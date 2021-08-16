@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -169,7 +168,7 @@ class AuthService {
     }
 
     String bearer = "Bearer " + tokenData["access"];
-    log("Token:- $bearer");
+    // log("Token:- $bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {

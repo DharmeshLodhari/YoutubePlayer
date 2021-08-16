@@ -202,6 +202,7 @@ class _HomeState extends State<Home> {
                   ),
                   onTap: () async {
                     await Navigator.of(context).pushNamed('/friends-dashboard');
+
                     setState(() {});
                   },
                 ),

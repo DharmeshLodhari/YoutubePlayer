@@ -13,6 +13,7 @@ import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/flutter_gifimage.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:devicelocale/devicelocale.dart';
@@ -33,7 +34,8 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   bool isChecked = false;
   bool isLoggedOut = false;
   String countryFromPref;
@@ -46,8 +48,21 @@ class _SplashScreenState extends State<SplashScreen> {
   var hasConnection = true;
   String errorText = "";
 
+  GifController controller;
+
   @override
   void initState() {
+    controller = GifController(vsync: this);
+    //  controller.animateTo(1, duration: Duration(seconds: 3));
+
+    // controller.repeat(min: 0, max: 139, period: Duration(milliseconds: 3000));
+    // controller.value = 0;
+    // from current frame to 26 frame
+    // controller.forward(from: 0);
+
+    // controller.animateTo(139, duration: Duration(seconds: 5));
+    controller.repeat(min: 0, max: 139, period: Duration(seconds: 6));
+
     try {
       initPlatformState();
     } catch (error) {
@@ -68,10 +83,10 @@ class _SplashScreenState extends State<SplashScreen> {
         hasConnection = true;
         if (mounted) setState(() {});
         try {
+          await Future.delayed(Duration(seconds: 4));
           await getLoggedInUser();
-          await Future.delayed(Duration(seconds: 3));
         } catch (error) {
-          await Future.delayed(Duration(seconds: 5));
+          await Future.delayed(Duration(seconds: 6));
           debugPrint("ERROR1:- $error");
           Navigator.pop(MyGlobals().navigationKey.currentContext);
           Navigator.of(MyGlobals().navigationKey.currentContext)
@@ -188,16 +203,16 @@ class _SplashScreenState extends State<SplashScreen> {
           //       ],
           //     ),
           //   ))
+
+          //assets/images/splash/slydo_splash_v3.gif
           ? Scaffold(
               body: Container(
               height: double.infinity,
               width: double.infinity,
               color: navyBlue,
-              child: Image.asset(
-                "assets/images/splash/slydo_splash_v4.gif",
-                fit: BoxFit.contain,
-                height: double.infinity,
-                width: double.infinity,
+              child: GifImage(
+                controller: controller,
+                image: AssetImage("assets/images/splash/slydo_splash_v3.gif"),
               ),
             ))
           : Scaffold(

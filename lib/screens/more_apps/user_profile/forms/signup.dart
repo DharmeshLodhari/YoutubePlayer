@@ -2,11 +2,14 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,14 +34,22 @@ class _SignUpState extends State<SignUp> {
   String phoneNumber = '';
   String password = '';
 
-  TextEditingController _fullNameController;
+  TextEditingController _firstNameController;
+  TextEditingController _lastNameController;
   TextEditingController _nickNameController;
   TextEditingController _userNameController;
   TextEditingController _phoneNumberController;
   TextEditingController _passwordController;
   TextEditingController _confirmPasswordController;
 
+  DateTime dob = DateTime.now();
+  String gender;
+
   UserBloc userBloc;
+
+  List<String> genders = ["Male", "Female"];
+
+  bool isOfficialInfoSet = false;
 
   @override
   void initState() {
@@ -46,7 +57,8 @@ class _SignUpState extends State<SignUp> {
 
     _phoneNumberController = TextEditingController();
     _phoneNumberController.text = phoneNumber;
-    _fullNameController = TextEditingController();
+    _firstNameController = TextEditingController();
+    _lastNameController = TextEditingController();
     _nickNameController = TextEditingController();
     _userNameController = TextEditingController();
     _passwordController = TextEditingController();
@@ -62,6 +74,11 @@ class _SignUpState extends State<SignUp> {
         if (FocusScope.of(context).hasFocus) {
           FocusScope.of(context).unfocus();
         }
+        if (isOfficialInfoSet) {
+          triggerInfoChange();
+          return Future.value(false);
+        }
+
         return Future.value(true);
       },
       child: Scaffold(
@@ -75,6 +92,10 @@ class _SignUpState extends State<SignUp> {
               color: navyBlue,
             ),
             onPressed: () {
+              if (isOfficialInfoSet) {
+                triggerInfoChange();
+                return;
+              }
               Navigator.pop(context);
             },
           ),
@@ -96,46 +117,72 @@ class _SignUpState extends State<SignUp> {
                     SizedBox(
                       height: 40,
                     ),
-                    phoneNumberField(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    fullNameField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    nameInstructionNote(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    userNameField(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    nickNameField(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    passwordField(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    passwordInstruction(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    confirmPasswordField(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    registrationTermsAndCondition(),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    registerBtn(),
-                    SizedBox(
-                      height: 40,
-                    ),
+                    // phoneNumberField(),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
+                    !isOfficialInfoSet
+                        ? Column(
+                            children: [
+                              nameInstructionNote(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              firstNameField(),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              lastNameField(),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              getDOBField(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              getGenderField(),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              nextBtn(),
+                              SizedBox(
+                                height: 40,
+                              ),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              userNameField(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              nickNameField(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              passwordField(),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              passwordInstruction(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              confirmPasswordField(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              registrationTermsAndCondition(),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              registerBtn(),
+                              SizedBox(
+                                height: 40,
+                              ),
+                            ],
+                          ),
                   ],
                 ),
               ),
@@ -188,20 +235,30 @@ class _SignUpState extends State<SignUp> {
   Widget nameInstructionNote() {
     return Container(
       child: Text(
-        "Use names registered on a government issued ID",
+        "Please ensure the information below matches that which is on your government issued ID",
         style: TextStyle(
             fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
       ),
     );
   }
 
-  Widget fullNameField() {
+  Widget firstNameField() {
     return CustomizedTextFormField(
-      controller: _fullNameController,
+      controller: _firstNameController,
       labelColor: darkGrey,
-      labelText: "Full name",
+      labelText: "First name",
       keyboardType: TextInputType.name,
-      validator: fullNameValidator,
+      // validator: fullNameValidator,
+    );
+  }
+
+  Widget lastNameField() {
+    return CustomizedTextFormField(
+      controller: _lastNameController,
+      labelColor: darkGrey,
+      labelText: "Last name",
+      keyboardType: TextInputType.name,
+      // validator: fullNameValidator,
     );
   }
 
@@ -271,6 +328,9 @@ class _SignUpState extends State<SignUp> {
   }
 
   String nickNameValidator(String nickName) {
+    if (_nickNameController.text.trim() == _userNameController.text.trim()) {
+      return "Nickname and Username should not be same";
+    }
     return null;
   }
 
@@ -288,7 +348,7 @@ class _SignUpState extends State<SignUp> {
     return CustomizedTextFormField(
       controller: _passwordController,
       labelColor: darkGrey,
-      labelText: "New password",
+      labelText: "Password",
       keyboardType: TextInputType.number,
       obscureText: true,
       maxLength: 6,
@@ -307,6 +367,46 @@ class _SignUpState extends State<SignUp> {
       maxLength: 6,
       isPassword: true,
       validator: validateEnteredConfirmPassword,
+    );
+  }
+
+  Widget getDOBField() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          builder: customThemeBuilder,
+          context: context,
+          initialDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          firstDate: DateTime(1920, 0, 1),
+          lastDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+        ).then((value) {
+          dob = DateTime(value.year, value.month, value.day);
+          setState(() {});
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Birthdate",
+        child: Container(
+          child: ListTile(
+            dense: true,
+            title: Text(
+              formatDate(dob),
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            trailing: Icon(
+              SlydoAppIcon.date,
+              size: 16,
+              color: darkGrey,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -341,6 +441,20 @@ class _SignUpState extends State<SignUp> {
       textColor: Colors.white,
       backgroundColor: navyBlue,
     );
+  }
+
+  Widget nextBtn() {
+    return CurvedButton(
+      onPressed: triggerInfoChange,
+      text: "Next",
+      textColor: Colors.white,
+      backgroundColor: navyBlue,
+    );
+  }
+
+  void triggerInfoChange() {
+    isOfficialInfoSet = !isOfficialInfoSet;
+    if (mounted) setState(() {});
   }
 
   // validate password
@@ -381,6 +495,97 @@ class _SignUpState extends State<SignUp> {
     return null;
   }
 
+  Widget getGenderField() {
+    return CustomizedDropDownField(
+      title: "Gender",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          gender != null ? gender : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectGenderField();
+        },
+      ),
+    );
+  }
+
+  void selectGenderField() async {
+    final pressedGender = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: genders.map<Widget>((data) {
+                          if (gender == data) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  data,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, data);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              data,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, data);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedGender != null) {
+      gender = pressedGender;
+      setState(() {});
+    }
+  }
+
   // validate the all field in the form then authenticate user and navigate him to dashboard screen
   void registerUser() async {
     if (FocusScope.of(context).hasFocus) {
@@ -390,14 +595,32 @@ class _SignUpState extends State<SignUp> {
       phoneNumber = _phoneNumberController.text.trim();
       password = _passwordController.text.trim();
 
+      DateFormat dateFormat = DateFormat('yyyy/MM/dd');
+      debugPrint("DOB:- ${dateFormat.format(dob)}");
+
+      String selectedGender = "";
+      if (gender == "Male") {
+        selectedGender = "M";
+      } else if (gender == "Female") {
+        selectedGender = "F";
+      }
+
+      String firstName = _firstNameController.text.trim();
+      String lastName = _lastNameController.text.trim();
+
       Map<String, dynamic> data = {
         "phone_number": _phoneNumberController.text.trim(),
-        "full_name": _fullNameController.text.trim(),
+        "firstname": firstName,
+        "lastname": lastName,
+        "full_name": "$firstName $lastName",
+        "dob": dateFormat.format(dob),
+        "gender": selectedGender,
         "username": _userNameController.text.trim(),
         "nickname": _nickNameController.text.trim(),
         "password1": _passwordController.text.trim(),
         "password2": _confirmPasswordController.text.trim(),
       };
+      debugPrint("DATA SENT:- $data");
 
       showDialog(context: context, builder: (context) => LoadingIndicator());
 

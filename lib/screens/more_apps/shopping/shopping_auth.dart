@@ -55,7 +55,8 @@ class ShoppingAuthService extends AuthService {
   // List the  item with pagination
   Future<Map<String, dynamic>> searchShoppingProducts(
       String searchedText, String next, String previous) async {
-    String url = secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
+    String url =
+        secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
     if (next == null) {
       return null;
     }
@@ -635,6 +636,8 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 201) {
       return jsonData;
     } else {

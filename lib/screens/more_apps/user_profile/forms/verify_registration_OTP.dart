@@ -196,9 +196,9 @@ class _VerifyRegistrationOTPScreenState
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
           .then((value) {
-        Navigator.of(context).popAndPushNamed('/register', arguments: {
-          'phoneNumber': phoneNumber,
-        });
+      Navigator.of(context).popAndPushNamed('/register', arguments: {
+        'phoneNumber': phoneNumber,
+      });
       });
     }
   }

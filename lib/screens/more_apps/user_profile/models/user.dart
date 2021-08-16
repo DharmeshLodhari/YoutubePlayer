@@ -1,7 +1,6 @@
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
-import 'package:flutter/cupertino.dart';
 
 class Address {
   String addressLineOne;
@@ -118,8 +117,6 @@ class User {
 
   String displayName() {
     if (this.nickName != "" && this.nickName != null) {
-      debugPrint(
-          "displayName===>${this.type}+${this.nickName}+${this.userName}+${this.fullName}");
       if (this.type != null &&
           this.type != "" &&
           this.type != "Business" &&

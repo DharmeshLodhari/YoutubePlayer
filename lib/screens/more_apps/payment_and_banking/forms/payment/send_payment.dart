@@ -125,9 +125,10 @@ class _SendPaymentState extends State<SendPayment> {
 
   void setAllFieldProduct() {
     _amountController.text =
-        moneyDisplayNormalizer(int.parse(product.price.toString()));
+        moneyDisplayNormalizer(int.parse(product.price.toString()))
+            .replaceAll(",", "");
 
-    amount = double.parse(_amountController.text.replaceAll(",", ""));
+    amount = double.parse(_amountController.text);
     _referenceController.text = product.name;
     reference = _referenceController.text;
     selectedCategory = "Shopping";
