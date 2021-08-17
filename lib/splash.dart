@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -13,7 +15,6 @@ import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/flutter_gifimage.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:devicelocale/devicelocale.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
+import 'package:video_player/video_player.dart';
 
 import 'data/socket_provider.dart';
 import 'data/state_notifier.dart';
@@ -48,20 +50,22 @@ class _SplashScreenState extends State<SplashScreen>
   var hasConnection = true;
   String errorText = "";
 
-  GifController controller;
+  VideoPlayerController playerController;
+  VoidCallback listener;
+
+  bool isUserFound;
+  Timer timer;
 
   @override
   void initState() {
-    controller = GifController(vsync: this);
-    //  controller.animateTo(1, duration: Duration(seconds: 3));
+    listener = () {
+      setState(() {});
+    };
+    initializeVideo();
+    playerController.play();
 
-    // controller.repeat(min: 0, max: 139, period: Duration(milliseconds: 3000));
-    // controller.value = 0;
-    // from current frame to 26 frame
-    // controller.forward(from: 0);
-
-    // controller.animateTo(139, duration: Duration(seconds: 5));
-    controller.repeat(min: 0, max: 139, period: Duration(seconds: 6));
+    ///video splash display only 5 second you can change the duration according to your need
+    timer = startTime();
 
     try {
       initPlatformState();
@@ -75,8 +79,63 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
   }
 
-  void stopAnimation() {
-    controller?.stop();
+  Timer startTime() {
+    var _duration = new Duration(seconds: 1);
+    return new Timer.periodic(_duration, (timer) {
+      navigationPage();
+    });
+  }
+
+  void navigationPage() {
+    debugPrint(
+        "isUserFound => $isUserFound playerController.value.isPlaying => ${playerController.value.isPlaying}");
+    if (isUserFound != null && playerController.value.isPlaying == false) {
+      playerController.setVolume(0.0);
+      playerController.removeListener(listener);
+      if (isUserFound == true) {
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushNamedAndRemoveUntil(
+          "/dashboard",
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushReplacementNamed("/index");
+      }
+    } else {
+      if (playerController.value.isPlaying == false) {
+        playerController.setVolume(0.0);
+        playerController.removeListener(listener);
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .pushReplacementNamed("/index");
+      }
+    }
+  }
+
+  void initializeVideo() {
+    playerController =
+        VideoPlayerController.asset('assets/images/splash/splash-v3.mp4')
+          ..addListener(listener)
+          ..setVolume(1.0)
+          ..initialize()
+          ..play();
+  }
+
+  @override
+  void deactivate() {
+    if (playerController != null) {
+      playerController.setVolume(0.0);
+      playerController.removeListener(listener);
+    }
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    if (playerController != null) playerController.dispose();
+    if (timer != null) timer?.cancel();
+    super.dispose();
   }
 
   void checkConnection() async {
@@ -87,16 +146,15 @@ class _SplashScreenState extends State<SplashScreen>
         hasConnection = true;
         if (mounted) setState(() {});
         try {
-          await Future.delayed(Duration(seconds: 4));
+          // await Future.delayed(Duration(seconds: 4));
           await getLoggedInUser();
         } catch (error) {
-          await Future.delayed(Duration(seconds: 6));
-          debugPrint("ERROR1:- $error");
-
-          stopAnimation();
-          Navigator.pop(MyGlobals().navigationKey.currentContext);
-          Navigator.of(MyGlobals().navigationKey.currentContext)
-              .pushNamed("/index");
+          // await Future.delayed(Duration(seconds: 6));
+          // debugPrint("ERROR1:- $error");
+          //
+          // Navigator.pop(MyGlobals().navigationKey.currentContext);
+          // Navigator.of(MyGlobals().navigationKey.currentContext)
+          //     .pushNamed("/index");
           return Future.value(null);
         }
       } else {
@@ -170,67 +228,18 @@ class _SplashScreenState extends State<SplashScreen>
     return WillPopScope(
       onWillPop: () async => Future.value(false),
       child: hasConnection
-          // ? Scaffold(
-          //     body: Container(
-          //     height: double.infinity,
-          //     width: double.infinity,
-          //     color: navyBlue,
-          //     child: Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: [
-          //         Image.asset(
-          //           "assets/images/app_logo.png",
-          //           color: Colors.white,
-          //           fit: BoxFit.fill,
-          //           height: 75,
-          //         ),
-          //         SizedBox(
-          //           height: 16,
-          //         ),
-          //         Text(
-          //           "Slydo",
-          //           style: TextStyle(
-          //               fontFamily: "CircularStd",
-          //               fontSize: 52,
-          //               color: Colors.white,
-          //               fontWeight: FontWeight.w600),
-          //         ),
-          //         // SizedBox(
-          //         //   height: 16,
-          //         // ),
-          //         // Text(
-          //         //   errorText,
-          //         //   style: TextStyle(
-          //         //       fontFamily: "CircularStd",
-          //         //       fontSize: 14,
-          //         //       color: Colors.white,
-          //         //       fontWeight: FontWeight.w600),
-          //         // )
-          //       ],
-          //     ),
-          //   ))
-
-          //assets/images/splash/slydo_splash_v3.gif
-          // ? Scaffold(
-          //     body: Container(
-          //     height: double.infinity,
-          //     width: double.infinity,
-          //     color: navyBlue,
-          //     child: GifImage(
-          //       controller: controller,
-          //       image: AssetImage("assets/images/splash/slydo_splash_v3.gif"),
-          //     ),
-          //   ))
           ? Scaffold(
-              body: Container(
-              height: double.infinity,
-              width: double.infinity,
-              color: navyBlue,
-              child: GifImage(
-                controller: controller,
-                image: AssetImage("assets/images/splash/slydo_splash_v3.gif"),
-              ),
-            ))
+              body: Stack(fit: StackFit.expand, children: <Widget>[
+              new AspectRatio(
+                  aspectRatio: 9 / 16,
+                  child: Container(
+                    child: (playerController != null
+                        ? VideoPlayer(
+                            playerController,
+                          )
+                        : Container()),
+                  )),
+            ]))
           : Scaffold(
               backgroundColor: Colors.white,
               appBar: AppBar(
@@ -278,9 +287,10 @@ class _SplashScreenState extends State<SplashScreen>
     isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
     if (isLoggedOut) {
       debugPrint("IsLoggedOut:- $isLoggedOut");
-      Navigator.pop(MyGlobals().navigationKey.currentContext);
-      Navigator.of(MyGlobals().navigationKey.currentContext)
-          .pushNamed("/index");
+      isUserFound = false;
+      // Navigator.pop(MyGlobals().navigationKey.currentContext);
+      // Navigator.of(MyGlobals().navigationKey.currentContext)
+      //     .pushNamed("/index");
       return;
     }
 
@@ -369,12 +379,12 @@ class _SplashScreenState extends State<SplashScreen>
 
             setState(() {});
 
-            stopAnimation();
-            Navigator.of(MyGlobals().navigationKey.currentContext)
-                .pushNamedAndRemoveUntil(
-              "/dashboard",
-              (Route<dynamic> route) => false,
-            );
+            isUserFound = true;
+            // Navigator.of(MyGlobals().navigationKey.currentContext)
+            //     .pushNamedAndRemoveUntil(
+            //   "/dashboard",
+            //   (Route<dynamic> route) => false,
+            // );
             return;
           } else {
             errorText += "accounts not found\n";
@@ -385,9 +395,9 @@ class _SplashScreenState extends State<SplashScreen>
       }
       if (mounted) setState(() {});
     }
-    stopAnimation();
-    Navigator.pop(MyGlobals().navigationKey.currentContext);
-    Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
+    isUserFound = false;
+    // Navigator.pop(MyGlobals().navigationKey.currentContext);
+    // Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
     return Future.value(null);
 
     // try {
