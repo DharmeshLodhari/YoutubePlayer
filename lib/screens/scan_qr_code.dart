@@ -1,3 +1,4 @@
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -112,9 +113,9 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       //if we get a text that belongs to us then we process it
       if (scanData != null) {
-        if (scanData.startsWith(secureBaseUrl) ||
-            scanData.startsWith(secureBaseUrl) ||
-            scanData.startsWith(localHostUrl)) {
+        if (scanData.startsWith(AppConfig.baseUrl) ||
+            scanData.startsWith(AppConfig.baseUrl) ||
+            scanData.startsWith(AppConfig.localHost)) {
           var scanDataList = scanData.split('/');
           scanDataList.removeWhere((value) => value == "");
           getNavigationRoot(scanDataList);

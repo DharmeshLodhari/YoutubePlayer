@@ -458,8 +458,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   }
                   var response =
                       await _auth.makePaymentForCartOrder({"orders": orders});
+                  Navigator.popUntil(
+                      context, ModalRoute.withName("/dashboard"));
                   if (response.statusCode == 200) {
-                    Navigator.popAndPushNamed(
+                    Navigator.pushNamed(
                       context,
                       '/orders-list',
                     );
@@ -503,14 +505,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
         Provider.of<BankAccountBloc>(context, listen: false);
     if (bankAccountBloc.bankAccount == null ||
         bankAccountBloc.bankAccount.bankName == null) {
-      Navigator.of(context).pop();
+      Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
       Toast.show("Please add bank account first !!", context,
           backgroundColor: Colors.black,
           textColor: Colors.white,
           duration: Toast.LENGTH_LONG);
     } else {
       double accountBalance = await getAccountBalance();
-      Navigator.of(context).pop();
+      Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
       debugPrint("accountBalance:- $accountBalance");
       double spendingAmount = basketBloc.total / 100;
       debugPrint("spendingAmount:- $spendingAmount");

@@ -75,6 +75,10 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
   }
 
+  void stopAnimation() {
+    controller?.stop();
+  }
+
   void checkConnection() async {
     await Connectivity().checkConnectivity().then((value) async {
       var connectionResult = value;
@@ -88,6 +92,8 @@ class _SplashScreenState extends State<SplashScreen>
         } catch (error) {
           await Future.delayed(Duration(seconds: 6));
           debugPrint("ERROR1:- $error");
+
+          stopAnimation();
           Navigator.pop(MyGlobals().navigationKey.currentContext);
           Navigator.of(MyGlobals().navigationKey.currentContext)
               .pushNamed("/index");
@@ -205,6 +211,16 @@ class _SplashScreenState extends State<SplashScreen>
           //   ))
 
           //assets/images/splash/slydo_splash_v3.gif
+          // ? Scaffold(
+          //     body: Container(
+          //     height: double.infinity,
+          //     width: double.infinity,
+          //     color: navyBlue,
+          //     child: GifImage(
+          //       controller: controller,
+          //       image: AssetImage("assets/images/splash/slydo_splash_v3.gif"),
+          //     ),
+          //   ))
           ? Scaffold(
               body: Container(
               height: double.infinity,
@@ -353,6 +369,7 @@ class _SplashScreenState extends State<SplashScreen>
 
             setState(() {});
 
+            stopAnimation();
             Navigator.of(MyGlobals().navigationKey.currentContext)
                 .pushNamedAndRemoveUntil(
               "/dashboard",
@@ -368,6 +385,7 @@ class _SplashScreenState extends State<SplashScreen>
       }
       if (mounted) setState(() {});
     }
+    stopAnimation();
     Navigator.pop(MyGlobals().navigationKey.currentContext);
     Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
     return Future.value(null);

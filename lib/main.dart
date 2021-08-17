@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
@@ -39,6 +40,8 @@ void main() async {
   // submitted as expected. It is not intended to be used for everyday
   // development.
   //Crashlytics.instance.enableInDevMode = true;
+
+  AppConfig();
 
   WidgetsFlutterBinding.ensureInitialized();
 

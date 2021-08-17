@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -10,12 +11,6 @@ import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
 import 'device_info.dart';
-
-final String secureBaseUrl = "https://api.slydo.co";
-final String localHostUrl = "https://127.0.0.1:8080";
-final String gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
-final String socketUrl = "wss://chat.slydo.co/ws/main";
-final String googleMapAPIKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
 
 class AuthService {
   final Duration timeOutDuration = Duration(seconds: 4);
@@ -48,7 +43,7 @@ class AuthService {
     // a user instance which we should pass around throughout the application as
     // the auth user.
 
-    var url = secureBaseUrl + "/api/v1/user/auth/get-token/";
+    var url = AppConfig.baseUrl + "/api/v1/user/auth/get-token/";
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -88,7 +83,7 @@ class AuthService {
       var jsonData = jsonResponse["user"];
       jsonData["password"] = password;
       jsonData["url"] =
-          secureBaseUrl + "/api/v1/user/customer/" + jsonData["username"];
+          AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
       User user = await createUser(jsonData);
 
       return user;
@@ -112,7 +107,7 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    var url = secureBaseUrl + "/api/v1/user/auth/logout/";
+    var url = AppConfig.baseUrl + "/api/v1/user/auth/logout/";
     var headers = await getAuthHeaders();
     debugPrint("URL:- $url Called !!");
     var response = await http.get(url, headers: headers);
@@ -220,7 +215,7 @@ class AuthService {
 
   //register device
   Future<bool> registerDevice(Map data) async {
-    var url = secureBaseUrl + "/api/v1/notification/register-device/";
+    var url = AppConfig.baseUrl + "/api/v1/notification/register-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
 
@@ -235,7 +230,7 @@ class AuthService {
 
   // it will unregister the device from server
   Future<bool> unRegisterDevice() async {
-    var url = secureBaseUrl + "/api/v1/notification/unregister-device/";
+    var url = AppConfig.baseUrl + "/api/v1/notification/unregister-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode({});
     debugPrint("URL:- $url Called !!");
@@ -254,7 +249,7 @@ class AuthService {
 
   // it will tell the server our app is in which state
   Future<bool> updateAppState(Map data) async {
-    var url = secureBaseUrl + "/api/v1/notification/update-app-state/";
+    var url = AppConfig.baseUrl + "/api/v1/notification/update-app-state/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response;

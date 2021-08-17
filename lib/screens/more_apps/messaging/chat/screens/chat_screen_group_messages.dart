@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -2164,7 +2165,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     stopShakeDetector();
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
-        apiKey: gifApiKey,
+        apiKey: AppConfig.gifApiKey,
         showPreviewPage: false,
         sticker: false,
         decorator: GiphyDecorator(
@@ -2201,7 +2202,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     stopShakeDetector();
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
-        apiKey: gifApiKey,
+        apiKey: AppConfig.gifApiKey,
         showPreviewPage: false,
         onError: (error) {
           debugPrint("ERROR IN GIPHY PICKER:- $error");
@@ -2526,7 +2527,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void addProductOrServiceToChat(var item) async {
-    String url = secureBaseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
         item.id +
         "/";
@@ -3856,13 +3857,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return secureBaseUrl +
+      return AppConfig.baseUrl +
           "/api/v1/search/products/?search=name__wildcard|*" +
           searchItemTextController.text +
           "*";
     }
     if (isServiceSearch) {
-      return secureBaseUrl +
+      return AppConfig.baseUrl +
           "/api/v1/search/services/?search=name__wildcard|*" +
           searchItemTextController.text +
           "*";

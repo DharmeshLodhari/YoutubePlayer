@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -251,7 +251,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url = secureBaseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/${service is Product ? "products" : "services"}/" +
         service.id +
         "/";

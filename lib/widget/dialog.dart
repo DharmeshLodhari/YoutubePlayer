@@ -279,7 +279,7 @@ void showUserLogoutCard({BuildContext context}) {
                   height: 10,
                 ),
                 Text(
-                  "You have logged in other device.",
+                  "You have logged in on another device.",
                   style: TextStyle(
                       color: blackFont,
                       fontWeight: FontWeight.bold,

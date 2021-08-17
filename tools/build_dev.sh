@@ -1,0 +1,1 @@
+flutter build apk --release --dart-define=BUILD_TYPE=DEVELOPMENT

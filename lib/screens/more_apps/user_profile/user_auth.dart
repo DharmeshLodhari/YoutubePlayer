@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
@@ -19,7 +20,7 @@ class UserAuth extends AuthService {
     if (userName == null) {
       return CustomerProfile();
     }
-    var url = secureBaseUrl + "/api/v1/user/customer/" + userName.trim();
+    var url = AppConfig.baseUrl + "/api/v1/user/customer/" + userName.trim();
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -45,7 +46,7 @@ class UserAuth extends AuthService {
     if (userName == null) {
       return CustomerProfile();
     }
-    var url = secureBaseUrl + "/api/v1/user/customer/" + userName.trim();
+    var url = AppConfig.baseUrl + "/api/v1/user/customer/" + userName.trim();
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -68,7 +69,7 @@ class UserAuth extends AuthService {
     User user = await getUser();
     var headers = await getAuthHeaders();
     var url =
-        secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
+        AppConfig.baseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
     if (avatar != null) {
       var avatarPath = avatar.path;
@@ -118,7 +119,7 @@ class UserAuth extends AuthService {
     User user = await getUser();
     var headers = await getAuthHeaders();
     var url =
-        secureBaseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
+        AppConfig.baseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
 
     var response = await httpDelete(url, headers: headers);
     if (response.statusCode == 204) {
@@ -131,7 +132,7 @@ class UserAuth extends AuthService {
 
   Future<User> verifyUserDetail(File documentPhoto, File userPhoto) async {
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/user/kyc/";
+    var url = AppConfig.baseUrl + "/api/v1/user/kyc/";
 
     if (documentPhoto != null && userPhoto != null) {
       var document = documentPhoto.path;
@@ -171,7 +172,7 @@ class UserAuth extends AuthService {
   // Register the user with the backend servers
   Future<bool> userRegistration(Map<String, dynamic> _body) async {
     Map<String, dynamic> data = {};
-    var url = secureBaseUrl + "/api/v1/user/account/";
+    var url = AppConfig.baseUrl + "/api/v1/user/account/";
     var headers = getNonAuthHeader();
     headers.remove("Content-type");
     var _getData = await getDeviceInfo();
@@ -195,7 +196,7 @@ class UserAuth extends AuthService {
 
 // it will register the phone number to get OTP
   Future<bool> registerPhoneNumber(String phoneNumber) async {
-    var url = secureBaseUrl + "/api/v1/sms/register-phone-number";
+    var url = AppConfig.baseUrl + "/api/v1/sms/register-phone-number";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
@@ -221,7 +222,7 @@ class UserAuth extends AuthService {
       String phoneNumber,
       String otp,
       String passwordToken) async {
-    var url = secureBaseUrl + "/api/v1/sms/verify";
+    var url = AppConfig.baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
@@ -245,7 +246,7 @@ class UserAuth extends AuthService {
   // it will verify the phone number to  OTP
   Future<bool> resetPassword(String passwordOne, String passwordTwo,
       String phoneNumber, String resetToken) async {
-    var url = secureBaseUrl + "/api/v1/user/auth/password-reset/";
+    var url = AppConfig.baseUrl + "/api/v1/user/auth/password-reset/";
     var headers = getNonAuthHeader();
 
     var data = {
@@ -268,7 +269,7 @@ class UserAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>> changePassword(Map<String, dynamic> data) async {
-    var url = secureBaseUrl + "/api/v1/user/change-password/";
+    var url = AppConfig.baseUrl + "/api/v1/user/change-password/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
@@ -308,7 +309,7 @@ class UserAuth extends AuthService {
   }
 
   Future<Address> fetchUserAddress() async {
-    var url = secureBaseUrl + "/api/v1/user/address/";
+    var url = AppConfig.baseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
@@ -326,7 +327,7 @@ class UserAuth extends AuthService {
   }
 
   Future<UserAbout> fetchUserAboutInfo({String userName}) async {
-    var url = secureBaseUrl + "/api/v1/user/about/$userName/";
+    var url = AppConfig.baseUrl + "/api/v1/user/about/$userName/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -339,7 +340,7 @@ class UserAuth extends AuthService {
 
   Future<UserAbout> addOrUpdateUserBio(
       {UserAbout userAbout, String nickName}) async {
-    var url = secureBaseUrl + "/api/v1/user/about/";
+    var url = AppConfig.baseUrl + "/api/v1/user/about/";
 
     var headers = await getAuthHeaders();
 
@@ -393,7 +394,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> updateSimpleUserDetail({String nickName}) async {
-    var url = secureBaseUrl + "/api/v1/user/update-customer-nickname/";
+    var url = AppConfig.baseUrl + "/api/v1/user/update-customer-nickname/";
     debugPrint("URL:- $url");
     var data = {"nickname": nickName};
     var headers = await getAuthHeaders();
@@ -409,7 +410,7 @@ class UserAuth extends AuthService {
 
   Future<bool> deleteImageCover() async {
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/user/about/";
+    var url = AppConfig.baseUrl + "/api/v1/user/about/";
 
     var response = await httpDelete(url, headers: headers);
 
@@ -422,7 +423,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> addUserAddress(Map data) async {
-    var url = secureBaseUrl + "/api/v1/user/address/";
+    var url = AppConfig.baseUrl + "/api/v1/user/address/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
@@ -436,7 +437,7 @@ class UserAuth extends AuthService {
   ///Friends List
 
   Future<Map<String, dynamic>> contacts(String next, String previous) async {
-    var url = secureBaseUrl + "/api/v1/user/contacts/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contacts/";
     if (next == null) {
       return null;
     }
@@ -466,7 +467,7 @@ class UserAuth extends AuthService {
 
   Future<List> fetchMissedContact(
       {String createdAt, String conversationId}) async {
-    var url = secureBaseUrl + "/api/v1/chat/fetch-missed-conversations/";
+    var url = AppConfig.baseUrl + "/api/v1/chat/fetch-missed-conversations/";
 
     var headers = await getAuthHeaders();
     debugPrint("URL:- $url");
@@ -492,7 +493,7 @@ class UserAuth extends AuthService {
   // Fetch user profile
   Future<ChatConversation> fetchContactProfile(String userName) async {
     var url =
-        secureBaseUrl + "/api/v1/user/connections/" + userName.trim() + "/";
+        AppConfig.baseUrl + "/api/v1/user/connections/" + userName.trim() + "/";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -513,7 +514,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> removeFromContactList(CustomerProfile user) async {
-    var url = secureBaseUrl + "/api/v1/user/contacts/remove-from-contact/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contacts/remove-from-contact/";
     debugPrint("URL:- $url");
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
@@ -530,7 +531,7 @@ class UserAuth extends AuthService {
   // Check if user is the the checker's list of contact
   Future<bool> checkInContactList(String user, String checker) async {
     // Note that the checker is the request.user making this request.
-    var url = secureBaseUrl + "/api/v1/user/contacts/check-in-contact/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contacts/check-in-contact/";
     var data = {"checker": checker, "user": user};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -546,7 +547,8 @@ class UserAuth extends AuthService {
 
   Future<bool> checkInRequest(String user) async {
     // Note that the checker is the request.user making this request.
-    var url = secureBaseUrl + "/api/v1/user/contact-request/check-in-request/";
+    var url =
+        AppConfig.baseUrl + "/api/v1/user/contact-request/check-in-request/";
     var data = {"to_user": user};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -558,7 +560,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> makeContactRequest(CustomerProfile user) async {
-    var url = secureBaseUrl + "/api/v1/user/contact-request/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contact-request/";
     var data = {"to_user": user.userName};
 
     var headers = await getAuthHeaders();
@@ -575,7 +577,7 @@ class UserAuth extends AuthService {
   // Block Contact
   Future<Map<String, dynamic>> listBlockUsers(
       String next, String previous) async {
-    var url = secureBaseUrl + "/api/v1/user/contacts/list-block-contact/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contacts/list-block-contact/";
     if (next == null) {
       return null;
     }
@@ -602,7 +604,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> blockUser(CustomerProfile user) async {
-    var url = secureBaseUrl + "/api/v1/user/contacts/block-contact/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contacts/block-contact/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -614,7 +616,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> unBlockUser(CustomerProfile user) async {
-    var url = secureBaseUrl + "/api/v1/user/contacts/unblock-contact/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contacts/unblock-contact/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -628,7 +630,7 @@ class UserAuth extends AuthService {
   // Contact Request
   Future<Map<String, dynamic>> listContactRequests(
       String next, String previous) async {
-    var url = secureBaseUrl + "/api/v1/user/contact-request/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contact-request/";
     if (next == null) {
       return null;
     }
@@ -655,7 +657,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> acceptContactRequest(CustomerProfile user) async {
-    var url = secureBaseUrl + "/api/v1/user/contact-request/accept/";
+    var url = AppConfig.baseUrl + "/api/v1/user/contact-request/accept/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -667,7 +669,8 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> rejectContactRequest(CustomerProfile user) async {
-    var url = secureBaseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
+    var url =
+        AppConfig.baseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
     var data = {"user": user.userName};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -679,7 +682,7 @@ class UserAuth extends AuthService {
   }
 
   Future<bool> upgradeUserProfile(Map<String, dynamic> data) async {
-    var url = secureBaseUrl + "/api/v1/user/upgrade-user-account/";
+    var url = AppConfig.baseUrl + "/api/v1/user/upgrade-user-account/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
@@ -691,7 +694,7 @@ class UserAuth extends AuthService {
   }
 
   Future<List> getUserProfileUpgradeDetails() async {
-    var url = secureBaseUrl + "/api/v1/user/profile-pricing/";
+    var url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     if (response.statusCode == 200) {
@@ -705,7 +708,7 @@ class UserAuth extends AuthService {
 
   // it will reset the phone number to get OTP
   Future<bool> resetDevice({Map data}) async {
-    // var url = secureBaseUrl + "/api/v1/user/reset-user-device/";
+    // var url = AppConfig.AppConfig.baseUrl + "/api/v1/user/reset-user-device/";
     //
     // var headers = getNonAuthHeader();
     // var deviceData = await getDeviceInfo();
@@ -729,7 +732,7 @@ class UserAuth extends AuthService {
 
   // it will register the phone number to get OTP
   Future<String> sendOTPForResetDevice(String phoneNumber) async {
-    // var url = secureBaseUrl + "/api/v1/sms/reset-user-device/";
+    // var url = secureAppConfig.baseUrl + "/api/v1/sms/reset-user-device/";
     // var headers = getNonAuthHeader();
     // var data = {
     //   "phone": phoneNumber,
@@ -751,7 +754,7 @@ class UserAuth extends AuthService {
 
   // it will verify the phone number to  OTP
   Future<String> verifyOTPForResetDevice(String phoneNumber, String otp) async {
-    // var url = secureBaseUrl + "/api/v1/sms/verify";
+    // var url = AppConfig.baseUrl + "/api/v1/sms/verify";
     // var headers = getNonAuthHeader();
     // var data = {"phone": phoneNumber, "code": otp};
     // var _data = jsonEncode(data);
@@ -772,7 +775,7 @@ class UserAuth extends AuthService {
   }
 
   // Future<bool> searchUserInContact(String next ,String previous,{String query}) async {
-  //   var url = secureBaseUrl +
+  //   var url = secureAppConfig.baseUrl +
   //       "/api/v1/user/group-conversation/search-user-contacts?q=$query/";
   //   debugPrint("UR");
   //   var headers = await getAuthHeaders();
@@ -792,8 +795,8 @@ class UserAuth extends AuthService {
   // Search User in Contact
   Future<Map<String, dynamic>> searchUserInContact(String next, String previous,
       {String query}) async {
-    var url =
-        secureBaseUrl + "/api/v1/user/group-conversation/search-user-contacts";
+    var url = AppConfig.baseUrl +
+        "/api/v1/user/group-conversation/search-user-contacts";
 
     if (query != "") {
       url = url + "?q=$query/";

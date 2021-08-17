@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -8,7 +9,6 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -786,11 +786,17 @@ class _SearchUsersProductAndServiceState
   String getSearchUrl(String searchedText) {
     switch (filterValue) {
       case "Products":
-        return secureBaseUrl + "/api/v1/search/products/byseller=" + searchedText;
+        return AppConfig.baseUrl +
+            "/api/v1/search/products/byseller=" +
+            searchedText;
       case "Services":
-        return secureBaseUrl + "/api/v1/search/services/?search=" + searchedText;
+        return AppConfig.baseUrl +
+            "/api/v1/search/services/?search=" +
+            searchedText;
       default:
-        return secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
+        return AppConfig.baseUrl +
+            "/api/v1/search/products/?search=" +
+            searchedText;
     }
   }
 

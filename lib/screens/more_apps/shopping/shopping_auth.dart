@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/services/auth.dart';
@@ -19,7 +20,7 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = secureBaseUrl + "/api/v1/products/by-seller/black/";
+      url = AppConfig.baseUrl + "/api/v1/products/by-seller/black/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -40,7 +41,7 @@ class ShoppingAuthService extends AuthService {
 
   // Get single product
   Future<ShoppingProduct> getShoppingProduct(String id) async {
-    var url = secureBaseUrl + "/api/v1/products/" + id + "/";
+    var url = AppConfig.baseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -56,7 +57,7 @@ class ShoppingAuthService extends AuthService {
   Future<Map<String, dynamic>> searchShoppingProducts(
       String searchedText, String next, String previous) async {
     String url =
-        secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
+        AppConfig.baseUrl + "/api/v1/search/products/?search=" + searchedText;
     if (next == null) {
       return null;
     }
@@ -85,7 +86,7 @@ class ShoppingAuthService extends AuthService {
   // delete product and service image
 
   Future<bool> deleteProductOrServiceImage(String imageId) async {
-    var url = secureBaseUrl + "/api/v1/images/" + imageId + "/";
+    var url = AppConfig.baseUrl + "/api/v1/images/" + imageId + "/";
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
     var response = await httpDelete(url, headers: headers);
@@ -130,7 +131,7 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = secureBaseUrl + "/api/v1/products/by-seller/" + userId + "/";
+      url = AppConfig.baseUrl + "/api/v1/products/by-seller/" + userId + "/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -170,7 +171,7 @@ class ShoppingAuthService extends AuthService {
   // Add Product
   Future<bool> addProduct(Product product) async {
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/products/";
+    var url = AppConfig.baseUrl + "/api/v1/products/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -214,7 +215,8 @@ class ShoppingAuthService extends AuthService {
   // Edit Product
   Future<bool> editProduct(Product product) async {
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/products/" + product.id.toString() + "/";
+    var url =
+        AppConfig.baseUrl + "/api/v1/products/" + product.id.toString() + "/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
@@ -260,7 +262,7 @@ class ShoppingAuthService extends AuthService {
 
   // Get single product
   Future<Product> getProduct(String id) async {
-    var url = secureBaseUrl + "/api/v1/products/" + id + "/";
+    var url = AppConfig.baseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -287,7 +289,7 @@ class ShoppingAuthService extends AuthService {
 
   // delete single product
   Future<bool> deleteProduct(String id) async {
-    var url = secureBaseUrl + "/api/v1/products/" + id + "/";
+    var url = AppConfig.baseUrl + "/api/v1/products/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpDelete(
       url,
@@ -334,7 +336,7 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = secureBaseUrl + "/api/v1/services/by-provider/" + userId + "/";
+      url = AppConfig.baseUrl + "/api/v1/services/by-provider/" + userId + "/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -374,7 +376,7 @@ class ShoppingAuthService extends AuthService {
   // addService
   Future<bool> addService(Service service) async {
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/services/";
+    var url = AppConfig.baseUrl + "/api/v1/services/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("POST", Uri.parse(url));
@@ -418,7 +420,8 @@ class ShoppingAuthService extends AuthService {
 // edit service
   Future<bool> editService(Service service) async {
     var headers = await getAuthHeaders();
-    var url = secureBaseUrl + "/api/v1/services/" + service.id.toString() + "/";
+    var url =
+        AppConfig.baseUrl + "/api/v1/services/" + service.id.toString() + "/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
@@ -464,7 +467,7 @@ class ShoppingAuthService extends AuthService {
 
 // Get single service
   Future<Service> getService(String id) async {
-    var url = secureBaseUrl + "/api/v1/services/" + id + "/";
+    var url = AppConfig.baseUrl + "/api/v1/services/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -478,7 +481,7 @@ class ShoppingAuthService extends AuthService {
 
   // delete single service
   Future<bool> deleteService(String id) async {
-    var url = secureBaseUrl + "/api/v1/services/" + id + "/";
+    var url = AppConfig.baseUrl + "/api/v1/services/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpDelete(
       url,
@@ -496,7 +499,8 @@ class ShoppingAuthService extends AuthService {
   Future<bool> updateOrderStatus(String value, String orderId) async {
     var data = {"status": value};
     var _data = jsonEncode(data);
-    var url = secureBaseUrl + "/api/v1/order/" + orderId + "/update-status/";
+    var url =
+        AppConfig.baseUrl + "/api/v1/order/" + orderId + "/update-status/";
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
@@ -509,7 +513,7 @@ class ShoppingAuthService extends AuthService {
   Future<bool> updateOrderNote(String note, String orderId) async {
     var data = {"note": note};
     var _data = jsonEncode(data);
-    var url = secureBaseUrl + "/api/v1/order/" + orderId + "/add-note/";
+    var url = AppConfig.baseUrl + "/api/v1/order/" + orderId + "/add-note/";
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
@@ -526,7 +530,7 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = secureBaseUrl + "/api/v1/order/";
+      url = AppConfig.baseUrl + "/api/v1/order/";
       if (filterValue != "" && filterValue != null) {
         url = url + "?status__iexact=$filterValue";
       }
@@ -556,7 +560,7 @@ class ShoppingAuthService extends AuthService {
 
   // Get single Order
   Future<dynamic> getOrder(String id) async {
-    var url = secureBaseUrl + "/api/v1/order/" + id + "/";
+    var url = AppConfig.baseUrl + "/api/v1/order/" + id + "/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -589,7 +593,7 @@ class ShoppingAuthService extends AuthService {
 
   //ShoppingCart
   Future<List> getShoppingCart() async {
-    var url = secureBaseUrl + "/api/v1/shopping-cart/";
+    var url = AppConfig.baseUrl + "/api/v1/shopping-cart/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
@@ -603,7 +607,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<bool> addItemToShoppingCart(Map data) async {
-    var url = secureBaseUrl + "/api/v1/shopping-cart/add-item/";
+    var url = AppConfig.baseUrl + "/api/v1/shopping-cart/add-item/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
@@ -617,7 +621,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<bool> removeItemToShoppingCart(Map data) async {
-    var url = secureBaseUrl + "/api/v1/shopping-cart/remove-item/";
+    var url = AppConfig.baseUrl + "/api/v1/shopping-cart/remove-item/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
@@ -631,7 +635,7 @@ class ShoppingAuthService extends AuthService {
 
   //place shopping cart order
   Future<dynamic> placeOrderOfShoppingCart(Map data) async {
-    var url = secureBaseUrl + "/api/v1/shopping-cart/";
+    var url = AppConfig.baseUrl + "/api/v1/shopping-cart/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
@@ -673,7 +677,8 @@ class ShoppingAuthService extends AuthService {
         ? "sellers-other-products"
         : "providers-other-services";
 
-    var url = "$secureBaseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
+    var url =
+        "$AppConfig.baseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -707,7 +712,7 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = secureBaseUrl +
+      url = AppConfig.baseUrl +
           "/api/v1/services/by-provider/" +
           filterOptions.searchedUser.userName +
           "/?";
@@ -768,7 +773,7 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = secureBaseUrl +
+      url = AppConfig.baseUrl +
           "/api/v1/products/by-seller/" +
           filterOptions.searchedUser.userName +
           "/?";

@@ -1,4 +1,5 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -447,13 +448,13 @@ class _SearchModuleState extends State<SearchModule> {
   String getSearchUrl(String searchedText) {
     switch (filterValue) {
       case "Users":
-        return secureBaseUrl + "/api/v1/search/users/?search=" + searchedText;
+        return AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchedText;
       case "Products":
-        return secureBaseUrl + "/api/v1/search/products/?search=" + searchedText;
+        return AppConfig.baseUrl + "/api/v1/search/products/?search=" + searchedText;
       case "Services":
-        return secureBaseUrl + "/api/v1/search/services/?search=" + searchedText;
+        return AppConfig.baseUrl + "/api/v1/search/services/?search=" + searchedText;
       default:
-        return secureBaseUrl + "/api/v1/search/users/?search=" + searchedText;
+        return AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchedText;
     }
   }
 

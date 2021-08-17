@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/services/auth.dart';
@@ -11,7 +12,7 @@ class TaxiAuth extends AuthService {
     String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
 
     url = url + "query=$place";
-    url = url + "&key=$googleMapAPIKey";
+    url = url + "&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
     var headers = await getAuthHeaders();
@@ -43,7 +44,7 @@ class TaxiAuth extends AuthService {
 
     url = url + "origin=${origin.latitude},${origin.longitude}";
     url = url + "&destination=${destination.latitude},${destination.longitude}";
-    url = url + "&key=$googleMapAPIKey";
+    url = url + "&key=${AppConfig.googleMapApiKey}";
 
     url = Uri.encodeFull(url);
     var headers = await getAuthHeaders();

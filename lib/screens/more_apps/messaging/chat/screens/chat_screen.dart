@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/enviroment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -31,7 +32,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -1495,7 +1495,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void pickGIF() async {
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
-        apiKey: gifApiKey,
+        apiKey: AppConfig.gifApiKey,
         showPreviewPage: false,
         sticker: false,
         title: Text(
@@ -1514,7 +1514,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void pickSticker() async {
     GiphyGif gif = await GiphyPicker.pickGif(
         context: context,
-        apiKey: gifApiKey,
+        apiKey: AppConfig.gifApiKey,
         showPreviewPage: false,
         sticker: true,
         searchText: "Search Sticker",
@@ -1673,7 +1673,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   void addProductOrServiceToChat(var item) async {
-    String url = secureBaseUrl +
+    String url = AppConfig.baseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
         item.messageId +
         "/";
@@ -2779,13 +2779,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   String getSearchUrl() {
     if (isProductSearch) {
-      return secureBaseUrl +
+      return AppConfig.baseUrl +
           "/api/v1/search/products/?search=name__wildcard|*" +
           searchItemTextController.text +
           "*";
     }
     if (isServiceSearch) {
-      return secureBaseUrl +
+      return AppConfig.baseUrl +
           "/api/v1/search/services/?search=name__wildcard|*" +
           searchItemTextController.text +
           "*";
