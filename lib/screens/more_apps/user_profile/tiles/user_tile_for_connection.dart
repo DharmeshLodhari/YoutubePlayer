@@ -184,7 +184,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
           height: 0,
         );
       } else {
-        return getBadge(count, padding: 24);
+        return getBadge(count, padding: 12);
       }
     } else {
       if (count == 0) {
