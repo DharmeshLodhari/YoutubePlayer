@@ -1,15 +1,11 @@
-import 'dart:io';
-
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -109,7 +105,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         },
       ),
       title: Text(
-        "Account Detail",
+        "Account Details",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -147,79 +143,6 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       onPressed: () {
         Navigator.pop(context);
       },
-    );
-  }
-
-  Widget getUserBankAccount() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.zero,
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          dense: true,
-          title: Text(
-            bankAccountBloc.bankAccount.bankName,
-            style: TextStyle(
-                color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
-          ),
-          subtitle: Text(
-            '******' +
-                bankAccountBloc.bankAccount.accountNumber
-                    .toString()
-                    .substring(5, 9),
-            style: TextStyle(color: darkGrey, fontSize: 12),
-          ),
-          leading: CachedNetworkImage(
-            imageUrl: bankAccountBloc.bankAccount.bankAvatar,
-            height: 48,
-            width: 48,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) =>
-                bankAccountBloc.bankAccount.bankAvatar == ""
-                    ? Icon(Icons.account_balance)
-                    : CircularLoadingIndicator(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget displayAmountField() {
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-        decoration: decorateBox(),
-        child: CustomizedTextFormField(
-          labelText: "Amount",
-          isAmount: true,
-          // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          keyboardType: Platform.isIOS
-              ? TextInputType.numberWithOptions(decimal: true)
-              : TextInputType.number,
-          onChanged: (val) {
-            amount = val.toString();
-            setState(() {});
-          },
-          validator: (val) {
-            if (val.isNotEmpty) {
-              try {
-                double.parse(val);
-                return null;
-              } catch (e) {
-                return AppLocalization.of(context).invalidAmount;
-              }
-            }
-            return AppLocalization.of(context).invalidAmount;
-          },
-        ),
-      ),
     );
   }
 
@@ -304,18 +227,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
               )
             : Column(
                 children: [
-                  ListTile(
-                    title: Text(virtualAccount.financialInstitution.name ?? "",
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: blackFont,
-                            fontWeight: FontWeight.w600)),
-                    leading: CachedNetworkImage(
-                      imageUrl: virtualAccount.financialInstitution.logo ?? "",
-                      height: 36,
-                      width: 36,
-                    ),
-                  ),
+                  getBankAccountName(),
                   Divider(
                     thickness: 1,
                     color: dividerColor,
@@ -325,58 +237,114 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                         left: 16, right: 16, top: 16, bottom: 20),
                     child: Column(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                "Account name",
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                virtualAccount.accountName ?? "",
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14),
-                              ),
-                            ),
-                          ],
-                        ),
+                        getAccountName(),
                         SizedBox(
                           height: 8,
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Account number',
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                virtualAccount.accountNumber ?? "",
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14),
-                              ),
-                            ),
-                          ],
-                        ),
+                        getAccountNumber(),
                       ],
                     ),
                   ),
                 ],
               ),
+      ),
+    );
+  }
+
+  Widget getBankAccountName() {
+    return ListTile(
+      title: Text(virtualAccount.financialInstitution.name ?? "",
+          style: TextStyle(
+              fontSize: 14, color: blackFont, fontWeight: FontWeight.w600)),
+      leading: CachedNetworkImage(
+        imageUrl: virtualAccount.financialInstitution.logo ?? "",
+        height: 36,
+        width: 36,
+      ),
+      trailing: getCopyButton(onTap: () {
+        Clipboard.setData(new ClipboardData(
+            text:
+                "Bank name: ${virtualAccount.financialInstitution.name}\nAccount name: ${virtualAccount.accountName}\nAccount number: ${virtualAccount.accountNumber}"));
+        Toast.show("Account details copied !!", context,
+            gravity: Toast.BOTTOM,
+            duration: Toast.LENGTH_LONG,
+            backgroundColor: Colors.black,
+            textColor: Colors.white);
+      }),
+    );
+  }
+
+  Widget getAccountName() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            "Account name",
+            style: TextStyle(
+                color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            virtualAccount.accountName ?? "",
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+        ),
+        getCopyButton(
+            onTap: () {
+              Clipboard.setData(
+                  new ClipboardData(text: "${virtualAccount.accountName}"));
+              Toast.show("Account name copied !!", context,
+                  gravity: Toast.BOTTOM,
+                  duration: Toast.LENGTH_LONG,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white);
+            },
+            size: 17)
+      ],
+    );
+  }
+
+  Widget getAccountNumber() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Account number',
+            style: TextStyle(
+                color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            virtualAccount.accountNumber ?? "",
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+        ),
+        getCopyButton(
+            onTap: () {
+              Clipboard.setData(
+                  new ClipboardData(text: "${virtualAccount.accountNumber}"));
+              Toast.show("Account number copied !!", context,
+                  gravity: Toast.BOTTOM,
+                  duration: Toast.LENGTH_LONG,
+                  backgroundColor: Colors.black,
+                  textColor: Colors.white);
+            },
+            size: 17)
+      ],
+    );
+  }
+
+  Widget getCopyButton({Function onTap, double size = 20}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Icon(
+        Icons.copy,
+        color: blackFont,
+        size: size,
       ),
     );
   }

@@ -86,6 +86,7 @@ dependencies:
   latlong: ^0.6.1
   google_maps_flutter: ^1.2.0
   flutter_polyline_points: ^0.2.6
+  extended_text_field: ^5.0.4
 
 
 

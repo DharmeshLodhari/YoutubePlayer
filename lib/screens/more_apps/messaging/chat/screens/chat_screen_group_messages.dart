@@ -43,7 +43,6 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -61,6 +60,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:extended_text_field/extended_text_field.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/animation.dart';
@@ -2345,12 +2345,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 child: Scrollbar(
                   radius: Radius.circular(12),
                   thickness: 2.5,
-                  child: TextFormField(
+                  child: ExtendedTextField(
                     controller: messageController,
                     textInputAction: TextInputAction.newline,
                     keyboardType: TextInputType.multiline,
                     focusNode: messageFocus,
-                    onFieldSubmitted: (value) {
+                    onSubmitted: (value) {
                       getSendMessageAction();
                     },
                     cursorColor: blackFont,
