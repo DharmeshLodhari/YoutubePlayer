@@ -204,43 +204,47 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                 ),
                 widget.chatConversation.isGroupConversation
                     ? Container(
-                        height: 50,
-                        width: 90,
+                        width: 60,
                         child: Stack(
-                          overflow: Overflow.visible,
                           children: [
                             Positioned(
-                              left: 40,
+                              left: 26,
                               child: Container(
-                                height: 50,
-                                width: 50,
+                                height: 34,
+                                width: 34,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(100),
                                     border:
                                         Border.all(color: navyBlue, width: 2)),
                                 child: ClipOval(
-                                  child: CachedNetworkImage(
-                                    height: 50,
-                                    width: 50,
-                                    fit: BoxFit.fill,
-                                    imageUrl: message['to_customer_avatar'],
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: CachedNetworkImage(
+                                      height: 34,
+                                      width: 34,
+                                      fit: BoxFit.fill,
+                                      imageUrl: message['to_customer_avatar'],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                             Container(
-                              height: 50,
-                              width: 50,
+                              height: 34,
+                              width: 34,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   border: Border.all(
                                       color: naturalGreen, width: 2)),
                               child: ClipOval(
-                                child: CachedNetworkImage(
-                                  height: 50,
-                                  width: 50,
-                                  fit: BoxFit.fill,
-                                  imageUrl: message['from_customer_avatar'],
+                                child: Container(
+                                  color: Colors.white,
+                                  child: CachedNetworkImage(
+                                    height: 34,
+                                    width: 34,
+                                    fit: BoxFit.fill,
+                                    imageUrl: message['from_customer_avatar'],
+                                  ),
                                 ),
                               ),
                             ),

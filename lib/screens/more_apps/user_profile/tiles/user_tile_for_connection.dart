@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/socket_provider.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
@@ -29,6 +30,8 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   MainSocketProvider mainSocketProvider;
   StreamSubscription streamSubscription;
   String typingMessage = "";
+
+  UserBloc userBloc;
 
   @override
   void initState() {
@@ -70,6 +73,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     Widget avatarImage;
 
     Color borderColor = getUserTypeColorByType(type: widget.user.type);
@@ -180,13 +184,14 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
           height: 0,
         );
       } else {
-        return getBadge(count, padding: 12);
+        return getBadge(count, padding: 24);
       }
     } else {
       if (count == 0) {
         return getGroupLabel();
       } else {
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             getBadge(count),
             Expanded(
@@ -202,18 +207,55 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   }
 
   Widget getGroupLabel() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        color: naturalGreen.withOpacity(0.1),
-      ),
-      child: Text(
-        "Group",
-        style: TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        checkUserIsAdmin() || checkUserIsOwner()
+            ? Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: navyBlue.withOpacity(0.1),
+                    ),
+                    child: Icon(
+                      checkUserIsOwner() ? Icons.group : Icons.person,
+                      color: navyBlue,
+                      size: 12,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 4,
+                  ),
+                ],
+              )
+            : Container(),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: naturalGreen.withOpacity(0.1),
+          ),
+          child: Text(
+            "Group",
+            style: TextStyle(
+                fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
+          ),
+        ),
+      ],
     );
+  }
+
+  bool checkUserIsAdmin() {
+    if (widget.user.adminUsers.contains(userBloc.user.userName)) return true;
+    return false;
+  }
+
+  bool checkUserIsOwner() {
+    if (widget.user.owner.contains(userBloc.user.userName)) return true;
+    return false;
   }
 
   Widget getBadge(int count, {double padding = 0}) {
@@ -224,11 +266,16 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         badgeColor: naturalGreen,
         animationType: BadgeAnimationType.slide,
         badgeContent: Text(
-          "$count",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+          getCountForMessage(count),
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w400, fontSize: 12),
         ),
         position: BadgePosition(end: 0, top: 0),
       ),
     );
+  }
+
+  String getCountForMessage(int count) {
+    return count > 999 ? "999+" : "$count";
   }
 }

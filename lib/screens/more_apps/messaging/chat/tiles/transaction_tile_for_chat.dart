@@ -57,80 +57,9 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          crossAxisAlignment: widget.chatConversation.isGroupConversation
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend
-                ? widget.chatConversation.isGroupConversation
-                    ? Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                            Container(
-                              height: 50,
-                              width: 90,
-                              child: Stack(
-                                overflow: Overflow.visible,
-                                children: [
-                                  Positioned(
-                                    left: 40,
-                                    child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          border: Border.all(
-                                              color: navyBlue, width: 2)),
-                                      child: ClipOval(
-                                        child: CachedNetworkImage(
-                                          height: 50,
-                                          width: 50,
-                                          fit: BoxFit.fill,
-                                          imageUrl: widget
-                                              .message['to_customer_avatar'],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        border: Border.all(
-                                            color: naturalGreen, width: 2)),
-                                    child: ClipOval(
-                                      child: CachedNetworkImage(
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.fill,
-                                        imageUrl: widget
-                                            .message['from_customer_avatar'],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container()
-                : Container(width: 20),
+            isSend ? Container() : Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.40,
@@ -148,7 +77,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
               padding:
                   EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CustomBoxShadow(
@@ -239,6 +168,68 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                       ],
                     ),
                   ),
+                  widget.chatConversation.isGroupConversation
+                      ? Column(
+                          children: [
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Container(
+                              width: 42,
+                              child: Stack(
+                                overflow: Overflow.visible,
+                                children: [
+                                  Positioned(
+                                    left: 26,
+                                    child: Container(
+                                      height: 34,
+                                      width: 34,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          border: Border.all(
+                                              color: navyBlue, width: 2)),
+                                      child: ClipOval(
+                                        child: Container(
+                                          color: Colors.white,
+                                          child: CachedNetworkImage(
+                                            height: 34,
+                                            width: 34,
+                                            fit: BoxFit.fill,
+                                            imageUrl: widget
+                                                .message['to_customer_avatar'],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 34,
+                                    width: 34,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        border: Border.all(
+                                            color: naturalGreen, width: 2)),
+                                    child: ClipOval(
+                                      child: Container(
+                                        color: Colors.white,
+                                        child: CachedNetworkImage(
+                                          height: 34,
+                                          width: 34,
+                                          fit: BoxFit.fill,
+                                          imageUrl: widget
+                                              .message['from_customer_avatar'],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container()
                 ],
               ),
             ),
@@ -251,74 +242,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                           )
                         : Container(),
                   )
-                : widget.chatConversation.isGroupConversation
-                    ? Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                            Container(
-                              height: 50,
-                              width: 90,
-                              child: Stack(
-                                overflow: Overflow.visible,
-                                children: [
-                                  Positioned(
-                                    left: 40,
-                                    child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          border: Border.all(
-                                              color: navyBlue, width: 2)),
-                                      child: ClipOval(
-                                        child: CachedNetworkImage(
-                                          height: 50,
-                                          width: 50,
-                                          fit: BoxFit.fill,
-                                          imageUrl: widget
-                                              .message['to_customer_avatar'],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        border: Border.all(
-                                            color: naturalGreen, width: 2)),
-                                    child: ClipOval(
-                                      child: CachedNetworkImage(
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.fill,
-                                        imageUrl: widget
-                                            .message['from_customer_avatar'],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(),
+                : Container(),
           ],
         ),
         SizedBox(
@@ -446,80 +370,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          crossAxisAlignment: widget.chatConversation.isGroupConversation
-              ? CrossAxisAlignment.center
-              : CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend
-                ? widget.chatConversation.isGroupConversation
-                    ? Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                            Container(
-                              height: 50,
-                              width: 90,
-                              child: Stack(
-                                overflow: Overflow.visible,
-                                children: [
-                                  Positioned(
-                                    left: 40,
-                                    child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          border: Border.all(
-                                              color: navyBlue, width: 2)),
-                                      child: ClipOval(
-                                        child: CachedNetworkImage(
-                                          height: 50,
-                                          width: 50,
-                                          fit: BoxFit.fill,
-                                          imageUrl:
-                                              paymentRequest.toCustomerAvatar,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        border: Border.all(
-                                            color: naturalGreen, width: 2)),
-                                    child: ClipOval(
-                                      child: CachedNetworkImage(
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.fill,
-                                        imageUrl:
-                                            paymentRequest.fromCustomerAvatar,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container()
-                : Container(width: 20),
+            isSend ? Container() : Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.40,
@@ -537,7 +390,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
               padding:
                   EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CustomBoxShadow(
@@ -752,6 +605,68 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                           ),
                         )
                       : Container(),
+                  widget.chatConversation.isGroupConversation
+                      ? Column(
+                          children: [
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Container(
+                              width: 42,
+                              child: Stack(
+                                overflow: Overflow.visible,
+                                children: [
+                                  Positioned(
+                                    left: 26,
+                                    child: Container(
+                                      height: 34,
+                                      width: 34,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          border: Border.all(
+                                              color: navyBlue, width: 2)),
+                                      child: ClipOval(
+                                        child: Container(
+                                          color: Colors.white,
+                                          child: CachedNetworkImage(
+                                            height: 34,
+                                            width: 34,
+                                            fit: BoxFit.fill,
+                                            imageUrl:
+                                                paymentRequest.toCustomerAvatar,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 34,
+                                    width: 34,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        border: Border.all(
+                                            color: naturalGreen, width: 2)),
+                                    child: ClipOval(
+                                      child: Container(
+                                        color: Colors.white,
+                                        child: CachedNetworkImage(
+                                          height: 34,
+                                          width: 34,
+                                          fit: BoxFit.fill,
+                                          imageUrl:
+                                              paymentRequest.fromCustomerAvatar,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container()
                 ],
               ),
             ),
@@ -767,74 +682,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                           : Container(),
                     ),
                   )
-                : widget.chatConversation.isGroupConversation
-                    ? Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                            Container(
-                              height: 50,
-                              width: 90,
-                              child: Stack(
-                                overflow: Overflow.visible,
-                                children: [
-                                  Positioned(
-                                    left: 40,
-                                    child: Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          border: Border.all(
-                                              color: navyBlue, width: 2)),
-                                      child: ClipOval(
-                                        child: CachedNetworkImage(
-                                          height: 50,
-                                          width: 50,
-                                          fit: BoxFit.fill,
-                                          imageUrl:
-                                              paymentRequest.toCustomerAvatar,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        border: Border.all(
-                                            color: naturalGreen, width: 2)),
-                                    child: ClipOval(
-                                      child: CachedNetworkImage(
-                                        height: 50,
-                                        width: 50,
-                                        fit: BoxFit.fill,
-                                        imageUrl:
-                                            paymentRequest.fromCustomerAvatar,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(
-                                width: 1,
-                                height: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Container(),
+                : Container(),
           ],
         ),
         SizedBox(

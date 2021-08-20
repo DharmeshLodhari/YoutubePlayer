@@ -54,7 +54,8 @@ dependencies:
   wakelock: ^0.2.0+1
   open_iconic_flutter: ^0.3.0
   percent_indicator: ^2.1.8
-  assets_audio_player: ^2.0.15
+ # assets_audio_player: ^2.0.15
+  assets_audio_player: ^2.0.10
   video_thumbnail: ^0.2.5+1
   flutter_video_info: ^1.1.0
   quiver: ^2.1.5

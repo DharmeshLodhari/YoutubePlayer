@@ -1784,7 +1784,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               flexibleSpace(),
               assignTitleToAction(text: "Send", child: sendMoneyBtn()),
               flexibleSpace(),
-              assignTitleToAction(text: "Image", child: addMediaButton()),
+              assignTitleToAction(text: "Media", child: addMediaButton()),
               flexibleSpace(),
               assignTitleToAction(text: "Voice", child: addVoiceBtn()),
             ],

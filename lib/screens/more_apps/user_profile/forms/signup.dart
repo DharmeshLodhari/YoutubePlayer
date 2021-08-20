@@ -30,6 +30,7 @@ class _SignUpState extends State<SignUp> {
   _SignUpState({@required this.arguments});
 
   final _registrationFormKey = GlobalKey<FormState>();
+  final _officialDetailFormKey = GlobalKey<FormState>();
 
   String phoneNumber = '';
   String password = '';
@@ -50,6 +51,8 @@ class _SignUpState extends State<SignUp> {
   List<String> genders = ["Male", "Female"];
 
   bool isOfficialInfoSet = false;
+
+  bool isValidAge;
 
   @override
   void initState() {
@@ -103,26 +106,27 @@ class _SignUpState extends State<SignUp> {
         body: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Form(
-              key: _registrationFormKey,
-              child: Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    appIcon(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    registerTitle(),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    // phoneNumberField(),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    !isOfficialInfoSet
-                        ? Column(
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  appIcon(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  registerTitle(),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  // phoneNumberField(),
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+                  !isOfficialInfoSet
+                      ? Form(
+                          key: _officialDetailFormKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               nameInstructionNote(),
                               SizedBox(
@@ -137,6 +141,22 @@ class _SignUpState extends State<SignUp> {
                                 height: 10,
                               ),
                               getDOBField(),
+                              if (isValidAge != null && !isValidAge)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(
+                                      "You are not eligible to use Slydo",
+                                      style: TextStyle(
+                                          color: mateRed, fontSize: 13),
+                                    ),
+                                  ],
+                                )
+                              else
+                                Container(),
                               SizedBox(
                                 height: 20,
                               ),
@@ -149,8 +169,11 @@ class _SignUpState extends State<SignUp> {
                                 height: 40,
                               ),
                             ],
-                          )
-                        : Column(
+                          ),
+                        )
+                      : Form(
+                          key: _registrationFormKey,
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               userNameField(),
@@ -183,8 +206,8 @@ class _SignUpState extends State<SignUp> {
                               ),
                             ],
                           ),
-                  ],
-                ),
+                        ),
+                ],
               ),
             ),
           ),
@@ -256,7 +279,7 @@ class _SignUpState extends State<SignUp> {
     return CustomizedTextFormField(
       controller: _lastNameController,
       labelColor: darkGrey,
-      labelText: "Last name",
+      labelText: "Surname",
       keyboardType: TextInputType.name,
       // validator: fullNameValidator,
     );
@@ -376,14 +399,14 @@ class _SignUpState extends State<SignUp> {
         showDatePicker(
           builder: customThemeBuilder,
           context: context,
-          initialDate: DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+          initialDate: DateTime(dob.year, dob.month, dob.day),
           firstDate: DateTime(1920, 0, 1),
           lastDate: DateTime(
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
         ).then((value) {
           dob = DateTime(value.year, value.month, value.day);
           setState(() {});
+          validateDOB();
         }).catchError((error) {});
       },
       child: CustomizedDropDownField(
@@ -453,8 +476,23 @@ class _SignUpState extends State<SignUp> {
   }
 
   void triggerInfoChange() {
-    isOfficialInfoSet = !isOfficialInfoSet;
-    if (mounted) setState(() {});
+    if (_officialDetailFormKey.currentState.validate() && validateDOB()) {
+      isOfficialInfoSet = !isOfficialInfoSet;
+      if (mounted) setState(() {});
+    }
+  }
+
+  bool validateDOB() {
+    DateTime dateTime = DateTime.now();
+
+    if (dob.add(Duration(days: 4745)).isBefore(dateTime)) {
+      isValidAge = true;
+      return true;
+    } else {
+      isValidAge = false;
+      setState(() {});
+      return false;
+    }
   }
 
   // validate password

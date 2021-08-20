@@ -110,17 +110,17 @@ class _VerifyRegistrationOTPScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Please enter code that sent to your phone number in the form below.",
+            "Please enter the code sent to your phone number.",
             style: TextStyle(fontSize: 14, color: darkGrey),
           ),
           Row(
             children: <Widget>[
               Text(
-                "This code will expired in",
+                "This code will expire in",
                 style: TextStyle(fontSize: 14, color: darkGrey),
               ),
               Text(
-                " 00:30 ",
+                " 30 ",
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
               Text(
@@ -196,9 +196,9 @@ class _VerifyRegistrationOTPScreenState
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
           .then((value) {
-      Navigator.of(context).popAndPushNamed('/register', arguments: {
-        'phoneNumber': phoneNumber,
-      });
+        Navigator.of(context).popAndPushNamed('/register', arguments: {
+          'phoneNumber': phoneNumber,
+        });
       });
     }
   }

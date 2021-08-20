@@ -174,7 +174,6 @@ class UserAuth extends AuthService {
     Map<String, dynamic> data = {};
     var url = AppConfig.baseUrl + "/api/v1/user/account/";
     var headers = getNonAuthHeader();
-    headers.remove("Content-type");
     var _getData = await getDeviceInfo();
     data.addAll(_body);
 
@@ -182,7 +181,7 @@ class UserAuth extends AuthService {
       data[element.key] = element.value.toString();
     });
 
-    var _data = jsonEncode(_getData);
+    var _data = jsonEncode(data);
 
     var response = await httpPost(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
