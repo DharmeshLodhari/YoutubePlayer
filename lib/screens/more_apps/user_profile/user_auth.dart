@@ -800,6 +800,7 @@ class UserAuth extends AuthService {
     if (query != "") {
       url = url + "?q=$query/";
     }
+    url = Uri.encodeFull(url);
     debugPrint("URL:- $url");
     if (next == null) {
       return null;

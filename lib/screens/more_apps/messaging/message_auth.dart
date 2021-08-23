@@ -757,7 +757,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>> acknowledgeMessagesToServer(
-      {List<String> dataToBeSent}) async {
+      {List dataToBeSent}) async {
     var url = AppConfig.baseUrl + "/api/v1/chat/acknowledge-messages/";
 
     debugPrint("URL:- $url");
@@ -799,6 +799,33 @@ class MessageAuth extends AuthService {
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> readByRecipientToServer(
+      {Map<String, dynamic> dataToBeSent}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/chat/acknowledge-message-read-by-recipient/";
+
+    debugPrint("URL:- $url");
+    var headers = await getAuthHeaders();
+
+    Map<String, dynamic> data = {"data": dataToBeSent};
+
+    debugPrint("DATA SENT:- $data");
+
+    var _data = jsonEncode(data);
+
+    var response = await httpPatch(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return Future.error("");
     }
   }
 

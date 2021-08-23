@@ -13,6 +13,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/MainSocketMessageModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
@@ -88,8 +89,8 @@ class MainSocketMessageHandler {
           await ChatMessageHandler()
               .updateChatMessage(chatMessage: chatMessage);
 
-          /// send acknowledgement to server that this message is received
-          sendAcknowledgementOfMessage(chatMessage: chatMessage);
+          /// Send Acknowledgement of the message
+          await sendAcknowledgementOfMessage(chatMessage: chatMessage);
 
           /// update ConnectionList order by last recive time
           updateConnectionListOrder(
@@ -206,6 +207,15 @@ class MainSocketMessageHandler {
       default:
         debugPrint("UNHANDLED MESSAGE GOT IN SOCKET:-  $messageData");
     }
+  }
+
+  Future<void> sendAcknowledgementOfMessage({ChatMessage chatMessage}) async {
+    /// send acknowledgement to server through API that this message is received
+    await sendAcknowledgementOfMessageThroughHttp(chatMessage: chatMessage)
+        .catchError((error) {
+      /// send acknowledgement to server through WEBSocket that this message is received
+      sendAcknowledgementOfMessageThroughSocket(chatMessage: chatMessage);
+    });
   }
 
   void addChatConversation({Map<String, dynamic> messageData}) {
@@ -511,7 +521,7 @@ class MainSocketMessageHandler {
     }
   }
 
-  void sendAcknowledgementOfMessage({ChatMessage chatMessage}) {
+  void sendAcknowledgementOfMessageThroughSocket({ChatMessage chatMessage}) {
     UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext,
         listen: false);
@@ -525,6 +535,23 @@ class MainSocketMessageHandler {
       };
 
       sendDataToSocket(data);
+    }
+  }
+
+  Future<void> sendAcknowledgementOfMessageThroughHttp(
+      {ChatMessage chatMessage}) async {
+    Map<String, dynamic> data = {
+      "check_id": chatMessage.checkId,
+      "conversation_id": chatMessage.conversationId,
+    };
+
+    List<Map<String, dynamic>> messages = [];
+    messages.add(data);
+
+    try {
+      await MessageAuth().acknowledgeMessagesToServer(dataToBeSent: messages);
+    } catch (e) {
+      return Future.error("");
     }
   }
 

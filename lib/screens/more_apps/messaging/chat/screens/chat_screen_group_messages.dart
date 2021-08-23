@@ -1093,15 +1093,33 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Future<void> messageReadByRecipient(Map<String, dynamic> message) async {
     if (message["author"] != userBloc.user.userName) {
       if (mainSocketProvider.isChatOnScreen) {
-        var data = {
+        Map<String, dynamic> data = {
           "check_id": message["check_id"],
           "type": "read_by_recipient",
           "conversation_id": chatConversation.conversationId,
         };
 
-        await mainSocketProvider.add(data);
+        await sendReadByRecipientMessageThroughHttp(data: data);
       }
     }
+  }
+
+  Future<void> sendReadByRecipientMessageThroughHttp(
+      {Map<String, dynamic> data}) async {
+    Map<String, dynamic> dataToBeSent = {};
+    data.forEach((key, value) {
+      if (key != "type") {
+        dataToBeSent[key] = value;
+      }
+    });
+
+    await MessageAuth()
+        .readByRecipientToServer(dataToBeSent: dataToBeSent)
+        .then((value) {
+      debugPrint("===> value");
+    }).catchError((error) async {
+      await mainSocketProvider.add(data);
+    });
   }
 
   void scrollToBottom() {

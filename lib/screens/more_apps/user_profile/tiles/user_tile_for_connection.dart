@@ -191,9 +191,12 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         return getGroupLabel();
       } else {
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: checkUserIsAdmin() || checkUserIsOwner()
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.center,
           children: [
-            getBadge(count),
+            getBadge(count,
+                padding: checkUserIsAdmin() || checkUserIsOwner() ? 10 : 0),
             Expanded(
               child: SizedBox(
                 height: 4,

@@ -43,7 +43,6 @@ class MessageSoundPlayer {
           myGlobals.scaffoldKey.currentContext,
           listen: false);
 
-      debugPrint("===========>$messageData");
       if (messageData["author"] == userBloc.user.userName) {
         if (messageData["delivered"] == true) {
           if (userBloc.chatMessageSettings.playOutgoingMessageSound) {

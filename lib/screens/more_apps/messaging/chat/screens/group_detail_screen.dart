@@ -853,9 +853,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void addParticipantToGroup() async {
-    var selectedUsers = await Navigator.of(context).pushNamed(
-        "/select-user-for-group",
-        arguments: {"isForAddingUserInGroup": true});
+    var selectedUsers = await Navigator.of(context)
+        .pushNamed("/select-user-for-group", arguments: {
+      "isForAddingUserInGroup": true,
+      "groupDetailModel": groupDetail
+    });
 
     if (selectedUsers != null) {
       MessageAuth()

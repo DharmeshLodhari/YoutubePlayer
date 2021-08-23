@@ -131,11 +131,13 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "${widget.paymentRequest.description}",
-          style: TextStyle(color: darkGrey, fontSize: 12),
-          maxLines: 1,
-        ),
+        widget.paymentRequest.description != ""
+            ? Text(
+                "${widget.paymentRequest.description}",
+                style: TextStyle(color: darkGrey, fontSize: 12),
+                maxLines: 1,
+              )
+            : Container(),
         moneyDisplayNormalizer(widget.paymentRequest.amount).length > 6
             ? getTrailing()
             : Container(),
@@ -293,11 +295,13 @@ class _TransactionTileState extends State<TransactionTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "${widget.transaction.description}",
-          style: TextStyle(color: darkGrey, fontSize: 12),
-          maxLines: 1,
-        ),
+        widget.transaction.description != ""
+            ? Text(
+                "${widget.transaction.description}",
+                style: TextStyle(color: darkGrey, fontSize: 12),
+                maxLines: 1,
+              )
+            : Container(),
         widget.transaction.amount.toString().length > 6
             ? getAmount()
             : Container(),

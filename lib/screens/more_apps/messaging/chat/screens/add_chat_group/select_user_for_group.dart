@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -41,11 +42,17 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   ///For checking if this page is oprn to add user is existingGroup or not
   bool isForAddingUserInGroup = false;
 
+  GroupDetailModel groupDetailModel;
+
   @protected
   void initState() {
     isForAddingUserInGroup = widget.arguments != null
         ? widget.arguments["isForAddingUserInGroup"] ?? false
         : false;
+
+    if (isForAddingUserInGroup) {
+      groupDetailModel = widget.arguments["groupDetailModel"];
+    }
 
     searchUserController = TextEditingController();
     this.getList();
@@ -305,8 +312,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         isLoading = false;
         if (mounted) setState(() {});
 
-        connectionList.addAll(users);
-        if (mounted) setState(() {});
+        filterUsersIfTheyAlreadyInGroup(users: users);
       }
       if (connectionList.isEmpty) {
         noItemInList = true;
@@ -319,6 +325,37 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         ));
       }
     }
+  }
+
+  /// If user is already present in the group then we will remove that user From List
+  void filterUsersIfTheyAlreadyInGroup({List<CustomerProfile> users}) {
+    List<CustomerProfile> existingList = [];
+
+    for (int i = 0; i < users.length; i++) {
+      existingList.add(users[i]);
+    }
+    List<String> toBeRemoveUsername = [];
+
+    if (groupDetailModel != null) {
+      for (int i = 0; i < groupDetailModel.participants.length; i++) {
+        for (int j = 0; j < existingList.length; j++) {
+          if (groupDetailModel.participants[i].userName ==
+              existingList[j].userName) {
+            toBeRemoveUsername.add(existingList[j].userName);
+          }
+        }
+      }
+
+      if (toBeRemoveUsername.isNotEmpty) {
+        for (int i = 0; i < toBeRemoveUsername.length; i++) {
+          existingList
+              .removeWhere((user) => user.userName == toBeRemoveUsername[i]);
+        }
+      }
+    }
+
+    connectionList.addAll(existingList);
+    if (mounted) setState(() {});
   }
 
   @override
