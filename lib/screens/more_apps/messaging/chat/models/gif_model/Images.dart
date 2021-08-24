@@ -23,121 +23,121 @@ import 'PreviewWebp.dart';
 import 'WStill.dart';
 
 class Images {
-  WStill w_still;
+  WStill wStill;
   Downsized downsized;
-  DownsizedLarge downsized_large;
-  DownsizedMedium downsized_medium;
-  DownsizedSmall downsized_small;
-  DownsizedStill downsized_still;
-  FixedHeight fixed_height;
-  FixedHeightDownsampled fixed_height_downsampled;
-  FixedHeightSmall fixed_height_small;
-  FixedHeightSmallStill fixed_height_small_still;
-  FixedHeightStill fixed_height_still;
-  FixedWidth fixed_width;
-  FixedWidthDownsampled fixed_width_downsampled;
-  FixedWidthSmall fixed_width_small;
-  FixedWidthSmallStill fixed_width_small_still;
-  FixedWidthStill fixed_width_still;
+  DownsizedLarge downsizedLarge;
+  DownsizedMedium downsizedMedium;
+  DownsizedSmall downsizedSmall;
+  DownsizedStill downsizedStill;
+  FixedHeight fixedHeight;
+  FixedHeightDownSampled fixedHeightDownSampled;
+  FixedHeightSmall fixedHeightSmall;
+  FixedHeightSmallStill fixedHeightSmallStill;
+  FixedHeightStill fixedHeightStill;
+  FixedWidth fixedWidth;
+  FixedWidthDownSampled fixedWidthDownSampled;
+  FixedWidthSmall fixedWidthSmall;
+  FixedWidthSmallStill fixedWidthSmallStill;
+  FixedWidthStill fixedWidthStill;
   Looping looping;
   Original original;
-  OriginalMp4 original_mp4;
-  OriginalStill original_still;
+  OriginalMp4 originalMp4;
+  OriginalStill originalStill;
   Preview preview;
-  PreviewGif preview_gif;
-  PreviewWebp preview_webp;
+  PreviewGif previewGif;
+  PreviewWebp previewWebp;
 
   Images(
-      {this.w_still,
+      {this.wStill,
       this.downsized,
-      this.downsized_large,
-      this.downsized_medium,
-      this.downsized_small,
-      this.downsized_still,
-      this.fixed_height,
-      this.fixed_height_downsampled,
-      this.fixed_height_small,
-      this.fixed_height_small_still,
-      this.fixed_height_still,
-      this.fixed_width,
-      this.fixed_width_downsampled,
-      this.fixed_width_small,
-      this.fixed_width_small_still,
-      this.fixed_width_still,
+      this.downsizedLarge,
+      this.downsizedMedium,
+      this.downsizedSmall,
+      this.downsizedStill,
+      this.fixedHeight,
+      this.fixedHeightDownSampled,
+      this.fixedHeightSmall,
+      this.fixedHeightSmallStill,
+      this.fixedHeightStill,
+      this.fixedWidth,
+      this.fixedWidthDownSampled,
+      this.fixedWidthSmall,
+      this.fixedWidthSmallStill,
+      this.fixedWidthStill,
       this.looping,
       this.original,
-      this.original_mp4,
-      this.original_still,
+      this.originalMp4,
+      this.originalStill,
       this.preview,
-      this.preview_gif,
-      this.preview_webp});
+      this.previewGif,
+      this.previewWebp});
 
   factory Images.fromJson(Map<String, dynamic> json) {
     return Images(
-      w_still: json['480w_still'] != null
+      wStill: json['480w_still'] != null
           ? WStill.fromJson(json['480w_still'])
           : null,
       downsized: json['downsized'] != null
           ? Downsized.fromJson(json['downsized'])
           : null,
-      downsized_large: json['downsized_large'] != null
+      downsizedLarge: json['downsized_large'] != null
           ? DownsizedLarge.fromJson(json['downsized_large'])
           : null,
-      downsized_medium: json['downsized_medium'] != null
+      downsizedMedium: json['downsized_medium'] != null
           ? DownsizedMedium.fromJson(json['downsized_medium'])
           : null,
-      downsized_small: json['downsized_small'] != null
+      downsizedSmall: json['downsized_small'] != null
           ? DownsizedSmall.fromJson(json['downsized_small'])
           : null,
-      downsized_still: json['downsized_still'] != null
+      downsizedStill: json['downsized_still'] != null
           ? DownsizedStill.fromJson(json['downsized_still'])
           : null,
-      fixed_height: json['fixed_height'] != null
+      fixedHeight: json['fixed_height'] != null
           ? FixedHeight.fromJson(json['fixed_height'])
           : null,
-      fixed_height_downsampled: json['fixed_height_downsampled'] != null
-          ? FixedHeightDownsampled.fromJson(json['fixed_height_downsampled'])
+      fixedHeightDownSampled: json['fixed_height_downsampled'] != null
+          ? FixedHeightDownSampled.fromJson(json['fixed_height_downsampled'])
           : null,
-      fixed_height_small: json['fixed_height_small'] != null
+      fixedHeightSmall: json['fixed_height_small'] != null
           ? FixedHeightSmall.fromJson(json['fixed_height_small'])
           : null,
-      fixed_height_small_still: json['fixed_height_small_still'] != null
+      fixedHeightSmallStill: json['fixed_height_small_still'] != null
           ? FixedHeightSmallStill.fromJson(json['fixed_height_small_still'])
           : null,
-      fixed_height_still: json['fixed_height_still'] != null
+      fixedHeightStill: json['fixed_height_still'] != null
           ? FixedHeightStill.fromJson(json['fixed_height_still'])
           : null,
-      fixed_width: json['fixed_width'] != null
+      fixedWidth: json['fixed_width'] != null
           ? FixedWidth.fromJson(json['fixed_width'])
           : null,
-      fixed_width_downsampled: json['fixed_width_downsampled'] != null
-          ? FixedWidthDownsampled.fromJson(json['fixed_width_downsampled'])
+      fixedWidthDownSampled: json['fixed_width_downsampled'] != null
+          ? FixedWidthDownSampled.fromJson(json['fixed_width_downsampled'])
           : null,
-      fixed_width_small: json['fixed_width_small'] != null
+      fixedWidthSmall: json['fixed_width_small'] != null
           ? FixedWidthSmall.fromJson(json['fixed_width_small'])
           : null,
-      fixed_width_small_still: json['fixed_width_small_still'] != null
+      fixedWidthSmallStill: json['fixed_width_small_still'] != null
           ? FixedWidthSmallStill.fromJson(json['fixed_width_small_still'])
           : null,
-      fixed_width_still: json['fixed_width_still'] != null
+      fixedWidthStill: json['fixed_width_still'] != null
           ? FixedWidthStill.fromJson(json['fixed_width_still'])
           : null,
       looping:
           json['looping'] != null ? Looping.fromJson(json['looping']) : null,
       original:
           json['original'] != null ? Original.fromJson(json['original']) : null,
-      original_mp4: json['original_mp4'] != null
+      originalMp4: json['original_mp4'] != null
           ? OriginalMp4.fromJson(json['original_mp4'])
           : null,
-      original_still: json['original_still'] != null
+      originalStill: json['original_still'] != null
           ? OriginalStill.fromJson(json['original_still'])
           : null,
       preview:
           json['preview'] != null ? Preview.fromJson(json['preview']) : null,
-      preview_gif: json['preview_gif'] != null
+      previewGif: json['preview_gif'] != null
           ? PreviewGif.fromJson(json['preview_gif'])
           : null,
-      preview_webp: json['preview_webp'] != null
+      previewWebp: json['preview_webp'] != null
           ? PreviewWebp.fromJson(json['preview_webp'])
           : null,
     );
@@ -145,53 +145,53 @@ class Images {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.w_still != null) {
-      data['480w_still'] = this.w_still.toJson();
+    if (this.wStill != null) {
+      data['480w_still'] = this.wStill.toJson();
     }
     if (this.downsized != null) {
       data['downsized'] = this.downsized.toJson();
     }
-    if (this.downsized_large != null) {
-      data['downsized_large'] = this.downsized_large.toJson();
+    if (this.downsizedLarge != null) {
+      data['downsized_large'] = this.downsizedLarge.toJson();
     }
-    if (this.downsized_medium != null) {
-      data['downsized_medium'] = this.downsized_medium.toJson();
+    if (this.downsizedMedium != null) {
+      data['downsized_medium'] = this.downsizedMedium.toJson();
     }
-    if (this.downsized_small != null) {
-      data['downsized_small'] = this.downsized_small.toJson();
+    if (this.downsizedSmall != null) {
+      data['downsized_small'] = this.downsizedSmall.toJson();
     }
-    if (this.downsized_still != null) {
-      data['downsized_still'] = this.downsized_still.toJson();
+    if (this.downsizedStill != null) {
+      data['downsized_still'] = this.downsizedStill.toJson();
     }
-    if (this.fixed_height != null) {
-      data['fixed_height'] = this.fixed_height.toJson();
+    if (this.fixedHeight != null) {
+      data['fixed_height'] = this.fixedHeight.toJson();
     }
-    if (this.fixed_height_downsampled != null) {
-      data['fixed_height_downsampled'] = this.fixed_height_downsampled.toJson();
+    if (this.fixedHeightDownSampled != null) {
+      data['fixed_height_downsampled'] = this.fixedHeightDownSampled.toJson();
     }
-    if (this.fixed_height_small != null) {
-      data['fixed_height_small'] = this.fixed_height_small.toJson();
+    if (this.fixedHeightSmall != null) {
+      data['fixed_height_small'] = this.fixedHeightSmall.toJson();
     }
-    if (this.fixed_height_small_still != null) {
-      data['fixed_height_small_still'] = this.fixed_height_small_still.toJson();
+    if (this.fixedHeightSmallStill != null) {
+      data['fixed_height_small_still'] = this.fixedHeightSmallStill.toJson();
     }
-    if (this.fixed_height_still != null) {
-      data['fixed_height_still'] = this.fixed_height_still.toJson();
+    if (this.fixedHeightStill != null) {
+      data['fixed_height_still'] = this.fixedHeightStill.toJson();
     }
-    if (this.fixed_width != null) {
-      data['fixed_width'] = this.fixed_width.toJson();
+    if (this.fixedWidth != null) {
+      data['fixed_width'] = this.fixedWidth.toJson();
     }
-    if (this.fixed_width_downsampled != null) {
-      data['fixed_width_downsampled'] = this.fixed_width_downsampled.toJson();
+    if (this.fixedWidthDownSampled != null) {
+      data['fixed_width_downsampled'] = this.fixedWidthDownSampled.toJson();
     }
-    if (this.fixed_width_small != null) {
-      data['fixed_width_small'] = this.fixed_width_small.toJson();
+    if (this.fixedWidthSmall != null) {
+      data['fixed_width_small'] = this.fixedWidthSmall.toJson();
     }
-    if (this.fixed_width_small_still != null) {
-      data['fixed_width_small_still'] = this.fixed_width_small_still.toJson();
+    if (this.fixedWidthSmallStill != null) {
+      data['fixed_width_small_still'] = this.fixedWidthSmallStill.toJson();
     }
-    if (this.fixed_width_still != null) {
-      data['fixed_width_still'] = this.fixed_width_still.toJson();
+    if (this.fixedWidthStill != null) {
+      data['fixed_width_still'] = this.fixedWidthStill.toJson();
     }
     if (this.looping != null) {
       data['looping'] = this.looping.toJson();
@@ -199,20 +199,20 @@ class Images {
     if (this.original != null) {
       data['original'] = this.original.toJson();
     }
-    if (this.original_mp4 != null) {
-      data['original_mp4'] = this.original_mp4.toJson();
+    if (this.originalMp4 != null) {
+      data['original_mp4'] = this.originalMp4.toJson();
     }
-    if (this.original_still != null) {
-      data['original_still'] = this.original_still.toJson();
+    if (this.originalStill != null) {
+      data['original_still'] = this.originalStill.toJson();
     }
     if (this.preview != null) {
       data['preview'] = this.preview.toJson();
     }
-    if (this.preview_gif != null) {
-      data['preview_gif'] = this.preview_gif.toJson();
+    if (this.previewGif != null) {
+      data['preview_gif'] = this.previewGif.toJson();
     }
-    if (this.preview_webp != null) {
-      data['preview_webp'] = this.preview_webp.toJson();
+    if (this.previewWebp != null) {
+      data['preview_webp'] = this.previewWebp.toJson();
     }
     return data;
   }

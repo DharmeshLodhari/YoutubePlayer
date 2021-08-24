@@ -1,17 +1,17 @@
 class OpeningHours {
-  bool open_now;
+  bool openNow;
 
-  OpeningHours({this.open_now});
+  OpeningHours({this.openNow});
 
   factory OpeningHours.fromJson(Map<String, dynamic> json) {
     return OpeningHours(
-      open_now: json['open_now'],
+      openNow: json['open_now'],
     );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['open_now'] = this.open_now;
+    data['open_now'] = this.openNow;
     return data;
   }
 }

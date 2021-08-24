@@ -75,11 +75,15 @@ class ChatMessageSynchronizer {
 
       List<String> tempList = result['results'];
 
-      await ChatMessageHandler().saveChatMessages(messages: tempList);
+      List<ChatMessage> insertedMessages =
+          await ChatMessageHandler().saveChatMessages(messages: tempList);
 
       chatMessagePagination.count = result['count'];
       chatMessagePagination.next = result['next'];
       chatMessagePagination.previous = result['previous'];
+
+      /// For sending acknowledgement for new Messages
+      sendAcknowledgementForNewMessages(messages: insertedMessages);
 
       if (isFirstTime) {
         await ChatMessageHandler().saveChatMessagePagination(
@@ -96,6 +100,39 @@ class ChatMessageSynchronizer {
       return;
     }
     return;
+  }
+
+  void sendAcknowledgementForNewMessages({List<ChatMessage> messages}) async {
+    UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    List<String> acknowledgedMessageIds = [];
+    for (int i = 0; i < messages.length; i++) {
+      if (userBloc.user.userName != messages[i].author &&
+          !messages[i].delivered) {
+        acknowledgedMessageIds.add(messages[i].messageId);
+        await MainSocketMessageHandler()
+            .saveAndUpdateUserMessageCount(messageData: messages[i].toJson());
+
+        int time = convertStringToMillisecondsSinceEpoch(messages[i].createdAt);
+
+        String conversationId = messages[i].conversationId;
+
+        await ConnectionListManager()
+            .updateLastMessageTime(conversationId: conversationId, time: time);
+
+        _chatMessageCountStream.sink.add(true);
+      }
+    }
+
+    Map<String, dynamic> acknowledgedMessages = await MessageAuth()
+        .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
+        .catchError((error) {
+      debugPrint("Error:- $error");
+    });
+
+    debugPrint("==> $acknowledgedMessages");
   }
 
   Future<void> syncMessages({bool fetchFresh = false}) async {

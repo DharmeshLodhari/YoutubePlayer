@@ -1,20 +1,20 @@
 class PlusCode {
-  String compound_code;
-  String global_code;
+  String compoundCode;
+  String globalCode;
 
-  PlusCode({this.compound_code, this.global_code});
+  PlusCode({this.compoundCode, this.globalCode});
 
   factory PlusCode.fromJson(Map<String, dynamic> json) {
     return PlusCode(
-      compound_code: json['compound_code'],
-      global_code: json['global_code'],
+      compoundCode: json['compound_code'],
+      globalCode: json['global_code'],
     );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['compound_code'] = this.compound_code;
-    data['global_code'] = this.global_code;
+    data['compound_code'] = this.compoundCode;
+    data['global_code'] = this.globalCode;
     return data;
   }
 }

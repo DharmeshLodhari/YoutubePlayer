@@ -1,26 +1,21 @@
-class FixedWidthDownsampled {
+class FixedWidthDownSampled {
   String height;
   String size;
   String url;
   String webp;
-  String webp_size;
+  String webpSize;
   String width;
 
-  FixedWidthDownsampled(
-      {this.height,
-      this.size,
-      this.url,
-      this.webp,
-      this.webp_size,
-      this.width});
+  FixedWidthDownSampled(
+      {this.height, this.size, this.url, this.webp, this.webpSize, this.width});
 
-  factory FixedWidthDownsampled.fromJson(Map<String, dynamic> json) {
-    return FixedWidthDownsampled(
+  factory FixedWidthDownSampled.fromJson(Map<String, dynamic> json) {
+    return FixedWidthDownSampled(
       height: json['height'],
       size: json['size'],
       url: json['url'],
       webp: json['webp'],
-      webp_size: json['webp_size'],
+      webpSize: json['webp_size'],
       width: json['width'],
     );
   }
@@ -31,7 +26,7 @@ class FixedWidthDownsampled {
     data['size'] = this.size;
     data['url'] = this.url;
     data['webp'] = this.webp;
-    data['webp_size'] = this.webp_size;
+    data['webp_size'] = this.webpSize;
     data['width'] = this.width;
     return data;
   }

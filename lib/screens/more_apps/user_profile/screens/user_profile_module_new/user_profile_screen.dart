@@ -74,12 +74,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     await getSearchedUser();
     currentIndex = arguments['index'] ?? 0;
     pageController = PageController(initialPage: currentIndex);
-    if (mounted) {
-      setState(() {});
-    }
+    if (mounted) setState(() {});
 
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
+  }
+
+  Future<void> dispose() async {
+    super.dispose();
+    _scrollController?.removeListener(_scrollListener);
+    _scrollController?.dispose();
   }
 
   Future<void> getSearchedUser() async {
@@ -130,7 +134,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
     }
 
-    if (userBloc.user.userName == searchedUser.userName) {
+    if (userBloc.user.userName == searchedUser?.userName ?? false) {
       isOwner = true;
     }
 

@@ -210,12 +210,18 @@ class MainSocketMessageHandler {
   }
 
   Future<void> sendAcknowledgementOfMessage({ChatMessage chatMessage}) async {
-    /// send acknowledgement to server through API that this message is received
-    await sendAcknowledgementOfMessageThroughHttp(chatMessage: chatMessage)
-        .catchError((error) {
-      /// send acknowledgement to server through WEBSocket that this message is received
-      sendAcknowledgementOfMessageThroughSocket(chatMessage: chatMessage);
-    });
+    UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
+
+    if (userBloc.user.userName != chatMessage.author) {
+      /// send acknowledgement to server through API that this message is received
+      await sendAcknowledgementOfMessageThroughHttp(chatMessage: chatMessage)
+          .catchError((error) {
+        /// send acknowledgement to server through WEBSocket that this message is received
+        sendAcknowledgementOfMessageThroughSocket(chatMessage: chatMessage);
+      });
+    }
   }
 
   void addChatConversation({Map<String, dynamic> messageData}) {
@@ -268,36 +274,39 @@ class MainSocketMessageHandler {
   }
 
   void handleAcknowledgementMessage({Map<String, dynamic> messageData}) async {
-    // {check_id: e0c64c88-262d-4428-8634-031762897556, conversation_id: 09700559-3aa6-4d71-bd4b-748322e49fdb, username: black, delivered: true, type: acknowledge_message}
-    UserBloc userBloc = Provider.of<UserBloc>(
-        MyGlobals().navigationKey.currentContext,
-        listen: false);
-
-    // if (userBloc.user.userName != messageData["username"]) {
     await ChatMessageHandler().updateDeliverStatusOfChatMessage(
         checkId: messageData['check_id'],
         conversationId:
             messageData['conversation_id'] ?? messageData['conversation']);
-    // }
   }
 
   Future<void> saveAndUpdateUserMessageCount(
       {Map<String, dynamic> messageData}) async {
     debugPrint("MESSAGE DATA:- $messageData");
 
-    MainSocketMessageModel messageModel =
-        MainSocketMessageModel.fromJson(messageData);
+    ChatMessage chatMessage = ChatMessage.fromJson(messageData);
 
-    String hashedMessage = generateHashedMessage(jsonEncode(messageData));
+    UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
 
-    await ChatUserManager().addUser(
-        conversationId:
-            messageData["conversation"] ?? messageData["conversation_id"]);
+    /// When any Message came we will check the author if the Author is
+    /// current user then we will not update chat count
+    if (chatMessage.author != userBloc.user.userName) {
+      MainSocketMessageModel messageModel =
+          MainSocketMessageModel.fromJson(messageData);
 
-    await ChatUserManager().updateChatUserMessageCount(
-        conversationId: messageModel.conversation,
-        hashedMessage: hashedMessage);
-    return;
+      String hashedMessage = generateHashedMessage(jsonEncode(messageData));
+
+      await ChatUserManager().addUser(
+          conversationId:
+              messageData["conversation"] ?? messageData["conversation_id"]);
+
+      await ChatUserManager().updateChatUserMessageCount(
+          conversationId: messageModel.conversation,
+          hashedMessage: hashedMessage);
+      return;
+    }
   }
 
   void showNudgeAlertToUser({Map<String, dynamic> messageData}) async {

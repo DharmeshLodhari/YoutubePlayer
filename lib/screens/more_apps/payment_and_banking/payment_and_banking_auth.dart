@@ -300,7 +300,8 @@ class PaymentAndBankingAuth extends AuthService {
       throw "Server Error";
     } else {
       debugPrint("======> ${jsonEncode(response.body)}");
-      //  throw json.decode(response.body);
+      return Future.error(
+          "URL: $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     }
   }
 

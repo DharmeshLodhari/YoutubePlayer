@@ -35,6 +35,8 @@ class CacheManager {
     await AuthService().deleteUsers();
     await AuthService().deleteDevice();
 
+    await DatabaseHelper().deleteUsers();
+
     debugPrint("Cache cleared");
   }
 }

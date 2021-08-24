@@ -310,13 +310,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void setUserStatusTimer() {
-    if (_timerForUserStatus?.isActive ?? false) {
-      _timerForUserStatus.cancel();
-    }
+    if(!chatConversation.isGroupConversation) {
+      if (_timerForUserStatus?.isActive ?? false) {
+        _timerForUserStatus.cancel();
+      }
 
-    _timerForUserStatus = Timer.periodic(userStatusCheckTimeDuration, (timer) {
-      if (mounted) getUserStatus();
-    });
+      _timerForUserStatus =
+          Timer.periodic(userStatusCheckTimeDuration, (timer) {
+            if (mounted) getUserStatus();
+          });
+    }
   }
 
   void getDBMessage() async {
@@ -1658,7 +1661,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     borderRadius: BorderRadius.circular(3),
                     child: CachedNetworkImage(
                       width: MediaQuery.of(context).size.width / 2,
-                      imageUrl: _gifs[index].images.preview_gif.url,
+                      imageUrl: _gifs[index].images.previewGif.url,
                       fit: BoxFit.fill,
                       placeholder: (context, url) => Container(
                           width: MediaQuery.of(context).size.width / 2,

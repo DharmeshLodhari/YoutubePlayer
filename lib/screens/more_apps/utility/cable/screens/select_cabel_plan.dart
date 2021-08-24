@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class SelectCablePlan extends StatefulWidget {
-  var arguments;
+  final Map<String, dynamic> arguments;
   SelectCablePlan({this.arguments});
   @override
   _SelectCablePlanState createState() => _SelectCablePlanState();

@@ -725,7 +725,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       title: "My profile",
                       icon: SlydoAppIcon.user,
                       onTap: () async {
-                        UserAuth()
+                        await UserAuth()
                             .fetchCustomerProfile(userBloc.user.userName)
                             .then((user) {
                           if (mounted) {

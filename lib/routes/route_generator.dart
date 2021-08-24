@@ -91,7 +91,6 @@ import 'package:Slydo/screens/more_apps/taxi/payment_options.dart';
 import 'package:Slydo/screens/more_apps/taxi/rate_and_tip_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/ride_option.dart';
 import 'package:Slydo/screens/more_apps/taxi/searching_for_driver.dart';
-import 'package:Slydo/screens/more_apps/taxi/select_address.dart';
 import 'package:Slydo/screens/more_apps/taxi/select_address_screen.dart';
 import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
 import 'package:Slydo/screens/more_apps/taxi/terms_and_condition.dart';

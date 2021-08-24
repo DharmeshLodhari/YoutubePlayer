@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 class SelectAddressForTaxi extends StatefulWidget {
-  void Function(Map<String, dynamic> place) updateSelectedDestination;
-  void Function(bool selectAddress) toggleAddressSelection;
+  final void Function(Map<String, dynamic> place) updateSelectedDestination;
+  final void Function(bool selectAddress) toggleAddressSelection;
 
   SelectAddressForTaxi(
       {this.updateSelectedDestination, this.toggleAddressSelection});

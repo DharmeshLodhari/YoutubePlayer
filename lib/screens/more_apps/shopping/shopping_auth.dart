@@ -677,8 +677,11 @@ class ShoppingAuthService extends AuthService {
         ? "sellers-other-products"
         : "providers-other-services";
 
-    var url =
-        "$AppConfig.baseUrl/api/v1/$type/$urlPart/$userId/?exclude=$exclude";
+    var url = "${AppConfig.baseUrl}/api/v1/$type/$urlPart/$userId/";
+
+    if (exclude != null) {
+      url += "?exclude=$exclude";
+    }
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -698,7 +701,8 @@ class ShoppingAuthService extends AuthService {
       }
       return items;
     } else if (response.statusCode == 500) {
-      throw "Server Error";
+      return Future.error(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     } else {
       return items;
     }

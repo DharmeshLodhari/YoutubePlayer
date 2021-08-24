@@ -311,18 +311,6 @@ class _ConnectionListState extends State<ConnectionList> {
     }
   }
 
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: 1.0,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
-  }
-
   void getList() async {
     ConnectionListBloc connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);

@@ -51,12 +51,9 @@ class _UserInfoState extends State<UserInfo> {
     super.initState();
   }
 
-  void getProductItems() {
-    ShoppingAuthService()
-        .ownersOrderProductsAndServices(
-            type: "products",
-            userId: user.userName,
-            exclude: "8eb50b0e-0a88-441b-84b1-d00935a88a3d")
+  void getProductItems() async {
+    await ShoppingAuthService()
+        .ownersOrderProductsAndServices(type: "products", userId: user.userName)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -72,16 +69,15 @@ class _UserInfoState extends State<UserInfo> {
           });
         }
       }
+    }).catchError((error) {
+      debugPrint("ERROR:- $error");
     });
     isProductFetched = true;
   }
 
-  void getServiceItems() {
-    ShoppingAuthService()
-        .ownersOrderProductsAndServices(
-            type: "services",
-            userId: user.userName,
-            exclude: "d54b8857-b901-405b-a4fa-f0df5d2983ba")
+  void getServiceItems() async {
+    await ShoppingAuthService()
+        .ownersOrderProductsAndServices(type: "services", userId: user.userName)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -97,6 +93,8 @@ class _UserInfoState extends State<UserInfo> {
           });
         }
       }
+    }).catchError((error) {
+      debugPrint("ERROR:- $error");
     });
     isServiceFetched = true;
   }

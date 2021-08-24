@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
 import 'package:Slydo/utils/secure_screen.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -23,7 +24,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
   int count = 0;
   String next = "";
   String previous = "";
-  List payoutList = [];
+  List<Payout> payoutList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -136,6 +137,8 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
                   padding: EdgeInsets.symmetric(vertical: 2),
                   child: PayoutTile(
                     payout: payoutList[index],
+                    key: Key(
+                        "Payout:${payoutList[index].uuid + payoutList[index].timeStamp}"),
                   ),
                 );
               }

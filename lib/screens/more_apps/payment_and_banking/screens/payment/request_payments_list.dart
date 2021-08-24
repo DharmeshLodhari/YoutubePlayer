@@ -397,20 +397,27 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
         if (mounted) setState(() {});
 
-        Map<String, dynamic> result =
-            await _auth.listPaymentRequests(next, previous, toMe, fromMe);
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
-        var tempList = result['results'];
+        try {
+          Map<String, dynamic> result =
+              await _auth.listPaymentRequests(next, previous, toMe, fromMe);
+          count = result['count'];
+          next = result['next'];
+          previous = result['previous'];
+          var tempList = result['results'];
 
-        isLoading = false;
-        requestPaymentList.addAll(tempList);
+          isLoading = false;
+          requestPaymentList.addAll(tempList);
 
-        if (mounted) setState(() {});
+          if (mounted) setState(() {});
 
-        if (next != null) {
-          getList();
+          if (next != null) {
+            getList();
+          }
+        } catch (error) {
+          debugPrint("ERROR:- $error");
+          isLoading = false;
+
+          if (mounted) setState(() {});
         }
       }
       if (requestPaymentList.isEmpty) {
@@ -714,7 +721,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   Widget _getSlideLists(
       BuildContext context, PaymentRequest paymentRequest, int index) {
     return Slidable(
-      key: UniqueKey(),
+      key:
+          Key("PaymentRequest:${paymentRequest.id + paymentRequest.createdAt}"),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
@@ -735,9 +743,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.paymentRequest);
+  VerticalListItem(this.paymentRequest, {this.key}) : super(key: key);
 
   final PaymentRequest paymentRequest;
+  final Key key;
 
   @override
   _VerticalListItemState createState() => _VerticalListItemState();
@@ -770,8 +779,10 @@ class _VerticalListItemState extends State<VerticalListItem> {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),
         child: PaymentRequestTile(
-            paymentRequest: widget.paymentRequest,
-            expandedWidget: expandedWidget()),
+          paymentRequest: widget.paymentRequest,
+          expandedWidget: expandedWidget(),
+          key: widget.key,
+        ),
       ),
     );
   }

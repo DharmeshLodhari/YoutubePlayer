@@ -415,7 +415,11 @@ class _TransactionListState extends State<TransactionList> {
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(transaction),
+      child: VerticalListItem(
+        transaction,
+        key: Key(
+            "Transaction:${transaction.amount.toString() + transaction.createdAt}"),
+      ),
       actions: listActionSlideActions(transaction),
       secondaryActions: listSecondaryActions(transaction),
     );
@@ -431,9 +435,10 @@ class _TransactionListState extends State<TransactionList> {
 }
 
 class VerticalListItem extends StatefulWidget {
-  VerticalListItem(this.transaction);
+  VerticalListItem(this.transaction, {this.key}) : super(key: key);
 
   final Transaction transaction;
+  final Key key;
 
   @override
   _VerticalListItemState createState() => _VerticalListItemState();
@@ -473,6 +478,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         child: TransactionTile(
           transaction: widget.transaction,
           expandedWidget: expandedWidget(),
+          key: widget.key,
         ),
       ),
     );

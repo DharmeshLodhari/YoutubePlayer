@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
@@ -13,7 +12,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:toast/toast.dart';
 
@@ -38,8 +36,6 @@ class _BlockListState extends State<BlockList> {
   bool isLoading = false;
   bool noItemInList = false;
 
-  RefreshBlocForConnectionDashboard _refreshBloc;
-
   @protected
   void initState() {
     this.getList();
@@ -57,20 +53,6 @@ class _BlockListState extends State<BlockList> {
     );
 
     super.initState();
-  }
-
-  // refresh the list when lifecycle called onResume method
-  void _onRefreshOnResume() {
-    _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
-    _refreshBloc
-      ..addListener(() {
-        if (_refreshBloc.isRefresh) {
-          if (mounted) {
-            _onRefresh();
-            _refreshBloc.isRefresh = false;
-          }
-        }
-      });
   }
 
   void _onRefresh() async {

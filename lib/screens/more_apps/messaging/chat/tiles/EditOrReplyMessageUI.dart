@@ -778,7 +778,6 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
 
   Widget renderEnvelope({Map<String, dynamic> message}) {
     Envelope envelope;
-    bool isSend = message["author"] == userBloc.user.userName;
     bool isEmptyEnvelope = false;
 
     if (message['meta_data'] is String) {

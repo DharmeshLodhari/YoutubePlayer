@@ -95,7 +95,6 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   Widget getDisplayCard() {
     var avatarImage;
-    var qrCodeImage;
     if (chatConversation != null) {
       avatarImage = Container(
         height: 48,

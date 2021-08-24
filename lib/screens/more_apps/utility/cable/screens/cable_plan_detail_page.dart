@@ -4,7 +4,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class CablePlanDetail extends StatefulWidget {
-  var arguments;
+  final Map<String, dynamic> arguments;
   CablePlanDetail({this.arguments});
   @override
   _CablePlanDetailState createState() => _CablePlanDetailState();

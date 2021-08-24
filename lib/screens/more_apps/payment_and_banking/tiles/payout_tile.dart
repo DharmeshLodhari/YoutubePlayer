@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,16 +9,12 @@ import 'package:intl/intl.dart';
 
 import '../../../../utils/colors.dart';
 
-class PayoutTile extends StatefulWidget {
+class PayoutTile extends StatelessWidget {
   final Payout payout;
+  final Key key;
 
-  PayoutTile({this.payout});
+  PayoutTile({this.payout, this.key}) : super(key: key);
 
-  @override
-  _PayoutTileState createState() => _PayoutTileState();
-}
-
-class _PayoutTileState extends State<PayoutTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -38,17 +35,17 @@ class _PayoutTileState extends State<PayoutTile> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  worldCurrencies[widget.payout.currency],
+                  worldCurrencies[payout.currency],
                   style: TextStyle(
                       fontFamily: "Roboto",
-                      color: getStatusColor(widget.payout.status),
+                      color: getStatusColor(payout.status),
                       fontWeight: FontWeight.bold,
                       fontSize: 14),
                 ),
                 Text(
-                  moneyDisplayNormalizer(widget.payout.amount),
+                  moneyDisplayNormalizer(payout.amount),
                   style: TextStyle(
-                      color: getStatusColor(widget.payout.status),
+                      color: getStatusColor(payout.status),
                       fontWeight: FontWeight.bold,
                       fontSize: 14),
                 )
@@ -64,17 +61,17 @@ class _PayoutTileState extends State<PayoutTile> {
     return ClipOval(
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: widget.payout.bankLogo);
+          Navigator.of(myGlobals.navigationKey.currentContext)
+              .pushNamed("/photo-viewer", arguments: payout.bankLogo);
         },
         child: CachedNetworkImage(
-          imageUrl: widget.payout.bankLogo,
+          imageUrl: payout.bankLogo,
           height: 48,
           width: 48,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => widget.payout.bankLogo == ""
+          placeholder: (context, url) => payout.bankLogo == ""
               ? Icon(Icons.account_balance)
               : CircularLoadingIndicator(),
         ),
@@ -94,7 +91,7 @@ class _PayoutTileState extends State<PayoutTile> {
 
   Widget getTitle() {
     return Text(
-      widget.payout.bankName,
+      payout.bankName,
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.w600,
@@ -104,7 +101,7 @@ class _PayoutTileState extends State<PayoutTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime dateTime = DateTime.parse(widget.payout.timeStamp).toLocal();
+    DateTime dateTime = DateTime.parse(payout.timeStamp).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(dateTime);
     String time = DateFormat("hh:mm a").format(dateTime);
     return Text(

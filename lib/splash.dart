@@ -132,7 +132,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     if (playerController != null) playerController.dispose();
     if (timer != null) timer?.cancel();
     super.dispose();

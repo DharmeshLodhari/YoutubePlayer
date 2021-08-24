@@ -6,7 +6,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class CablePlanPaymentDetail extends StatefulWidget {
-  var arguments;
+  final Map<String, dynamic> arguments;
 
   CablePlanPaymentDetail({this.arguments});
   @override

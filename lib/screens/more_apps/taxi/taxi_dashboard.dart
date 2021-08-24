@@ -176,29 +176,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
           strokeWidth: 2,
           strokeColor: navyBlue);
 
-      debugPrint(
-          "${widget.userCurrentLocation.latitude} => ${widget.userCurrentLocation.longitude}");
-      _carOneMarker = Marker(
-        markerId: MarkerId("Taxi"),
-        infoWindow: const InfoWindow(title: "Taxi"),
-        icon: BitmapDescriptor.fromAsset("assets/images/car_top.png"),
-        position: LatLng(widget.userCurrentLocation.latitude - 0.003300,
-            widget.userCurrentLocation.longitude + 0.009100),
-      );
-      _bikeOneMarker = Marker(
-        markerId: MarkerId("Bike"),
-        infoWindow: const InfoWindow(title: "Taxi"),
-        icon: BitmapDescriptor.fromAsset("assets/images/bike_top.png"),
-        position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
-            widget.userCurrentLocation.longitude - 0.000100),
-      );
-      _tricycleOneMarker = Marker(
-        markerId: MarkerId("Tricycle"),
-        infoWindow: const InfoWindow(title: "Taxi"),
-        icon: BitmapDescriptor.fromAsset("assets/images/tricycle_top.png"),
-        position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
-            widget.userCurrentLocation.longitude - 0.010100),
-      );
+      assignMarkers();
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -207,6 +185,36 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
         _fabPosition = _initialSheetChildSize * context.size.height;
       });
     });
+  }
+
+  void assignMarkers() async {
+    debugPrint(
+        "${widget.userCurrentLocation.latitude} => ${widget.userCurrentLocation.longitude}");
+    _carOneMarker = Marker(
+      markerId: MarkerId("Taxi"),
+      infoWindow: const InfoWindow(title: "Taxi"),
+      icon: await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration.empty, "assets/images/car_top.png"),
+      position: LatLng(widget.userCurrentLocation.latitude - 0.003300,
+          widget.userCurrentLocation.longitude + 0.009100),
+    );
+    _bikeOneMarker = Marker(
+      markerId: MarkerId("Bike"),
+      infoWindow: const InfoWindow(title: "Taxi"),
+      icon: await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration.empty, "assets/images/bike_top.png"),
+      position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
+          widget.userCurrentLocation.longitude - 0.000100),
+    );
+    _tricycleOneMarker = Marker(
+      markerId: MarkerId("Tricycle"),
+      infoWindow: const InfoWindow(title: "Taxi"),
+      icon: await BitmapDescriptor.fromAssetImage(
+          ImageConfiguration.empty, "assets/images/tricycle_top.png"),
+      position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
+          widget.userCurrentLocation.longitude - 0.010100),
+    );
+    if (mounted) setState(() {});
   }
 
   @override
@@ -464,6 +472,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
       },
       child: SearchTextField(
         hintText: "Search",
+        textEditingController: TextEditingController(),
         isDisabled: true,
         hintStyle: TextStyle(
             fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),

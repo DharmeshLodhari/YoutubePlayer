@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,17 +12,14 @@ import 'package:provider/provider.dart';
 import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
-class PaymentRequestTile extends StatefulWidget {
+class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest paymentRequest;
   Widget expandedWidget = Container();
+  Key key;
 
-  PaymentRequestTile({this.paymentRequest, this.expandedWidget});
+  PaymentRequestTile({this.paymentRequest, this.expandedWidget, this.key})
+      : super(key: key);
 
-  @override
-  _PaymentRequestTileState createState() => _PaymentRequestTileState();
-}
-
-class _PaymentRequestTileState extends State<PaymentRequestTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -40,14 +38,13 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
                   dense: true,
                   leading: getLeading(),
                   title: getTitle(),
-                  trailing: moneyDisplayNormalizer(widget.paymentRequest.amount)
-                              .length >
-                          6
-                      ? null
-                      : getTrailing(),
+                  trailing:
+                      moneyDisplayNormalizer(paymentRequest.amount).length > 6
+                          ? null
+                          : getTrailing(),
                   subtitle: getSubtitle(context)),
             ),
-            widget.expandedWidget
+            expandedWidget
           ],
         ),
       ),
@@ -57,8 +54,8 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   Widget getLeading() {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/photo-viewer",
-            arguments: widget.paymentRequest.avatar);
+        Navigator.of(myGlobals.navigationKey.currentContext)
+            .pushNamed("/photo-viewer", arguments: paymentRequest.avatar);
       },
       child: Container(
         height: 48,
@@ -72,13 +69,13 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
         ),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: widget.paymentRequest.avatar,
+            imageUrl: paymentRequest.avatar,
             height: 48,
             width: 48,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
-            placeholder: (context, url) => widget.paymentRequest.avatar == ""
+            placeholder: (context, url) => paymentRequest.avatar == ""
                 ? Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
@@ -91,7 +88,7 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.paymentRequest.payee}",
+        "${paymentRequest.payee}",
         maxLines: 1,
         style: TextStyle(
           color: blackFont,
@@ -109,17 +106,17 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[widget.paymentRequest.currency],
+          worldCurrencies[paymentRequest.currency],
           style: TextStyle(
               fontFamily: "Roboto",
-              color: widget.paymentRequest.isCredit ? navyBlue : blackFont,
+              color: paymentRequest.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(widget.paymentRequest.amount),
+          moneyDisplayNormalizer(paymentRequest.amount),
           style: TextStyle(
-              color: widget.paymentRequest.isCredit ? navyBlue : blackFont,
+              color: paymentRequest.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -131,14 +128,14 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        widget.paymentRequest.description != ""
+        paymentRequest.description != ""
             ? Text(
-                "${widget.paymentRequest.description}",
+                "${paymentRequest.description}",
                 style: TextStyle(color: darkGrey, fontSize: 12),
                 maxLines: 1,
               )
             : Container(),
-        moneyDisplayNormalizer(widget.paymentRequest.amount).length > 6
+        moneyDisplayNormalizer(paymentRequest.amount).length > 6
             ? getTrailing()
             : Container(),
         getDateTime(context)
@@ -147,8 +144,7 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime =
-        DateTime.parse(widget.paymentRequest.createdAt).toLocal();
+    DateTime requestTime = DateTime.parse(paymentRequest.createdAt).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return Text(
@@ -161,18 +157,16 @@ class _PaymentRequestTileState extends State<PaymentRequestTile> {
 }
 
 // ignore: must_be_immutable
-class TransactionTile extends StatefulWidget {
+class TransactionTile extends StatelessWidget {
+  UserBloc userBloc;
+
   final Transaction transaction;
   Widget expandedWidget = Container();
 
-  TransactionTile({this.transaction, this.expandedWidget});
+  TransactionTile({this.transaction, this.expandedWidget, this.key})
+      : super(key: key);
 
-  @override
-  _TransactionTileState createState() => _TransactionTileState();
-}
-
-class _TransactionTileState extends State<TransactionTile> {
-  UserBloc userBloc;
+  Key key;
 
   @override
   Widget build(BuildContext context) {
@@ -194,18 +188,16 @@ class _TransactionTileState extends State<TransactionTile> {
                 title: getTitle(),
                 subtitle: getSubTitle(context),
                 leading: getLeading(),
-                trailing: widget.transaction.amount.toString().length > 6
+                trailing: transaction.amount.toString().length > 6
                     ? null
                     : getAmount(),
                 onTap: () {
                   Navigator.of(context).pushNamed('/transaction-detail',
-                      arguments: {'transaction': widget.transaction});
+                      arguments: {'transaction': transaction});
                 },
               ),
             ),
-            widget.transaction.isAnonymous
-                ? Container()
-                : widget.expandedWidget,
+            transaction.isAnonymous ? Container() : expandedWidget,
           ],
         ),
       ),
@@ -216,7 +208,7 @@ class _TransactionTileState extends State<TransactionTile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.transaction.payee}",
+        "${transaction.payee}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -225,7 +217,7 @@ class _TransactionTileState extends State<TransactionTile> {
   }
 
   Widget getLeading() {
-    return widget.transaction.isAnonymous
+    return transaction.isAnonymous
         ? Container(
             padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
             child: Image.asset(
@@ -248,18 +240,18 @@ class _TransactionTileState extends State<TransactionTile> {
             ),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushNamed("/photo-viewer",
-                    arguments: widget.transaction.avatar);
+                Navigator.of(myGlobals.navigationKey.currentContext)
+                    .pushNamed("/photo-viewer", arguments: transaction.avatar);
               },
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: widget.transaction.avatar,
+                  imageUrl: transaction.avatar,
                   height: 48,
                   width: 48,
                   colorBlendMode: BlendMode.darken,
                   fit: BoxFit.cover,
                   filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => widget.transaction.avatar == ""
+                  placeholder: (context, url) => transaction.avatar == ""
                       ? Icon(Icons.person)
                       : CircularLoadingIndicator(),
                 ),
@@ -273,17 +265,17 @@ class _TransactionTileState extends State<TransactionTile> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[widget.transaction.currency],
+          worldCurrencies[transaction.currency],
           style: TextStyle(
               fontFamily: "Roboto",
-              color: widget.transaction.isCredit ? navyBlue : blackFont,
+              color: transaction.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(widget.transaction.amount),
+          moneyDisplayNormalizer(transaction.amount),
           style: TextStyle(
-              color: widget.transaction.isCredit ? navyBlue : blackFont,
+              color: transaction.isCredit ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -295,24 +287,21 @@ class _TransactionTileState extends State<TransactionTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        widget.transaction.description != ""
+        transaction.description != ""
             ? Text(
-                "${widget.transaction.description}",
+                "${transaction.description}",
                 style: TextStyle(color: darkGrey, fontSize: 12),
                 maxLines: 1,
               )
             : Container(),
-        widget.transaction.amount.toString().length > 6
-            ? getAmount()
-            : Container(),
+        transaction.amount.toString().length > 6 ? getAmount() : Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime =
-        DateTime.parse(widget.transaction.createdAt).toLocal();
+    DateTime transactionTime = DateTime.parse(transaction.createdAt).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(

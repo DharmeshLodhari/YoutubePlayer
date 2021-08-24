@@ -398,18 +398,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             height: 0,
             thickness: 1,
           ),
-          SizedBox(
-            height: 16,
-          ),
-          getMuteNotificationTile(),
-          SizedBox(
-            height: 16,
-          ),
-          Divider(
-            color: dividerColor,
-            height: 0,
-            thickness: 1,
-          ),
+          // SizedBox(
+          //   height: 16,
+          // ),
+          // getMuteNotificationTile(),
+          // SizedBox(
+          //   height: 16,
+          // ),
+          // Divider(
+          //   color: dividerColor,
+          //   height: 0,
+          //   thickness: 1,
+          // ),
           SizedBox(
             height: 16,
           ),

@@ -72,24 +72,24 @@ class _MapUIState extends State<MapUI> {
     }
 
     if (taxiBloc.rideDetail != null) {
-      BitmapDescriptor pin;
-      String markerName;
-
+      // BitmapDescriptor pin;
+      // String markerName;
+      //
       if (taxiBloc.rideDetail["name"] == "Bike" ||
           taxiBloc.rideDetail["name"] == "Tricycle") {
         if (taxiBloc.rideDetail["name"] == "Bike") {
-          pin = BitmapDescriptor.fromAsset("assets/images/bike_top.png");
+          //     pin = BitmapDescriptor.fromAsset("assets/images/bike_top.png");
           rideMarkerImage = "assets/images/bike_top.png";
-          markerName = "Bike";
+          //     markerName = "Bike";
         } else {
-          pin = BitmapDescriptor.fromAsset("assets/images/tricycle_top.png");
+          //     pin = BitmapDescriptor.fromAsset("assets/images/tricycle_top.png");
           rideMarkerImage = "assets/images/tricycle_top.png";
-          markerName = "Tricycle";
+          //     markerName = "Tricycle";
         }
       } else {
-        pin = BitmapDescriptor.fromAsset("assets/images/car_top.png");
+        //   pin = BitmapDescriptor.fromAsset("assets/images/car_top.png");
         rideMarkerImage = "assets/images/car_top.png";
-        markerName = "Taxi";
+        //   markerName = "Taxi";
       }
 
       // _rideMarker = Marker(

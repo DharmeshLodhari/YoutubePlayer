@@ -3,11 +3,11 @@ class Original {
   String hash;
   String height;
   String mp4;
-  String mp4_size;
+  String mp4Size;
   String size;
   String url;
   String webp;
-  String webp_size;
+  String webpSize;
   String width;
 
   Original(
@@ -15,11 +15,11 @@ class Original {
       this.hash,
       this.height,
       this.mp4,
-      this.mp4_size,
+      this.mp4Size,
       this.size,
       this.url,
       this.webp,
-      this.webp_size,
+      this.webpSize,
       this.width});
 
   factory Original.fromJson(Map<String, dynamic> json) {
@@ -28,11 +28,11 @@ class Original {
       hash: json['hash'],
       height: json['height'],
       mp4: json['mp4'],
-      mp4_size: json['mp4_size'],
+      mp4Size: json['mp4_size'],
       size: json['size'],
       url: json['url'],
       webp: json['webp'],
-      webp_size: json['webp_size'],
+      webpSize: json['webp_size'],
       width: json['width'],
     );
   }
@@ -43,11 +43,11 @@ class Original {
     data['hash'] = this.hash;
     data['height'] = this.height;
     data['mp4'] = this.mp4;
-    data['mp4_size'] = this.mp4_size;
+    data['mp4_size'] = this.mp4Size;
     data['size'] = this.size;
     data['url'] = this.url;
     data['webp'] = this.webp;
-    data['webp_size'] = this.webp_size;
+    data['webp_size'] = this.webpSize;
     data['width'] = this.width;
     return data;
   }
