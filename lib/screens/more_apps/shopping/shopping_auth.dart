@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Slydo/data/enviroment.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/services/auth.dart';

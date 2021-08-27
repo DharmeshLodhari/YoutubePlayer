@@ -150,7 +150,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             .listContactRequests(next, previous)
             .catchError((error) {
           debugPrint("ERROR:- $error");
-          return;
+        //  return;
         });
         if (result == null) return;
         count = result['count'];

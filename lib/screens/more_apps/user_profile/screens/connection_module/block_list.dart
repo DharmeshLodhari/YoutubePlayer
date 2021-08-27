@@ -144,7 +144,7 @@ class _BlockListState extends State<BlockList> {
         Map<String, dynamic> result =
             await UserAuth().listBlockUsers(next, previous).catchError((error) {
           debugPrint("ERROR:- $error");
-          return;
+          //  return;
         });
         if (result == null) return;
 

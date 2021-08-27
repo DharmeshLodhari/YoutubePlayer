@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:Slydo/data/enviroment.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
@@ -31,8 +32,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'locale/app_localization.dart';
+
+void callbackDispatcher() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  AppConfig();
+
+  Workmanager().executeTask((task, inputData) {
+    try {
+      debugPrint("WorkManager started message synchronization");
+      ChatMessageSynchronizer().syncMessages(fetchFresh: true);
+    } catch (e) {
+      debugPrint("WorkManager exception caught: $e");
+    }
+    return Future.value(true);
+  });
+}
 
 void main() async {
   // Set `enableInDevMode` to true to see reports while in debug mode
@@ -42,8 +60,9 @@ void main() async {
   //Crashlytics.instance.enableInDevMode = true;
 
   AppConfig();
-
   WidgetsFlutterBinding.ensureInitialized();
+
+  // initializeBackgroundService();
 
   await LocalNotificationService().init();
 
@@ -174,6 +193,15 @@ void main() async {
 //    exit(0);
     });
   });
+}
+
+void initializeBackgroundService() {
+  AppConfig();
+  Workmanager().initialize(
+    callbackDispatcher, // The top level function, aka callbackDispatcher
+    isInDebugMode:
+        true, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  );
 }
 
 class MyApp extends StatelessWidget {

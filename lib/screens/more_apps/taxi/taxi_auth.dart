@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Slydo/data/enviroment.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/services/auth.dart';

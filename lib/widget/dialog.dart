@@ -6,6 +6,7 @@ import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'curved_btn.dart';
 import 'cutomized_alert/customized_alert_for_nudge.dart';
@@ -253,6 +254,8 @@ void showHoldHintCard({BuildContext context}) {
 }
 
 void showUserLogoutCard({BuildContext context}) {
+  debugPrint("WorkManager cancel");
+  Workmanager().cancelAll();
   showDialog(
     barrierDismissible: true,
     context: context,

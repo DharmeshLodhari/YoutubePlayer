@@ -46,12 +46,14 @@ class AlertStyle {
           color: Colors.black,
           fontWeight: FontWeight.bold,
           fontStyle: FontStyle.normal,
-          fontSize: 16.0),
+          fontSize: 16.0,
+          fontFamily: "Roberto"),
       this.descStyle = const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w400,
           fontStyle: FontStyle.normal,
-          fontSize: 18.0),
+          fontSize: 18.0,
+          fontFamily: "Roberto"),
       this.buttonAreaPadding = const EdgeInsets.all(20.0),
       this.constraints});
 }

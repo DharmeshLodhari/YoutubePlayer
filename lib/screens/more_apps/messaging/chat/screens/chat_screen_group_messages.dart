@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:Slydo/data/enviroment.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -310,15 +310,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void setUserStatusTimer() {
-    if(!chatConversation.isGroupConversation) {
+    if (!chatConversation.isGroupConversation) {
       if (_timerForUserStatus?.isActive ?? false) {
         _timerForUserStatus.cancel();
       }
 
       _timerForUserStatus =
           Timer.periodic(userStatusCheckTimeDuration, (timer) {
-            if (mounted) getUserStatus();
-          });
+        if (mounted) getUserStatus();
+      });
     }
   }
 
@@ -523,14 +523,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     _timerForUserStatus?.cancel();
 
-    messageController.removeListener(sendUserTypingState);
+    messageController?.removeListener(sendUserTypingState);
 
-    _gifController.removeListener(searchGiFListener);
+    _gifController?.removeListener(searchGiFListener);
 
     // searchItemTextController.removeListener(searchProductOrService);
 
-    messageController.dispose();
-    messageFocus.dispose();
+    messageController?.dispose();
+    messageFocus?.dispose();
 
     super.dispose();
   }

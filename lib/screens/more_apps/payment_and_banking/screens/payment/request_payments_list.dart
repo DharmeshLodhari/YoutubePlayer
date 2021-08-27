@@ -273,7 +273,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   Widget _threeItemPopup() => PopupMenuButton(
         padding: EdgeInsets.all(0),
-        captureInheritedThemes: true,
+    //    captureInheritedThemes: true,
         icon: Icon(
           SlydoAppIcon.menu,
           size: 16,

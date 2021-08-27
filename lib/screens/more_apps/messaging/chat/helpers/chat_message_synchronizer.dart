@@ -126,13 +126,15 @@ class ChatMessageSynchronizer {
       }
     }
 
-    Map<String, dynamic> acknowledgedMessages = await MessageAuth()
-        .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
-        .catchError((error) {
-      debugPrint("Error:- $error");
-    });
+    if (acknowledgedMessageIds.isNotEmpty) {
+      Map<String, dynamic> acknowledgedMessages = await MessageAuth()
+          .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
+          .catchError((error) {
+        debugPrint("Error:- $error");
+      });
 
-    debugPrint("==> $acknowledgedMessages");
+      debugPrint("==> $acknowledgedMessages");
+    }
   }
 
   Future<void> syncMessages({bool fetchFresh = false}) async {

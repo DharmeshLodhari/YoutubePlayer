@@ -28,6 +28,7 @@ import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
+import 'package:workmanager/workmanager.dart';
 
 class UserLogin extends StatefulWidget {
   @override
@@ -379,9 +380,9 @@ class _UserLoginState extends State<UserLogin> {
   Widget rememberMeAndForgotPasswordField() {
     return Container(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          rememberMeField(),
+          //   rememberMeField(),
           forgotPasswordField(),
         ],
       ),
@@ -458,16 +459,17 @@ class _UserLoginState extends State<UserLogin> {
 
   Widget forgotPasswordField() {
     return Container(
-        child: GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed('/forgot-password');
-      },
-      child: Text(
-        AppLocalization.of(context).forgotPassword,
-        style: TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed('/forgot-password');
+        },
+        child: Text(
+          AppLocalization.of(context).forgotPassword,
+          style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
+        ),
       ),
-    ));
+    );
   }
 
   Widget loginBtnField() {
@@ -549,6 +551,8 @@ class _UserLoginState extends State<UserLogin> {
 
           backgroundFetchBloc.isAllowed = true;
 
+          startWorkManager();
+
           Navigator.of(context).pushNamedAndRemoveUntil(
             "/dashboard",
             (Route<dynamic> route) => false,
@@ -572,12 +576,21 @@ class _UserLoginState extends State<UserLogin> {
     }
   }
 
+  void startWorkManager() {
+    Workmanager().registerPeriodicTask(
+      "2",
+      "simplePeriodicTask",
+      // When no frequency is provided the default 15 minutes is set.
+      // Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
+      frequency: Duration(minutes: 5),
+    );
+  }
+
   void isRememberChecked() async {
     await _sharedPreferences.clear();
     bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
-    if (isRemember) {
-      bool isCheckedSet =
-          await _sharedPreferences.setBool('isChecked', isChecked);
+    if (true) {
+      bool isCheckedSet = await _sharedPreferences.setBool('isChecked', true);
 
       bool countryCodeSet = await _sharedPreferences.setString(
           'country', _selectedDialogCountry.isoCode);
@@ -587,7 +600,7 @@ class _UserLoginState extends State<UserLogin> {
       }
     } else {
       bool isSuccessFullyStored =
-          await _sharedPreferences.setBool('isChecked', isChecked);
+          await _sharedPreferences.setBool('isChecked', true);
       if (!isSuccessFullyStored) {
         Toast.show(AppLocalization.of(context).userIsNotSaved, context);
       }
