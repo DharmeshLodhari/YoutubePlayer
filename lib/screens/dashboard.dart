@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/search_module.dart';
@@ -28,6 +29,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
@@ -47,6 +49,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   //newUI Variables
   DashboardBloc _dashboardBloc;
+  DatabaseHelper _db = DatabaseHelper();
 
   int _currentIndex = 0;
   var arguments;
@@ -84,7 +87,7 @@ class _DashboardState extends State<Dashboard> {
 
     PushNotificationService().initialize();
     ListRefresher().initialize();
-
+    getFeeStructureData();
     fetchConnections();
 
     checkNotificationToNavigate();
@@ -248,6 +251,22 @@ class _DashboardState extends State<Dashboard> {
     AwesomeNotificationService().notificationActionStream.listen((event) {
       debugPrint("<=====> $event");
     });
+  }
+
+  void getFeeStructureData() {
+    PaymentAndBankingAuth().getFeeStructure().then((value) async {
+      if (value != null) {
+        //  deleteFeeStructure();
+        await DatabaseHelper().saveFeeStructure(value);
+      }
+    }).catchError((e) {
+      debugPrint(e.toString());
+      Toast.show(e, context, gravity: Toast.BOTTOM, textColor: Colors.white);
+    });
+  }
+
+  Future<int> deleteFeeStructure() async {
+    return await _db.deleteFeeStructure();
   }
 
   Widget goToBasket() {

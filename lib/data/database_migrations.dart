@@ -10,6 +10,7 @@ const String NUDGE_NOTIFICATION_TABLE = "NudgeNotification";
 const String NOTIFICATION_TABLE = "Notification";
 const String VIRTUAL_ACCOUNT_TABLE = "VirtualAccount";
 const String APP_SETTING_TABLE = "GeneralSettings";
+const String FEE_STRUCTURE = "FeeStructure";
 
 final initialDBSchema = [
   // Create the user table
@@ -165,6 +166,20 @@ final initialDBSchema = [
             "playIncomingMessageSound" INTEGER,
             "playOutgoingMessageSound" INTEGER
           );
+    ''',
+
+  // Create the Fee Structure table
+  '''CREATE TABLE $FEE_STRUCTURE (     
+          "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+          "customer_api_transaction_fee" INTEGER,
+          "business_transaction_fee" INTEGER,
+          "magic_envelope_fee" INTEGER,
+          "empty_envelope_fee" INTEGER,
+          "anonymous_transaction_fee" INTEGER,
+          "tax_rate" INTEGER,
+          "country" TEXT,
+          "currency" TEXT
+        );
     '''
 ];
 

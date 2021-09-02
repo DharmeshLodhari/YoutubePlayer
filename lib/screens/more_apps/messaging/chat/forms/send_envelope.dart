@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -42,13 +44,32 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   ChatConversation chatConversation;
 
+  String costOfEnvelope = "";
+  bool isLoading = false;
+
   @override
   void initState() {
     isEmptyEnvelope =
         widget.arguments != null ? widget.arguments["isEmptyEnvelope"] : false;
     chatConversation = widget.arguments["chatConversation"];
 
+    getTransactionFees();
     super.initState();
+  }
+
+  void getTransactionFees() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    FeeStructure feeStructure = await DatabaseHelper().getFeeStructure();
+
+    costOfEnvelope = feeStructure.getFeeWithTax(
+        type: isEmptyEnvelope
+            ? FeesType.EMPTY_ENVELOPE_FEE
+            : FeesType.MAGIC_ENVELOPE_FEE);
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -160,95 +181,99 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   Widget scaffoldBody() {
     bool isScreenIsSmall = MediaQuery.of(context).size.height < 600;
 
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
-        child: Column(
-          children: [
-            Card(
-              elevation: 2,
-              margin: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              shadowColor: iconBtnGrey,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: iconBtnGrey, width: 1)),
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        getDisplayCard(),
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16, vertical: isScreenIsSmall ? 8 : 16),
+              child: Column(
+                children: [
+                  Card(
+                    elevation: 2,
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    shadowColor: iconBtnGrey,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: iconBtnGrey, width: 1)),
+                      child: Form(
+                        key: _formKey,
+                        child: Container(
                           child: Column(
-                            children: [
-                              isEmptyEnvelope
-                                  ? Container()
-                                  : Column(
-                                      children: [
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        displayAmountField(),
-                                      ],
-                                    ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getTitleField(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              getMessageField(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : Text(
-                                      errorMessage,
-                                      style: TextStyle(
-                                          color: mateRed,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                              errorMessage == ""
-                                  ? Container()
-                                  : SizedBox(
+                            children: <Widget>[
+                              getDisplayCard(),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Column(
+                                  children: [
+                                    isEmptyEnvelope
+                                        ? Container()
+                                        : Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              displayAmountField(),
+                                            ],
+                                          ),
+                                    SizedBox(
                                       height: 20,
                                     ),
+                                    getTitleField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    getMessageField(),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : Text(
+                                            errorMessage,
+                                            style: TextStyle(
+                                                color: mateRed,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                    errorMessage == ""
+                                        ? Container()
+                                        : SizedBox(
+                                            height: 20,
+                                          ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getSubmitButton(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        getConditionText(),
                       ],
                     ),
                   ),
-                ),
-              ),
-            ),
-            Container(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  getSubmitButton(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  getConditionText(),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -318,7 +343,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
         Text("This service will cost you ",
             style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey)),
-        Text("₦ 4",
+        Text("₦ $costOfEnvelope",
             style: TextStyle(
                 fontFamily: "Roberto",
                 fontSize: 14,

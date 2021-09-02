@@ -7,6 +7,14 @@
 /// country : "Nigeria"
 /// currency : "NGN"
 
+enum FeesType {
+  CUSTOMER_API_TRANSACTION_FEE,
+  BUSINESS_TRANSACTION_FEE,
+  MAGIC_ENVELOPE_FEE,
+  EMPTY_ENVELOPE_FEE,
+  ANONYMOUS_TRANSACTION_FEE,
+}
+
 class FeeStructure {
   int customerApiTransactionFee;
   int businessTransactionFee;
@@ -49,5 +57,32 @@ class FeeStructure {
     map['country'] = country;
     map['currency'] = currency;
     return map;
+  }
+
+  String getFeeWithTax({FeesType type}) {
+    switch (type) {
+      case FeesType.BUSINESS_TRANSACTION_FEE:
+        return calculatePrice(businessTransactionFee);
+
+      case FeesType.CUSTOMER_API_TRANSACTION_FEE:
+        return calculatePrice(customerApiTransactionFee);
+
+      case FeesType.EMPTY_ENVELOPE_FEE:
+        return calculatePrice(emptyEnvelopeFee);
+
+      case FeesType.MAGIC_ENVELOPE_FEE:
+        return calculatePrice(magicEnvelopeFee);
+
+      case FeesType.ANONYMOUS_TRANSACTION_FEE:
+        return calculatePrice(anonymousTransactionFee);
+
+      default:
+        return "";
+    }
+  }
+
+  String calculatePrice(int price) {
+    int total = price + (price * taxRate);
+    return (total / 100).toString();
   }
 }

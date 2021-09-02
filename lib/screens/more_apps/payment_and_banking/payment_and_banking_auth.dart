@@ -541,7 +541,7 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<FeeStructure> getFeeStructure() async {
-    var url = AppConfig.baseUrl + "/api/v1/fees/";
+    var url = AppConfig.baseUrl + "/api/v1/transactions/fees/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     debugPrint("Response ${response.statusCode}");
@@ -549,8 +549,8 @@ class PaymentAndBankingAuth extends AuthService {
       return FeeStructure.fromJson(jsonDecode(response.body));
     } else {
       return FeeStructure.fromJson({
-        "customer_api_transaction_fee": 500,
-        "business_transaction_fee": 400,
+        "customer_api_transaction_fee": 1100,
+        "business_transaction_fee": 1000,
         "magic_envelope_fee": 400,
         "empty_envelope_fee": 400,
         "anonymous_transaction_fee": 400,

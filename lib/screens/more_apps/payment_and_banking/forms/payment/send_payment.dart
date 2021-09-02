@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -761,7 +763,12 @@ class _SendPaymentState extends State<SendPayment> {
     );
   }
 
-  void sendMoneyAnonymousAlert() {
+  void sendMoneyAnonymousAlert() async {
+    FeeStructure feeStructure = await DatabaseHelper().getFeeStructure();
+
+    String anonymousFee =
+        feeStructure.getFeeWithTax(type: FeesType.ANONYMOUS_TRANSACTION_FEE);
+
     showDialog<String>(
         barrierDismissible: false,
         context: context,
@@ -820,11 +827,12 @@ class _SendPaymentState extends State<SendPayment> {
                                       Container(
                                         color: Colors.white,
                                         child: Text(
-                                          "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you 4 ₦.",
+                                          "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you ₦$anonymousFee.",
                                           style: TextStyle(
                                               color: blackFont,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w400),
+                                              fontWeight: FontWeight.w400,
+                                              fontFamily: "Roberto"),
                                           textAlign: TextAlign.justify,
                                         ),
                                       ),

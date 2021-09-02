@@ -1,25 +1,16 @@
-import 'dart:async';
-
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/global_key.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:toast/toast.dart';
 
 class GetUserConnectionList extends StatefulWidget {
   @override
@@ -29,12 +20,8 @@ class GetUserConnectionList extends StatefulWidget {
 class _GetUserConnectionListState extends State<GetUserConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
       new GlobalKey<ScaffoldState>();
-  SlidableController _slideController;
-  int count = 0;
-  String next = "";
-  String previous = "";
   List<ChatConversation> connectionsList = [];
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
 
   bool isLoading = false;
   bool noItemInList = false;
@@ -42,19 +29,6 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   @protected
   void initState() {
     this.getList();
-    super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        getList();
-      }
-    });
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
-
     super.initState();
   }
 
@@ -150,140 +124,6 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
     // }
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
-
-  void handleSlideIsOpenChanged(bool isOpen) {}
-
-  void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactsListKey.currentState
-        .showSnackBar(SnackBar(content: Text(text)));
-  }
-
-  List<Widget> listSecondaryActions(ChatConversation user, int index) {
-    CustomerProfile customerProfile =
-        CustomerProfile.fromChatConversation(user);
-
-    return [
-      SlideActionButton(
-        backgroundColor: mateRed,
-        icon: SlydoAppIcon.block,
-        onTap: () {
-          blockUserAlert(customerProfile, index);
-        },
-        title: AppLocalization.of(context).block,
-        slideController: _slideController,
-      ),
-    ];
-  }
-
-  List<Widget> listActionSlideActions(ChatConversation user, int index) {
-    CustomerProfile customerProfile =
-        CustomerProfile.fromChatConversation(user);
-
-    return [
-      SlideActionButton(
-        backgroundColor: mateRed,
-        icon: SlydoAppIcon.remove_connection,
-        onTap: () {
-          removeFromConnectionUserAlert(customerProfile, index);
-        },
-        title: AppLocalization.of(context).remove,
-        slideController: _slideController,
-      ),
-    ];
-  }
-
-  void blockUserAlert(CustomerProfile user, int index) async {
-    bool result = await showDialogBox(
-      context: context,
-      roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: mateRed.withOpacity(0.08),
-        borderRadius: 20,
-        width: 48,
-        height: 48,
-        icon: Icon(
-          SlydoAppIcon.block,
-          color: mateRed,
-          size: 16,
-        ),
-        enableMargin: false,
-      ),
-      actionOneBgColor: mateRed,
-      actionOneTextColor: Colors.white,
-      actionTwoBgColor: greyBorderColor,
-      actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).block,
-      description: AppLocalization.of(context).areYouSureWantToBlock +
-          " ${user.displayName()}",
-      actionOne: AppLocalization.of(context).block,
-      actionTwo: AppLocalization.of(context).cancel,
-    );
-    if (result) {
-      bool done = await UserAuth().blockUser(user);
-      done = true;
-      if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context).isBlockedSuccessfully);
-        setState(() {
-          connectionsList.removeAt(index);
-          if (connectionsList.length <= 9) {
-            getList();
-          }
-        });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
-      }
-    }
-  }
-
-  Future<void> removeFromConnectionUserAlert(
-      CustomerProfile user, int index) async {
-    bool result = await showDialogBox(
-      context: context,
-      roundedBackgroundIcon: RoundedBackgroundIcon(
-        backgroundColor: mateRed.withOpacity(0.08),
-        borderRadius: 20,
-        width: 48,
-        height: 48,
-        icon: Icon(
-          SlydoAppIcon.delete,
-          color: mateRed,
-          size: 16,
-        ),
-        enableMargin: false,
-      ),
-      actionOneBgColor: mateRed,
-      actionOneTextColor: Colors.white,
-      actionTwoBgColor: greyBorderColor,
-      actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).delete,
-      description: AppLocalization.of(context).areYouSureWantToDelete +
-          " ${user.displayName()} " +
-          "From Your Connection List",
-      actionOne: AppLocalization.of(context).delete,
-      actionTwo: AppLocalization.of(context).cancel,
-    );
-    if (result) {
-      bool done = await UserAuth().removeFromContactList(user);
-      if (done) {
-        _showSnackBar(
-            context,
-            "${user.displayName()} " +
-                AppLocalization.of(context).isRemovedSuccessfully);
-        setState(() {
-          connectionsList.removeAt(index);
-          if (connectionsList.length <= 9) {
-            getList();
-          }
-        });
-      } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
-      }
-    }
-  }
-
   @override
   void dispose() {
     _scrollController.dispose();
@@ -352,7 +192,14 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
         onTap: () {
           isSelected = !isSelected;
           if (isSelected) {
-            _shareMessageToChatBloc.addRecipient(chatConversation: widget.user);
+            if (_shareMessageToChatBloc.getRecipients().length < 5) {
+              _shareMessageToChatBloc.addRecipient(
+                  chatConversation: widget.user);
+            } else {
+              Toast.show("You can only share with 5 people at a time !!",
+                  myGlobals.navigationKey.currentContext,
+                  backgroundColor: blackFont, textColor: Colors.white);
+            }
           } else {
             _shareMessageToChatBloc.removeRecipient(
                 customerProfile: widget.user);

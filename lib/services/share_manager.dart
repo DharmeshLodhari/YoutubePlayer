@@ -25,13 +25,12 @@ class ShareManager {
 
   List<SharedMediaFile> _sharedFiles;
   String _sharedText;
-  Timer _timerForListRefresher;
+  Timer _timerForSharingDataListen;
   Duration _refreshDurationInterval = Duration(seconds: 1);
 
   void initializeShareManager() {
     _initializeMediaStream();
     _initializeTextStream();
-    _initializeLinkStream();
   }
 
   void _initializeMediaStream() {
@@ -76,27 +75,6 @@ class ShareManager {
     });
   }
 
-  void _initializeLinkStream() {
-    disposeSharedValue();
-    // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStreamAsUri().listen((Uri value) {
-      //  openPopup(value.toString());
-      print("ReceiveSharedLink1: $value");
-      _sharedText = value.toString();
-      initializeNavigationTimer();
-    }, onError: (err) {
-      print("getLinkStream error: $err");
-    });
-
-    // For sharing or opening urls/text coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialTextAsUri().then((Uri value) {
-      print("ReceiveSharedLink2: $value");
-      _sharedText = value.toString();
-      initializeNavigationTimer();
-    });
-  }
-
   void disposeShareManager() {
     _intentDataStreamSubscription?.cancel();
     disposeSharedValue();
@@ -108,14 +86,15 @@ class ShareManager {
   }
 
   void initializeNavigationTimer() {
-    if (_timerForListRefresher?.isActive ?? false) {
-      _timerForListRefresher?.cancel();
+    if (_timerForSharingDataListen?.isActive ?? false) {
+      _timerForSharingDataListen?.cancel();
     }
 
-    _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
+    _timerForSharingDataListen =
+        Timer.periodic(_refreshDurationInterval, (time) {
       try {
         if (myGlobals.navigationKey.currentContext != null) {
-          _timerForListRefresher.cancel();
+          _timerForSharingDataListen.cancel();
           print("<====== Opening user list ======>");
           RouteProvider routeProvider = Provider.of<RouteProvider>(
               myGlobals.navigationKey.currentContext,
@@ -132,35 +111,33 @@ class ShareManager {
     });
   }
 
-  void openPopup() {
+  void openPopup() async {
     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
       debugPrint("ShareContext===> Text ===> $_sharedText");
       String text = _sharedText.trim();
+      _timerForSharingDataListen.cancel();
       disposeSharedValue();
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        List<ChatConversation> selectedUser = await ShareInChat()
-            .selectShareCustomer(myGlobals.navigationKey.currentContext);
+      List<ChatConversation> selectedUser = await ShareInChat()
+          .selectShareCustomer(myGlobals.navigationKey.currentContext);
 
-        for (int i = 0; i < selectedUser.length; i++) {
-          await sendTextMessage(text, selectedUser[i]);
-        }
-      });
+      for (int i = 0; i < selectedUser.length; i++) {
+        await sendTextMessage(text, selectedUser[i]);
+      }
     } else if (_sharedFiles != null && _sharedFiles.isNotEmpty) {
       debugPrint("ShareContext===> Media ===> $_sharedFiles");
-      List<SharedMediaFile> files = _sharedFiles;
+      List<SharedMediaFile> files = [];
+      files.addAll(_sharedFiles);
+      _timerForSharingDataListen.cancel();
       disposeSharedValue();
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        List<ChatConversation> selectedUser = await ShareInChat()
-            .selectShareCustomer(myGlobals.navigationKey.currentContext);
+      List<ChatConversation> selectedUser = await ShareInChat()
+          .selectShareCustomer(myGlobals.navigationKey.currentContext);
 
-        for (int i = 0; i < selectedUser.length; i++) {
-          for (int j = 0; j < files.length; j++) {
-            await sendMediaMessage(selectedUser[i], files[j]);
-          }
+      for (int i = 0; i < selectedUser.length; i++) {
+        for (int j = 0; j < files.length; j++) {
+          await sendMediaMessage(selectedUser[i], files[j]);
         }
-      });
+      }
     }
-    _timerForListRefresher.cancel();
   }
 
   Future<void> sendMediaMessage(ChatConversation chatConversation,

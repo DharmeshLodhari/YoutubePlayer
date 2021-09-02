@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class DatabaseHelper {
 
   Future<Database> openDB() async {
     final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'Initialize.db');
+    final path = join(databasesPath, 'Initial.db');
 
     return await openDatabaseWithMigration(path, config);
   }
@@ -986,6 +987,39 @@ class DatabaseHelper {
     if (res != null) {
       debugPrint("DATABASE:- DELETE GeneralSettings !!");
       return res;
+    }
+    return null;
+  }
+
+  /// Fee structure operations
+
+  // save user's fee structure to the db
+  Future<int> saveFeeStructure(FeeStructure feeStructure) async {
+    var dbClient = await db;
+    await deleteFeeStructure();
+    int res = await dbClient.insert(FEE_STRUCTURE, feeStructure.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    debugPrint("DATABASE:- $FEE_STRUCTURE saved to db");
+    return res;
+  }
+
+  // Delete the fee structure from the db
+  Future<int> deleteFeeStructure() async {
+    var dbClient = await db;
+    int res = await dbClient.delete(FEE_STRUCTURE);
+    debugPrint("DATABASE:- $FEE_STRUCTURE deleted from db");
+    return res;
+  }
+
+  // Get current user's fee structure from db
+  Future<FeeStructure> getFeeStructure() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> feeStructure =
+        await dbClient.query(FEE_STRUCTURE);
+    if (feeStructure != null) {
+      if (feeStructure.length > 0)
+        return FeeStructure.fromJson(feeStructure.first);
     }
     return null;
   }
