@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -294,17 +295,6 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     );
   }
 
-  Future<String> getVideoThumbnail(File file) async {
-    String path = await VideoThumbnail.thumbnailFile(
-      video: file.path,
-      imageFormat: ImageFormat.JPEG,
-      maxWidth:
-          512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-      quality: 25,
-    );
-    debugPrint(" PATH:-  ===> $path");
-    return path;
-  }
 
   void sendMessage() async {
     // Navigator.pop(context, Future.error("error"));

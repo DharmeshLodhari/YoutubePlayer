@@ -348,7 +348,7 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.naira,
-          title: "Pay out",
+          title: "Cash out",
           onTap: () {
             bankAndroidSheet();
           },

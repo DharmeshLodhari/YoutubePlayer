@@ -100,7 +100,9 @@ class CustomizedAlert {
                                   child: Text(
                                     desc ?? "",
                                     style: TextStyle(
-                                        color: blackFont, fontSize: 16.0),
+                                        color: blackFont,
+                                        fontSize: 16.0,
+                                        fontFamily: "roberto"),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),

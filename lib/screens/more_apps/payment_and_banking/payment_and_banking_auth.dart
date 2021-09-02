@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -537,5 +538,17 @@ class PaymentAndBankingAuth extends AuthService {
     //   return Future.error(jsonDecode(response.body));
     // }
     return true;
+  }
+
+  Future<FeeStructure> getFeeStructure() async {
+    var url = AppConfig.baseUrl + "/api/v1/fees/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint("Response ${response.statusCode}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return FeeStructure.fromJson(jsonDecode(response.body));
+    } else {
+      return FeeStructure.fromJson({});
+    }
   }
 }

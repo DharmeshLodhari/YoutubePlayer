@@ -204,10 +204,30 @@ void initializeBackgroundService() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   //default local language
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final AppLocalizationDelegate _localeOverrideDelegate =
       AppLocalizationDelegate(Locale('en', 'US'));
+
+  @override
+  void initState() {
+    /*WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ShareManager().initializeShareManager();
+    });*/
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    //ShareManager().disposeShareManager();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

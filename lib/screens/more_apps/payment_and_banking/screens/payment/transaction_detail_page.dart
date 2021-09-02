@@ -281,6 +281,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
   }
 
   Widget detailTile(IconData icon, String title, String subtitle) {
+    debugPrint("==>$subtitle");
     return Container(
       child: ListTile(
         dense: true,
@@ -305,6 +306,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
           style: TextStyle(
             color: blackFont,
             fontSize: 14,
+            fontFamily: "roberto",
           ),
         ),
       ),

@@ -820,7 +820,7 @@ class _SendPaymentState extends State<SendPayment> {
                                       Container(
                                         color: Colors.white,
                                         child: Text(
-                                          "This transaction will be done anonymously recipient will not be able to see sender information. ",
+                                          "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you 4 ₦.",
                                           style: TextStyle(
                                               color: blackFont,
                                               fontSize: 16,

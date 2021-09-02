@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui' as ui;
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
@@ -5,6 +8,7 @@ import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class ImageTileForChat extends StatelessWidget {
@@ -164,7 +168,7 @@ class ImageTileForChat extends StatelessWidget {
                                   ? 0
                                   : 8),
                       child: ClipRRect(
-                        child: CachedNetworkImage(
+                        /*child: CachedNetworkImage(
                           height: MediaQuery.of(context).size.width / 3,
                           width: MediaQuery.of(context).size.width / 1.8,
                           // height: MediaQuery.of(context).size.width / 2.2,
@@ -182,6 +186,39 @@ class ImageTileForChat extends StatelessWidget {
                             ),
                           ),
                           errorWidget: imageErrorWidget,
+                        ),*/
+                        child: new FutureBuilder<ui.Image>(
+                          future: _getImage(message['media']),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<ui.Image> snapshot) {
+                            if (snapshot.hasData) {
+                              ui.Image image = snapshot.data;
+                              if (image.width > image.height)
+                                return setImage(
+                                    context,
+                                    isSend,
+                                    MediaQuery.of(context).size.width / 3,
+                                    MediaQuery.of(context).size.width / 1.8);
+                              else
+                                return setImage(
+                                    context,
+                                    isSend,
+                                    MediaQuery.of(context).size.width,
+                                    MediaQuery.of(context).size.width / 1.8);
+                            } else {
+                              return Container(
+                                height: MediaQuery.of(context).size.width / 3,
+                                child: Center(
+                                  child: new CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation(
+                                        isSend ? Colors.white : navyBlue),
+                                    backgroundColor: Colors.transparent,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                         ),
                         borderRadius: BorderRadius.circular(3),
                       ),
@@ -228,5 +265,35 @@ class ImageTileForChat extends StatelessWidget {
         )
       ],
     );
+  }
+
+  Future<ui.Image> _getImage(String url) {
+    Completer<ui.Image> completer = new Completer<ui.Image>();
+    new NetworkImage(url).resolve(new ImageConfiguration()).addListener(
+      ImageStreamListener(
+        (ImageInfo info, bool _) {
+          completer.complete(info.image);
+        },
+      ),
+    );
+    return completer.future;
+  }
+
+  Widget setImage(BuildContext context, isSend, height, width) {
+    return CachedNetworkImage(
+        height: height,
+        width: width,
+        imageUrl: message['media'],
+        fit: BoxFit.cover,
+        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
+              child: CircularProgressIndicator(
+                value: downloadProgress.progress,
+                strokeWidth: 2.5,
+                valueColor:
+                    AlwaysStoppedAnimation(isSend ? Colors.white : navyBlue),
+                backgroundColor: Colors.transparent,
+              ),
+            ),
+        errorWidget: imageErrorWidget);
   }
 }

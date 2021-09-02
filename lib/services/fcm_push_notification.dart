@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
@@ -47,6 +48,8 @@ Future<dynamic> fcmBackgroundMessageHandler(
     /// title: Slydo Notification}}
 
     Map<String, dynamic> data = {};
+
+    AppConfig();
 
     AwesomeNotificationService().init();
 

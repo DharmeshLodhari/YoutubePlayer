@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 /// allowed message types
 List<String> imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
@@ -15,6 +18,18 @@ List<String> videoExtensions = [
   "mkv"
 ];
 List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
+
+Future<String> getVideoThumbnail(File file) async {
+  String path = await VideoThumbnail.thumbnailFile(
+    video: file.path,
+    imageFormat: ImageFormat.JPEG,
+    maxWidth:
+        512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+    quality: 25,
+  );
+  debugPrint(" PATH:-  ===> $path");
+  return path;
+}
 
 String getFileType(FilePickerResult pickedMedia) {
   debugPrint("File path :- ${pickedMedia.files.single.path}");

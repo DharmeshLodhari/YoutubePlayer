@@ -17,6 +17,7 @@ import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
+import 'package:Slydo/services/share_manager.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -61,6 +62,9 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ShareManager().initializeShareManager();
+    });
     if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
@@ -449,6 +453,7 @@ class _DashboardState extends State<Dashboard> {
   void dispose() {
     debugPrint("Subscription Removed ${streamSubscription?.toString()}");
     streamSubscription?.cancel();
+    ShareManager().disposeShareManager();
     super.dispose();
   }
 }
