@@ -548,7 +548,16 @@ class PaymentAndBankingAuth extends AuthService {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return FeeStructure.fromJson(jsonDecode(response.body));
     } else {
-      return FeeStructure.fromJson({});
+      return FeeStructure.fromJson({
+        "customer_api_transaction_fee": 500,
+        "business_transaction_fee": 400,
+        "magic_envelope_fee": 400,
+        "empty_envelope_fee": 400,
+        "anonymous_transaction_fee": 400,
+        "tax_rate": 0,
+        "country": "Nigeria",
+        "currency": "NGN",
+      });
     }
   }
 }

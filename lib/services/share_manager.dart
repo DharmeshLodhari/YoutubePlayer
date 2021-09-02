@@ -21,9 +21,8 @@ import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
 class ShareManager {
-  StreamSubscription _intentMediaDataStreamSubscription;
-  StreamSubscription _intentTextDataStreamSubscription;
-  StreamSubscription _intentLinkDataStreamSubscription;
+  StreamSubscription _intentDataStreamSubscription;
+
   List<SharedMediaFile> _sharedFiles;
   String _sharedText;
   Timer _timerForListRefresher;
@@ -36,8 +35,9 @@ class ShareManager {
   }
 
   void _initializeMediaStream() {
+    disposeSharedValue();
     // For sharing images coming from outside the app while the app is in the memory
-    _intentMediaDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
+    _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
         .listen((List<SharedMediaFile> value) {
       print("ReceiveSharedMedia1:" +
           (value?.map((f) => f.path)?.join(",") ?? ""));
@@ -57,8 +57,9 @@ class ShareManager {
   }
 
   void _initializeTextStream() {
+    disposeSharedValue();
     // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentTextDataStreamSubscription =
+    _intentDataStreamSubscription =
         ReceiveSharingIntent.getTextStream().listen((String value) {
       print("ReceiveSharedText1: $value");
       _sharedText = value;
@@ -76,8 +77,9 @@ class ShareManager {
   }
 
   void _initializeLinkStream() {
+    disposeSharedValue();
     // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentLinkDataStreamSubscription =
+    _intentDataStreamSubscription =
         ReceiveSharingIntent.getTextStreamAsUri().listen((Uri value) {
       //  openPopup(value.toString());
       print("ReceiveSharedLink1: $value");
@@ -96,64 +98,65 @@ class ShareManager {
   }
 
   void disposeShareManager() {
-    _intentMediaDataStreamSubscription?.cancel();
-    _intentTextDataStreamSubscription?.cancel();
-    _intentLinkDataStreamSubscription?.cancel();
+    _intentDataStreamSubscription?.cancel();
+    disposeSharedValue();
+  }
+
+  void disposeSharedValue() {
+    _sharedText = null;
+    _sharedFiles = null;
   }
 
   void initializeNavigationTimer() {
-    print("ShareContext===>Navigation Timer");
     if (_timerForListRefresher?.isActive ?? false) {
-      print("ShareContext===>Navigation Timer If");
       _timerForListRefresher?.cancel();
     }
-    print(
-        "ShareContext===>Navigation Timer After ${_timerForListRefresher?.isActive}");
+
     _timerForListRefresher = Timer.periodic(_refreshDurationInterval, (time) {
       try {
-        print("ShareContext===>try");
         if (myGlobals.navigationKey.currentContext != null) {
           _timerForListRefresher.cancel();
-          print("<====== Refreshing list ======>");
-          print("ShareContext===>Context not null");
+          print("<====== Opening user list ======>");
           RouteProvider routeProvider = Provider.of<RouteProvider>(
               myGlobals.navigationKey.currentContext,
               listen: false);
 
           if (routeProvider.routes.contains("/dashboard") ||
               routeProvider.routes.last == "/dashboard") {
-            debugPrint("ShareContext===>Dashboard");
-
             openPopup();
           }
-        } else {
-          print("ShareContext===>Context null");
         }
       } catch (e) {
-        print("ShareContext===>$e");
+        print("ShareContextException===>$e");
       }
     });
-    print("ShareContext===>Timer out");
   }
 
   void openPopup() {
     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
+      debugPrint("ShareContext===> Text ===> $_sharedText");
+      String text = _sharedText.trim();
+      disposeSharedValue();
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         List<ChatConversation> selectedUser = await ShareInChat()
             .selectShareCustomer(myGlobals.navigationKey.currentContext);
 
         for (int i = 0; i < selectedUser.length; i++) {
-          await sendTextMessage(_sharedText.trim(), selectedUser[i]);
+          await sendTextMessage(text, selectedUser[i]);
         }
       });
     } else if (_sharedFiles != null && _sharedFiles.isNotEmpty) {
-      debugPrint("ShareContext===>Media ===> $_sharedFiles");
+      debugPrint("ShareContext===> Media ===> $_sharedFiles");
+      List<SharedMediaFile> files = _sharedFiles;
+      disposeSharedValue();
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         List<ChatConversation> selectedUser = await ShareInChat()
             .selectShareCustomer(myGlobals.navigationKey.currentContext);
 
         for (int i = 0; i < selectedUser.length; i++) {
-          await sendMediaMessage(selectedUser[i], _sharedFiles[0]);
+          for (int j = 0; j < files.length; j++) {
+            await sendMediaMessage(selectedUser[i], files[j]);
+          }
         }
       });
     }

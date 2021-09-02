@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/common.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -103,43 +103,51 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   }
 
   void getList() async {
-    if (!isLoading) {
-      if (next != null && !isLoading) {
-        if (mounted) {
-          setState(() {
-            isLoading = true;
-          });
-        }
-        Map<String, dynamic> result = await UserAuth().contacts(next, previous);
-        count = result['count'];
-        next = result['next'];
-        previous = result['previous'];
+    ConnectionListBloc _connectionListBloc = Provider.of<ConnectionListBloc>(
+        myGlobals.navigationKey.currentContext,
+        listen: false);
 
-        List tempList = result['results'];
-        List<ChatConversation> users = List<ChatConversation>();
+    connectionsList.addAll(_connectionListBloc.connectionUsers);
 
-        tempList.forEach(
-            (element) => users.add(ChatConversation.fromJson(element)));
+    if (mounted) setState(() {});
 
-        isLoading = false;
-        connectionsList.addAll(users);
-
-        if (mounted) setState(() {});
-
-        /// adding chat Users in database
-        ChatUserManager().addUsers(users);
-      }
-      if (connectionsList.isEmpty) {
-        noItemInList = true;
-        if (mounted) setState(() {});
-      } else if (next == null && connectionsList.length > 6) {
-        _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
-      }
-    }
+    // if (!isLoading) {
+    //   if (next != null && !isLoading) {
+    //     if (mounted) {
+    //       setState(() {
+    //         isLoading = true;
+    //       });
+    //     }
+    //     Map<String, dynamic> result = await UserAuth().contacts(next, previous);
+    //     count = result['count'];
+    //     next = result['next'];
+    //     previous = result['previous'];
+    //
+    //     List tempList = result['results'];
+    //     List<ChatConversation> users = List<ChatConversation>();
+    //
+    //     tempList.forEach(
+    //         (element) => users.add(ChatConversation.fromJson(element)));
+    //
+    //     isLoading = false;
+    //     connectionsList.addAll(users);
+    //
+    //     if (mounted) setState(() {});
+    //
+    //     /// adding chat Users in database
+    //     ChatUserManager().addUsers(users);
+    //   }
+    //   if (connectionsList.isEmpty) {
+    //     noItemInList = true;
+    //     if (mounted) setState(() {});
+    //   } else if (next == null && connectionsList.length > 6) {
+    //     _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
+    //       content:
+    //           Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+    //       duration: Duration(milliseconds: 500),
+    //     ));
+    //   }
+    // }
   }
 
   void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
