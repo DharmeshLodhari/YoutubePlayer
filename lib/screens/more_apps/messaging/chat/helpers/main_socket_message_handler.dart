@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
@@ -15,6 +16,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
@@ -90,7 +92,8 @@ class MainSocketMessageHandler {
               .updateChatMessage(chatMessage: chatMessage);
 
           /// Send Acknowledgement of the message
-          await sendAcknowledgementOfMessage(chatMessage: chatMessage);
+          await sendAcknowledgementOfMessageWithCheckingAuthor(
+              chatMessage: chatMessage);
 
           /// update ConnectionList order by last receive time
           await updateConnectionListOrder(
@@ -209,19 +212,45 @@ class MainSocketMessageHandler {
     }
   }
 
-  Future<void> sendAcknowledgementOfMessage({ChatMessage chatMessage}) async {
-    UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.navigationKey.currentContext,
-        listen: false);
+  Future<void> sendAcknowledgementOfMessageWithCheckingAuthor(
+      {ChatMessage chatMessage}) async {
+    String currentUserName;
 
-    if (userBloc.user.userName != chatMessage.author) {
+    UserBloc userBloc;
+
+    try {
+      userBloc = Provider.of<UserBloc>(myGlobals.navigationKey.currentContext,
+          listen: false);
+      currentUserName = userBloc.user.userName;
+    } catch (error) {
+      User user = await DatabaseHelper().getUser();
+      currentUserName = user.userName;
+    }
+
+    if (currentUserName != chatMessage.author) {
       /// send acknowledgement to server through API that this message is received
-      await sendAcknowledgementOfMessageThroughHttp(chatMessage: chatMessage)
+      await sendAcknowledgementOfMessageThroughHttp(
+              conversationId: chatMessage.conversationId,
+              checkId: chatMessage.checkId)
           .catchError((error) {
         /// send acknowledgement to server through WEBSocket that this message is received
-        sendAcknowledgementOfMessageThroughSocket(chatMessage: chatMessage);
+        sendAcknowledgementOfMessageThroughSocket(
+            conversationId: chatMessage.conversationId,
+            checkId: chatMessage.checkId);
       });
     }
+  }
+
+  Future<void> sendAcknowledgementOfMessageWithOutCheckingAuthor(
+      {String checkId, String conversationId}) async {
+    /// send acknowledgement to server through API that this message is received
+    await sendAcknowledgementOfMessageThroughHttp(
+            conversationId: conversationId, checkId: checkId)
+        .catchError((error) {
+      /// send acknowledgement to server through WEBSocket that this message is received
+      sendAcknowledgementOfMessageThroughSocket(
+          conversationId: conversationId, checkId: checkId);
+    });
   }
 
   void addChatConversation({Map<String, dynamic> messageData}) {
@@ -531,28 +560,27 @@ class MainSocketMessageHandler {
     }
   }
 
-  void sendAcknowledgementOfMessageThroughSocket({ChatMessage chatMessage}) {
+  void sendAcknowledgementOfMessageThroughSocket(
+      {String checkId, String conversationId}) {
     UserBloc userBloc = Provider.of<UserBloc>(
         myGlobals.navigationKey.currentContext,
         listen: false);
 
-    if (chatMessage.author != userBloc.user.userName) {
-      Map<String, dynamic> data = {
-        "check_id": chatMessage.checkId,
-        "type": "acknowledge_message",
-        "conversation_id": chatMessage.conversationId,
-        "username": userBloc.user.userName
-      };
+    Map<String, dynamic> data = {
+      "check_id": checkId,
+      "type": "acknowledge_message",
+      "conversation_id": conversationId,
+      "username": userBloc.user.userName
+    };
 
-      sendDataToSocket(data);
-    }
+    sendDataToSocket(data);
   }
 
   Future<void> sendAcknowledgementOfMessageThroughHttp(
-      {ChatMessage chatMessage}) async {
+      {String checkId, String conversationId}) async {
     Map<String, dynamic> data = {
-      "check_id": chatMessage.checkId,
-      "conversation_id": chatMessage.conversationId,
+      "check_id": checkId,
+      "conversation_id": conversationId,
     };
 
     List<Map<String, dynamic>> messages = [];

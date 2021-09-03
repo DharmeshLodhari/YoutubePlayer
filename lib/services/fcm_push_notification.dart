@@ -87,16 +87,22 @@ Future<dynamic> fcmBackgroundMessageHandler(
           await ChatUserManager().updateChatUserMessageCount(
               conversationId: conversationId, hashedMessage: hashedMessage);
 
+          /// send acknowledgement to server
+          MainSocketMessageHandler()
+              .sendAcknowledgementOfMessageWithCheckingAuthor(
+                  chatMessage: textMessage);
+
           AwesomeNotificationService().showNotification(message: data);
         }
-      }
-    } else if (data['data']['type'] == "acknowledge_message") {
-      Map<String, dynamic> messageData = message['data']['data'] is Map
-          ? message['data']['data']
-          : jsonDecode(message['data']['data']);
+      } else if (data['data']['type'] == "acknowledge_message") {
+        Map<String, dynamic> messageData = message['data']['data'] is Map
+            ? message['data']['data']
+            : jsonDecode(message['data']['data']);
 
-      MainSocketMessageHandler()
-          .handleAcknowledgementMessage(messageData: messageData);
+        /// set delivery status true for the message
+        MainSocketMessageHandler()
+            .handleAcknowledgementMessage(messageData: messageData);
+      }
     } else {
       data['notification'] = jsonDecode(message['data']['notification']);
 
