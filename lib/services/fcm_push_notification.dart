@@ -76,17 +76,19 @@ Future<dynamic> fcmBackgroundMessageHandler(
 
           String conversationId = textMessage.conversationId;
 
-          ConnectionListManager().updateLastMessageTime(
+          /// move user to top of the list in the connection list
+          await ConnectionListManager().updateLastMessageTime(
               conversationId: conversationId, time: time);
 
           String hashedMessage =
               generateHashedMessage(jsonEncode(data['data']));
 
-          ChatUserManager().updateChatUserMessageCount(
+          /// update the message count
+          await ChatUserManager().updateChatUserMessageCount(
               conversationId: conversationId, hashedMessage: hashedMessage);
-        }
 
-        AwesomeNotificationService().showNotification(message: data);
+          AwesomeNotificationService().showNotification(message: data);
+        }
       }
     } else if (data['data']['type'] == "acknowledge_message") {
       Map<String, dynamic> messageData = message['data']['data'] is Map
@@ -201,7 +203,7 @@ class PushNotificationService {
           }
           if (decodeMessage != null) {
             if (decodeMessage.isNotEmpty) {
-              MainSocketMessageHandler(message: notification["data"]);
+              MainSocketMessageHandler(message: jsonEncode(decodeMessage));
             }
           }
         } else {

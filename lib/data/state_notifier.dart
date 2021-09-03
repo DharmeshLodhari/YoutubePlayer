@@ -479,7 +479,7 @@ class ConnectionListBloc extends ChangeNotifier {
     return await ConnectionListManager().getConnectionsFromDB();
   }
 
-  void updateLastMessageTime({String conversationId, int time}) async {
+  Future<void> updateLastMessageTime({String conversationId, int time}) async {
     await ConnectionListManager()
         .updateLastMessageTime(conversationId: conversationId, time: time);
     _connectionUsers.clear();

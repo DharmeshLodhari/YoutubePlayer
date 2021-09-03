@@ -3,10 +3,16 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class AwesomeNotificationService {
@@ -176,8 +182,7 @@ class AwesomeNotificationService {
           //     importance: NotificationImportance.High)
         ],
       );
-    }catch(ERROR)
-    {
+    } catch (ERROR) {
       debugPrint("ERROR while initializing notification $ERROR");
     }
 
@@ -211,8 +216,115 @@ class AwesomeNotificationService {
           saveNudgeNotification(receivedNotification.payload);
         } else {
           debugPrint("===> ${receivedNotification.toMap()}");
+
           saveNotification(payload);
+          // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          //   navigateToNotification(receivedNotification.toMap());
+          // });
         }
+      });
+    }
+  }
+
+  void navigateToNotification(Map<String, dynamic> data) async {
+    /// {id: 31386,
+    /// channelKey: basic_channel,
+    /// title: Slydo Notification,
+    /// body: test1,
+    /// summary: null,
+    /// showWhen: true,
+    /// icon: null,
+    /// payload:
+    /// {image: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b1a8773527284446a45e9dd31924c5e8.jpg,
+    /// notification_id: 31386,
+    /// body: test1,
+    /// title: Slydo Notification,
+    /// priority: normal,
+    /// type: chatroom_message,
+    /// actions: /chat-screen/09700559-3aa6-4d71-bd4b-748322e49fdb},
+    /// largeIcon: https://slydo-assets.s3.amazonaws.com/media/customer/avatar/b1a8773527284446a45e9dd31924c5e8.jpg,
+    /// bigPicture: null,
+    /// autoCancel: true,
+    /// privacy: Private,
+    /// color: null,
+    /// backgroundColor: null,
+    /// createdSource: Local,
+    /// createdLifeCycle: Background,
+    /// displayedLifeCycle: Background,
+    /// createdDate: 2021-09-03 12:29:40,
+    /// displayedDate: 2021-09-03 12:29:40,
+    /// actionDate: 2021-09-03 12:30:51,
+    /// dismissedDate: null,
+    /// actionLifeCycle: AppKilled,
+    /// dismissedLifeCycle: null,
+    /// buttonKeyPressed: null, buttonKeyInput: null}
+
+    Map<String, dynamic> notification = data['payload'] is String
+        ? jsonDecode(data['payload'])
+        : data['payload'];
+
+    if (notification['type'] == "chatroom_message") {
+      String recipientUsername =
+          notification['actions'].replaceAll("/chat-screen/", "");
+      print("Recipient user name = $recipientUsername");
+
+      if (recipientUsername != null) {
+        showDialog(
+            context: MyGlobals().navigationKey.currentContext,
+            builder: (context) => Center(child: CircularLoadingIndicator()));
+
+        await DatabaseHelper().deleteNotification();
+
+        ChatConversation chatConversation =
+            await UserAuth().fetchContactProfile(recipientUsername);
+
+        if (chatConversation == null) {
+          Navigator.of(MyGlobals().navigationKey.currentContext)
+              .popUntil(ModalRoute.withName('/dashboard'));
+          return;
+        }
+        Navigator.of(MyGlobals().navigationKey.currentContext)
+            .popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.pushNamed(
+            MyGlobals().navigationKey.currentContext, '/chat-screen',
+            arguments: {"searchedUser": chatConversation});
+      }
+    } else if (notification['type'] == "request-payment") {
+      await DatabaseHelper().deleteNotification();
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .popUntil(ModalRoute.withName('/dashboard'));
+      DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
+          MyGlobals().navigationKey.currentContext,
+          listen: false);
+      _dashboardBloc.index = 1;
+    } else if (notification['type'] == "transaction") {
+      await DatabaseHelper().deleteNotification();
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .pushNamed('/transactions');
+    } else if (notification['type'] == "connection-request") {
+      await DatabaseHelper().deleteNotification();
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .pushNamed('/friends-dashboard', arguments: {"index": 1});
+    } else if (notification['type'] == "friends-dashboard") {
+      await DatabaseHelper().deleteNotification();
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .pushNamed('/friends-dashboard', arguments: {"index": 0});
+    } else if (notification['type'] == "detail_message") {
+      await DatabaseHelper().deleteNotification();
+      //this variable will fetch the id of message from the response
+      String idOfMessage =
+          notification['actions'].replaceAll("/detail_message/", "");
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.of(MyGlobals().navigationKey.currentContext)
+          .pushNamed('/detail_message', arguments: {
+        'id': idOfMessage,
       });
     }
   }

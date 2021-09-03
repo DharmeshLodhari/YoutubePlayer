@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:file_picker/file_picker.dart';
@@ -83,5 +84,13 @@ String getAuthorName(
     return "You";
   } else {
     return message["author_full_name"] ?? message["author"];
+  }
+}
+
+String getCurrency(String title, String symbol) {
+  if (title.contains("CURRENCY")) {
+    return title.replaceAll("CURRENCY", worldCurrencies[symbol]);
+  } else {
+    return title;
   }
 }

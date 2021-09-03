@@ -80,7 +80,7 @@ class MainSocketMessageHandler {
 
           /// checking if the recipient is in the current chat screen then we will not update message count
           if (mainSocketProvider.currentConversationId != conversationId) {
-            saveAndUpdateUserMessageCount(messageData: messageData);
+            await saveAndUpdateUserMessageCount(messageData: messageData);
           }
 
           /// update message in the local message db
@@ -92,8 +92,8 @@ class MainSocketMessageHandler {
           /// Send Acknowledgement of the message
           await sendAcknowledgementOfMessage(chatMessage: chatMessage);
 
-          /// update ConnectionList order by last recive time
-          updateConnectionListOrder(
+          /// update ConnectionList order by last receive time
+          await updateConnectionListOrder(
               conversationId: conversationId, messageData: messageData);
 
           ///delete message from ChatTextMessage table in db if message came back from socket
@@ -512,8 +512,8 @@ class MainSocketMessageHandler {
     _hashedNudgingMessages.clear();
   }
 
-  void updateConnectionListOrder(
-      {String conversationId, Map<String, dynamic> messageData}) {
+  Future<void> updateConnectionListOrder(
+      {String conversationId, Map<String, dynamic> messageData}) async {
     // debugPrint("MessageData:- $messageData");
 
     if (messageData.containsKey("created_at")) {
@@ -525,7 +525,8 @@ class MainSocketMessageHandler {
       ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
           myGlobals.scaffoldKey.currentContext,
           listen: false);
-      connectionListBloc.updateLastMessageTime(
+
+      await connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);
     }
   }
