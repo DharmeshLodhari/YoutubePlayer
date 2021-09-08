@@ -113,7 +113,7 @@ class AuthService {
     var response = await http.get(url, headers: headers);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    await unRegisterDevice();
+    unRegisterDevice();
   }
 
   // Delete user from db

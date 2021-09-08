@@ -93,7 +93,7 @@ class _DashboardState extends State<Dashboard> {
     fetchConnections();
 
     // checkNotificationToNavigate();
-
+    MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
   }
 
@@ -249,10 +249,9 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  void listenNotificationTap() {
-    AwesomeNotificationService()
-        .awesomeNotifications
-        .actionStream
+  void listenNotificationTap() async {
+    MyGlobals.notificationStream = AwesomeNotificationService()
+        .notificationActionStream
         .listen((receivedNotification) async {
       debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
       debugPrint("data:-  ${receivedNotification.payload}");

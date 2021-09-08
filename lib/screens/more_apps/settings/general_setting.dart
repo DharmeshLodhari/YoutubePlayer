@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
   @override
@@ -295,12 +294,13 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
 
     MainSocketMessageHandler().dispose();
 
+    print("logout===>start");
     await _auth.logOut();
-
+    print("logout===>stop");
     CacheManager().deleteCache(clearAll: true);
     await socketProvider?.close();
 
-    await PushNotificationService().logout();
+    PushNotificationService().logout();
 
     bankAccountBloc.bankAccount = BankAccount();
     dashboardBloc.index = 0;
@@ -310,7 +310,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     /// clearing all data when user is logout
     if (!_sharedPreferences.getBool("isChecked")) {
       debugPrint("WorkManager cancel");
-      Workmanager().cancelAll();
+      // Workmanager().cancelAll();
       await SecureStorage().clear();
     }
 

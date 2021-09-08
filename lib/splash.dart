@@ -9,6 +9,7 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
@@ -74,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) setState(() {});
     }
     checkConnection();
-
+    AwesomeNotificationService().awesomeNotifications.cancelAll();
     WidgetsFlutterBinding.ensureInitialized();
     super.initState();
   }

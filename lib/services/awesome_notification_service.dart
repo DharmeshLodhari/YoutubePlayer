@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AwesomeNotificationService {
   static final AwesomeNotificationService _notificationService =
@@ -12,6 +14,10 @@ class AwesomeNotificationService {
   factory AwesomeNotificationService() {
     return _notificationService;
   }
+
+  static StreamController<ReceivedAction> _streamController;
+
+  Stream get notificationActionStream => _streamController?.stream;
 
   AwesomeNotificationService._internal();
 
@@ -169,6 +175,14 @@ class AwesomeNotificationService {
     } catch (ERROR) {
       debugPrint("ERROR while initializing notification $ERROR");
     }
+
+    if (_streamController == null) {
+      _streamController = BehaviorSubject<ReceivedAction>();
+
+      _streamController.addStream(awesomeNotifications.actionStream);
+
+      _streamController.stream.listen((receivedNotification) async {});
+    }
   }
 
   void showNudgeNotification({Map<String, dynamic> message}) async {
@@ -217,7 +231,7 @@ class AwesomeNotificationService {
     notification['type'] = message['data']['type'];
     notification['notification_id'] = id.toString();
 
-    await awesomeNotifications.cancelAll();
+    //  await awesomeNotifications.cancelAll();
 
     if (notification.containsKey("image") &&
         notification['image'] != "" &&

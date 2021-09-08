@@ -24,6 +24,12 @@ class CacheManager {
       element.deleteSync(recursive: true);
     });
 
+    /*try {
+      MyGlobals.notificationStream?.cancel();
+    } catch (error) {
+      debugPrint("Subscription Removing :- $error");
+    }
+*/
     await ChatMessageHandler().deleteChatMessages();
     await ChatUserManager().clearChatUsers();
     await ConnectionListManager().clearConnections();

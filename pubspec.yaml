@@ -89,6 +89,7 @@ dependencies:
   extended_text_field: ^5.0.4
   workmanager: ^0.3.0
   receive_sharing_intent: ^1.3.2
+  rxdart: ^0.25.0
 
 
 

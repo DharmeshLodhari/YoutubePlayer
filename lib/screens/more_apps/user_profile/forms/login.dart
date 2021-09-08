@@ -551,7 +551,7 @@ class _UserLoginState extends State<UserLogin> {
 
           backgroundFetchBloc.isAllowed = true;
 
-          // startWorkManager();
+          //  startWorkManager();
 
           Navigator.of(context).pushNamedAndRemoveUntil(
             "/dashboard",

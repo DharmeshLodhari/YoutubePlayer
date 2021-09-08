@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 MyGlobals myGlobals = MyGlobals();
@@ -9,8 +11,13 @@ class MyGlobals {
 
   static final MyGlobals _myGlobals = MyGlobals._internal();
   static GlobalKey _scaffoldKey = GlobalKey();
+  static StreamSubscription _notificationStream;
 
   static GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+
+  static set notificationStream(StreamSubscription value) {
+    _notificationStream = value;
+  }
 
   factory MyGlobals() {
     return _myGlobals;
@@ -19,4 +26,6 @@ class MyGlobals {
   GlobalKey get scaffoldKey => _scaffoldKey;
 
   GlobalKey get navigationKey => _navKey;
+
+  static StreamSubscription get notificationStream => _notificationStream;
 }
