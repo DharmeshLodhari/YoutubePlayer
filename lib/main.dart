@@ -177,8 +177,8 @@ void main() async {
             value: ConnectionListBloc(),
           ),
 
-          ChangeNotifierProvider<BackgroundFetchBloc>.value(
-            value: BackgroundFetchBloc(),
+          ChangeNotifierProvider<BackgroundFetchStopBloc>.value(
+            value: BackgroundFetchStopBloc(),
           ),
 
           ChangeNotifierProvider<TaxiBloc>.value(

@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
@@ -19,6 +20,7 @@ import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -156,16 +158,56 @@ class _ConnectionListState extends State<ConnectionList> {
   //   );
   // }
   Widget getRefreshIndicator() {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-        refresh: CircularLoadingIndicator(),
+    return StreamBuilder<bool>(
+        initialData: false,
+        stream: ChatMessageSynchronizer().getChatMessageFetchingStream,
+        builder: (context, snapshot) {
+          return Stack(
+            children: [
+              IgnorePointer(
+                ignoring: snapshot.data,
+                child: SmartRefresher(
+                  enablePullDown: true,
+                  header: WaterDropHeader(
+                    complete: Container(),
+                    waterDropColor: navyBlue,
+                    refresh: CircularLoadingIndicator(),
+                  ),
+                  controller: _refreshController,
+                  onRefresh: refreshList,
+                  child: _buildConnectionsList(),
+                ),
+              ),
+              if (snapshot.data) showFetchingMessageUI()
+            ],
+          );
+        });
+  }
+
+  Widget showFetchingMessageUI() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 8,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18), color: navyBlue),
+            child: JumpingText(
+              'Updating Messages ...',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400),
+            ),
+          )
+        ],
       ),
-      controller: _refreshController,
-      onRefresh: refreshList,
-      child: _buildConnectionsList(),
     );
   }
 

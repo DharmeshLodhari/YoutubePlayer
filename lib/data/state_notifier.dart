@@ -153,7 +153,7 @@ class RefreshBlocForConnectionDashboard extends ChangeNotifier {
   }
 }
 
-class BackgroundFetchBloc extends ChangeNotifier {
+class BackgroundFetchStopBloc extends ChangeNotifier {
   bool _isAllowed = true;
 
   bool get isAllowed => _isAllowed;

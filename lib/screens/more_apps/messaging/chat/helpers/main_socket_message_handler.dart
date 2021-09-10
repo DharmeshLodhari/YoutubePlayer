@@ -60,7 +60,7 @@ class MainSocketMessageHandler {
     Map<String, dynamic> messageData = jsonDecode(message);
 
     MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-        myGlobals.scaffoldKey.currentContext,
+        myGlobals.navigationKey.currentContext,
         listen: false);
 
     mainSocketProvider.removeFromTheQueue(message: message);
@@ -73,7 +73,7 @@ class MainSocketMessageHandler {
             messageData.containsKey("conversation_id")) {
           MainSocketProvider mainSocketProvider =
               Provider.of<MainSocketProvider>(
-                  myGlobals.scaffoldKey.currentContext,
+                  myGlobals.navigationKey.currentContext,
                   listen: false);
 
           String conversationId = (messageData.containsKey("conversation")
@@ -602,9 +602,10 @@ class MainSocketMessageHandler {
 
     showUserLogoutCard(context: myGlobals.navigationKey.currentContext);
 
-    BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
-        myGlobals.navigationKey.currentContext,
-        listen: false);
+    BackgroundFetchStopBloc backgroundFetchBloc =
+        Provider.of<BackgroundFetchStopBloc>(
+            myGlobals.navigationKey.currentContext,
+            listen: false);
 
     backgroundFetchBloc.isAllowed = false;
 

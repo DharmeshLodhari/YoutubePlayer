@@ -544,8 +544,8 @@ class _UserLoginState extends State<UserLogin> {
           initializeShoppingCart();
           await clearDBMessages();
 
-          BackgroundFetchBloc backgroundFetchBloc =
-              Provider.of<BackgroundFetchBloc>(
+          BackgroundFetchStopBloc backgroundFetchBloc =
+              Provider.of<BackgroundFetchStopBloc>(
                   myGlobals.navigationKey.currentContext,
                   listen: false);
 

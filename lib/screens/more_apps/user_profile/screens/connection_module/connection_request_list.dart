@@ -92,16 +92,20 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     return Scaffold(
       key: _scaffoldContactRequestListKey,
       backgroundColor: lightGrey,
-      body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _buildFriendsList()),
+      body: _buildScaffoldBody(),
     );
+  }
+
+  Widget _buildScaffoldBody() {
+    return SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: _buildFriendsList());
   }
 
   Widget _buildFriendsList() {
@@ -150,7 +154,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             .listContactRequests(next, previous)
             .catchError((error) {
           debugPrint("ERROR:- $error");
-        //  return;
+          //  return;
         });
         if (result == null) return;
         count = result['count'];

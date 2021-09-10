@@ -90,6 +90,7 @@ class _DashboardState extends State<Dashboard> {
     PushNotificationService().initialize();
     ListRefresher().initialize();
     getFeeStructureData();
+
     fetchConnections();
 
     // checkNotificationToNavigate();
@@ -102,8 +103,12 @@ class _DashboardState extends State<Dashboard> {
         myGlobals.navigationKey.currentContext,
         listen: false);
 
-    BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
-        myGlobals.navigationKey.currentContext);
+    BackgroundFetchStopBloc backgroundFetchStopBloc =
+        Provider.of<BackgroundFetchStopBloc>(
+            myGlobals.navigationKey.currentContext);
+
+    /// to show updating Messaging in connection list
+    ChatMessageSynchronizer().updateFetchStream(isFetching: true);
 
     int result = await connectionListBloc.getConnectionsCount();
     debugPrint("CONNECTION LIST LENGTH:- $result");
@@ -114,7 +119,7 @@ class _DashboardState extends State<Dashboard> {
       debugPrint("CONNECTION LIST LENGTH:- $result");
 
       for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-        if (backgroundFetchBloc.isAllowed) {
+        if (backgroundFetchStopBloc.isAllowed) {
           await ChatMessageSynchronizer().getMessages(
               chatConversation: connectionListBloc.connectionUsers[i],
               isFirstTime: true);
@@ -126,6 +131,7 @@ class _DashboardState extends State<Dashboard> {
       await ConnectionSynchronizer().update();
       await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
     }
+    ChatMessageSynchronizer().updateFetchStream(isFetching: false);
   }
 
   void initializeListener() {

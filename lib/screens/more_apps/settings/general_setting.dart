@@ -283,9 +283,10 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   }
 
   void logoutUser() async {
-    BackgroundFetchBloc backgroundFetchBloc = Provider.of<BackgroundFetchBloc>(
-        myGlobals.navigationKey.currentContext,
-        listen: false);
+    BackgroundFetchStopBloc backgroundFetchBloc =
+        Provider.of<BackgroundFetchStopBloc>(
+            myGlobals.navigationKey.currentContext,
+            listen: false);
 
     backgroundFetchBloc.isAllowed = false;
 

@@ -13,6 +13,7 @@ import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ChatMessageSynchronizer {
   static final ChatMessageSynchronizer _chatMessageSynchronizer =
@@ -29,6 +30,15 @@ class ChatMessageSynchronizer {
       StreamController<bool>.broadcast();
 
   Stream<bool> get getChatMessageStream => _chatMessageStream.stream;
+
+  StreamController<bool> _chatMessageFetchingStream = BehaviorSubject<bool>();
+
+  Stream<bool> get getChatMessageFetchingStream =>
+      _chatMessageFetchingStream.stream;
+
+  void updateFetchStream({bool isFetching}) {
+    _chatMessageFetchingStream.sink.add(isFetching);
+  }
 
   factory ChatMessageSynchronizer() {
     return _chatMessageSynchronizer;
@@ -234,5 +244,6 @@ class ChatMessageSynchronizer {
   void dispose() {
     _chatMessageCountStream.close();
     _chatMessageStream.close();
+    _chatMessageFetchingStream.close();
   }
 }
