@@ -27,7 +27,8 @@ class AppConfig {
     }
 
     if (appType == AppType.DEVELOPMENT) {
-      baseUrl = "https://devapi.slydo.co";
+      // baseUrl = "https://devapi.slydo.co";
+      baseUrl = "https://api.slydo.co";
       localHost = "https://127.0.0.1:8080";
       gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
       socketUrl = "wss://devchat.slydo.co/ws/main";

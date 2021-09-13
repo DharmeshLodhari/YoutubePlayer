@@ -9,6 +9,10 @@ import 'get_connection_list_for_sharing.dart';
 
 class ShareInChat {
   Future<String> selectUsersToShare(BuildContext context) async {
+    return shareSheet(context);
+  }
+
+  Future<String> shareSheet(BuildContext context) async {
     return await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,

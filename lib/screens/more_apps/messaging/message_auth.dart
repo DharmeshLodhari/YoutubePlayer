@@ -32,7 +32,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> sendSocketMessage(Map data, File media, {File poster}) async {
-    var url = AppConfig.baseUrl + "/api/v1/chat/create/";
+    var url = AppConfig.chatUrl + "/api/v1/chat/create/";
     // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
@@ -82,7 +82,7 @@ class MessageAuth extends AuthService {
 
   Future<bool> sendReplyMessage(
       {String messageId, String data, String conversationId}) async {
-    var url = AppConfig.baseUrl +
+    var url = AppConfig.chatUrl +
         "/api/v1/chat/reply-chat-message/$messageId/$conversationId/";
     var headers = await getAuthHeaders();
     debugPrint(
@@ -228,7 +228,7 @@ class MessageAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/chat/messages/" + conversionId + "/";
+      url = AppConfig.chatUrl + "/api/v1/chat/messages/" + conversionId + "/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -268,7 +268,7 @@ class MessageAuth extends AuthService {
 
   // Get status of the user you are chatting with
   Future<Map> getChatUserStatus(String id) async {
-    var url = AppConfig.baseUrl +
+    var url = AppConfig.chatUrl +
         "/api/v1/chat/retrieve-user-chat-status/" +
         id +
         "/";
@@ -700,7 +700,7 @@ class MessageAuth extends AuthService {
   }
 
   void sendStopNudge({Map<String, dynamic> dataToSend}) async {
-    var url = AppConfig.baseUrl + "/api/v1/chat/conversation/stop-nudge/";
+    var url = AppConfig.chatUrl + "/api/v1/chat/conversation/stop-nudge/";
     var headers = await getAuthHeaders();
 
     var response =
@@ -721,7 +721,7 @@ class MessageAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/chat/fetch-missed-messages/";
+      url = AppConfig.chatUrl + "/api/v1/chat/fetch-missed-messages/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -758,7 +758,7 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>> acknowledgeMessagesToServer(
       {List dataToBeSent}) async {
-    var url = AppConfig.baseUrl + "/api/v1/chat/acknowledge-messages/";
+    var url = AppConfig.chatUrl + "/api/v1/chat/acknowledge-messages/";
 
     debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -804,7 +804,7 @@ class MessageAuth extends AuthService {
 
   Future<Map<String, dynamic>> readByRecipientToServer(
       {Map<String, dynamic> dataToBeSent}) async {
-    var url = AppConfig.baseUrl +
+    var url = AppConfig.chatUrl +
         "/api/v1/chat/acknowledge-message-read-by-recipient/";
 
     debugPrint("URL:- $url");

@@ -41,7 +41,9 @@ class ShareManager {
       print("ReceiveSharedMedia1:" +
           (value?.map((f) => f.path)?.join(",") ?? ""));
       _sharedFiles = value;
-      initializeNavigationTimer();
+      if (_sharedFiles != null && _sharedFiles.isNotEmpty) {
+        initializeNavigationTimer();
+      }
     }, onError: (err) {
       print("getIntentDataStream error: $err");
     });
@@ -51,7 +53,9 @@ class ShareManager {
       print("ReceiveSharedMedia2:" +
           (value?.map((f) => f.path)?.join(",") ?? ""));
       _sharedFiles = value;
-      initializeNavigationTimer();
+      if (_sharedFiles != null && _sharedFiles.isNotEmpty) {
+        initializeNavigationTimer();
+      }
     });
   }
 
@@ -62,7 +66,9 @@ class ShareManager {
         ReceiveSharingIntent.getTextStream().listen((String value) {
       print("ReceiveSharedText1: $value");
       _sharedText = value;
-      initializeNavigationTimer();
+      if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
+        initializeNavigationTimer();
+      }
     }, onError: (err) {
       print("getLinkStream error: $err");
     });
@@ -71,7 +77,9 @@ class ShareManager {
     ReceiveSharingIntent.getInitialText().then((String value) {
       print("ReceiveSharedText2: $value");
       _sharedText = value;
-      initializeNavigationTimer();
+      if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
+        initializeNavigationTimer();
+      }
     });
   }
 

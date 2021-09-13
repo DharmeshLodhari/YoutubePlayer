@@ -466,7 +466,7 @@ class UserAuth extends AuthService {
 
   Future<List> fetchMissedContact(
       {String createdAt, String conversationId}) async {
-    var url = AppConfig.baseUrl + "/api/v1/chat/fetch-missed-conversations/";
+    var url = AppConfig.chatUrl + "/api/v1/chat/fetch-missed-conversations/";
 
     var headers = await getAuthHeaders();
     debugPrint("URL:- $url");

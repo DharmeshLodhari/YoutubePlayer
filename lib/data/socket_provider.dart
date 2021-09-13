@@ -59,10 +59,10 @@ class MainSocketProvider extends ChangeNotifier {
 
   /// ping server variables
   static Timer _timerForPingServer;
-  static Duration _timePeriodForSecond = Duration(seconds: 20);
+  static Duration _timePeriodForSecond = Duration(seconds: 5);
   static DateTime _lastSent = DateTime.now();
   static DateTime _lastReceive = DateTime.now();
-  static Duration _socketTimeout = Duration(seconds: 19);
+  static Duration _socketTimeout = Duration(seconds: 4);
 
   set currentUser(User value) {
     _currentUser = value;
@@ -135,6 +135,7 @@ class MainSocketProvider extends ChangeNotifier {
   void ping() async {
     var currentTime = DateTime.now();
 
+    /// only ping server when there is no user activity is done with in _socketTimeout time
     if (currentTime.difference(_lastSent) > _socketTimeout &&
         currentTime.difference(_lastReceive) > _socketTimeout) {
       var data = {
@@ -162,11 +163,13 @@ class MainSocketProvider extends ChangeNotifier {
           _lastSent = DateTime.now();
           print("ping Done!!");
           _isConnected = false;
+          ChatMessageSynchronizer().updateFetchStream(isFetching: true);
 
           ///TODO: UNCOMMENT THIS WHEN IT IS DONE
           await ConnectionSynchronizer().update();
           // await ChatMessageSynchronizer().updateMessages();
           await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
+          ChatMessageSynchronizer().updateFetchStream(isFetching: false);
         });
       }
     }
