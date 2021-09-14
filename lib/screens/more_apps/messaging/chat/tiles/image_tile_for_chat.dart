@@ -272,7 +272,9 @@ class ImageTileForChat extends StatelessWidget {
     new NetworkImage(url).resolve(new ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo info, bool _) {
-          completer.complete(info.image);
+          if (!completer.isCompleted) {
+            completer.complete(info.image);
+          }
         },
       ),
     );

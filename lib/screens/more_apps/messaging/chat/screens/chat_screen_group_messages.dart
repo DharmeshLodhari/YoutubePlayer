@@ -2366,12 +2366,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 child: Scrollbar(
                   radius: Radius.circular(12),
                   thickness: 2.5,
-                  child: ExtendedTextField(
+                  child: TextFormField(
                     controller: messageController,
                     textInputAction: TextInputAction.newline,
                     keyboardType: TextInputType.multiline,
                     focusNode: messageFocus,
-                    onSubmitted: (value) {
+                    onFieldSubmitted: (value) {
                       getSendMessageAction();
                     },
                     cursorColor: blackFont,
