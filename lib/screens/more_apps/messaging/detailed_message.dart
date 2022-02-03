@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -26,8 +27,8 @@ class DetailedMessage extends StatefulWidget {
 class _DetailedMessageState extends State<DetailedMessage> {
   bool isLoading = true;
   var id;
-  Message message;
-  UserBloc userBloc;
+  late Message message;
+  late UserBloc userBloc;
 
   _DetailedMessageState({this.id});
 
@@ -69,7 +70,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -92,7 +93,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context).message,
+        AppLocalization.of(context)!.message,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -128,7 +129,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
         children: <Widget>[
           Expanded(
             child: Text(
-              message.subject,
+              message.subject!,
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.bold,
@@ -169,7 +170,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   Widget getRecipientWidget() {
     return Text(
-      AppLocalization.of(context).to + ": ${message.recipient}",
+      AppLocalization.of(context)!.to + ": ${message.recipient}",
       maxLines: 1,
       softWrap: false,
       overflow: TextOverflow.fade,
@@ -198,7 +199,8 @@ class _DetailedMessageState extends State<DetailedMessage> {
         },
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: message.senderAvatar,
+            errorWidget: imageErrorWidget,
+            imageUrl: message.senderAvatar!,
             height: 48,
             width: 48,
             colorBlendMode: BlendMode.darken,
@@ -215,7 +217,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
 
   getSender() {
     return Text(
-      message.sender,
+      message.sender!,
       style: TextStyle(
         color: blackFont,
         fontSize: 14,
@@ -235,10 +237,10 @@ class _DetailedMessageState extends State<DetailedMessage> {
     bool isRecipient = userBloc.user.userName == message.recipient;
 
     IconData icon = isRecipient
-        ? message.isArchivedByRecipient
+        ? message.isArchivedByRecipient!
             ? SlydoAppIcon.archive
             : SlydoAppIcon.unarchive
-        : message.isArchivedBySender
+        : message.isArchivedBySender!
             ? SlydoAppIcon.archive
             : SlydoAppIcon.unarchive;
 
@@ -250,20 +252,20 @@ class _DetailedMessageState extends State<DetailedMessage> {
       ),
       onPressed: () async {
         var action = isRecipient
-            ? message.isArchivedByRecipient
+            ? message.isArchivedByRecipient!
                 ? "unarchive"
                 : "archive"
-            : message.isArchivedBySender
+            : message.isArchivedBySender!
                 ? "unarchive"
                 : "archive";
-        await _messageAuth.updateMessage(message.id, action);
+        await _messageAuth.updateMessage(message.id!, action);
         setState(() {
           if (isRecipient) {
             message.isArchivedByRecipient =
-                message.isArchivedByRecipient ? false : true;
+                message.isArchivedByRecipient! ? false : true;
           } else {
             message.isArchivedBySender =
-                message.isArchivedBySender ? false : true;
+                message.isArchivedBySender! ? false : true;
           }
         });
       },
@@ -277,10 +279,10 @@ class _DetailedMessageState extends State<DetailedMessage> {
     // we are showing and modifying star icon by message's isStarredBySender property
     bool isRecipient = userBloc.user.userName == message.recipient;
     Color iconColor = isRecipient
-        ? message.isStarredByRecipient
+        ? message.isStarredByRecipient!
             ? starYellow
             : greyBorderColor
-        : message.isStarredBySender
+        : message.isStarredBySender!
             ? starYellow
             : greyBorderColor;
     return IconButton(
@@ -290,20 +292,20 @@ class _DetailedMessageState extends State<DetailedMessage> {
       ),
       onPressed: () async {
         var action = isRecipient
-            ? message.isStarredByRecipient
-                ? AppLocalization.of(context).unstar
-                : AppLocalization.of(context).star
-            : message.isStarredBySender
-                ? AppLocalization.of(context).unstar
-                : AppLocalization.of(context).star;
-        await _messageAuth.updateMessage(message.id, action);
+            ? message.isStarredByRecipient!
+                ? AppLocalization.of(context)!.unstar
+                : AppLocalization.of(context)!.star
+            : message.isStarredBySender!
+                ? AppLocalization.of(context)!.unstar
+                : AppLocalization.of(context)!.star;
+        await _messageAuth.updateMessage(message.id!, action);
         setState(() {
           if (isRecipient) {
             message.isStarredByRecipient =
-                message.isStarredByRecipient ? false : true;
+                message.isStarredByRecipient! ? false : true;
           } else {
             message.isStarredBySender =
-                message.isStarredBySender ? false : true;
+                message.isStarredBySender! ? false : true;
           }
         });
       },
@@ -354,7 +356,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
         ? CurvedButton(
             backgroundColor: navyBlue,
             textColor: Colors.white,
-            text: AppLocalization.of(context).reply,
+            text: AppLocalization.of(context)!.reply,
             onPressed: () {
               Navigator.of(context).pushNamed('/compose_message', arguments: {
                 'isReply': 1,

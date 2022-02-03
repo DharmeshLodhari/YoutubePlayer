@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 class SelectAddressForTaxi extends StatefulWidget {
-  final void Function(Map<String, dynamic> place) updateSelectedDestination;
-  final void Function(bool selectAddress) toggleAddressSelection;
+  final void Function(Map<String, dynamic> place)? updateSelectedDestination;
+  final void Function(bool selectAddress)? toggleAddressSelection;
 
   SelectAddressForTaxi(
       {this.updateSelectedDestination, this.toggleAddressSelection});
@@ -19,8 +19,8 @@ class SelectAddressForTaxi extends StatefulWidget {
 class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
   double _initialSheetChildSize = 0.9;
 
-  TextEditingController chooseDestinationPointController;
-  TextEditingController chooseStartingPointController;
+  TextEditingController? chooseDestinationPointController;
+  TextEditingController? chooseStartingPointController;
 
   List<Map<String, dynamic>> places = [
     {"name": "Agege Post Office, Agege,", "place": "Lagos"},
@@ -55,7 +55,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
         NotificationListener<DraggableScrollableNotification>(
           onNotification: (DraggableScrollableNotification notification) {
             return;
-          },
+          } as bool Function(DraggableScrollableNotification)?,
           child: DraggableScrollableSheet(
             initialChildSize: _initialSheetChildSize,
             maxChildSize: _initialSheetChildSize,
@@ -74,7 +74,7 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
     );
   }
 
-  Widget getSearchDestination({ScrollController scrollController}) {
+  Widget getSearchDestination({ScrollController? scrollController}) {
     return Container(
         padding: EdgeInsets.only(left: 16, right: 16, top: 8),
         child: Column(
@@ -148,8 +148,8 @@ class _SelectAddressForTaxiState extends State<SelectAddressForTaxi> {
                       ),
                       subtitle: Text(places[i]["place"]),
                       onTap: () {
-                        widget.updateSelectedDestination(places[i]);
-                        widget.toggleAddressSelection(false);
+                        widget.updateSelectedDestination!(places[i]);
+                        widget.toggleAddressSelection!(false);
                       },
                     ),
                 ],

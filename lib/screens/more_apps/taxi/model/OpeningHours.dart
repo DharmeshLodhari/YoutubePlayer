@@ -1,5 +1,5 @@
 class OpeningHours {
-  bool openNow;
+  bool? openNow;
 
   OpeningHours({this.openNow});
 

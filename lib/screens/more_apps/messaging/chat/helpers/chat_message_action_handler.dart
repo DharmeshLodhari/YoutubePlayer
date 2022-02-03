@@ -5,26 +5,31 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:flutter/material.dart';
 
+/// This Helper is Responsible for getting the chat Message Actions like
+/// Reply Message,
+/// Delete Message,
+/// Edit Message
+/// which is available for that particular type of messsage
 class GetChatMessageActions {
-  String _message;
-  UserBloc _userBloc;
+  String? _message;
+  UserBloc? _userBloc;
 
   GetChatMessageActions();
 
   /// this function will return ChatMessageActions which contains all the action
   /// which available for that kind of message
-  ChatMessageAction getActions({@required String message, UserBloc userBloc}) {
+  ChatMessageAction getActions({required String message, UserBloc? userBloc}) {
     _message = message;
     _userBloc = userBloc;
 
     ChatMessageAction chatMessageAction = ChatMessageAction(message: _message);
 
-    Map<String, dynamic> messageData = jsonDecode(_message);
+    Map<String, dynamic> messageData = jsonDecode(_message!);
 
-    String messageType = messageData["kind"];
+    String? messageType = messageData["kind"];
 
     bool isAuthorPerformingAction =
-        _userBloc.user.userName == messageData["author"];
+        _userBloc!.user.userName == messageData["author"];
 
     switch (messageType) {
       case "text":
@@ -32,56 +37,48 @@ class GetChatMessageActions {
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "image":
         chatMessageAction = _getImageActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "video":
         chatMessageAction = _getVideoActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "audio":
         chatMessageAction = _getAudioActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "transaction":
         chatMessageAction = _getTransactionActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "payment-request":
         chatMessageAction = _getPaymentRequestActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "product":
         chatMessageAction = _getProductActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "service":
         chatMessageAction = _getServiceActions(
             message: _message,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
-        break;
 
       case "user-profile":
         chatMessageAction = _getUserProfileActions(
@@ -103,7 +100,7 @@ class GetChatMessageActions {
 
       case "envelope":
         chatMessageAction = _getEnvelopeActions(
-            message: _message,
+            message: _message!,
             isAuthorPerformingAction: isAuthorPerformingAction);
         return chatMessageAction;
 
@@ -114,7 +111,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getTextMessageActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -129,7 +126,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getImageActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -143,7 +140,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getVideoActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -156,7 +153,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getAudioActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -168,7 +165,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getPaymentRequestActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, bool? isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     chatMessageAction.isReplyable = true;
@@ -177,7 +174,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getTransactionActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, bool? isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     chatMessageAction.isReplyable = true;
@@ -186,7 +183,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getProductActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -198,7 +195,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getServiceActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -210,7 +207,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getUserProfileActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -222,7 +219,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getUserLocationActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -234,7 +231,7 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getGIFImageActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String? message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     if (isAuthorPerformingAction) {
@@ -246,12 +243,12 @@ class GetChatMessageActions {
   }
 
   ChatMessageAction _getEnvelopeActions(
-      {@required String message, bool isAuthorPerformingAction}) {
+      {required String message, required bool isAuthorPerformingAction}) {
     ChatMessageAction chatMessageAction = ChatMessageAction(message: message);
 
     Map<String, dynamic> messageData = jsonDecode(message);
 
-    Map<String, dynamic> data;
+    Map<String, dynamic>? data;
 
     if (messageData['meta_data'] is String) {
       data = jsonDecode(messageData['meta_data']);
@@ -259,7 +256,7 @@ class GetChatMessageActions {
       data = messageData['meta_data'];
     }
 
-    Envelope envelope = Envelope.fromJson(data);
+    Envelope envelope = Envelope.fromJson(data!);
 
     if (isAuthorPerformingAction) {
       if (!envelope.isOpen) {

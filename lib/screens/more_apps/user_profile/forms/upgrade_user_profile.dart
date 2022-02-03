@@ -11,7 +11,6 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../../../utils/colors.dart';
 import '../user_auth.dart';
@@ -24,23 +23,26 @@ class UpgradeUserProfile extends StatefulWidget {
 class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   final _formKey = GlobalKey<FormState>();
 
-  var type = List();
+  var type = [];
   var selectedType;
   var price = "0";
-  List<String> paymentCategories = List();
+  List<String?> paymentCategories = [];
   bool isLoading = true;
   var selectedCategory;
 
-  String businessName;
+  String? businessName;
 
   final _auth = AuthService();
 
   final _upgradeProfileScaffold = GlobalKey<ScaffoldState>();
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
+  bool hideAmountDropDown = false;
+  double? accountBalance;
 
   @override
   void initState() {
+    getAccountBalance();
     fetchCategory();
     setState(() {
       isLoading = true;
@@ -49,8 +51,19 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     super.initState();
   }
 
+  Future<void> getAccountBalance() async {
+    await PaymentAndBankingAuth().getAccountBalance().then((value) {
+      var data = value!;
+      var spendableBalance = data["spendable_balance"];
+
+      debugPrint("spendableBalance $spendableBalance");
+      accountBalance = spendableBalance / 100;
+      if (mounted) setState(() {});
+    });
+  }
+
   void fetchCategory() async {
-    PaymentAndBankingAuth().getPaymentCategory().then((result) {
+    await PaymentAndBankingAuth().getPaymentCategory().then((result) {
       if (mounted) {
         setState(() {
           List categoriesList = result["results"]["data"];
@@ -67,14 +80,26 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     UserAuth().getUserProfileUpgradeDetails().then((result) {
       if (mounted) {
         setState(() {
-          List profileUpgradeTypeAndPrice = result;
+          List profileUpgradeTypeAndPrice = result!;
           profileUpgradeTypeAndPrice.forEach((data) {
             type.add({"name": data["account_type"], "price": data["price"]});
           });
           isLoading = false;
+
+          hideAmountTobePaidDropDown();
         });
       }
     });
+  }
+
+  void hideAmountTobePaidDropDown() {
+    hideAmountDropDown = false;
+    type.forEach((element) {
+      if (element["price"].toString() == "0") {
+        hideAmountDropDown = true;
+      }
+    });
+    setState(() {});
   }
 
   @override
@@ -88,7 +113,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         key: _upgradeProfileScaffold,
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -126,34 +151,42 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         : SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Container(
-              height: MediaQuery.of(context).size.height -
-                  (AppBar().preferredSize.height +
-                      MediaQuery.of(context).padding.top),
-              width: MediaQuery.of(context).size.width,
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
-                  Expanded(
-                    flex: 8,
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          getUpgradeProfileType(),
-                          flexibleSpace(),
-                          getBusinessName(),
-                          flexibleSpace(),
-                          getCategoryField(),
-                          flexibleSpace(),
-                          getAmount(),
-                          flexibleSpace(),
-                          submitButton(),
-                          flexibleSpace(),
-                        ],
-                      ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        getUpgradeProfileType(),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        getBusinessName(),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        getCategoryField(),
+                        !hideAmountDropDown
+                            ? Column(
+                                children: [
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  getAmount(),
+                                ],
+                              )
+                            : Container(),
+                        SizedBox(
+                          height: 48,
+                        ),
+                        submitButton(),
+                        SizedBox(
+                          height: 16,
+                        ),
+                      ],
                     ),
                   ),
-                  flexibleSpace(flex: 2)
                 ],
               ),
             ),
@@ -214,7 +247,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     return CustomizedTextFormField(
       keyboardType: TextInputType.text,
       labelText: "Business name",
-      validator: (val) => val == "" ? "Please enter business name" : null,
+      validator: businessNameValidator,
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -223,6 +256,14 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         }
       },
     );
+  }
+
+  String? businessNameValidator(String data) {
+    if (data == "") {
+      return "Please enter business name";
+    }
+
+    return checkSlydoName(data);
   }
 
   Widget getCategoryField() {
@@ -243,21 +284,21 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
         ),
         hint: Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Text(AppLocalization.of(context).category),
+          child: Text(AppLocalization.of(context)!.category),
         ),
         value: selectedCategory,
-        onChanged: (String value) {
+        onChanged: (String? value) {
           setState(() {
             selectedCategory = value;
           });
         },
-        items: paymentCategories.map((String category) {
+        items: paymentCategories.map((String? category) {
           return DropdownMenuItem<String>(
             value: category,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
               child: Text(
-                category,
+                category!,
                 style: TextStyle(
                     color: blackFont,
                     fontSize: 16,
@@ -279,81 +320,81 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
     );
   }
 
-  void onSubmit() {
+  void onSubmit() async {
+    if (FocusScope.of(context).hasFocus) {
+      FocusScope.of(context).unfocus();
+    }
+
+    await Future.delayed(Duration(milliseconds: 500));
+
     var data = {
       "account_type": selectedType.toString().trim(),
       "business_name": businessName.toString().trim(),
       "default_payment_type": selectedCategory.toString().trim(),
     };
+
     if (validateDropdown()) {
-      if (_formKey.currentState.validate()) {
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              showDialog(
-                  context: context,
-                  builder: (context) =>
-                      Center(child: CircularLoadingIndicator()));
-              UserAuth().upgradeUserProfile(data).then((result) {
-                if (result) {
-                  Toast.show(
-                    "Request sent !! Your Profile Will Be Updated Soon !!",
-                    context,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                  );
+      if (_formKey.currentState!.validate()) {
+        debugPrint("==> ${(int.parse(price) / 100)}");
+        if (accountBalance != null &&
+            accountBalance! > (int.parse(price) / 100)) {
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () async {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        Center(child: CircularLoadingIndicator()));
+                await UserAuth().upgradeUserProfile(data).then((result) async {
+                  if (result) {
+                    await _auth
+                        .authenticate(
+                            userBloc.user.phoneNumber, userBloc.user.password)
+                        .then((newUser) async {
+                      userBloc.user = newUser;
+                      if (mounted) setState(() {});
 
-                  _auth
-                      .authenticate(
-                          userBloc.user.phoneNumber, userBloc.user.password)
-                      .then((newUser) {
-                    if (mounted) {
-                      setState(() {
-                        userBloc.user = newUser;
+                      await UserAuth()
+                          .fetchCustomerProfile(userBloc.user.userName)
+                          .then((user) {
+                        showToast(
+                            message: "Your profile upgrade was successful.");
+
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/profile', arguments: {
+                          "searchedUserName": user.userName,
+                          "index": 0
+                        });
                       });
-                    }
-
-                    UserAuth()
-                        .fetchCustomerProfile(userBloc.user.userName)
-                        .then((user) {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/profile',
-                          arguments: {"searchedUserName": user.userName});
                     });
-                  });
-                } else {
-                  Toast.show(
-                    "Something Went Wrong !!",
-                    context,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                  );
-                }
+                  } else {
+                    Navigator.pop(context);
+                    showToast(message: "Something Went Wrong !!");
+                  }
+                });
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+                _upgradeProfileScaffold.currentState!.showSnackBar(SnackBar(
+                  content: Text(AppLocalization.of(context)!.invalidPassword),
+                ));
               });
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-              _upgradeProfileScaffold.currentState.showSnackBar(SnackBar(
-                content: Text(AppLocalization.of(context).invalidPassword),
-              ));
-            });
+        } else {
+          showToast(
+              message:
+                  "Your slydo wallet does not have enough amount to update your profile !!");
+        }
       }
     }
   }
 
   bool validateDropdown() {
     if (selectedType == null) {
-      Toast.show("Please select account type", context,
-          backgroundColor: blackFont,
-          textColor: Colors.white,
-          gravity: Toast.BOTTOM);
+      showToast(message: "Please select account type");
       return false;
     } else if (selectedCategory == null) {
-      Toast.show("Please select default payment type", context,
-          backgroundColor: blackFont,
-          textColor: Colors.white,
-          gravity: Toast.BOTTOM);
+      showToast(message: "Please select default payment type");
       return false;
     }
 
@@ -399,7 +440,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                     Row(
                       children: [
                         Text(
-                          worldCurrencies[userBloc.user.currency],
+                          worldCurrencies[userBloc.user.currency!]!,
                           style: TextStyle(
                               fontFamily: "Roboto",
                               fontSize: 16,
@@ -407,7 +448,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
                               color: blackFont),
                         ),
                         Text(
-                          price.toString(),
+                          moneyDisplayNormalizer(int.parse(price)),
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

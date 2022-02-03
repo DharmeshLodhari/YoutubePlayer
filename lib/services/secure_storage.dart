@@ -9,7 +9,7 @@ class SecureStorage {
 
   // Check user
   Future<bool> hasUser() async {
-    String userData = await _storage.read(key: "user");
+    String? userData = await _storage.read(key: "user");
     if (userData == null) {
       return false;
     }
@@ -17,14 +17,14 @@ class SecureStorage {
   }
 
   // Write user
-  Future<void> storeUser({SecureUser user}) async {
+  Future<void> storeUser({required SecureUser user}) async {
     String userData = jsonEncode(user.toJson());
     return await _storage.write(key: "user", value: userData);
   }
 
   // Write user
-  Future<void> updateUserPassword({String password}) async {
-    String userData = await _storage.read(key: "user");
+  Future<void> updateUserPassword({String? password}) async {
+    String? userData = await _storage.read(key: "user");
     if (userData == null) {
       return;
     }
@@ -38,7 +38,7 @@ class SecureStorage {
 
   // Read user
   Future<SecureUser> getUser() async {
-    String userData = await _storage.read(key: "user");
+    String? userData = await _storage.read(key: "user");
     if (userData == null) {
       return SecureUser();
     }

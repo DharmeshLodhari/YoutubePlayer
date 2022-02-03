@@ -2,19 +2,18 @@ import 'dart:io';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import 'package:toast/toast.dart';
 
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 
@@ -26,11 +25,37 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldHomeKey =
       new GlobalKey<ScaffoldState>();
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  MainSocketProvider socketProvider;
+  late MainSocketProvider socketProvider;
 
   bool hasMessage = true;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+      SharedPreferences _sharedPreferences;
+
+      _sharedPreferences = await SharedPreferences.getInstance();
+      bool isAppTutorialDone = false;
+      try {
+        isAppTutorialDone =
+            _sharedPreferences.getBool('isAppTutorialDone') ?? false;
+      } catch (error) {
+        isAppTutorialDone = false;
+      }
+
+      if (!isAppTutorialDone) {
+        bool result =
+            await _sharedPreferences.setBool("isAppTutorialDone", true);
+        debugPrint("result:- $result");
+        await Future.delayed(Duration(milliseconds: 1500)).then((value) {
+          AppTutorialController().showTutorial(context);
+        });
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +74,10 @@ class _HomeState extends State<Home> {
           color: Colors.white,
           child: Stack(
             children: <Widget>[
-              backgroundScreen(),
+              _backgroundScreen(),
               Column(
                 children: [
-                  Expanded(child: foregroundScreen()),
+                  Expanded(child: _foregroundScreen()),
                 ],
               ),
             ],
@@ -62,10 +87,9 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget backgroundScreen() {
+  Widget _backgroundScreen() {
     if (userBloc.user.userAbout == null ||
-        userBloc.user.userAbout.wallpaper == null ||
-        userBloc.user.userAbout.wallpaper == "") {
+        userBloc.user.userAbout!.wallpaper == "") {
       return Container(
         child: Image.asset(
           "assets/images/home_screen_background.png",
@@ -78,19 +102,23 @@ class _HomeState extends State<Home> {
     return ClipRRect(
       borderRadius: new BorderRadius.vertical(
           bottom: new Radius.elliptical(100.0.w, 50.0)),
-      child: CachedNetworkImage(
-        imageUrl: userBloc.user.userAbout.wallpaper,
-        fit: BoxFit.cover,
+      child: Container(
+        color: navyBlue,
         width: 100.0.w,
         height: 33.0.h,
-        color: blackFont.withOpacity(0.4),
-        colorBlendMode: BlendMode.darken,
-        filterQuality: FilterQuality.high,
+        child: CachedNetworkImage(
+          imageUrl: userBloc.user.userAbout!.wallpaper,
+          fit: BoxFit.cover,
+          color: blackFont.withOpacity(0.4),
+          colorBlendMode: BlendMode.darken,
+          filterQuality: FilterQuality.high,
+          errorWidget: wallpaperErrorWidget,
+        ),
       ),
     );
   }
 
-  Widget foregroundScreen() {
+  Widget _foregroundScreen() {
     return Container(
       padding: EdgeInsets.only(
         left: 16,
@@ -107,11 +135,11 @@ class _HomeState extends State<Home> {
                         height: 10,
                       )
                     : flexibleSpace(),
-                appBar(),
+                _appBar(),
                 flexibleSpace(flex: 3),
-                displayUserInfo(),
+                _displayUserInfo(),
                 flexibleSpace(),
-                displayPaymentButtons(),
+                _displayPaymentButtons(),
               ],
             ),
           ),
@@ -121,24 +149,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  String getGreetingMessage() {
-    TimeOfDay currentTime = TimeOfDay.now();
-
-    if (currentTime.hour >= 6 &&
-        (currentTime.hour <= 11 && currentTime.minute <= 59)) {
-      return "Good morning,";
-    } else if (currentTime.hour >= 12 &&
-        (currentTime.hour <= 16 && currentTime.minute <= 59)) {
-      return "Good afternoon,";
-    } else if (currentTime.hour >= 17 &&
-        (currentTime.hour <= 19 && currentTime.minute <= 59)) {
-      return "Good evening,";
-    } else {
-      return "Good evening,";
-    }
-  }
-
-  Widget appBar() {
+  Widget _appBar() {
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
@@ -153,7 +164,7 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(
-            userBloc.user.displayName(),
+            userBloc.user.displayName()!,
             style: TextStyle(
               fontSize: 14,
             ),
@@ -161,15 +172,15 @@ class _HomeState extends State<Home> {
         ],
       ),
       actions: <Widget>[
-        scanQRBtn(),
+        _scanQRBtn(),
         SizedBox(
           width: 8.0,
         ),
-        chatBtn(),
+        _chatBtn(),
         SizedBox(
           width: 8.0,
         ),
-        messageBtn(),
+        _messageBtn(),
         SizedBox(
           width: 4.0,
         ),
@@ -177,9 +188,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget chatBtn() {
+  Widget _chatBtn() {
     return Stack(
-      overflow: Overflow.visible,
+      key: tutorialChatMessageKey,
+      clipBehavior: Clip.none,
       children: [
         Column(
           children: [
@@ -240,8 +252,9 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget scanQRBtn() {
+  Widget _scanQRBtn() {
     return SizedBox(
+      key: tutorialScanQrCodeKey,
       height: 34,
       width: 34,
       child: InkWell(
@@ -265,9 +278,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget messageBtn() {
+  Widget _messageBtn() {
     return Stack(
-      overflow: Overflow.visible,
+      key: tutorialMessageKey,
+      clipBehavior: Clip.none,
       children: [
         Column(
           children: [
@@ -300,7 +314,7 @@ class _HomeState extends State<Home> {
             stream: socketProvider.socketStream,
             initialData: null,
             builder: (context, snapshot) {
-              if (snapshot?.error == false) {
+              if (snapshot.error == false) {
                 return Container();
               }
               if (snapshot.hasData) {
@@ -323,8 +337,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget displayUserInfo() {
-    Color borderColor = getUserTypeColorByType(type: userBloc.user.type);
+  Widget _displayUserInfo() {
+    Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
 
     return GestureDetector(
       child: CustomBoxShadow(
@@ -339,6 +353,7 @@ class _HomeState extends State<Home> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
+                  key: tutorialUserProfileDetailKey,
                   dense:
                       MediaQuery.of(context).size.height > 600 ? false : true,
                   contentPadding:
@@ -358,19 +373,20 @@ class _HomeState extends State<Home> {
                           border: Border.all(color: borderColor, width: 2)),
                       child: ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl: userBloc.user.avatar,
+                          imageUrl: userBloc.user.avatar!,
                           fit: BoxFit.fill,
+                          errorWidget: imageErrorWidget,
                         ),
                       ),
                     ),
                   ),
                   title: Text(
-                    userBloc.user.displayName(),
+                    userBloc.user.displayName()!,
                     maxLines: 1,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                   subtitle: Text(
-                    userBloc.user.userName,
+                    userBloc.user.userName!,
                     maxLines: 1,
                     style: TextStyle(fontSize: 14),
                   ),
@@ -386,13 +402,15 @@ class _HomeState extends State<Home> {
                   height: 1,
                 ),
                 Container(
+                    key: tutorialQrCodeKey,
                     padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
                     child: CachedNetworkImage(
                       height: MediaQuery.of(context).size.width / 1.7,
                       width: MediaQuery.of(context).size.width / 1.7,
-                      imageUrl: userBloc.user.qrCode,
+                      imageUrl: userBloc.user.qrCode!,
                       colorBlendMode: BlendMode.darken,
                       fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
                       filterQuality: FilterQuality.high,
                       placeholder: (context, url) => Center(
                         child: CircularLoadingIndicator(),
@@ -420,13 +438,13 @@ class _HomeState extends State<Home> {
         //  MainSocketMessageHandler().logoutUser();
 
         //  showSwipeHintCard(context: context);
-        // showHoldHintCard(context: context);
-        // showUserLogoutCard(context: context);
+        //  showHoldHintCard(context: context);
+        //  showUserLogoutCard(context: context);
       },
     );
   }
 
-  Widget displayPaymentButtons() {
+  Widget _displayPaymentButtons() {
     return CustomBoxShadow(
       child: Card(
         elevation: 0,
@@ -441,8 +459,9 @@ class _HomeState extends State<Home> {
           child: Row(
             children: <Widget>[
               Expanded(
+                key: tutorialRequestPaymentKey,
                 child: Container(
-                  child: requestPaymentButton(),
+                  child: _requestPaymentButton(),
                 ),
               ),
               Container(
@@ -451,8 +470,9 @@ class _HomeState extends State<Home> {
                 height: 50,
               ),
               Expanded(
+                key: tutorialSendPaymentKey,
                 child: Container(
-                  child: sendPaymentButton(),
+                  child: _sendPaymentButton(),
                 ),
               ),
             ],
@@ -462,7 +482,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget requestPaymentButton() {
+  Widget _requestPaymentButton() {
     return Theme(
       data: Theme.of(context).copyWith(
         splashColor: Colors.transparent,
@@ -506,7 +526,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget sendPaymentButton() {
+  Widget _sendPaymentButton() {
     return Theme(
       data: Theme.of(context).copyWith(
         splashColor: Colors.white,
@@ -549,35 +569,26 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget displayQRCodeButton() {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: InkWell(
-        onTap: () {
-          Connectivity().checkConnectivity().then((value) {
-            var connectionResult = value;
-            if (connectionResult == ConnectivityResult.wifi ||
-                connectionResult == ConnectivityResult.mobile) {
-              Navigator.of(context)
-                  .pushNamed('/scan-qr', arguments: {'isRequest': false});
-            } else {
-              Toast.show(
-                AppLocalization.of(context).internetConnectionNotAvailable,
-                context,
-                gravity: Toast.BOTTOM,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-              );
-            }
-          });
-        },
-        child: Image.asset(
-          'assets/images/qr_code.png',
-          height: 24.0,
-          width: 24.0,
-          color: Colors.white,
-        ),
-      ),
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (mounted) setState(() {});
+  }
+
+  String getGreetingMessage() {
+    TimeOfDay currentTime = TimeOfDay.now();
+
+    if (currentTime.hour >= 6 &&
+        (currentTime.hour <= 11 && currentTime.minute <= 59)) {
+      return "Good morning,";
+    } else if (currentTime.hour >= 12 &&
+        (currentTime.hour <= 16 && currentTime.minute <= 59)) {
+      return "Good afternoon,";
+    } else if (currentTime.hour >= 17 &&
+        (currentTime.hour <= 19 && currentTime.minute <= 59)) {
+      return "Good evening,";
+    } else {
+      return "Good evening,";
+    }
   }
 }

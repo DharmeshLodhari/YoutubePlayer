@@ -1,10 +1,10 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/PartialMusicItem.dart';
 import 'music_auth.dart';
@@ -46,9 +46,10 @@ class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -62,7 +63,7 @@ class _SpecificCategoryMusicListState extends State<SpecificCategoryMusicList> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),

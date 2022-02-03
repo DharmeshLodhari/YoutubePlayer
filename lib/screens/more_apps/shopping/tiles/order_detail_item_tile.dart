@@ -10,9 +10,9 @@ import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
 class OrderTileForProduct extends StatefulWidget {
-  Product item;
-  String type;
-  int qty;
+  Product? item;
+  String? type;
+  int? qty;
 
   OrderTileForProduct(Map<String, dynamic> item) {
     type = item["type"];
@@ -26,8 +26,8 @@ class OrderTileForProduct extends StatefulWidget {
 }
 
 class _OrderTileForProductState extends State<OrderTileForProduct> {
-  Product product;
-  int qty;
+  Product? product;
+  int? qty;
 
   _OrderTileForProductState({this.product, this.qty});
 
@@ -85,13 +85,14 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
         child: CachedNetworkImage(
           height: 48,
           width: 48,
-          imageUrl: product.serverImages.isNotEmpty
-              ? product.serverImages.first
-              : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          imageUrl: product!.serverImages!.isNotEmpty
+              ? product!.serverImages!.first!
+              : defaultImage,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fitWidth,
+          errorWidget: productAndServiceErrorWidget,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => product.serverImages.isNotEmpty
+          placeholder: (context, url) => product!.serverImages!.isNotEmpty
               ? Icon(Icons.widgets)
               : CircularLoadingIndicator(),
         ),
@@ -101,7 +102,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
 
   Widget getTitle() {
     return Text(
-      "${product.name}",
+      "${product!.name}",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -114,7 +115,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            worldCurrencies[product.currency],
+            worldCurrencies[product!.currency!]!,
             style: TextStyle(
                 color: blackFont,
                 fontFamily: "Roboto",
@@ -122,7 +123,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
                 fontSize: 14),
           ),
           Text(
-            moneyDisplayNormalizer(int.parse(product.price.toString())),
+            moneyDisplayNormalizer(int.parse(product!.price.toString())),
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
@@ -135,14 +136,14 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
   }
 
   String getProductPrice() {
-    if (product.price.toString().length > 5) {
-      return product.price.toString().substring(0, 5) + "..";
+    if (product!.price.toString().length > 5) {
+      return product!.price.toString().substring(0, 5) + "..";
     }
-    return product.price.toString();
+    return product!.price.toString();
   }
 
   String getTotalPrice() {
-    var price = qty * int.parse(product.price);
+    var price = qty! * int.parse(product!.price!);
     return price.toString();
   }
 
@@ -164,7 +165,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product.currency],
+          worldCurrencies[product!.currency!]!,
           style: TextStyle(
               color: blackFont,
               fontFamily: "Roboto",
@@ -182,7 +183,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
 
   Widget getSellerName(BuildContext context) {
     return Text(
-      product.seller,
+      product!.seller!,
       style: TextStyle(fontSize: 12, color: darkGrey),
     );
   }
@@ -190,9 +191,9 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
 
 // ignore: must_be_immutable
 class OrderTileForService extends StatefulWidget {
-  Service item;
-  String type;
-  int qty;
+  Service? item;
+  String? type;
+  int? qty;
 
   OrderTileForService(Map<String, dynamic> item) {
     type = item["type"];
@@ -206,8 +207,8 @@ class OrderTileForService extends StatefulWidget {
 }
 
 class _OrderTileForServiceState extends State<OrderTileForService> {
-  Service service;
-  int qty;
+  Service? service;
+  int? qty;
 
   _OrderTileForServiceState({this.service, this.qty});
 
@@ -265,13 +266,14 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
         child: CachedNetworkImage(
           height: 48,
           width: 48,
-          imageUrl: service.serverImages.isNotEmpty
-              ? service.serverImages.first
-              : "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          imageUrl: service!.serverImages!.isNotEmpty
+              ? service!.serverImages!.first!
+              : defaultImage,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
+          errorWidget: productAndServiceErrorWidget,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => service.serverImages.isNotEmpty
+          placeholder: (context, url) => service!.serverImages!.isNotEmpty
               ? Icon(Icons.widgets)
               : CircularLoadingIndicator(),
         ),
@@ -281,7 +283,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
 
   Widget getTitle() {
     return Text(
-      "${service.name}",
+      "${service!.name}",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -294,7 +296,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            worldCurrencies[service.currency],
+            worldCurrencies[service!.currency!]!,
             style: TextStyle(
                 color: blackFont,
                 fontFamily: "Roboto",
@@ -302,7 +304,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
                 fontSize: 14),
           ),
           Text(
-            moneyDisplayNormalizer(int.parse(service.price)),
+            moneyDisplayNormalizer(int.parse(service!.price!)),
             style: TextStyle(
               color: blackFont,
               fontWeight: FontWeight.w600,
@@ -315,14 +317,14 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
   }
 
   String getServicePrice() {
-    if (service.price.toString().length > 5) {
-      return service.price.toString().substring(0, 5) + "..";
+    if (service!.price.toString().length > 5) {
+      return service!.price.toString().substring(0, 5) + "..";
     }
-    return service.price.toString();
+    return service!.price.toString();
   }
 
   String getTotalPrice() {
-    var price = qty * int.parse(service.price);
+    var price = qty! * int.parse(service!.price!);
     return price.toString();
   }
 
@@ -344,7 +346,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[service.currency],
+          worldCurrencies[service!.currency!]!,
           style: TextStyle(
               color: blackFont,
               fontFamily: "Roboto",
@@ -362,7 +364,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
 
   Widget getSellerName(BuildContext context) {
     return Text(
-      service.provider,
+      service!.provider!,
       style: TextStyle(fontSize: 12, color: darkGrey),
     );
   }

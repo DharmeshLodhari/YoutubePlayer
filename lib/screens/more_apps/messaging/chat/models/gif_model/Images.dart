@@ -23,29 +23,29 @@ import 'PreviewWebp.dart';
 import 'WStill.dart';
 
 class Images {
-  WStill wStill;
-  Downsized downsized;
-  DownsizedLarge downsizedLarge;
-  DownsizedMedium downsizedMedium;
-  DownsizedSmall downsizedSmall;
-  DownsizedStill downsizedStill;
-  FixedHeight fixedHeight;
-  FixedHeightDownSampled fixedHeightDownSampled;
-  FixedHeightSmall fixedHeightSmall;
-  FixedHeightSmallStill fixedHeightSmallStill;
-  FixedHeightStill fixedHeightStill;
-  FixedWidth fixedWidth;
-  FixedWidthDownSampled fixedWidthDownSampled;
-  FixedWidthSmall fixedWidthSmall;
-  FixedWidthSmallStill fixedWidthSmallStill;
-  FixedWidthStill fixedWidthStill;
-  Looping looping;
-  Original original;
-  OriginalMp4 originalMp4;
-  OriginalStill originalStill;
-  Preview preview;
-  PreviewGif previewGif;
-  PreviewWebp previewWebp;
+  WStill? wStill;
+  Downsized? downsized;
+  DownsizedLarge? downsizedLarge;
+  DownsizedMedium? downsizedMedium;
+  DownsizedSmall? downsizedSmall;
+  DownsizedStill? downsizedStill;
+  FixedHeight? fixedHeight;
+  FixedHeightDownSampled? fixedHeightDownSampled;
+  FixedHeightSmall? fixedHeightSmall;
+  FixedHeightSmallStill? fixedHeightSmallStill;
+  FixedHeightStill? fixedHeightStill;
+  FixedWidth? fixedWidth;
+  FixedWidthDownSampled? fixedWidthDownSampled;
+  FixedWidthSmall? fixedWidthSmall;
+  FixedWidthSmallStill? fixedWidthSmallStill;
+  FixedWidthStill? fixedWidthStill;
+  Looping? looping;
+  Original? original;
+  OriginalMp4? originalMp4;
+  OriginalStill? originalStill;
+  Preview? preview;
+  PreviewGif? previewGif;
+  PreviewWebp? previewWebp;
 
   Images(
       {this.wStill,
@@ -146,73 +146,73 @@ class Images {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.wStill != null) {
-      data['480w_still'] = this.wStill.toJson();
+      data['480w_still'] = this.wStill!.toJson();
     }
     if (this.downsized != null) {
-      data['downsized'] = this.downsized.toJson();
+      data['downsized'] = this.downsized!.toJson();
     }
     if (this.downsizedLarge != null) {
-      data['downsized_large'] = this.downsizedLarge.toJson();
+      data['downsized_large'] = this.downsizedLarge!.toJson();
     }
     if (this.downsizedMedium != null) {
-      data['downsized_medium'] = this.downsizedMedium.toJson();
+      data['downsized_medium'] = this.downsizedMedium!.toJson();
     }
     if (this.downsizedSmall != null) {
-      data['downsized_small'] = this.downsizedSmall.toJson();
+      data['downsized_small'] = this.downsizedSmall!.toJson();
     }
     if (this.downsizedStill != null) {
-      data['downsized_still'] = this.downsizedStill.toJson();
+      data['downsized_still'] = this.downsizedStill!.toJson();
     }
     if (this.fixedHeight != null) {
-      data['fixed_height'] = this.fixedHeight.toJson();
+      data['fixed_height'] = this.fixedHeight!.toJson();
     }
     if (this.fixedHeightDownSampled != null) {
-      data['fixed_height_downsampled'] = this.fixedHeightDownSampled.toJson();
+      data['fixed_height_downsampled'] = this.fixedHeightDownSampled!.toJson();
     }
     if (this.fixedHeightSmall != null) {
-      data['fixed_height_small'] = this.fixedHeightSmall.toJson();
+      data['fixed_height_small'] = this.fixedHeightSmall!.toJson();
     }
     if (this.fixedHeightSmallStill != null) {
-      data['fixed_height_small_still'] = this.fixedHeightSmallStill.toJson();
+      data['fixed_height_small_still'] = this.fixedHeightSmallStill!.toJson();
     }
     if (this.fixedHeightStill != null) {
-      data['fixed_height_still'] = this.fixedHeightStill.toJson();
+      data['fixed_height_still'] = this.fixedHeightStill!.toJson();
     }
     if (this.fixedWidth != null) {
-      data['fixed_width'] = this.fixedWidth.toJson();
+      data['fixed_width'] = this.fixedWidth!.toJson();
     }
     if (this.fixedWidthDownSampled != null) {
-      data['fixed_width_downsampled'] = this.fixedWidthDownSampled.toJson();
+      data['fixed_width_downsampled'] = this.fixedWidthDownSampled!.toJson();
     }
     if (this.fixedWidthSmall != null) {
-      data['fixed_width_small'] = this.fixedWidthSmall.toJson();
+      data['fixed_width_small'] = this.fixedWidthSmall!.toJson();
     }
     if (this.fixedWidthSmallStill != null) {
-      data['fixed_width_small_still'] = this.fixedWidthSmallStill.toJson();
+      data['fixed_width_small_still'] = this.fixedWidthSmallStill!.toJson();
     }
     if (this.fixedWidthStill != null) {
-      data['fixed_width_still'] = this.fixedWidthStill.toJson();
+      data['fixed_width_still'] = this.fixedWidthStill!.toJson();
     }
     if (this.looping != null) {
-      data['looping'] = this.looping.toJson();
+      data['looping'] = this.looping!.toJson();
     }
     if (this.original != null) {
-      data['original'] = this.original.toJson();
+      data['original'] = this.original!.toJson();
     }
     if (this.originalMp4 != null) {
-      data['original_mp4'] = this.originalMp4.toJson();
+      data['original_mp4'] = this.originalMp4!.toJson();
     }
     if (this.originalStill != null) {
-      data['original_still'] = this.originalStill.toJson();
+      data['original_still'] = this.originalStill!.toJson();
     }
     if (this.preview != null) {
-      data['preview'] = this.preview.toJson();
+      data['preview'] = this.preview!.toJson();
     }
     if (this.previewGif != null) {
-      data['preview_gif'] = this.previewGif.toJson();
+      data['preview_gif'] = this.previewGif!.toJson();
     }
     if (this.previewWebp != null) {
-      data['preview_webp'] = this.previewWebp.toJson();
+      data['preview_webp'] = this.previewWebp!.toJson();
     }
     return data;
   }

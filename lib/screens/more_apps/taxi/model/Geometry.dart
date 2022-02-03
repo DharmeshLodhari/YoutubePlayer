@@ -2,8 +2,8 @@ import 'Location.dart';
 import 'Viewport.dart';
 
 class Geometry {
-  Location location;
-  Viewport viewport;
+  Location? location;
+  Viewport? viewport;
 
   Geometry({this.location, this.viewport});
 
@@ -19,10 +19,10 @@ class Geometry {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.location != null) {
-      data['location'] = this.location.toJson();
+      data['location'] = this.location!.toJson();
     }
     if (this.viewport != null) {
-      data['viewport'] = this.viewport.toJson();
+      data['viewport'] = this.viewport!.toJson();
     }
     return data;
   }

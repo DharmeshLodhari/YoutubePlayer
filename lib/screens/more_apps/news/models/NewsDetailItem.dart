@@ -1,18 +1,18 @@
 import 'package:Slydo/screens/more_apps/news/models/NewsListItem.dart';
 
 class NewsDetailItem {
-  String author;
-  String authorAvatar;
-  String description;
-  List<NewsListItem> newsListItems;
-  String poster;
-  String read;
-  String shortDescription;
-  String subHeader;
-  List<String> tags;
-  String title;
-  String uploadTime;
-  String video;
+  String? author;
+  String? authorAvatar;
+  String? description;
+  List<NewsListItem>? newsListItems;
+  String? poster;
+  String? read;
+  String? shortDescription;
+  String? subHeader;
+  List<String>? tags;
+  String? title;
+  String? uploadTime;
+  String? video;
 
   NewsDetailItem(
       {this.author = "",
@@ -63,7 +63,7 @@ class NewsDetailItem {
     data['video'] = this.video;
     if (this.newsListItems != null) {
       data['news_list_items'] =
-          this.newsListItems.map((v) => v.toJson()).toList();
+          this.newsListItems!.map((v) => v.toJson()).toList();
     }
     if (this.tags != null) {
       data['tags'] = this.tags;

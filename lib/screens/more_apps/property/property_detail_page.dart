@@ -27,10 +27,10 @@ class PropertyDetailPage extends StatefulWidget {
 }
 
 class _PropertyDetailPageState extends State<PropertyDetailPage> {
-  PropertyDashboardBloc _propertyDashboardBloc;
+  late PropertyDashboardBloc _propertyDashboardBloc;
 
-  VideoPlayerController _videoController;
-  ChewieController _chewieController;
+  late VideoPlayerController _videoController;
+  late ChewieController _chewieController;
 
   List<String> availableDates = ["18", "25", "01", "08", "15"];
   int selectedDate = 0;
@@ -79,14 +79,15 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
       ],
     );
 
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
 
     super.dispose();
   }
 
   void initializeVideoPlayer() {
     _videoController = VideoPlayerController.network(
-      property.video,
+      property.video!,
     );
 
     _chewieController = ChewieController(
@@ -120,7 +121,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -288,7 +289,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             isVideo
                 ? Chewie(
                     controller: _chewieController,
-                    posterUrl: property.images.first,
+                    posterUrl: property.images!.first,
                     titleName: property.name,
                   )
                 : Stack(
@@ -306,12 +307,13 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                                 });
                               }
                             }),
-                        items: property.images
+                        items: property.images!
                             .map(
                               (e) => InkWell(
                                 child: CachedNetworkImage(
                                   width: double.infinity,
                                   imageUrl: e,
+                                  errorWidget: imageErrorWidget,
                                   fit: BoxFit.fill,
                                   filterQuality: FilterQuality.high,
                                 ),
@@ -323,12 +325,12 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                       Positioned(
                         bottom: 0,
                         left: MediaQuery.of(context).size.width / 2 -
-                            ((5 * property.images.length)),
+                            5 * property.images!.length,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: property.images.map((url) {
-                            int index = property.images.indexOf(url);
+                          children: property.images!.map((url) {
+                            int index = property.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
@@ -376,7 +378,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              property.name,
+              property.name!,
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
             ),
@@ -391,7 +393,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                   width: 4,
                 ),
                 Text(
-                  property.partners.first.star,
+                  property.partners!.first.star!,
                   style: TextStyle(fontSize: 14, color: blackFont),
                 )
               ],
@@ -402,7 +404,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           height: 4,
         ),
         Text(
-          property.shortDetail,
+          property.shortDetail!,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         ),
@@ -416,10 +418,11 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               width: 32,
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: property.ownerAvatar,
+                  imageUrl: property.ownerAvatar!,
                   fit: BoxFit.fill,
                   width: double.infinity,
                   height: double.infinity,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -427,7 +430,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               width: 12,
             ),
             Text(
-              property.ownerName,
+              property.ownerName!,
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             )
@@ -762,7 +765,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
     );
   }
 
-  Widget rentDetail({String categoryName}) {
+  Widget rentDetail({required String categoryName}) {
     return Container(
       child: Column(
         children: [
@@ -802,7 +805,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
               child: Container(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 16),
                 child: Row(
-                  children: property.similarProperties
+                  children: property.similarProperties!
                       .map(
                         (similarProperty) => Container(
                           margin: EdgeInsets.only(right: 12),
@@ -819,7 +822,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
     );
   }
 
-  Widget rentCard({SimilarProperty similarProperty}) {
+  Widget rentCard({required SimilarProperty similarProperty}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/property-detail");
@@ -839,10 +842,11 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: similarProperty.image,
+                    imageUrl: similarProperty.image!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
                 SizedBox(
@@ -877,7 +881,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                                     fontFamily: "Roborto"),
                               ),
                               Text(
-                                similarProperty.price,
+                                similarProperty.price!,
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(
@@ -892,7 +896,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
                       ],
                     ),
                     Text(
-                      similarProperty.shortDescription,
+                      similarProperty.shortDescription!,
                       softWrap: false,
                       overflow: TextOverflow.fade,
                       style: TextStyle(
@@ -912,7 +916,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
   }
 
   Widget dateAndTimeTile(String type, String date) {
-    bool isSelected = false;
+    bool isSelected = Random().nextBool();
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
@@ -970,7 +974,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
           height: 12,
         ),
         Text(
-          property.about,
+          property.about!,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -1054,7 +1058,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             height: 16,
           ),
           Column(
-            children: property.reviews
+            children: property.reviews!
                 .map((review) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: ReviewTile(),
@@ -1083,7 +1087,7 @@ class _PropertyDetailPageState extends State<PropertyDetailPage> {
             height: 16,
           ),
           Column(
-            children: property.partners
+            children: property.partners!
                 .map((partner) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: Column(

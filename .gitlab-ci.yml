@@ -12,7 +12,6 @@ before_script:
   - cat $KEYFILE >> android/key.properties
   - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
 
-
 test:
   stage: Test
   script:
@@ -20,7 +19,6 @@ test:
 
   tags:
     - flutter
-
 
 android:build:
   stage: Build Android

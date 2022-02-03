@@ -6,7 +6,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class AddMoneyToSlydoTwo extends StatefulWidget {
@@ -30,9 +29,9 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
 
   bool isChecked = false;
 
-  String bankName;
-  String bankAccountName;
-  String bankAccountNumber;
+  String? bankName;
+  String? bankAccountName;
+  String? bankAccountNumber;
 
   bool isBankDetailsIsEmpty = false;
   bool alreadyHaveReference = false;
@@ -43,7 +42,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
     amount = widget.arguments["amount"].toString();
     referenceNumber = widget.arguments["reference"].toString();
     currency = widget.arguments["currency"].toString();
-    Map bankDetails = widget.arguments["bank_details"];
+    Map? bankDetails = widget.arguments["bank_details"];
     if (bankDetails == null || bankDetails.isEmpty) {
       // isBankDetailsIsEmpty = true;
       isBankDetailsIsEmpty = false;
@@ -65,7 +64,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -327,10 +326,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
               ),
               onTap: () {
                 Clipboard.setData(new ClipboardData(text: referenceNumber));
-                Toast.show("Reference number copied !!", context,
-                    gravity: Toast.BOTTOM,
-                    duration: Toast.LENGTH_LONG,
-                    textColor: Colors.white);
+                showToast(message: "Reference number copied !!");
               },
             ),
           ],
@@ -408,7 +404,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
         context: context,
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
-    if (_formKeyTwo.currentState.validate()) {
+    if (_formKeyTwo.currentState!.validate()) {
       var data = {"reference": referenceNumber};
       PaymentAndBankingAuth()
           .confirmTopUpWithReferenceNumber(data)
@@ -420,7 +416,7 @@ class _AddMoneyToSlydoTwoState extends State<AddMoneyToSlydoTwo> {
       }).catchError((e) {
         Navigator.pop(context);
         debugPrint(e.toString());
-        Toast.show(e, context, gravity: Toast.BOTTOM, textColor: Colors.white);
+        showToast(message: e);
       });
     } else {
       Navigator.pop(context);

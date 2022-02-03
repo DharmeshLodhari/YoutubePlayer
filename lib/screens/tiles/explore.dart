@@ -14,7 +14,7 @@ class _ExploreTileState extends State<ExploreTile> {
         margin: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
         child: ListTile(
           title: Text(
-            AppLocalization.of(context).explore,
+            AppLocalization.of(context)!.explore,
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
           ),

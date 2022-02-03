@@ -3,7 +3,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 
 class NoVehicleFound extends StatefulWidget {
   @override
@@ -11,7 +11,7 @@ class NoVehicleFound extends StatefulWidget {
 }
 
 class _NoVehicleFoundState extends State<NoVehicleFound> {
-  MapController mapController;
+  MapController? mapController;
 
   LatLng mapPoint = LatLng(6.605874, 3.349149);
 
@@ -28,7 +28,7 @@ class _NoVehicleFoundState extends State<NoVehicleFound> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
             Image.asset(

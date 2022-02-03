@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
@@ -26,7 +27,7 @@ import 'package:provider/provider.dart';
 
 class SearchUsersProductAndService extends StatefulWidget {
   final arguments;
-  SearchUsersProductAndService({@required this.arguments});
+  SearchUsersProductAndService({required this.arguments});
 
   @override
   _SearchUsersProductAndServiceState createState() =>
@@ -39,13 +40,13 @@ class _SearchUsersProductAndServiceState
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
 
-  List<dynamic> searchedResult;
-  CustomerProfileBloc customerProfileBloc;
-  UserBloc userBloc;
+  List<dynamic>? searchedResult;
+
+  late UserBloc userBloc;
   static var filterValue = "Products";
 
-  SlidableController slidableController1;
-  SlidableController slidableController2;
+  SlidableController? slidableController1;
+  SlidableController? slidableController2;
 
   List<Widget> results = [];
 
@@ -56,15 +57,15 @@ class _SearchUsersProductAndServiceState
   GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
   //pagination variables
-  int count = 0;
-  String next = "";
-  String previous = "";
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   ScrollController _scrollController = new ScrollController();
   bool isLoading = false;
   bool noItemInList = false;
 
   GlobalKey _key = LabeledGlobalKey("searchTypeSelectionKey");
-  CustomizedPopUpMenu searchTypeSelectionMenu;
+  late CustomizedPopUpMenu searchTypeSelectionMenu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
@@ -72,7 +73,7 @@ class _SearchUsersProductAndServiceState
 
   var hint = "Search here";
 
-  CustomerProfile searchedUser;
+  CustomerProfile? searchedUser;
 
   SearchItemWithFilterModel filterModel = SearchItemWithFilterModel();
 
@@ -190,14 +191,13 @@ class _SearchUsersProductAndServiceState
     searchTypeSelectionMenu.onChange = menuItemSelectionChange;
     searchTypeSelectionMenu.menuState = menuStateChange;
 
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
 
     return Scaffold(
       key: _scaffoldSearchKey,
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: Form(
         key: _formFieldKey,
         child: Column(
@@ -388,10 +388,10 @@ class _SearchUsersProductAndServiceState
           if (amount > 0) {
             return null;
           } else {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         } catch (e) {
-          return AppLocalization.of(context).invalidAmount;
+          return AppLocalization.of(context)!.invalidAmount;
         }
       },
     );
@@ -425,10 +425,10 @@ class _SearchUsersProductAndServiceState
           if (amount > 0) {
             return null;
           } else {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         } catch (e) {
-          return AppLocalization.of(context).invalidAmount;
+          return AppLocalization.of(context)!.invalidAmount;
         }
       },
     );
@@ -443,7 +443,9 @@ class _SearchUsersProductAndServiceState
           children: [
             Theme(
               data: Theme.of(context).copyWith(
-                textSelectionHandleColor: navyBlue,
+                textSelectionTheme: TextSelectionThemeData(
+                  selectionHandleColor: navyBlue,
+                ),
               ),
               child: TextFormField(
                 key: textFormField,
@@ -605,7 +607,7 @@ class _SearchUsersProductAndServiceState
                   height: 34,
                   width: 34,
                   icon: Icon(
-                    SlydoAppIcon.filter,
+                    Icons.filter_alt_rounded,
                     size: 16,
                     color: blackFont,
                   ),
@@ -662,12 +664,12 @@ class _SearchUsersProductAndServiceState
   Widget _buildResultList() {
     return isSearchIsEmpty
         ? NoItemInList(
-            msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
             isResult: false,
           )
         : noItemInList
             ? NoItemInList(
-                msg: AppLocalization.of(context).noResultFound,
+                msg: AppLocalization.of(context)!.noResultFound,
               )
             : Container(
                 child: ListView.builder(
@@ -681,9 +683,10 @@ class _SearchUsersProductAndServiceState
                       try {
                         return results[index];
                       } catch (error) {
-                        debugPrint(error);
+                        debugPrint(error.toString());
                       }
                     }
+                    return _buildIndicator();
                   },
                   controller: _scrollController,
                 ),
@@ -702,7 +705,7 @@ class _SearchUsersProductAndServiceState
     );
   }
 
-  Future<Map<String, dynamic>> getSearchApi() async {
+  Future<Map<String, dynamic>?> getSearchApi() async {
     filterModel.searchedText = searchItemTextController.text;
     switch (filterValue) {
       case "Products":
@@ -718,7 +721,7 @@ class _SearchUsersProductAndServiceState
   }
 
   void getList() async {
-    if (!_formFieldKey.currentState.validate()) {
+    if (!_formFieldKey.currentState!.validate()) {
       /// open filters when user has some error in filter fields validation
       showFilterOptions = true;
       if (mounted) setState(() {});
@@ -736,15 +739,19 @@ class _SearchUsersProductAndServiceState
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic> result = await getSearchApi();
+        Map<String, dynamic>? result = await getSearchApi();
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
           try {
-            tempList.forEach((result) {
+            tempList!.forEach((result) {
               results.add(getResultTile(result));
             });
           } catch (e) {}
@@ -762,9 +769,9 @@ class _SearchUsersProductAndServiceState
           setState(() {});
         }
       } else if (next == null && results.length > 6) {
-        _scaffoldSearchKey.currentState.showSnackBar(SnackBar(
+        _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -776,11 +783,10 @@ class _SearchUsersProductAndServiceState
     switch (filterValue) {
       case "Products":
         return getProductTile(result);
-        break;
       case "Services":
         return getServiceTile(result);
-        break;
     }
+    return getProductTile(result);
   }
 
   String getSearchUrl(String searchedText) {
@@ -842,18 +848,18 @@ class _SearchUsersProductAndServiceState
   Widget getLeading(Product product) {
     var imageUrl = "";
     try {
-      imageUrl = product.cover ??
-          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+      imageUrl = product.cover ?? defaultImage;
     } catch (e) {
       imageUrl = "";
     }
     if (imageUrl == "") {
-      imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+      imageUrl = defaultImage;
     }
     return ClipOval(
       child: CachedNetworkImage(
         imageUrl: imageUrl,
         height: 48,
+        errorWidget: imageErrorWidget,
         width: 48,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
@@ -878,7 +884,7 @@ class _SearchUsersProductAndServiceState
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[product.currency],
+          worldCurrencies[product.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
               color: blackFont,
@@ -886,7 +892,7 @@ class _SearchUsersProductAndServiceState
               fontSize: 14),
         ),
         Text(
-          product.price.toString(),
+          moneyDisplayNormalizer(int.parse(product.price.toString())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -921,7 +927,7 @@ class _SearchUsersProductAndServiceState
     return Row(
       children: <Widget>[
         Text(
-          product.seller,
+          product.seller!,
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 10),
         ),
@@ -951,7 +957,7 @@ class _SearchUsersProductAndServiceState
                   dense: true,
                   leading: getLeadingService(service),
                   title: Text(
-                    service.name,
+                    service.name!,
                     maxLines: 1,
                     style: TextStyle(
                         color: blackFont,
@@ -978,19 +984,19 @@ class _SearchUsersProductAndServiceState
   Widget getLeadingService(Service service) {
     var imageUrl = "";
     try {
-      imageUrl = service.cover ??
-          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+      imageUrl = service.cover ?? defaultImage;
     } catch (e) {
       imageUrl = "";
     }
     if (imageUrl == "") {
-      imageUrl = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+      imageUrl = defaultImage;
     }
     return ClipOval(
       child: CachedNetworkImage(
           imageUrl: imageUrl,
           height: 48,
           width: 48,
+          errorWidget: imageErrorWidget,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
@@ -1026,7 +1032,7 @@ class _SearchUsersProductAndServiceState
     return Row(
       children: <Widget>[
         Text(
-          service.provider,
+          service.provider!,
           maxLines: 1,
           style: TextStyle(color: darkGrey, fontSize: 10),
         ),
@@ -1039,7 +1045,7 @@ class _SearchUsersProductAndServiceState
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[service.currency],
+          worldCurrencies[service.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
               color: blackFont,
@@ -1047,7 +1053,7 @@ class _SearchUsersProductAndServiceState
               fontSize: 14),
         ),
         Text(
-          service.price.toString(),
+          moneyDisplayNormalizer(int.parse(service.price.toString())),
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -1121,12 +1127,15 @@ class _SearchUsersProductAndServiceState
       SlideActionButton(
         icon: SlydoAppIcon.cart,
         onTap: () async {
+          CustomerProfileBloc customerProfileBloc =
+              Provider.of<CustomerProfileBloc>(context, listen: false);
+
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(product.seller);
           Navigator.of(context).pushNamed('/send-payment',
               arguments: {'isFromProfile': false, 'product': product});
         },
-        title: AppLocalization.of(context).buy,
+        title: AppLocalization.of(context)!.buy,
         backgroundColor: naturalGreen,
         slideController: slidableController1,
       ),
@@ -1173,11 +1182,13 @@ class _SearchUsersProductAndServiceState
     }
     return [
       SlideActionButton(
-          title: AppLocalization.of(context).buy,
+          title: AppLocalization.of(context)!.buy,
           backgroundColor: naturalGreen,
           slideController: slidableController2,
           icon: SlydoAppIcon.cart,
           onTap: () async {
+            CustomerProfileBloc customerProfileBloc =
+                Provider.of<CustomerProfileBloc>(context, listen: false);
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
             Navigator.of(context).pushNamed('/send-payment',
@@ -1192,7 +1203,7 @@ class _SearchUsersProductAndServiceState
     }
     return [
       SlideActionButton(
-        title: AppLocalization.of(context).message,
+        title: AppLocalization.of(context)!.message,
         backgroundColor: navyBlue,
         slideController: slidableController2,
         icon: SlydoAppIcon.text_message,
@@ -1210,13 +1221,13 @@ class _SearchUsersProductAndServiceState
 
   void handleSlideIsOpenChanged(bool isOpen) {}
 
-  void handleSlideAnimationChanged1(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged1(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged1(bool isOpen) {}
+  void handleSlideIsOpenChanged1(bool? isOpen) {}
 
-  void handleSlideAnimationChanged2(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged2(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged2(bool isOpen) {}
+  void handleSlideIsOpenChanged2(bool? isOpen) {}
 
   @override
   void dispose() {

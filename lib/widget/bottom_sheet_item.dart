@@ -3,9 +3,9 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 Widget bottomSheetItem(
-    {Function onTap,
-    IconData icon,
-    String title,
+    {Function? onTap,
+    IconData? icon,
+    required String title,
     bool isLast = false,
     double iconSize = 14}) {
   return InkWell(
@@ -36,6 +36,6 @@ Widget bottomSheetItem(
         ),
       ),
     ),
-    onTap: onTap,
+    onTap: onTap as void Function()?,
   );
 }

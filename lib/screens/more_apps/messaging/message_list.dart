@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/messaging/tiles/message.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -17,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'message_auth.dart';
 
@@ -30,10 +30,10 @@ class _MessageListState extends State<MessageList> {
   final GlobalKey<ScaffoldState> _scaffoldMessageKey =
       new GlobalKey<ScaffoldState>();
   final _messageAuth = MessageAuth();
-  SlidableController slidableController;
-  int count = 0;
-  String next = "";
-  String previous = "";
+  SlidableController? slidableController;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List messageList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
@@ -41,11 +41,11 @@ class _MessageListState extends State<MessageList> {
   bool isLoading = false;
   bool noItemInList = false;
   String filterValue = "all";
-  UserBloc userBloc;
-  RefreshBlocForMessages _refreshBloc;
+  late UserBloc userBloc;
+  RefreshBlocForMessages? _refreshBloc;
 
   GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
-  CustomizedPopUpMenu menu;
+  late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
@@ -71,12 +71,12 @@ class _MessageListState extends State<MessageList> {
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForMessages>(context);
-    _refreshBloc
+    _refreshBloc!
       ..addListener(() {
-        if (_refreshBloc.isRefresh) {
+        if (_refreshBloc!.isRefresh) {
           if (mounted) {
             _onRefresh();
-            _refreshBloc.isRefresh = false;
+            _refreshBloc!.isRefresh = false;
           }
         }
       });
@@ -94,13 +94,10 @@ class _MessageListState extends State<MessageList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -126,14 +123,13 @@ class _MessageListState extends State<MessageList> {
       buttonKey: _key,
       context: context,
       children: [
+        CustomizedPopUpMenuItem(title: "Inbox", value: "all"),
         CustomizedPopUpMenuItem(
-            title: AppLocalization.of(context).all, value: "all"),
+            title: AppLocalization.of(context)!.archived, value: "archived"),
         CustomizedPopUpMenuItem(
-            title: AppLocalization.of(context).archived, value: "archived"),
+            title: AppLocalization.of(context)!.sent, value: "sent"),
         CustomizedPopUpMenuItem(
-            title: AppLocalization.of(context).sent, value: "sent"),
-        CustomizedPopUpMenuItem(
-            title: AppLocalization.of(context).starred, value: "starred"),
+            title: AppLocalization.of(context)!.starred, value: "starred"),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -147,7 +143,7 @@ class _MessageListState extends State<MessageList> {
     return Scaffold(
       key: _scaffoldMessageKey,
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
@@ -189,7 +185,7 @@ class _MessageListState extends State<MessageList> {
         },
       ),
       title: Text(
-        AppLocalization.of(context).messages,
+        AppLocalization.of(context)!.messages,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -216,7 +212,7 @@ class _MessageListState extends State<MessageList> {
         ),
         child: IconButton(
           icon: Icon(
-            Icons.more_vert,
+            Icons.filter_alt_rounded,
             color: isPopMenuOpen ? Colors.white : Colors.black,
             size: 20,
           ),
@@ -235,7 +231,7 @@ class _MessageListState extends State<MessageList> {
   Widget _buildMessageList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).noMessages,
+            msg: AppLocalization.of(context)!.noMessages,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -272,8 +268,13 @@ class _MessageListState extends State<MessageList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result = await _messageAuth
+        Map<String, dynamic>? result = await _messageAuth
             .listMessages(next, previous, filter: filterValue);
+
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -293,21 +294,21 @@ class _MessageListState extends State<MessageList> {
           });
         }
       } else if (next == null && messageList.length > 6) {
-        _scaffoldMessageKey.currentState.showSnackBar(SnackBar(
+        _scaffoldMessageKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessageKey.currentState
+    _scaffoldMessageKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
@@ -325,18 +326,18 @@ class _MessageListState extends State<MessageList> {
     bool isRecipient = userBloc.user.userName == partialMessage.recipient;
 
     IconData actionIcon = isRecipient
-        ? partialMessage.isArchivedByRecipient
+        ? partialMessage.isArchivedByRecipient!
             ? SlydoAppIcon.unarchive
             : SlydoAppIcon.archive
-        : partialMessage.isArchivedBySender
+        : partialMessage.isArchivedBySender!
             ? SlydoAppIcon.unarchive
             : SlydoAppIcon.archive;
 
     String actionText = isRecipient
-        ? partialMessage.isArchivedByRecipient
+        ? partialMessage.isArchivedByRecipient!
             ? "Unarchive"
             : "Archive"
-        : partialMessage.isArchivedBySender
+        : partialMessage.isArchivedBySender!
             ? "Unarchive"
             : "Archive";
 
@@ -345,20 +346,20 @@ class _MessageListState extends State<MessageList> {
         icon: actionIcon,
         onTap: () async {
           var action = isRecipient
-              ? partialMessage.isArchivedByRecipient
+              ? partialMessage.isArchivedByRecipient!
                   ? "unarchive"
                   : "archive"
-              : partialMessage.isArchivedBySender
+              : partialMessage.isArchivedBySender!
                   ? "unarchive"
                   : "archive";
-          await _messageAuth.updateMessage(partialMessage.id, action);
+          await _messageAuth.updateMessage(partialMessage.id!, action);
           setState(() {
             if (isRecipient) {
               partialMessage.isArchivedByRecipient =
-                  partialMessage.isArchivedByRecipient ? false : true;
+                  partialMessage.isArchivedByRecipient! ? false : true;
             } else {
               partialMessage.isArchivedBySender =
-                  partialMessage.isArchivedBySender ? false : true;
+                  partialMessage.isArchivedBySender! ? false : true;
             }
           });
         },
@@ -369,7 +370,7 @@ class _MessageListState extends State<MessageList> {
   void markArchivedUnArchivedMessage(PartialMessage partialMessage, int index) {
     setState(() {
       partialMessage.isArchivedByRecipient =
-          partialMessage.isArchivedByRecipient ? false : true;
+          partialMessage.isArchivedByRecipient! ? false : true;
     });
   }
 
@@ -384,12 +385,12 @@ class _MessageListState extends State<MessageList> {
         onTap: () {
           deleteMessage(partialMessage, index);
         },
-        title: AppLocalization.of(context).delete,
+        title: AppLocalization.of(context)!.delete,
         slideController: slidableController);
   }
 
   void deleteMessage(PartialMessage partialMessage, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -407,18 +408,19 @@ class _MessageListState extends State<MessageList> {
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).delete,
-      description: AppLocalization.of(context).areYouSureWantToDeleteThisMsg,
-      actionOne: AppLocalization.of(context).delete,
-      actionTwo: AppLocalization.of(context).cancel,
+      title: AppLocalization.of(context)!.delete,
+      description: AppLocalization.of(context)!.areYouSureWantToDeleteThisMsg,
+      actionOne: AppLocalization.of(context)!.delete,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
+    if (result == null) return;
     if (result) {
       // call delete message _auth method
       bool done =
           await _messageAuth.deleteMessage(messageList[index].conversationId);
       if (done) {
         _showSnackBar(
-            context, AppLocalization.of(context).messageIsDeletedSuccessfully);
+            context, AppLocalization.of(context)!.messageIsDeletedSuccessfully);
         setState(() {
           messageList.removeAt(index);
           if (messageList.length <= 9) {
@@ -426,7 +428,7 @@ class _MessageListState extends State<MessageList> {
           }
         });
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
@@ -434,7 +436,7 @@ class _MessageListState extends State<MessageList> {
   Widget _getSlidableWithLists(
       BuildContext context, PartialMessage partialMessage, int index) {
     return Slidable(
-      key: Key(partialMessage.id),
+      key: Key(partialMessage.id!),
       controller: slidableController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
@@ -551,7 +553,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization.of(context).message,
+              AppLocalization.of(context)!.message,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -592,12 +594,9 @@ class _VerticalListItemState extends State<VerticalListItem> {
                 isExpanded = false;
               });
               if (result) {
-                Toast.show(
-                    "${widget.partialMessage.sender} " +
-                        AppLocalization.of(context).isBlocked,
-                    context);
+                showToast(message: "${widget.partialMessage.sender} ");
               } else {
-                Toast.show(AppLocalization.of(context).error, context);
+                showToast(message: AppLocalization.of(context)!.error);
               }
             });
           });
@@ -619,7 +618,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization.of(context).blockUser,
+              AppLocalization.of(context)!.blockUser,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

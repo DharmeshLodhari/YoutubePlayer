@@ -7,10 +7,10 @@ import 'material_controls.dart';
 
 // ignore: must_be_immutable
 class PlayerWithControls extends StatelessWidget {
-  String posterUrl;
-  String titleName;
+  String? posterUrl;
+  String? titleName;
 
-  PlayerWithControls({Key key, this.posterUrl, this.titleName})
+  PlayerWithControls({Key? key, this.posterUrl, this.titleName})
       : super(key: key);
 
   @override
@@ -43,13 +43,13 @@ class PlayerWithControls extends StatelessWidget {
             ),
           ),
           chewieController.overlay ?? Container(),
-          _buildControls(context, chewieController),
+          _buildControls(context, chewieController)!,
         ],
       ),
     );
   }
 
-  Widget _buildControls(
+  Widget? _buildControls(
     BuildContext context,
     ChewieController chewieController,
   ) {

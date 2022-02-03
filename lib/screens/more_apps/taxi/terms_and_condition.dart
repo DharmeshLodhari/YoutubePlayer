@@ -2,7 +2,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 
 class TermsAndCondition extends StatefulWidget {
   @override
@@ -10,7 +10,7 @@ class TermsAndCondition extends StatefulWidget {
 }
 
 class _TermsAndConditionState extends State<TermsAndCondition> {
-  MapController mapController;
+  MapController? mapController;
 
   LatLng mapPoint = LatLng(6.605874, 3.349149);
 
@@ -27,7 +27,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: getScaffoldBody(),
       ),
     );

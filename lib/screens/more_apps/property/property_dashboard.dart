@@ -14,9 +14,9 @@ class PropertyDashboard extends StatefulWidget {
 }
 
 class _PropertyDashboardState extends State<PropertyDashboard> {
-  PropertyDashboardBloc _propertyDashboardBloc;
+  late PropertyDashboardBloc _propertyDashboardBloc;
 
-  PropertyFilterBloc _propertyFilterBloc;
+  late PropertyFilterBloc _propertyFilterBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
         items: [
           bottomNavigationBarItem(
             icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context).explore,
+            title: AppLocalization.of(context)!.explore,
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
@@ -79,7 +79,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData icon, String title}) {
+      {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
       icon: Container(
         height: 50,
@@ -96,7 +96,7 @@ class _PropertyDashboardState extends State<PropertyDashboard> {
   }
 
 // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData icon, String title}) {
+  Widget activeIcon({IconData? icon, required String title}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(

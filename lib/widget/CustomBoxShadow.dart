@@ -6,12 +6,12 @@ class CustomBoxShadow extends StatelessWidget {
   Widget child;
   double offsetRight;
   double offsetBottom;
-  Color color;
+  Color? color;
   double blurRadius;
   double borderRadius;
 
   CustomBoxShadow({
-    @required this.child,
+    required this.child,
     this.blurRadius = 7.0,
     this.borderRadius = 12,
     this.offsetBottom = 6.0,
@@ -26,7 +26,7 @@ class CustomBoxShadow extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
-            color: color != null ? color : boxShadowTwo.withOpacity(0.04),
+            color: color != null ? color! : boxShadowTwo.withOpacity(0.04),
             blurRadius: blurRadius, // soften the shadow
             spreadRadius: 0.0, //extend the shadow
             offset: Offset(

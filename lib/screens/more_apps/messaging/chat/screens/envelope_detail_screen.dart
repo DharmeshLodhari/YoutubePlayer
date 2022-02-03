@@ -13,12 +13,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class EnvelopeDetailScreen extends StatefulWidget {
   final arguments;
-  EnvelopeDetailScreen({@required this.arguments});
+  EnvelopeDetailScreen({required this.arguments});
 
   @override
   _EnvelopeDetailScreenState createState() =>
@@ -33,18 +32,18 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   _EnvelopeDetailScreenState({this.arguments});
 
-  CustomerProfile senderCustomer;
+  CustomerProfile? senderCustomer;
 
   // this variable will responsible for is the user is owner of the products and add
   // edit button on the product if user is owner
   bool isAuthor = false;
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
   bool isUserIsSimpleUser = false;
 
-  Map<String, dynamic> data;
+  Map<String, dynamic>? data;
 
-  Envelope envelope;
+  Envelope? envelope;
 
   bool isEmptyEnvelope = false;
 
@@ -60,13 +59,12 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
     data = arguments['data'];
     isLoading = true;
     if (mounted) setState(() {});
-    // debugPrint("DATA:- $data");
 
-    debugPrint("envelope ${envelope.toJson()}");
+    debugPrint("envelope ${envelope!.toJson()}");
     await getSearchedUser();
-    if (envelope.type != "empty-envelop") {
+    if (envelope!.type != "empty-envelop") {
       Envelope envelopeFromServer = await MessageAuth()
-          .getEnvelope(envelope: envelope, id: data['id'])
+          .getEnvelope(envelope: envelope!, id: data!['id'])
           .catchError((error) {
         deleteChatMessage();
         if (mounted) {
@@ -87,17 +85,15 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Future<void> getSearchedUser() async {
     CustomerProfile user = await UserAuth()
-        .fetchCustomerProfileWithAuth(envelope.fromCustomer)
+        .fetchCustomerProfileWithAuth(envelope!.fromCustomer)
         .catchError((error) {
       debugPrint("ERROR2:- $error");
-      Toast.show("ERROR2:- $error", context);
+      showToast(message: "ERROR2:- $error");
     });
-    if (user != null) {
-      senderCustomer = user;
+    senderCustomer = user;
 
-      if (senderCustomer.type.toLowerCase() == "user") {
-        isUserIsSimpleUser = true;
-      }
+    if (senderCustomer!.type!.toLowerCase() == "user") {
+      isUserIsSimpleUser = true;
     }
   }
 
@@ -107,14 +103,14 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
     if (isLoading) {
       return Scaffold(
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: Center(
           child: CircularLoadingIndicator(),
         ),
       );
     }
 
-    if (userBloc.user.userName == envelope.fromCustomer) {
+    if (userBloc.user.userName == envelope!.fromCustomer) {
       isAuthor = true;
     }
 
@@ -163,7 +159,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Widget getTitle() {
     return Text(
-      "Envelope from ${isAuthor ? "you" : senderCustomer.displayName()}",
+      "Envelope from ${isAuthor ? "you" : senderCustomer!.displayName()}",
       style: TextStyle(
           fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
     );
@@ -194,8 +190,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                           color: navyBlue),
                     ),
                     Text(
-                      "${moneyDisplayNormalizer(int.parse(envelope.amount))}" ??
-                          "",
+                      "${moneyDisplayNormalizer(int.parse(envelope!.amount!))}",
                       style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.w700,
@@ -207,7 +202,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
             height: 12,
           ),
           Text(
-            messageDecoderWithEmoji("${envelope.title ?? ""}"),
+            messageDecoderWithEmoji("${envelope!.title ?? ""}")!,
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
           ),
@@ -215,7 +210,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
             height: 12,
           ),
           Text(
-            messageDecoderWithEmoji("${envelope.message ?? ""}"),
+            messageDecoderWithEmoji("${envelope!.message ?? ""}")!,
             style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
           ),
@@ -225,8 +220,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   Widget getEnvelopeActions() {
-    return isAuthor && envelope.type == "empty-envelop" ||
-            isAuthor && !envelope.isOpen
+    return isAuthor && envelope!.type == "empty-envelop" ||
+            isAuthor && !envelope!.isOpen
         ? Container(
             child: CurvedButton(
               backgroundColor: mateRed,
@@ -245,7 +240,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     var result = await MessageAuth()
-        .cancelEnvelope(envelope: envelope, data: data)
+        .cancelEnvelope(envelope: envelope!, data: data!)
         .catchError((error) {});
 
     if (result != null) {
@@ -254,7 +249,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         return;
       } else {
         Navigator.pop(context);
-        Toast.show("Failed to cancel Envelope", context, duration: 2);
+        showToast(message: "Failed to cancel Envelope");
       }
     } else {
       deleteChatMessage();
@@ -353,7 +348,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                     backgroundColor: Colors.transparent,
                   ),
                 )
-              : senderCustomer.userAbout == null
+              : senderCustomer!.userAbout == null
                   ? Center(
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
@@ -361,7 +356,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                         backgroundColor: Colors.transparent,
                       ),
                     )
-                  : senderCustomer.userAbout.wallpaper == ""
+                  : senderCustomer!.userAbout!.wallpaper == ""
                       ? Image.asset(
                           "assets/images/home_screen_background.png",
                           width: double.infinity,
@@ -370,12 +365,14 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                       : GestureDetector(
                           onTap: () {
                             Navigator.of(context).pushNamed("/photo-viewer",
-                                arguments: senderCustomer.userAbout.wallpaper);
+                                arguments:
+                                    senderCustomer!.userAbout!.wallpaper);
                           },
                           child: CachedNetworkImage(
                             width: double.infinity,
                             height: double.infinity,
-                            imageUrl: senderCustomer.userAbout.wallpaper,
+                            errorWidget: imageErrorWidget,
+                            imageUrl: senderCustomer!.userAbout!.wallpaper,
                             fit: BoxFit.cover,
                             placeholder: (context, url) =>
                                 Center(child: CircularLoadingIndicator()),
@@ -389,7 +386,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
   Widget getProfilePhoto() {
     if (senderCustomer != null) {
-      Color borderColor = getUserTypeColor(user: senderCustomer);
+      Color borderColor = getUserTypeColor(user: senderCustomer!);
 
       return Container(
         alignment: Alignment.bottomLeft,
@@ -406,7 +403,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed("/photo-viewer",
-                        arguments: senderCustomer.avatar);
+                        arguments: senderCustomer!.avatar);
                   },
                   child: Container(
                     color: Colors.white,
@@ -415,7 +412,8 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
                       width: 88,
                       fit: BoxFit.fill,
                       filterQuality: FilterQuality.high,
-                      imageUrl: senderCustomer.avatar,
+                      imageUrl: senderCustomer!.avatar!,
+                      errorWidget: imageErrorWidget,
                     ),
                   ),
                 ),
@@ -460,7 +458,7 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
   }
 
   void deleteChatMessage() async {
-    ChatMessage chatMessage = ChatMessage.fromJson(data);
+    ChatMessage chatMessage = ChatMessage.fromJson(data!);
 
     Map<String, dynamic> deleteMessage = Map<String, dynamic>();
 

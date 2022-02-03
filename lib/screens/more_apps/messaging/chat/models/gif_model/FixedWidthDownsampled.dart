@@ -1,10 +1,10 @@
 class FixedWidthDownSampled {
-  String height;
-  String size;
-  String url;
-  String webp;
-  String webpSize;
-  String width;
+  String? height;
+  String? size;
+  String? url;
+  String? webp;
+  String? webpSize;
+  String? width;
 
   FixedWidthDownSampled(
       {this.height, this.size, this.url, this.webp, this.webpSize, this.width});

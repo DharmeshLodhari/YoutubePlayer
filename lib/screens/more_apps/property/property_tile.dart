@@ -15,7 +15,7 @@ import 'models/PropertyItem.dart';
 
 // ignore: must_be_immutable
 class PropertyTileWithHeart extends StatefulWidget {
-  String imageUrl;
+  String? imageUrl;
   PropertyTileWithHeart({this.imageUrl});
 
   @override
@@ -230,7 +230,7 @@ class _PropertyTileWithHeartState extends State<PropertyTileWithHeart> {
 }
 
 class PropertyImagesTile extends StatefulWidget {
-  final PropertyItem property;
+  final PropertyItem? property;
 
   PropertyImagesTile({this.property});
 
@@ -271,7 +271,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                 });
                               }
                             }),
-                        items: widget.property.images
+                        items: widget.property!.images!
                             .map(
                               (e) => InkWell(
                                 child: CachedNetworkImage(
@@ -291,12 +291,12 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                       Positioned(
                         bottom: 0,
                         left: MediaQuery.of(context).size.width / 2 -
-                            ((5 * widget.property.images.length) + 16),
+                            ((5 * widget.property!.images!.length) + 16),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: widget.property.images.map((url) {
-                            int index = widget.property.images.indexOf(url);
+                          children: widget.property!.images!.map((url) {
+                            int index = widget.property!.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
@@ -323,7 +323,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              widget.property.name,
+                              widget.property!.name!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -347,7 +347,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                           fontFamily: "Roborto"),
                                     ),
                                     Text(
-                                      widget.property.price,
+                                      widget.property!.price!,
                                       softWrap: false,
                                       overflow: TextOverflow.fade,
                                       style: TextStyle(
@@ -369,9 +369,9 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              widget.property.address1 +
+                              widget.property!.address1! +
                                   ", " +
-                                  widget.property.address2,
+                                  widget.property!.address2!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -391,7 +391,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
                                   width: 4,
                                 ),
                                 Text(
-                                  widget.property.rating,
+                                  widget.property!.rating!,
                                   style:
                                       TextStyle(fontSize: 14, color: blackFont),
                                 )
@@ -411,7 +411,7 @@ class _PropertyImagesTileState extends State<PropertyImagesTile> {
 }
 
 class RentPropertyTile extends StatefulWidget {
-  final PropertyItem property;
+  final PropertyItem? property;
 
   RentPropertyTile({this.property});
 
@@ -421,7 +421,7 @@ class RentPropertyTile extends StatefulWidget {
 
 class _RentPropertyTileState extends State<RentPropertyTile> {
   int _current = 0;
-  bool isAvailable;
+  late bool isAvailable;
   bool isChange = false;
 
   @override
@@ -461,7 +461,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                       });
                                     }
                                   }),
-                              items: widget.property.images
+                              items: widget.property!.images!
                                   .map(
                                     (e) => CachedNetworkImage(
                                       width: double.infinity,
@@ -475,13 +475,13 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                             Positioned(
                               bottom: 0,
                               left: MediaQuery.of(context).size.width / 2 -
-                                  ((5 * widget.property.images.length) + 16),
+                                  ((5 * widget.property!.images!.length) + 16),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: widget.property.images.map((url) {
+                                children: widget.property!.images!.map((url) {
                                   int index =
-                                      widget.property.images.indexOf(url);
+                                      widget.property!.images!.indexOf(url);
                                   return Container(
                                     width: 5.0,
                                     height: 5.0,
@@ -544,7 +544,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                             fontFamily: "Roborto"),
                                       ),
                                       Text(
-                                        widget.property.price,
+                                        widget.property!.price!,
                                         softWrap: false,
                                         overflow: TextOverflow.fade,
                                         style: TextStyle(
@@ -574,7 +574,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                 height: 4,
                               ),
                               Text(
-                                widget.property.name,
+                                widget.property!.name!,
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 maxLines: 1,
@@ -592,9 +592,9 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    widget.property.address1 +
+                                    widget.property!.address1! +
                                         ", " +
-                                        widget.property.address2,
+                                        widget.property!.address2!,
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                     style: TextStyle(
@@ -614,7 +614,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
                                         width: 4,
                                       ),
                                       Text(
-                                        widget.property.rating,
+                                        widget.property!.rating!,
                                         style: TextStyle(
                                             fontSize: 14, color: blackFont),
                                       )
@@ -864,7 +864,7 @@ class _RentPropertyTileState extends State<RentPropertyTile> {
 }
 
 class RentPropertyTileWithoutHeart extends StatefulWidget {
-  final PropertyItem property;
+  final PropertyItem? property;
 
   RentPropertyTileWithoutHeart({this.property});
 
@@ -876,7 +876,7 @@ class RentPropertyTileWithoutHeart extends StatefulWidget {
 class _RentPropertyTileWithoutHeartState
     extends State<RentPropertyTileWithoutHeart> {
   int _current = 0;
-  bool isAvailable;
+  late bool isAvailable;
   bool isChange = false;
 
   @override
@@ -916,7 +916,7 @@ class _RentPropertyTileWithoutHeartState
                                       });
                                     }
                                   }),
-                              items: widget.property.images
+                              items: widget.property!.images!
                                   .map(
                                     (e) => CachedNetworkImage(
                                       width: double.infinity,
@@ -930,13 +930,13 @@ class _RentPropertyTileWithoutHeartState
                             Positioned(
                               bottom: 0,
                               left: MediaQuery.of(context).size.width / 2 -
-                                  ((5 * widget.property.images.length) + 16),
+                                  ((5 * widget.property!.images!.length) + 16),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: widget.property.images.map((url) {
+                                children: widget.property!.images!.map((url) {
                                   int index =
-                                      widget.property.images.indexOf(url);
+                                      widget.property!.images!.indexOf(url);
                                   return Container(
                                     width: 5.0,
                                     height: 5.0,
@@ -999,7 +999,7 @@ class _RentPropertyTileWithoutHeartState
                                             fontFamily: "Roborto"),
                                       ),
                                       Text(
-                                        widget.property.price,
+                                        widget.property!.price!,
                                         softWrap: false,
                                         overflow: TextOverflow.fade,
                                         style: TextStyle(
@@ -1029,7 +1029,7 @@ class _RentPropertyTileWithoutHeartState
                                 height: 4,
                               ),
                               Text(
-                                widget.property.name,
+                                widget.property!.name!,
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 maxLines: 1,
@@ -1047,9 +1047,9 @@ class _RentPropertyTileWithoutHeartState
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    widget.property.address1 +
+                                    widget.property!.address1! +
                                         ", " +
-                                        widget.property.address2,
+                                        widget.property!.address2!,
                                     softWrap: false,
                                     overflow: TextOverflow.fade,
                                     style: TextStyle(
@@ -1069,7 +1069,7 @@ class _RentPropertyTileWithoutHeartState
                                         width: 4,
                                       ),
                                       Text(
-                                        widget.property.rating,
+                                        widget.property!.rating!,
                                         style: TextStyle(
                                             fontSize: 14, color: blackFont),
                                       )
@@ -1270,7 +1270,7 @@ class _RentPropertyTileWithoutHeartState
 }
 
 class PartialPropertyItemTile extends StatelessWidget {
-  final PartialPropertyItem property;
+  final PartialPropertyItem? property;
 
   PartialPropertyItemTile({this.property});
 
@@ -1295,7 +1295,7 @@ class PartialPropertyItemTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: property.image,
+                    imageUrl: property!.image!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
@@ -1333,7 +1333,7 @@ class PartialPropertyItemTile extends StatelessWidget {
                                     fontFamily: "Roborto"),
                               ),
                               Text(
-                                property.price,
+                                property!.price!,
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(
@@ -1348,7 +1348,7 @@ class PartialPropertyItemTile extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      property.shortDescription,
+                      property!.shortDescription!,
                       softWrap: false,
                       overflow: TextOverflow.fade,
                       style: TextStyle(
@@ -1369,7 +1369,7 @@ class PartialPropertyItemTile extends StatelessWidget {
 }
 
 class CityItemCard extends StatelessWidget {
-  final CityData city;
+  final CityData? city;
 
   CityItemCard({this.city});
 
@@ -1392,7 +1392,7 @@ class CityItemCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  city.name,
+                  city!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -1407,7 +1407,7 @@ class CityItemCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: city.image,
+                    imageUrl: city!.image!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,

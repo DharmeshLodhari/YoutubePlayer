@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -12,10 +14,14 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:toast/toast.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class AddBvnNumber extends StatefulWidget {
+  var arguments;
+
+  AddBvnNumber({this.arguments});
+
   @override
   _AddBvnNumberState createState() => _AddBvnNumberState();
 }
@@ -23,9 +29,9 @@ class AddBvnNumber extends StatefulWidget {
 class _AddBvnNumberState extends State<AddBvnNumber> {
   final _formKeyTwo = GlobalKey<FormState>();
 
-  TextEditingController bvnNumberController;
+  TextEditingController? bvnNumberController;
 
-  Map<String, String> selectedIdType;
+  Map<String, String>? selectedIdType;
 
   List<Map<String, String>> idTypes = [
     {"name": "Nigerian Passport", "value": "passport"},
@@ -33,11 +39,25 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     {"name": "Driver's License", "value": "driving_license"},
   ];
 
-  String pickedImage;
+  String? pickedGovernmentId;
+  String? pickedBusinessRegistrationLicense;
+
+  VirtualAccount? virtualAccount;
+  String? selectedTier;
 
   @override
   void initState() {
     bvnNumberController = TextEditingController();
+    if (widget.arguments != null) {
+      if (widget.arguments["account"] != null) {
+        virtualAccount = widget.arguments["account"];
+      }
+      if (widget.arguments["selected_tier"] != null) {
+        selectedTier = widget.arguments["selected_tier"]
+            .toString()
+            .replaceAll("Tier ", "");
+      }
+    }
     super.initState();
   }
 
@@ -50,7 +70,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -89,34 +109,82 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           key: _formKeyTwo,
           child: Column(
             children: <Widget>[
-              addBvnNumberTextField(),
+              buildBvnNumberDropDown(),
+              buildGetIdType(),
+              buildBusinessRegistrationLicense(),
+              getVerificationWarning(),
               SizedBox(
                 height: 16,
               ),
-              getIdTypeDropDown(),
-              SizedBox(
-                height: 16,
-              ),
-              selectedIdType != null
-                  ? Column(
-                      children: [
-                        getIdPhoto(),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        getVerificationWarning(),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        getSubmitButton()
-                      ],
-                    )
-                  : Container(),
+              getSubmitButton(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget buildBvnNumberDropDown() {
+    if ((selectedTier == "2" || selectedTier == "3") &&
+        virtualAccount!.accountTier!.tierType! == "1") {
+      return Column(
+        children: [
+          addBvnNumberTextField(),
+          SizedBox(
+            height: 16,
+          ),
+        ],
+      );
+    }
+    return Container();
+  }
+
+  Widget buildGetIdType() {
+    if (selectedTier == "3" &&
+        (virtualAccount!.accountTier!.tierType! == "2" ||
+            virtualAccount!.accountTier!.tierType! == "1")) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          getIdTypeDropDown(),
+          SizedBox(
+            height: 16,
+          ),
+          Text(
+            "Id proof",
+            style: TextStyle(color: darkGrey, fontSize: 14),
+          ),
+          getIdPhoto(),
+          SizedBox(
+            height: 16,
+          ),
+        ],
+      );
+    }
+    return Container();
+  }
+
+  Widget buildBusinessRegistrationLicense() {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    if (selectedTier == "3" &&
+        virtualAccount!.accountTier!.tierType! == "1" &&
+        userBloc.user.type != "user") {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Business registration license",
+            style: TextStyle(color: darkGrey, fontSize: 14),
+          ),
+          getBusinessRegistrationLicense(),
+          SizedBox(
+            height: 16,
+          ),
+        ],
+      );
+    }
+    return Container();
   }
 
   Widget showBackArrow() {
@@ -138,7 +206,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
 
   Widget getSubmitButton() {
     return CurvedButton(
-      onPressed: pickedImage == null ? null : onSubmit,
+      onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "SUBMIT",
@@ -154,11 +222,14 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         barrierDismissible: false,
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
-    if (_formKeyTwo.currentState.validate()) {
+    if (_formKeyTwo.currentState!.validate()) {
       var data = {
-        "bvn_number": bvnNumberController.text,
-        "government_id_type": selectedIdType["value"],
-        "government_id": pickedImage
+        "bvn_number": bvnNumberController!.text,
+        "government_id_type": selectedIdType!["value"],
+        "government_id": pickedGovernmentId ?? "",
+        "business_registration_license":
+            pickedBusinessRegistrationLicense ?? "",
+        "tier": selectedTier,
       };
       PaymentAndBankingAuth().addBvnNumberAndIdProof(data).then((value) {
         if (value) {
@@ -168,7 +239,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       }).catchError((e) {
         Navigator.pop(context);
         debugPrint(e.toString());
-        Toast.show(e, context, gravity: Toast.BOTTOM, textColor: Colors.white);
+        showToast(message: e);
       });
     } else {
       Navigator.pop(context);
@@ -208,9 +279,9 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: InkWell(
-              child: pickedImage != null
+              child: pickedGovernmentId != null
                   ? Image.file(
-                      File(pickedImage),
+                      File(pickedGovernmentId!),
                       fit: BoxFit.fitWidth,
                     )
                   : Column(
@@ -231,7 +302,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                       ],
                     ),
               onTap: () {
-                pickImage();
+                pickIdImage();
               },
             ),
           ),
@@ -240,34 +311,117 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     );
   }
 
-  void pickImage() async {
+  void pickIdImage() async {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context).selectTheImageSource),
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).camera),
+                  child: Text(AppLocalization.of(context)!.camera),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallery),
+                  child: Text(AppLocalization.of(context)!.gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
             ));
 
     if (imageSource != null) {
-      ImagePicker().getImage(source: imageSource).then((value) async {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String croppedImage = await ImageCrop().cropImage(value.path);
+          String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
           if (mounted) setState(() {});
 
-          pickedImage = croppedImage;
+          pickedGovernmentId = croppedImage;
+        }
+      });
+    }
+  }
+
+  Widget getBusinessRegistrationLicense() {
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: MediaQuery.of(context).size.width - 32,
+          // height: MediaQuery.of(context).size.width - 32,
+          constraints:
+              BoxConstraints(minHeight: MediaQuery.of(context).size.width / 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: InkWell(
+              child: pickedBusinessRegistrationLicense != null
+                  ? Image.file(
+                      File(pickedBusinessRegistrationLicense!),
+                      fit: BoxFit.fitWidth,
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          SlydoAppIcon.add_image,
+                          color: darkGrey,
+                          size: 55,
+                        ),
+                        SizedBox(
+                          height: 16,
+                        ),
+                        Text(
+                          "Upload image",
+                          style: TextStyle(color: darkGrey, fontSize: 14),
+                        ),
+                      ],
+                    ),
+              onTap: () {
+                pickBusinessProof();
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void pickBusinessProof() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
+
+    if (imageSource != null) {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
+        if (value != null) {
+          /// for cropping the image
+          String? croppedImage = await ImageCrop().cropImage(value.path);
+          if (croppedImage == null) {
+            return;
+          }
+          if (mounted) setState(() {});
+
+          pickedBusinessRegistrationLicense = croppedImage;
         }
       });
     }
@@ -295,7 +449,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedIdType != null ? selectedIdType["name"] : "",
+              selectedIdType != null ? selectedIdType!["name"]! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -338,10 +492,10 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                       child: Column(
                         children: idTypes.map<Widget>((idType) {
                           if (selectedIdType == null ||
-                              selectedIdType["name"] != idType["name"]) {
+                              selectedIdType!["name"] != idType["name"]) {
                             return ListTile(
                               title: Text(
-                                idType["name"],
+                                idType["name"]!,
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(
@@ -361,7 +515,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                             child: ListTile(
                               dense: true,
                               title: Text(
-                                idType["name"],
+                                idType["name"]!,
                                 overflow: TextOverflow.fade,
                                 softWrap: false,
                                 style: TextStyle(

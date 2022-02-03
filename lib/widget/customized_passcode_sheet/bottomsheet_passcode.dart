@@ -10,14 +10,14 @@ import 'package:provider/provider.dart';
 class BottomSheetPassCode {
   BuildContext context;
   GestureTapCallback isValidCallback;
-  GestureTapCallback cancelCallBack;
+  GestureTapCallback? cancelCallBack;
   final StreamController<bool> _verificationNotifier =
       StreamController<bool>.broadcast();
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
   BottomSheetPassCode(
-      {@required this.context,
-      @required this.isValidCallback,
+      {required this.context,
+      required this.isValidCallback,
       this.cancelCallBack}) {
     userBloc = Provider.of<UserBloc>(context, listen: false);
 
@@ -36,7 +36,7 @@ class BottomSheetPassCode {
               height: 375,
               child: CustomizedPassCodeScreen(
                 title: Text(
-                  AppLocalization.of(context).enterPassCode,
+                  AppLocalization.of(context)!.enterPassCode,
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 14,
@@ -51,7 +51,7 @@ class BottomSheetPassCode {
                       bottom:
                           MediaQuery.of(context).size.height > 600 ? 25 : 8),
                   child: Text(
-                    AppLocalization.of(context).cancel,
+                    AppLocalization.of(context)!.cancel,
                     style: TextStyle(
                       color: HexColor("#8D92A3"),
                       fontSize: 14,

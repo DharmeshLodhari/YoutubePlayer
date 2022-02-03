@@ -9,7 +9,7 @@ enum TrimMode {
 class ReadMoreText extends StatefulWidget {
   const ReadMoreText(
     this.data, {
-    Key key,
+    Key? key,
     this.trimExpandedText = 'show less',
     this.trimCollapsedText = 'read more',
     this.colorClickableText,
@@ -27,27 +27,26 @@ class ReadMoreText extends StatefulWidget {
     this.delimiter = '...',
     this.delimiterStyle,
     this.callback,
-  })  : assert(data != null),
-        super(key: key);
+  }) : super(key: key);
 
   final String delimiter;
   final String data;
   final String trimExpandedText;
   final String trimCollapsedText;
-  final Color colorClickableText;
+  final Color? colorClickableText;
   final int trimLength;
   final int trimLines;
   final TrimMode trimMode;
-  final TextStyle style;
-  final TextAlign textAlign;
-  final TextDirection textDirection;
-  final Locale locale;
-  final double textScaleFactor;
-  final String semanticsLabel;
-  final TextStyle moreStyle;
-  final TextStyle lessStyle;
-  final TextStyle delimiterStyle;
-  final Function(bool val) callback;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+  final TextDirection? textDirection;
+  final Locale? locale;
+  final double? textScaleFactor;
+  final String? semanticsLabel;
+  final TextStyle? moreStyle;
+  final TextStyle? lessStyle;
+  final TextStyle? delimiterStyle;
+  final Function(bool val)? callback;
 
   @override
   ReadMoreTextState createState() => ReadMoreTextState();
@@ -70,8 +69,8 @@ class ReadMoreTextState extends State<ReadMoreText> {
   @override
   Widget build(BuildContext context) {
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
-    TextStyle effectiveTextStyle = widget.style;
-    if (widget.style == null || widget.style.inherit) {
+    TextStyle? effectiveTextStyle = widget.style;
+    if (widget.style == null || widget.style!.inherit) {
       effectiveTextStyle = defaultTextStyle.style.merge(widget.style);
     }
 
@@ -81,14 +80,16 @@ class ReadMoreTextState extends State<ReadMoreText> {
     final textScaleFactor =
         widget.textScaleFactor ?? MediaQuery.textScaleFactorOf(context);
     final overflow = defaultTextStyle.overflow;
-    final locale =
-        widget.locale ?? Localizations.localeOf(context, nullOk: true);
+    final locale = widget.locale ??
+        Localizations.localeOf(
+          context,
+        );
     final colorClickableText =
-        widget.colorClickableText ?? Theme.of(context).accentColor;
+        widget.colorClickableText ?? Theme.of(context).colorScheme.secondary;
     final _defaultLessStyle = widget.lessStyle ??
-        effectiveTextStyle.copyWith(color: colorClickableText);
+        effectiveTextStyle!.copyWith(color: colorClickableText);
     final _defaultMoreStyle = widget.moreStyle ??
-        effectiveTextStyle.copyWith(color: colorClickableText);
+        effectiveTextStyle!.copyWith(color: colorClickableText);
     final _defaultDelimiterStyle = widget.delimiterStyle ?? effectiveTextStyle;
 
     TextSpan link = TextSpan(
@@ -140,7 +141,7 @@ class ReadMoreTextState extends State<ReadMoreText> {
 
         // Get the endIndex of data
         bool linkLongerThanLine = false;
-        int endIndex;
+        int? endIndex;
 
         if (linkSize.width < maxWidth) {
           final pos = textPainter.getPositionForOffset(Offset(

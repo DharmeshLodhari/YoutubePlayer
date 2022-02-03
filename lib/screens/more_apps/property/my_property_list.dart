@@ -1,11 +1,11 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/PropertyItem.dart';
 import 'property_auth.dart';
@@ -24,7 +24,7 @@ class _MyPropertyListState extends State<MyPropertyList> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  PropertyDashboardBloc _propertyDashboardBloc;
+  late PropertyDashboardBloc _propertyDashboardBloc;
 
   @override
   void initState() {
@@ -51,9 +51,9 @@ class _MyPropertyListState extends State<MyPropertyList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });

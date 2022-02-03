@@ -13,19 +13,27 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
 class ShareManager {
-  StreamSubscription _intentDataStreamSubscription;
+  StreamSubscription? _intentDataStreamSubscription;
 
-  List<SharedMediaFile> _sharedFiles;
-  String _sharedText;
-  Timer _timerForSharingDataListen;
+  static final ShareManager _shareManager = ShareManager._internal();
+
+  factory ShareManager() {
+    return _shareManager;
+  }
+
+  ShareManager._internal();
+
+  List<SharedMediaFile>? _sharedFiles;
+  String? _sharedText;
+  Timer? _timerForSharingDataListen;
   Duration _refreshDurationInterval = Duration(seconds: 1);
 
   void initializeShareManager() {
@@ -38,10 +46,9 @@ class ShareManager {
     // For sharing images coming from outside the app while the app is in the memory
     _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
         .listen((List<SharedMediaFile> value) {
-      print("ReceiveSharedMedia1:" +
-          (value?.map((f) => f.path)?.join(",") ?? ""));
+      print("ReceiveSharedMedia1:" + value.map((f) => f.path).join(","));
       _sharedFiles = value;
-      if (_sharedFiles != null && _sharedFiles.isNotEmpty) {
+      if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
       }
     }, onError: (err) {
@@ -50,10 +57,9 @@ class ShareManager {
 
     // For sharing images coming from outside the app while the app is closed
     ReceiveSharingIntent.getInitialMedia().then((List<SharedMediaFile> value) {
-      print("ReceiveSharedMedia2:" +
-          (value?.map((f) => f.path)?.join(",") ?? ""));
+      print("ReceiveSharedMedia2:" + (value.map((f) => f.path).join(",")));
       _sharedFiles = value;
-      if (_sharedFiles != null && _sharedFiles.isNotEmpty) {
+      if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
         initializeNavigationTimer();
       }
     });
@@ -74,7 +80,7 @@ class ShareManager {
     });
 
     // For sharing or opening urls/text coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialText().then((String value) {
+    ReceiveSharingIntent.getInitialText().then((String? value) {
       print("ReceiveSharedText2: $value");
       _sharedText = value;
       if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
@@ -102,10 +108,10 @@ class ShareManager {
         Timer.periodic(_refreshDurationInterval, (time) {
       try {
         if (myGlobals.navigationKey.currentContext != null) {
-          _timerForSharingDataListen.cancel();
+          _timerForSharingDataListen!.cancel();
           print("<====== Opening user list ======>");
           RouteProvider routeProvider = Provider.of<RouteProvider>(
-              myGlobals.navigationKey.currentContext,
+              myGlobals.navigationKey.currentContext!,
               listen: false);
 
           if (routeProvider.routes.contains("/dashboard") ||
@@ -122,23 +128,23 @@ class ShareManager {
   void openPopup() async {
     if (_sharedText != null && _sharedText != "" && _sharedText != "null") {
       debugPrint("ShareContext===> Text ===> $_sharedText");
-      String text = _sharedText.trim();
-      _timerForSharingDataListen.cancel();
+      String text = _sharedText!.trim();
+      _timerForSharingDataListen!.cancel();
       disposeSharedValue();
-      List<ChatConversation> selectedUser = await ShareInChat()
-          .selectShareCustomer(myGlobals.navigationKey.currentContext);
+      List<ChatConversation?> selectedUser = await ShareInChat()
+          .selectShareCustomer(myGlobals.navigationKey.currentContext!);
 
       for (int i = 0; i < selectedUser.length; i++) {
-        await sendTextMessage(text, selectedUser[i]);
+        await sendTextMessage(text, selectedUser[i]!);
       }
-    } else if (_sharedFiles != null && _sharedFiles.isNotEmpty) {
+    } else if (_sharedFiles != null && _sharedFiles!.isNotEmpty) {
       debugPrint("ShareContext===> Media ===> $_sharedFiles");
       List<SharedMediaFile> files = [];
-      files.addAll(_sharedFiles);
-      _timerForSharingDataListen.cancel();
+      files.addAll(_sharedFiles!);
+      _timerForSharingDataListen!.cancel();
       disposeSharedValue();
-      List<ChatConversation> selectedUser = await ShareInChat()
-          .selectShareCustomer(myGlobals.navigationKey.currentContext);
+      List<ChatConversation?> selectedUser = await ShareInChat()
+          .selectShareCustomer(myGlobals.navigationKey.currentContext!);
 
       for (int i = 0; i < selectedUser.length; i++) {
         for (int j = 0; j < files.length; j++) {
@@ -148,15 +154,15 @@ class ShareManager {
     }
   }
 
-  Future<void> sendMediaMessage(ChatConversation chatConversation,
+  Future<void> sendMediaMessage(ChatConversation? chatConversation,
       SharedMediaFile sharedMediaFile) async {
     UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
     File file = File(sharedMediaFile.path);
 
-    String mediaType = getFileKind(sharedMediaFile);
+    String? mediaType = getFileKind(sharedMediaFile);
 
     if (mediaType == null) return;
 
@@ -167,14 +173,16 @@ class ShareManager {
     _data['read_by_author'] = true;
     _data['created_at'] = DateTime.now().toUtc().toString();
     _data['type'] = "chatroom_message";
-    _data['conversation'] = chatConversation.conversationId;
+    _data['conversation'] = chatConversation!.conversationId;
     _data['author'] = userBloc.user.userName;
 
     debugPrint("ShareContentMediaData====> $_data");
 
-    File poster;
+    File? poster;
     if (mediaType == "video") {
-      String posterPath = await getVideoThumbnail(file);
+      String? posterPath = await getVideoThumbnail(file);
+
+      if (posterPath == null) return;
       poster = File(posterPath);
     }
 
@@ -187,7 +195,7 @@ class ShareManager {
     });
   }
 
-  String getFileKind(SharedMediaFile file) {
+  String? getFileKind(SharedMediaFile file) {
     if (file.type == SharedMediaType.IMAGE) {
       return "image";
     } else if (file.type == SharedMediaType.VIDEO) {
@@ -199,7 +207,7 @@ class ShareManager {
   Future<void> sendTextMessage(
       String message, ChatConversation chatConversation) async {
     UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
     Map<String, dynamic> data = {
@@ -233,14 +241,12 @@ class ShareManager {
           messageData: data, conversationId: chatConversation.conversationId);
       await sendDataToSocket(data);
     } else {
-      Toast.show("Please check your connection !!",
-          myGlobals.navigationKey.currentContext,
-          textColor: Colors.white);
+      showToast(message: "Please check your connection !!");
     }
   }
 
   void updateConnectionList(
-      {Map<String, dynamic> messageData, String conversationId}) {
+      {required Map<String, dynamic> messageData, String? conversationId}) {
     if (messageData.containsKey("created_at")) {
       DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();
       int time = dateTime.millisecondsSinceEpoch;
@@ -248,7 +254,7 @@ class ShareManager {
       debugPrint("Last message Time => $time");
 
       ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-          myGlobals.scaffoldKey.currentContext,
+          myGlobals.scaffoldKey.currentContext!,
           listen: false);
       connectionListBloc.updateLastMessageTime(
           conversationId: conversationId, time: time);

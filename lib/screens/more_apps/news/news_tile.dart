@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class NewsTile extends StatefulWidget {
-  final NewsListItem newsListItem;
+  final NewsListItem? newsListItem;
 
-  const NewsTile({Key key, this.newsListItem}) : super(key: key);
+  const NewsTile({Key? key, this.newsListItem}) : super(key: key);
 
   @override
   _NewsTileState createState() => _NewsTileState();
@@ -41,7 +41,8 @@ class _NewsTileState extends State<NewsTile> {
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.fill,
-                        imageUrl: widget.newsListItem.image,
+                        errorWidget: imageErrorWidget,
+                        imageUrl: widget.newsListItem?.image ?? "",
                       ),
                     ),
                     Positioned(
@@ -69,7 +70,7 @@ class _NewsTileState extends State<NewsTile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.newsListItem.title,
+                        widget.newsListItem?.title ?? "",
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -82,7 +83,7 @@ class _NewsTileState extends State<NewsTile> {
                         height: 4,
                       ),
                       Text(
-                        widget.newsListItem.description,
+                        widget.newsListItem?.description ?? "",
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -102,9 +103,9 @@ class _NewsTileState extends State<NewsTile> {
 }
 
 class SubscriptionTile extends StatelessWidget {
-  final SubscriptionItem subscriptionItem;
+  final SubscriptionItem? subscriptionItem;
 
-  const SubscriptionTile({Key key, this.subscriptionItem}) : super(key: key);
+  const SubscriptionTile({Key? key, this.subscriptionItem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -113,10 +114,11 @@ class SubscriptionTile extends StatelessWidget {
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: subscriptionItem.image,
+            imageUrl: subscriptionItem?.image ?? "",
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fitWidth,
             filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
           ),
         ));
 
@@ -130,7 +132,7 @@ class SubscriptionTile extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           title: Text(
-            subscriptionItem.name,
+            subscriptionItem?.name ?? "",
             maxLines: 1,
             style: TextStyle(
               color: blackFont,

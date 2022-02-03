@@ -1,6 +1,6 @@
 class PartialMovieItem {
-  int id;
-  String poster;
+  int? id;
+  String? poster;
 
   PartialMovieItem({this.id, this.poster});
 

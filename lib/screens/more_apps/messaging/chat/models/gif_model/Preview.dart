@@ -1,8 +1,8 @@
 class Preview {
-  String height;
-  String mp4;
-  String mp4Size;
-  String width;
+  String? height;
+  String? mp4;
+  String? mp4Size;
+  String? width;
 
   Preview({this.height, this.mp4, this.mp4Size, this.width});
 

@@ -5,17 +5,17 @@ import 'Partner.dart';
 import 'Review.dart';
 
 class HotelRoomDetailItem {
-  String about;
-  List<String> images;
-  List<Location> location;
-  String name;
-  String ownerAvatar;
-  String ownerName;
-  String ownerUserName;
-  List<Partner> partners;
-  List<PartialHotelRoomItem> recommendedItem;
-  List<Review> reviews;
-  String shortDetail;
+  String? about;
+  List<String>? images;
+  List<Location>? location;
+  String? name;
+  String? ownerAvatar;
+  String? ownerName;
+  String? ownerUserName;
+  List<Partner>? partners;
+  List<PartialHotelRoomItem>? recommendedItem;
+  List<Review>? reviews;
+  String? shortDetail;
 
   HotelRoomDetailItem(
       {this.about,
@@ -69,17 +69,17 @@ class HotelRoomDetailItem {
       data['images'] = this.images;
     }
     if (this.location != null) {
-      data['location'] = this.location.map((v) => v.toJson()).toList();
+      data['location'] = this.location!.map((v) => v.toJson()).toList();
     }
     if (this.partners != null) {
-      data['partners'] = this.partners.map((v) => v.toJson()).toList();
+      data['partners'] = this.partners!.map((v) => v.toJson()).toList();
     }
     if (this.recommendedItem != null) {
       data['recommended_item'] =
-          this.recommendedItem.map((v) => v.toJson()).toList();
+          this.recommendedItem!.map((v) => v.toJson()).toList();
     }
     if (this.reviews != null) {
-      data['reviews'] = this.reviews.map((v) => v.toJson()).toList();
+      data['reviews'] = this.reviews!.map((v) => v.toJson()).toList();
     }
     return data;
   }

@@ -1,8 +1,8 @@
 class Participant {
-  String avatar;
-  String fullName;
-  String type;
-  String userName;
+  String? avatar;
+  String? fullName;
+  String? type;
+  String? userName;
 
   Participant({this.avatar, this.fullName, this.type, this.userName});
 

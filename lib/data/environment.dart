@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 
+/// This File is use to set environment SERVER Urls of the app
+/// PRODUCTION & DEVELOPMENT
+
 enum AppType { DEVELOPMENT, PRODUCTION }
 
 class AppConfig {
   static final AppConfig _appConfig = AppConfig._internal();
 
-  static AppType appType;
+  static AppType? appType;
 
-  static String baseUrl;
-  static String localHost;
-  static String gifApiKey;
-  static String socketUrl;
-  static String googleMapApiKey;
-  static String chatUrl;
+  static late String baseUrl;
+  static late String localHost;
+  static late String gifApiKey;
+  static String? socketUrl;
+  static String? googleMapApiKey;
+  static late String chatUrl;
+  static String? termsAndCondition;
+  static String? privacyPolicy;
 
   static void initialize() {
     const BUILD_TYPE =
@@ -34,6 +39,8 @@ class AppConfig {
       socketUrl = "wss://devchat.slydo.co/ws/main";
       chatUrl = "https://devchat.slydo.co";
       googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      termsAndCondition = "https://slydo.co/terms/";
+      privacyPolicy = "https://slydo.co/privacy/";
     } else if (appType == AppType.PRODUCTION) {
       baseUrl = "https://api.slydo.co";
       localHost = "https://127.0.0.1:8080";
@@ -41,6 +48,8 @@ class AppConfig {
       socketUrl = "wss://chat.slydo.co/ws/main";
       chatUrl = "https://chat.slydo.co";
       googleMapApiKey = "AIzaSyCLDiXFm1mRQEsutNrxX_Hv-sHrbhvASzY";
+      termsAndCondition = "https://slydo.co/terms/";
+      privacyPolicy = "https://slydo.co/privacy/";
     }
   }
 

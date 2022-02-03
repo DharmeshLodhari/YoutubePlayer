@@ -15,15 +15,14 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../utils.dart';
 
 class ProductTileForChatMessage extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
-  ProductTileForChatMessage({@required this.message, this.chatConversation});
+  ProductTileForChatMessage({required this.message, this.chatConversation});
 
   @override
   _ProductTileForChatMessageState createState() =>
@@ -31,12 +30,12 @@ class ProductTileForChatMessage extends StatefulWidget {
 }
 
 class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
-  Product product;
+  Product? product;
 
-  BasketBloc basketBloc;
+  late BasketBloc basketBloc;
 
-  UserBloc userBloc;
-  CustomerProfileBloc customerProfileBloc;
+  late UserBloc userBloc;
+  late CustomerProfileBloc customerProfileBloc;
 
   @override
   void initState() {
@@ -45,15 +44,15 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.message["meta_data"] is String) {
-      product = Product.fromJson(jsonDecode(widget.message["meta_data"]));
-    } else if (widget.message["meta_data"] is Map) {
-      product = Product.fromJson(widget.message["meta_data"]);
+    if (widget.message!["meta_data"] is String) {
+      product = Product.fromJson(jsonDecode(widget.message!["meta_data"]));
+    } else if (widget.message!["meta_data"] is Map) {
+      product = Product.fromJson(widget.message!["meta_data"]);
     }
 
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return GestureDetector(
@@ -78,15 +77,15 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                   //     : MediaQuery.of(context).size.width / 1.65,
                   maxWidth: MediaQuery.of(context).size.width / 1.50,
                   minWidth: MediaQuery.of(context).size.width / 1.50,
-                  maxHeight: product.seller == userBloc.user.userName
+                  maxHeight: product!.seller == userBloc.user.userName
                       ? MediaQuery.of(context).size.width / 2.5
                       : MediaQuery.of(context).size.width / 2,
                 ),
                 decoration: BoxDecoration(
-                  color: widget.chatConversation.isGroupConversation
+                  color: widget.chatConversation!.isGroupConversation!
                       ? isSend
                           ? Colors.transparent
-                          : chatBackgroundColor
+                          : Colors.white
                       : Colors.transparent,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
@@ -96,12 +95,12 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
-                    horizontal: widget.chatConversation.isGroupConversation
+                    horizontal: widget.chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
                         : 0,
-                    vertical: widget.chatConversation.isGroupConversation
+                    vertical: widget.chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
@@ -110,13 +109,13 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.chatConversation.isGroupConversation
-                        ? widget.message['author'] != userBloc.user.userName
+                    widget.chatConversation!.isGroupConversation!
+                        ? widget.message!['author'] != userBloc.user.userName
                             ? Column(
                                 children: [
                                   Text(
-                                    widget.message['author_full_name'] ??
-                                        widget.message['author'],
+                                    widget.message!['author_full_name'] ??
+                                        widget.message!['author'],
                                     style: TextStyle(
                                         color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
@@ -151,7 +150,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                     Expanded(
                                       child: CachedNetworkImage(
                                         width: double.infinity,
-                                        imageUrl: product.cover,
+                                        imageUrl: product!.cover!,
                                         fit: BoxFit.fill,
                                         filterQuality: FilterQuality.high,
                                         progressIndicatorBuilder:
@@ -165,7 +164,8 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                             backgroundColor: Colors.transparent,
                                           ),
                                         ),
-                                        errorWidget: imageErrorWidget,
+                                        errorWidget:
+                                            productAndServiceErrorWidget,
                                       ),
                                     ),
                                     Container(
@@ -177,7 +177,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  product.name,
+                                                  product!.name!,
                                                   maxLines: 1,
                                                   style: TextStyle(
                                                       fontWeight:
@@ -193,7 +193,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                 text: TextSpan(children: [
                                                   TextSpan(
                                                       text: worldCurrencies[
-                                                          product.currency],
+                                                          product!.currency!],
                                                       style: TextStyle(
                                                           fontFamily: "Roboto",
                                                           color: navyBlue,
@@ -204,7 +204,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                       // text: widget.product.price.toString(),
                                                       text:
                                                           moneyDisplayNormalizer(
-                                                              int.parse(product
+                                                              int.parse(product!
                                                                   .price
                                                                   .toString())),
                                                       style: TextStyle(
@@ -217,7 +217,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                               )
                                             ],
                                           ),
-                                          product.seller ==
+                                          product!.seller ==
                                                   userBloc.user.userName
                                               ? Container(
                                                   height: 4,
@@ -255,7 +255,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                                     customerProfileBloc
                                                                             .customer =
                                                                         await UserAuth()
-                                                                            .fetchCustomerProfile(product.seller);
+                                                                            .fetchCustomerProfile(product!.seller);
 
                                                                     Navigator.of(
                                                                             context)
@@ -293,7 +293,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                       width: 20,
                       child: isSend
                           ? Center(
-                              child: getMessageTick(message: widget.message),
+                              child: getMessageTick(message: widget.message!),
                             )
                           : Container(),
                     )
@@ -313,7 +313,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                       width: 20,
                     ),
               Text(
-                formatTime(widget.message['created_at']),
+                formatTime(widget.message!['created_at']),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
@@ -344,7 +344,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
         String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(item: item, type: type);
-        var mapData;
+        late var mapData;
         basketBloc.items.forEach((element) {
           if (element["item"].id == item.id) {
             mapData = element;
@@ -357,7 +357,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
-        Toast.show("Item added to the cart !!", context);
+        showToast(message: "Item added to the cart !!");
         await ShoppingAuthService().addItemToShoppingCart(data);
       },
     );
@@ -365,22 +365,22 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 }
 
 class ServiceTileChatMessage extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
-  ServiceTileChatMessage({@required this.message, this.chatConversation});
+  ServiceTileChatMessage({required this.message, this.chatConversation});
 
   @override
   _ServiceTileChatMessageState createState() => _ServiceTileChatMessageState();
 }
 
 class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
-  Service service;
+  Service? service;
 
-  BasketBloc basketBloc;
+  late BasketBloc basketBloc;
 
-  UserBloc userBloc;
-  CustomerProfileBloc customerProfileBloc;
+  late UserBloc userBloc;
+  late CustomerProfileBloc customerProfileBloc;
 
   @override
   void initState() {
@@ -390,13 +390,13 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
   @override
   Widget build(BuildContext context) {
     try {
-      service = Service.fromJson(jsonDecode(widget.message["meta_data"]));
+      service = Service.fromJson(jsonDecode(widget.message!["meta_data"]));
     } catch (e) {
-      service = Service.fromJson(widget.message["meta_data"]);
+      service = Service.fromJson(widget.message!["meta_data"]);
     }
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return GestureDetector(
@@ -421,15 +421,15 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                   //     : MediaQuery.of(context).size.width / 1.65,
                   maxWidth: MediaQuery.of(context).size.width / 1.50,
                   minWidth: MediaQuery.of(context).size.width / 1.50,
-                  maxHeight: service.provider == userBloc.user.userName
+                  maxHeight: service!.provider == userBloc.user.userName
                       ? MediaQuery.of(context).size.width / 2.5
                       : MediaQuery.of(context).size.width / 2,
                 ),
                 decoration: BoxDecoration(
-                  color: widget.chatConversation.isGroupConversation
+                  color: widget.chatConversation!.isGroupConversation!
                       ? isSend
                           ? Colors.transparent
-                          : chatBackgroundColor
+                          : Colors.white
                       : Colors.transparent,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
@@ -439,12 +439,12 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
-                    horizontal: widget.chatConversation.isGroupConversation
+                    horizontal: widget.chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
                         : 0,
-                    vertical: widget.chatConversation.isGroupConversation
+                    vertical: widget.chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
@@ -453,13 +453,13 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.chatConversation.isGroupConversation
-                        ? widget.message['author'] != userBloc.user.userName
+                    widget.chatConversation!.isGroupConversation!
+                        ? widget.message!['author'] != userBloc.user.userName
                             ? Column(
                                 children: [
                                   Text(
-                                    widget.message['author_full_name'] ??
-                                        widget.message['author'],
+                                    widget.message!['author_full_name'] ??
+                                        widget.message!['author'],
                                     style: TextStyle(
                                         color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
@@ -494,7 +494,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                     Expanded(
                                       child: CachedNetworkImage(
                                         width: double.infinity,
-                                        imageUrl: service.cover,
+                                        imageUrl: service!.cover!,
                                         fit: BoxFit.fill,
                                         filterQuality: FilterQuality.high,
                                         progressIndicatorBuilder:
@@ -508,7 +508,8 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                             backgroundColor: Colors.transparent,
                                           ),
                                         ),
-                                        errorWidget: imageErrorWidget,
+                                        errorWidget:
+                                            productAndServiceBigErrorWidget,
                                       ),
                                     ),
                                     Container(
@@ -520,7 +521,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  service.name,
+                                                  service!.name!,
                                                   maxLines: 1,
                                                   style: TextStyle(
                                                       fontWeight:
@@ -536,7 +537,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                 text: TextSpan(children: [
                                                   TextSpan(
                                                       text: worldCurrencies[
-                                                          service.currency],
+                                                          service!.currency!],
                                                       style: TextStyle(
                                                           fontFamily: "Roboto",
                                                           color: navyBlue,
@@ -547,7 +548,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                       // text: widget.product.price.toString(),
                                                       text:
                                                           moneyDisplayNormalizer(
-                                                              int.parse(service
+                                                              int.parse(service!
                                                                   .price
                                                                   .toString())),
                                                       style: TextStyle(
@@ -560,7 +561,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                               )
                                             ],
                                           ),
-                                          service.provider ==
+                                          service!.provider ==
                                                   userBloc.user.userName
                                               ? Container()
                                               : Container(
@@ -596,7 +597,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                                     customerProfileBloc
                                                                             .customer =
                                                                         await UserAuth()
-                                                                            .fetchCustomerProfile(service.provider);
+                                                                            .fetchCustomerProfile(service!.provider);
 
                                                                     Navigator.of(
                                                                             context)
@@ -634,7 +635,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                       width: 20,
                       child: isSend
                           ? Center(
-                              child: getMessageTick(message: widget.message),
+                              child: getMessageTick(message: widget.message!),
                             )
                           : Container(),
                     )
@@ -654,7 +655,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                       width: 20,
                     ),
               Text(
-                formatTime(widget.message['created_at']),
+                formatTime(widget.message!['created_at']),
                 style: TextStyle(
                     color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
               ),
@@ -685,7 +686,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
         String type = item is Product ? "product" : "service";
         debugPrint("item $item type:- $type");
         basketBloc.addItemToCart(item: item, type: type);
-        var mapData;
+        late var mapData;
         basketBloc.items.forEach((element) {
           if (element["item"].messageId == item.messageId) {
             mapData = element;
@@ -698,7 +699,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
-        Toast.show("Item added to the cart !!", context);
+        showToast(message: "Item added to the cart !!");
         await ShoppingAuthService().addItemToShoppingCart(data);
       },
     );

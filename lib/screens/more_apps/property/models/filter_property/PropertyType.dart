@@ -1,9 +1,9 @@
 class PropertyType {
-  bool any;
-  bool apartment;
-  bool condo;
-  bool house;
-  bool townHouse;
+  bool? any;
+  bool? apartment;
+  bool? condo;
+  bool? house;
+  bool? townHouse;
 
   PropertyType(
       {this.any, this.apartment, this.condo, this.house, this.townHouse});

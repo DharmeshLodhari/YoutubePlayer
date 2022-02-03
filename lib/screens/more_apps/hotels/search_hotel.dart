@@ -3,6 +3,7 @@ import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomItem.dart';
 import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -10,7 +11,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'hotel_auth.dart';
 import 'hotel_tile.dart';
@@ -32,9 +32,9 @@ class _SearchHotelState extends State<SearchHotel> {
     "2007"
   ];
 
-  String selectedMovieCategory;
-  String selectedMovieYear;
-  int selectedRating;
+  String? selectedMovieCategory;
+  String? selectedMovieYear;
+  int? selectedRating;
   RangeValues selectedPriceValue = RangeValues(5, 56);
 
   List<HotelRoomItem> hotelRooms = [];
@@ -74,9 +74,10 @@ class _SearchHotelState extends State<SearchHotel> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -86,7 +87,7 @@ class _SearchHotelState extends State<SearchHotel> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -192,7 +193,9 @@ class _SearchHotelState extends State<SearchHotel> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: TextFormField(
           autofocus: true,
@@ -325,7 +328,7 @@ class _SearchHotelState extends State<SearchHotel> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          AppLocalization.of(context).category,
+          AppLocalization.of(context)!.category,
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
         SizedBox(
@@ -342,7 +345,7 @@ class _SearchHotelState extends State<SearchHotel> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedMovieCategory != null ? selectedMovieCategory : "",
+              selectedMovieCategory != null ? selectedMovieCategory! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -462,7 +465,7 @@ class _SearchHotelState extends State<SearchHotel> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedMovieYear != null ? selectedMovieYear : "",
+              selectedMovieYear != null ? selectedMovieYear! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -604,7 +607,7 @@ class _SearchHotelState extends State<SearchHotel> {
   }
 
   Widget movieRatingButton(StateSetter bottomSheetSetState,
-      {bool isSelected = false, int index}) {
+      {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),

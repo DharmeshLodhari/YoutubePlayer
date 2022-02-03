@@ -9,7 +9,7 @@ import 'my_wish_list.dart';
 
 // ignore: must_be_immutable
 class MyMusicScreen extends StatefulWidget {
-  MusicPlayer musicPlayer;
+  MusicPlayer? musicPlayer;
 
   MyMusicScreen({this.musicPlayer});
 
@@ -20,7 +20,7 @@ class MyMusicScreen extends StatefulWidget {
 class _MyMusicScreenState extends State<MyMusicScreen> {
   int currentIndex = 0;
 
-  MusicDashboardBloc _musicDashboardBloc;
+  late MusicDashboardBloc _musicDashboardBloc;
   @override
   Widget build(BuildContext context) {
     _musicDashboardBloc = Provider.of<MusicDashboardBloc>(context);
@@ -33,7 +33,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
         length: 2,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
       ),
@@ -65,7 +65,7 @@ class _MyMusicScreenState extends State<MyMusicScreen> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
     );
   }
 

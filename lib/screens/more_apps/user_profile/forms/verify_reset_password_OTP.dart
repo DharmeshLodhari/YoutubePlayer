@@ -2,7 +2,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-import 'package:sms_otp_auto_verify/sms_otp_auto_verify.dart';
 
 import '../user_auth.dart';
 
@@ -19,9 +18,9 @@ class VerifyResetPasswordOTPScreen extends StatefulWidget {
 
 class _VerifyResetPasswordOTPScreenState
     extends State<VerifyResetPasswordOTPScreen> {
-  TextEditingController otpController;
-  String phoneNumber = '';
-  FocusNode _pinPutFocusNode;
+  TextEditingController? otpController;
+  String? phoneNumber = '';
+  FocusNode? _pinPutFocusNode;
 
   final _verifyOtpFormKey = GlobalKey<FormState>();
 
@@ -30,34 +29,12 @@ class _VerifyResetPasswordOTPScreenState
     otpController = TextEditingController();
     phoneNumber = widget.arguments['phoneNumber'];
     _pinPutFocusNode = FocusNode();
-    _getAppSignature();
-    _startListeningSms();
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-
-    ///stopListening
-    SmsRetrieved.stopListening();
-  }
-
-  /// Get signature code
-  _getAppSignature() async {
-    String signature = await SmsRetrieved.getAppSignature();
-    print("App Hash Key:  $signature");
-  }
-
-  ///Here ListeningSms
-  _startListeningSms() async {
-    String otp = await SmsRetrieved.startListeningSms();
-    if (otp.isNotEmpty || otp != null) {
-      debugPrint("${otp.split(" ")[1]}");
-      debugPrint("OTP $otp");
-    }
-    debugPrint("${otp.split(" ")[1]}");
-    debugPrint("OTP $otp");
   }
 
   @override
@@ -199,7 +176,7 @@ class _VerifyResetPasswordOTPScreenState
           textStyle: TextStyle(
               color: blackFont, fontSize: 32, fontWeight: FontWeight.w600),
           validator: (val) {
-            if (val.length != 6) {
+            if (val!.length != 6) {
               return "Please enter code that sent to you";
             }
             return null;
@@ -219,13 +196,14 @@ class _VerifyResetPasswordOTPScreenState
   }
 
   void verifyOTP() {
-    if (_verifyOtpFormKey.currentState.validate()) {
-      String enteredOTP = otpController.text.trim();
+    if (_verifyOtpFormKey.currentState!.validate()) {
+      String enteredOTP = otpController!.text.trim();
       String passwordToken = "true";
+
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
           .then((value) {
-        String resetToken = value;
+        String? resetToken = value;
         Navigator.of(context).popAndPushNamed('/reset-password',
             arguments: {'phoneNumber': phoneNumber, "resetToken": resetToken});
       });

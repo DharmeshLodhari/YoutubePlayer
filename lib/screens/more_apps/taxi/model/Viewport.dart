@@ -2,8 +2,8 @@ import 'Northeast.dart';
 import 'Southwest.dart';
 
 class Viewport {
-  Northeast northeast;
-  Southwest southwest;
+  Northeast? northeast;
+  Southwest? southwest;
 
   Viewport({this.northeast, this.southwest});
 
@@ -21,10 +21,10 @@ class Viewport {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.northeast != null) {
-      data['northeast'] = this.northeast.toJson();
+      data['northeast'] = this.northeast!.toJson();
     }
     if (this.southwest != null) {
-      data['southwest'] = this.southwest.toJson();
+      data['southwest'] = this.southwest!.toJson();
     }
     return data;
   }

@@ -1,15 +1,17 @@
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
 class CurvedButton extends StatelessWidget {
-  String text = "Button";
-  Color backgroundColor = navyBlue;
-  Color textColor = Colors.white;
-  Function onPressed = () {};
+  String? text;
+  Color? backgroundColor;
+  Color? textColor;
+  Function? onPressed;
   double height;
   double borderRadius;
+  bool isLoading;
 
   CurvedButton(
       {this.text,
@@ -17,23 +19,46 @@ class CurvedButton extends StatelessWidget {
       this.backgroundColor,
       this.onPressed,
       this.height = 42,
-      this.borderRadius = 7});
+      this.borderRadius = 7,
+      this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
+    if (backgroundColor == null) {
+      backgroundColor = navyBlue;
+    }
+    if (textColor == null) {
+      textColor = Colors.white;
+    }
+    if (text == null) {
+      text = "Button";
+    }
     return Container(
       width: 100.0.w,
       height: height,
-      child: FlatButton(
+      child: MaterialButton(
+        elevation: 0,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
-        child: Text(
-          text,
-          style: TextStyle(
-              color: textColor, fontSize: 16.0, fontWeight: FontWeight.w600),
-        ),
+        child: isLoading
+            ? Center(
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: CircularLoadingIndicator(
+                    color: Colors.white,
+                  ),
+                ),
+              )
+            : Text(
+                text!,
+                style: TextStyle(
+                    color: textColor,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600),
+              ),
         color: backgroundColor,
-        onPressed: onPressed,
+        onPressed: onPressed as void Function()?,
         disabledColor: darkGrey.withOpacity(0.5),
       ),
     );
@@ -42,10 +67,10 @@ class CurvedButton extends StatelessWidget {
 
 // ignore: must_be_immutable
 class OutlineCurvedButton extends StatelessWidget {
-  String text = "Button";
-  Color backgroundColor = Colors.transparent;
-  Color textColor = navyBlue;
-  Function onPressed = () {};
+  String? text = "Button";
+  Color? backgroundColor = Colors.transparent;
+  Color? textColor = navyBlue;
+  Function? onPressed = () {};
 
   OutlineCurvedButton({
     this.text,
@@ -59,19 +84,19 @@ class OutlineCurvedButton extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 42,
-      child: FlatButton(
+      child: MaterialButton(
         shape: OutlineInputBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(10),
             ),
-            borderSide: BorderSide(color: textColor)),
+            borderSide: BorderSide(color: textColor!)),
         child: Text(
-          text,
+          text!,
           style: TextStyle(
               color: textColor, fontSize: 16, fontWeight: FontWeight.w600),
         ),
         color: backgroundColor,
-        onPressed: onPressed,
+        onPressed: onPressed as void Function()?,
       ),
     );
   }

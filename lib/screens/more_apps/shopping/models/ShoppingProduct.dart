@@ -1,24 +1,24 @@
 import 'Picture.dart';
 
 class ShoppingProduct {
-  String availableFrom;
-  String category;
-  String condition;
-  String cover;
-  String createdAt;
-  String currency;
-  String description;
-  String id;
-  bool isAvailable;
-  String manufacturer;
-  String name;
-  List<Picture> images;
-  int price;
-  String qrCode;
-  String seller;
-  String sellerAvatar;
-  String shortDescription;
-  String type;
+  String? availableFrom;
+  String? category;
+  String? condition;
+  String? cover;
+  String? createdAt;
+  String? currency;
+  String? description;
+  String? id;
+  bool? isAvailable;
+  String? manufacturer;
+  String? name;
+  List<Picture>? images;
+  int? price;
+  String? qrCode;
+  String? seller;
+  String? sellerAvatar;
+  String? shortDescription;
+  String? type;
 
   ShoppingProduct(
       {this.availableFrom,
@@ -85,7 +85,7 @@ class ShoppingProduct {
     data['short_description'] = this.shortDescription;
     data['type'] = this.type;
     if (this.images != null) {
-      data['pictures'] = this.images.map((v) => v.toJson()).toList();
+      data['pictures'] = this.images!.map((v) => v.toJson()).toList();
     }
     return data;
   }

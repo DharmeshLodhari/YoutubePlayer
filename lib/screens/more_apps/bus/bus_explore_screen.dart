@@ -27,14 +27,14 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
   DateTime departureDate = DateTime.now();
   DateTime arrivalDate = DateTime.now();
 
-  BusDashboardBloc _busDashboardBloc;
+  late BusDashboardBloc _busDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -222,7 +222,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
                     DateTime.now().day),
                 lastDate: DateTime(2101),
               ).then((value) {
-                departureDate = DateTime(value.year, value.month, value.day);
+                departureDate = DateTime(value!.year, value.month, value.day);
                 setState(() {});
               }).catchError((error) {});
             },
@@ -271,7 +271,7 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
                       lastDate: DateTime(2101),
                     ).then((value) {
                       arrivalDate =
-                          DateTime(value.year, value.month, value.day);
+                          DateTime(value!.year, value.month, value.day);
                       setState(() {});
                     }).catchError((error) {});
                   },
@@ -328,12 +328,12 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
+                child: Text(AppLocalization.of(context)!.category),
               ),
             ],
           ),
           value: selectedFromPlace,
-          onChanged: (String value) {
+          onChanged: (String? value) {
             setState(() {
               selectedFromPlace = value;
             });
@@ -494,12 +494,12 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
+                child: Text(AppLocalization.of(context)!.category),
               ),
             ],
           ),
           value: selectedFromPlace,
-          onChanged: (String value) {
+          onChanged: (String? value) {
             setState(() {
               selectedFromPlace = value;
             });
@@ -660,12 +660,12 @@ class _BusExploreScreenState extends State<BusExploreScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
+                child: Text(AppLocalization.of(context)!.category),
               ),
             ],
           ),
           value: selectedClass,
-          onChanged: (String value) {
+          onChanged: (String? value) {
             setState(() {
               selectedClass = value;
             });

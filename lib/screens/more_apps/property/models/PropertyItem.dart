@@ -1,11 +1,11 @@
 class PropertyItem {
-  String address1;
-  String address2;
-  String currency;
-  List<String> images;
-  String name;
-  String price;
-  String rating;
+  String? address1;
+  String? address2;
+  String? currency;
+  List<String>? images;
+  String? name;
+  String? price;
+  String? rating;
 
   PropertyItem(
       {this.address1,

@@ -4,10 +4,10 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../user_auth.dart';
 
@@ -20,14 +20,14 @@ class _AddDocumentState extends State<AddDocument> {
   final _formsPageViewController = PageController();
 
   //List of the all three form
-  List _forms;
+  late List _forms;
 
-  PickedFile documentImage;
-  PickedFile userImage;
+  XFile? documentImage;
+  XFile? userImage;
   bool isPassportAllowed = true;
   bool isDrivingLicenceAllowed = false;
   bool isIdentityCardAllowed = false;
-  bool userAgree = false;
+  bool? userAgree = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class _AddDocumentState extends State<AddDocument> {
       backgroundColor: chatBackgroundColor,
       appBar: AppBar(
         backgroundColor: navyBlue,
-        title: Text(AppLocalization.of(context).verifyYourIdentity),
+        title: Text(AppLocalization.of(context)!.verifyYourIdentity),
       ),
       body: Column(
         children: <Widget>[
@@ -70,7 +70,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   // to navigate to the next form
   void _nextFormStep() {
-    if (userAgree) {
+    if (userAgree!) {
       _formsPageViewController.nextPage(
         duration: Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -88,7 +88,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   bool onWillPop() {
     // if we are on the first page then it will pop the screen otherwise navigate to the privious screen
-    if (_formsPageViewController.page.round() ==
+    if (_formsPageViewController.page!.round() ==
         _formsPageViewController.initialPage) return true;
 
     _previousFormStep();
@@ -112,8 +112,8 @@ class _AddDocumentState extends State<AddDocument> {
                 Icons.account_balance_wallet,
                 size: 40,
               ),
-              title: AppLocalization.of(context).passportMsg,
-              subtitle: AppLocalization.of(context).facePhotoPage,
+              title: AppLocalization.of(context)!.passportMsg,
+              subtitle: AppLocalization.of(context)!.facePhotoPage,
               onTap: _nextFormStep,
               enabled: isPassportAllowed),
           documentTypeTile(
@@ -121,8 +121,8 @@ class _AddDocumentState extends State<AddDocument> {
                 Icons.directions_car,
                 size: 40,
               ),
-              title: AppLocalization.of(context).driverLicence,
-              subtitle: AppLocalization.of(context).frontAndBack,
+              title: AppLocalization.of(context)!.driverLicence,
+              subtitle: AppLocalization.of(context)!.frontAndBack,
               onTap: _nextFormStep,
               enabled: isDrivingLicenceAllowed),
           documentTypeTile(
@@ -130,8 +130,8 @@ class _AddDocumentState extends State<AddDocument> {
                 Icons.card_membership,
                 size: 40,
               ),
-              title: AppLocalization.of(context).identityCard,
-              subtitle: AppLocalization.of(context).frontAndBack,
+              title: AppLocalization.of(context)!.identityCard,
+              subtitle: AppLocalization.of(context)!.frontAndBack,
               onTap: _nextFormStep,
               enabled: isIdentityCardAllowed),
           SizedBox(
@@ -153,7 +153,7 @@ class _AddDocumentState extends State<AddDocument> {
                 width: 8,
               ),
               Expanded(
-                child: Text(AppLocalization.of(context)
+                child: Text(AppLocalization.of(context)!
                     .documentVerificationTermsAndCondition),
               ),
             ],
@@ -165,18 +165,18 @@ class _AddDocumentState extends State<AddDocument> {
 
   Widget subtitleTextOne() {
     return Text(
-      AppLocalization.of(context).selectTypeOfDocument,
+      AppLocalization.of(context)!.selectTypeOfDocument,
       style: TextStyle(
           fontWeight: FontWeight.w500, fontSize: 16, color: Colors.white),
     );
   }
 
   Widget documentTypeTile(
-      {@required Widget icon,
-      @required String title,
-      @required String subtitle,
-      @required Function onTap,
-      @required bool enabled}) {
+      {required Widget icon,
+      required String title,
+      required String subtitle,
+      required Function onTap,
+      required bool enabled}) {
     return Card(
         child: ListTile(
       enabled: enabled,
@@ -187,7 +187,7 @@ class _AddDocumentState extends State<AddDocument> {
       ),
       subtitle: Text(subtitle),
       trailing: Icon(Icons.keyboard_arrow_right),
-      onTap: onTap,
+      onTap: onTap as void Function()?,
     ));
   }
 
@@ -219,7 +219,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   Widget titleTextTwo() {
     return Text(
-      AppLocalization.of(context).passportPhotoPage,
+      AppLocalization.of(context)!.passportPhotoPage,
       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
     );
   }
@@ -232,13 +232,13 @@ class _AddDocumentState extends State<AddDocument> {
           size: 40,
         ),
         title: Text(
-          AppLocalization.of(context).needToUseYourMobileToTake,
+          AppLocalization.of(context)!.needToUseYourMobileToTake,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(AppLocalization.of(context).tapHereToContinue),
+        subtitle: Text(AppLocalization.of(context)!.tapHereToContinue),
         onTap: () async {
           ImagePicker()
-              .getImage(source: ImageSource.camera, imageQuality: 70)
+              .pickImage(source: ImageSource.camera, imageQuality: 70)
               .then((value) {
             setState(() {
               documentImage = value;
@@ -257,13 +257,13 @@ class _AddDocumentState extends State<AddDocument> {
           size: 40,
         ),
         title: Text(
-          AppLocalization.of(context).uploadPhotoFromDevice,
+          AppLocalization.of(context)!.uploadPhotoFromDevice,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(AppLocalization.of(context).tapHereToContinue),
+        subtitle: Text(AppLocalization.of(context)!.tapHereToContinue),
         onTap: () async {
           ImagePicker()
-              .getImage(source: ImageSource.gallery, imageQuality: 70)
+              .pickImage(source: ImageSource.gallery, imageQuality: 70)
               .then((value) {
             setState(() {
               documentImage = value;
@@ -283,7 +283,7 @@ class _AddDocumentState extends State<AddDocument> {
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Image.file(
-                    File(documentImage.path),
+                    File(documentImage!.path),
                     filterQuality: FilterQuality.high,
                   ),
                 )
@@ -306,7 +306,7 @@ class _AddDocumentState extends State<AddDocument> {
         documentImage != null
             ? MaterialButton(
                 child: Text(
-                  AppLocalization.of(context).next,
+                  AppLocalization.of(context)!.next,
                   style: TextStyle(color: Colors.white),
                 ),
                 color: blackFont,
@@ -344,7 +344,7 @@ class _AddDocumentState extends State<AddDocument> {
 
   Widget titleTextThree() {
     return Text(
-      AppLocalization.of(context).userPhotoPage,
+      AppLocalization.of(context)!.userPhotoPage,
       style: TextStyle(
           fontWeight: FontWeight.bold, fontSize: 24, color: blackFont),
     );
@@ -358,13 +358,13 @@ class _AddDocumentState extends State<AddDocument> {
           size: 40,
         ),
         title: Text(
-          AppLocalization.of(context).needToUseYourMobileToTake,
+          AppLocalization.of(context)!.needToUseYourMobileToTake,
           style: TextStyle(fontWeight: FontWeight.bold, color: blackFont),
         ),
-        subtitle: Text(AppLocalization.of(context).tapHereToContinue),
+        subtitle: Text(AppLocalization.of(context)!.tapHereToContinue),
         onTap: () {
           ImagePicker()
-              .getImage(source: ImageSource.camera, imageQuality: 70)
+              .pickImage(source: ImageSource.camera, imageQuality: 70)
               .then((value) {
             setState(() {
               userImage = value;
@@ -384,7 +384,7 @@ class _AddDocumentState extends State<AddDocument> {
               ? Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Image.file(
-                    File(userImage.path),
+                    File(userImage!.path),
                     filterQuality: FilterQuality.high,
                   ),
                 )
@@ -409,7 +409,7 @@ class _AddDocumentState extends State<AddDocument> {
       children: <Widget>[
         MaterialButton(
           child: Text(
-            AppLocalization.of(context).previous,
+            AppLocalization.of(context)!.previous,
             style: TextStyle(color: Colors.white),
           ),
           color: blackFont,
@@ -418,7 +418,7 @@ class _AddDocumentState extends State<AddDocument> {
         userImage != null
             ? MaterialButton(
                 child: Text(
-                  AppLocalization.of(context).finish,
+                  AppLocalization.of(context)!.finish,
                   style: TextStyle(color: Colors.white),
                 ),
                 color: blackFont,
@@ -434,13 +434,13 @@ class _AddDocumentState extends State<AddDocument> {
                     try {
                       UserAuth()
                           .verifyUserDetail(
-                              File(documentImage.path), File(userImage.path))
+                              File(documentImage!.path), File(userImage!.path))
                           .then((user) {
                         _auth
                             .authenticate(userBloc.user.phoneNumber,
                                 userBloc.user.password)
                             .then((user) {
-                          if (user.isVerified) {
+                          if (user.isVerified!) {
                             userBloc.user = user;
                             Navigator.of(context).pushNamedAndRemoveUntil(
                               "/dashboard",
@@ -450,12 +450,7 @@ class _AddDocumentState extends State<AddDocument> {
                         });
                       });
                     } catch (exception) {
-                      Toast.show(
-                        exception,
-                        context,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                      );
+                      showToast(message: exception.toString());
                     }
                   });
                 },

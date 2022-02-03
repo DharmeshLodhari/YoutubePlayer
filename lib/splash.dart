@@ -11,6 +11,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/secure_storage.dart';
+import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -24,7 +25,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
 import 'package:video_player/video_player.dart';
 
 import 'data/socket_provider.dart';
@@ -41,21 +41,21 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   bool isChecked = false;
   bool isLoggedOut = false;
-  String countryFromPref;
-  String userPhoneNumber;
-  String userPassword;
-  SharedPreferences _sharedPreferences;
-  BasketBloc basketBloc;
+  String? countryFromPref;
+  String? userPhoneNumber;
+  String? userPassword;
+  late SharedPreferences _sharedPreferences;
+  late BasketBloc basketBloc;
 
   // bool for to check if internet connection is available or not
   var hasConnection = true;
   String errorText = "";
 
-  VideoPlayerController playerController;
-  VoidCallback listener;
+  VideoPlayerController? playerController;
+  late VoidCallback listener;
 
-  bool isUserFound;
-  Timer timer;
+  bool? isUserFound;
+  Timer? timer;
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen>
       setState(() {});
     };
     initializeVideo();
-    playerController.play();
+    playerController!.play();
 
     ///video splash display only 5 second you can change the duration according to your need
     timer = startTime();
@@ -77,6 +77,7 @@ class _SplashScreenState extends State<SplashScreen>
     checkConnection();
     AwesomeNotificationService().awesomeNotifications.cancelAll();
     WidgetsFlutterBinding.ensureInitialized();
+
     super.initState();
   }
 
@@ -89,25 +90,18 @@ class _SplashScreenState extends State<SplashScreen>
 
   void navigationPage() {
     debugPrint(
-        "isUserFound => $isUserFound playerController.value.isPlaying => ${playerController.value.isPlaying}");
-    if (isUserFound != null && playerController.value.isPlaying == false) {
-      playerController.setVolume(0.0);
-      playerController.removeListener(listener);
+        "isUserFound => $isUserFound playerController.value.isPlaying => ${playerController!.value.isPlaying}");
+    if (isUserFound != null && playerController!.value.isPlaying == false) {
+      playerController!.setVolume(0.0);
+      playerController!.removeListener(listener);
       if (isUserFound == true) {
-        Navigator.of(MyGlobals().navigationKey.currentContext)
+        Navigator.of(MyGlobals().navigationKey.currentContext!)
             .pushNamedAndRemoveUntil(
           "/dashboard",
           (Route<dynamic> route) => false,
         );
       } else {
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .pushReplacementNamed("/index");
-      }
-    } else {
-      if (playerController.value.isPlaying == false) {
-        playerController.setVolume(0.0);
-        playerController.removeListener(listener);
-        Navigator.of(MyGlobals().navigationKey.currentContext)
+        Navigator.of(MyGlobals().navigationKey.currentContext!)
             .pushReplacementNamed("/index");
       }
     }
@@ -125,15 +119,15 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void deactivate() {
     if (playerController != null) {
-      playerController.setVolume(0.0);
-      playerController.removeListener(listener);
+      playerController?.setVolume(0.0);
+      playerController?.removeListener(listener);
     }
     super.deactivate();
   }
 
   @override
   void dispose() {
-    if (playerController != null) playerController.dispose();
+    if (playerController != null) playerController!.dispose();
     if (timer != null) timer?.cancel();
     super.dispose();
   }
@@ -146,24 +140,15 @@ class _SplashScreenState extends State<SplashScreen>
         hasConnection = true;
         if (mounted) setState(() {});
         try {
-          // await Future.delayed(Duration(seconds: 4));
           await getLoggedInUser();
         } catch (error) {
-          // await Future.delayed(Duration(seconds: 6));
-          // debugPrint("ERROR1:- $error");
-          //
-          // Navigator.pop(MyGlobals().navigationKey.currentContext);
-          // Navigator.of(MyGlobals().navigationKey.currentContext)
-          //     .pushNamed("/index");
+          debugPrint("ERROR1:- $error");
           return Future.value(null);
         }
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM,
-            backgroundColor: Colors.black,
-            duration: Toast.LENGTH_LONG,
-            textColor: Colors.white);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
 
         hasConnection = false;
         if (mounted) setState(() {});
@@ -172,13 +157,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> initPlatformState() async {
-    List languagesList;
-    String currentLocale;
+    List? languagesList;
+    String? currentLocale;
 
     //checking if the language data is stored in system or not
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
-      String languageCode = sharedPreferences.getString("language");
+      String languageCode = sharedPreferences.getString("language")!;
       AppLocalization.load(Locale(languageCode, ""));
       debugPrint("Language Set From SharedPreference => $languageCode ");
       return;
@@ -194,9 +179,9 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       currentLocale = await Devicelocale.currentLocale;
       debugPrint("Device current language => $currentLocale");
-      Language language;
+      late Language language;
       languages.forEach((lang) {
-        if (lang.languageCode == currentLocale.substring(0, 2)) {
+        if (lang.languageCode == currentLocale!.substring(0, 2)) {
           language = lang;
           return;
         }
@@ -235,7 +220,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Container(
                     child: (playerController != null
                         ? VideoPlayer(
-                            playerController,
+                            playerController!,
                           )
                         : Container()),
                   )),
@@ -256,14 +241,14 @@ class _SplashScreenState extends State<SplashScreen>
                 children: <Widget>[
                   Expanded(
                     child: NoItemInList(
-                      msg: AppLocalization.of(context)
+                      msg: AppLocalization.of(context)!
                           .internetConnectionNotAvailable,
                     ),
                   ),
                   MaterialButton(
                     color: navyBlue,
                     child: Text(
-                      AppLocalization.of(context).retry,
+                      AppLocalization.of(context)!.retry,
                       style: TextStyle(color: Colors.white),
                     ),
                     onPressed: checkConnection,
@@ -275,7 +260,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> getLoggedInUser() async {
-    // await Future.delayed(Duration(milliseconds: 500));
     _sharedPreferences = await SharedPreferences.getInstance();
 
     final UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
@@ -284,13 +268,11 @@ class _SplashScreenState extends State<SplashScreen>
     final BankAccountBloc bankAccountBloc = Provider.of(context, listen: false);
     final _auth = AuthService();
 
+    // for not showing intro second time we are maintaining this variable in shared pref
     isLoggedOut = _sharedPreferences.getBool('isLoggedOut') ?? false;
     if (isLoggedOut) {
       debugPrint("IsLoggedOut:- $isLoggedOut");
       isUserFound = false;
-      // Navigator.pop(MyGlobals().navigationKey.currentContext);
-      // Navigator.of(MyGlobals().navigationKey.currentContext)
-      //     .pushNamed("/index");
       return;
     }
 
@@ -299,7 +281,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (isChecked) {
       countryFromPref = _sharedPreferences.getString('country');
       errorText += "countryFromPref = $countryFromPref\n";
-      Country country1;
+      Country? country1;
       try {
         country1 = CountryPickerUtils.getCountryByIsoCode("NG");
       } catch (error) {
@@ -312,7 +294,7 @@ class _SplashScreenState extends State<SplashScreen>
         errorText += "country1 iso3Code ${country1.iso3Code}\n";
       }
 
-      Country country2;
+      Country? country2;
       try {
         country2 = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
       } catch (error) {
@@ -328,27 +310,31 @@ class _SplashScreenState extends State<SplashScreen>
         userPhoneNumber = secureUser.phoneNumber;
         userPassword = secureUser.password;
 
-        var phoneNumber = "+" + country2.phoneCode + userPhoneNumber;
+        var phoneNumber = "+" + country2.phoneCode! + userPhoneNumber!;
         var password = userPassword;
 
         errorText += "phoneNumber $phoneNumber\n";
         errorText += "password $password\n";
 
-        User user;
+        User? user;
         try {
           user = await _auth.authenticate(phoneNumber, password);
         } catch (e) {
           errorText += "ERROR while fetching USER:- $e\n";
+          isUserFound = false;
         }
         if (user != null) {
           errorText += "User:- ${user.toJson()}\n";
 
-          List<BankAccount> accounts;
+          List<BankAccount>? accounts;
 
           try {
             accounts = await PaymentAndBankingAuth().getBankAccounts();
           } catch (e) {
             errorText += "ERROR while fetching ACCOUNTS:- $e\n";
+            isUserFound = false;
+            CacheManager().deleteCache(clearAll: true);
+            return;
           }
 
           if (accounts != null) {
@@ -371,7 +357,11 @@ class _SplashScreenState extends State<SplashScreen>
                 ChatMessageSettings.fromDBJson(settings);
             userBloc.chatMessageSettings = chatMessageSettings;
 
-            socketProvider.currentUser = user;
+            try {
+              socketProvider.setCurrentUser(user);
+            } catch (error) {
+              debugPrint("ERROR:- $error");
+            }
 
             setState(() {});
 
@@ -380,11 +370,6 @@ class _SplashScreenState extends State<SplashScreen>
             setState(() {});
 
             isUserFound = true;
-            // Navigator.of(MyGlobals().navigationKey.currentContext)
-            //     .pushNamedAndRemoveUntil(
-            //   "/dashboard",
-            //   (Route<dynamic> route) => false,
-            // );
             return;
           } else {
             errorText += "accounts not found\n";
@@ -396,8 +381,8 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) setState(() {});
     }
     isUserFound = false;
-    // Navigator.pop(MyGlobals().navigationKey.currentContext);
-    // Navigator.of(MyGlobals().navigationKey.currentContext).pushNamed("/index");
+    CacheManager().deleteCache(clearAll: true);
+
     return Future.value(null);
 
     // try {
@@ -539,6 +524,8 @@ class _SplashScreenState extends State<SplashScreen>
     } catch (e) {
       errorText += "ERROR:- while loading shopping cart ITEM\n";
       debugPrint("ERROR:- while loading shopping cart ITEM");
+      isUserFound = false;
+      CacheManager().deleteCache(clearAll: true);
     }
   }
 }

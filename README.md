@@ -103,3 +103,18 @@ bundle exec fastlane deploy_android alpha:true`
 ```
 bundle exec fastlane deploy_android internal:true`
 ```
+
+
+add this line in info.plist when we want to publish music player in Slydo
+
+```<string>audio</string>```
+
+```
+<key>UIBackgroundModes</key>
+	<array>
+	    <string>audio</string>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
+```

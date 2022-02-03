@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AudioTileForChat extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
   AudioTileForChat({this.message, this.chatConversation});
 
@@ -20,9 +20,9 @@ class AudioTileForChat extends StatefulWidget {
 
 class _AudioTileForChatState extends State<AudioTileForChat> {
   /// Music Player
-  AssetsAudioPlayer _audioPlayer;
+  AssetsAudioPlayer? _audioPlayer;
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
   @override
   void initState() {
     super.initState();
@@ -36,16 +36,16 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
 
-    if (_audioPlayer == null || _audioPlayer?.id != widget.message["id"]) {
-      _audioPlayer = AssetsAudioPlayer.withId(widget.message["id"]);
+    if (_audioPlayer == null || _audioPlayer?.id != widget.message!["id"]) {
+      _audioPlayer = AssetsAudioPlayer.withId(widget.message!["id"]);
 
-      debugPrint("==> ${widget.message["media"]}");
+      debugPrint("==> ${widget.message!["media"]}");
 
       /// "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/f133a23f344e2e96b275800d505011f54a4dc20f/Burna-Boy-Monsters-You-Made-ft-Chris-Martin.mp3" ??
-      _audioPlayer
-          .open(Audio.network(widget.message["media"]),
+      _audioPlayer!
+          .open(Audio.network(widget.message!["media"]),
               autoStart: false, showNotification: false)
           .catchError((error) {
         debugPrint("ERROR while playing:- $error");
@@ -64,13 +64,13 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
                   minWidth: MediaQuery.of(context).size.width / 1.30,
-                  minHeight: widget.chatConversation.isGroupConversation
-                      ? widget.message['author'] != userBloc.user.userName
+                  minHeight: widget.chatConversation!.isGroupConversation!
+                      ? widget.message!['author'] != userBloc.user.userName
                           ? 65
                           : 50
                       : 50),
               decoration: BoxDecoration(
-                color: chatBackgroundColor,
+                color: Colors.white,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(!isSend ? 0 : 6),
                   bottomRight: Radius.circular(isSend ? 0 : 6),
@@ -83,16 +83,16 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  widget.chatConversation.isGroupConversation
-                      ? widget.message['author'] != userBloc.user.userName
+                  widget.chatConversation!.isGroupConversation!
+                      ? widget.message!['author'] != userBloc.user.userName
                           ? Container(
                               padding: EdgeInsets.only(left: 12),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    widget.message['author_full_name'] ??
-                                        widget.message['author'],
+                                    widget.message!['author_full_name'] ??
+                                        widget.message!['author'],
                                     style: TextStyle(
                                         color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
@@ -111,7 +111,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                     children: [
                       Container(
                         padding: EdgeInsets.only(top: 6, left: 4),
-                        child: _audioPlayer.builderRealtimePlayingInfos(
+                        child: _audioPlayer!.builderRealtimePlayingInfos(
                             builder: (context, info) {
                           if (info == null) {
                             return GestureDetector(
@@ -125,16 +125,14 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                           }
                           return GestureDetector(
                             child: Icon(
-                              // ignore: null_aware_in_condition
-                              _audioPlayer?.isPlaying?.value
+                              _audioPlayer?.isPlaying.value ?? false
                                   ? Icons.pause_rounded
                                   : Icons.play_arrow_rounded,
                               color: navyBlue,
                               size: 32,
                             ),
                             onTap: () {
-                              // ignore: null_aware_in_condition
-                              if (_audioPlayer?.isPlaying?.value) {
+                              if (_audioPlayer?.isPlaying.value ?? false) {
                                 _audioPlayer?.pause();
                               } else {
                                 _audioPlayer?.play();
@@ -144,7 +142,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                           );
                         }),
                       ),
-                      _audioPlayer?.builderRealtimePlayingInfos(
+                      _audioPlayer!.builderRealtimePlayingInfos(
                           builder: (context, info) {
                         if (info == null) {
                           return Expanded(
@@ -166,10 +164,10 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                           child: Column(
                             children: [
                               PositionSeekWidget(
-                                currentPosition: info?.currentPosition,
-                                duration: info?.duration,
+                                currentPosition: info.currentPosition,
+                                duration: info.duration,
                                 seekTo: (to) {
-                                  _audioPlayer.seek(to);
+                                  _audioPlayer?.seek(to!);
                                 },
                               ),
                               SizedBox(
@@ -189,7 +187,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                     width: 20,
                     child: isSend
                         ? Center(
-                            child: getMessageTick(message: widget.message),
+                            child: getMessageTick(message: widget.message!),
                           )
                         : Container(),
                   )
@@ -209,7 +207,7 @@ class _AudioTileForChatState extends State<AudioTileForChat> {
                     width: 20,
                   ),
             Text(
-              formatTime(widget.message['created_at']),
+              formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),

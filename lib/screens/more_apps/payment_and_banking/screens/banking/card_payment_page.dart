@@ -1,8 +1,11 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
-import 'package:toast/toast.dart';
+import 'package:flutter_credit_card/flutter_credit_card.dart';
 
 import '../../../../../utils/colors.dart';
 
@@ -40,250 +43,330 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
       },
       child: Scaffold(
         key: cardPaymentPageKey,
-        backgroundColor: chatBackgroundColor,
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          backgroundColor: navyBlue,
-          title: Text(AppLocalization.of(context).cardPayment),
-        ),
-        body: Column(
-          children: <Widget>[
-            CreditCardWidget(
-              cardNumber: cardNumber,
-              expiryDate: expiryDate,
-              cardHolderName: cardHolderName,
-              cvvCode: cvvCode,
-              showBackView: isCvvFocused,
-            ),
-            Expanded(
-              child: SingleChildScrollView(child: creditCardForm()),
-            )
-          ],
-        ),
+        backgroundColor: Colors.white,
+        appBar: appBar(),
+        body: SingleChildScrollView(child: creditCardForm()),
       ),
     );
   }
 
-  creditCardForm() {
-    return Card(
-      color: Colors.white,
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Container(
-        child: Form(
-            key: formKey,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
-                  child: TextFormField(
-                    controller: _cardNumberController,
-                    cursorColor: navyBlue,
-                    style: TextStyle(
-                      color: navyBlue,
-                    ),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: navyBlue, width: 1.3),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: navyBlue)),
-                      hintStyle: TextStyle(color: navyBlue),
-                      labelStyle: TextStyle(color: navyBlue),
-                      labelText: AppLocalization.of(context).cardNumber,
-                      hintText: 'xxxx xxxx xxxx xxxx',
-                    ),
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    onChanged: (val) {
-                      setState(() {
-                        cardNumber = val;
-                      });
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  child: TextFormField(
-                    controller: _expiryDateController,
-                    cursorColor: navyBlue,
-                    style: TextStyle(
-                      color: navyBlue,
-                    ),
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: navyBlue, width: 1.3),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: navyBlue)),
-                        hintStyle: TextStyle(color: navyBlue),
-                        labelStyle: TextStyle(color: navyBlue),
-                        labelText: AppLocalization.of(context).expiredDate,
-                        hintText: 'MM/YY'),
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    onChanged: (val) {
-                      setState(() {
-                        expiryDate = val;
-                      });
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  child: TextField(
-                    focusNode: cvvFocusNode,
-                    controller: _cvvCodeController,
-                    cursorColor: navyBlue,
-                    style: TextStyle(
-                      color: navyBlue,
-                    ),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: navyBlue, width: 1.3),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: navyBlue)),
-                      hintStyle: TextStyle(color: navyBlue),
-                      labelStyle: TextStyle(color: navyBlue),
-                      labelText: AppLocalization.of(context).cvv,
-                      hintText: 'XXXX',
-                    ),
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.done,
-                    onChanged: (val) {
-                      setState(() {
-                        cvvCode = val;
-                      });
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  child: TextFormField(
-                    controller: _cardHolderNameController,
-                    cursorColor: navyBlue,
-                    style: TextStyle(
-                      color: navyBlue,
-                    ),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white)),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: navyBlue, width: 1.3),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: navyBlue)),
-                      hintStyle: TextStyle(color: navyBlue),
-                      labelStyle: TextStyle(color: navyBlue),
-                      labelText: AppLocalization.of(context).cardHolder,
-                    ),
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    onChanged: (val) {
-                      setState(() {
-                        cardHolderName = val;
-                      });
-                    },
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  child: TextFormField(
-                    controller: _amountController,
-                    cursorColor: navyBlue,
-                    style: TextStyle(
-                      color: navyBlue,
-                    ),
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: navyBlue, width: 1.3),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: navyBlue)),
-                        hintStyle: TextStyle(color: navyBlue),
-                        labelStyle: TextStyle(color: navyBlue),
-                        labelText: AppLocalization.of(context).amount,
-                        hintText: AppLocalization.of(context).enterAmount),
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    onChanged: (val) {
-                      setState(() {
-                        amount = int.parse(val);
-                      });
-                    },
-                    validator: (val) {
-                      try {
-                        int.parse(val);
-                      } catch (e) {
-                        return AppLocalization.of(context).invalidAmount;
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Container(
-                  height: 60,
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: MaterialButton(
-                    minWidth: double.infinity,
-                    color: navyBlue,
-                    child: Text(
-                      AppLocalization.of(context).topUp,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () {
-                      if (formKey.currentState.validate()) {
-                        sendPaymentData();
-                      } else {
-                        Toast.show(
-                          AppLocalization.of(context).invalidDetails + " !!",
-                          context,
-                          backgroundColor: Colors.black,
-                          textColor: Colors.white,
-                        );
-                      }
-                    },
-                  ),
-                )
-              ],
-            )),
+  PreferredSizeWidget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 0,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
       ),
+      centerTitle: false,
+      title: Text(
+        "Add Credit Card",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget creditCardForm() {
+    return Column(
+      children: [
+        CreditCardWidget(
+          cardNumber: cardNumber,
+          expiryDate: expiryDate,
+          cardHolderName: cardHolderName,
+          cvvCode: cvvCode,
+          showBackView: isCvvFocused,
+          onCreditCardWidgetChange: (creditCardBrand) {},
+          cardBgColor: navyBlue,
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Card(
+          color: Colors.white,
+          margin: EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          elevation: 5,
+          shadowColor: boxShadow,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Form(
+                key: formKey,
+                child: Column(
+                  children: <Widget>[
+                    CustomizedTextFormField(
+                      controller: _cardNumberController,
+                      hintText: 'xxxx xxxx xxxx xxxx',
+                      labelText: "Card Number",
+                      onChanged: (val) {
+                        setState(() {
+                          cardNumber = val;
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomizedTextFormField(
+                              controller: _expiryDateController,
+                              hintText: 'MM/YY',
+                              labelText: "Expiry date",
+                              onChanged: (val) {
+                                setState(() {
+                                  expiryDate = val;
+                                });
+                              }),
+                        ),
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(
+                          child: CustomizedTextFormField(
+                              controller: _cvvCodeController,
+                              focusNode: cvvFocusNode,
+                              hintText: '123',
+                              labelText: "CVV",
+                              onChanged: (val) {
+                                setState(() {
+                                  cvvCode = val;
+                                });
+                              }),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    //   margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
+                    //   child: TextFormField(
+                    //     controller: _cardNumberController,
+                    //     cursorColor: navyBlue,
+                    //     style: TextStyle(
+                    //       color: navyBlue,
+                    //     ),
+                    //     decoration: InputDecoration(
+                    //       border: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: Colors.white)),
+                    //       focusedBorder: OutlineInputBorder(
+                    //         borderSide: BorderSide(color: navyBlue, width: 1.3),
+                    //       ),
+                    //       enabledBorder: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: navyBlue)),
+                    //       hintStyle: TextStyle(color: navyBlue),
+                    //       labelStyle: TextStyle(color: navyBlue),
+                    //       labelText: AppLocalization.of(context)!.cardNumber,
+                    //       hintText: 'xxxx xxxx xxxx xxxx',
+                    //     ),
+                    //     keyboardType: TextInputType.number,
+                    //     textInputAction: TextInputAction.next,
+                    //     onChanged: (val) {
+                    //       setState(() {
+                    //         cardNumber = val;
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
+                    //   child: TextFormField(
+                    //     controller: _expiryDateController,
+                    //     cursorColor: navyBlue,
+                    //     style: TextStyle(
+                    //       color: navyBlue,
+                    //     ),
+                    //     decoration: InputDecoration(
+                    //         border: OutlineInputBorder(
+                    //             borderSide: BorderSide(color: Colors.white)),
+                    //         focusedBorder: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: navyBlue, width: 1.3),
+                    //         ),
+                    //         enabledBorder: OutlineInputBorder(
+                    //             borderSide: BorderSide(color: navyBlue)),
+                    //         hintStyle: TextStyle(color: navyBlue),
+                    //         labelStyle: TextStyle(color: navyBlue),
+                    //         labelText: AppLocalization.of(context)!.expiredDate,
+                    //         hintText: 'MM/YY'),
+                    //     keyboardType: TextInputType.number,
+                    //     textInputAction: TextInputAction.next,
+                    //     onChanged: (val) {
+                    //       setState(() {
+                    //         expiryDate = val;
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
+                    //   child: TextField(
+                    //     focusNode: cvvFocusNode,
+                    //     controller: _cvvCodeController,
+                    //     cursorColor: navyBlue,
+                    //     style: TextStyle(
+                    //       color: navyBlue,
+                    //     ),
+                    //     decoration: InputDecoration(
+                    //       border: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: Colors.white)),
+                    //       focusedBorder: OutlineInputBorder(
+                    //         borderSide: BorderSide(color: navyBlue, width: 1.3),
+                    //       ),
+                    //       enabledBorder: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: navyBlue)),
+                    //       hintStyle: TextStyle(color: navyBlue),
+                    //       labelStyle: TextStyle(color: navyBlue),
+                    //       labelText: AppLocalization.of(context)!.cvv,
+                    //       hintText: 'XXXX',
+                    //     ),
+                    //     keyboardType: TextInputType.number,
+                    //     textInputAction: TextInputAction.done,
+                    //     onChanged: (val) {
+                    //       setState(() {
+                    //         cvvCode = val;
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
+                    //   child: TextFormField(
+                    //     controller: _cardHolderNameController,
+                    //     cursorColor: navyBlue,
+                    //     style: TextStyle(
+                    //       color: navyBlue,
+                    //     ),
+                    //     decoration: InputDecoration(
+                    //       border: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: Colors.white)),
+                    //       focusedBorder: OutlineInputBorder(
+                    //         borderSide: BorderSide(color: navyBlue, width: 1.3),
+                    //       ),
+                    //       enabledBorder: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: navyBlue)),
+                    //       hintStyle: TextStyle(color: navyBlue),
+                    //       labelStyle: TextStyle(color: navyBlue),
+                    //       labelText: AppLocalization.of(context)!.cardHolder,
+                    //     ),
+                    //     keyboardType: TextInputType.text,
+                    //     textInputAction: TextInputAction.next,
+                    //     onChanged: (val) {
+                    //       setState(() {
+                    //         cardHolderName = val;
+                    //       });
+                    //     },
+                    //   ),
+                    // ),
+
+                    CustomizedTextFormField(
+                      controller: _amountController,
+                      isAmount: true,
+                      labelText: "Amount",
+                      onChanged: (val) {
+                        setState(() {
+                          amount = int.parse(val);
+                        });
+                      },
+                      validator: (val) {
+                        try {
+                          int.parse(val!);
+                        } catch (e) {
+                          return AppLocalization.of(context)!.invalidAmount;
+                        }
+                        return null;
+                      },
+                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
+                    //   child: TextFormField(
+                    //     controller: _amountController,
+                    //     cursorColor: navyBlue,
+                    //     style: TextStyle(
+                    //       color: navyBlue,
+                    //     ),
+                    //     decoration: InputDecoration(
+                    //         border: OutlineInputBorder(
+                    //             borderSide: BorderSide(color: Colors.white)),
+                    //         focusedBorder: OutlineInputBorder(
+                    //           borderSide: BorderSide(color: navyBlue, width: 1.3),
+                    //         ),
+                    //         enabledBorder: OutlineInputBorder(
+                    //             borderSide: BorderSide(color: navyBlue)),
+                    //         hintStyle: TextStyle(color: navyBlue),
+                    //         labelStyle: TextStyle(color: navyBlue),
+                    //         labelText: AppLocalization.of(context)!.amount,
+                    //         hintText: AppLocalization.of(context)!.enterAmount),
+                    //     keyboardType: TextInputType.number,
+                    //     textInputAction: TextInputAction.next,
+                    //     onChanged: (val) {
+                    //       setState(() {
+                    //         amount = int.parse(val);
+                    //       });
+                    //     },
+                    //     validator: (val) {
+                    //       try {
+                    //         int.parse(val!);
+                    //       } catch (e) {
+                    //         return AppLocalization.of(context)!.invalidAmount;
+                    //       }
+                    //       return null;
+                    //     },
+                    //   ),
+                    // ),
+                  ],
+                )),
+          ),
+        ),
+        SizedBox(
+          height: 32,
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: CurvedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                sendPaymentData();
+              } else {
+                showToast(
+                    message:
+                        AppLocalization.of(context)!.invalidDetails + " !!");
+              }
+            },
+            text: AppLocalization.of(context)!.topUp,
+            textColor: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 
   void sendPaymentData() {
     PaymentAndBankingAuth().topUpAccountByCC({"data": "data"}).then((value) {
       if (value == true) {
-        Toast.show(
-          AppLocalization.of(context).topUp +
+        showToast(
+          message: AppLocalization.of(context)!.topUp +
               " " +
-              AppLocalization.of(context).done,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
+              AppLocalization.of(context)!.done,
         );
         Navigator.pop(context);
       } else {
-        Toast.show(
-          AppLocalization.of(context).somethingWentWrong,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(message: AppLocalization.of(context)!.somethingWentWrong);
       }
     });
   }

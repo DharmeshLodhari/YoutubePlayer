@@ -1,11 +1,19 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/country_picker/country.dart';
+import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -23,7 +31,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import 'package:toast/toast.dart';
 
 import 'more_apps/user_profile/user_auth.dart';
 
@@ -37,15 +44,15 @@ class _UserDashboardState extends State<UserDashboard> {
   final GlobalKey<ScaffoldState> _scaffoldSettingKey =
       new GlobalKey<ScaffoldState>();
   final _auth = AuthService();
-  UserBloc userBloc;
-  BankAccountBloc bankAccountBloc;
+  late UserBloc userBloc;
+  late BankAccountBloc bankAccountBloc;
 
   bool isLoading = false;
   bool storeLocked = true;
-  Language language;
+  Language? language;
   String accountBalance = "";
 
-  DashboardBloc dashboardBloc;
+  late DashboardBloc dashboardBloc;
   bool isBalanceHidden = true;
 
   @override
@@ -91,10 +98,23 @@ class _UserDashboardState extends State<UserDashboard> {
         ));
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint("======> didChange dependency called !!");
+    hideBalance();
+  }
+
+  void hideBalance() {
+    if (isBalanceHidden == false) {
+      isBalanceHidden = true;
+      if (mounted) setState(() {});
+    }
+  }
+
   Widget backgroundScreen() {
     if (userBloc.user.userAbout == null ||
-        userBloc.user.userAbout.wallpaper == null ||
-        userBloc.user.userAbout.wallpaper == "") {
+        userBloc.user.userAbout!.wallpaper == "") {
       return Container(
         child: Image.asset(
           "assets/images/home_screen_background.png",
@@ -107,14 +127,18 @@ class _UserDashboardState extends State<UserDashboard> {
     return ClipRRect(
       borderRadius: new BorderRadius.vertical(
           bottom: new Radius.elliptical(100.0.w, 50.0)),
-      child: CachedNetworkImage(
-        imageUrl: userBloc.user.userAbout.wallpaper,
-        fit: BoxFit.cover,
+      child: Container(
+        color: navyBlue,
         width: 100.0.w,
         height: 33.0.h,
-        color: blackFont.withOpacity(0.4),
-        colorBlendMode: BlendMode.darken,
-        filterQuality: FilterQuality.high,
+        child: CachedNetworkImage(
+          imageUrl: userBloc.user.userAbout!.wallpaper,
+          fit: BoxFit.cover,
+          color: blackFont.withOpacity(0.4),
+          colorBlendMode: BlendMode.darken,
+          filterQuality: FilterQuality.high,
+          errorWidget: wallpaperErrorWidget,
+        ),
       ),
     );
   }
@@ -134,7 +158,7 @@ class _UserDashboardState extends State<UserDashboard> {
           secondRowOfUserDashboardItem(),
           flexibleSpace(flex: 1),
           thirdRowOfUserDashboardItem(),
-          flexibleSpace(flex: 3),
+          flexibleSpace(flex: 4),
           appVersionDataUI(),
           flexibleSpace(flex: 3),
         ],
@@ -149,9 +173,22 @@ class _UserDashboardState extends State<UserDashboard> {
       elevation: 0,
       titleSpacing: 0,
       centerTitle: false,
-      title: Text(
-        "Account",
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+      title: GestureDetector(
+        onTap: () async {
+          await UserAuth()
+              .fetchCustomerProfile(userBloc.user.userName)
+              .then((user) {
+            if (mounted) {
+              Navigator.pushNamed(
+                  myGlobals.navigationKey.currentContext!, '/profile',
+                  arguments: {"searchedUserName": user.userName});
+            }
+          });
+        },
+        child: Text(
+          "Account",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
       ),
       actions: <Widget>[
         settingBtn(),
@@ -177,6 +214,7 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ),
         onTap: () {
+          hideBalance();
           Navigator.of(context).pushNamed("/general-setting");
         },
       ),
@@ -288,6 +326,7 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.user,
           title: "Profile",
           onTap: () {
+            hideBalance();
             profileAndroidSheet();
           },
           iconColor: HexColor("#9B51E0"),
@@ -300,6 +339,7 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.cart,
           title: "Orders",
           onTap: () {
+            hideBalance();
             Navigator.pushNamed(context, '/orders-list');
           },
           iconColor: HexColor("#FFAB00"),
@@ -310,9 +350,10 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.store,
-          title: "My store",
+          title: "Store Listing",
           isLocked: storeLocked,
           onTap: () {
+            hideBalance();
             if (!storeLocked) {
               storeItemAndroidSheet();
             }
@@ -331,6 +372,7 @@ class _UserDashboardState extends State<UserDashboard> {
           icon: SlydoAppIcon.transactions,
           title: "Transaction",
           onTap: () {
+            hideBalance();
             BottomSheetPassCode(
                 context: context,
                 isValidCallback: () {
@@ -348,8 +390,9 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.naira,
-          title: "Cash out",
+          title: "Cashout",
           onTap: () {
+            hideBalance();
             bankAndroidSheet();
           },
           iconColor: HexColor("#46CE7C"),
@@ -357,27 +400,24 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
-        // Expanded(
-        //     child: UserDashboardItemTile(
-        //   icon: Icons.business_center_rounded,
-        //   title: "Business",
-        //   isLocked: storeLocked,
-        //   onTap: () {
-        //     if (!storeLocked) {
-        //       Navigator.of(context).pushNamed("/contracts");
-        //     }
-        //   },
-        //   iconColor: HexColor("#5218E9"),
-        // )),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.bank,
-          title: "Bank",
+          icon: Icons.account_balance_wallet_rounded,
+          title: "TopUp",
           onTap: () {
-            Navigator.of(context).pushNamed('/add-money-to-slydo-one');
+            Navigator.of(context).pushNamed("/top-up-options");
           },
           iconColor: HexColor("#F35B46"),
         )),
+        // Expanded(
+        //     child: UserDashboardItemTile(
+        //   icon: Icons.account_balance_wallet_rounded,
+        //   title: "Fund Wallet",
+        //   onTap: () {
+        //     Navigator.of(context).pushNamed("/card-payment-page");
+        //   },
+        //   iconColor: HexColor("#F35B46"),
+        // )),
       ],
     );
   }
@@ -385,29 +425,33 @@ class _UserDashboardState extends State<UserDashboard> {
   Widget thirdRowOfUserDashboardItem() {
     return Row(
       children: [
+        // Expanded(child: Container()),
         Expanded(
             child: UserDashboardItemTile(
-          icon: SlydoAppIcon.translation,
-          title: "Language",
+          icon: Icons.business_center_rounded,
+          title: "Business",
+          isLocked: storeLocked,
           onTap: () {
-            // changeLanguage();
-            changeLanguageBottomSheet();
+            hideBalance();
+            if (!storeLocked) {
+              Navigator.of(context).pushNamed("/contracts");
+            }
           },
           iconColor: HexColor("#5218E9"),
         )),
         SizedBox(
           width: 12,
         ),
-        Expanded(child: Container()),
-        // Expanded(
-        //     child: UserDashboardItemTile(
-        //   icon: SlydoAppIcon.more,
-        //   title: "More",
-        //   onTap: () {
-        //     Navigator.pushNamed(context, "/more-apps");
-        //   },
-        //   iconColor: HexColor("#374677"),
-        // )),
+        // Expanded(child: Container()),
+        Expanded(
+            child: UserDashboardItemTile(
+          icon: SlydoAppIcon.more,
+          title: "More",
+          onTap: () {
+            Navigator.pushNamed(context, "/more-apps");
+          },
+          iconColor: HexColor("#374677"),
+        )),
         SizedBox(
           width: 12,
         ),
@@ -433,9 +477,15 @@ class _UserDashboardState extends State<UserDashboard> {
                   fontWeight: FontWeight.w600,
                   shadows: [
                     Shadow(
-                        color: boxShadow, blurRadius: 3, offset: Offset(1, 1)),
+                      color: boxShadow,
+                      blurRadius: 3,
+                      offset: Offset(1, 1),
+                    ),
                     Shadow(
-                        color: boxShadow, blurRadius: 3, offset: Offset(1, 1))
+                      color: boxShadow,
+                      blurRadius: 3,
+                      offset: Offset(1, 1),
+                    )
                   ])),
         ],
       ),
@@ -444,7 +494,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
   Future<void> getAccountBalance() async {
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value;
+      var data = value!;
       var spendableBalance = data["spendable_balance"];
       accountBalance = spendableBalance.toString();
       if (mounted) {
@@ -482,13 +532,13 @@ class _UserDashboardState extends State<UserDashboard> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               title: Text(
-                AppLocalization.of(context).selectTheImageSource,
+                AppLocalization.of(context)!.selectTheImageSource,
                 style: TextStyle(fontSize: 18, color: blackFont),
               ),
               actions: <Widget>[
                 MaterialButton(
                   child: Text(
-                    AppLocalization.of(context).camera,
+                    AppLocalization.of(context)!.camera,
                     style: TextStyle(fontSize: 16, color: blackFont),
                   ),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
@@ -505,10 +555,10 @@ class _UserDashboardState extends State<UserDashboard> {
 
     if (imageSource != null) {
       final file =
-          await ImagePicker().getImage(source: imageSource, imageQuality: 70);
+          await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String croppedImage = await ImageCrop().cropImage(file.path);
+        String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -516,10 +566,35 @@ class _UserDashboardState extends State<UserDashboard> {
         try {
           isLoading = true;
           if (mounted) setState(() {});
-          // Get user current login info so we can reuse it to login
-          var dbUser = await _auth.getUser();
-          var phoneNumber = dbUser.phoneNumber;
-          var password = dbUser.password;
+
+          User? _user = await DatabaseHelper().getUser();
+
+          SharedPreferences sharedPreferences =
+              await SharedPreferences.getInstance();
+          String countryFromPref =
+              sharedPreferences.getString('country') ?? "NG";
+
+          Country country =
+              CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
+          SecureUser secureUser = await SecureStorage().getUser();
+          String phoneNumber = secureUser.phoneNumber ?? "";
+          String password = secureUser.password ?? "";
+
+          if (phoneNumber != "") {
+            phoneNumber = "+" + country.phoneCode! + phoneNumber;
+          }
+
+          if (phoneNumber == "" || password == "") {
+            phoneNumber = _user?.phoneNumber ?? "";
+            password = _user?.password ?? "";
+          }
+
+          if (phoneNumber == "" || password == "") {
+            isLoading = false;
+            if (mounted) setState(() {});
+            return;
+          }
 
           // Upload Image new image
           await UserAuth().updateUserAvatar(File(croppedImage));
@@ -534,8 +609,7 @@ class _UserDashboardState extends State<UserDashboard> {
         } catch (err) {
           isLoading = false;
           if (mounted) setState(() {});
-          Toast.show(err.toString(), context,
-              backgroundColor: blackFont, textColor: Colors.white);
+          // showToast(message: err.toString());
           debugPrint("Cannot Update Avatar : " + err.toString());
         }
       }
@@ -546,18 +620,18 @@ class _UserDashboardState extends State<UserDashboard> {
     await showDialog<Language>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context).selectYourLanguage),
+              title: Text(AppLocalization.of(context)!.selectYourLanguage),
               contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               content: SingleChildScrollView(
                 child: Column(
                   children: languages.map((data) {
                     return RadioListTile(
-                      selected: language.languageCode == data.languageCode,
+                      selected: language!.languageCode == data.languageCode,
                       title: Text(data.name),
                       activeColor: navyBlue,
                       groupValue: language,
                       value: data,
-                      onChanged: (lang) {
+                      onChanged: (dynamic lang) {
                         setState(() {
                           language = lang;
                           setLanguage(lang);
@@ -575,43 +649,39 @@ class _UserDashboardState extends State<UserDashboard> {
   void getLanguage() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
-      String languageCode = sharedPreferences.getString("language");
+      String? languageCode = sharedPreferences.getString("language");
       setState(() {
         language = getLanguageByLanguageCode(languageCode);
-        debugPrint("Set language: => " + language.name);
+        debugPrint("Set language: => " + language!.name);
       });
     } else {
       setState(() {
         language = getLanguageByLanguageCode("en");
-        debugPrint("Set default language: => " + language.name);
+        debugPrint("Set default language: => " + language!.name);
       });
     }
   }
 
-  void setLanguage(Language language) {
+  void setLanguage(Language? language) {
     setState(() {
-      AppLocalization.load(Locale(language.languageCode, ""));
-      Toast.show(
-        AppLocalization.of(context).languageSwitchedTo + " ${language.name}",
-        context,
-        duration: Toast.LENGTH_LONG,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
+      AppLocalization.load(Locale(language!.languageCode, ""));
+      showToast(
+          message: AppLocalization.of(context)!.languageSwitchedTo +
+              " ${language.name}");
     });
   }
 
   //to save language in shared preference when user change the language
-  void saveIntoSharedPreference(Language language) async {
+  void saveIntoSharedPreference(Language? language) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (sharedPreferences.containsKey("language")) {
       bool result =
-          await sharedPreferences.setString("language", language.languageCode);
+          await sharedPreferences.setString("language", language!.languageCode);
       debugPrint(
           "${language.name} Language is updated in sharedPreference => $result");
     } else {
       bool result =
-          await sharedPreferences.setString("language", language.languageCode);
+          await sharedPreferences.setString("language", language!.languageCode);
       debugPrint(
           "${language.name} Language is set in sharedPreference => $result");
     }
@@ -643,8 +713,11 @@ class _UserDashboardState extends State<UserDashboard> {
                             .fetchCustomerProfile(userBloc.user.userName)
                             .then((user) {
                           if (mounted) {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, '/profile',
+                            Navigator.pop(
+                                myGlobals.navigationKey.currentContext!);
+                            Navigator.pushNamed(
+                                myGlobals.navigationKey.currentContext!,
+                                '/profile',
                                 arguments: {"searchedUserName": user.userName});
                           }
                         });
@@ -702,20 +775,17 @@ class _UserDashboardState extends State<UserDashboard> {
                     },
                   ),
                   bottomSheetItem(
-                    title: "Payout",
+                    title: "Cashout",
                     icon: SlydoAppIcon.payout,
                     onTap: () {
                       BottomSheetPassCode(
                           context: context,
                           isValidCallback: () {
                             if (bankAccountBloc.bankAccount == null ||
-                                bankAccountBloc.bankAccount.bankName == null) {
+                                bankAccountBloc.bankAccount!.bankName == null) {
                               Navigator.pop(context);
-                              Toast.show(
-                                  "Please add bank account first !!", context,
-                                  backgroundColor: Colors.black,
-                                  textColor: Colors.white,
-                                  duration: Toast.LENGTH_LONG);
+                              showToast(
+                                  message: "Please add bank account first !!");
                             } else {
                               Navigator.pop(context);
                               Navigator.pushNamed(context, "/payout");
@@ -727,7 +797,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     },
                   ),
                   bottomSheetItem(
-                    title: "Payout list",
+                    title: "Cashout transactions",
                     icon: SlydoAppIcon.payout_list,
                     isLast: true,
                     onTap: () {
@@ -755,19 +825,19 @@ class _UserDashboardState extends State<UserDashboard> {
       child: CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).myProfile),
+            child: Text(AppLocalization.of(context)!.myProfile),
             onPressed: () {
               Navigator.pop(context, 'My Profile');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).updateMyAvatar),
+            child: Text(AppLocalization.of(context)!.updateMyAvatar),
             onPressed: () {
               Navigator.pop(context, 'Update My Avatar');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).myAddress),
+            child: Text(AppLocalization.of(context)!.myAddress),
             onPressed: () {
               Navigator.pop(context, 'My Address');
             },
@@ -780,7 +850,7 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(AppLocalization.of(context).cancel),
+          child: Text(AppLocalization.of(context)!.cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');
@@ -796,26 +866,26 @@ class _UserDashboardState extends State<UserDashboard> {
       child: CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).bankAccounts),
+            child: Text(AppLocalization.of(context)!.bankAccounts),
             onPressed: () {
               Navigator.pop(context, 'Bank Accounts');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).payoutList),
+            child: Text(AppLocalization.of(context)!.payoutList),
             onPressed: () {
               Navigator.pop(context, 'Payout List');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).payout),
+            child: Text(AppLocalization.of(context)!.payout),
             onPressed: () {
               Navigator.pop(context, 'Payout');
             },
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(AppLocalization.of(context).cancel),
+          child: Text(AppLocalization.of(context)!.cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');
@@ -825,11 +895,11 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 
-  void showDemoActionSheet({BuildContext context, Widget child}) {
+  void showDemoActionSheet({required BuildContext context, Widget? child}) {
     showCupertinoModalPopup<String>(
       context: context,
-      builder: (BuildContext context) => child,
-    ).then((String value) {
+      builder: (BuildContext context) => child!,
+    ).then((String? value) {
       if (value != null) {
         if (value == "My Profile") {
           Navigator.pushNamed(context, '/profile',
@@ -918,20 +988,20 @@ class _UserDashboardState extends State<UserDashboard> {
       child: CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).addProduct),
+            child: Text(AppLocalization.of(context)!.addProduct),
             onPressed: () {
               Navigator.pop(context, 'Add Product');
             },
           ),
           CupertinoActionSheetAction(
-            child: Text(AppLocalization.of(context).addService),
+            child: Text(AppLocalization.of(context)!.addService),
             onPressed: () {
               Navigator.pop(context, 'Add Service');
             },
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
-          child: Text(AppLocalization.of(context).cancel),
+          child: Text(AppLocalization.of(context)!.cancel),
           isDefaultAction: true,
           onPressed: () {
             Navigator.pop(context, 'Cancel');
@@ -962,7 +1032,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     return bottomSheetItemWithCheck(
                         icon: SlydoAppIcon.translation,
                         title: data.name,
-                        isChecked: language.languageCode == data.languageCode,
+                        isChecked: language!.languageCode == data.languageCode,
                         onTap: () {
                           language = data;
                           setLanguage(data);
@@ -976,11 +1046,11 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget bottomSheetItemWithCheck(
-      {Function onTap,
-      IconData icon,
-      String title,
+      {Function? onTap,
+      IconData? icon,
+      required String title,
       bool isLast = false,
-      bool isChecked}) {
+      required bool isChecked}) {
     return GestureDetector(
       child: Padding(
         padding: EdgeInsets.only(bottom: isLast ? 0 : 10),
@@ -1014,7 +1084,7 @@ class _UserDashboardState extends State<UserDashboard> {
           ],
         ),
       ),
-      onTap: onTap,
+      onTap: onTap as void Function()?,
     );
   }
 }

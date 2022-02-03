@@ -1,6 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 const String applicationName = "Slydo";
 
@@ -54,12 +53,15 @@ class LocalNotificationService {
     tz.initializeTimeZones();
 
     channelList.forEach((element) {
-      _createNotificationChannel(element['channel_id'], element['channel_name'],
-          element['channel_description'], element['sound']);
+      _createNotificationChannel(
+          element['channel_id']!,
+          element['channel_name']!,
+          element['channel_description']!,
+          element['sound']);
     });
   }
 
-  Future selectNotification(String payload) async {
+  Future selectNotification(String? payload) async {
     print("Select notification $payload");
   }
 
@@ -82,7 +84,7 @@ class LocalNotificationService {
   // }
 
   Future<void> _createNotificationChannel(
-      String id, String name, String description, String sound) async {
+      String id, String name, String description, String? sound) async {
     var androidNotificationChannel = AndroidNotificationChannel(
       id,
       name,
@@ -107,7 +109,7 @@ class LocalNotificationService {
   }
 
   Future onDidReceiveLocalNotification(
-      int id, String title, String body, String payload) async {
+      int id, String? title, String? body, String? payload) async {
     return;
   }
 }

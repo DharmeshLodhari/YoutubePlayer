@@ -1,8 +1,8 @@
 class Partner {
-  String name;
-  String star;
-  String userAvatar;
-  String userTag;
+  String? name;
+  String? star;
+  String? userAvatar;
+  String? userTag;
 
   Partner({this.name, this.star, this.userAvatar, this.userTag});
 

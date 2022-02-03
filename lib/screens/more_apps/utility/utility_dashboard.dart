@@ -14,7 +14,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: foregroundScreen(),
     );
   }

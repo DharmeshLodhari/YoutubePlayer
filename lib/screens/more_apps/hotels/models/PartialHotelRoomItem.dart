@@ -1,9 +1,9 @@
 class PartialHotelRoomItem {
-  String currency;
-  String image;
-  String name;
-  String price;
-  String shortDescription;
+  String? currency;
+  String? image;
+  String? name;
+  String? price;
+  String? shortDescription;
 
   PartialHotelRoomItem(
       {this.currency,

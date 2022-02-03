@@ -18,7 +18,7 @@ class EventDetailPage extends StatefulWidget {
 }
 
 class _EventDetailPageState extends State<EventDetailPage> {
-  EventDashboardBloc _eventDashboardBloc;
+  late EventDashboardBloc _eventDashboardBloc;
 
   List<String> availableDates = ["18", "25", "01", "08", "15"];
   int selectedDate = 0;
@@ -60,7 +60,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
         floatingActionButton: floatingActionBar(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -231,8 +231,9 @@ class _EventDetailPageState extends State<EventDetailPage> {
             CachedNetworkImage(
               width: double.infinity,
               height: double.infinity,
-              imageUrl: event.image,
+              imageUrl: event.image!,
               fit: BoxFit.fill,
+              errorWidget: imageErrorWidget,
             ),
             Positioned(
               right: 12,
@@ -263,7 +264,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           children: [
             Expanded(
               child: Text(
-                event.name,
+                event.name!,
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -282,10 +283,11 @@ class _EventDetailPageState extends State<EventDetailPage> {
               width: 32,
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: event.ownerAvatar,
+                  imageUrl: event.ownerAvatar!,
                   fit: BoxFit.fill,
                   width: double.infinity,
                   height: double.infinity,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -293,7 +295,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
               width: 12,
             ),
             Text(
-              event.ownerName,
+              event.ownerName!,
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             )
@@ -341,7 +343,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                             ),
                             Expanded(
                               child: Text(
-                                event.eventTime,
+                                event.eventTime!,
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
@@ -377,7 +379,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                             ),
                             Expanded(
                               child: Text(
-                                event.location.first.name,
+                                event.location!.first.name!,
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
@@ -419,7 +421,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                   size: 10,
                                 ),
                                 Text(
-                                  event.price,
+                                  event.price!,
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
@@ -549,7 +551,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
           height: 12,
         ),
         Text(
-          event.about,
+          event.about!,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -592,6 +594,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             height: double.infinity,
             width: double.infinity,
             fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
           ),
         ),
       ],
@@ -615,7 +618,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             height: 12,
           ),
           Column(
-            children: event.similarEvent
+            children: event.similarEvent!
                 .map((element) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: EventTileWithHeart(partialEvent: element),

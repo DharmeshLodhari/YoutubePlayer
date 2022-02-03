@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class UserTileForConnection extends StatefulWidget {
-  ChatConversation user;
+  ChatConversation? user;
 
   UserTileForConnection({this.user});
 
@@ -27,24 +27,24 @@ class UserTileForConnection extends StatefulWidget {
 class _UserTileForConnectionState extends State<UserTileForConnection> {
   bool isTyping = false;
 
-  MainSocketProvider mainSocketProvider;
-  StreamSubscription streamSubscription;
-  String typingMessage = "";
+  MainSocketProvider? mainSocketProvider;
+  StreamSubscription? streamSubscription;
+  String? typingMessage = "";
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       try {
         if (mounted) {
           mainSocketProvider =
               Provider.of<MainSocketProvider>(context, listen: false);
 
-          streamSubscription = mainSocketProvider.listen((message) {
+          streamSubscription = mainSocketProvider!.listen((message) {
             Map<String, dynamic> messageData = jsonDecode(message);
             if (messageData["type"] == "user_typing_message" &&
-                messageData["conversation_id"] == widget.user.conversationId) {
+                messageData["conversation_id"] == widget.user!.conversationId) {
               isTyping = true;
               typingMessage = messageData["message"];
               if (mounted) setState(() {});
@@ -76,12 +76,12 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
     userBloc = Provider.of<UserBloc>(context);
     Widget avatarImage;
 
-    Color borderColor = getUserTypeColorByType(type: widget.user.type);
+    Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
 
     avatarImage = GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/photo-viewer", arguments: widget.user.avatar);
+            .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
       },
       child: Container(
           height: 48,
@@ -93,9 +93,9 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
               border: Border.all(color: borderColor, width: 2)),
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: widget.user.avatar == "" || widget.user.avatar == null
-                  ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                  : widget.user.avatar,
+              imageUrl: widget.user!.avatar == "" || widget.user!.avatar == null
+                  ? defaultImage
+                  : widget.user!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fill,
               filterQuality: FilterQuality.high,
@@ -114,7 +114,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         child: ListTile(
           dense: true,
           title: Text(
-            widget.user.fullName,
+            widget.user!.fullName!,
             maxLines: 1,
             style: TextStyle(
               color: blackFont,
@@ -136,13 +136,13 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   Widget getSubtitle(BuildContext context) {
     return isTyping
         ? Text(
-            typingMessage,
+            typingMessage!,
             style: TextStyle(
               color: naturalGreen,
             ),
           )
         : Text(
-            widget.user.userName,
+            widget.user!.userName!,
             maxLines: 1,
             style: TextStyle(
               color: darkGrey,
@@ -158,7 +158,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         stream: ChatMessageSynchronizer().getChatMessageCountStream,
         builder: (context, snapshot) {
           return FutureBuilder<ChatUserModel>(
-              future: ChatUserManager().getUser(widget.user.conversationId),
+              future: ChatUserManager().getUser(widget.user!.conversationId),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Container(
@@ -166,7 +166,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
                     height: 0,
                   );
                 } else if (snapshot.hasData) {
-                  return getBadgeAndGroupLabel(snapshot.data.messageCount);
+                  return getBadgeAndGroupLabel(snapshot.data!.messageCount);
                 }
                 return Container(
                   width: 0,
@@ -176,15 +176,15 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         });
   }
 
-  Widget getBadgeAndGroupLabel(int count) {
-    if (!widget.user.isGroupConversation) {
+  Widget getBadgeAndGroupLabel(int? count) {
+    if (!widget.user!.isGroupConversation!) {
       if (count == 0) {
         return Container(
           width: 0,
           height: 0,
         );
       } else {
-        return getBadge(count, padding: 12);
+        return getBadge(count!, padding: 12);
       }
     } else {
       if (count == 0) {
@@ -195,7 +195,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.center,
           children: [
-            getBadge(count,
+            getBadge(count!,
                 padding: checkUserIsAdmin() || checkUserIsOwner() ? 10 : 0),
             Expanded(
               child: SizedBox(
@@ -252,12 +252,12 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   }
 
   bool checkUserIsAdmin() {
-    if (widget.user.adminUsers.contains(userBloc.user.userName)) return true;
+    if (widget.user!.adminUsers.contains(userBloc.user.userName)) return true;
     return false;
   }
 
   bool checkUserIsOwner() {
-    if (widget.user.owner.contains(userBloc.user.userName)) return true;
+    if (widget.user!.owner!.contains(userBloc.user.userName!)) return true;
     return false;
   }
 

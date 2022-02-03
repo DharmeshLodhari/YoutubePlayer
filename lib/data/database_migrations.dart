@@ -24,6 +24,7 @@ final initialDBSchema = [
       "password"	TEXT,
       "avatar"	TEXT,
       "qrCode"	TEXT,
+      "rating" REAL,
       "url"	TEXT,
       "currency"	TEXT);
     ''',
@@ -157,7 +158,8 @@ final initialDBSchema = [
             "is_active" INTEGER,
             "created_at" TEXT,
             "updated_at" TEXT,
-            "note" TEXT
+            "note" TEXT,
+            "account_tier" TEXT
           );
     ''',
   // Create the General Settings table
@@ -183,4 +185,5 @@ final initialDBSchema = [
     '''
 ];
 
+///Add List Of Migration query's when app is in production
 List<String> dbMigrations = [];

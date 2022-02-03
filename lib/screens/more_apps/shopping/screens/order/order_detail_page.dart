@@ -15,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../shopping_auth.dart';
 
@@ -23,7 +22,7 @@ import '../../shopping_auth.dart';
 class OrderDetailPage extends StatefulWidget {
   var arguments;
 
-  OrderDetailPage({@required this.arguments});
+  OrderDetailPage({required this.arguments});
 
   @override
   _OrderDetailPageState createState() =>
@@ -35,34 +34,34 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   _OrderDetailPageState({this.arguments});
 
-  BasketBloc basketBloc;
-  UserBloc userBloc;
+  late BasketBloc basketBloc;
+  late UserBloc userBloc;
 
-  SlidableController _slideController;
+  SlidableController? _slideController;
 
   String note = "";
 
-  Order order;
-  List consumable = List();
+  Order? order;
+  List items = [];
   bool isLoading = true;
   final _auth = ShoppingAuthService();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  var statusOfOrder = "";
+  String? statusOfOrder = "";
 
   GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
-  CustomizedPopUpMenu menu;
+  late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
   @override
   void initState() {
     order = arguments['order'];
-    statusOfOrder = order.status.toLowerCase();
+    statusOfOrder = order!.status!.toLowerCase();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    fetchOrder(order.id.toString());
+    fetchOrder(order!.id.toString());
     super.initState();
   }
 
@@ -70,7 +69,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     _auth.getOrder(orderId).then((value) {
       if (mounted) {
         setState(() {
-          consumable = value;
+          items = value;
           isLoading = false;
         });
       }
@@ -78,7 +77,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void menuItemSelectionChange(String value, int index) {
-    if (userBloc.user.userName == order.merchant) {
+    if (userBloc.user.userName == order!.merchant) {
       selectedMenuItemIndex = index;
       updateStatus(value);
       statusOfOrder = value;
@@ -122,7 +121,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       child: Scaffold(
           key: scaffoldKey,
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: scaffoldBody()),
     );
   }
@@ -235,16 +234,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               ? Center(
                   child: CircularLoadingIndicator(),
                 )
-              : ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  itemCount: consumable.length,
-                  itemBuilder: (BuildContext context, int index) =>
-                      getItemTile(index)),
+              : Column(
+                  children: [
+                    getOrderDetail(),
+                    Expanded(
+                      child: ListView.builder(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          itemCount: items.length,
+                          itemBuilder: (BuildContext context, int index) =>
+                              getItemTile(index)),
+                    ),
+                  ],
+                ),
         ),
-        checkoutWidget(),
-        SizedBox(
-          height: 20,
-        )
       ],
     );
   }
@@ -255,6 +257,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       onPressed: () {
         showChangeStatusAndroidSheet();
       },
+    );
+  }
+
+  Widget getOrderDetail() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          checkoutWidget(),
+        ],
+      ),
     );
   }
 
@@ -291,7 +304,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
-                        AppLocalization.of(context).note,
+                        AppLocalization.of(context)!.note,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: blackFont,
@@ -307,7 +320,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget getBodyOfNoteBottomSheet() {
-    bool result = order.note == "" && order.customer == userBloc.user.userName;
+    bool result =
+        order!.note == "" && order!.customer == userBloc.user.userName;
     if (!result) {
       return Expanded(
         child: SingleChildScrollView(
@@ -339,7 +353,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         SizedBox(
           height: 30,
         ),
-        Expanded(child: getNoteAddTextField()),
+        getNoteAddTextField(),
         SizedBox(
           height: 20,
         ),
@@ -358,7 +372,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         cursorColor: blackFont,
         decoration: InputDecoration(
           isDense: true,
-          labelText: AppLocalization.of(context).enterYourNoteHere,
+          labelText: AppLocalization.of(context)!.enterYourNoteHere,
           labelStyle: TextStyle(color: darkGrey),
           alignLabelWithHint: true,
           focusedBorder: OutlineInputBorder(
@@ -386,10 +400,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void addNote() async {
-    await _auth.updateOrderNote(note, order.id.toString()).then((value) {
+    await _auth.updateOrderNote(note, order!.id.toString()).then((value) {
       if (value) {
         setState(() {
-          order.note = note;
+          order!.note = note;
           Navigator.pop(context);
         });
       }
@@ -397,10 +411,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   getOrderNote() {
-    if (order.note == "") {
-      return AppLocalization.of(context).noSpecialNoteAttached + " !!";
+    if (order!.note == "") {
+      return AppLocalization.of(context)!.noSpecialNoteAttached + " !!";
     }
-    return order.note;
+    return order!.note;
   }
 
   void showChangeStatusAndroidSheet() {
@@ -426,7 +440,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Text(
-                        AppLocalization.of(context).status,
+                        AppLocalization.of(context)!.status,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: blackFont,
@@ -441,7 +455,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: dividerColor,
                             ),
                             statusListTile(
-                              title: AppLocalization.of(context).newOrder,
+                              title: AppLocalization.of(context)!.newOrder,
                               value: "new order",
                               setState: setState,
                             ),
@@ -451,7 +465,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             ),
                             statusListTile(
                               title:
-                                  AppLocalization.of(context).awaitingPayment,
+                                  AppLocalization.of(context)!.awaitingPayment,
                               value: "awaiting payment",
                               setState: setState,
                             ),
@@ -460,7 +474,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: dividerColor,
                             ),
                             statusListTile(
-                              title: AppLocalization.of(context).canceled,
+                              title: AppLocalization.of(context)!.canceled,
                               value: "canceled",
                               setState: setState,
                             ),
@@ -469,7 +483,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: dividerColor,
                             ),
                             statusListTile(
-                              title: AppLocalization.of(context).completed,
+                              title: AppLocalization.of(context)!.completed,
                               value: "complete",
                               setState: setState,
                             ),
@@ -478,7 +492,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: dividerColor,
                             ),
                             statusListTile(
-                              title: AppLocalization.of(context).onHold,
+                              title: AppLocalization.of(context)!.onHold,
                               value: "on hold",
                               setState: setState,
                             ),
@@ -487,7 +501,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: dividerColor,
                             ),
                             statusListTile(
-                              title: AppLocalization.of(context).pending,
+                              title: AppLocalization.of(context)!.pending,
                               value: "pending",
                               setState: setState,
                             ),
@@ -496,7 +510,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               color: dividerColor,
                             ),
                             statusListTile(
-                              title: AppLocalization.of(context).processing,
+                              title: AppLocalization.of(context)!.processing,
                               value: "processing",
                               setState: setState,
                             ),
@@ -514,7 +528,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         });
   }
 
-  Widget statusListTile({String title, String value, StateSetter setState}) {
+  Widget statusListTile(
+      {required String title, String? value, StateSetter? setState}) {
     return RadioListTile(
       activeColor: navyBlue,
       title: Text(
@@ -526,9 +541,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         ),
       ),
       value: value,
-      onChanged: (value) {
-        if (userBloc.user.userName == order.merchant) {
-          setState(() {
+      onChanged: (dynamic value) {
+        if (userBloc.user.userName == order!.merchant) {
+          setState!(() {
             updateStatus(value);
             statusOfOrder = value;
           });
@@ -556,25 +571,65 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ),
             Row(
               children: <Widget>[
-                Text(
-                  AppLocalization.of(context).total + " : ",
-                  style: TextStyle(fontSize: 14, color: Colors.white),
+                Expanded(
+                  child: Text(
+                    AppLocalization.of(context)!.total + " : ",
+                    style: TextStyle(fontSize: 14, color: Colors.white),
+                  ),
                 ),
-                Text(
-                  worldCurrencies[order.currency],
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(
+                        worldCurrencies[order!.currency!]!,
+                        style: TextStyle(
+                            fontFamily: "Roboto",
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        moneyDisplayNormalizer(order!.totalPrice),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                    child: Text("Order No:- ",
+                        style: TextStyle(fontSize: 14, color: Colors.white))),
+                Expanded(
+                    child: Text(
+                  "${"Ref # :" + (order?.id ?? "")}",
                   style: TextStyle(
                       fontFamily: "Roboto",
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
-                ),
-                Text(
-                  moneyDisplayNormalizer(order.totalPrice),
+                )),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(
+                    child: Text("Order Status:- ",
+                        style: TextStyle(fontSize: 14, color: Colors.white))),
+                Expanded(
+                    child: Text(
+                  "${order?.status ?? ""}",
                   style: TextStyle(
+                      fontFamily: "Roboto",
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
-                ),
+                )),
               ],
             ),
             SizedBox(
@@ -590,19 +645,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return _getSlidableWithLists(
       context,
       getItemTileUi(index),
-      consumable[index],
+      items[index],
       index,
     );
   }
 
   getItemTileUi(int index) {
-    if (consumable[index]["type"] == "product") {
+    if (items[index]["type"] == "product") {
       return OrderTileForProduct(
-        consumable[index],
+        items[index],
       );
     }
     return OrderTileForService(
-      consumable[index],
+      items[index],
     );
   }
 
@@ -620,7 +675,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   List<Widget> listSecondaryActions(int index) {
-    var item = consumable[index];
+    var item = items[index];
     var conditionForUser =
         item["type"] == "product" ? item["item"].seller : item["item"].provider;
 
@@ -638,20 +693,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   navigateToComposeMessage(conditionForUser, index);
                 }
               : () {
-                  Toast.show(
-                    "You can not send message to yourself!!",
-                    context,
-                    backgroundColor: blackFont,
-                    textColor: Colors.white,
-                  );
+                  showToast(message: "You can not send message to yourself!!");
                 },
-          title: AppLocalization.of(context).message,
+          title: AppLocalization.of(context)!.message,
           slideController: _slideController),
     ];
   }
 
   void removeItem(int index) {
-    var item = consumable[index];
+    var item = items[index];
     Map data = {
       "type": item["type"],
       "id": item.conversationId,
@@ -659,11 +709,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
     _auth.removeItemToShoppingCart(data);
     basketBloc.removeItemFromCart(item);
-    Toast.show(
-        AppLocalization.of(context).itemIsRemovedSuccessfullyFromCart, context,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        duration: Toast.LENGTH_LONG);
+    showToast(
+        message:
+            AppLocalization.of(context)!.itemIsRemovedSuccessfullyFromCart);
   }
 
   List<Widget> listActionSlideActions(int index) {
@@ -673,13 +721,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void navigateToComposeMessage(var conditionForUser, int index) async {
     Navigator.of(context).pushNamed('/compose_message', arguments: {
       'recipient': conditionForUser.toString(),
-      'subject': consumable[index]["item"].name.toString(),
+      'subject': items[index]["item"].name.toString(),
     });
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   Product getProduct(String productId) {
     Product product = Product();
@@ -700,15 +748,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void updateStatus(value) {
-    _auth.updateOrderStatus(value, order.id.toString());
+    _auth.updateOrderStatus(value, order!.id.toString());
   }
 }
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  Widget child;
+  Widget? child;
   var item;
-  String type;
+  String? type;
 
   VerticalListItem(Widget child, var item) {
     this.child = child;
@@ -721,12 +769,12 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (type == "product") {
-          Product product = item;
+          Product? product = item;
           Navigator.pushNamed(context, "/product",
               arguments: {"product": product});
         }
         if (type == "service") {
-          Service service = item;
+          Service? service = item;
           Navigator.pushNamed(context, "/service-detail",
               arguments: {"service": service});
         }

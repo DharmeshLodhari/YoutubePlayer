@@ -1,7 +1,7 @@
 class FinancialInstitution {
-  String country;
-  String logo;
-  String name;
+  String? country;
+  String? logo;
+  String? name;
 
   FinancialInstitution({this.country, this.logo, this.name});
 

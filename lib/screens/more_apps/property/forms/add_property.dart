@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -21,7 +22,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -33,10 +33,10 @@ class AddProperty extends StatefulWidget {
 class _AddPropertyState extends State<AddProperty> {
   final _formKey = GlobalKey<FormState>();
 
-  UserBloc userBloc;
-  PropertyType selectedPropertyType;
+  UserBloc? userBloc;
+  PropertyType? selectedPropertyType;
 
-  ProductCondition selectedProductCondition;
+  ProductCondition? selectedProductCondition;
 
   int bedroomCount = 0;
   int bathroomCount = 0;
@@ -76,10 +76,10 @@ class _AddPropertyState extends State<AddProperty> {
   ScrollController _imageScrollController = ScrollController();
   ScrollController _videoScrollController = ScrollController();
 
-  List<File> propertyImages = List<File>();
-  List<File> propertyVideos = List<File>();
-  List<File> testVideoFiles = List<File>();
-  List<Uint8List> propertyVideoThumbnail = List<Uint8List>();
+  List<File> propertyImages = [];
+  List<File> propertyVideos = [];
+  List<File> testVideoFiles = [];
+  List<Uint8List?> propertyVideoThumbnail = [];
 
   String propertyTagLine = "";
   String propertyDescription = "";
@@ -87,7 +87,7 @@ class _AddPropertyState extends State<AddProperty> {
   String propertyAddressLineTwo = "";
   String propertyPassCode = "";
   String propertyCity = "";
-  String propertyCategory = "";
+  String? propertyCategory = "";
   String propertyCondition = "";
   String propertyPrice = "";
   String propertyManufacturer = "";
@@ -99,8 +99,8 @@ class _AddPropertyState extends State<AddProperty> {
   @override
   void deactivate() {
     if (_controller != null) {
-      _controller.setVolume(0.0);
-      _controller.pause();
+      _controller!.setVolume(0.0);
+      _controller!.pause();
     }
     CacheManager().deleteCache();
     super.deactivate();
@@ -114,7 +114,7 @@ class _AddPropertyState extends State<AddProperty> {
 
   Future<void> _disposeVideoController() async {
     if (_toBeDisposed != null) {
-      await _toBeDisposed.dispose();
+      await _toBeDisposed!.dispose();
     }
     _toBeDisposed = _controller;
     _controller = null;
@@ -130,7 +130,7 @@ class _AddPropertyState extends State<AddProperty> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -160,8 +160,8 @@ class _AddPropertyState extends State<AddProperty> {
     );
   }
 
-  VideoPlayerController _controller;
-  VideoPlayerController _toBeDisposed;
+  VideoPlayerController? _controller;
+  VideoPlayerController? _toBeDisposed;
 
   // Text _getRetrieveErrorWidget() {
   //   return null;
@@ -389,7 +389,7 @@ class _AddPropertyState extends State<AddProperty> {
                   height: 4,
                 ),
                 Text(
-                  AppLocalization.of(context).addImage,
+                  AppLocalization.of(context)!.addImage,
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
               ],
@@ -407,21 +407,21 @@ class _AddPropertyState extends State<AddProperty> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context).selectTheImageSource),
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).camera),
+                  child: Text(AppLocalization.of(context)!.camera),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallery),
+                  child: Text(AppLocalization.of(context)!.gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
             ));
 
     if (imageSource != null) {
-      ImagePicker().getImage(source: imageSource).then((value) {
+      ImagePicker().pickImage(source: imageSource).then((value) {
         if (value != null) {
           setState(() {
             propertyImages.add(File(value.path));
@@ -509,7 +509,7 @@ class _AddPropertyState extends State<AddProperty> {
         .pushNamed("/video-recorder", arguments: {"duration": videoDuration});
     if (path != null) {
       debugPrint("$path");
-      propertyVideos.add(File(path));
+      propertyVideos.add(File(path as String));
       getVideoThumbnail(propertyVideos.length - 1);
       setState(() {});
     }
@@ -560,35 +560,34 @@ class _AddPropertyState extends State<AddProperty> {
               title: Text("Select video source"),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).camera),
+                  child: Text(AppLocalization.of(context)!.camera),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallery),
+                  child: Text(AppLocalization.of(context)!.gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
             ));
 
     if (videoSource != null) {
-      bool isConditionAccepted = await videoLengthAlert();
+      bool? isConditionAccepted = await videoLengthAlert();
       if (isConditionAccepted != null && isConditionAccepted) {
         if (videoSource == ImageSource.gallery) {
           ImagePicker()
-              .getVideo(source: videoSource, maxDuration: Duration(minutes: 10))
+              .pickVideo(
+                  source: videoSource, maxDuration: Duration(minutes: 10))
               .then((value) async {
             if (value != null) {
               final videoInfo = FlutterVideoInfo();
               var info = await videoInfo.getVideoInfo(value.path);
+              if (info == null) return;
               Duration pickedVideoDuration =
-                  Duration(milliseconds: info.duration.toInt());
+                  Duration(milliseconds: info.duration!.toInt());
               if (pickedVideoDuration > videoLimit) {
-                Toast.show(
-                    "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.",
-                    context,
-                    backgroundColor: blackFont,
-                    textColor: Colors.white,
-                    duration: 3);
+                showToast(
+                    message:
+                        "The file you have selected is too long. Max length is ${videoLimit.inMinutes} minutes.");
                 return;
               } else {
                 propertyVideos.add(File(value.path));
@@ -612,7 +611,7 @@ class _AddPropertyState extends State<AddProperty> {
     }
   }
 
-  Future<bool> videoLengthAlert() async {
+  Future<bool?> videoLengthAlert() async {
     return await showDialog<bool>(
         barrierDismissible: false,
         context: context,
@@ -625,7 +624,7 @@ class _AddPropertyState extends State<AddProperty> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 content: Stack(
-                  overflow: Overflow.visible,
+                  clipBehavior: Clip.none,
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width - 40,
@@ -700,8 +699,7 @@ class _AddPropertyState extends State<AddProperty> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    FlatButton(
-                                      padding: EdgeInsets.zero,
+                                    TextButton(
                                       child: Text("OK",
                                           style: TextStyle(
                                               fontSize: 14,
@@ -711,8 +709,7 @@ class _AddPropertyState extends State<AddProperty> {
                                         Navigator.pop(context, true);
                                       },
                                     ),
-                                    FlatButton(
-                                      padding: EdgeInsets.zero,
+                                    TextButton(
                                       child: Text("CANCEL",
                                           style: TextStyle(
                                               fontSize: 14,
@@ -778,7 +775,7 @@ class _AddPropertyState extends State<AddProperty> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                          image: MemoryImage(propertyVideoThumbnail[index]),
+                          image: MemoryImage(propertyVideoThumbnail[index]!),
                           fit: BoxFit.fill),
                     ),
                   )
@@ -1112,7 +1109,7 @@ class _AddPropertyState extends State<AddProperty> {
       child: ListTile(
         dense: true,
         title: Text(
-          propertyCity != null ? propertyCity : "",
+          propertyCity,
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
           maxLines: 1,
@@ -1216,7 +1213,7 @@ class _AddPropertyState extends State<AddProperty> {
         return "Please enter description";
       },
       textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context).description,
+      labelText: AppLocalization.of(context)!.description,
       onChanged: (val) {
         propertyDescription = val;
       },
@@ -1230,7 +1227,7 @@ class _AddPropertyState extends State<AddProperty> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedPropertyType != null ? selectedPropertyType.name : "",
+          selectedPropertyType != null ? selectedPropertyType!.name! : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
           maxLines: 1,
@@ -1355,7 +1352,7 @@ class _AddPropertyState extends State<AddProperty> {
                               child: ListTile(
                                 dense: true,
                                 title: Text(
-                                  category.name,
+                                  category.name!,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -1376,7 +1373,7 @@ class _AddPropertyState extends State<AddProperty> {
                           }
                           return ListTile(
                             title: Text(
-                              category.name,
+                              category.name!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -1398,7 +1395,7 @@ class _AddPropertyState extends State<AddProperty> {
             ));
     if (pressedCategory != null) {
       selectedPropertyType = pressedCategory;
-      propertyCategory = selectedPropertyType.name;
+      propertyCategory = selectedPropertyType!.name;
       setState(() {});
     }
   }
@@ -1736,7 +1733,7 @@ class _AddPropertyState extends State<AddProperty> {
                                       ),
                                       onTap: () {
                                         propertyAmenities[entry.key] =
-                                            !propertyAmenities[entry.key];
+                                            !propertyAmenities[entry.key]!;
                                         amenitiesStateSetter(() {});
                                         setState(() {});
                                       },
@@ -1756,7 +1753,7 @@ class _AddPropertyState extends State<AddProperty> {
                                   dense: true,
                                   onTap: () {
                                     propertyAmenities[entry.key] =
-                                        !propertyAmenities[entry.key];
+                                        !propertyAmenities[entry.key]!;
                                     amenitiesStateSetter(() {});
                                     setState(() {});
                                   },
@@ -1890,7 +1887,7 @@ class _AddPropertyState extends State<AddProperty> {
                                       ),
                                       onTap: () {
                                         propertyPetPolicy[entry.key] =
-                                            !propertyPetPolicy[entry.key];
+                                            !propertyPetPolicy[entry.key]!;
                                         petPolicyStateSetter(() {});
                                         setState(() {});
                                       },
@@ -1910,7 +1907,7 @@ class _AddPropertyState extends State<AddProperty> {
                                   dense: true,
                                   onTap: () {
                                     propertyPetPolicy[entry.key] =
-                                        !propertyPetPolicy[entry.key];
+                                        !propertyPetPolicy[entry.key]!;
                                     petPolicyStateSetter(() {});
                                     setState(() {});
                                   },
@@ -2093,7 +2090,7 @@ class _AddPropertyState extends State<AddProperty> {
 
   Widget getAmountField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).price,
+      labelText: AppLocalization.of(context)!.price,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -2103,7 +2100,7 @@ class _AddPropertyState extends State<AddProperty> {
           try {
             propertyPrice = double.parse(val).toString();
           } catch (e) {
-            Toast.show(e, context);
+            showToast(message: e.toString());
           }
         }
       },
@@ -2113,10 +2110,10 @@ class _AddPropertyState extends State<AddProperty> {
             double.parse(val);
             return null;
           } catch (e) {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        return AppLocalization.of(context).pleaseEnterValidAmout;
+        return AppLocalization.of(context)!.pleaseEnterValidAmout;
       },
     );
   }
@@ -2182,25 +2179,16 @@ class _AddPropertyState extends State<AddProperty> {
   }
 
   bool validateDropdown() {
-    if (selectedPropertyType != null && propertyCity != null) {
+    if (selectedPropertyType != null) {
       return true;
-    } else if (selectedPropertyType == null && propertyCity == null) {
-      Toast.show("Please select Property type and Property City", context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
+    } else if (selectedPropertyType == null) {
+      showToast(message: "Please select Property type and Property City");
       return false;
-    } else if (selectedPropertyType == null && propertyCity != null) {
-      Toast.show("Please select Property type", context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
+    } else if (selectedPropertyType == null) {
+      showToast(message: "Please select Property type");
       return false;
     } else {
-      Toast.show("Please select Property city", context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
+      showToast(message: "Please select Property city");
       return false;
     }
   }
@@ -2217,7 +2205,7 @@ class _AddPropertyState extends State<AddProperty> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
           lastDate: DateTime(2101),
         ).then((value) {
-          propertyAvailableFrom = DateTime(value.year, value.month, value.day);
+          propertyAvailableFrom = DateTime(value!.year, value.month, value.day);
           setState(() {});
         }).catchError((error) {});
       },
@@ -2264,8 +2252,8 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     if (!mounted) {
       return;
     }
-    if (initialized != controller.value.initialized) {
-      initialized = controller.value.initialized;
+    if (initialized != controller.value.isInitialized) {
+      initialized = controller.value.isInitialized;
       setState(() {});
     }
   }
@@ -2287,7 +2275,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     if (initialized) {
       return Center(
         child: AspectRatio(
-          aspectRatio: controller.value?.aspectRatio,
+          aspectRatio: controller.value.aspectRatio,
           child: VideoPlayer(controller),
         ),
       );

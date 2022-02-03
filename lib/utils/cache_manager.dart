@@ -14,7 +14,7 @@ class CacheManager {
     final Directory tempDir = await getTemporaryDirectory();
     List<FileSystemEntity> list =
         tempDir.listSync(followLinks: false, recursive: clearAll);
-    List<FileSystemEntity> temp = new List<FileSystemEntity>();
+    List<FileSystemEntity> temp = [];
     list.forEach((element) {
       if (element is File) {
         temp.add(element);
@@ -30,19 +30,19 @@ class CacheManager {
       debugPrint("Subscription Removing :- $error");
     }
 */
-    await ChatMessageHandler().deleteChatMessages();
-    await ChatUserManager().clearChatUsers();
-    await ConnectionListManager().clearConnections();
-    await DBSocketMessageHandler().clearSocketQueueChatMessage();
-    await DatabaseHelper().deleteVirtualAccount();
-    await DatabaseHelper().deleteGeneralSettings();
-    await DatabaseHelper().deleteNotification();
-    await DatabaseHelper().deleteNudgeNotification();
-    await AuthService().deleteUsers();
-    await AuthService().deleteDevice();
+    if (clearAll) {
+      await ChatMessageHandler().deleteChatMessages();
+      await ChatUserManager().clearChatUsers();
+      await ConnectionListManager().clearConnections();
+      await DBSocketMessageHandler().clearSocketQueueChatMessage();
+      await DatabaseHelper().deleteVirtualAccount();
+      await DatabaseHelper().deleteGeneralSettings();
+      await AuthService().deleteUsers();
+      await AuthService().deleteDevice();
 
-    await DatabaseHelper().deleteUsers();
+      await DatabaseHelper().deleteUsers();
 
-    debugPrint("Cache cleared");
+      debugPrint("Cache cleared");
+    }
   }
 }

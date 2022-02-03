@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class UserTile extends StatefulWidget {
-  CustomerProfile user;
+  CustomerProfile? user;
 
   UserTile({this.user});
 
@@ -19,12 +19,12 @@ class _UserTileState extends State<UserTile> {
   Widget build(BuildContext context) {
     Widget avatarImage;
 
-    Color borderColor = getUserTypeColor(user: widget.user);
+    Color borderColor = getUserTypeColor(user: widget.user!);
 
     avatarImage = GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/photo-viewer", arguments: widget.user.avatar);
+            .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
       },
       child: Container(
           height: 48,
@@ -36,9 +36,9 @@ class _UserTileState extends State<UserTile> {
               border: Border.all(color: borderColor, width: 2)),
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: widget.user.avatar == ""
-                  ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                  : widget.user.avatar,
+              imageUrl: widget.user!.avatar == ""
+                  ? defaultImage
+                  : widget.user!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fill,
               filterQuality: FilterQuality.high,
@@ -57,7 +57,7 @@ class _UserTileState extends State<UserTile> {
         child: ListTile(
           dense: true,
           title: Text(
-            widget.user.displayName(),
+            widget.user!.displayName()!,
             maxLines: 1,
             style: TextStyle(
               color: blackFont,
@@ -77,7 +77,7 @@ class _UserTileState extends State<UserTile> {
 
   Widget getSubtitle(BuildContext context) {
     return Text(
-      widget.user.userName,
+      widget.user!.userName!,
       maxLines: 1,
       style: TextStyle(
         color: darkGrey,

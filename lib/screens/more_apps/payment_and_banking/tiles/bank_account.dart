@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class BankAccountTile extends StatefulWidget {
   // Pass account object into this constructor
-  final BankAccount account;
+  final BankAccount? account;
 
   BankAccountTile({this.account});
 
@@ -27,21 +27,22 @@ class _BankAccountTileState extends State<BankAccountTile> {
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: ListTile(
         title: Text(
-          widget.account.bankName,
+          widget.account!.bankName!,
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15),
         ),
-        subtitle: Text(
-            '******' + widget.account.accountNumber.toString().substring(5, 9)),
+        subtitle: Text('******' +
+            widget.account!.accountNumber.toString().substring(5, 9)),
         leading: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: widget.account.bankAvatar,
+            imageUrl: widget.account!.bankAvatar!,
             height: 45,
             width: 45,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
             filterQuality: FilterQuality.high,
-            placeholder: (context, url) => widget.account.bankAvatar == ""
+            placeholder: (context, url) => widget.account!.bankAvatar == ""
                 ? Icon(
                     Icons.account_balance,
                     size: 45,

@@ -32,10 +32,10 @@ class ExploreList extends StatefulWidget {
 class _ExploreListState extends State<ExploreList> {
   bool isSearchBoxOpen = false;
   bool isValidSearch = false;
-  TextEditingController searchController;
+  TextEditingController? searchController;
   String searchedText = "";
-  FocusNode searchFocus;
-  List<dynamic> searchedResult;
+  FocusNode? searchFocus;
+  List<dynamic>? searchedResult;
 
   @override
   void initState() {
@@ -81,12 +81,12 @@ class _ExploreListState extends State<ExploreList> {
 
   Widget listBuilder() {
     return isValidSearch
-        ? FutureBuilder(
+        ? FutureBuilder<List?>(
             future: fetchSearchResult(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
-                  itemCount: snapshot.data.length,
+                  itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext context, int index) => Container(
                     height: 50,
                     width: double.infinity,
@@ -131,7 +131,7 @@ class _ExploreListState extends State<ExploreList> {
 
   Widget search() {
     if (!isSearchBoxOpen) {
-      return Center(child: Text(AppLocalization.of(context).explore));
+      return Center(child: Text(AppLocalization.of(context)!.explore));
     } else {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -144,7 +144,7 @@ class _ExploreListState extends State<ExploreList> {
               size: 30,
             ),
             onPressed: () {
-              if (searchFocus.hasFocus) {
+              if (searchFocus!.hasFocus) {
                 FocusScope.of(context).unfocus();
               } else {
                 FocusScope.of(context).requestFocus(searchFocus);
@@ -164,7 +164,7 @@ class _ExploreListState extends State<ExploreList> {
                 controller: searchController,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(10),
-                  hintText: AppLocalization.of(context).search,
+                  hintText: AppLocalization.of(context)!.search,
                   isDense: true,
                   fillColor: Colors.white,
                   filled: true,
@@ -187,7 +187,7 @@ class _ExploreListState extends State<ExploreList> {
   }
 
   void searchResult() {
-    if (isSearchBoxOpen && searchController.text.length >= 3) {
+    if (isSearchBoxOpen && searchController!.text.length >= 3) {
       fetchSearchResult();
       FocusScope.of(context).unfocus();
       if (mounted) {
@@ -196,14 +196,14 @@ class _ExploreListState extends State<ExploreList> {
         });
       }
     }
-    if (searchController.text.length < 3) {
+    if (searchController!.text.length < 3) {
       if (mounted) {
         setState(() {
           isValidSearch = false;
         });
       }
     }
-    if (isSearchBoxOpen && searchController.text.length == 0) {
+    if (isSearchBoxOpen && searchController!.text.length == 0) {
       if (mounted) {
         setState(() {
           isSearchBoxOpen = false;
@@ -218,7 +218,7 @@ class _ExploreListState extends State<ExploreList> {
     }
   }
 
-  Future<List> fetchSearchResult() async {
+  Future<List?> fetchSearchResult() async {
     //TODO:call your searching API with passing searchedText variable and store your List in searchResult to be displayed
     // searchedResult = await _auth.listPaymentRequests("","");
     return searchedResult;

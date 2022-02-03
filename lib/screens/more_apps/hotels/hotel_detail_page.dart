@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:Slydo/screens/more_apps/hotels/hotel_auth.dart';
 import 'package:Slydo/screens/more_apps/hotels/models/HotelRoomDetailItem.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -19,7 +21,7 @@ class HotelDetailPage extends StatefulWidget {
 }
 
 class _HotelDetailPageState extends State<HotelDetailPage> {
-  HotelDashboardBloc _hotelDashboardBloc;
+  late HotelDashboardBloc _hotelDashboardBloc;
 
   bool isLoading = false;
   HotelRoomDetailItem hotelRoomDetailItem = HotelRoomDetailItem();
@@ -60,7 +62,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
         floatingActionButton: floatingActionBar(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -273,6 +275,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               imageUrl:
                   "https://www.gannett-cdn.com/-mm-/05b227ad5b8ad4e9dcb53af4f31d7fbdb7fa901b/c=0-64-2119-1259/local/-/media/USATODAY/USATODAY/2014/08/13/1407953244000-177513283.jpg",
               fit: BoxFit.fill,
+              errorWidget: imageErrorWidget,
             ),
             Positioned(
               right: 12,
@@ -303,7 +306,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              hotelRoomDetailItem.name,
+              hotelRoomDetailItem.name!,
               style: TextStyle(
                   fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
             ),
@@ -329,7 +332,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           height: 4,
         ),
         Text(
-          hotelRoomDetailItem.shortDetail,
+          hotelRoomDetailItem.shortDetail!,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         ),
@@ -343,10 +346,11 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               width: 32,
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: hotelRoomDetailItem.ownerAvatar,
+                  imageUrl: hotelRoomDetailItem.ownerAvatar!,
                   fit: BoxFit.fill,
                   width: double.infinity,
                   height: double.infinity,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -354,7 +358,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               width: 12,
             ),
             Text(
-              hotelRoomDetailItem.ownerName,
+              hotelRoomDetailItem.ownerName!,
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             )
@@ -690,7 +694,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 
   Widget rentDetail(
-      {String categoryName, String movieName, String moviePoster}) {
+      {String? categoryName, String? movieName, String? moviePoster}) {
     return Container(
       child: Column(
         children: [
@@ -730,7 +734,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
               child: Container(
                 padding: EdgeInsets.only(left: 16, top: 16, bottom: 16),
                 child: Row(
-                  children: hotelRoomDetailItem.recommendedItem
+                  children: hotelRoomDetailItem.recommendedItem!
                       .map(
                         (partialHotelRoom) => Container(
                           margin: EdgeInsets.only(right: 12),
@@ -750,7 +754,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
   }
 
   Widget dateAndTimeTile(String type, String date) {
-    bool isSelected = false;
+    bool isSelected = Random().nextBool();
     return Container(
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
@@ -808,7 +812,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
           height: 12,
         ),
         Text(
-          hotelRoomDetailItem.about,
+          hotelRoomDetailItem.about!,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -851,6 +855,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             height: double.infinity,
             width: double.infinity,
             fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
           ),
         ),
       ],
@@ -874,7 +879,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             height: 16,
           ),
           Column(
-            children: hotelRoomDetailItem.reviews
+            children: hotelRoomDetailItem.reviews!
                 .map((review) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: ReviewTile(),
@@ -903,7 +908,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             height: 16,
           ),
           Column(
-            children: hotelRoomDetailItem.partners
+            children: hotelRoomDetailItem.partners!
                 .map((partner) => Container(
                       margin: EdgeInsets.only(bottom: 12),
                       child: InkWell(

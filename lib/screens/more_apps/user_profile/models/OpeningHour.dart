@@ -1,11 +1,11 @@
-class OpeningHour {
-  String day;
-  String time;
+class OpeningHourForDay {
+  String? day;
+  String? time;
 
-  OpeningHour({this.day, this.time});
+  OpeningHourForDay({this.day, this.time});
 
-  factory OpeningHour.fromJson(Map<String, dynamic> json) {
-    return OpeningHour(
+  factory OpeningHourForDay.fromJson(Map<String, dynamic> json) {
+    return OpeningHourForDay(
       day: json['day'],
       time: json['time'],
     );

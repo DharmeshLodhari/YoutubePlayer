@@ -13,7 +13,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/CityData.dart';
 
@@ -105,13 +104,10 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -122,7 +118,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -196,7 +192,9 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -300,10 +298,11 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                             child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
-                            imageUrl: item.image,
+                            imageUrl: item.image!,
                             fit: BoxFit.fill,
                             height: double.infinity,
                             width: double.infinity,
+                            errorWidget: imageErrorWidget,
                           ),
                         )),
                       ),
@@ -375,7 +374,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
     );
   }
 
-  Widget cityCard({CityData cityData}) {
+  Widget cityCard({required CityData cityData}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/event-detail");
@@ -393,7 +392,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  cityData.name,
+                  cityData.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -408,10 +407,11 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: cityData.image,
+                    imageUrl: cityData.image!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
               ],
@@ -484,7 +484,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
     );
   }
 
-  Widget foodFestivalEvent({String categoryName}) {
+  Widget foodFestivalEvent({required String categoryName}) {
     return Container(
       child: Column(
         children: [
@@ -546,7 +546,8 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                           child: InkWell(
                                             child: CachedNetworkImage(
                                               width: double.infinity,
-                                              imageUrl: eventList[0].image,
+                                              imageUrl: eventList[0].image!,
+                                              errorWidget: imageErrorWidget,
                                               fit: BoxFit.fill,
                                               filterQuality: FilterQuality.high,
                                             ),
@@ -567,7 +568,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
-                                                      eventList[0].dateTime,
+                                                      eventList[0].dateTime!,
                                                       softWrap: false,
                                                       overflow:
                                                           TextOverflow.fade,
@@ -582,7 +583,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                       height: 2,
                                                     ),
                                                     Text(
-                                                      eventList[0].title,
+                                                      eventList[0].title!,
                                                       softWrap: false,
                                                       overflow:
                                                           TextOverflow.fade,
@@ -598,7 +599,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                     ),
                                                     Text(
                                                       eventList[0]
-                                                          .shortDescription,
+                                                          .shortDescription!,
                                                       style: TextStyle(
                                                         fontSize: 14,
                                                         fontWeight:
@@ -622,7 +623,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                         size: 10,
                                                       ),
                                                       Text(
-                                                        eventList[0].price,
+                                                        eventList[0].price!,
                                                         style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.w700,
@@ -671,7 +672,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
     );
   }
 
-  Widget eventPoster({EventPoster eventPoster}) {
+  Widget eventPoster({required EventPoster eventPoster}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/event-detail");
@@ -688,14 +689,15 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                 width: double.infinity,
                 color: Colors.black12,
                 colorBlendMode: BlendMode.darken,
-                imageUrl: eventPoster.image,
+                imageUrl: eventPoster.image!,
                 fit: BoxFit.fill,
+                errorWidget: imageErrorWidget,
               ),
             ),
             Align(
               alignment: Alignment.center,
               child: Text(
-                eventPoster.name,
+                eventPoster.name!,
                 style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,

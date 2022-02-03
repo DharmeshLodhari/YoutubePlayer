@@ -12,17 +12,17 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class UserServiceList extends StatefulWidget {
-  CustomerProfile user;
+  CustomerProfile? user;
   bool isOwner;
 
-  UserServiceList({@required this.user, this.isOwner = false});
+  UserServiceList({required this.user, this.isOwner = false});
 
   @override
   _UserServiceListState createState() => _UserServiceListState();
@@ -33,9 +33,9 @@ class _UserServiceListState extends State<UserServiceList> {
       new GlobalKey<ScaffoldState>();
 
   // this variable responsible for service pagination
-  int serviceCount = 0;
-  String serviceNext = "";
-  String servicePrevious = "";
+  int? serviceCount = 0;
+  String? serviceNext = "";
+  String? servicePrevious = "";
   List<Service> serviceList = [];
   ScrollController _serviceScrollController = new ScrollController();
   RefreshController _servicesRefreshController =
@@ -56,13 +56,9 @@ class _UserServiceListState extends State<UserServiceList> {
         getServiceList();
         _servicesRefreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _servicesRefreshController.refreshCompleted();
       }
     });
@@ -88,7 +84,7 @@ class _UserServiceListState extends State<UserServiceList> {
       key: _serviceScaffoldKey,
       body: Container(
         color: lightGrey,
-        padding: EdgeInsets.fromLTRB(4, 10, 4, 4),
+        padding: EdgeInsets.fromLTRB(4, 34, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -105,7 +101,7 @@ class _UserServiceListState extends State<UserServiceList> {
   Widget _buildServiceList() {
     return noServiceInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).noServices,
+            msg: AppLocalization.of(context)!.noServices,
           )
         : StaggeredGridView.countBuilder(
             controller: _serviceScrollController,
@@ -145,9 +141,13 @@ class _UserServiceListState extends State<UserServiceList> {
             isServiceLoading = true;
           });
         }
-        Map<String, dynamic> result = await ShoppingAuthService()
+        Map<String, dynamic>? result = await ShoppingAuthService()
             .listServicesByProvider(serviceNext, servicePrevious,
-                userId: widget.user.userName);
+                userName: widget.user!.userName);
+        if (result == null) {
+          isServiceLoading = false;
+          return;
+        }
         serviceCount = result['count'];
         serviceNext = result['next'];
         servicePrevious = result['previous'];
@@ -167,9 +167,9 @@ class _UserServiceListState extends State<UserServiceList> {
           });
         }
       } else if (serviceNext == null && serviceList.length > 6) {
-        _serviceScaffoldKey.currentState.showSnackBar(SnackBar(
+        _serviceScaffoldKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -179,121 +179,175 @@ class _UserServiceListState extends State<UserServiceList> {
   Widget serviceTile(int index) {
     return CustomBoxShadow(
       child: Card(
-          elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.zero,
-          shadowColor: boxShadowTwo,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(children: <Widget>[
-                    InkWell(
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl: serviceList[index].serverImages[0],
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/service-detail',
-                            arguments: {"service": serviceList[index]});
-                      },
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadowTwo,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: Stack(children: <Widget>[
+                  InkWell(
+                    child: CachedNetworkImage(
+                      width: double.infinity,
+                      imageUrl: serviceList[index].serverImages![0]!,
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.high,
+                      errorWidget: productAndServiceBigErrorWidget,
                     ),
-                    widget.isOwner
-                        ? Positioned(
-                            left: 8,
-                            top: 8,
-                            child: RoundedBackgroundIcon(
-                                height: 28,
-                                width: 28,
-                                backgroundColor: Colors.white,
-                                icon: Icon(
-                                  Icons.print,
-                                  color: blackFont,
-                                  size: 16,
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(
-                                    '/print-qr',
-                                    arguments: {
-                                      "imageUrl": serviceList[index].qrCode,
-                                      "itemName": serviceList[index].name
-                                    },
-                                  );
-                                }),
-                          )
-                        : Container(),
-                    widget.isOwner
-                        ? Positioned(
-                            right: 8,
-                            top: 8,
-                            child: RoundedBackgroundIcon(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/service-detail',
+                          arguments: {"service": serviceList[index]});
+                    },
+                  ),
+                  widget.isOwner
+                      ? Positioned(
+                          left: 8,
+                          top: 8,
+                          child: RoundedBackgroundIcon(
                               height: 28,
                               width: 28,
                               backgroundColor: Colors.white,
                               icon: Icon(
-                                SlydoAppIcon.edit,
+                                Icons.print,
                                 color: blackFont,
-                                size: 12,
+                                size: 16,
                               ),
                               onTap: () {
                                 Navigator.of(context).pushNamed(
-                                  '/edit-service',
+                                  '/print-qr',
                                   arguments: {
-                                    "serviceId":
-                                        serviceList[index].id.toString(),
+                                    "imageUrl": serviceList[index].qrCode,
+                                    "itemName": serviceList[index].name
                                   },
                                 );
-                              },
+                              }),
+                        )
+                      : Container(),
+                  widget.isOwner
+                      ? Positioned(
+                          right: 8,
+                          top: 8,
+                          child: RoundedBackgroundIcon(
+                            height: 28,
+                            width: 28,
+                            backgroundColor: Colors.white,
+                            icon: Icon(
+                              SlydoAppIcon.edit,
+                              color: blackFont,
+                              size: 12,
                             ),
-                          )
-                        : Container()
-                  ]),
-                ),
-                ListTile(
-                    dense: true,
-                    title: Text(
-                      serviceList[index].name,
-                      maxLines: 1,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: blackFont),
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
+                            onTap: () async {
+                              var result =
+                                  await Navigator.of(context).pushNamed(
+                                '/edit-service',
+                                arguments: {
+                                  "serviceId": serviceList[index].id.toString(),
+                                },
+                              );
+
+                              if (result != null) {
+                                if (result is String) {
+                                  if (result == "delete_item" ||
+                                      result == "update_item") {
+                                    _onServiceRefresh();
+                                  }
+                                }
+                              }
+                            },
+                          ),
+                        )
+                      : Container()
+                ]),
+              ),
+              ListTile(
+                dense: true,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        messageDecoderWithEmoji(serviceList[index].name!) ?? "",
+                        maxLines: 1,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: blackFont),
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
+                      ),
                     ),
-                    subtitle: Text(
-                      serviceList[index].shortDescription,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 14, color: darkGrey),
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
-                    ),
-                    trailing: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: worldCurrencies[serviceList[index].currency],
-                            style: TextStyle(
-                                fontFamily: "Roboto",
-                                color: navyBlue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14)),
-                        TextSpan(
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text:
+                                  worldCurrencies[serviceList[index].currency!],
+                              style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  color: navyBlue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14)),
+                          TextSpan(
                             text: moneyDisplayNormalizer(
                                 int.parse(serviceList[index].price.toString())),
                             style: TextStyle(
                               color: navyBlue,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                            ))
-                      ]),
-                    )),
-              ],
-            ),
-          )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        messageDecoderWithEmoji(
+                                serviceList[index].shortDescription!) ??
+                            "",
+                        maxLines: 1,
+                        style: TextStyle(fontSize: 14, color: darkGrey),
+                        softWrap: false,
+                        overflow: TextOverflow.fade,
+                      ),
+                    ),
+                    (serviceList[index].rating ?? 0.0) != 0.0
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(
+                                SlydoAppIcon.star,
+                                color: starYellow,
+                                size: 11,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                serviceList[index].rating?.toString() ?? "0.0",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Container(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

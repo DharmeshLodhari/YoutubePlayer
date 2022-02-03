@@ -11,17 +11,17 @@ import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class VideoTileForChat extends StatelessWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
-  VideoTileForChat({@required this.message, this.chatConversation});
+  VideoTileForChat({required this.message, this.chatConversation});
 
   @override
   Widget build(BuildContext context) {
     UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message["author"] == userBloc.user.userName;
-    String messageText = message['text'] ?? "";
+    bool isSend = message!["author"] == userBloc.user.userName;
+    String? messageText = message!['text'] ?? "";
     bool isMessageEmpty = messageText == "";
     messageText = messageDecoderWithEmoji(messageText);
 
@@ -43,8 +43,8 @@ class VideoTileForChat extends StatelessWidget {
                   "/view-chat-media",
                   arguments: {
                     "type": "video",
-                    "file": message["media"],
-                    "message": message['text']
+                    "file": message!["media"],
+                    "message": message!['text']
                   },
                 );
                 debugPrint("Result:- $result");
@@ -57,17 +57,17 @@ class VideoTileForChat extends StatelessWidget {
                   minWidth: MediaQuery.of(context).size.width / 1.8,
                 ),
                 decoration: BoxDecoration(
-                  color: chatConversation.isGroupConversation
+                  color: chatConversation!.isGroupConversation!
                       ? isSend
                           ? isMessageEmpty
                               ? Colors.transparent
                               : navyBlue
-                          : chatBackgroundColor
+                          : Colors.white
                       : isMessageEmpty
                           ? Colors.transparent
                           : isSend
                               ? navyBlue
-                              : chatBackgroundColor,
+                              : Colors.white,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -76,26 +76,26 @@ class VideoTileForChat extends StatelessWidget {
                   ),
                 ),
                 padding: EdgeInsets.only(
-                    top: chatConversation.isGroupConversation
+                    top: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
                         : isMessageEmpty
                             ? 0
                             : 8,
-                    bottom: chatConversation.isGroupConversation
+                    bottom: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
                         : isMessageEmpty
                             ? 0
                             : 8,
-                    left: chatConversation.isGroupConversation
+                    left: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
                         : 0,
-                    right: chatConversation.isGroupConversation
+                    right: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
@@ -106,13 +106,13 @@ class VideoTileForChat extends StatelessWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    chatConversation.isGroupConversation
-                        ? message['author'] != userBloc.user.userName
+                    chatConversation!.isGroupConversation!
+                        ? message!['author'] != userBloc.user.userName
                             ? Column(
                                 children: [
                                   Text(
-                                    message['author_full_name'] ??
-                                        message['author'],
+                                    message!['author_full_name'] ??
+                                        message!['author'],
                                     style: TextStyle(
                                         color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
@@ -133,14 +133,15 @@ class VideoTileForChat extends StatelessWidget {
                         ? Container()
                         : Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: chatConversation.isGroupConversation
-                                    ? 0
-                                    : 8),
+                                horizontal:
+                                    chatConversation!.isGroupConversation!
+                                        ? 0
+                                        : 8),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
-                                    messageText,
+                                    messageText!,
                                     style: TextStyle(
                                         color:
                                             isSend ? Colors.white : blackFont,
@@ -158,7 +159,7 @@ class VideoTileForChat extends StatelessWidget {
                           ),
                     Container(
                       padding: EdgeInsets.symmetric(
-                          horizontal: chatConversation.isGroupConversation
+                          horizontal: chatConversation!.isGroupConversation!
                               ? 0
                               : isMessageEmpty
                                   ? 0
@@ -171,7 +172,7 @@ class VideoTileForChat extends StatelessWidget {
                               width: MediaQuery.of(context).size.width / 1.8,
                               // height: MediaQuery.of(context).size.width / 2.2,
                               // width: MediaQuery.of(context).size.width / 1.30,
-                              imageUrl: message["poster"] ??
+                              imageUrl: message!["poster"] ??
                                   "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
                               fit: BoxFit.cover,
                               color: Colors.black38,
@@ -224,7 +225,7 @@ class VideoTileForChat extends StatelessWidget {
                     width: 20,
                     child: isSend
                         ? Center(
-                            child: getMessageTick(message: message),
+                            child: getMessageTick(message: message!),
                           )
                         : Container(),
                   )
@@ -244,7 +245,7 @@ class VideoTileForChat extends StatelessWidget {
                     width: 20,
                   ),
             Text(
-              formatTime(message['created_at']),
+              formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
@@ -259,8 +260,8 @@ class VideoTileForChat extends StatelessWidget {
     );
   }
 
-  Future<Uint8List> getVideoThumbnail(String url) async {
-    Uint8List uInt8list = await VideoThumbnail.thumbnailData(
+  Future<Uint8List?> getVideoThumbnail(String url) async {
+    Uint8List? uInt8list = await VideoThumbnail.thumbnailData(
       video: url,
       imageFormat: ImageFormat.JPEG,
       maxWidth:

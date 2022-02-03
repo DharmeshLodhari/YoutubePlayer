@@ -1,22 +1,22 @@
 import 'dart:convert';
 
 class Envelope {
-  String amount;
-  String createdAt;
-  String currency;
-  String fromCustomer;
-  String id;
+  String? amount;
+  String? createdAt;
+  String? currency;
+  String? fromCustomer;
+  String? id;
   bool isOpen;
   bool isPaid;
-  String message;
-  String openAt;
-  String paidAt;
-  String payOutTransaction;
-  String magicEnvelope;
-  String title;
-  String toCustomer;
-  String transaction;
-  String type;
+  String? message;
+  String? openAt;
+  String? paidAt;
+  String? payOutTransaction;
+  String? magicEnvelope;
+  String? title;
+  String? toCustomer;
+  String? transaction;
+  String? type;
 
   Envelope(
       {this.amount,
@@ -56,7 +56,7 @@ class Envelope {
         magicEnvelope: getMagicEnvelope(json['magic_envelope']));
   }
 
-  static String getMagicEnvelope(var magicEnvelope) {
+  static String? getMagicEnvelope(var magicEnvelope) {
     if (magicEnvelope == null) {
       return null;
     }

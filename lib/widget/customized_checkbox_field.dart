@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 class CustomizedCheckBoxField extends StatefulWidget {
   String title;
   Function onTap;
-  bool isChecked;
+  bool? isChecked;
 
   CustomizedCheckBoxField(
-      {@required this.title, @required this.onTap, @required this.isChecked});
+      {required this.title, required this.onTap, required this.isChecked});
 
   @override
   _CustomizedCheckBoxFieldState createState() =>
@@ -66,7 +66,7 @@ class _CustomizedCheckBoxFieldState extends State<CustomizedCheckBoxField> {
           ),
         ],
       ),
-      onTap: widget.onTap,
+      onTap: widget.onTap as void Function()?,
     );
   }
 }

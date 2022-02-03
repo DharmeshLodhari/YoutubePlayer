@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/user_tile_for_group
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -14,7 +15,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:toast/toast.dart';
 
 class UpdateGroupNameAndProfile extends StatefulWidget {
   final arguments;
@@ -34,12 +34,12 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
   List<CustomerProfile> selectedConnectionList = [];
 
-  TextEditingController groupNameController;
-  TextEditingController groupDescriptionController;
+  TextEditingController? groupNameController;
+  TextEditingController? groupDescriptionController;
 
-  GroupDetailModel groupDetail;
+  GroupDetailModel? groupDetail;
 
-  UpdateGroupDetailModel groupModel;
+  late UpdateGroupDetailModel groupModel;
 
   @protected
   void initState() {
@@ -48,21 +48,21 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
     getGroupDetail();
 
-    groupNameController.text = groupDetail.fullName;
-    groupDescriptionController.text = groupDetail.description;
+    groupNameController!.text = groupDetail!.fullName!;
+    groupDescriptionController!.text = groupDetail!.description!;
 
     super.initState();
   }
 
   void getGroupDetail() {
     groupDetail = widget.arguments["groupDetail"];
-    groupModel =
-        UpdateGroupDetailModel(groupConversationId: groupDetail.conversationId);
+    groupModel = UpdateGroupDetailModel(
+        groupConversationId: groupDetail!.conversationId);
     fetchConnectionList();
   }
 
   void fetchConnectionList() async {
-    selectedConnectionList = groupDetail.participants
+    selectedConnectionList = groupDetail!.participants
         .map((element) => CustomerProfile(
             userName: element.userName,
             avatar: element.avatar,
@@ -76,7 +76,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     return Scaffold(
       key: _scaffoldUpdateGroupNameAndProfileKey,
       backgroundColor: Colors.white,
-      appBar: getAppBar(),
+      appBar: getAppBar() as PreferredSizeWidget?,
       body: getScaffoldBody(),
       floatingActionButton: getFloatingActionBtn(),
     );
@@ -171,7 +171,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
               controller: groupNameController,
               cursorColor: blackFont,
               validator: (value) {
-                if (value.isNotEmpty) return null;
+                if (value!.isNotEmpty) return null;
                 return "Please Enter group name";
               },
               style: TextStyle(
@@ -204,18 +204,19 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
                 width: 64,
                 color: chatBackgroundColor,
                 child: CachedNetworkImage(
-                  imageUrl: groupDetail.avatar == null ||
-                          groupDetail.avatar == ""
-                      ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                      : groupDetail.avatar,
+                  imageUrl:
+                      groupDetail!.avatar == null || groupDetail!.avatar == ""
+                          ? defaultImage
+                          : groupDetail!.avatar!,
                   fit: BoxFit.fill,
+                  errorWidget: imageErrorWidget,
                 ),
               )
             : Container(
                 height: 64,
                 width: 64,
                 child: Image.file(
-                  File(groupModel.avatar),
+                  File(groupModel.avatar!),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -230,13 +231,13 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               title: Text(
-                AppLocalization.of(context).selectTheImageSource,
+                AppLocalization.of(context)!.selectTheImageSource,
                 style: TextStyle(fontSize: 18, color: blackFont),
               ),
               actions: <Widget>[
                 MaterialButton(
                   child: Text(
-                    AppLocalization.of(context).camera,
+                    AppLocalization.of(context)!.camera,
                     style: TextStyle(fontSize: 16, color: blackFont),
                   ),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
@@ -253,10 +254,10 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
 
     if (imageSource != null) {
       final file =
-          await ImagePicker().getImage(source: imageSource, imageQuality: 70);
+          await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String croppedImage = await ImageCrop().cropImage(file.path);
+        String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -301,7 +302,7 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     );
   }
 
-  Widget getUserTile({CustomerProfile user}) {
+  Widget getUserTile({CustomerProfile? user}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2),
       child: UserTileForGroupDetail(
@@ -312,9 +313,9 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
   }
 
   void updateGroup() {
-    if (_formFieldKey.currentState.validate()) {
-      groupModel.name = groupNameController.text.trim();
-      groupModel.description = groupDescriptionController.text.trim();
+    if (_formFieldKey.currentState!.validate()) {
+      groupModel.name = groupNameController!.text.trim();
+      groupModel.description = groupDescriptionController!.text.trim();
 
       showDialog(
           context: context,
@@ -326,30 +327,21 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
       MessageAuth().updateGroupChat(group: groupModel).then((value) {
         Navigator.pop(context);
         if (value != null) {
-          Toast.show(
-            "Group detail updated successfully !!",
-            context,
-            duration: Toast.LENGTH_LONG,
-            textColor: Colors.white,
-          );
+          showToast(message: "Group detail updated successfully !!");
+
           debugPrint("Group detail updated successfully !!");
           Map<String, dynamic> data = value;
 
-          groupDetail.avatar = data["banner"];
-          groupDetail.fullName = data["group_name"];
-          groupDetail.username = data["group_name"];
-          groupDetail.description = data["description"];
+          groupDetail!.avatar = data["banner"];
+          groupDetail!.fullName = data["group_name"];
+          groupDetail!.username = data["group_name"];
+          groupDetail!.description = data["description"];
 
           Navigator.pop(context, groupDetail);
         }
       }).catchError((error) {
         debugPrint("ERROR While Updating Group :- $error");
-        Toast.show(
-          "$error",
-          context,
-          duration: Toast.LENGTH_LONG,
-          textColor: Colors.white,
-        );
+        showToast(message: "$error");
       });
     }
   }

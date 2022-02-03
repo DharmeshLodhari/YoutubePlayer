@@ -1,8 +1,8 @@
 class DownsizedSmall {
-  String height;
-  String mp4;
-  String mp4Size;
-  String width;
+  String? height;
+  String? mp4;
+  String? mp4Size;
+  String? width;
 
   DownsizedSmall({this.height, this.mp4, this.mp4Size, this.width});
 

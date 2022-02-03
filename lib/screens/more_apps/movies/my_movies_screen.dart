@@ -12,7 +12,7 @@ class MyMoviesScreen extends StatefulWidget {
 
 class _MyMoviesScreenState extends State<MyMoviesScreen> {
   int currentIndex = 0;
-  MovieDashboardBloc movieDashboardBloc;
+  late MovieDashboardBloc movieDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
         length: 2,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
       ),
@@ -58,7 +58,7 @@ class _MyMoviesScreenState extends State<MyMoviesScreen> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
     );
   }
 

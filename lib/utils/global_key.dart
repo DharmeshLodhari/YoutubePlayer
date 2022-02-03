@@ -11,11 +11,11 @@ class MyGlobals {
 
   static final MyGlobals _myGlobals = MyGlobals._internal();
   static GlobalKey _scaffoldKey = GlobalKey();
-  static StreamSubscription _notificationStream;
+  static StreamSubscription? _notificationStream;
 
   static GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
-  static set notificationStream(StreamSubscription value) {
+  static set notificationStream(StreamSubscription? value) {
     _notificationStream = value;
   }
 
@@ -25,7 +25,7 @@ class MyGlobals {
 
   GlobalKey get scaffoldKey => _scaffoldKey;
 
-  GlobalKey get navigationKey => _navKey;
+  GlobalKey<NavigatorState> get navigationKey => _navKey;
 
-  static StreamSubscription get notificationStream => _notificationStream;
+  static StreamSubscription? get notificationStream => _notificationStream;
 }

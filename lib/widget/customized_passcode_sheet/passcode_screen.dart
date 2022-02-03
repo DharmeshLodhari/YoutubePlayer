@@ -16,33 +16,33 @@ typedef CancelCallback = void Function();
 class CustomizedPassCodeScreen extends StatefulWidget {
   final Widget title;
   final int passwordDigits;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final PasswordEnteredCallback passwordEnteredCallback;
 
   //isValidCallback will be invoked after passcode screen will pop.
-  final IsValidCallback isValidCallback;
-  final CancelCallback cancelCallback;
+  final IsValidCallback? isValidCallback;
+  final CancelCallback? cancelCallback;
 
   // Cancel button and delete button will be switched based on the screen state
   final Widget cancelButton;
   final Widget deleteButton;
   final Stream<bool> shouldTriggerVerification;
-  final Widget bottomWidget;
+  final Widget? bottomWidget;
   final CircleUIConfig circleUIConfig;
   final KeyboardUIConfig keyboardUIConfig;
-  final List<String> digits;
+  final List<String>? digits;
 
   CustomizedPassCodeScreen({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.passwordDigits = 6,
-    @required this.passwordEnteredCallback,
-    @required this.cancelButton,
-    @required this.deleteButton,
-    @required this.shouldTriggerVerification,
+    required this.passwordEnteredCallback,
+    required this.cancelButton,
+    required this.deleteButton,
+    required this.shouldTriggerVerification,
     this.isValidCallback,
-    CircleUIConfig circleUIConfig,
-    KeyboardUIConfig keyboardUIConfig,
+    CircleUIConfig? circleUIConfig,
+    KeyboardUIConfig? keyboardUIConfig,
     this.bottomWidget,
     this.backgroundColor,
     this.cancelCallback,
@@ -60,10 +60,10 @@ class CustomizedPassCodeScreen extends StatefulWidget {
 
 class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     with SingleTickerProviderStateMixin {
-  StreamSubscription<bool> streamSubscription;
+  late StreamSubscription<bool> streamSubscription;
   String enteredPasscode = '';
-  AnimationController controller;
-  Animation<double> animation;
+  late AnimationController controller;
+  late Animation<double> animation;
 
   @override
   initState() {
@@ -76,7 +76,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     );
     final Animation curve =
         CurvedAnimation(parent: controller, curve: ShakeCurve());
-    animation = Tween(begin: 0.0, end: 10.0).animate(curve)
+    animation = Tween(begin: 0.0, end: 10.0).animate(curve as Animation<double>)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           setState(() {
@@ -191,7 +191,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
     } else {
       // Navigator.pop(context);
       if (widget.cancelCallback != null) {
-        widget.cancelCallback();
+        widget.cancelCallback!();
       }
     }
   }
@@ -235,7 +235,7 @@ class _CustomizedPassCodeScreenState extends State<CustomizedPassCodeScreen>
 
   _validationCallback() {
     if (widget.isValidCallback != null) {
-      widget.isValidCallback();
+      widget.isValidCallback!();
     } else {
       debugPrint(
           "You didn't implement validation callback. Please handle a state by yourself then.");

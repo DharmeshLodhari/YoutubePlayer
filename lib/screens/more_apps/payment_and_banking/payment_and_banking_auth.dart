@@ -7,6 +7,7 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'models/payout.dart';
 import 'models/transactions.dart';
@@ -37,13 +38,15 @@ class PaymentAndBankingAuth extends AuthService {
       }
       return accounts;
     } else {
+      debugPrint(
+          "URL:- $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
       return Future.error(
-          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${jsonDecode(response.body)}");
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}");
     }
   }
 
   // Get Account Balance
-  Future<Map<String, dynamic>> getAccountBalance() async {
+  Future<Map<String, dynamic>?> getAccountBalance() async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -88,7 +91,7 @@ class PaymentAndBankingAuth extends AuthService {
         data['uuid'] +
         "/";
     var headers = await getAuthHeaders();
-    var response;
+    late var response;
     var _data = jsonEncode(data);
     try {
       response = await httpPatch(url, headers: headers, body: _data);
@@ -103,8 +106,8 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // List the users bank accounts with pagination
-  Future<Map<String, dynamic>> getBankAccountsPagination(
-      String next, String previous) async {
+  Future<Map<String, dynamic>?> getBankAccountsPagination(
+      String? next, String? previous) async {
     var url = "";
     if (next == null) {
       return null;
@@ -148,7 +151,7 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // Transactions graph and Category
-  Future<Map<String, dynamic>> getTransactionWeeklyReport(
+  Future<Map<String, dynamic>?> getTransactionWeeklyReport(
       String weekNumber) async {
     var url = AppConfig.baseUrl +
         "/api/v1/transactions/transaction-filter/?week=" +
@@ -183,7 +186,7 @@ class PaymentAndBankingAuth extends AuthService {
 
   // Accept Payment with POST method with empty data  post
   Future<http.Response> acceptPaymentRequests(PaymentRequest paymentRequest,
-      {String messageId}) async {
+      {String? messageId}) async {
     var url =
         AppConfig.baseUrl + "/api/v1/transactions/request-payment/accept/";
 
@@ -202,10 +205,10 @@ class PaymentAndBankingAuth extends AuthService {
 
   // Patch payment status with empty data  patch
   Future<bool> rejectPaymentRequests(PaymentRequest paymentRequest,
-      {String messageId}) async {
+      {String? messageId}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/transactions/request-payment/update/" +
-        paymentRequest.id +
+        paymentRequest.id! +
         "/";
 
     if (messageId != null) {
@@ -240,8 +243,8 @@ class PaymentAndBankingAuth extends AuthService {
     return response;
   }
 
-  Future<Map<String, dynamic>> listPaymentRequests(
-      String next, String previous, bool toMe, bool fromMe) async {
+  Future<Map<String, dynamic>?> listPaymentRequests(
+      String? next, String? previous, bool toMe, bool fromMe) async {
     var url = "";
     if (next == null) {
       return null;
@@ -263,30 +266,26 @@ class PaymentAndBankingAuth extends AuthService {
     if (response.statusCode == 200) {
       List<PaymentRequest> paymentRequests = [];
       // This variable will hold list of transactions we got from server
-      var user = await getUser();
+      await getUser();
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        // if sender is not current user then
-        bool isCredit = (item["from_customer"] != user.userName &&
-                item["to_customer"] == user.userName)
-            ? true
-            : false;
+        PaymentRequest paymentRequest = PaymentRequest.fromJson(item);
 
-        var payee = isCredit ? item["from_customer"] : item['to_customer'];
-        var avatar = isCredit
-            ? item["from_customer_avatar"]
-            : item['to_customer_avatar'];
-
-        PaymentRequest paymentRequest = PaymentRequest(
-            status: item['status'],
-            id: item['id'].toString(),
-            description: item['description'],
-            payee: payee,
-            avatar: avatar,
-            currency: item['currency'],
-            createdAt: item['created_at'],
-            amount: item['amount'],
-            isCredit: isCredit);
+        // var payee = isCredit ? item["from_customer"] : item['to_customer'];
+        // var avatar = isCredit
+        //     ? item["from_customer_avatar"]
+        //     : item['to_customer_avatar'];
+        //
+        // PaymentRequest paymentRequest = PaymentRequest(
+        //     status: item['status'],
+        //     id: item['id'].toString(),
+        //     description: item['description'],
+        //     payee: payee,
+        //     avatar: avatar,
+        //     currency: item['currency'],
+        //     createdAt: item['created_at'],
+        //     amount: item['amount'],
+        //     isCredit: isCredit);
         paymentRequests.add(paymentRequest);
       }
 
@@ -300,15 +299,16 @@ class PaymentAndBankingAuth extends AuthService {
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      debugPrint("======> ${jsonEncode(response.body)}");
+      debugPrint(
+          "URL: $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return Future.error(
           "URL: $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     }
   }
 
   // List users transactions
-  Future<Map<String, dynamic>> getTransactions(
-      String next, String previous, bool moneyIn, bool moneyOut) async {
+  Future<Map<String, dynamic>?> getTransactions(
+      String? next, String? previous, bool moneyIn, bool moneyOut) async {
     var url = "";
     if (next == null) {
       return null;
@@ -336,28 +336,9 @@ class PaymentAndBankingAuth extends AuthService {
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
-        bool isCredit = item["is_credit"];
 
-        var payee = isCredit ? item["from_customer"] : item['to_customer'];
-        var avatar = isCredit
-            ? item["from_customer_avatar"]
-            : item['to_customer_avatar'];
+        Transaction transaction = Transaction.fromJson(item);
 
-        Transaction transaction = Transaction(
-            status: item['status'],
-            uuid: item['slug'],
-            description: item['description'],
-            payee: payee,
-            avatar: avatar,
-            currency: item['currency'],
-            createdAt: item['created_at'],
-            category: item['category'],
-            note: item['notes'],
-            latitude: item['latitude'] ?? "",
-            longitude: item['longitude'] ?? "",
-            amount: item['amount'],
-            isAnonymous: item['is_anonymous'] ?? false,
-            isCredit: isCredit);
         transactions.add(transaction);
       }
       Map<String, dynamic> result = {
@@ -404,8 +385,8 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // List of bank Payout
-  Future<Map<String, dynamic>> getPayoutList(
-      String next, String previous) async {
+  Future<Map<String, dynamic>?> getPayoutList(
+      String? next, String? previous) async {
     var url = "";
     if (next == null) {
       return null;
@@ -465,7 +446,7 @@ class PaymentAndBankingAuth extends AuthService {
     return false;
   }
 
-  Future<Map<String, dynamic>> topUpAccountByBank(
+  Future<Map<String, dynamic>?> topUpAccountByBank(
       Map<String, dynamic> data) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/get-payment-reference/";
     var headers = await getAuthHeaders();
@@ -478,7 +459,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<VirtualAccount> getVirtualAccountDetail() async {
+  Future<VirtualAccount?> getVirtualAccountDetail() async {
     var url =
         AppConfig.baseUrl + "/api/v1/transactions/get-virtual-account-info/";
     var headers = await getAuthHeaders();
@@ -495,7 +476,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> verifyReferenceNumber(
+  Future<Map<String, dynamic>?> verifyReferenceNumber(
       Map<String, dynamic> data) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/get-payment-reference/";
     var headers = await getAuthHeaders();
@@ -525,6 +506,54 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<bool> addBvnNumberAndIdProof(Map<String, dynamic> data) async {
+    var headers = await getAuthHeaders();
+    var url = AppConfig.baseUrl + "/api/v1/user/kyc/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = data;
+
+    _data.forEach((k, v) {
+      request.fields[k] = v.toString();
+    });
+    List<MultipartFile> newList = [];
+
+    if (data["business_registration_license"] != null ||
+        data["business_registration_license"] != "") {
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "business_registration_license",
+          data["business_registration_license"]);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+    if (data["government_id"] != null || data["government_id"] != "") {
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "government_id", data["government_id"]);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+
+    // Add multipart to request
+    request.files.addAll(newList);
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    if (response.statusCode == 201) {
+      return true;
+    }
+    debugPrint(
+        "URL: $url Data:-${request.fields} Status code:-${response.statusCode} body:- $responseBody");
+    return Future.error("Something went Wrong please try after some time.");
+
     // var url = secureAppConfig.baseUrl + "/api/v1/transactions/topup-by-reference/";
     // var headers = await getAuthHeaders();
     // var _data = jsonEncode(data);
@@ -537,7 +566,7 @@ class PaymentAndBankingAuth extends AuthService {
     // } else {
     //   return Future.error(jsonDecode(response.body));
     // }
-    return true;
+    // return true;
   }
 
   Future<FeeStructure> getFeeStructure() async {

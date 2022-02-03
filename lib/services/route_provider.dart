@@ -10,14 +10,14 @@ class RouteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addRoute({String name}) {
+  void addRoute({String? name}) {
     if (name != null) {
       _routes.add(name);
       debugPrint("Routes:- $_routes");
     }
   }
 
-  void removeRoute({String name}) {
+  void removeRoute({String? name}) {
     if (_routes.last == name) _routes.remove(name);
     debugPrint("Routes:- $_routes");
   }

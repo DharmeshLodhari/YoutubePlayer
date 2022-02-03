@@ -18,7 +18,7 @@ class BusinessAuth extends AuthService {
     var jsonData = json.decode(response.body);
     List data = jsonData["results"];
 
-    List<Contract> contracts = List<Contract>();
+    List<Contract> contracts = [];
 
     data.forEach((element) {
       contracts.add(Contract.fromJson(element));
@@ -41,8 +41,8 @@ class BusinessAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getContractTransactions(
-      String next, String previous, bool moneyIn, bool moneyOut) async {
+  Future<Map<String, dynamic>?> getContractTransactions(
+      String? next, String? previous, bool moneyIn, bool moneyOut) async {
     var url = "";
     if (next == null) {
       return null;
@@ -123,7 +123,7 @@ class BusinessAuth extends AuthService {
     }
   }
 
-  Future<bool> updateContract({String id, Map data}) async {
+  Future<bool> updateContract({String? id, Map? data}) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
@@ -144,7 +144,7 @@ class BusinessAuth extends AuthService {
     var jsonData = json.decode(response.body);
     List data = jsonData["results"];
 
-    List<Invoice> invoices = List<Invoice>();
+    List<Invoice> invoices = [];
 
     data.forEach((element) {
       invoices.add(Invoice.fromJson(element));

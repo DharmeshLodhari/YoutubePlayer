@@ -7,6 +7,7 @@ import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
@@ -15,7 +16,6 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../shopping_auth.dart';
 
@@ -28,13 +28,13 @@ class _AddServiceState extends State<AddService> {
   final _auth = ShoppingAuthService();
   final _formKey = GlobalKey<FormState>();
 
-  UserBloc userBloc;
-  ServiceCatagory selectedServiceCategory;
-  ProductCondition selectedProductCondition;
+  UserBloc? userBloc;
+  ServiceCategory? selectedServiceCategory;
+  ProductCondition? selectedProductCondition;
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<PickedFile> serviceImages = List<PickedFile>();
+  List<PickedFile> serviceImages = [];
   String serviceName = "";
   String serviceShortDescription = "";
   String serviceDescription = "";
@@ -43,11 +43,34 @@ class _AddServiceState extends State<AddService> {
   String servicePrice = "";
   bool serviceIsAvailable = false;
   DateTime serviceAvailableFrom = DateTime.now();
+  List<ServiceCategory>? serviceCategories;
+  bool isLoading = false;
+  bool isAPILoading = false;
 
   @override
   void deactivate() {
     CacheManager().deleteCache();
     super.deactivate();
+  }
+
+  @override
+  void initState() {
+    getCategories();
+    super.initState();
+  }
+
+  void getCategories() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    try {
+      serviceCategories = await ShoppingAuthService().getServiceCategories();
+    } catch (e) {
+      serviceCategories = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -60,7 +83,7 @@ class _AddServiceState extends State<AddService> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -92,44 +115,48 @@ class _AddServiceState extends State<AddService> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 10),
-                addImages(),
-                SizedBox(
-                  height: 10,
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height: 10),
+                      addImages(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      addTitleField(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getAmountField(),
+                      SizedBox(height: 10),
+                      getCategoryField(),
+                      SizedBox(height: 16),
+                      getIsAvailableField(),
+                      SizedBox(height: 16),
+                      getAvailableFromField(),
+                      SizedBox(height: 10),
+                      getServiceShortDescription(),
+                      SizedBox(height: 10),
+                      getServiceDescription(),
+                      SizedBox(height: 40),
+                      getSubmitButton(),
+                      SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-                addTitleField(),
-                SizedBox(
-                  height: 10,
-                ),
-                getAmountField(),
-                SizedBox(height: 10),
-                getCategoryField(),
-                SizedBox(height: 16),
-                getIsAvailableField(),
-                SizedBox(height: 16),
-                getAvailableFromField(),
-                SizedBox(height: 10),
-                getServiceShortDescription(),
-                SizedBox(height: 10),
-                getServiceDescription(),
-                SizedBox(height: 40),
-                getSubmitButton(),
-                SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -184,7 +211,7 @@ class _AddServiceState extends State<AddService> {
                   height: 4,
                 ),
                 Text(
-                  AppLocalization.of(context).addImage,
+                  AppLocalization.of(context)!.addImage,
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
               ],
@@ -202,24 +229,24 @@ class _AddServiceState extends State<AddService> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context).selectTheImageSource),
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).camera),
+                  child: Text(AppLocalization.of(context)!.camera),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallery),
+                  child: Text(AppLocalization.of(context)!.gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
             ));
 
     if (imageSource != null) {
-      ImagePicker().getImage(source: imageSource).then((value) async {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String croppedImage = await ImageCrop().cropImage(value.path);
+          String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -289,7 +316,7 @@ class _AddServiceState extends State<AddService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).pleaseEnterServiceName;
+        return AppLocalization.of(context)!.pleaseEnterServiceName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -305,7 +332,7 @@ class _AddServiceState extends State<AddService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).shortDescription;
+        return AppLocalization.of(context)!.shortDescription;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -318,7 +345,7 @@ class _AddServiceState extends State<AddService> {
     return CustomizedTextFormField(
       maxLines: 5,
       textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context).description,
+      labelText: AppLocalization.of(context)!.description,
       onChanged: (val) {
         serviceDescription = val;
       },
@@ -326,18 +353,18 @@ class _AddServiceState extends State<AddService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).descriptionMustNotEmpty;
+        return AppLocalization.of(context)!.descriptionMustNotEmpty;
       },
     );
   }
 
   Widget getCategoryField() {
     return CustomizedDropDownField(
-      title: AppLocalization.of(context).category,
+      title: AppLocalization.of(context)!.category,
       child: ListTile(
         dense: true,
         title: Text(
-          selectedServiceCategory != null ? selectedServiceCategory.name : "",
+          selectedServiceCategory != null ? selectedServiceCategory!.name : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -353,8 +380,7 @@ class _AddServiceState extends State<AddService> {
   }
 
   void selectItemCategory() async {
-    final pressedCategory = await showDialog<ServiceCatagory>(
-        barrierDismissible: false,
+    final pressedCategory = await showDialog<ServiceCategory>(
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -374,47 +400,49 @@ class _AddServiceState extends State<AddService> {
                     borderRadius: BorderRadius.circular(10),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: serviceCategories.map<Widget>((category) {
-                          if (selectedServiceCategory == category) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  category.name,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              category.name,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          );
-                        }).toList(),
-                      ),
+                          children: serviceCategories?.map<Widget>((category) {
+                                if (selectedServiceCategory == category) {
+                                  return Container(
+                                    color: selectedListItemBackgroundBlue,
+                                    child: ListTile(
+                                      dense: true,
+                                      title: Text(
+                                        category.name,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                            color: navyBlue,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: "Roberto"),
+                                      ),
+                                      trailing: Icon(
+                                        SlydoAppIcon.checked,
+                                        color: navyBlue,
+                                        size: 12,
+                                      ),
+                                      onTap: () {
+                                        Navigator.pop(context, category);
+                                      },
+                                    ),
+                                  );
+                                }
+                                return ListTile(
+                                  title: Text(
+                                    category.name,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: "Roberto"),
+                                  ),
+                                  dense: true,
+                                  onTap: () {
+                                    Navigator.pop(context, category);
+                                  },
+                                );
+                              }).toList() ??
+                              []),
                     ),
                   ),
                 ),
@@ -422,7 +450,7 @@ class _AddServiceState extends State<AddService> {
             ));
     if (pressedCategory != null) {
       selectedServiceCategory = pressedCategory;
-      serviceCategory = selectedServiceCategory.name;
+      serviceCategory = selectedServiceCategory!.name;
       setState(() {});
     }
   }
@@ -439,7 +467,7 @@ class _AddServiceState extends State<AddService> {
           try {
             servicePrice = double.parse(val).toString();
           } catch (e) {
-            Toast.show(e, context);
+            showToast(message: e.toString());
           }
         }
       },
@@ -449,28 +477,37 @@ class _AddServiceState extends State<AddService> {
             double.parse(val);
             return null;
           } catch (e) {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
     );
   }
 
   Widget getSubmitButton() {
     return CurvedButton(
-      onPressed: () async {
-        FocusScope.of(context).unfocus();
-        addService();
-      },
+      onPressed: isAPILoading
+          ? () {}
+          : () async {
+              FocusScope.of(context).unfocus();
+              isAPILoading = true;
+              if (mounted) setState(() {});
+
+              await addService();
+
+              isAPILoading = false;
+              if (mounted) setState(() {});
+            },
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "Add service",
+      isLoading: isAPILoading,
     );
   }
 
-  void addService() {
-    if (_formKey.currentState.validate()) {
+  Future<void> addService() async {
+    if (_formKey.currentState!.validate()) {
       if (serviceImages.length >= 1) {
         if (validateDropdown()) {
           Service service = Service();
@@ -484,29 +521,16 @@ class _AddServiceState extends State<AddService> {
           service.availableFrom = serviceAvailableFrom;
           service.isAvailable = serviceIsAvailable;
 
-          _auth.addService(service).then((value) {
+          await _auth.addService(service).then((value) {
             Navigator.pop(context);
-            Toast.show(
-              AppLocalization.of(context).serviceAddedSuccessfully,
-              context,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-              duration: 3,
-            );
+            showToast(
+                message: AppLocalization.of(context)!.serviceAddedSuccessfully);
           }).catchError((error) {
-            Toast.show(error.toString(), context,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                duration: 5);
+            showToast(message: error.toString());
           });
         }
       } else {
-        Toast.show(
-          AppLocalization.of(context).pleaseAddImage,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
     }
   }
@@ -515,10 +539,7 @@ class _AddServiceState extends State<AddService> {
     if (selectedServiceCategory != null) {
       return true;
     } else {
-      Toast.show(AppLocalization.of(context).selectCategory, context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
+      showToast(message: AppLocalization.of(context)!.selectCategory);
       return false;
     }
   }
@@ -549,7 +570,7 @@ class _AddServiceState extends State<AddService> {
           if (mounted) {
             setState(() {
               serviceAvailableFrom =
-                  DateTime(value.year, value.month, value.day);
+                  DateTime(value!.year, value.month, value.day);
             });
           }
         }).catchError((error) {});

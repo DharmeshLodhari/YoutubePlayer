@@ -3,6 +3,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -13,7 +14,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../user_auth.dart';
 
@@ -25,10 +25,10 @@ class BlockList extends StatefulWidget {
 class _BlockListState extends State<BlockList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
       new GlobalKey<ScaffoldState>();
-  SlidableController _slideController;
-  int count = 0;
-  String next = "";
-  String previous = "";
+  SlidableController? _slideController;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List blockList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
@@ -68,13 +68,9 @@ class _BlockListState extends State<BlockList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -141,7 +137,7 @@ class _BlockListState extends State<BlockList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result =
+        Map<String, dynamic>? result =
             await UserAuth().listBlockUsers(next, previous).catchError((error) {
           debugPrint("ERROR:- $error");
           //  return;
@@ -153,7 +149,7 @@ class _BlockListState extends State<BlockList> {
         previous = result['previous'];
         List tempList = result['results'];
 
-        List<CustomerProfile> users = List<CustomerProfile>();
+        List<CustomerProfile> users = [];
 
         tempList
             .forEach((element) => users.add(CustomerProfile.fromJson(element)));
@@ -168,21 +164,21 @@ class _BlockListState extends State<BlockList> {
 
         if (mounted) setState(() {});
       } else if (next == null && blockList.length > 6) {
-        _scaffoldBlockListKey.currentState.showSnackBar(SnackBar(
+        _scaffoldBlockListKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldBlockListKey.currentState
+    _scaffoldBlockListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
@@ -194,7 +190,7 @@ class _BlockListState extends State<BlockList> {
         onTap: () {
           unBlockUserAlert(user, index);
         },
-        title: AppLocalization.of(context).unblock,
+        title: AppLocalization.of(context)!.unblock,
         slideController: _slideController,
       ),
     ];
@@ -205,7 +201,7 @@ class _BlockListState extends State<BlockList> {
   }
 
   void unBlockUserAlert(CustomerProfile user, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: naturalGreen.withOpacity(0.08),
@@ -224,20 +220,20 @@ class _BlockListState extends State<BlockList> {
       actionTwoBgColor: naturalGreen,
       actionTwoTextColor: Colors.white,
       firstActionPrimary: false,
-      title: AppLocalization.of(context).unblock,
-      description: AppLocalization.of(context).areYouSureWantToUnblock +
+      title: AppLocalization.of(context)!.unblock,
+      description: AppLocalization.of(context)!.areYouSureWantToUnblock +
           " ${user.displayName()}",
-      actionOne: AppLocalization.of(context).cancel,
-      actionTwo: AppLocalization.of(context).accept,
+      actionOne: AppLocalization.of(context)!.cancel,
+      actionTwo: AppLocalization.of(context)!.accept,
     );
-    if (result) {
+    if (result != null && result) {
       bool done = await UserAuth().unBlockUser(user);
       done = true;
       if (done) {
         _showSnackBar(
             context,
             "${user.displayName()} " +
-                AppLocalization.of(context).isUnblockedSuccessfully);
+                AppLocalization.of(context)!.isUnblockedSuccessfully);
         setState(() {
           blockList.removeAt(index);
           if (blockList.length <= 9) {
@@ -245,7 +241,7 @@ class _BlockListState extends State<BlockList> {
           }
         });
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
@@ -253,7 +249,7 @@ class _BlockListState extends State<BlockList> {
   Widget _getSlidableWithLists(
       BuildContext context, CustomerProfile user, int index) {
     return Slidable(
-      key: Key(user.userName),
+      key: Key(user.userName!),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),

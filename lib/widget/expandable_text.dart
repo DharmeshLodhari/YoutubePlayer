@@ -16,7 +16,7 @@ class _ExpandableTextState extends State<ExpandableText>
     with TickerProviderStateMixin<ExpandableText> {
   @override
   Widget build(BuildContext context) {
-    return Stack(overflow: Overflow.visible, children: <Widget>[
+    return Stack(clipBehavior: Clip.none, children: <Widget>[
       AnimatedSize(
         vsync: this,
         duration: const Duration(milliseconds: 500),

@@ -11,7 +11,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/PropertyItem.dart';
 import 'property_auth.dart';
@@ -99,7 +98,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   bool amenityIsPoolAvailable = false;
   bool amenityIsDishwasherAvailable = false;
 
-  PropertyFilterBloc _propertyFilterBloc;
+  PropertyFilterBloc? _propertyFilterBloc;
 
   bool isLoading = false;
 
@@ -116,47 +115,47 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   void setFilterProperty() {
-    typeIsAny = _propertyFilterBloc.typeIsAny;
-    typeIsApartment = _propertyFilterBloc.typeIsApartment;
-    typeIsCondo = _propertyFilterBloc.typeIsCondo;
-    typeIsDuplex = _propertyFilterBloc.typeIsDuplex;
-    typeIsHouse = _propertyFilterBloc.typeIsHouse;
-    typeIsTownHouse = _propertyFilterBloc.typeIsTownHouse;
-    durationAtLeastAYear = _propertyFilterBloc.durationAtLeastAYear;
-    durationAtFewMonths = _propertyFilterBloc.durationAtFewMonths;
-    durationAtFewWeeks = _propertyFilterBloc.durationAtFewWeeks;
-    durationAtFewDays = _propertyFilterBloc.durationAtFewDays;
-    checkInDate = _propertyFilterBloc.checkInDate;
-    checkOutDate = _propertyFilterBloc.checkOutDate;
-    selectedGuestCount = _propertyFilterBloc.selectedGuestCount;
-    roommatesNeeded = _propertyFilterBloc.roommatesNeeded;
-    roommatesDoesNotNeeded = _propertyFilterBloc.roommatesDoesNotNeeded;
-    bedroomIsStudio = _propertyFilterBloc.bedroomIsStudio;
-    bedroomIs1 = _propertyFilterBloc.bedroomIs1;
-    bedroomIs2 = _propertyFilterBloc.bedroomIs2;
-    bedroomIs3 = _propertyFilterBloc.bedroomIs3;
-    bedroomIs4Plus = _propertyFilterBloc.bedroomIs4Plus;
-    bathroomIs1 = _propertyFilterBloc.bathroomIs1;
-    bathroomIs2 = _propertyFilterBloc.bathroomIs2;
-    bathroomIs3 = _propertyFilterBloc.bathroomIs3;
-    bathroomIs4 = _propertyFilterBloc.bathroomIs4;
-    bathroomIs5Plus = _propertyFilterBloc.bathroomIs5Plus;
-    isDogAllowed = _propertyFilterBloc.isDogAllowed;
-    isCatAllowed = _propertyFilterBloc.isCatAllowed;
-    isFurnished = _propertyFilterBloc.isFurnished;
-    isUnfurnished = _propertyFilterBloc.isUnfurnished;
-    amenityIsAny = _propertyFilterBloc.amenityIsAny;
-    amenityIsLaundryAvailable = _propertyFilterBloc.amenityIsLaundryAvailable;
-    amenityIsACAvailable = _propertyFilterBloc.amenityIsACAvailable;
-    amenityIsHeatingAvailable = _propertyFilterBloc.amenityIsHeatingAvailable;
-    amenityIsParkingAvailable = _propertyFilterBloc.amenityIsParkingAvailable;
+    typeIsAny = _propertyFilterBloc!.typeIsAny;
+    typeIsApartment = _propertyFilterBloc!.typeIsApartment;
+    typeIsCondo = _propertyFilterBloc!.typeIsCondo;
+    typeIsDuplex = _propertyFilterBloc!.typeIsDuplex;
+    typeIsHouse = _propertyFilterBloc!.typeIsHouse;
+    typeIsTownHouse = _propertyFilterBloc!.typeIsTownHouse;
+    durationAtLeastAYear = _propertyFilterBloc!.durationAtLeastAYear;
+    durationAtFewMonths = _propertyFilterBloc!.durationAtFewMonths;
+    durationAtFewWeeks = _propertyFilterBloc!.durationAtFewWeeks;
+    durationAtFewDays = _propertyFilterBloc!.durationAtFewDays;
+    checkInDate = _propertyFilterBloc!.checkInDate;
+    checkOutDate = _propertyFilterBloc!.checkOutDate;
+    selectedGuestCount = _propertyFilterBloc!.selectedGuestCount;
+    roommatesNeeded = _propertyFilterBloc!.roommatesNeeded;
+    roommatesDoesNotNeeded = _propertyFilterBloc!.roommatesDoesNotNeeded;
+    bedroomIsStudio = _propertyFilterBloc!.bedroomIsStudio;
+    bedroomIs1 = _propertyFilterBloc!.bedroomIs1;
+    bedroomIs2 = _propertyFilterBloc!.bedroomIs2;
+    bedroomIs3 = _propertyFilterBloc!.bedroomIs3;
+    bedroomIs4Plus = _propertyFilterBloc!.bedroomIs4Plus;
+    bathroomIs1 = _propertyFilterBloc!.bathroomIs1;
+    bathroomIs2 = _propertyFilterBloc!.bathroomIs2;
+    bathroomIs3 = _propertyFilterBloc!.bathroomIs3;
+    bathroomIs4 = _propertyFilterBloc!.bathroomIs4;
+    bathroomIs5Plus = _propertyFilterBloc!.bathroomIs5Plus;
+    isDogAllowed = _propertyFilterBloc!.isDogAllowed;
+    isCatAllowed = _propertyFilterBloc!.isCatAllowed;
+    isFurnished = _propertyFilterBloc!.isFurnished;
+    isUnfurnished = _propertyFilterBloc!.isUnfurnished;
+    amenityIsAny = _propertyFilterBloc!.amenityIsAny;
+    amenityIsLaundryAvailable = _propertyFilterBloc!.amenityIsLaundryAvailable;
+    amenityIsACAvailable = _propertyFilterBloc!.amenityIsACAvailable;
+    amenityIsHeatingAvailable = _propertyFilterBloc!.amenityIsHeatingAvailable;
+    amenityIsParkingAvailable = _propertyFilterBloc!.amenityIsParkingAvailable;
     amenityIsGatedEntryAvailable =
-        _propertyFilterBloc.amenityIsGatedEntryAvailable;
-    amenityIsDoormanAvailable = _propertyFilterBloc.amenityIsDoormanAvailable;
-    amenityIsGymAvailable = _propertyFilterBloc.amenityIsGymAvailable;
-    amenityIsPoolAvailable = _propertyFilterBloc.amenityIsPoolAvailable;
+        _propertyFilterBloc!.amenityIsGatedEntryAvailable;
+    amenityIsDoormanAvailable = _propertyFilterBloc!.amenityIsDoormanAvailable;
+    amenityIsGymAvailable = _propertyFilterBloc!.amenityIsGymAvailable;
+    amenityIsPoolAvailable = _propertyFilterBloc!.amenityIsPoolAvailable;
     amenityIsDishwasherAvailable =
-        _propertyFilterBloc.amenityIsDishwasherAvailable;
+        _propertyFilterBloc!.amenityIsDishwasherAvailable;
   }
 
   void _onRefresh() async {
@@ -167,13 +166,9 @@ class _SearchPropertyState extends State<SearchProperty> {
         getResult("");
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -183,7 +178,7 @@ class _SearchPropertyState extends State<SearchProperty> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -356,7 +351,9 @@ class _SearchPropertyState extends State<SearchProperty> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: TextFormField(
           style: TextStyle(
@@ -532,7 +529,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         });
   }
 
-  Widget getHouseTypeRequirement({StateSetter bottomSheetSetState}) {
+  Widget getHouseTypeRequirement({StateSetter? bottomSheetSetState}) {
     return getChipsList(
       title: "Type",
       bottomSheetSetState: bottomSheetSetState,
@@ -562,7 +559,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  Widget getDurationRequirement({StateSetter bottomSheetSetState}) {
+  Widget getDurationRequirement({StateSetter? bottomSheetSetState}) {
     bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
@@ -607,7 +604,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           );
   }
 
-  Widget getDateField({StateSetter bottomSheetSetState}) {
+  Widget getDateField({StateSetter? bottomSheetSetState}) {
     return durationAtLeastAYear || durationAtFewMonths
         ? Container()
         : Column(
@@ -630,8 +627,8 @@ class _SearchPropertyState extends State<SearchProperty> {
                           lastDate: DateTime(2101),
                         ).then((value) {
                           checkInDate =
-                              DateTime(value.year, value.month, value.day);
-                          bottomSheetSetState(() {});
+                              DateTime(value!.year, value.month, value.day);
+                          bottomSheetSetState!(() {});
                         }).catchError((error) {});
                       },
                       child: CustomizedDropDownField(
@@ -677,8 +674,8 @@ class _SearchPropertyState extends State<SearchProperty> {
                           lastDate: DateTime(2101),
                         ).then((value) {
                           checkOutDate =
-                              DateTime(value.year, value.month, value.day);
-                          bottomSheetSetState(() {});
+                              DateTime(value!.year, value.month, value.day);
+                          bottomSheetSetState!(() {});
                         }).catchError((error) {});
                       },
                       child: CustomizedDropDownField(
@@ -714,7 +711,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           );
   }
 
-  Widget getGuestCountDropDown({StateSetter bottomSheetSetState}) {
+  Widget getGuestCountDropDown({StateSetter? bottomSheetSetState}) {
     return durationAtLeastAYear || durationAtFewMonths
         ? Container()
         : Column(
@@ -762,7 +759,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           );
   }
 
-  void selectGuestCount({StateSetter bottomSheetSetState}) async {
+  void selectGuestCount({StateSetter? bottomSheetSetState}) async {
     final pressedCategory = await showDialog<int>(
         barrierDismissible: false,
         context: context,
@@ -834,11 +831,11 @@ class _SearchPropertyState extends State<SearchProperty> {
             ));
     if (pressedCategory != null) {
       selectedGuestCount = pressedCategory;
-      bottomSheetSetState(() {});
+      bottomSheetSetState!(() {});
     }
   }
 
-  Widget getRoommatesRequirement({StateSetter bottomSheetSetState}) {
+  Widget getRoommatesRequirement({StateSetter? bottomSheetSetState}) {
     bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
@@ -875,7 +872,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           );
   }
 
-  Widget getPetPolicyRequirement({StateSetter bottomSheetSetState}) {
+  Widget getPetPolicyRequirement({StateSetter? bottomSheetSetState}) {
     bool isForRent = isForBuyOrRent[1];
     return !isForRent
         ? Container()
@@ -912,7 +909,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           );
   }
 
-  Widget getBedroomRequirement({StateSetter bottomSheetSetState}) {
+  Widget getBedroomRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
         SizedBox(
@@ -961,7 +958,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  Widget getBathroomRequirement({StateSetter bottomSheetSetState}) {
+  Widget getBathroomRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
         SizedBox(
@@ -1010,7 +1007,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  Widget getFurnitureRequirement({StateSetter bottomSheetSetState}) {
+  Widget getFurnitureRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
         SizedBox(
@@ -1044,7 +1041,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  Widget getAmenityRequirement({StateSetter bottomSheetSetState}) {
+  Widget getAmenityRequirement({StateSetter? bottomSheetSetState}) {
     return Column(
       children: [
         SizedBox(
@@ -1119,9 +1116,9 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   Widget getChipsList(
-      {String title,
-      StateSetter bottomSheetSetState,
-      List<ChipData> children}) {
+      {required String title,
+      StateSetter? bottomSheetSetState,
+      required List<ChipData> children}) {
     return Container(
       width: double.infinity,
       child: Column(
@@ -1155,7 +1152,7 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  Widget buyOrRentSwitch({StateSetter bottomSheetSetState}) {
+  Widget buyOrRentSwitch({StateSetter? bottomSheetSetState}) {
     return Container(
       width: MediaQuery.of(context).size.width - 40,
       height: 30,
@@ -1182,7 +1179,7 @@ class _SearchPropertyState extends State<SearchProperty> {
                 isForBuyOrRent[0] = false;
                 isForBuyOrRent[1] = true;
               }
-              bottomSheetSetState(() {});
+              bottomSheetSetState!(() {});
             },
           ),
         ],
@@ -1214,7 +1211,8 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  Widget selectionCard({ChipData chipData, StateSetter bottomSheetSetState}) {
+  Widget selectionCard(
+      {required ChipData chipData, StateSetter? bottomSheetSetState}) {
     return InkWell(
       onTap: () {
         chipSelection(
@@ -1234,23 +1232,23 @@ class _SearchPropertyState extends State<SearchProperty> {
                 blurRadius: 1.0,
               ),
             ],
-            color: chipData.isSelected ? navyBlue : Colors.white,
+            color: chipData.isSelected! ? navyBlue : Colors.white,
             borderRadius: BorderRadius.all(
               Radius.circular(10),
             ),
             border: new Border.all(
-                color: chipData.isSelected ? navyBlue : dividerColor,
+                color: chipData.isSelected! ? navyBlue : dividerColor,
                 width: 1.0,
                 style: BorderStyle.solid),
           ),
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Text(
-            chipData.name,
+            chipData.name!,
             style: TextStyle(
-              color: chipData.isSelected ? Colors.white : blackFont,
+              color: chipData.isSelected! ? Colors.white : blackFont,
               fontSize: 14,
               fontWeight:
-                  chipData.isSelected ? FontWeight.w600 : FontWeight.w500,
+                  chipData.isSelected! ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
         ),
@@ -1258,7 +1256,8 @@ class _SearchPropertyState extends State<SearchProperty> {
     );
   }
 
-  void chipSelection({ChipData chipData, StateSetter bottomSheetSetState}) {
+  void chipSelection(
+      {required ChipData chipData, StateSetter? bottomSheetSetState}) {
     switch (chipData.variableName) {
       case "typeIsAny":
         if (typeIsAny == false) {
@@ -1271,7 +1270,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           typeIsAny = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "typeIsApartment":
         if (typeIsApartment == false) {
@@ -1280,7 +1279,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           typeIsApartment = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "typeIsCondo":
         if (typeIsCondo == false) {
@@ -1289,7 +1288,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           typeIsCondo = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "typeIsDuplex":
         if (typeIsDuplex == false) {
@@ -1298,7 +1297,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           typeIsDuplex = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "typeIsHouse":
         if (typeIsHouse == false) {
@@ -1307,7 +1306,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           typeIsHouse = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "typeIsTownHouse":
         if (typeIsTownHouse == false) {
@@ -1316,7 +1315,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           typeIsTownHouse = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "durationAtLeastAYear":
         if (durationAtLeastAYear == false) {
@@ -1325,7 +1324,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           durationAtFewWeeks = false;
           durationAtFewDays = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "durationAtFewMonths":
         if (durationAtFewMonths == false) {
@@ -1334,7 +1333,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           durationAtFewWeeks = false;
           durationAtFewDays = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "durationAtFewWeeks":
         if (durationAtFewWeeks == false) {
@@ -1343,7 +1342,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           durationAtFewDays = false;
           durationAtFewWeeks = true;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "durationAtFewDays":
         if (durationAtFewDays == false) {
@@ -1352,83 +1351,83 @@ class _SearchPropertyState extends State<SearchProperty> {
           durationAtFewWeeks = false;
           durationAtFewDays = true;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "roommatesNeeded":
         if (roommatesNeeded == false) {
           roommatesNeeded = true;
           roommatesDoesNotNeeded = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "roommatesDoesNotNeeded":
         if (roommatesDoesNotNeeded == false) {
           roommatesNeeded = false;
           roommatesDoesNotNeeded = true;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bedroomIsStudio":
         bedroomIsStudio = !bedroomIsStudio;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bedroomIs1":
         bedroomIs1 = !bedroomIs1;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bedroomIs2":
         bedroomIs2 = !bedroomIs2;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bedroomIs3":
         bedroomIs3 = !bedroomIs3;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bedroomIs4Plus":
         bedroomIs4Plus = !bedroomIs4Plus;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bathroomIs1":
         bathroomIs1 = !bathroomIs1;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bathroomIs2":
         bathroomIs2 = !bathroomIs2;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bathroomIs3":
         bathroomIs3 = !bathroomIs3;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bathroomIs4":
         bathroomIs4 = !bathroomIs4;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "bathroomIs5Plus":
         bathroomIs5Plus = !bathroomIs5Plus;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "isDogAllowed":
         isDogAllowed = !isDogAllowed;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "isCatAllowed":
         isCatAllowed = !isCatAllowed;
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "isFurnished":
         if (isFurnished == false) {
           isFurnished = true;
           isUnfurnished = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "isUnfurnished":
         if (isUnfurnished == false) {
           isUnfurnished = true;
           isFurnished = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsAny":
         if (amenityIsAny == false) {
@@ -1445,7 +1444,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           amenityIsAny = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsLaundryAvailable":
         if (amenityIsLaundryAvailable == false) {
@@ -1455,7 +1454,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           amenityIsLaundryAvailable = false;
         }
 
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsACAvailable":
         if (amenityIsACAvailable == false) {
@@ -1464,7 +1463,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           amenityIsACAvailable = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsHeatingAvailable":
         if (amenityIsHeatingAvailable == false) {
@@ -1474,7 +1473,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           amenityIsHeatingAvailable = false;
         }
 
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsParkingAvailable":
         if (amenityIsParkingAvailable == false) {
@@ -1484,7 +1483,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           amenityIsParkingAvailable = false;
         }
 
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsGatedEntryAvailable":
         if (amenityIsGatedEntryAvailable == false) {
@@ -1494,7 +1493,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           amenityIsGatedEntryAvailable = false;
         }
 
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsDoormanAvailable":
         if (amenityIsDoormanAvailable == false) {
@@ -1504,7 +1503,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           amenityIsDoormanAvailable = false;
         }
 
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsGymAvailable":
         if (amenityIsGymAvailable == false) {
@@ -1514,7 +1513,7 @@ class _SearchPropertyState extends State<SearchProperty> {
           amenityIsGymAvailable = false;
         }
 
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsPoolAvailable":
         if (amenityIsPoolAvailable == false) {
@@ -1523,7 +1522,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           amenityIsPoolAvailable = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       case "amenityIsDishwasherAvailable":
         if (amenityIsDishwasherAvailable == false) {
@@ -1532,10 +1531,10 @@ class _SearchPropertyState extends State<SearchProperty> {
         } else {
           amenityIsDishwasherAvailable = false;
         }
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
         break;
       default:
-        bottomSheetSetState(() {});
+        bottomSheetSetState!(() {});
     }
   }
 
@@ -1553,7 +1552,7 @@ class _SearchPropertyState extends State<SearchProperty> {
         height: 20,
         width: MediaQuery.of(context).size.width - 20,
         child: Stack(
-          overflow: Overflow.visible,
+          clipBehavior: Clip.none,
           children: [
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
@@ -1596,55 +1595,55 @@ class _SearchPropertyState extends State<SearchProperty> {
   }
 
   void updateFilterValue() {
-    _propertyFilterBloc.isForBuyOrRent = isForBuyOrRent;
-    _propertyFilterBloc.typeIsAny = typeIsAny;
-    _propertyFilterBloc.typeIsApartment = typeIsApartment;
-    _propertyFilterBloc.typeIsCondo = typeIsCondo;
-    _propertyFilterBloc.typeIsDuplex = typeIsDuplex;
-    _propertyFilterBloc.typeIsHouse = typeIsHouse;
-    _propertyFilterBloc.typeIsTownHouse = typeIsTownHouse;
-    _propertyFilterBloc.durationAtLeastAYear = durationAtLeastAYear;
-    _propertyFilterBloc.durationAtFewMonths = durationAtFewMonths;
-    _propertyFilterBloc.durationAtFewWeeks = durationAtFewWeeks;
-    _propertyFilterBloc.durationAtFewDays = durationAtFewDays;
-    _propertyFilterBloc.checkInDate = checkInDate;
-    _propertyFilterBloc.checkOutDate = checkOutDate;
-    _propertyFilterBloc.selectedGuestCount = selectedGuestCount;
-    _propertyFilterBloc.roommatesNeeded = roommatesNeeded;
-    _propertyFilterBloc.roommatesDoesNotNeeded = roommatesDoesNotNeeded;
-    _propertyFilterBloc.bedroomIsStudio = bedroomIsStudio;
-    _propertyFilterBloc.bedroomIs1 = bedroomIs1;
-    _propertyFilterBloc.bedroomIs2 = bedroomIs2;
-    _propertyFilterBloc.bedroomIs3 = bedroomIs3;
-    _propertyFilterBloc.bedroomIs4Plus = bedroomIs4Plus;
-    _propertyFilterBloc.bathroomIs1 = bathroomIs1;
-    _propertyFilterBloc.bathroomIs2 = bathroomIs2;
-    _propertyFilterBloc.bathroomIs3 = bathroomIs3;
-    _propertyFilterBloc.bathroomIs4 = bathroomIs4;
-    _propertyFilterBloc.bathroomIs5Plus = bathroomIs5Plus;
-    _propertyFilterBloc.isDogAllowed = isDogAllowed;
-    _propertyFilterBloc.isCatAllowed = isCatAllowed;
-    _propertyFilterBloc.isFurnished = isFurnished;
-    _propertyFilterBloc.isUnfurnished = isUnfurnished;
-    _propertyFilterBloc.amenityIsAny = amenityIsAny;
-    _propertyFilterBloc.amenityIsLaundryAvailable = amenityIsLaundryAvailable;
-    _propertyFilterBloc.amenityIsACAvailable = amenityIsACAvailable;
-    _propertyFilterBloc.amenityIsHeatingAvailable = amenityIsHeatingAvailable;
-    _propertyFilterBloc.amenityIsParkingAvailable = amenityIsParkingAvailable;
-    _propertyFilterBloc.amenityIsGatedEntryAvailable =
+    _propertyFilterBloc!.isForBuyOrRent = isForBuyOrRent;
+    _propertyFilterBloc!.typeIsAny = typeIsAny;
+    _propertyFilterBloc!.typeIsApartment = typeIsApartment;
+    _propertyFilterBloc!.typeIsCondo = typeIsCondo;
+    _propertyFilterBloc!.typeIsDuplex = typeIsDuplex;
+    _propertyFilterBloc!.typeIsHouse = typeIsHouse;
+    _propertyFilterBloc!.typeIsTownHouse = typeIsTownHouse;
+    _propertyFilterBloc!.durationAtLeastAYear = durationAtLeastAYear;
+    _propertyFilterBloc!.durationAtFewMonths = durationAtFewMonths;
+    _propertyFilterBloc!.durationAtFewWeeks = durationAtFewWeeks;
+    _propertyFilterBloc!.durationAtFewDays = durationAtFewDays;
+    _propertyFilterBloc!.checkInDate = checkInDate;
+    _propertyFilterBloc!.checkOutDate = checkOutDate;
+    _propertyFilterBloc!.selectedGuestCount = selectedGuestCount;
+    _propertyFilterBloc!.roommatesNeeded = roommatesNeeded;
+    _propertyFilterBloc!.roommatesDoesNotNeeded = roommatesDoesNotNeeded;
+    _propertyFilterBloc!.bedroomIsStudio = bedroomIsStudio;
+    _propertyFilterBloc!.bedroomIs1 = bedroomIs1;
+    _propertyFilterBloc!.bedroomIs2 = bedroomIs2;
+    _propertyFilterBloc!.bedroomIs3 = bedroomIs3;
+    _propertyFilterBloc!.bedroomIs4Plus = bedroomIs4Plus;
+    _propertyFilterBloc!.bathroomIs1 = bathroomIs1;
+    _propertyFilterBloc!.bathroomIs2 = bathroomIs2;
+    _propertyFilterBloc!.bathroomIs3 = bathroomIs3;
+    _propertyFilterBloc!.bathroomIs4 = bathroomIs4;
+    _propertyFilterBloc!.bathroomIs5Plus = bathroomIs5Plus;
+    _propertyFilterBloc!.isDogAllowed = isDogAllowed;
+    _propertyFilterBloc!.isCatAllowed = isCatAllowed;
+    _propertyFilterBloc!.isFurnished = isFurnished;
+    _propertyFilterBloc!.isUnfurnished = isUnfurnished;
+    _propertyFilterBloc!.amenityIsAny = amenityIsAny;
+    _propertyFilterBloc!.amenityIsLaundryAvailable = amenityIsLaundryAvailable;
+    _propertyFilterBloc!.amenityIsACAvailable = amenityIsACAvailable;
+    _propertyFilterBloc!.amenityIsHeatingAvailable = amenityIsHeatingAvailable;
+    _propertyFilterBloc!.amenityIsParkingAvailable = amenityIsParkingAvailable;
+    _propertyFilterBloc!.amenityIsGatedEntryAvailable =
         amenityIsGatedEntryAvailable;
-    _propertyFilterBloc.amenityIsDoormanAvailable = amenityIsDoormanAvailable;
-    _propertyFilterBloc.amenityIsGymAvailable = amenityIsGymAvailable;
-    _propertyFilterBloc.amenityIsPoolAvailable = amenityIsPoolAvailable;
-    _propertyFilterBloc.amenityIsDishwasherAvailable =
+    _propertyFilterBloc!.amenityIsDoormanAvailable = amenityIsDoormanAvailable;
+    _propertyFilterBloc!.amenityIsGymAvailable = amenityIsGymAvailable;
+    _propertyFilterBloc!.amenityIsPoolAvailable = amenityIsPoolAvailable;
+    _propertyFilterBloc!.amenityIsDishwasherAvailable =
         amenityIsDishwasherAvailable;
   }
 }
 
 class ChipData {
-  final String name;
-  final bool isSelected;
-  final String variableName;
+  final String? name;
+  final bool? isSelected;
+  final String? variableName;
 
   ChipData({this.name, this.isSelected, this.variableName});
 }
@@ -1701,7 +1700,9 @@ class MyTextField extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: TextFormField(
           controller: controller,

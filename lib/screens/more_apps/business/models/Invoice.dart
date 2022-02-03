@@ -1,18 +1,18 @@
 import 'Item.dart';
 
 class Invoice {
-  int amount;
-  String createdAt;
-  String currency;
-  String dueDate;
-  String fromCustomer;
-  String fromCustomerAvatar;
-  int id;
-  String invoiceDate;
-  List<InvoiceItem> items;
-  String status;
-  String toCustomer;
-  String toCustomerAvatar;
+  int? amount;
+  String? createdAt;
+  String? currency;
+  String? dueDate;
+  String? fromCustomer;
+  String? fromCustomerAvatar;
+  int? id;
+  String? invoiceDate;
+  List<InvoiceItem>? items;
+  String? status;
+  String? toCustomer;
+  String? toCustomerAvatar;
 
   Invoice(
       {this.amount,
@@ -61,7 +61,7 @@ class Invoice {
     data['to_customer'] = this.toCustomer;
     data['to_customer_avatar'] = this.toCustomerAvatar;
     if (this.items != null) {
-      data['items'] = this.items.map((v) => v.toJson()).toList();
+      data['items'] = this.items!.map((v) => v.toJson()).toList();
     }
     return data;
   }

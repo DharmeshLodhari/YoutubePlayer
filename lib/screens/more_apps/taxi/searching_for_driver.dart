@@ -5,7 +5,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 
 class SearchingForRide extends StatefulWidget {
   @override
@@ -15,16 +15,16 @@ class SearchingForRide extends StatefulWidget {
 class _SearchingForRideState extends State<SearchingForRide> {
   bool isSearchingForDriver = false;
 
-  MapController mapController;
+  MapController? mapController;
 
   LatLng mapPoint = LatLng(6.605874, 3.349149);
 
-  Timer driverFindingTimer;
+  Timer? driverFindingTimer;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       navigateToArrivingDriver();
     });
   }

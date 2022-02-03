@@ -1,13 +1,12 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/payout.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/payout_tile.dart';
-import 'package:Slydo/utils/secure_screen.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../../../../utils/colors.dart';
 import '../../payment_and_banking_auth.dart';
@@ -21,9 +20,9 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   // Get list of users transactions
-  int count = 0;
-  String next = "";
-  String previous = "";
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List<Payout> payoutList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
@@ -33,7 +32,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
 
   @override
   void initState() {
-    secureScreen();
+    // secureScreen();
     this.getList();
 
     super.initState();
@@ -62,13 +61,9 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
 
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -83,7 +78,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -114,7 +109,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context).bankPayout,
+        "Cashout transactions",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -124,7 +119,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
   Widget _buildPayoutTransactionList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).payoutHistoryEmpty,
+            msg: AppLocalization.of(context)!.payoutHistoryEmpty,
           )
         : ListView.builder(
             //+1 for progressbar
@@ -138,7 +133,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
                   child: PayoutTile(
                     payout: payoutList[index],
                     key: Key(
-                        "Payout:${payoutList[index].uuid + payoutList[index].timeStamp}"),
+                        "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
                   ),
                 );
               }
@@ -167,8 +162,13 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result =
+        Map<String, dynamic>? result =
             await PaymentAndBankingAuth().getPayoutList(next, previous);
+
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -187,9 +187,9 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
           });
         }
       } else if (next == null && payoutList.length > 6) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+        _scaffoldKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -198,7 +198,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
 
   @override
   void dispose() {
-    unsecureScreen();
+    // unsecureScreen();
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();

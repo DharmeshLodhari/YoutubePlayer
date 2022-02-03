@@ -16,7 +16,7 @@ class RideOption extends StatefulWidget {
 }
 
 class _RideOptionState extends State<RideOption> {
-  Map<String, dynamic> selectedRide;
+  Map<String, dynamic>? selectedRide;
 
   bool isRideSelected = false;
   bool toggleCarOption = false;
@@ -63,14 +63,14 @@ class _RideOptionState extends State<RideOption> {
     }
   ];
 
-  TaxiBloc taxiBloc;
+  late TaxiBloc taxiBloc;
 
   bool isLoading = false;
 
   @override
   void initState() {
     TaxiBloc taxiBloc =
-        Provider.of(myGlobals.navigationKey.currentContext, listen: false);
+        Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
     if (taxiBloc.rideDetail != null) {
       isRideSelected = true;
       selectedRide = taxiBloc.rideDetail;
@@ -81,10 +81,11 @@ class _RideOptionState extends State<RideOption> {
 
     TaxiAuth()
         .getDirections(
-            origin: LatLng(taxiBloc.startingPoint.geometry.location.lat,
-                taxiBloc.startingPoint.geometry.location.lng),
-            destination: LatLng(taxiBloc.destinationPoint.geometry.location.lat,
-                taxiBloc.destinationPoint.geometry.location.lng))
+            origin: LatLng(taxiBloc.startingPoint!.geometry!.location!.lat!,
+                taxiBloc.startingPoint!.geometry!.location!.lng!),
+            destination: LatLng(
+                taxiBloc.destinationPoint!.geometry!.location!.lat!,
+                taxiBloc.destinationPoint!.geometry!.location!.lng!))
         .then((value) {
       taxiBloc.startingPointToDestinationDirections = value;
       isLoading = false;
@@ -107,7 +108,7 @@ class _RideOptionState extends State<RideOption> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
             isLoading
@@ -211,13 +212,13 @@ class _RideOptionState extends State<RideOption> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      selectedRide["image"],
+                      selectedRide!["image"],
                       height: 90,
                       width: 120,
                       fit: BoxFit.fitWidth,
                     ),
                     Text(
-                      selectedRide["name"],
+                      selectedRide!["name"],
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,

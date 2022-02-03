@@ -1,7 +1,6 @@
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:meta/meta.dart';
 
 Future<NotificationDetails> _imageAndIcon(
     BuildContext context, Image picture, Image icon) async {
@@ -25,10 +24,10 @@ Future<NotificationDetails> _imageAndIcon(
 Future showIconAndImageNotification(
   BuildContext context,
   FlutterLocalNotificationsPlugin notifications, {
-  @required String title,
-  @required String body,
-  @required Image picture,
-  @required Image icon,
+  required String title,
+  required String body,
+  required Image picture,
+  required Image icon,
   int id = 0,
 }) async =>
     notifications.show(
@@ -53,9 +52,9 @@ Future<NotificationDetails> _image(BuildContext context, Image picture) async {
 Future showImageNotification(
   BuildContext context,
   FlutterLocalNotificationsPlugin notifications, {
-  @required String title,
-  @required String body,
-  @required Image picture,
+  required String title,
+  required String body,
+  required Image picture,
   int id = 0,
 }) async =>
     notifications.show(id, title, body, await _image(context, picture));
@@ -75,9 +74,9 @@ Future<NotificationDetails> _icon(BuildContext context, Image icon) async {
 Future showIconNotification(
   BuildContext context,
   FlutterLocalNotificationsPlugin notifications, {
-  @required String title,
-  @required String body,
-  @required Image icon,
+  required String title,
+  required String body,
+  required Image icon,
   int id = 0,
 }) async =>
     notifications.show(id, title, body, await _icon(context, icon));
@@ -97,8 +96,8 @@ NotificationDetails get _noSound {
 
 Future showSilentNotification(
   FlutterLocalNotificationsPlugin notifications, {
-  @required String title,
-  @required String body,
+  required String title,
+  required String body,
   int id = 0,
 }) =>
     _showNotification(notifications,
@@ -119,8 +118,8 @@ NotificationDetails get _ongoing {
 
 Future showOngoingNotification(
   FlutterLocalNotificationsPlugin notifications, {
-  @required String title,
-  @required String body,
+  required String title,
+  required String body,
   int id = 0,
 }) =>
     _showNotification(notifications,
@@ -128,9 +127,9 @@ Future showOngoingNotification(
 
 Future _showNotification(
   FlutterLocalNotificationsPlugin notifications, {
-  @required String title,
-  @required String body,
-  @required NotificationDetails type,
+  required String title,
+  required String body,
+  required NotificationDetails type,
   int id = 0,
 }) =>
     notifications.show(id, title, body, type);

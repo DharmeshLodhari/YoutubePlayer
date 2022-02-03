@@ -1,6 +1,6 @@
 class Northeast {
-  double lat;
-  double lng;
+  double? lat;
+  double? lng;
 
   Northeast({this.lat, this.lng});
 

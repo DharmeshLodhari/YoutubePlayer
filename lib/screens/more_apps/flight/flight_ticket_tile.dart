@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'models/Transport.dart';
 
 class FlightTicketTile extends StatelessWidget {
-  final Transport transport;
+  final Transport? transport;
 
-  const FlightTicketTile({Key key, this.transport}) : super(key: key);
+  const FlightTicketTile({Key? key, this.transport}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -40,7 +40,7 @@ class FlightTicketTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      transport.name,
+                      transport!.name!,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -56,7 +56,7 @@ class FlightTicketTile extends StatelessWidget {
                           size: 10,
                         ),
                         Text(
-                          transport.price,
+                          transport!.price!,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -74,7 +74,7 @@ class FlightTicketTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      transport.date,
+                      transport!.date!,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
@@ -90,7 +90,7 @@ class FlightTicketTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      transport.time,
+                      transport!.time!,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -98,7 +98,7 @@ class FlightTicketTile extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      transport.travelTime,
+                      transport!.travelTime!,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -127,7 +127,7 @@ class FlightTicketTile extends StatelessWidget {
                           width: 4,
                         ),
                         Text(
-                          transport.from,
+                          transport!.from!,
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,
@@ -150,7 +150,7 @@ class FlightTicketTile extends StatelessWidget {
                           width: 4,
                         ),
                         Text(
-                          transport.to,
+                          transport!.to!,
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 12,

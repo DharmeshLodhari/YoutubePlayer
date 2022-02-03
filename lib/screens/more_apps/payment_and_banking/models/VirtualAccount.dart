@@ -1,26 +1,30 @@
 import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/FinancialInstitution.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/account_tier.dart';
 
 class VirtualAccount {
-  String accountName;
-  String accountNumber;
-  String createdAt;
-  String customerUsername;
-  FinancialInstitution financialInstitution;
-  bool isActive;
-  String note;
-  String updatedAt;
+  String? accountName;
+  String? accountNumber;
+  String? createdAt;
+  String? customerUsername;
+  FinancialInstitution? financialInstitution;
+  AccountTier? accountTier;
+  bool? isActive;
+  String? note;
+  String? updatedAt;
 
-  VirtualAccount(
-      {this.accountName,
-      this.accountNumber,
-      this.createdAt,
-      this.customerUsername,
-      this.financialInstitution,
-      this.isActive,
-      this.note = "",
-      this.updatedAt});
+  VirtualAccount({
+    this.accountName,
+    this.accountNumber,
+    this.createdAt,
+    this.customerUsername,
+    this.financialInstitution,
+    this.accountTier,
+    this.isActive,
+    this.note = "",
+    this.updatedAt,
+  });
 
   factory VirtualAccount.fromJson(Map<String, dynamic> json) {
     return VirtualAccount(
@@ -30,6 +34,9 @@ class VirtualAccount {
       customerUsername: json['customer_username'],
       financialInstitution: json['financial_institution'] != null
           ? FinancialInstitution.fromJson(json['financial_institution'])
+          : null,
+      accountTier: json['account_tier'] != null
+          ? AccountTier.fromJson(json['account_tier'])
           : null,
       isActive: json['is_active'],
       note: json['note'],
@@ -44,7 +51,11 @@ class VirtualAccount {
       createdAt: json['created_at'],
       customerUsername: json['customer_username'],
       financialInstitution: FinancialInstitution.fromJson(
-          jsonDecode(json['financial_institution'])),
+        jsonDecode(json['financial_institution']),
+      ),
+      accountTier: AccountTier.fromJson(
+        jsonDecode(json['account_tier']),
+      ),
       isActive: json['is_active'] == 1 ? true : false,
       note: json['note'],
       updatedAt: json['updated_at'],
@@ -61,7 +72,10 @@ class VirtualAccount {
     data['note'] = this.note;
     data['updated_at'] = this.updatedAt;
     if (this.financialInstitution != null) {
-      data['financial_institution'] = this.financialInstitution.toJson();
+      data['financial_institution'] = this.financialInstitution!.toJson();
+    }
+    if (this.accountTier != null) {
+      data['account_tier'] = this.accountTier!.toJson();
     }
     return data;
   }
@@ -76,7 +90,8 @@ class VirtualAccount {
     data['note'] = this.note;
     data['updated_at'] = this.updatedAt;
     data['financial_institution'] =
-        jsonEncode(this.financialInstitution.toJson());
+        jsonEncode(this.financialInstitution!.toJson());
+    data['account_tier'] = jsonEncode(this.accountTier!.toJson());
     return data;
   }
 }

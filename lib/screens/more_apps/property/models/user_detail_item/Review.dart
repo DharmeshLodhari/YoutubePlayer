@@ -1,9 +1,9 @@
 class Review {
-  String date;
-  String detail;
-  String name;
-  int star;
-  String userAvatar;
+  String? date;
+  String? detail;
+  String? name;
+  int? star;
+  String? userAvatar;
 
   Review({this.date, this.detail, this.name, this.star, this.userAvatar});
 

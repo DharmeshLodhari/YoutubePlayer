@@ -17,8 +17,8 @@ import '../utils.dart';
 
 // ignore: must_be_immutable
 class EditOrReplyMessageUI extends StatefulWidget {
-  final Map<String, dynamic> messageData;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? messageData;
+  final ChatConversation? chatConversation;
 
   EditOrReplyMessageUI({this.messageData, this.chatConversation});
 
@@ -28,76 +28,67 @@ class EditOrReplyMessageUI extends StatefulWidget {
 
 class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     with SingleTickerProviderStateMixin {
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  GifController gifController;
+  GifController? gifController;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     Widget uiTile =
-        getUITileAccordingToMessageType(messageData: widget.messageData);
+        getUITileAccordingToMessageType(messageData: widget.messageData!);
 
     return Container(padding: EdgeInsets.only(top: 8), child: uiTile);
   }
 
-  Widget getUITileAccordingToMessageType({Map<String, dynamic> messageData}) {
-    String messageType = messageData["kind"];
+  Widget getUITileAccordingToMessageType(
+      {required Map<String, dynamic> messageData}) {
+    String? messageType = messageData["kind"];
     switch (messageType) {
       case "text":
         Widget getMessageUi = renderMessage(message: messageData);
         return getMessageUi;
-        break;
 
       case "image":
         Widget getMessageUi = renderImageMedia(message: messageData);
         return getMessageUi;
-        break;
 
       case "video":
         Widget getMessageUi = renderVideoMedia(message: messageData);
         return getMessageUi;
-        break;
 
       case "audio":
         Widget getMessageUi = renderAudioMedia(message: messageData);
         return getMessageUi;
-        break;
 
       case "transaction":
         Widget getPaymentUI = renderSendPayment(message: messageData);
         return getPaymentUI;
 
-        break;
-
       case "payment-request":
         Widget getPaymentUI = renderPaymentRequest(message: messageData);
         return getPaymentUI;
-        break;
 
       case "product":
         Widget getProductUI = renderProduct(message: messageData);
         return getProductUI;
-        break;
+
       case "service":
         Widget getServiceUI = renderService(message: messageData);
         return getServiceUI;
-        break;
 
       case "user-profile":
         Widget getUserProfileUI = renderUserProfile(message: messageData);
         return getUserProfileUI;
-        break;
 
       case "user_location":
         Widget getUserLocationUI = renderUserLocationUI(message: messageData);
         return getUserLocationUI;
-        break;
 
       case "gif_image":
         if (gifController == null) {
           gifController = GifController(vsync: this);
-          gifController.value = 0;
+          gifController!.value = 0;
         }
         Widget getGIFImageUI = renderGIFImageUI(message: messageData);
         return getGIFImageUI;
@@ -105,7 +96,6 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
       case "envelope":
         Widget getEnvelopeUI = renderEnvelope(message: messageData);
         return getEnvelopeUI;
-        break;
 
       default:
         debugPrint(
@@ -115,9 +105,10 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     }
   }
 
-  Widget renderMessage({Map<String, dynamic> message}) {
+  Widget renderMessage({required Map<String, dynamic> message}) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -127,7 +118,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            getAuthorName(message: message, currentUser: userBloc.user),
+            getAuthorName(message: message, currentUser: userBloc.user)!,
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
             overflow: TextOverflow.ellipsis,
@@ -149,9 +140,10 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderImageMedia({Map<String, dynamic> message}) {
+  Widget renderImageMedia({required Map<String, dynamic> message}) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -166,6 +158,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               width: 48,
               fit: BoxFit.cover,
               imageUrl: message["media"],
+              errorWidget: imageErrorWidget,
             ),
           ),
           SizedBox(
@@ -176,7 +169,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -205,9 +198,10 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderVideoMedia({Map<String, dynamic> message}) {
+  Widget renderVideoMedia({required Map<String, dynamic> message}) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -224,6 +218,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                   width: 48,
                   fit: BoxFit.cover,
                   imageUrl: message["poster"],
+                  errorWidget: imageErrorWidget,
                 ),
                 Positioned(
                   top: 16,
@@ -245,7 +240,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -274,9 +269,10 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderAudioMedia({Map<String, dynamic> message}) {
+  Widget renderAudioMedia({required Map<String, dynamic> message}) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -286,7 +282,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            getAuthorName(message: message, currentUser: userBloc.user),
+            getAuthorName(message: message, currentUser: userBloc.user)!,
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
             overflow: TextOverflow.ellipsis,
@@ -308,8 +304,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderSendPayment({Map<String, dynamic> message}) {
-    Map<String, dynamic> transaction;
+  Widget renderSendPayment({required Map<String, dynamic> message}) {
+    Map<String, dynamic>? transaction;
 
     if (message['text'] is String) {
       transaction = jsonDecode(message['text']);
@@ -319,6 +315,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -331,12 +328,12 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  transaction["description"] == ""
+                  transaction!["description"] == ""
                       ? getAuthorName(
-                          message: message, currentUser: userBloc.user)
+                          message: message, currentUser: userBloc.user)!
                       : transaction["description"] ??
                           getAuthorName(
-                              message: message, currentUser: userBloc.user),
+                              message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -375,12 +372,12 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
-          widget.chatConversation.isGroupConversation
+          widget.chatConversation!.isGroupConversation!
               ? Container(
                   height: 50,
                   width: 70,
                   child: Stack(
-                    overflow: Overflow.visible,
+                    clipBehavior: Clip.none,
                     children: [
                       Positioned(
                         left: 30,
@@ -395,6 +392,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                               height: 40,
                               width: 40,
                               fit: BoxFit.fill,
+                              errorWidget: imageErrorWidget,
                               imageUrl: message['to_customer_avatar'],
                             ),
                           ),
@@ -411,6 +409,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                             height: 40,
                             width: 40,
                             fit: BoxFit.fill,
+                            errorWidget: imageErrorWidget,
                             imageUrl: message['from_customer_avatar'],
                           ),
                         ),
@@ -427,8 +426,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderPaymentRequest({Map<String, dynamic> message}) {
-    Map<String, dynamic> paymentRequest;
+  Widget renderPaymentRequest({required Map<String, dynamic> message}) {
+    Map<String, dynamic>? paymentRequest;
 
     if (message['text'] is String) {
       paymentRequest = jsonDecode(message['text']);
@@ -438,6 +437,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -450,12 +450,12 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  paymentRequest["description"] == ""
+                  paymentRequest!["description"] == ""
                       ? getAuthorName(
-                          message: message, currentUser: userBloc.user)
+                          message: message, currentUser: userBloc.user)!
                       : paymentRequest["description"] ??
                           getAuthorName(
-                              message: message, currentUser: userBloc.user),
+                              message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -495,12 +495,12 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
-          widget.chatConversation.isGroupConversation
+          widget.chatConversation!.isGroupConversation!
               ? Container(
                   height: 50,
                   width: 70,
                   child: Stack(
-                    overflow: Overflow.visible,
+                    clipBehavior: Clip.none,
                     children: [
                       Positioned(
                         left: 30,
@@ -515,6 +515,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                               height: 40,
                               width: 40,
                               fit: BoxFit.fill,
+                              errorWidget: imageErrorWidget,
                               imageUrl: message['to_customer_avatar'],
                             ),
                           ),
@@ -531,6 +532,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                             height: 40,
                             width: 40,
                             fit: BoxFit.fill,
+                            errorWidget: imageErrorWidget,
                             imageUrl: message['from_customer_avatar'],
                           ),
                         ),
@@ -547,8 +549,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderProduct({Map<String, dynamic> message}) {
-    Product product;
+  Widget renderProduct({required Map<String, dynamic> message}) {
+    late Product product;
     if (message["meta_data"] is String) {
       product = Product.fromJson(jsonDecode(message["meta_data"]));
     } else if (message["meta_data"] is Map) {
@@ -557,6 +559,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -570,7 +573,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               height: 48,
               width: 48,
               fit: BoxFit.cover,
-              imageUrl: product.cover,
+              imageUrl: product.cover!,
+              errorWidget: imageErrorWidget,
             ),
           ),
           SizedBox(
@@ -581,7 +585,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  product.name,
+                  product.name!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -623,8 +627,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderService({Map<String, dynamic> message}) {
-    Service service;
+  Widget renderService({required Map<String, dynamic> message}) {
+    late Service service;
     if (message["meta_data"] is String) {
       service = Service.fromJson(jsonDecode(message["meta_data"]));
     } else if (message["meta_data"] is Map) {
@@ -633,6 +637,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -646,7 +651,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               height: 48,
               width: 48,
               fit: BoxFit.cover,
-              imageUrl: service.cover,
+              imageUrl: service.cover!,
+              errorWidget: imageErrorWidget,
             ),
           ),
           SizedBox(
@@ -657,7 +663,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  service.name,
+                  service.name!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -699,8 +705,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderUserProfile({Map<String, dynamic> message}) {
-    CustomerProfile customerProfile;
+  Widget renderUserProfile({required Map<String, dynamic> message}) {
+    late CustomerProfile customerProfile;
 
     if (message['meta_data'] is String) {
       customerProfile =
@@ -713,6 +719,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -731,8 +738,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: customerProfile.avatar == ""
-                      ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                      : customerProfile.avatar,
+                      ? defaultImage
+                      : customerProfile.avatar!,
                   colorBlendMode: BlendMode.darken,
                   fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
@@ -776,8 +783,8 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderEnvelope({Map<String, dynamic> message}) {
-    Envelope envelope;
+  Widget renderEnvelope({required Map<String, dynamic> message}) {
+    late Envelope envelope;
     bool isEmptyEnvelope = false;
 
     if (message['meta_data'] is String) {
@@ -792,6 +799,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
 
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -820,7 +828,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  messageDecoderWithEmoji("${envelope.title ?? ""}"),
+                  messageDecoderWithEmoji("${envelope.title ?? ""}")!,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -844,12 +852,12 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               ],
             ),
           ),
-          widget.chatConversation.isGroupConversation
+          widget.chatConversation!.isGroupConversation!
               ? Container(
                   height: 50,
                   width: 80,
                   child: Stack(
-                    overflow: Overflow.visible,
+                    clipBehavior: Clip.none,
                     children: [
                       Positioned(
                         left: 30,
@@ -864,6 +872,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                               height: 40,
                               width: 40,
                               fit: BoxFit.fill,
+                              errorWidget: imageErrorWidget,
                               imageUrl: message['to_customer_avatar'],
                             ),
                           ),
@@ -880,6 +889,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                             height: 40,
                             width: 40,
                             fit: BoxFit.fill,
+                            errorWidget: imageErrorWidget,
                             imageUrl: message['from_customer_avatar'],
                           ),
                         ),
@@ -896,9 +906,10 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderUserLocationUI({Map<String, dynamic> message}) {
+  Widget renderUserLocationUI({required Map<String, dynamic> message}) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -915,6 +926,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               imageUrl: "https://i.dlpng.com/static/png/6635948_preview.png",
               color: navyBlue,
               colorBlendMode: BlendMode.color,
+              errorWidget: imageErrorWidget,
             ),
           ),
           SizedBox(
@@ -925,7 +937,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,
@@ -954,9 +966,10 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
     );
   }
 
-  Widget renderGIFImageUI({Map<String, dynamic> message}) {
+  Widget renderGIFImageUI({required Map<String, dynamic> message}) {
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(
           left: BorderSide(width: 2.0, color: blackFont),
         ),
@@ -982,7 +995,7 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: blackFont,
                       fontSize: 14,

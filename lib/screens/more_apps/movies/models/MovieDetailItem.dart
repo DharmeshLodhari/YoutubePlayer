@@ -1,16 +1,16 @@
 class MovieDetailItem {
-  String category;
-  String currency;
-  String description;
-  String name;
-  String poster;
-  String price;
-  String rating;
-  String starring;
-  String time;
-  String video;
-  String viewingRating;
-  String year;
+  String? category;
+  String? currency;
+  String? description;
+  String? name;
+  String? poster;
+  String? price;
+  String? rating;
+  String? starring;
+  String? time;
+  String? video;
+  String? viewingRating;
+  String? year;
 
   MovieDetailItem(
       {this.category = "",

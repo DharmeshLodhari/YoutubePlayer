@@ -24,20 +24,34 @@ class LoadingIndicator extends StatelessWidget {
   }
 }
 
-class CircularLoadingIndicator extends StatelessWidget {
+class CircularLoadingIndicator extends StatefulWidget {
+  Color? color;
+
+  CircularLoadingIndicator({this.color});
+
+  @override
+  State<CircularLoadingIndicator> createState() =>
+      _CircularLoadingIndicatorState();
+}
+
+class _CircularLoadingIndicatorState extends State<CircularLoadingIndicator> {
   @override
   Widget build(BuildContext context) {
+    if (widget.color == null) {
+      widget.color = navyBlue;
+    }
+
     return CircularProgressIndicator(
       strokeWidth: 2.5,
-      valueColor: AlwaysStoppedAnimation(navyBlue),
+      valueColor: AlwaysStoppedAnimation(widget.color),
       backgroundColor: Colors.transparent,
     );
   }
 }
 
 class CircularLoadingIndicatorWithPercentage extends StatefulWidget {
-  final double value;
-  final Color color;
+  final double? value;
+  final Color? color;
 
   CircularLoadingIndicatorWithPercentage({this.value, this.color});
 
@@ -48,7 +62,7 @@ class CircularLoadingIndicatorWithPercentage extends StatefulWidget {
 
 class _CircularLoadingIndicatorWithPercentageState
     extends State<CircularLoadingIndicatorWithPercentage> {
-  Color color;
+  Color? color;
 
   @override
   void initState() {

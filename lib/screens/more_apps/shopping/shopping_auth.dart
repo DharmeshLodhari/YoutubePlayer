@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
@@ -13,14 +14,11 @@ import 'models/store.dart';
 
 class ShoppingAuthService extends AuthService {
   // List Products
-  Future<List<ShoppingProduct>> getProductList(
-      String next, String previous) async {
+  Future<List<ShoppingProduct>?> getProductList(String next, String previous,
+      {String userName = "black"}) async {
     var url = "";
-    if (next == null) {
-      return null;
-    }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/products/by-seller/black/";
+      url = AppConfig.baseUrl + "/api/v1/products/by-seller/$userName/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -54,8 +52,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List the  item with pagination
-  Future<Map<String, dynamic>> searchShoppingProducts(
-      String searchedText, String next, String previous) async {
+  Future<Map<String, dynamic>?> searchShoppingProducts(
+      String searchedText, String? next, String? previous) async {
     String url =
         AppConfig.baseUrl + "/api/v1/search/products/?search=" + searchedText;
     if (next == null) {
@@ -117,21 +115,24 @@ class ShoppingAuthService extends AuthService {
     product.category = item['category'].toString();
     product.condition = item['condition'];
     product.seller = item['seller'];
+    product.sellerFullName = item['seller_fullname'] ?? "";
     product.sellerAvatar = item["seller_avatar"];
     product.price = item['price'].toString();
     product.currency = item["currency"];
+    product.rating = formatRating(item['rating'] ?? 0.0);
+    product.canRate = item["can_rate"] ?? false;
     return product;
   }
 
   // List Products
-  Future<Map<String, dynamic>> listOfProduct(String next, String previous,
-      {String userId}) async {
+  Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous,
+      {String? userName}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/products/by-seller/" + userId + "/";
+      url = AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName! + "/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -177,20 +178,22 @@ class ShoppingAuthService extends AuthService {
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = product.toMap();
-    _data["available_from"] = dateToString(product.availableFrom);
-    _data["image_count"] = product.localImages.length;
+    _data["available_from"] = dateToString(product.availableFrom!);
+    _data["image_count"] = product.localImages!.length;
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
-    List<MultipartFile> newList = new List<MultipartFile>();
-    for (int i = 0; i < product.localImages.length; i++) {
+
+    List<MultipartFile> newList = [];
+
+    for (int i = 0; i < product.localImages!.length; i++) {
       // Add fields
-      request.fields["imagefile_$i"] = product.localImages[i].path;
+      request.fields["imagefile_$i"] = product.localImages![i].path;
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
-          "imagefile_$i", product.localImages[i].path);
+          "imagefile_$i", product.localImages![i].path);
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -198,6 +201,7 @@ class ShoppingAuthService extends AuthService {
 
     // Add multipart to request
     request.files.addAll(newList);
+
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
     if (response.statusCode == 413) {
@@ -208,6 +212,9 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 201) {
       return true;
     } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
       throw responseBody;
     }
   }
@@ -222,20 +229,20 @@ class ShoppingAuthService extends AuthService {
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = product.toMap();
-    _data["available_from"] = dateToString(product.availableFrom);
-    _data["image_count"] = product.localImages.length;
+    _data["available_from"] = dateToString(product.availableFrom!);
+    _data["image_count"] = product.localImages!.length;
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
-    List<MultipartFile> newList = new List<MultipartFile>();
-    for (int i = 0; i < product.localImages.length; i++) {
+    List<MultipartFile> newList = [];
+    for (int i = 0; i < product.localImages!.length; i++) {
       // Add fields
-      request.fields["imagefile_$i"] = product.localImages[i].path;
+      request.fields["imagefile_$i"] = product.localImages![i].path;
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
-          "imagefile_$i", product.localImages[i].path);
+          "imagefile_$i", product.localImages![i].path);
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -266,6 +273,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
+    log("jsonData :- $jsonData");
     if (response.statusCode == 200) {
       Product product = createProduct(jsonData);
       return product;
@@ -276,7 +284,7 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getProductOrService(String url) async {
+  Future<Map<String, dynamic>?> getProductOrService(String url) async {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
@@ -306,6 +314,7 @@ class ShoppingAuthService extends AuthService {
 
   //Service
   Service createService(Map<String, dynamic> item) {
+    debugPrint("==> $item");
     Service service = Service();
     service.id = item['id'];
     service.cover = item['cover'];
@@ -320,23 +329,27 @@ class ShoppingAuthService extends AuthService {
     service.shortDescription = item["short_description"];
     service.category = item['category'];
     service.provider = item['provider'];
+    service.providerFullName = item['provider_fullname'] ?? "";
     service.price = item['price'].toString();
     service.currency = item["currency"];
     service.providerAvatar = item["provider_avatar"];
+    service.rating = formatRating(item['rating'] ?? 0.0);
+    service.canRate = item["can_rate"] ?? false;
 
     return service;
   }
 
   // List services
-  Future<Map<String, dynamic>> listServicesByProvider(
-      String next, String previous,
-      {String userId}) async {
+  Future<Map<String, dynamic>?> listServicesByProvider(
+      String? next, String? previous,
+      {String? userName}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/services/by-provider/" + userId + "/";
+      url =
+          AppConfig.baseUrl + "/api/v1/services/by-provider/" + userName! + "/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -382,20 +395,20 @@ class ShoppingAuthService extends AuthService {
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = service.toMap();
-    _data["available_from"] = dateToString(service.availableFrom);
-    _data["image_count"] = service.localImages.length;
+    _data["available_from"] = dateToString(service.availableFrom!);
+    _data["image_count"] = service.localImages!.length;
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
-    List<MultipartFile> newList = new List<MultipartFile>();
-    for (int i = 0; i < service.localImages.length; i++) {
+    List<MultipartFile> newList = [];
+    for (int i = 0; i < service.localImages!.length; i++) {
       // Add fields
-      request.fields["imagefile_$i"] = service.localImages[i].path;
+      request.fields["imagefile_$i"] = service.localImages![i].path;
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
-          "imagefile_$i", service.localImages[i].path);
+          "imagefile_$i", service.localImages![i].path);
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -427,22 +440,22 @@ class ShoppingAuthService extends AuthService {
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = service.toMap();
-    _data["available_from"] = dateToString(service.availableFrom);
-    _data["image_count"] = service.localImages.length;
+    _data["available_from"] = dateToString(service.availableFrom!);
+    _data["image_count"] = service.localImages!.length;
 
     _data.forEach((k, v) {
       request.fields[k] = v.toString();
     });
 
-    if (service.localImages.length > 0) {
-      List<MultipartFile> newList = new List<MultipartFile>();
-      for (int i = 0; i < service.localImages.length; i++) {
+    if (service.localImages!.length > 0) {
+      List<MultipartFile> newList = [];
+      for (int i = 0; i < service.localImages!.length; i++) {
         //add fields
-        request.fields["imagefile_$i"] = service.localImages[i].path;
+        request.fields["imagefile_$i"] = service.localImages![i].path;
 
         //create multipart using filepath, string or bytes
         var multipartFile = await http.MultipartFile.fromPath(
-            "imagefile_$i", service.localImages[i].path);
+            "imagefile_$i", service.localImages![i].path);
 
         //add multipart to newList
         newList.add(multipartFile);
@@ -496,7 +509,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   // Update Order Status
-  Future<bool> updateOrderStatus(String value, String orderId) async {
+  Future<bool> updateOrderStatus(String? value, String orderId) async {
     var data = {"status": value};
     var _data = jsonEncode(data);
     var url =
@@ -524,15 +537,21 @@ class ShoppingAuthService extends AuthService {
 
   // List of Orders
   Future<dynamic> listOrders(
-      String next, String previous, String filterValue) async {
+      String? next, String? previous, String filterValue, String? date) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/order/";
-      if (filterValue != "" && filterValue != null) {
+      if (filterValue != "") {
         url = url + "?status__iexact=$filterValue";
+      }
+      if (filterValue != "" && date != null) {
+        url = url + "&created_at=$date";
+      }
+      if (filterValue == "" && date != null) {
+        url = url + "?created_at=$date";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -542,18 +561,18 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      List items = List();
+      List items = [];
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
         var order = Order.fromJson(data[i]);
         items.add(order);
       }
-
       jsonData["results"] = items;
       return jsonData;
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
+      debugPrint("STATUS CODE:- ${response.statusCode} ");
       throw json.decode(response.body);
     }
   }
@@ -565,7 +584,8 @@ class ShoppingAuthService extends AuthService {
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      List items = List();
+      log("DATA=> $jsonData");
+      List items = [];
       var data = jsonData["results"];
       for (int i = 0; i < data.length; i++) {
         if (data[i]["item"].containsKey("manufacturer")) {
@@ -651,7 +671,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   List<dynamic> getCartItems(var jsonResponse) {
-    List items = List();
+    List items = [];
     var data = jsonResponse["results"];
 
     for (int i = 0; i < data.length; i++) {
@@ -672,7 +692,7 @@ class ShoppingAuthService extends AuthService {
   }
 
   Future<List<dynamic>> ownersOrderProductsAndServices(
-      {@required String type, @required String userId, String exclude}) async {
+      {required String type, required String? userId, String? exclude}) async {
     String urlPart = type == "products"
         ? "sellers-other-products"
         : "providers-other-services";
@@ -685,7 +705,7 @@ class ShoppingAuthService extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    List items = List();
+    List items = [];
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       var data = jsonData["results"];
@@ -709,8 +729,9 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List services
-  Future<Map<String, dynamic>> searchUsersServices(String next, String previous,
-      {SearchItemWithFilterModel filterOptions}) async {
+  Future<Map<String, dynamic>?> searchUsersServices(
+      String? next, String? previous,
+      {SearchItemWithFilterModel? filterOptions}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -718,12 +739,12 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = AppConfig.baseUrl +
           "/api/v1/services/by-provider/" +
-          filterOptions.searchedUser.userName +
+          filterOptions!.searchedUser!.userName! +
           "/?";
       if (filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.category}";
       }
-      if (filterOptions.searchedText.trim() != "") {
+      if (filterOptions.searchedText!.trim() != "") {
         url = url + "&name__icontains=${filterOptions.searchedText}";
       }
       if (filterOptions.minAmount != null) {
@@ -770,8 +791,9 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List Products
-  Future<Map<String, dynamic>> searchUsersProducts(String next, String previous,
-      {SearchItemWithFilterModel filterOptions}) async {
+  Future<Map<String, dynamic>?> searchUsersProducts(
+      String? next, String? previous,
+      {SearchItemWithFilterModel? filterOptions}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -779,13 +801,13 @@ class ShoppingAuthService extends AuthService {
     if (next == "") {
       url = AppConfig.baseUrl +
           "/api/v1/products/by-seller/" +
-          filterOptions.searchedUser.userName +
+          filterOptions!.searchedUser!.userName! +
           "/?";
 
       if (filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.category}";
       }
-      if (filterOptions.searchedText.trim() != "") {
+      if (filterOptions.searchedText!.trim() != "") {
         url = url + "&name__icontains=${filterOptions.searchedText}";
       }
       if (filterOptions.minAmount != null) {
@@ -830,6 +852,52 @@ class ShoppingAuthService extends AuthService {
         "results": productList
       };
       return result;
+    }
+  }
+
+  Future<List<ServiceCategory>> getServiceCategories() async {
+    var url = AppConfig.baseUrl + "/api/v1/services/choices/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ServiceCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ServiceCategory(messageDecoderWithEmoji(results[i])!));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL: $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ServiceCategory>[]);
+    }
+  }
+
+  Future<List<ProductCategory>> getProductCategories() async {
+    var url = AppConfig.baseUrl + "/api/v1/products/choices/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ProductCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ProductCategory(messageDecoderWithEmoji(results[i])!));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL: $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ProductCategory>[]);
     }
   }
 }

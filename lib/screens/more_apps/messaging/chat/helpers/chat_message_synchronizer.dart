@@ -15,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// This helper will sync messages from the server to the local db
 class ChatMessageSynchronizer {
   static final ChatMessageSynchronizer _chatMessageSynchronizer =
       ChatMessageSynchronizer._internal();
@@ -31,12 +32,12 @@ class ChatMessageSynchronizer {
 
   Stream<bool> get getChatMessageStream => _chatMessageStream.stream;
 
-  StreamController<bool> _chatMessageFetchingStream = BehaviorSubject<bool>();
+  StreamController<bool?> _chatMessageFetchingStream = BehaviorSubject<bool?>();
 
-  Stream<bool> get getChatMessageFetchingStream =>
+  Stream<bool?> get getChatMessageFetchingStream =>
       _chatMessageFetchingStream.stream;
 
-  void updateFetchStream({bool isFetching}) {
+  void updateFetchStream({bool? isFetching}) {
     _chatMessageFetchingStream.sink.add(isFetching);
   }
 
@@ -44,11 +45,11 @@ class ChatMessageSynchronizer {
     return _chatMessageSynchronizer;
   }
 
-  static String _next = "";
-  static String _previous = "";
+  static String? _next = "";
+  static String? _previous = "";
 
-  static String _nextMissedMessages = "";
-  static String _previousMissedMessages = "";
+  static String? _nextMissedMessages = "";
+  static String? _previousMissedMessages = "";
 
   void setStreamFalse() {
     _chatMessageStream.sink.add(false);
@@ -60,7 +61,7 @@ class ChatMessageSynchronizer {
   }
 
   Future<void> getMessages(
-      {ChatConversation chatConversation, bool isFirstTime}) async {
+      {required ChatConversation chatConversation, bool? isFirstTime}) async {
     debugPrint("Fetching previous messages !!");
 
     ChatMessagePagination chatMessagePagination = await ChatMessageHandler()
@@ -74,7 +75,7 @@ class ChatMessageSynchronizer {
       debugPrint(
           "recipient conversationID:- ${chatConversation.conversationId}  ${chatConversation.fullName}");
 
-      Map<String, dynamic> result = await MessageAuth()
+      Map<String, dynamic>? result = await MessageAuth()
           .getChatMessages(_next, _previous,
               conversionId: chatConversation.conversationId)
           .catchError((error) {
@@ -95,7 +96,7 @@ class ChatMessageSynchronizer {
       /// For sending acknowledgement for new Messages
       sendAcknowledgementForNewMessages(messages: insertedMessages);
 
-      if (isFirstTime) {
+      if (isFirstTime!) {
         await ChatMessageHandler().saveChatMessagePagination(
             chatMessagePagination: chatMessagePagination);
       } else {
@@ -104,7 +105,7 @@ class ChatMessageSynchronizer {
       }
     }
 
-    if (isFirstTime && chatMessagePagination.next != null) {
+    if (isFirstTime! && chatMessagePagination.next != null) {
       await getMessages(chatConversation: chatConversation, isFirstTime: false);
     } else {
       return;
@@ -112,22 +113,24 @@ class ChatMessageSynchronizer {
     return;
   }
 
-  void sendAcknowledgementForNewMessages({List<ChatMessage> messages}) async {
+  void sendAcknowledgementForNewMessages(
+      {required List<ChatMessage> messages}) async {
     UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
-    List<String> acknowledgedMessageIds = [];
+    List<String?> acknowledgedMessageIds = [];
     for (int i = 0; i < messages.length; i++) {
       if (userBloc.user.userName != messages[i].author &&
-          !messages[i].delivered) {
+          !messages[i].delivered!) {
         acknowledgedMessageIds.add(messages[i].messageId);
         await MainSocketMessageHandler()
             .saveAndUpdateUserMessageCount(messageData: messages[i].toJson());
 
-        int time = convertStringToMillisecondsSinceEpoch(messages[i].createdAt);
+        int? time =
+            convertStringToMillisecondsSinceEpoch(messages[i].createdAt);
 
-        String conversationId = messages[i].conversationId;
+        String? conversationId = messages[i].conversationId;
 
         await ConnectionListManager()
             .updateLastMessageTime(conversationId: conversationId, time: time);
@@ -137,7 +140,7 @@ class ChatMessageSynchronizer {
     }
 
     if (acknowledgedMessageIds.isNotEmpty) {
-      Map<String, dynamic> acknowledgedMessages = await MessageAuth()
+      Map<String, dynamic>? acknowledgedMessages = await MessageAuth()
           .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
           .catchError((error) {
         debugPrint("Error:- $error");
@@ -153,7 +156,7 @@ class ChatMessageSynchronizer {
       _previousMissedMessages = "";
     }
 
-    Map<String, dynamic> resultData = await MessageAuth()
+    Map<String, dynamic>? resultData = await MessageAuth()
         .fetchMissedMessages(
             next: _nextMissedMessages, previous: _previousMissedMessages)
         .catchError((error) {
@@ -162,9 +165,9 @@ class ChatMessageSynchronizer {
 
     if (resultData == null) return;
 
-    List<ChatMessage> messageList = List<ChatMessage>();
+    List<ChatMessage> messageList = [];
 
-    List missedMessages = resultData['results'];
+    List? missedMessages = resultData['results'];
     _nextMissedMessages = resultData['next'];
     _previousMissedMessages = resultData['previous'];
 
@@ -187,10 +190,10 @@ class ChatMessageSynchronizer {
           await MainSocketMessageHandler().saveAndUpdateUserMessageCount(
               messageData: messageList[i].toJson());
 
-          int time =
+          int? time =
               convertStringToMillisecondsSinceEpoch(messageList[i].createdAt);
 
-          String conversationId = messageList[i].conversationId;
+          String? conversationId = messageList[i].conversationId;
 
           await ConnectionListManager().updateLastMessageTime(
               conversationId: conversationId, time: time);
@@ -200,18 +203,18 @@ class ChatMessageSynchronizer {
       }
 
       ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-          myGlobals.navigationKey.currentContext,
+          myGlobals.navigationKey.currentContext!,
           listen: false);
       await connectionListBloc.getConnectionsCount();
 
       _chatMessageStream.sink.add(true);
 
-      List<String> acknowledgedMessageIds = [];
+      List<String?> acknowledgedMessageIds = [];
       for (int i = 0; i < messageList.length; i++) {
         acknowledgedMessageIds.add(messageList[i].messageId);
       }
 
-      Map<String, dynamic> acknowledgedMessages = await MessageAuth()
+      Map<String, dynamic>? acknowledgedMessages = await MessageAuth()
           .acknowledgeMessagesToServer(dataToBeSent: acknowledgedMessageIds)
           .catchError((error) {
         debugPrint("Error:- $error");
@@ -227,10 +230,13 @@ class ChatMessageSynchronizer {
     return Future.value();
   }
 
-  void handleAcknowledgementMessage({Map<String, dynamic> messageData}) async {
-    // {check_id: e0c64c88-262d-4428-8634-031762897556, conversation_id: 09700559-3aa6-4d71-bd4b-748322e49fdb, username: black, delivered: true, type: acknowledge_message}
+  void handleAcknowledgementMessage(
+      {required Map<String, dynamic> messageData}) async {
+    /// {check_id: e0c64c88-262d-4428-8634-031762897556,
+    /// conversation_id: 09700559-3aa6-4d71-bd4b-748322e49fdb,
+    /// username: black, delivered: true, type: acknowledge_message}
     UserBloc userBloc = Provider.of<UserBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
     if (userBloc.user.userName != messageData["username"]) {

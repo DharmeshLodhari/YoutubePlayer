@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
@@ -14,29 +15,28 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 // ignore: must_be_immutable
 class AddMediaToChatMessage extends StatefulWidget {
-  Map<String, dynamic> arguments;
+  Map<String, dynamic>? arguments;
 
-  AddMediaToChatMessage({@required this.arguments});
+  AddMediaToChatMessage({required this.arguments});
 
   @override
   _AddMediaToChatMessageState createState() => _AddMediaToChatMessageState();
 }
 
 class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
-  Map<String, dynamic> data;
-  File mediaFile;
-  String mediaType;
+  Map<String, dynamic>? data;
+  File? mediaFile;
+  String? mediaType;
 
-  TextEditingController messageController;
+  TextEditingController? messageController;
 
   bool isLoading = false;
 
-  VideoPlayerController _videoController;
-  ChewieController _chewieController;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
 
   /// Music Player
   AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
@@ -44,11 +44,11 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
 
   @override
   void initState() {
-    var message = widget.arguments["message"];
+    var message = widget.arguments!["message"];
     messageController = TextEditingController(text: message);
-    data = widget.arguments["data"];
-    mediaFile = widget.arguments["media"];
-    mediaType = widget.arguments["mediaType"];
+    data = widget.arguments!["data"];
+    mediaFile = widget.arguments!["media"];
+    mediaType = widget.arguments!["mediaType"];
 
     if (mediaType == "video") {
       setUpVideoPlayer();
@@ -63,7 +63,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
 
   void cropImage() async {
     /// for cropping the image
-    String croppedImage = await ImageCrop().cropImage(mediaFile.path);
+    String? croppedImage = await ImageCrop().cropImage(mediaFile!.path);
     if (croppedImage != null) {
       mediaFile = File(croppedImage);
       if (mounted) setState(() {});
@@ -73,14 +73,15 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
   void setUpVideoPlayer() async {
     isLoading = true;
     if (mounted) setState(() {});
-
-    _videoController = VideoPlayerController.file(mediaFile);
-    await _videoController.initialize();
+    debugPrint("path=> $mediaFile");
+    _videoController = VideoPlayerController.file(mediaFile!);
+    await _videoController!.initialize();
 
     _chewieController = ChewieController(
-      videoPlayerController: _videoController,
-      aspectRatio: _videoController.value.aspectRatio,
-      allowedScreenSleep: false, autoPlay: false,
+      videoPlayerController: _videoController!,
+      aspectRatio: _videoController!.value.aspectRatio,
+      allowedScreenSleep: false,
+      autoPlay: false,
       allowFullScreen: true,
       deviceOrientationsAfterFullScreen: [
         DeviceOrientation.portraitUp,
@@ -106,8 +107,8 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     _videoController?.dispose();
     _chewieController?.dispose();
 
-    _audioPlayer?.stop();
-    _audioPlayer?.dispose();
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
 
     SystemChrome.setPreferredOrientations(
       [
@@ -116,7 +117,8 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
       ],
     );
 
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
 
     super.dispose();
   }
@@ -295,18 +297,15 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     );
   }
 
-
   void sendMessage() async {
-    // Navigator.pop(context, Future.error("error"));
-
     Map<String, dynamic> _data = {};
-    _data['text'] = messageController.text.trim();
+    _data['text'] = messageController!.text.trim();
     _data['check_id'] = Uuid().v4();
     _data['kind'] = mediaType;
     _data['read_by_author'] = true;
     _data['created_at'] = DateTime.now().toUtc().toString();
     _data['type'] = "chatroom_message";
-    _data.addAll(data);
+    _data.addAll(data!);
 
     showDialog(
         context: context,
@@ -314,14 +313,15 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               child: CircularLoadingIndicator(),
             ));
 
-    File poster;
+    File? poster;
     if (mediaType == "video") {
-      String posterPath = await getVideoThumbnail(mediaFile);
+      String? posterPath = await getVideoThumbnail(mediaFile!);
+      if (posterPath == null) return;
       poster = File(posterPath);
     }
 
     await MessageAuth()
-        .sendSocketMessage(_data, mediaFile, poster: poster)
+        .sendSocketMessage(_data, mediaFile!, poster: poster)
         .then((value) {
       Navigator.pop(context);
       Navigator.pop(context, true);
@@ -335,15 +335,16 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     if (mediaType == "image") {
       return ClipRect(
           child: PhotoView(
-        imageProvider: FileImage(mediaFile),
+        imageProvider: FileImage(mediaFile!),
       ));
     } else if (mediaType == "video") {
+      debugPrint("ISLOADING=> $isLoading");
       return isLoading
           ? Center(
               child: CircularLoadingIndicator(),
             )
           : Chewie(
-              controller: _chewieController,
+              controller: _chewieController!,
               posterUrl: "",
               titleName: "",
             );
@@ -379,7 +380,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                           padding: EdgeInsets.only(top: 6, left: 4),
                           child: _audioPlayer.builderRealtimePlayingInfos(
                               builder: (context, info) {
-                            if (info == null || info.current == null) {
+                            if (info.current == null) {
                               return GestureDetector(
                                 child: Icon(
                                   Icons.play_arrow_rounded,
@@ -388,7 +389,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                                 ),
                                 onTap: () {
                                   _audioPlayer.open(
-                                    Audio.file(mediaFile.path),
+                                    Audio.file(mediaFile!.path),
                                     autoStart: false,
                                   );
                                   isAudioPlaying = !isAudioPlaying;
@@ -417,7 +418,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                         ),
                         _audioPlayer.builderRealtimePlayingInfos(
                             builder: (context, info) {
-                          if (info == null || info.current == null) {
+                          if (info.current == null) {
                             return Expanded(
                               child: Column(
                                 children: [
@@ -440,7 +441,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                                   currentPosition: info.currentPosition,
                                   duration: info.duration,
                                   seekTo: (to) {
-                                    _audioPlayer.seek(to);
+                                    _audioPlayer.seek(to!);
                                   },
                                 ),
                                 SizedBox(

@@ -1,13 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/logout_helper.dart';
+import 'package:Slydo/services/secure_storage.dart';
+import 'package:Slydo/utils/country_picker/country.dart';
+import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import 'device_info.dart';
@@ -27,7 +35,7 @@ class AuthService {
     User _user = User.fromJson(userData);
 
     await _db.saveUser(_user);
-    return _user;
+    return Future.value(_user);
   }
 
   int getEpochTime(DateTime time) {
@@ -36,14 +44,14 @@ class AuthService {
   }
 
   // Log user in if credentials are correct
-  Future<User> authenticate(String phoneNumber, String password) async {
+  Future<User> authenticate(String? phoneNumber, String? password) async {
     // This method will pass the user name and password to the backend server
     // and if credentials are correct will receive payload with jwt and user info
     // which will be saved to the user table and jwt table then create
     // a user instance which we should pass around throughout the application as
     // the auth user.
 
-    var url = AppConfig.baseUrl + "/api/v1/user/auth/get-token/";
+    var uri = AppConfig.baseUrl + "/api/v1/user/auth/get-token/";
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
@@ -66,28 +74,31 @@ class AuthService {
     _body.addAll(data);
 
     debugPrint("=> $_body");
+    Uri url = Uri.parse(uri);
 
+    debugPrint("URL => $url BODY => $_body");
     var response = await http.post(url, body: _body, headers: headers);
     if (response.statusCode == 200) {
-      Map<String, String> data = {};
-      var jsonResponse = json.decode(response.body);
-      data["access"] = jsonResponse[
-          "access"]; // Get `access` and `refresh` Tokens from response
-      data["refresh"] = jsonResponse["refresh"];
-      data["expiration"] =
-          expirationTime.toString(); // Convert expirationTime int to string .
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
-      await _db.saveJwt(data);
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      jsonResponse["expiration"] = expirationTime;
+
+      Jwt jwt = Jwt.fromJson(jsonResponse);
+      await _db.saveJwt(jwt);
 
       // Save user to database
       var jsonData = jsonResponse["user"];
+      log("User=> $jsonData");
       jsonData["password"] = password;
       jsonData["url"] =
           AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
       User user = await createUser(jsonData);
 
-      return user;
+      return Future.value(user);
     }
+
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
@@ -107,9 +118,10 @@ class AuthService {
 
   // Log user out
   Future<void> logOut() async {
-    var url = AppConfig.baseUrl + "/api/v1/user/auth/logout/";
+    var uri = AppConfig.baseUrl + "/api/v1/user/auth/logout/";
     var headers = await getAuthHeaders();
-    debugPrint("URL:- $url Called !!");
+    debugPrint("URL:- $uri Called !!");
+    Uri url = Uri.parse(uri);
     var response = await http.get(url, headers: headers);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -130,66 +142,114 @@ class AuthService {
   Future close() async => _db.close();
 
   // Get user instance from db
-  Future<User> getUser() async {
-    return await _db.getUser();
+  Future<User?> getUser() async {
+    return Future.value(await _db.getUser());
   }
 
   // Check if token has expired
   bool hasTokenExpired(String expirationTimeString) {
     // Will return false if token is still valid and true if token is no longer useful
 
+    if (expirationTimeString == "") return true;
     int expirationTime = int.parse(expirationTimeString);
     int now = getEpochTime(DateTime.now());
-    return now >= expirationTime;
+
+    bool hasTokenExpired = now >= expirationTime;
+
+    if (hasTokenExpired) {
+      debugPrint(
+          "Expiration Time :- $expirationTimeString  NOW TIME:- $now  (now >= expirationTime) ($now >= $expirationTime)  ${now >= expirationTime}");
+    }
+
+    return hasTokenExpired;
   }
 
   // Get jwt
-  Future<Map<String, dynamic>> getJwt() async {
+  Future<Jwt?> getJwt() async {
     return await _db.getJwt();
   }
 
-  Future<Map<String, String>> getAuthHeaders() async {
-    var tokenData = await _db.getJwt();
-    String expirationTime = tokenData['expiration'];
+  // For fetching new token for user if somehow user is not found then
+  // we are logging out that user to get a fresh token
+  Future<Jwt> fetchNewToken() async {
+    debugPrint("Token Expired getting new one");
+    User? _user = await _db.getUser();
 
-    // Authenticate again if token has expired
-    if (hasTokenExpired(expirationTime)) {
-      debugPrint("Token Expired getting new one");
-      User _user = await _db.getUser();
-      await authenticate(_user.phoneNumber, _user.password).catchError((error) {
-        debugPrint("ERROR:- while fetching new Token $error");
-      });
-      tokenData = await _db.getJwt(); // get new token now
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String countryFromPref = sharedPreferences.getString('country') ?? "NG";
+
+    Country country = CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
+    SecureUser secureUser = await SecureStorage().getUser();
+    String phoneNumber = secureUser.phoneNumber ?? "";
+    String password = secureUser.password ?? "";
+
+    if (phoneNumber != "") {
+      phoneNumber = "+" + country.phoneCode! + phoneNumber;
     }
 
-    String bearer = "Bearer " + tokenData["access"];
-    // log("Token:- $bearer");
+    if (phoneNumber == "" || password == "") {
+      phoneNumber = _user?.phoneNumber ?? "";
+      password = _user?.password ?? "";
+    }
+
+    await authenticate(phoneNumber, password).catchError((error) async {
+      debugPrint("ERROR:- while fetching new Token $error");
+      await LogoutHelper().logoutUser();
+    });
+    Jwt? jwt = await _db.getJwt(); // get new token now
+
+    if (jwt == null) {
+      await LogoutHelper().logoutUser();
+    }
+    return jwt!;
+  }
+
+  Future<Map<String, String>> getAuthHeaders() async {
+    // we are setting this variable assuming that the token is expired
+    // after that we will check in db has token expire or not if not then we will
+    // send that token in header else we will fetch new token
+    bool isNewTokenNeeded = true;
+
+    Jwt? jwt = await _db.getJwt();
+
+    String? expirationTime = jwt?.expiration ?? null;
+
+    if ((jwt?.access ?? null) != null && (jwt?.access ?? "") != "") {
+      isNewTokenNeeded = true;
+    }
+
+    if (expirationTime != null && expirationTime != "") {
+      if (!hasTokenExpired(expirationTime)) {
+        isNewTokenNeeded = false;
+      } else {
+        debugPrint("EXPIRED DUE TO EXPIRED TIME >>>>>>>>>>>!!");
+      }
+    }
+
+    // Authenticate again if token has expired
+    if (isNewTokenNeeded) {
+      debugPrint("TOKEN EXPIRE REASON 1");
+      jwt = await fetchNewToken();
+    }
+
+    if (jwt?.access == null || jwt?.access == "") {
+      debugPrint("TOKEN EXPIRE REASON 2");
+      jwt = await fetchNewToken();
+    }
+
+    String bearer = "Bearer " + jwt!.access!;
+    // log("$bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
     var headers = {
       "Authorization": bearer,
-      "Content-type": "application/json",
+      "Content-type": "application/json; charset=utf-8",
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
     };
     return headers;
-  }
-
-  Future<String> getAuthHeadersToken() async {
-    var tokenData = await _db.getJwt();
-    String expirationTime = tokenData['expiration'];
-
-    // Authenticate again if token has expired
-    if (hasTokenExpired(expirationTime)) {
-      debugPrint("Token Expired getting new one");
-      User _user = await getUser();
-      await authenticate(_user.phoneNumber, _user.password);
-      tokenData = await _db.getJwt(); // get new token now
-    }
-
-    String token = tokenData["access"];
-    return token;
   }
 
   // Delete JWT from db
@@ -230,11 +290,12 @@ class AuthService {
 
   // it will unregister the device from server
   Future<bool> unRegisterDevice() async {
-    var url = AppConfig.baseUrl + "/api/v1/notification/unregister-device/";
+    var uri = AppConfig.baseUrl + "/api/v1/notification/unregister-device/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode({});
-    debugPrint("URL:- $url Called !!");
-    var response;
+    debugPrint("URL:- $uri Called !!");
+    Uri url = Uri.parse(uri);
+    late var response;
     try {
       response = await http.patch(url, headers: headers, body: _data);
     } catch (e) {
@@ -267,7 +328,7 @@ class AuthService {
       }
       return response.statusCode == 200;
     }
-    return false;
+    return Future.value(false);
   }
 
   Map getNonAuthHeader() {
@@ -284,8 +345,8 @@ class AuthService {
 
   /// Search Module
   // List the  item with pagination
-  Future<Map<String, dynamic>> searchEndpointPagination(
-      String url, String next, String previous) async {
+  Future<Map<String, dynamic>?> searchEndpointPagination(
+      String url, String? next, String? previous) async {
     if (next == null) {
       return null;
     }
@@ -312,7 +373,7 @@ class AuthService {
     }
   }
 
-  FutureOr<http.Response> timeOutFunction({String url}) {
+  FutureOr<http.Response> timeOutFunction({String? url}) {
     if (url != null) {
       debugPrint("Timeout on URL:- $url");
     }
@@ -327,7 +388,9 @@ class AuthService {
       var jsonData = jsonDecode(response.body);
       // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
 
-      debugPrint("===> $response");
+      debugPrint(
+          "Token Black List ===> ${response.statusCode}  ${response.body}");
+
       try {
         if (jsonData["messages"][0]["status_code"] == 423 ||
             jsonData["messages"][0]["status_code"] == "423") {
@@ -337,32 +400,45 @@ class AuthService {
         debugPrint("Token is Valid");
       }
     }
-    return false;
+    return;
   }
 
-  Future<Response> httpGet(String url, {Map<String, dynamic> headers}) async {
-    var response = await http.get(url, headers: headers);
+  Future<Response> httpGet(String url, {Map<String, dynamic>? headers}) async {
+    Uri uri = Uri.parse(url);
+    debugPrint("URL:- $uri");
+
+    var response =
+        await http.get(uri, headers: headers as Map<String, String>?);
+
+    // var utf8runs = response.body.runes.toList();
+    // Response res = Response(utf8.decode(utf8runs), response.statusCode);
     wasTokenBlackListed(response);
     return response;
   }
 
   Future<Response> httpPost(String url,
-      {Map<String, dynamic> headers, String body}) async {
-    var response = await http.post(url, headers: headers, body: body);
+      {Map<String, dynamic>? headers, String? body}) async {
+    Uri uri = Uri.parse(url);
+    var response = await http.post(uri,
+        headers: headers as Map<String, String>?, body: body);
     wasTokenBlackListed(response);
     return response;
   }
 
   Future<Response> httpPatch(String url,
-      {Map<String, dynamic> headers, String body}) async {
-    var response = await http.patch(url, headers: headers, body: body);
+      {Map<String, dynamic>? headers, String? body}) async {
+    Uri uri = Uri.parse(url);
+    var response = await http.patch(uri,
+        headers: headers as Map<String, String>?, body: body);
     wasTokenBlackListed(response);
     return response;
   }
 
   Future<Response> httpDelete(String url,
-      {Map<String, dynamic> headers}) async {
-    var response = await http.delete(url, headers: headers);
+      {Map<String, dynamic>? headers}) async {
+    Uri uri = Uri.parse(url);
+    var response =
+        await http.delete(uri, headers: headers as Map<String, String>?);
     wasTokenBlackListed(response);
     return response;
   }

@@ -13,12 +13,12 @@ import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
 class ShoppingCartTileForProduct extends StatefulWidget {
-  Product item;
-  String type;
-  int qty;
-  int index;
-  Function onIncreaseQty;
-  Function onDecreaseQty;
+  Product? item;
+  String? type;
+  int? qty;
+  int? index;
+  Function? onIncreaseQty;
+  Function? onDecreaseQty;
 
   ShoppingCartTileForProduct(Map<String, dynamic> item,
       {this.onIncreaseQty, this.onDecreaseQty, this.index}) {
@@ -34,7 +34,7 @@ class ShoppingCartTileForProduct extends StatefulWidget {
 
 class _ShoppingCartTileForProductState
     extends State<ShoppingCartTileForProduct> {
-  BasketBloc basketBloc;
+  late BasketBloc basketBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -80,12 +80,12 @@ class _ShoppingCartTileForProductState
       child: CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: widget.item?.cover ??
-            "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+        imageUrl: widget.item?.cover ?? defaultImage,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.cover,
+        errorWidget: productAndServiceErrorWidget,
         filterQuality: FilterQuality.high,
-        placeholder: (context, url) => widget.item?.cover == null ?? true
+        placeholder: (context, url) => widget.item?.cover == null
             ? Icon(Icons.widgets)
             : CircularLoadingIndicator(),
       ),
@@ -94,7 +94,7 @@ class _ShoppingCartTileForProductState
 
   Widget getTitle() {
     return Text(
-      "${widget.item.name}",
+      "${widget.item!.name}",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -124,7 +124,7 @@ class _ShoppingCartTileForProductState
               ),
             ),
             Text(
-              basketBloc.items[widget.index]["qty"].toString(),
+              basketBloc.items[widget.index!]["qty"].toString(),
               style: TextStyle(
                   fontSize: 14, fontWeight: FontWeight.w600, color: blackFont),
             ),
@@ -148,15 +148,15 @@ class _ShoppingCartTileForProductState
   }
 
   String getProductPrice() {
-    if (widget.item.price.toString().length > 5) {
-      return widget.item.price.toString().substring(0, 5) + "..";
+    if (widget.item!.price.toString().length > 5) {
+      return widget.item!.price.toString().substring(0, 5) + "..";
     }
-    return widget.item.price.toString();
+    return widget.item!.price.toString();
   }
 
   String getTotalPrice() {
     var price =
-        basketBloc.items[widget.index]["qty"] * int.parse(widget.item.price);
+        basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
     return price.toString();
   }
 
@@ -178,7 +178,7 @@ class _ShoppingCartTileForProductState
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[widget.item.currency],
+          worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
               color: blackFont,
               fontFamily: "Roboto",
@@ -196,7 +196,7 @@ class _ShoppingCartTileForProductState
 
   Widget getSellerName(BuildContext context) {
     return Text(
-      widget.item.seller,
+      widget.item!.seller!,
       style: TextStyle(fontSize: 10, color: darkGrey),
     );
   }
@@ -204,12 +204,12 @@ class _ShoppingCartTileForProductState
 
 // ignore: must_be_immutable
 class ShoppingCartTileForService extends StatefulWidget {
-  Service item;
-  String type;
-  int qty;
-  int index;
-  Function onIncreaseQty;
-  Function onDecreaseQty;
+  Service? item;
+  String? type;
+  int? qty;
+  int? index;
+  Function? onIncreaseQty;
+  Function? onDecreaseQty;
 
   ShoppingCartTileForService(Map<String, dynamic> item,
       {this.onDecreaseQty, this.onIncreaseQty, this.index}) {
@@ -225,7 +225,7 @@ class ShoppingCartTileForService extends StatefulWidget {
 
 class _ShoppingCartTileForServiceState
     extends State<ShoppingCartTileForService> {
-  BasketBloc basketBloc;
+  late BasketBloc basketBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -276,12 +276,12 @@ class _ShoppingCartTileForServiceState
         child: CachedNetworkImage(
           height: 48,
           width: 48,
-          imageUrl: widget.item?.cover ??
-              "https://homepages.cae.wisc.edu/~ece533/images/peppers.png",
+          imageUrl: widget.item?.cover ?? defaultImage,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.cover,
+          errorWidget: productAndServiceErrorWidget,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => widget.item?.cover == null ?? true
+          placeholder: (context, url) => widget.item?.cover == null
               ? Icon(Icons.widgets)
               : CircularProgressIndicator(
                   strokeWidth: 2.5,
@@ -295,7 +295,7 @@ class _ShoppingCartTileForServiceState
 
   Widget getTitle() {
     return Text(
-      "${widget.item.name}",
+      "${widget.item!.name}",
       maxLines: 1,
       style: TextStyle(
           color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
@@ -303,8 +303,8 @@ class _ShoppingCartTileForServiceState
   }
 
   Widget getTrailing() {
-    int qty = basketBloc.items[widget.index]["qty"] != 0
-        ? basketBloc.items[widget.index]["qty"]
+    int? qty = basketBloc.items[widget.index!]["qty"] != 0
+        ? basketBloc.items[widget.index!]["qty"]
         : 0;
     return Container(
       width: 100,
@@ -353,15 +353,15 @@ class _ShoppingCartTileForServiceState
   }
 
   String getServicePrice() {
-    if (widget.item.price.toString().length > 5) {
-      return widget.item.price.toString().substring(0, 5) + "..";
+    if (widget.item!.price.toString().length > 5) {
+      return widget.item!.price.toString().substring(0, 5) + "..";
     }
-    return widget.item.price.toString();
+    return widget.item!.price.toString();
   }
 
   String getTotalPrice() {
     var price =
-        basketBloc.items[widget.index]["qty"] * int.parse(widget.item.price);
+        basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
     return price.toString();
   }
 
@@ -383,7 +383,7 @@ class _ShoppingCartTileForServiceState
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[widget.item.currency],
+          worldCurrencies[widget.item!.currency!]!,
           style: TextStyle(
               color: blackFont,
               fontFamily: "Roboto",
@@ -401,7 +401,7 @@ class _ShoppingCartTileForServiceState
 
   Widget getSellerName(BuildContext context) {
     return Text(
-      widget.item.provider,
+      widget.item!.provider!,
       style: TextStyle(fontSize: 10, color: darkGrey),
     );
   }

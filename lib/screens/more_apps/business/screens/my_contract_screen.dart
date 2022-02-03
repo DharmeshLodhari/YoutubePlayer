@@ -16,7 +16,7 @@ class _MyContractScreenState extends State<MyContractScreen> {
   int currentIndex = 0;
 
   GlobalKey _key = LabeledGlobalKey("myInvoiceList");
-  CustomizedPopUpMenu menu;
+  late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
@@ -56,7 +56,7 @@ class _MyContractScreenState extends State<MyContractScreen> {
         length: 2,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
       ),
@@ -87,7 +87,7 @@ class _MyContractScreenState extends State<MyContractScreen> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
       actions: [
         addContractAndInvoiceButton(),
         currentIndex == 1
@@ -138,7 +138,7 @@ class _MyContractScreenState extends State<MyContractScreen> {
         ),
         child: IconButton(
           icon: Icon(
-            Icons.more_vert,
+            Icons.filter_alt_rounded,
             color: isPopMenuOpen ? Colors.white : Colors.black,
             size: 20,
           ),

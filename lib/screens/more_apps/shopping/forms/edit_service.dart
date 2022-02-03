@@ -7,6 +7,7 @@ import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
@@ -16,7 +17,6 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../shopping_auth.dart';
 
@@ -36,24 +36,24 @@ class _EditServiceState extends State<EditService> {
   _EditServiceState({this.arguments});
 
   final _auth = ShoppingAuthService();
-  UserBloc userBloc;
+  UserBloc? userBloc;
   final _formKey = GlobalKey<FormState>();
 
-  String serviceId;
+  String? serviceId;
   Service currentService = Service();
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
-  List<PickedFile> serviceLocalImages = List<PickedFile>();
-  List<String> serviceImagesFromServer = List<String>();
-  String serviceName = "";
-  String serviceDescription = "";
-  String serviceCategory = "";
-  String serviceShortDescription = "";
-  String servicePrice = "";
-  ServiceCatagory selectedServiceCategory;
-  bool serviceIsAvailable = false;
-  DateTime serviceAvailableFrom = DateTime.now();
+  List<PickedFile> serviceLocalImages = [];
+  List<String?> serviceImagesFromServer = [];
+  String? serviceName = "";
+  String? serviceDescription = "";
+  String? serviceCategory = "";
+  String? serviceShortDescription = "";
+  String? servicePrice = "";
+  ServiceCategory? selectedServiceCategory;
+  bool? serviceIsAvailable = false;
+  DateTime? serviceAvailableFrom = DateTime.now();
 
   //text editing controllers for the edit fields
   TextEditingController serviceTitleController = TextEditingController();
@@ -61,6 +61,9 @@ class _EditServiceState extends State<EditService> {
   TextEditingController serviceShortDescriptionController =
       TextEditingController();
   TextEditingController servicePriceController = TextEditingController();
+  List<ServiceCategory>? serviceCategories;
+  bool isLoading = false;
+  bool isAPILoading = false;
 
   @override
   void deactivate() {
@@ -71,52 +74,63 @@ class _EditServiceState extends State<EditService> {
   @override
   void initState() {
     serviceId = arguments['serviceId'];
-    fetchProduct();
+    getCategories();
+
     super.initState();
   }
 
-  void fetchProduct() {
+  void getCategories() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    try {
+      serviceCategories = await ShoppingAuthService().getServiceCategories();
+    } catch (e) {
+      serviceCategories = [];
+    }
+
+    await fetchProduct();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  Future<void> fetchProduct() async {
     // assigning the dropdown
-    serviceCategories.forEach((catagory) {
+    serviceCategories?.forEach((catagory) {
       if (catagory.name == currentService.category) {
         selectedServiceCategory = catagory;
       }
     });
 
     //fetchProductFrom id to edit
-    _auth.getService(serviceId).then((value) {
+    await _auth.getService(serviceId!).then((value) {
       currentService = value;
       // asssigning to our edit controllers
 
-      serviceTitleController.text = currentService.name;
-      serviceDescriptionController.text = currentService.description;
-      servicePriceController.text = currentService.price;
-      serviceShortDescriptionController.text = currentService.shortDescription;
+      serviceTitleController.text = currentService.name!;
+      serviceDescriptionController.text = currentService.description!;
+      servicePriceController.text =
+          moneyNormalizer(int.parse(currentService.price!)).toString();
+      serviceShortDescriptionController.text = currentService.shortDescription!;
 
-      serviceImagesFromServer.addAll(currentService.serverImages);
+      serviceImagesFromServer.addAll(currentService.serverImages!);
       serviceName = currentService.name;
       serviceCategory = currentService.category;
-      servicePrice = currentService.price;
+      servicePrice = moneyNormalizer(int.parse(currentService.price!));
       serviceDescription = currentService.description;
       serviceIsAvailable = currentService.isAvailable;
       serviceAvailableFrom = currentService.availableFrom;
       serviceShortDescription = currentService.shortDescription;
 
       // assigning the dropdown from currentProduct
-      serviceCategories.forEach((catagory) {
+      serviceCategories?.forEach((catagory) {
         if (catagory.name == currentService.category) {
           selectedServiceCategory = catagory;
         }
       });
-      if (mounted) setState(() {});
     }).catchError((error) {
-      Toast.show(
-        error.toString(),
-        context,
-        backgroundColor: navyBlue,
-        textColor: Colors.white,
-        gravity: Toast.CENTER,
-      );
+      showToast(message: error.toString());
     });
   }
 
@@ -130,7 +144,7 @@ class _EditServiceState extends State<EditService> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -161,50 +175,56 @@ class _EditServiceState extends State<EditService> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 10),
-                checkImageLimitForServerImage()
-                    ? viewServerImages()
-                    : Container(),
-                checkImageLimitForServerImage()
-                    ? SizedBox(height: 8)
-                    : Container(),
-                checkImageLimitForLocalImage() ? addLocalImages() : Container(),
-                SizedBox(
-                  height: 10,
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height: 10),
+                      checkImageLimitForServerImage()
+                          ? viewServerImages()
+                          : Container(),
+                      checkImageLimitForServerImage()
+                          ? SizedBox(height: 8)
+                          : Container(),
+                      checkImageLimitForLocalImage()
+                          ? addLocalImages()
+                          : Container(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      addTitleField(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getAmountField(),
+                      SizedBox(height: 10),
+                      getCategoryField(),
+                      SizedBox(height: 16),
+                      getIsAvailableField(),
+                      SizedBox(height: 16),
+                      getAvailableFromField(),
+                      SizedBox(height: 10),
+                      getServiceShortDescription(),
+                      SizedBox(height: 10),
+                      getServiceDescription(),
+                      SizedBox(height: 40),
+                      getSubmitButton(),
+                      SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-                addTitleField(),
-                SizedBox(
-                  height: 10,
-                ),
-                getAmountField(),
-                SizedBox(height: 10),
-                getCategoryField(),
-                SizedBox(height: 16),
-                getIsAvailableField(),
-                SizedBox(height: 16),
-                getAvailableFromField(),
-                SizedBox(height: 10),
-                getServiceShortDescription(),
-                SizedBox(height: 10),
-                getServiceDescription(),
-                SizedBox(height: 40),
-                getSubmitButton(),
-                SizedBox(height: 40),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -275,7 +295,7 @@ class _EditServiceState extends State<EditService> {
                   height: 4,
                 ),
                 Text(
-                  AppLocalization.of(context).addImage,
+                  AppLocalization.of(context)!.addImage,
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
               ],
@@ -293,24 +313,24 @@ class _EditServiceState extends State<EditService> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context).selectTheImageSource),
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).camera),
+                  child: Text(AppLocalization.of(context)!.camera),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallery),
+                  child: Text(AppLocalization.of(context)!.gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
             ));
 
     if (imageSource != null) {
-      ImagePicker().getImage(source: imageSource).then((value) async {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String croppedImage = await ImageCrop().cropImage(value.path);
+          String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -392,7 +412,7 @@ class _EditServiceState extends State<EditService> {
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
                     image: NetworkImage(
-                      serviceImagesFromServer[index],
+                      serviceImagesFromServer[index]!,
                     ),
                     fit: BoxFit.fill),
               ),
@@ -466,7 +486,7 @@ class _EditServiceState extends State<EditService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).pleaseEnterServiceName;
+        return AppLocalization.of(context)!.pleaseEnterServiceName;
       },
       onChanged: (val) {
         serviceName = val;
@@ -482,7 +502,7 @@ class _EditServiceState extends State<EditService> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).shortDescription;
+        return AppLocalization.of(context)!.shortDescription;
       },
       onChanged: (val) {
         serviceShortDescription = val;
@@ -493,7 +513,7 @@ class _EditServiceState extends State<EditService> {
   Widget getServiceDescription() {
     return CustomizedTextFormField(
       maxLines: 5,
-      labelText: AppLocalization.of(context).description,
+      labelText: AppLocalization.of(context)!.description,
       controller: serviceDescriptionController,
       textCapitalization: TextCapitalization.sentences,
       onChanged: (val) {
@@ -504,11 +524,11 @@ class _EditServiceState extends State<EditService> {
 
   Widget getCategoryField() {
     return CustomizedDropDownField(
-      title: AppLocalization.of(context).category,
+      title: AppLocalization.of(context)!.category,
       child: ListTile(
         dense: true,
         title: Text(
-          selectedServiceCategory != null ? selectedServiceCategory.name : "",
+          selectedServiceCategory != null ? selectedServiceCategory!.name : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -524,8 +544,7 @@ class _EditServiceState extends State<EditService> {
   }
 
   void selectItemCategory() async {
-    final pressedCategory = await showDialog<ServiceCatagory>(
-        barrierDismissible: false,
+    final pressedCategory = await showDialog<ServiceCategory>(
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -545,46 +564,47 @@ class _EditServiceState extends State<EditService> {
                     borderRadius: BorderRadius.circular(10),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: serviceCategories.map<Widget>((category) {
-                          if (selectedServiceCategory == category) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
+                        children: serviceCategories?.map<Widget>((category) {
+                              if (selectedServiceCategory == category) {
+                                return Container(
+                                  color: selectedListItemBackgroundBlue,
+                                  child: ListTile(
+                                    dense: true,
+                                    title: Text(
+                                      category.name,
+                                      overflow: TextOverflow.fade,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                          color: navyBlue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    trailing: Icon(
+                                      SlydoAppIcon.checked,
+                                      color: navyBlue,
+                                      size: 12,
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context, category);
+                                    },
+                                  ),
+                                );
+                              }
+                              return ListTile(
                                 title: Text(
                                   category.name,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
                                   style: TextStyle(
-                                      color: navyBlue,
+                                      color: blackFont,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w600),
+                                      fontWeight: FontWeight.w400),
                                 ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
+                                dense: true,
                                 onTap: () {
                                   Navigator.pop(context, category);
                                 },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              category.name,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          );
-                        }).toList(),
+                              );
+                            }).toList() ??
+                            [],
                       ),
                     ),
                   ),
@@ -593,7 +613,7 @@ class _EditServiceState extends State<EditService> {
             ));
     if (pressedCategory != null) {
       selectedServiceCategory = pressedCategory;
-      serviceCategory = selectedServiceCategory.name;
+      serviceCategory = selectedServiceCategory!.name;
       setState(() {});
     }
   }
@@ -611,7 +631,7 @@ class _EditServiceState extends State<EditService> {
           try {
             servicePrice = double.parse(val).toString();
           } catch (e) {
-            Toast.show(e, context);
+            showToast(message: e.toString());
           }
         }
       },
@@ -621,10 +641,10 @@ class _EditServiceState extends State<EditService> {
             double.parse(val);
             return null;
           } catch (e) {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
     );
   }
@@ -635,7 +655,7 @@ class _EditServiceState extends State<EditService> {
         Expanded(
           child: CurvedButton(
               textColor: Colors.white,
-              text: AppLocalization.of(context).delete,
+              text: AppLocalization.of(context)!.delete,
               backgroundColor: mateRed,
               onPressed: () async {
                 FocusScope.of(context).unfocus();
@@ -647,20 +667,30 @@ class _EditServiceState extends State<EditService> {
         ),
         Expanded(
           child: CurvedButton(
-              textColor: Colors.white,
-              text: AppLocalization.of(context).update,
-              backgroundColor: navyBlue,
-              onPressed: () async {
-                FocusScope.of(context).unfocus();
-                editProduct();
-              }),
+            textColor: Colors.white,
+            text: AppLocalization.of(context)!.update,
+            backgroundColor: navyBlue,
+            onPressed: isAPILoading
+                ? () {}
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    isAPILoading = true;
+                    if (mounted) setState(() {});
+
+                    await editProduct();
+
+                    isAPILoading = false;
+                    if (mounted) setState(() {});
+                  },
+            isLoading: isAPILoading,
+          ),
         ),
       ],
     );
   }
 
-  void editProduct() {
-    if (_formKey.currentState.validate()) {
+  Future<void> editProduct() async {
+    if (_formKey.currentState!.validate()) {
       if (serviceLocalImages.length >= 0) {
         if (validateDropdown()) {
           // setting updated value
@@ -671,34 +701,21 @@ class _EditServiceState extends State<EditService> {
           currentService.serverImages = serviceImagesFromServer;
           currentService.category = serviceCategory;
           currentService.shortDescription = serviceShortDescription;
-          currentService.price = moneyInputNormalizer(servicePrice).toString();
+          currentService.price = moneyInputNormalizer(servicePrice!).toString();
           currentService.isAvailable = serviceIsAvailable;
           currentService.availableFrom = serviceAvailableFrom;
 
-          _auth.editService(currentService).then((value) {
-            Toast.show(
-              AppLocalization.of(context).serviceEditedSuccessfully,
-              context,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
+          await _auth.editService(currentService).then((value) {
+            showToast(
+              message: AppLocalization.of(context)!.serviceEditedSuccessfully,
             );
-            Navigator.pop(context);
+            Navigator.pop(context, "update_item");
           }).catchError((error) {
-            Toast.show(
-              error.toString(),
-              context,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            showToast(message: error.toString());
           });
         }
       } else {
-        Toast.show(
-          AppLocalization.of(context).pleaseAddImage,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
     }
   }
@@ -707,10 +724,7 @@ class _EditServiceState extends State<EditService> {
     if (selectedServiceCategory != null) {
       return true;
     } else {
-      Toast.show(AppLocalization.of(context).selectCategory, context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
+      showToast(message: AppLocalization.of(context)!.selectCategory);
       return false;
     }
   }
@@ -718,7 +732,7 @@ class _EditServiceState extends State<EditService> {
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        serviceIsAvailable = !serviceIsAvailable;
+        serviceIsAvailable = !serviceIsAvailable!;
         setState(() {});
       },
       isChecked: serviceIsAvailable,
@@ -741,7 +755,7 @@ class _EditServiceState extends State<EditService> {
           if (mounted) {
             setState(() {
               serviceAvailableFrom =
-                  DateTime(value.year, value.month, value.day);
+                  DateTime(value!.year, value.month, value.day);
             });
           }
         }).catchError((error) {});
@@ -752,7 +766,7 @@ class _EditServiceState extends State<EditService> {
           child: ListTile(
             dense: true,
             title: Text(
-              formatDate(serviceAvailableFrom),
+              formatDate(serviceAvailableFrom!),
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w600,
@@ -771,25 +785,18 @@ class _EditServiceState extends State<EditService> {
   }
 
   void deleteProduct() async {
-    bool result = await showDialog(
+    bool? result = await showDialog(
       context: context,
       builder: (context) => ConfirmDelete(),
     );
-    if (result) {
-      _auth.deleteService(currentService.id).then((value) {
-        Navigator.pop(context);
-        Toast.show(
-          AppLocalization.of(context).serviceDeletedSuccessfully,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          duration: 3,
-        );
+
+    if (result != null && result) {
+      await _auth.deleteService(currentService.id!).then((value) {
+        Navigator.pop(context, "delete_item");
+        showToast(
+            message: AppLocalization.of(context)!.serviceDeletedSuccessfully);
       }).catchError((error) {
-        Toast.show(error.toString(), context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
+        showToast(message: error.toString());
       });
     }
   }

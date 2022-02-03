@@ -27,7 +27,7 @@ class _IndexState extends State<Index> {
   _IndexState(
       {this.arguments}); // for Checking if User  start App first time or come back from logout button
 
-  bool isIntroDone = false;
+  bool? isIntroDone = false;
   int introScreenCount = 4;
 
   var _pageController = PageController();
@@ -37,7 +37,7 @@ class _IndexState extends State<Index> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {
           isIntroDone = arguments != null ? arguments['isIntroDone'] : false;
@@ -50,7 +50,7 @@ class _IndexState extends State<Index> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        bool result = await showDialogBox(
+        bool? result = await showDialogBox(
           context: context,
           actionOneBgColor: mateRed,
           actionOneTextColor: Colors.white,
@@ -58,10 +58,10 @@ class _IndexState extends State<Index> {
           actionTwoTextColor: blackFont,
           title: "Exit app",
           description: "Are you sure want to exit app?",
-          actionOne: AppLocalization.of(context).exit,
-          actionTwo: AppLocalization.of(context).cancel,
+          actionOne: AppLocalization.of(context)!.exit,
+          actionTwo: AppLocalization.of(context)!.cancel,
         );
-        if (result) {
+        if (result != null && result) {
           SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
         }
         return false;
@@ -69,7 +69,7 @@ class _IndexState extends State<Index> {
       child: Scaffold(
           backgroundColor: navyBlue,
           resizeToAvoidBottomInset: true,
-          body: !isIntroDone ? introScreen() : homeScreen()),
+          body: !isIntroDone! ? introScreen() : homeScreen()),
     );
   }
 
@@ -185,7 +185,7 @@ class _IndexState extends State<Index> {
         textColor: Colors.white,
         color: blackFont,
         height: 50,
-        child: Text(AppLocalization.of(context).login),
+        child: Text(AppLocalization.of(context)!.login),
       ),
     );
   }
@@ -200,7 +200,7 @@ class _IndexState extends State<Index> {
         textColor: Colors.white,
         color: blackFont,
         height: 50,
-        child: Text(AppLocalization.of(context).register),
+        child: Text(AppLocalization.of(context)!.register),
       ),
     );
   }

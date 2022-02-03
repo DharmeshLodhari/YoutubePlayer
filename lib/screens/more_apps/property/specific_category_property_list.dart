@@ -1,11 +1,11 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/PropertyItem.dart';
 import 'property_auth.dart';
@@ -20,7 +20,7 @@ class SpecificCategoryPropertyList extends StatefulWidget {
 
 class _SpecificCategoryPropertyListState
     extends State<SpecificCategoryPropertyList> {
-  PropertyDashboardBloc _propertyDashboardBloc;
+  late PropertyDashboardBloc _propertyDashboardBloc;
 
   List<PropertyItem> propertyItem = [];
   RefreshController _refreshController =
@@ -54,7 +54,7 @@ class _SpecificCategoryPropertyListState
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),
@@ -94,13 +94,9 @@ class _SpecificCategoryPropertyListState
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });

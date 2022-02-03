@@ -1,8 +1,8 @@
 class DownsizedLarge {
-  String height;
-  String size;
-  String url;
-  String width;
+  String? height;
+  String? size;
+  String? url;
+  String? width;
 
   DownsizedLarge({this.height, this.size, this.url, this.width});
 

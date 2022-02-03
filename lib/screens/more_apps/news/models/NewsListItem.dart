@@ -1,7 +1,7 @@
 class NewsListItem {
-  String description;
-  String image;
-  String title;
+  String? description;
+  String? image;
+  String? title;
 
   NewsListItem({this.description, this.image, this.title});
 

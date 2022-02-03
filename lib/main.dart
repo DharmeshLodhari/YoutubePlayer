@@ -8,7 +8,6 @@ import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard_bloc.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_shake_detection.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
@@ -32,7 +31,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'locale/app_localization.dart';
 
@@ -41,15 +39,15 @@ void callbackDispatcher() {
 
   AppConfig();
 
-  Workmanager().executeTask((task, inputData) {
-    try {
-      debugPrint("WorkManager started message synchronization");
-      ChatMessageSynchronizer().syncMessages(fetchFresh: true);
-    } catch (e) {
-      debugPrint("WorkManager exception caught: $e");
-    }
-    return Future.value(true);
-  });
+  // Workmanager().executeTask((task, inputData) {
+  //   try {
+  //     debugPrint("WorkManager started message synchronization");
+  //     ChatMessageSynchronizer().syncMessages(fetchFresh: true);
+  //   } catch (e) {
+  //     debugPrint("WorkManager exception caught: $e");
+  //   }
+  //   return Future.value(true);
+  // });
 }
 
 void main() async {
@@ -86,7 +84,7 @@ void main() async {
       DeviceOrientation.portraitDown,
     ],
   ).then((value) {
-    runZoned(() {
+    runZonedGuarded(() {
       runApp(
         MultiProvider(providers: [
           ChangeNotifierProvider<UserBloc>.value(
@@ -186,7 +184,7 @@ void main() async {
           ),
         ], child: MyApp()),
       );
-    }, onError: (exception, stack) {
+    }, (exception, stack) {
       FirebaseCrashlytics.instance.recordError(exception, stack);
 //    final _auth = AuthService();
 //    _auth.logOut();
@@ -197,11 +195,11 @@ void main() async {
 
 void initializeBackgroundService() {
   AppConfig();
-  Workmanager().initialize(
-    callbackDispatcher, // The top level function, aka callbackDispatcher
-    isInDebugMode:
-        true, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-  );
+  // Workmanager().initialize(
+  //   callbackDispatcher, // The top level function, aka callbackDispatcher
+  //   isInDebugMode:
+  //       true, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  // );
 }
 
 class MyApp extends StatefulWidget {
@@ -234,7 +232,7 @@ class _MyAppState extends State<MyApp> {
     return AppLifeCycle(
       child: LayoutBuilder(builder: (context, constraints) {
         return OrientationBuilder(builder: (context, orientation) {
-          SizerUtil().init(constraints, orientation);
+          SizerUtil.setScreenSize(constraints, orientation);
           return MaterialApp(
             navigatorKey: MyGlobals().navigationKey,
             localizationsDelegates: [
@@ -261,10 +259,12 @@ class _MyAppState extends State<MyApp> {
             theme: ThemeData(
                 primaryColor: navyBlue,
                 fontFamily: "OpenSans",
-                textSelectionHandleColor: navyBlue,
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                backgroundColor: navyBlue),
+                backgroundColor: navyBlue,
+                textSelectionTheme: TextSelectionThemeData(
+                  selectionHandleColor: navyBlue,
+                )),
           );
         });
       }),

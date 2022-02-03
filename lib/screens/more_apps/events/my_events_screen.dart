@@ -13,7 +13,7 @@ class MyEventsScreen extends StatefulWidget {
 class _MyEventsScreenState extends State<MyEventsScreen> {
   int currentIndex = 0;
 
-  EventDashboardBloc eventDashboardBloc;
+  late EventDashboardBloc eventDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
         length: 2,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
       ),
@@ -59,7 +59,7 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
     );
   }
 

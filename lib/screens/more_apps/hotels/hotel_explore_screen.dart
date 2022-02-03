@@ -11,7 +11,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'hotel_tile.dart';
 import 'models/CityData.dart';
@@ -104,9 +103,10 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -117,7 +117,7 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -222,7 +222,9 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -329,12 +331,13 @@ class _HotelExploreScreenState extends State<HotelExploreScreen> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(10)),
                               child: CachedNetworkImage(
-                                imageUrl: item.image,
+                                imageUrl: item.image!,
                                 fit: BoxFit.fill,
                                 color: Colors.black12,
                                 colorBlendMode: BlendMode.darken,
                                 height: double.infinity,
                                 width: double.infinity,
+                                errorWidget: imageErrorWidget,
                               ),
                             )),
                           ),

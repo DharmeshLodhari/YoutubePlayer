@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 
 /// A render object that is bigger on the inside.
 ///
@@ -11,13 +10,13 @@ import 'package:meta/meta.dart';
 /// for more information.
 class UnboundedViewport extends Viewport {
   UnboundedViewport({
-    Key key,
+    Key? key,
     AxisDirection axisDirection = AxisDirection.down,
-    AxisDirection crossAxisDirection,
+    AxisDirection? crossAxisDirection,
     double anchor = 0.0,
-    @required ViewportOffset offset,
-    Key center,
-    double cacheExtent,
+    required ViewportOffset offset,
+    Key? center,
+    double? cacheExtent,
     List<Widget> slivers = const <Widget>[],
   })  : _anchor = anchor,
         super(
@@ -61,12 +60,12 @@ class UnboundedRenderViewport extends RenderViewport {
   /// Creates a viewport for [RenderSliver] objects.
   UnboundedRenderViewport({
     AxisDirection axisDirection = AxisDirection.down,
-    @required AxisDirection crossAxisDirection,
-    @required ViewportOffset offset,
+    required AxisDirection crossAxisDirection,
+    required ViewportOffset offset,
     double anchor = 0.0,
-    List<RenderSliver> children,
-    RenderSliver center,
-    double cacheExtent,
+    List<RenderSliver>? children,
+    RenderSliver? center,
+    double? cacheExtent,
   })  : _anchor = anchor,
         super(
             axisDirection: axisDirection,
@@ -81,8 +80,8 @@ class UnboundedRenderViewport extends RenderViewport {
   double _anchor;
 
   // Out-of-band data computed during layout.
-  double _minScrollExtent;
-  double _maxScrollExtent;
+  late double _minScrollExtent;
+  late double _maxScrollExtent;
   bool _hasVisualOverflow = false;
 
   /// This value is set during layout based on the [CacheExtentStyle].
@@ -90,14 +89,13 @@ class UnboundedRenderViewport extends RenderViewport {
   /// When the style is [CacheExtentStyle.viewport], it is the main axis extent
   /// of the viewport multiplied by the requested cache extent, which is still
   /// expressed in pixels.
-  double _calculatedCacheExtent;
+  double? _calculatedCacheExtent;
 
   @override
   double get anchor => _anchor;
 
   @override
   set anchor(double value) {
-    assert(value != null);
     if (value == _anchor) return;
     _anchor = value;
     markNeedsLayout();
@@ -120,9 +118,7 @@ class UnboundedRenderViewport extends RenderViewport {
   }
 
   @override
-  Rect describeSemanticsClip(RenderSliver child) {
-    assert(axis != null);
-
+  Rect describeSemanticsClip(RenderSliver? child) {
     if (_calculatedCacheExtent == null) {
       return semanticBounds;
     }
@@ -131,15 +127,15 @@ class UnboundedRenderViewport extends RenderViewport {
       case Axis.vertical:
         return Rect.fromLTRB(
           semanticBounds.left,
-          semanticBounds.top - _calculatedCacheExtent,
+          semanticBounds.top - _calculatedCacheExtent!,
           semanticBounds.right,
-          semanticBounds.bottom + _calculatedCacheExtent,
+          semanticBounds.bottom + _calculatedCacheExtent!,
         );
       default:
         return Rect.fromLTRB(
-          semanticBounds.left - _calculatedCacheExtent,
+          semanticBounds.left - _calculatedCacheExtent!,
           semanticBounds.top,
-          semanticBounds.right + _calculatedCacheExtent,
+          semanticBounds.right + _calculatedCacheExtent!,
           semanticBounds.bottom,
         );
     }
@@ -155,10 +151,10 @@ class UnboundedRenderViewport extends RenderViewport {
       offset.applyContentDimensions(0.0, 0.0);
       return;
     }
-    assert(center.parent == this);
+    assert(center!.parent == this);
 
-    double mainAxisExtent;
-    double crossAxisExtent;
+    late double mainAxisExtent;
+    late double crossAxisExtent;
     switch (axis) {
       case Axis.vertical:
         mainAxisExtent = size.height;
@@ -170,12 +166,11 @@ class UnboundedRenderViewport extends RenderViewport {
         break;
     }
 
-    final centerOffsetAdjustment = center.centerOffsetAdjustment;
+    final centerOffsetAdjustment = center!.centerOffsetAdjustment;
 
     double correction;
     var count = 0;
     do {
-      assert(offset.pixels != null);
       correction = _attemptLayout(mainAxisExtent, crossAxisExtent,
           offset.pixels + centerOffsetAdjustment);
       if (correction != 0.0) {
@@ -242,18 +237,18 @@ class UnboundedRenderViewport extends RenderViewport {
         _calculatedCacheExtent = cacheExtent;
         break;
       case CacheExtentStyle.viewport:
-        _calculatedCacheExtent = mainAxisExtent * cacheExtent;
+        _calculatedCacheExtent = mainAxisExtent * cacheExtent!;
         break;
     }
 
-    final double fullCacheExtent = mainAxisExtent + 2 * _calculatedCacheExtent;
-    final double centerCacheOffset = centerOffset + _calculatedCacheExtent;
+    final double fullCacheExtent = mainAxisExtent + 2 * _calculatedCacheExtent!;
+    final double centerCacheOffset = centerOffset + _calculatedCacheExtent!;
     final double reverseDirectionRemainingCacheExtent =
         centerCacheOffset.clamp(0.0, fullCacheExtent);
     final double forwardDirectionRemainingCacheExtent =
         (fullCacheExtent - centerCacheOffset).clamp(0.0, fullCacheExtent);
 
-    final RenderSliver leadingNegativeChild = childBefore(center);
+    final RenderSliver? leadingNegativeChild = childBefore(center!);
 
     if (leadingNegativeChild != null) {
       // negative scroll offsets
@@ -268,8 +263,8 @@ class UnboundedRenderViewport extends RenderViewport {
         growthDirection: GrowthDirection.reverse,
         advance: childBefore,
         remainingCacheExtent: reverseDirectionRemainingCacheExtent,
-        cacheOrigin:
-            (mainAxisExtent - centerOffset).clamp(-_calculatedCacheExtent, 0.0),
+        cacheOrigin: (mainAxisExtent - centerOffset)
+            .clamp(-_calculatedCacheExtent!, 0.0),
       );
       if (result != 0.0) return -result;
     }
@@ -289,7 +284,7 @@ class UnboundedRenderViewport extends RenderViewport {
       growthDirection: GrowthDirection.forward,
       advance: childAfter,
       remainingCacheExtent: forwardDirectionRemainingCacheExtent,
-      cacheOrigin: centerOffset.clamp(-_calculatedCacheExtent, 0.0),
+      cacheOrigin: centerOffset.clamp(-_calculatedCacheExtent!, 0.0),
     );
   }
 

@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 class CustomizedDropDownField extends StatefulWidget {
   Widget child;
   String title;
-  Color titleColor;
+  Color? titleColor;
 
   CustomizedDropDownField(
-      {@required this.child, @required this.title, this.titleColor});
+      {required this.child, required this.title, this.titleColor});
 
   @override
   _CustomizedDropDownFieldState createState() =>

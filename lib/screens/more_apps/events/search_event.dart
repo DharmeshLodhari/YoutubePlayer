@@ -29,9 +29,9 @@ class _SearchEventState extends State<SearchEvent> {
     "2007"
   ];
 
-  String selectedMovieCategory;
-  String selectedMovieYear;
-  int selectedRating;
+  String? selectedMovieCategory;
+  String? selectedMovieYear;
+  int? selectedRating;
   RangeValues selectedPriceValue = RangeValues(5, 56);
 
   List<PartialEventItem> eventList = [];
@@ -76,7 +76,7 @@ class _SearchEventState extends State<SearchEvent> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -180,7 +180,9 @@ class _SearchEventState extends State<SearchEvent> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: TextFormField(
           onFieldSubmitted: (val) {
@@ -313,7 +315,7 @@ class _SearchEventState extends State<SearchEvent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          AppLocalization.of(context).category,
+          AppLocalization.of(context)!.category,
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
         SizedBox(
@@ -330,7 +332,7 @@ class _SearchEventState extends State<SearchEvent> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedMovieCategory != null ? selectedMovieCategory : "",
+              selectedMovieCategory != null ? selectedMovieCategory! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -450,7 +452,7 @@ class _SearchEventState extends State<SearchEvent> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedMovieYear != null ? selectedMovieYear : "",
+              selectedMovieYear != null ? selectedMovieYear! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -592,7 +594,7 @@ class _SearchEventState extends State<SearchEvent> {
   }
 
   Widget movieRatingButton(StateSetter bottomSheetSetState,
-      {bool isSelected = false, int index}) {
+      {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),

@@ -13,8 +13,8 @@ import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
 class MessageTile extends StatefulWidget {
-  final PartialMessage partialMessage;
-  Widget expandedWidget = Container();
+  final PartialMessage? partialMessage;
+  Widget? expandedWidget = Container();
 
   MessageTile({this.partialMessage, this.expandedWidget});
 
@@ -24,9 +24,9 @@ class MessageTile extends StatefulWidget {
 }
 
 class _MessageTileState extends State<MessageTile> {
-  UserBloc userBloc;
+  late UserBloc userBloc;
   final _messageAuth = MessageAuth();
-  PartialMessage partialMessage;
+  PartialMessage? partialMessage;
 
   _MessageTileState({this.partialMessage});
 
@@ -52,7 +52,7 @@ class _MessageTileState extends State<MessageTile> {
                   trailing: getTrailing(),
                   subtitle: getSubtitle()),
             ),
-            widget.expandedWidget,
+            widget.expandedWidget!,
           ],
         ),
       ),
@@ -73,17 +73,18 @@ class _MessageTileState extends State<MessageTile> {
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).pushNamed("/photo-viewer",
-              arguments: partialMessage.senderAvatar);
+              arguments: partialMessage!.senderAvatar);
         },
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: partialMessage.senderAvatar,
+            imageUrl: partialMessage!.senderAvatar!,
             height: 48,
             width: 48,
+            errorWidget: imageErrorWidget,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
-            placeholder: (context, url) => partialMessage.senderAvatar == ""
+            placeholder: (context, url) => partialMessage!.senderAvatar == ""
                 ? Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
@@ -96,10 +97,10 @@ class _MessageTileState extends State<MessageTile> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2.0),
       child: Text(
-        partialMessage.subject,
+        partialMessage!.subject!,
         maxLines: 1,
         style: TextStyle(
-            color: partialMessage.isRead ? darkGrey : Colors.black,
+            color: partialMessage!.isRead! ? darkGrey : Colors.black,
             fontWeight: FontWeight.bold,
             fontSize: 15),
       ),
@@ -111,10 +112,10 @@ class _MessageTileState extends State<MessageTile> {
     // or isSender is seeing message we got that user and check if it is recipient then
     // we are showing and modifying star icon by message's isStarredByRecipient property and if it sender then
     // we are showing and modifying star icon by message's isStarredBySender property
-    bool isRecipient = userBloc.user.userName == partialMessage.recipient;
+    bool isRecipient = userBloc.user.userName == partialMessage!.recipient;
     return IconButton(
       icon: isRecipient
-          ? partialMessage.isStarredByRecipient
+          ? partialMessage!.isStarredByRecipient!
               ? Icon(
                   SlydoAppIcon.star,
                   color: starYellow,
@@ -125,7 +126,7 @@ class _MessageTileState extends State<MessageTile> {
                   color: greyBorderColor,
                   size: 20,
                 )
-          : partialMessage.isStarredBySender
+          : partialMessage!.isStarredBySender!
               ? Icon(
                   SlydoAppIcon.star,
                   color: starYellow,
@@ -138,20 +139,20 @@ class _MessageTileState extends State<MessageTile> {
                 ),
       onPressed: () async {
         var action = isRecipient
-            ? partialMessage.isStarredByRecipient
-                ? AppLocalization.of(context).unstar
-                : AppLocalization.of(context).star
-            : partialMessage.isStarredBySender
-                ? AppLocalization.of(context).unstar
-                : AppLocalization.of(context).star;
-        await _messageAuth.updateMessage(partialMessage.id, action);
+            ? partialMessage!.isStarredByRecipient!
+                ? AppLocalization.of(context)!.unstar
+                : AppLocalization.of(context)!.star
+            : partialMessage!.isStarredBySender!
+                ? AppLocalization.of(context)!.unstar
+                : AppLocalization.of(context)!.star;
+        await _messageAuth.updateMessage(partialMessage!.id!, action);
 
         if (isRecipient) {
-          partialMessage.isStarredByRecipient =
-              partialMessage.isStarredByRecipient ? false : true;
+          partialMessage!.isStarredByRecipient =
+              partialMessage!.isStarredByRecipient! ? false : true;
         } else {
-          partialMessage.isStarredBySender =
-              partialMessage.isStarredBySender ? false : true;
+          partialMessage!.isStarredBySender =
+              partialMessage!.isStarredBySender! ? false : true;
         }
         if (mounted) {
           setState(() {});
@@ -166,14 +167,14 @@ class _MessageTileState extends State<MessageTile> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          partialMessage.subtitle,
+          partialMessage!.subtitle!,
           style: TextStyle(
             color: darkGrey,
             fontSize: 12,
           ),
         ),
         Text(
-          partialMessage.timeStamp,
+          partialMessage!.timeStamp!,
           style: TextStyle(
             color: darkGrey,
             fontSize: 10,

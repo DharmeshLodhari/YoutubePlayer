@@ -6,11 +6,11 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
@@ -22,8 +22,8 @@ class VirtualAccountDetail extends StatefulWidget {
 class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
   final _formKeyTwo = GlobalKey<FormState>();
 
-  UserBloc userBloc;
-  BankAccountBloc bankAccountBloc;
+  UserBloc? userBloc;
+  BankAccountBloc? bankAccountBloc;
 
   String errorMessage = "";
 
@@ -32,8 +32,12 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
   bool isLoading = false;
   bool isAccountExist = false;
   bool isKYCInProcess = false;
+  String? _selectedTier;
+  String? _currentTier;
 
-  VirtualAccount virtualAccount;
+  VirtualAccount? virtualAccount;
+
+  List<String> tiers = [];
 
   @override
   void initState() {
@@ -59,8 +63,17 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     } else {
       isAccountExist = true;
       if (isFromServer) {
-        await DatabaseHelper().saveVirtualAccount(virtualAccount);
+        await DatabaseHelper().saveVirtualAccount(virtualAccount!);
       }
+    }
+
+    _currentTier = virtualAccount?.accountTier?.tierType;
+
+    debugPrint("CURRENT TIER => $_currentTier");
+    if (_currentTier == "1") {
+      _selectedTier = "Tier 2";
+    } else if (_currentTier == "2") {
+      _selectedTier = "Tier 3";
     }
 
     /// TODO: REMOVE THIS COMMENT AND LINES WHEN IMPLEMENTATION DONE FOR KYC
@@ -81,7 +94,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -105,7 +118,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         },
       ),
       title: Text(
-        "Account Details",
+        "Wallet Details",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -165,11 +178,15 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       "amount": moneyInputNormalizer(amount.toString()),
       "currency": "NGN"
     };
-    showDialog(
-        context: context,
-        builder: (context) => Center(child: CircularLoadingIndicator()));
 
-    if (_formKeyTwo.currentState.validate()) {
+    showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: CircularLoadingIndicator(),
+      ),
+    );
+
+    if (_formKeyTwo.currentState!.validate()) {
       await PaymentAndBankingAuth().topUpAccountByBank(data).then((value) {
         if (value != null) {
           Navigator.pop(context);
@@ -180,7 +197,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       }).catchError((e) {
         Navigator.pop(context);
         debugPrint(e);
-        Toast.show(e, context, gravity: Toast.BOTTOM, textColor: Colors.white);
+        showToast(message: e);
       });
     } else {
       Navigator.pop(context);
@@ -232,18 +249,64 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                     thickness: 1,
                     color: dividerColor,
                   ),
-                  Container(
-                    padding: EdgeInsets.only(
-                        left: 16, right: 16, top: 16, bottom: 20),
-                    child: Column(
-                      children: [
-                        getAccountName(),
-                        SizedBox(
-                          height: 8,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                        child: Column(
+                          children: [
+                            getSlydoBankAccountDetail(),
+                            SizedBox(
+                              height: 24,
+                            ),
+                            getAccountName(),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            getAccountNumber(),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            getTierInstruction(),
+                          ],
                         ),
-                        getAccountNumber(),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        height: 32,
+                      ),
+
+                      /// TODO:- To be enabled in future version
+                      // Divider(
+                      //   thickness: 1,
+                      //   color: dividerColor,
+                      // ),
+                      // SizedBox(
+                      //   height: 16,
+                      // ),
+                      // Container(
+                      //   padding:
+                      //       EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                      //   child: Column(
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     children: [
+                      //       getUpgradeAccountTitle(),
+                      //       SizedBox(
+                      //         height: 16,
+                      //       ),
+                      //       // getTierSelection(),
+                      //       getTierDropDown(),
+                      //       SizedBox(
+                      //         height: 16,
+                      //       ),
+                      //       getUpdateTierButton(),
+                      //       SizedBox(
+                      //         height: 16,
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ],
               ),
@@ -251,25 +314,138 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     );
   }
 
+  Widget getSlydoBankAccountDetail() {
+    return Container(
+      child: Column(
+        children: [
+          Text(
+            "Please transfer funds into your virtual account to fund your slydo wallet",
+            style: TextStyle(
+                color: naturalGreen, fontWeight: FontWeight.w600, fontSize: 14),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getUpgradeAccountTitle() {
+    return Container(
+      child: Column(
+        children: [
+          Text(
+            "Upgrade Account",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: blackFont, fontWeight: FontWeight.w600, fontSize: 16),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getTierInstruction() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text("Tier "),
+            ),
+            Expanded(
+                child: Text(
+              "1",
+              style: TextStyle(
+                  color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
+            )),
+            SizedBox(
+              width: 20,
+            )
+          ],
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Text("Account limit"),
+            ),
+            Expanded(
+              child: Text(
+                virtualAccount?.accountTier?.cumulativeBalance ?? "",
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
+              ),
+            ),
+            SizedBox(
+              width: 20,
+            )
+          ],
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Text("Maximum pay limit"),
+            ),
+            Expanded(
+              child: Text(
+                virtualAccount?.accountTier?.dailyCumulativeTransactionLimit ??
+                    "",
+                style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
+              ),
+            ),
+            SizedBox(
+              width: 20,
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget getUpdateTierButton() {
+    if (_currentTier == "3") {
+      return Container();
+    }
+
+    return CurvedButton(
+      backgroundColor: navyBlue,
+      textColor: Colors.white,
+      text: "Update",
+      onPressed: () {
+        Navigator.of(context).pushNamed("/add-bvn-number", arguments: {
+          "account": virtualAccount,
+          "selected_tier": _selectedTier
+        });
+      },
+    );
+  }
+
   Widget getBankAccountName() {
     return ListTile(
-      title: Text(virtualAccount.financialInstitution.name ?? "",
+      title: Text(virtualAccount!.financialInstitution!.name ?? "",
           style: TextStyle(
               fontSize: 14, color: blackFont, fontWeight: FontWeight.w600)),
       leading: CachedNetworkImage(
-        imageUrl: virtualAccount.financialInstitution.logo ?? "",
+        imageUrl: virtualAccount!.financialInstitution!.logo ?? "",
         height: 36,
         width: 36,
+        errorWidget: imageErrorWidget,
       ),
       trailing: getCopyButton(onTap: () {
         Clipboard.setData(new ClipboardData(
             text:
-                "Bank name: ${virtualAccount.financialInstitution.name}\nAccount name: ${virtualAccount.accountName}\nAccount number: ${virtualAccount.accountNumber}"));
-        Toast.show("Account details copied !!", context,
-            gravity: Toast.BOTTOM,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: Colors.black,
-            textColor: Colors.white);
+                "Bank name: ${virtualAccount!.financialInstitution!.name}\nAccount name: ${virtualAccount!.accountName}\nAccount number: ${virtualAccount!.accountNumber}"));
+        showToast(message: "Account details copied !!");
       }),
     );
   }
@@ -286,7 +462,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         ),
         Expanded(
           child: Text(
-            virtualAccount.accountName ?? "",
+            virtualAccount!.accountName ?? "",
             style: TextStyle(
                 color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
           ),
@@ -294,12 +470,8 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         getCopyButton(
             onTap: () {
               Clipboard.setData(
-                  new ClipboardData(text: "${virtualAccount.accountName}"));
-              Toast.show("Account name copied !!", context,
-                  gravity: Toast.BOTTOM,
-                  duration: Toast.LENGTH_LONG,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white);
+                  new ClipboardData(text: "${virtualAccount!.accountName}"));
+              showToast(message: "Account name copied !!");
             },
             size: 17)
       ],
@@ -318,7 +490,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         ),
         Expanded(
           child: Text(
-            virtualAccount.accountNumber ?? "",
+            virtualAccount!.accountNumber ?? "",
             style: TextStyle(
                 color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
           ),
@@ -326,21 +498,17 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         getCopyButton(
             onTap: () {
               Clipboard.setData(
-                  new ClipboardData(text: "${virtualAccount.accountNumber}"));
-              Toast.show("Account number copied !!", context,
-                  gravity: Toast.BOTTOM,
-                  duration: Toast.LENGTH_LONG,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white);
+                  new ClipboardData(text: "${virtualAccount!.accountNumber}"));
+              showToast(message: "Account number copied !!");
             },
             size: 17)
       ],
     );
   }
 
-  Widget getCopyButton({Function onTap, double size = 20}) {
+  Widget getCopyButton({Function? onTap, double size = 20}) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap as void Function()?,
       child: Icon(
         Icons.copy,
         color: blackFont,
@@ -349,21 +517,113 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     );
   }
 
-  Widget alreadyHaveReference() {
-    return GestureDetector(
-      child: Text(
-        "Already have reference?",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 14,
-          color: navyBlue,
-          fontWeight: FontWeight.w600,
+  Widget getTierDropDown() {
+    debugPrint("Current ==> $_currentTier");
+
+    if (_currentTier == "3") {
+      return Container();
+    }
+
+    return CustomizedDropDownField(
+      title: "Select Tier",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          _selectedTier ?? "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectTier();
+        },
       ),
-      onTap: () {
-        Navigator.of(context).pushNamed("/already-have-reference");
-      },
     );
+  }
+
+  void selectTier() async {
+    if (_currentTier == "1") {
+      tiers = ["Tier 2", "Tier 3"];
+    } else if (_currentTier == "2") {
+      tiers = ["Tier 3"];
+    } else {
+      tiers = [];
+    }
+
+    final pressedCondition = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: tiers.map<Widget>((item) {
+                          if (_selectedTier == item) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      item,
+                                      style: TextStyle(
+                                          color: navyBlue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, item);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              item,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, item);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedCondition != null) {
+      _selectedTier = pressedCondition;
+      setState(() {});
+    }
   }
 
   Widget amountUserGetMsg() {

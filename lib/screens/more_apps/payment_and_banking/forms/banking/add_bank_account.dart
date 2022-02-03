@@ -7,7 +7,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../payment_and_banking_auth.dart';
@@ -19,7 +18,7 @@ class AddAccount extends StatefulWidget {
 
 class _AddAccountState extends State<AddAccount> {
   final _auth = PaymentAndBankingAuth();
-  UserBloc userBloc;
+  late UserBloc userBloc;
   final _formKey = GlobalKey<FormState>();
   String errorMessage = "";
 
@@ -41,7 +40,7 @@ class _AddAccountState extends State<AddAccount> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -74,56 +73,67 @@ class _AddAccountState extends State<AddAccount> {
   Widget scaffoldBody() {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 8,
-              child: Form(
-                key: _formKey,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: <Widget>[
-                      flexibleSpace(),
-                      Text(
-                        AppLocalization.of(context).bankAccountTerms,
-                        style: TextStyle(color: darkGrey, fontSize: 14),
-                      ),
-                      flexibleSpace(flex: 2),
-                      getBankNameDropDownMenu(),
-                      flexibleSpace(),
-                      getAccountName(),
-                      flexibleSpace(),
-                      getAccountNumber(),
-                      flexibleSpace(),
-                      checkButton(),
-                      flexibleSpace(),
-                      errorMessage != ""
-                          ? Text(
+      child: Column(
+        children: [
+          Form(
+            key: _formKey,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Text(
+                    AppLocalization.of(context)!.bankAccountTerms,
+                    style: TextStyle(color: darkGrey, fontSize: 14),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  getBankNameDropDownMenu(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  getAccountName(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  getAccountNumber(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  checkButton(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  errorMessage != ""
+                      ? Column(
+                          children: [
+                            Text(
                               errorMessage,
                               style: TextStyle(color: mateRed, fontSize: 14),
-                            )
-                          : Container(),
-                      getUserAgreeCheckBoxWidget(),
-                      flexibleSpace(flex: 2),
-                      isUserAgree
-                          ? getSubmitButton(userBloc.user.userName)
-                          : Container(
-                              height: 42,
                             ),
-                    ],
+                            SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        )
+                      : Container(),
+                  getUserAgreeCheckBoxWidget(),
+                  SizedBox(
+                    height: 40,
                   ),
-                ),
+                  isUserAgree
+                      ? getSubmitButton(userBloc.user.userName)
+                      : Container(
+                          height: 42,
+                        ),
+                ],
               ),
             ),
-            flexibleSpace(flex: 2)
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -133,7 +143,7 @@ class _AddAccountState extends State<AddAccount> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppLocalization.of(context).bank,
+          AppLocalization.of(context)!.bank,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
         SizedBox(
@@ -163,15 +173,15 @@ class _AddAccountState extends State<AddAccount> {
             ),
             hint: Padding(
               padding: const EdgeInsets.only(left: 16.0),
-              child: Text(AppLocalization.of(context).bank),
+              child: Text(AppLocalization.of(context)!.bank),
             ),
             iconSize: 24,
             elevation: 16,
             style: TextStyle(color: Colors.black),
-            onChanged: (String val) {
+            onChanged: (String? val) {
               if (mounted) {
                 setState(() {
-                  bankName = val.trim();
+                  bankName = val!.trim();
                 });
               }
             },
@@ -198,9 +208,9 @@ class _AddAccountState extends State<AddAccount> {
 
   Widget getAccountName() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).accountNameHint,
+      labelText: AppLocalization.of(context)!.accountNameHint,
       validator: (val) => val.length < 5
-          ? AppLocalization.of(context).validationTextMessage
+          ? AppLocalization.of(context)!.validationTextMessage
           : null,
       onChanged: (val) {
         if (mounted) {
@@ -214,10 +224,10 @@ class _AddAccountState extends State<AddAccount> {
 
   Widget getAccountNumber() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).accountNumber,
+      labelText: AppLocalization.of(context)!.accountNumber,
       keyboardType: TextInputType.number,
       validator: (val) => val.length < 10
-          ? AppLocalization.of(context).validationTextMessage1
+          ? AppLocalization.of(context)!.validationTextMessage1
           : null,
       onChanged: (val) {
         if (mounted) {
@@ -234,7 +244,7 @@ class _AddAccountState extends State<AddAccount> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          AppLocalization.of(context).setDefaultAccountMsg,
+          AppLocalization.of(context)!.setDefaultAccountMsg,
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
@@ -255,21 +265,21 @@ class _AddAccountState extends State<AddAccount> {
     );
   }
 
-  Widget getSubmitButton(String userName) {
+  Widget getSubmitButton(String? userName) {
     return CurvedButton(
       onPressed: () {
         onSubmit(userName);
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context).submitButton,
+      text: AppLocalization.of(context)!.submitButton,
     );
   }
 
-  void onSubmit(String userName) async {
+  void onSubmit(String? userName) async {
     final BankAccountBloc bankAccountBloc =
         Provider.of<BankAccountBloc>(context, listen: false);
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       Map data = {
         "customer_username": userName,
         "bank": bankName,
@@ -277,10 +287,14 @@ class _AddAccountState extends State<AddAccount> {
         "account_number": accountNumber,
         "is_default": isDefault,
       };
-      bool wasSuccessful = await _auth.addBankAccount(data);
+      bool wasSuccessful = false;
+
+      try {
+        wasSuccessful = await _auth.addBankAccount(data);
+      } catch (error) {}
       if (wasSuccessful) {
         BankAccount _bankAccount;
-        _auth.getBankAccounts().then((accounts) {
+        await _auth.getBankAccounts().then((accounts) {
           try {
             _bankAccount = accounts[0];
             if (_bankAccount != null) {
@@ -293,19 +307,10 @@ class _AddAccountState extends State<AddAccount> {
       } else {
         if (mounted) {
           setState(() {
-            errorMessage = AppLocalization.of(context).errorMsg1;
+            errorMessage = AppLocalization.of(context)!.errorMsg1;
           });
         }
       }
-    } else {
-      var msg = AppLocalization.of(context).errorMsg2;
-      Toast.show(
-        msg,
-        context,
-        gravity: Toast.BOTTOM,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
     }
   }
 
@@ -355,7 +360,7 @@ class _AddAccountState extends State<AddAccount> {
           ),
           Expanded(
               child: Text(
-            AppLocalization.of(context).bankAccountUserAgreeTerm,
+            AppLocalization.of(context)!.bankAccountUserAgreeTerm,
             style: TextStyle(color: blackFont, fontSize: 14),
           ))
         ],

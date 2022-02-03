@@ -6,11 +6,10 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class SelectPlanAndDecoderNumber extends StatefulWidget {
-  Map<String, dynamic> arguments;
+  Map<String, dynamic>? arguments;
 
   SelectPlanAndDecoderNumber({this.arguments});
   @override
@@ -29,13 +28,13 @@ class _SelectPlanAndDecoderNumberState
     {"name": "DStv Padi", "price": "₦1,850"},
   ];
 
-  Map<String, dynamic> provider;
+  Map<String, dynamic>? provider;
 
-  CablePlan selectedPlan;
+  CablePlan? selectedPlan;
 
   @override
   void initState() {
-    provider = widget.arguments['provider'];
+    provider = widget.arguments!['provider'];
     super.initState();
   }
 
@@ -44,7 +43,7 @@ class _SelectPlanAndDecoderNumberState
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -142,7 +141,7 @@ class _SelectPlanAndDecoderNumberState
     return Row(
       children: [
         Image.asset(
-          provider['image'],
+          provider!['image'],
           fit: BoxFit.fill,
           height: 80,
           width: 80,
@@ -151,7 +150,7 @@ class _SelectPlanAndDecoderNumberState
           width: 8,
         ),
         Text(
-          provider['name'],
+          provider!['name'],
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
         ),
       ],
@@ -182,7 +181,7 @@ class _SelectPlanAndDecoderNumberState
             title: Row(
               children: [
                 Text(
-                  selectedPlan != null ? selectedPlan.name : "",
+                  selectedPlan != null ? selectedPlan!.name! : "",
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -195,7 +194,7 @@ class _SelectPlanAndDecoderNumberState
                   width: 2,
                 )),
                 Text(
-                  selectedPlan != null ? selectedPlan.price : "",
+                  selectedPlan != null ? selectedPlan!.price! : "",
                   overflow: TextOverflow.fade,
                   softWrap: false,
                   style: TextStyle(
@@ -250,10 +249,7 @@ class _SelectPlanAndDecoderNumberState
                       Center(child: CircularLoadingIndicator()));
 
               await Future.delayed(Duration(seconds: 2)).then((value) {
-                Toast.show("Payment Completed Successfully !", context,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                    duration: Toast.LENGTH_LONG);
+                showToast(message: "Payment Completed Successfully !");
 
                 Navigator.popUntil(
                     context, ModalRoute.withName("/utility-dashboard"));

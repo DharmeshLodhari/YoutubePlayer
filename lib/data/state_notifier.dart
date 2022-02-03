@@ -8,7 +8,7 @@ import 'package:Slydo/screens/more_apps/taxi/model/DirectionsModal.dart';
 import 'package:Slydo/screens/more_apps/taxi/model/PlaceModal.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/secure_screen.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
 class UserBloc extends ChangeNotifier {
@@ -42,7 +42,7 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  set userAbout(UserAbout userAbout) {
+  set userAbout(UserAbout? userAbout) {
     _user.userAbout = userAbout;
     notifyListeners();
   }
@@ -52,28 +52,27 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateProfileAvatar(String url) {
+  void updateProfileAvatar(String? url) {
     _user.avatar = url;
     notifyListeners();
   }
 
   void removeProfileAvatar() {
-    _user.avatar =
-        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
+    _user.avatar = defaultImage;
     notifyListeners();
   }
 
   void removeProfileCover() {
-    _user.userAbout.wallpaper = "";
+    _user.userAbout!.wallpaper = "";
     notifyListeners();
   }
 
-  UserAbout get userAbout => _user.userAbout;
+  UserAbout? get userAbout => _user.userAbout;
 }
 
 class BankAccountBloc extends ChangeNotifier {
   // This block notify's the change in user status and pass it round the app.
-  BankAccount _bankAccount = BankAccount(
+  BankAccount? _bankAccount = BankAccount(
       uuid: null,
       bankAvatar: null,
       bankName: null,
@@ -81,10 +80,10 @@ class BankAccountBloc extends ChangeNotifier {
       accountNumber: null);
 
   // Getter
-  BankAccount get bankAccount => _bankAccount;
+  BankAccount? get bankAccount => _bankAccount;
 
   // Setter
-  set bankAccount(BankAccount val) {
+  set bankAccount(BankAccount? val) {
     _bankAccount = val;
     notifyListeners();
   }
@@ -92,7 +91,7 @@ class BankAccountBloc extends ChangeNotifier {
 
 class CustomerProfileBloc extends ChangeNotifier {
   // This block notify's the change in user status and pass it round the app.
-  CustomerProfile _customer = CustomerProfile(
+  CustomerProfile? _customer = CustomerProfile(
     fullName: null,
     userName: null,
     avatar: null,
@@ -100,10 +99,10 @@ class CustomerProfileBloc extends ChangeNotifier {
   );
 
   // Getter
-  CustomerProfile get customer => _customer;
+  CustomerProfile? get customer => _customer;
 
   // Setter
-  set customer(CustomerProfile val) {
+  set customer(CustomerProfile? val) {
     _customer = val;
     notifyListeners();
   }
@@ -166,7 +165,7 @@ class BackgroundFetchStopBloc extends ChangeNotifier {
 
 class BasketBloc extends ChangeNotifier {
   // will accept products and services
-  List<Map<String, dynamic>> _items = List<Map<String, dynamic>>();
+  List<Map<String, dynamic>> _items = [];
   int _total = 0;
 
   int get total => _total;
@@ -179,12 +178,12 @@ class BasketBloc extends ChangeNotifier {
   List get items => _items;
 
   set items(List value) {
-    _items = value;
+    _items = value as List<Map<String, dynamic>>;
     notifyListeners();
   }
 
   // this will add the product or service in the cart;
-  void addItemToCart({@required var item, @required String type}) {
+  void addItemToCart({required var item, required String type}) {
     addItemInBasketWithQty(item, type);
     notifyListeners();
   }
@@ -246,60 +245,60 @@ class BasketBloc extends ChangeNotifier {
 }
 
 class AddressBloc extends ChangeNotifier {
-  Address _address;
+  Address? _address;
 
-  Address get address => _address;
+  Address? get address => _address;
 
-  set address(Address value) {
+  set address(Address? value) {
     _address = value;
     notifyListeners();
   }
 }
 
 class TaxiBloc extends ChangeNotifier {
-  PlaceModal _startingPoint;
+  PlaceModal? _startingPoint;
 
-  PlaceModal _destinationPoint;
+  PlaceModal? _destinationPoint;
 
-  Map<String, dynamic> _rideDetail;
+  Map<String, dynamic>? _rideDetail;
 
-  Directions _startingPointToDestinationDirections;
+  Directions? _startingPointToDestinationDirections;
 
-  Directions _driverToStartingPointDirections;
+  Directions? _driverToStartingPointDirections;
 
-  PlaceModal get startingPoint => _startingPoint;
+  PlaceModal? get startingPoint => _startingPoint;
 
-  PlaceModal get destinationPoint => _destinationPoint;
+  PlaceModal? get destinationPoint => _destinationPoint;
 
-  Map<String, dynamic> get rideDetail => _rideDetail;
+  Map<String, dynamic>? get rideDetail => _rideDetail;
 
-  Directions get startingPointToDestinationDirections =>
+  Directions? get startingPointToDestinationDirections =>
       _startingPointToDestinationDirections;
 
-  Directions get driverToStartingPointDirections =>
+  Directions? get driverToStartingPointDirections =>
       _driverToStartingPointDirections;
 
-  set startingPoint(PlaceModal value) {
+  set startingPoint(PlaceModal? value) {
     _startingPoint = value;
     notifyListeners();
   }
 
-  set destinationPoint(PlaceModal value) {
+  set destinationPoint(PlaceModal? value) {
     _destinationPoint = value;
     notifyListeners();
   }
 
-  set rideDetail(Map<String, dynamic> value) {
+  set rideDetail(Map<String, dynamic>? value) {
     _rideDetail = value;
     notifyListeners();
   }
 
-  set startingPointToDestinationDirections(Directions value) {
+  set startingPointToDestinationDirections(Directions? value) {
     _startingPointToDestinationDirections = value;
     notifyListeners();
   }
 
-  set driverToStartingPointDirections(Directions value) {
+  set driverToStartingPointDirections(Directions? value) {
     _driverToStartingPointDirections = value;
     notifyListeners();
   }
@@ -315,9 +314,9 @@ class DashboardBloc extends ChangeNotifier {
 
   set index(int value) {
     if (value == 1) {
-      secureScreen();
+      // secureScreen();
     } else {
-      unsecureScreen();
+      // unsecureScreen();
     }
     _index = value;
     _pageController.animateToPage(_index,
@@ -327,12 +326,12 @@ class DashboardBloc extends ChangeNotifier {
 }
 
 class AddInvoiceBloc extends ChangeNotifier {
-  List<InvoiceItem> _items = List<InvoiceItem>();
+  List<InvoiceItem?> _items = [];
   int _total = 0;
 
-  List<InvoiceItem> get items => _items;
+  List<InvoiceItem?> get items => _items;
 
-  set items(List<InvoiceItem> value) {
+  set items(List<InvoiceItem?> value) {
     _items = value;
     notifyListeners();
   }
@@ -344,19 +343,19 @@ class AddInvoiceBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addItem({InvoiceItem invoiceItem}) {
+  void addItem({InvoiceItem? invoiceItem}) {
     _items.add(invoiceItem);
     updateTotal();
     notifyListeners();
   }
 
-  void removeItem({int index}) {
+  void removeItem({required int index}) {
     _items.removeAt(index);
     updateTotal();
     notifyListeners();
   }
 
-  void updateItem({int index, InvoiceItem invoiceItem}) {
+  void updateItem({required int index, InvoiceItem? invoiceItem}) {
     _items.removeAt(index);
     _items.insert(index, invoiceItem);
     updateTotal();
@@ -372,21 +371,21 @@ class AddInvoiceBloc extends ChangeNotifier {
   void updateTotal() {
     int sum = 0;
     _items.forEach((element) {
-      sum += (element.amount * element.quantity);
+      sum += (element!.amount! * element.quantity!);
     });
     _total = sum;
   }
 }
 
 class ShareMessageToChatBloc extends ChangeNotifier {
-  List<ChatConversation> _recipientUsers = List<ChatConversation>();
+  List<ChatConversation?> _recipientUsers = [];
 
-  void addRecipient({ChatConversation chatConversation}) {
+  void addRecipient({ChatConversation? chatConversation}) {
     bool isAlreadyPresent = false;
 
     /// Check for user is already in the list
     _recipientUsers.forEach((element) {
-      if (element.userName == chatConversation.userName)
+      if (element!.userName == chatConversation!.userName)
         isAlreadyPresent = true;
     });
 
@@ -403,12 +402,12 @@ class ShareMessageToChatBloc extends ChangeNotifier {
 
     _recipientUsers.forEach((element) {
       debugPrint(
-          "==> Username ${element.userName} ConversationId:- ${element.conversationId}");
+          "==> Username ${element!.userName} ConversationId:- ${element.conversationId}");
     });
   }
 
-  void removeRecipient({ChatConversation customerProfile, String username}) {
-    String userNameToCheck;
+  void removeRecipient({ChatConversation? customerProfile, String? username}) {
+    String? userNameToCheck;
 
     if (customerProfile != null) {
       userNameToCheck = customerProfile.userName;
@@ -417,10 +416,10 @@ class ShareMessageToChatBloc extends ChangeNotifier {
     }
 
     if (userNameToCheck != null) {
-      ChatConversation recipientToBeRemoved;
+      ChatConversation? recipientToBeRemoved;
 
       for (int i = 0; i < _recipientUsers.length; i++) {
-        if (_recipientUsers[i].userName == customerProfile.userName) {
+        if (_recipientUsers[i]!.userName == customerProfile!.userName) {
           recipientToBeRemoved = _recipientUsers[i];
           break;
         }
@@ -434,7 +433,7 @@ class ShareMessageToChatBloc extends ChangeNotifier {
     }
   }
 
-  List<ChatConversation> getRecipients() {
+  List<ChatConversation?> getRecipients() {
     return _recipientUsers;
   }
 
@@ -450,11 +449,12 @@ class ShareMessageToChatBloc extends ChangeNotifier {
 }
 
 class ConnectionListBloc extends ChangeNotifier {
-  List<ChatConversation> _connectionUsers = List<ChatConversation>();
+  List<ChatConversation> _connectionUsers = [];
 
   List<ChatConversation> get connectionUsers => _connectionUsers;
 
-  Future<void> setConnectionUsers({List<ChatConversation> users}) async {
+  Future<void> setConnectionUsers(
+      {required List<ChatConversation> users}) async {
     /// adding chat Users in database for message Count
     ChatUserManager().addUsers(users);
 
@@ -466,7 +466,7 @@ class ConnectionListBloc extends ChangeNotifier {
     return Future.value();
   }
 
-  void addConnectionUser({ChatConversation chatConversation}) async {
+  void addConnectionUser({required ChatConversation chatConversation}) async {
     await ConnectionListManager()
         .addConnectionToDB(chatConversation: chatConversation);
 
@@ -479,7 +479,8 @@ class ConnectionListBloc extends ChangeNotifier {
     return await ConnectionListManager().getConnectionsFromDB();
   }
 
-  Future<void> updateLastMessageTime({String conversationId, int time}) async {
+  Future<void> updateLastMessageTime(
+      {String? conversationId, int? time}) async {
     await ConnectionListManager()
         .updateLastMessageTime(conversationId: conversationId, time: time);
     _connectionUsers.clear();
@@ -487,7 +488,8 @@ class ConnectionListBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateChatConversation({ChatConversation chatConversation}) async {
+  void updateChatConversation(
+      {required ChatConversation chatConversation}) async {
     await ConnectionListManager()
         .updateChatConversation(chatConversation: chatConversation);
     _connectionUsers.clear();
@@ -495,7 +497,7 @@ class ConnectionListBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteChatConversation({String conversationId}) async {
+  void deleteChatConversation({String? conversationId}) async {
     await ConnectionListManager()
         .deleteChatConversation(conversationId: conversationId);
     _connectionUsers.clear();

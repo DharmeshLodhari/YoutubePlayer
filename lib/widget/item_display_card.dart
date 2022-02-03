@@ -1,11 +1,13 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-Widget displayProduct({BuildContext context, Product product}) {
+Widget displayProduct(
+    {required BuildContext context, required Product product}) {
   return Card(
     color: Colors.white,
     margin: EdgeInsets.only(right: 10.0, bottom: 8.0),
@@ -26,54 +28,89 @@ Widget displayProduct({BuildContext context, Product product}) {
                     topRight: Radius.circular(10)),
                 clipBehavior: Clip.antiAliasWithSaveLayer,
                 child: CachedNetworkImage(
-                  imageUrl: product.cover,
+                  imageUrl: product.cover!,
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  errorWidget: productAndServiceBigErrorWidget,
                 ),
               ),
             ),
             ListTile(
               dense: true,
-              title: Text(
-                product.name,
-                style: TextStyle(
-                    color: blackFont,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              subtitle: Text(
-                product.shortDescription,
-                style: TextStyle(
-                  color: darkGrey,
-                  fontSize: 14,
-                ),
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   Text(
-                    worldCurrencies[product.currency],
+                    product.name!,
                     style: TextStyle(
-                      fontFamily: "Roboto",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: navyBlue,
+                        color: blackFont,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        worldCurrencies[product.currency!]!,
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: navyBlue,
+                        ),
+                      ),
+                      Text(
+                        moneyDisplayNormalizer(int.parse(product.price!)),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: navyBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product.shortDescription ?? "",
+                      style: TextStyle(
+                        color: darkGrey,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  Text(
-                    moneyDisplayNormalizer(int.parse(product.price)),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: navyBlue,
-                    ),
-                  ),
+                  product.rating != 0.0
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Icon(
+                              SlydoAppIcon.star,
+                              color: starYellow,
+                              size: 11,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              product.rating?.toString() ?? "0.0",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(),
                 ],
               ),
             ),
@@ -95,6 +132,7 @@ Widget displayProduct({BuildContext context, Product product}) {
         currentProduct.seller = product.seller;
         currentProduct.manufacturer = product.manufacturer;
         currentProduct.serverImages = product.serverImages;
+        currentProduct.rating = product.rating;
         Navigator.pushNamed(context, '/product',
             arguments: {"product": currentProduct});
       },
@@ -102,7 +140,8 @@ Widget displayProduct({BuildContext context, Product product}) {
   );
 }
 
-Widget displayService({BuildContext context, Service service}) {
+Widget displayService(
+    {required BuildContext context, required Service service}) {
   return Card(
     color: Colors.white,
     margin: EdgeInsets.only(right: 10, bottom: 8.0),
@@ -122,54 +161,92 @@ Widget displayService({BuildContext context, Service service}) {
                     topLeft: Radius.circular(10),
                     topRight: Radius.circular(10)),
                 child: CachedNetworkImage(
-                  imageUrl: service.cover,
+                  imageUrl: service.cover!,
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  errorWidget: productAndServiceBigErrorWidget,
                 ),
               ),
             ),
             ListTile(
               dense: true,
-              title: Text(
-                service.name,
-                style: TextStyle(
-                    color: blackFont,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-              ),
-              subtitle: Text(
-                service.shortDescription,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  color: darkGrey,
-                  fontSize: 14,
-                ),
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    worldCurrencies[service.currency],
-                    style: TextStyle(
-                      fontFamily: "Roboto",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: navyBlue,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      service.name!,
+                      style: TextStyle(
+                          color: blackFont,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
                     ),
                   ),
-                  Text(
-                    moneyDisplayNormalizer(int.parse(service.price.toString())),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: navyBlue,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        worldCurrencies[service.currency!]!,
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: navyBlue,
+                        ),
+                      ),
+                      Text(
+                        moneyDisplayNormalizer(
+                            int.parse(service.price.toString())),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: navyBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      service.shortDescription ?? "",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: darkGrey,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
+                  service.rating != 0.0
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Icon(
+                              SlydoAppIcon.star,
+                              color: starYellow,
+                              size: 11,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              service.rating?.toString() ?? "0.0",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Container(),
                 ],
               ),
             ),
@@ -190,6 +267,7 @@ Widget displayService({BuildContext context, Service service}) {
         currentService.currency = service.currency;
         currentService.description = service.description;
         currentService.availableFrom = DateTime.now();
+        currentService.rating = currentService.rating;
 
         Navigator.pushNamed(context, '/service-detail',
             arguments: {"service": currentService});

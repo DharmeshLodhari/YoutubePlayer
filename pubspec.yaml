@@ -1,102 +1,110 @@
 name: Slydo
 description: The slydo application.
-version: 1.0.0+8
+version: 1.0.0+18
 
 environment:
-  sdk: ">=2.2.2 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl_translation: ^0.17.1
+#  intl_translation: ^0.17.10+1
   http: ^0.13.3
-#  http: ^0.11.3+17
-  provider: ^4.0.0
-  sqflite: ^1.2.0
-  path_provider: ^1.6.24
-  qr_code_scanner: ^0.0.13
-  page_view_indicators: ^1.3.1
-  image_picker: ^0.6.1+4
-  firebase_crashlytics: ^0.2.4
-  firebase_messaging: ^7.0.3
-  cached_network_image: ^2.5.0
-  toast: ^0.1.5
-  shared_preferences: ^0.5.12+4
-  passcode_screen: ^1.0.2
-  location: ^3.2.4
-  flutter_slidable: ^0.5.7
-  device_info: ^0.4.1+5
-  pull_to_refresh: 1.6.3
-  connectivity: ^2.0.2
-  uuid: ^2.0.4
-  intl: ^0.15.8
-  autocomplete_textfield: ^1.7.3
-  flutter_staggered_grid_view: ^0.3.2
-  package_info: ^0.4.3+2
-  maps_launcher: ^1.2.2+2
-  devicelocale: ^0.3.3
-  flip_card: ^0.4.4
-  charts_flutter: ^0.9.0
-  flutter_money_formatter: ^0.8.3
-  badges: ^1.1.4
-  flutter_credit_card: ^0.1.3
-  share: ^0.6.5+4
-  carousel_slider: ^2.3.1
-  page_transition: ^1.1.7+2
-  pinput: ^0.2.4
-  overlay_container: ^0.0.4+1
-  sms_otp_auto_verify: ^1.2.2
-  printing: ^3.6.1
-  pdf: ^1.11.2
-  video_player: ^1.0.1
-  wakelock: ^0.2.0+1
-  open_iconic_flutter: ^0.3.0
-  percent_indicator: ^2.1.8
- # assets_audio_player: ^2.0.15
-  assets_audio_player: ^2.0.10
-  video_thumbnail: ^0.2.5+1
-  flutter_video_info: ^1.1.0
-  quiver: ^2.1.5
-  camera: ^0.5.8+17
-  web_socket_channel: ^1.1.0
-  photo_view: ^0.10.3
-  flutter_keyboard_visibility: ^4.0.2
-  crypto: ^2.1.5
-  file_picker: ^2.1.6
-  flutter_sound: ^7.4.16+3
-  flare_flutter: ^2.0.6
-  lazy_load_scrollview: ^1.2.0
-  permission_handler: ^5.0.1+2
-  shake: ^0.1.0
-  sizer: ^1.1.8
-  colorful_safe_area: ^0.2.1
-  flutter_secure_storage: ^3.3.5
-  image_cropper: ^1.3.1
-  linkwell: ^0.1.9
-  flutter_link_preview: ^1.5.6
-  swipe_to: ^0.0.1+8
-  giphy_picker: ^1.0.8
-  awesome_notifications: ^0.0.5+5
-  flutter_local_notifications: ^4.0.1+2
-  sqflite_migration: ^0.2.0
-  flutter_windowmanager: ^0.0.2
-  flutter_map: ^0.11.0
-  latlong: ^0.6.1
-  google_maps_flutter: ^1.2.0
-  flutter_polyline_points: ^0.2.6
-  extended_text_field: ^5.0.4
-  workmanager: ^0.3.0
-  receive_sharing_intent: ^1.3.2
-  rxdart: ^0.25.0
-  progress_indicators: ^0.1.5
+  provider: ^6.0.1
+  sqflite: ^2.0.0+4
+  path_provider: ^2.0.5
+  qr_code_scanner: ^0.5.2
+  page_view_indicators: ^2.0.0
+  image_picker: ^0.8.4+2
+  firebase_crashlytics: ^2.2.1
+  firebase_messaging: ^10.0.7
+  cached_network_image: ^3.1.0
+  shared_preferences: ^2.0.8
+  passcode_screen: ^2.0.0
+  location: ^4.3.0
+  flutter_slidable: ^0.6.0
+  device_info: ^2.0.2
+  pull_to_refresh: ^2.0.0
+  connectivity: ^3.0.6
+  uuid: ^3.0.4
+  intl: ^0.17.0
+  flutter_staggered_grid_view: ^0.4.0
+  package_info: ^2.0.2
+  maps_launcher: ^2.0.1
+  devicelocale: ^0.4.3
+  flip_card: ^0.5.0
+#  charts_flutter: ^0.11.0
+  charts_flutter:
+    git:
+      url: https://github.com/google/charts.git
+      path: charts_flutter
+      ref: 30477090290b348ed3101bc13017aae465f59017
+#  flutter_link_preview:
+#    git:
+#      url: https://github.com/ItzNotABug/flutter_link_preview'
+#      ref: fe0d3db907604f0d4d3d825aa69b82d99621f776
+  badges: ^2.0.1
+  flutter_credit_card: ^3.0.0
+  share: ^2.0.4
+  carousel_slider: ^4.0.0
+  page_transition: ^2.0.4
+  pinput: ^1.2.0
+  printing: ^5.6.0
+  pdf: ^3.6.1
+  video_player: ^2.2.5
+  wakelock: ^0.5.6
+  percent_indicator: ^3.0.1
+  assets_audio_player: ^3.0.3+6
+  video_thumbnail: ^0.4.3
+  flutter_video_info: ^1.2.0
+  quiver: ^3.0.1
+  camera: ^0.9.4+1
+  web_socket_channel: ^2.1.0
+  photo_view: ^0.12.0
+  flutter_keyboard_visibility: ^5.0.3
+  crypto: ^3.0.1
+  file_picker: ^4.1.2
+  flutter_sound: ^8.4.2
+  flare_flutter: ^3.0.2
+  lazy_load_scrollview: ^1.3.0
+  permission_handler: ^8.1.6
+  shake: ^1.0.1
+  sizer: ^2.0.15
+  colorful_safe_area: ^0.3.0
+  flutter_secure_storage: ^4.2.1
+  image_cropper: ^1.4.1
+  linkwell: ^2.0.6
+  swipe_to: ^0.1.0-nullsafety.1
+  giphy_picker: ^2.0.0
+  awesome_notifications: ^0.6.19
+  flutter_local_notifications: ^8.2.0
+  sqflite_migration: ^0.3.0
+#  flutter_windowmanager: ^0.2.0
+  flutter_map: ^0.14.0
+  google_maps_flutter: ^2.0.10
+  flutter_polyline_points: ^1.0.0
+  extended_text_field: ^8.0.0
+#  workmanager: ^0.4.1
+  receive_sharing_intent: ^1.4.5
+  rxdart: ^0.27.3
+  progress_indicators: ^1.0.0
+  fluttertoast: ^8.0.8
+  fast_gbk: ^1.0.0
+#  coachmaker: ^0.1.1
+  tutorial_coach_mark: ^1.1.1
+  syncfusion_flutter_pdf: ^19.3.47-beta
+  flutter_rating_bar: ^4.0.0
 
 
 
-dependency_overrides:
-  intl: ^0.16.1
-  http: ^0.12.0+2
+
+#dependency_overrides:
+#  intl: ^0.16.1
+#  http: ^0.12.0+2
+  collection: ^1.15.0-nullsafety.4
+  webview_flutter: ^3.0.0
 
 
 
@@ -117,10 +125,8 @@ dependency_validator:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.8.1
-  dependency_validator: ^2.0.1
+  flutter_launcher_icons: ^0.9.2
 #  mockito: ^4.1.3
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -128,7 +134,7 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
 
-  # The following line ensures that the Material Icons font is
+  # The following line ensures that the Material Icons font isc
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
@@ -137,6 +143,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/splash/
+    - assets/images/default_image/
     - assets/images/flags/
     - assets/images/category/
     - assets/images/intro_images/

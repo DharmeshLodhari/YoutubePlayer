@@ -1,7 +1,7 @@
 class Location {
-  String latitude;
-  String longitude;
-  String name;
+  String? latitude;
+  String? longitude;
+  String? name;
 
   Location({this.latitude, this.longitude, this.name});
 

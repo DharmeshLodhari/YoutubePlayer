@@ -1,11 +1,11 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/PartialMusicItem.dart';
 import 'music_auth.dart';
@@ -15,7 +15,7 @@ import 'music_tile.dart';
 
 // ignore: must_be_immutable
 class MyMusicList extends StatefulWidget {
-  MusicPlayer musicPlayer;
+  MusicPlayer? musicPlayer;
 
   MyMusicList({this.musicPlayer});
 
@@ -53,15 +53,16 @@ class _MyMusicListState extends State<MyMusicList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
   }
 
-  MusicDashboardBloc _musicDashboardBloc;
+  late MusicDashboardBloc _musicDashboardBloc;
 
   @override
   Widget build(BuildContext context) {

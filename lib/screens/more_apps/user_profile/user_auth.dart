@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/device_info.dart';
@@ -16,7 +19,7 @@ import 'models/UserAbout.dart';
 
 class UserAuth extends AuthService {
   // Fetch user profile
-  Future<CustomerProfile> fetchCustomerProfile(String userName) async {
+  Future<CustomerProfile> fetchCustomerProfile(String? userName) async {
     if (userName == null) {
       return CustomerProfile();
     }
@@ -33,6 +36,7 @@ class UserAuth extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
@@ -42,7 +46,7 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<CustomerProfile> fetchCustomerProfileWithAuth(String userName) async {
+  Future<CustomerProfile> fetchCustomerProfileWithAuth(String? userName) async {
     if (userName == null) {
       return CustomerProfile();
     }
@@ -52,8 +56,6 @@ class UserAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       var jsonData = json.decode(response.body);
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
@@ -66,10 +68,13 @@ class UserAuth extends AuthService {
 
   // Update User Avatar
   Future<CustomerProfile> updateUserAvatar(File avatar) async {
-    User user = await getUser();
+    User? user = await getUser();
+    if (user == null) return Future.error("Try after Some time");
     var headers = await getAuthHeaders();
-    var url =
-        AppConfig.baseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
+    var url = AppConfig.baseUrl +
+        "/api/v1/user/update-avatar/" +
+        user.userName! +
+        "/";
 
     if (avatar != null) {
       var avatarPath = avatar.path;
@@ -77,9 +82,9 @@ class UserAuth extends AuthService {
       var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
       //add fields
-      request.fields["username"] = user.userName;
-      request.fields["full_name"] = user.fullName;
-      request.fields["avatar"] = user.avatar;
+      request.fields["username"] = user.userName!;
+      request.fields["full_name"] = user.fullName!;
+      request.fields["avatar"] = user.avatar!;
 
       //create multipart using filepath, string or bytes
       var multipartFile =
@@ -96,7 +101,7 @@ class UserAuth extends AuthService {
       }
       var responseBody = await response.stream.bytesToString();
       if (response.statusCode == 200) {
-        var jsonData = json.decode(responseBody);
+        var jsonData = jsonDecode(responseBody);
 
         CustomerProfile customerProfile = CustomerProfile(
           fullName: jsonData["full_name"],
@@ -109,17 +114,19 @@ class UserAuth extends AuthService {
         return Future.error(
             "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
       }
-    } else {
-      throw "Can't get https.";
     }
+    return Future.error("Error while updating profile avatar");
   }
 
   // Update User Avatar
   Future<bool> deleteUserAvatar() async {
-    User user = await getUser();
+    User? user = await getUser();
+    if (user == null) return Future.error("User Not Found");
     var headers = await getAuthHeaders();
-    var url =
-        AppConfig.baseUrl + "/api/v1/user/update-avatar/" + user.userName + "/";
+    var url = AppConfig.baseUrl +
+        "/api/v1/user/update-avatar/" +
+        user.userName! +
+        "/";
 
     var response = await httpDelete(url, headers: headers);
     if (response.statusCode == 204) {
@@ -183,8 +190,9 @@ class UserAuth extends AuthService {
 
     var _data = jsonEncode(data);
 
-    var response = await httpPost(url, headers: headers, body: _data);
-    if (response.statusCode == 200) {
+    var response = await httpPost(url,
+        headers: headers as Map<String, dynamic>?, body: _data);
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
     debugPrint("DATA SENT:- $data");
@@ -202,7 +210,8 @@ class UserAuth extends AuthService {
     };
 
     var _data = jsonEncode(data);
-    var response = await httpPost(url, body: _data, headers: headers);
+    var response = await httpPost(url,
+        body: _data, headers: headers as Map<String, dynamic>?);
 
     if (response.statusCode == 200) {
       return true;
@@ -216,9 +225,9 @@ class UserAuth extends AuthService {
   }
 
   // it will verify the phone number to  OTP
-  Future<String> verifyPhoneNumber(
+  Future<String?> verifyPhoneNumber(
       // ignore: non_constant_identifier_names
-      String phoneNumber,
+      String? phoneNumber,
       String otp,
       String passwordToken) async {
     var url = AppConfig.baseUrl + "/api/v1/sms/verify";
@@ -229,7 +238,8 @@ class UserAuth extends AuthService {
       "password-token": passwordToken,
     };
     var _data = jsonEncode(data);
-    var response = await httpPost(url, body: _data, headers: headers);
+    var response = await httpPost(url,
+        body: _data, headers: headers as Map<String, dynamic>?);
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       var resetToken = jsonData['reset-token'];
@@ -244,7 +254,7 @@ class UserAuth extends AuthService {
 
   // it will verify the phone number to  OTP
   Future<bool> resetPassword(String passwordOne, String passwordTwo,
-      String phoneNumber, String resetToken) async {
+      String? phoneNumber, String? resetToken) async {
     var url = AppConfig.baseUrl + "/api/v1/user/auth/password-reset/";
     var headers = getNonAuthHeader();
 
@@ -256,7 +266,8 @@ class UserAuth extends AuthService {
     };
     var _data = jsonEncode(data);
     debugPrint(_data);
-    var response = await httpPatch(url, headers: headers, body: _data);
+    var response = await httpPatch(url,
+        headers: headers as Map<String, dynamic>?, body: _data);
     var jsonData = json.decode(response.body);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -284,22 +295,15 @@ class UserAuth extends AuthService {
       int expirationTime =
           getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
 
-      Map<String, String> data = {};
       var jsonResponse = json.decode(response.body);
       debugPrint("===> $jsonResponse");
 
-      data["access"] = jsonResponse[
-          "access"]; // Get `access` and `refresh` Tokens from response
-      data["refresh"] = jsonResponse["refresh"];
-      data["expiration"] =
-          expirationTime.toString(); // Convert expirationTime int to string .
+      jsonResponse["expiration"] = expirationTime;
+      Jwt jwt = Jwt.fromJson(jsonResponse);
 
       // Delete jwt from db if one exist
-      await deleteJwt();
-      await DatabaseHelper().saveJwt(data);
-
-      /// TODO: Also update the password in secure storage if user has selected
-      /// Remember me button
+      // await deleteJwt();
+      await DatabaseHelper().saveJwt(jwt);
 
       return {"new_password": data["new_password1"]};
     } else {
@@ -325,7 +329,7 @@ class UserAuth extends AuthService {
         countryIsoCode: "NG");
   }
 
-  Future<UserAbout> fetchUserAboutInfo({String userName}) async {
+  Future<UserAbout> fetchUserAboutInfo({String? userName}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/about/$userName/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -338,21 +342,23 @@ class UserAuth extends AuthService {
   }
 
   Future<UserAbout> addOrUpdateUserBio(
-      {UserAbout userAbout, String nickName}) async {
+      {UserAbout? userAbout, String? nickName}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/about/";
 
     var headers = await getAuthHeaders();
 
     var responseBody;
     var response;
-    if (userAbout != null && !userAbout.wallpaper.contains("https")) {
+    if (userAbout != null &&
+        userAbout.wallpaper != "" &&
+        !userAbout.wallpaper.contains("https")) {
       var request = http.MultipartRequest("PATCH", Uri.parse(url));
       Map<String, dynamic> data = userAbout.toJson();
       data.forEach((key, value) {
         request.fields[key] = value is List<Map> ? jsonEncode(value) : value;
       });
 
-      request.fields['nickname'] = nickName;
+      request.fields['nickname'] = nickName!;
 
       //create multipart using filepath, string or bytes
       var multipartFile =
@@ -392,7 +398,7 @@ class UserAuth extends AuthService {
     return Future.error("$responseBody");
   }
 
-  Future<bool> updateSimpleUserDetail({String nickName}) async {
+  Future<bool> updateSimpleUserDetail({String? nickName}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/update-customer-nickname/";
     debugPrint("URL:- $url");
     var data = {"nickname": nickName};
@@ -435,7 +441,7 @@ class UserAuth extends AuthService {
 
   ///Friends List
 
-  Future<Map<String, dynamic>> contacts(String next, String previous) async {
+  Future<Map<String, dynamic>?> contacts(String? next, String? previous) async {
     var url = AppConfig.baseUrl + "/api/v1/user/contacts/";
     if (next == null) {
       return null;
@@ -464,8 +470,8 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<List> fetchMissedContact(
-      {String createdAt, String conversationId}) async {
+  Future<List?> fetchMissedContact(
+      {required String createdAt, String? conversationId}) async {
     var url = AppConfig.chatUrl + "/api/v1/chat/fetch-missed-conversations/";
 
     var headers = await getAuthHeaders();
@@ -528,7 +534,7 @@ class UserAuth extends AuthService {
   }
 
   // Check if user is the the checker's list of contact
-  Future<bool> checkInContactList(String user, String checker) async {
+  Future<bool> checkInContactList(String? user, String? checker) async {
     // Note that the checker is the request.user making this request.
     var url = AppConfig.baseUrl + "/api/v1/user/contacts/check-in-contact/";
     var data = {"checker": checker, "user": user};
@@ -544,7 +550,7 @@ class UserAuth extends AuthService {
     return false;
   }
 
-  Future<bool> checkInRequest(String user) async {
+  Future<bool> checkInRequest(String? user) async {
     // Note that the checker is the request.user making this request.
     var url =
         AppConfig.baseUrl + "/api/v1/user/contact-request/check-in-request/";
@@ -574,8 +580,8 @@ class UserAuth extends AuthService {
   }
 
   // Block Contact
-  Future<Map<String, dynamic>> listBlockUsers(
-      String next, String previous) async {
+  Future<Map<String, dynamic>?> listBlockUsers(
+      String? next, String? previous) async {
     var url = AppConfig.baseUrl + "/api/v1/user/contacts/list-block-contact/";
     if (next == null) {
       return null;
@@ -627,8 +633,8 @@ class UserAuth extends AuthService {
   }
 
   // Contact Request
-  Future<Map<String, dynamic>> listContactRequests(
-      String next, String previous) async {
+  Future<Map<String, dynamic>?> listContactRequests(
+      String? next, String? previous) async {
     var url = AppConfig.baseUrl + "/api/v1/user/contact-request/";
     if (next == null) {
       return null;
@@ -685,14 +691,15 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
+    log("Headers:- $headers body :- $_data URL:- $url statuscode ${response.statusCode}  body:- ${response.body}");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 201 || response.statusCode == 200) {
       return true;
     }
     return false;
   }
 
-  Future<List> getUserProfileUpgradeDetails() async {
+  Future<List?> getUserProfileUpgradeDetails() async {
     var url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -706,7 +713,7 @@ class UserAuth extends AuthService {
   }
 
   // it will reset the phone number to get OTP
-  Future<bool> resetDevice({Map data}) async {
+  Future<bool> resetDevice({Map? data}) async {
     // var url = AppConfig.AppConfig.baseUrl + "/api/v1/user/reset-user-device/";
     //
     // var headers = getNonAuthHeader();
@@ -730,7 +737,7 @@ class UserAuth extends AuthService {
   }
 
   // it will register the phone number to get OTP
-  Future<String> sendOTPForResetDevice(String phoneNumber) async {
+  Future<String?> sendOTPForResetDevice(String phoneNumber) async {
     // var url = secureAppConfig.baseUrl + "/api/v1/sms/reset-user-device/";
     // var headers = getNonAuthHeader();
     // var data = {
@@ -752,7 +759,8 @@ class UserAuth extends AuthService {
   }
 
   // it will verify the phone number to  OTP
-  Future<String> verifyOTPForResetDevice(String phoneNumber, String otp) async {
+  Future<String> verifyOTPForResetDevice(
+      String? phoneNumber, String otp) async {
     // var url = AppConfig.baseUrl + "/api/v1/sms/verify";
     // var headers = getNonAuthHeader();
     // var data = {"phone": phoneNumber, "code": otp};
@@ -792,8 +800,9 @@ class UserAuth extends AuthService {
   // }
 
   // Search User in Contact
-  Future<Map<String, dynamic>> searchUserInContact(String next, String previous,
-      {String query}) async {
+  Future<Map<String, dynamic>?> searchUserInContact(
+      String? next, String? previous,
+      {String? query}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/search-user-contacts";
 

@@ -2,19 +2,19 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 
 class GroupDetailModel {
-  List<String> adminUsers;
-  String avatar;
-  List<String> blockedParticipants;
-  String conversationId;
-  String fullName;
-  bool isGroupConversation;
-  String createdAt;
-  List<String> mutedParticipants;
+  List<String?> adminUsers;
+  String? avatar;
+  List<String?> blockedParticipants;
+  String? conversationId;
+  String? fullName;
+  bool? isGroupConversation;
+  String? createdAt;
+  List<String?> mutedParticipants;
   List<Participant> participants;
-  String type;
-  String username;
-  String owner;
-  String description;
+  String? type;
+  String? username;
+  String? owner;
+  String? description;
 
   GroupDetailModel(
       {this.adminUsers = const [],
@@ -87,18 +87,10 @@ class GroupDetailModel {
     data['owner'] = this.owner;
     data['description'] = this.description;
     data['created_at'] = this.createdAt;
-    if (this.adminUsers != null) {
-      data['admin_users'] = this.adminUsers;
-    }
-    if (this.blockedParticipants != null) {
-      data['blocked_participants'] = this.blockedParticipants;
-    }
-    if (this.mutedParticipants != null) {
-      data['muted_participants'] = this.mutedParticipants;
-    }
-    if (this.participants != null) {
-      data['participants'] = this.participants.map((v) => v.toJson()).toList();
-    }
+    data['admin_users'] = this.adminUsers;
+    data['blocked_participants'] = this.blockedParticipants;
+    data['muted_participants'] = this.mutedParticipants;
+    data['participants'] = this.participants.map((v) => v.toJson()).toList();
     return data;
   }
 }

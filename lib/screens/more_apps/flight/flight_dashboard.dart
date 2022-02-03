@@ -13,7 +13,7 @@ class FlightDashboard extends StatefulWidget {
 }
 
 class _FlightDashboardState extends State<FlightDashboard> {
-  FlightDashboardBloc _flightDashboardBloc;
+  late FlightDashboardBloc _flightDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
         items: [
           bottomNavigationBarItem(
             icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context).explore,
+            title: AppLocalization.of(context)!.explore,
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
@@ -73,7 +73,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData icon, String title}) {
+      {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
       icon: Container(
         height: 50,
@@ -90,7 +90,7 @@ class _FlightDashboardState extends State<FlightDashboard> {
   }
 
 // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData icon, String title}) {
+  Widget activeIcon({IconData? icon, required String title}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(

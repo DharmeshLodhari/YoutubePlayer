@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -23,7 +25,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
@@ -43,45 +44,46 @@ class _SendPaymentState extends State<SendPayment> {
   TextEditingController _amountController = TextEditingController();
   TextEditingController _referenceController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
-  http.Response response;
+  late http.Response response;
 
   final _auth = PaymentAndBankingAuth();
   final _formKey = GlobalKey<FormState>();
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
-  CustomerProfile _payee;
-  UserBloc userBloc;
-  CustomerProfileBloc customerProfileBloc;
+  CustomerProfile? _payee;
+  late UserBloc userBloc;
+  late CustomerProfileBloc customerProfileBloc;
 
   //for Product payment
-  Product product;
+  Product? product;
 
   //for Service payment
-  Service service;
+  Service? service;
 
-  bool isFromProfile = false;
-  bool isFromChat = false;
+  bool? isFromProfile = false;
+  bool? isFromChat = false;
   bool isValidPayee = false;
-  double amount;
+  double? amount;
   String reference = "";
   String category = "";
   String errorMessage = "";
-  String recipient;
+  String? recipient;
   final locationService = LocationService();
 
-  String conversationId;
+  String? conversationId;
 
   //variables for categorie
   bool isLoading = true;
-  List<String> paymentCategories = List();
-  String selectedCategory;
-  BasketBloc basketBloc;
+  List<String?> paymentCategories = [];
+  String? selectedCategory;
+  late BasketBloc basketBloc;
 
   //variables for shoppingcart
-  int itemIndex;
+  int? itemIndex;
 
   bool sendMoneyAnonymous = false;
 
   bool showMoreOption = false;
+  VirtualAccount? virtualAccount;
 
   @override
   void initState() {
@@ -122,16 +124,21 @@ class _SendPaymentState extends State<SendPayment> {
         }
       });
     fetchCategory();
+    getBankAccountDetail();
     super.initState();
+  }
+
+  void getBankAccountDetail() async {
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
   }
 
   void setAllFieldProduct() {
     _amountController.text =
-        moneyDisplayNormalizer(int.parse(product.price.toString()))
+        moneyDisplayNormalizer(int.parse(product!.price.toString()))
             .replaceAll(",", "");
 
     amount = double.parse(_amountController.text);
-    _referenceController.text = product.name;
+    _referenceController.text = product!.name!;
     reference = _referenceController.text;
     selectedCategory = "Shopping";
     isValidPayee = true;
@@ -139,9 +146,9 @@ class _SendPaymentState extends State<SendPayment> {
 
   void setAllFieldService() {
     _amountController.text =
-        moneyDisplayNormalizer(int.parse(service.price.toString()));
+        moneyDisplayNormalizer(int.parse(service!.price.toString()));
     amount = double.parse(_amountController.text);
-    _referenceController.text = service.name;
+    _referenceController.text = service!.name!;
     reference = _referenceController.text;
     selectedCategory = "Shopping";
     isValidPayee = true;
@@ -149,19 +156,19 @@ class _SendPaymentState extends State<SendPayment> {
 
   void initializeDisplayCard() {
     // if (!isFromProfile && product != null) {
-    if (!isFromProfile) {
+    if (!isFromProfile!) {
       if (customerProfileBloc.customer != null) {
         if (mounted) {
           setState(() {
             _payee = customerProfileBloc.customer;
-            recipient = _payee.userName;
-            _recipientController.text = recipient;
+            recipient = _payee!.userName;
+            _recipientController.text = recipient!;
             UserAuth().fetchCustomerProfile(recipient).then((customerProfile) {
               if (customerProfile != null) {
                 if (mounted) {
                   setState(() {
                     _payee = customerProfile;
-                    isValidPayee = _payee.userName != userBloc.user.userName;
+                    isValidPayee = _payee!.userName != userBloc.user.userName;
                   });
                 }
               }
@@ -202,7 +209,7 @@ class _SendPaymentState extends State<SendPayment> {
         backgroundColor: Colors.white,
         key: _sendPaymentScaffold,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -230,7 +237,7 @@ class _SendPaymentState extends State<SendPayment> {
         },
       ),
       title: Text(
-        AppLocalization.of(context).sendPayment,
+        AppLocalization.of(context)!.sendPayment,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -255,7 +262,7 @@ class _SendPaymentState extends State<SendPayment> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": _payee.userName});
+              arguments: {"searchedUserName": _payee!.userName});
         },
         backgroundColor: iconBtnGrey,
         enableMargin: true,
@@ -369,7 +376,7 @@ class _SendPaymentState extends State<SendPayment> {
         SizedBox(
           height: 20,
         ),
-        isFromChat ? Container() : sendMoneyAnonymouslySwitch(),
+        isFromChat! ? Container() : sendMoneyAnonymouslySwitch(),
       ],
     );
   }
@@ -411,7 +418,7 @@ class _SendPaymentState extends State<SendPayment> {
         icon: Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": _payee.userName});
+              arguments: {"searchedUserName": _payee!.userName});
         },
       );
     }
@@ -437,7 +444,7 @@ class _SendPaymentState extends State<SendPayment> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      Color borderColor = getUserTypeColor(user: _payee);
+      Color borderColor = getUserTypeColor(user: _payee!);
 
       avatarImage = Container(
         height: 48,
@@ -450,14 +457,15 @@ class _SendPaymentState extends State<SendPayment> {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: _payee.avatar);
+                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
           },
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: _payee.avatar,
+              imageUrl: _payee!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fill,
               filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
             ),
           ),
         ),
@@ -469,15 +477,16 @@ class _SendPaymentState extends State<SendPayment> {
       qrCodeImage = GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: _payee.qrCode);
+              .pushNamed("/photo-viewer", arguments: _payee!.qrCode);
         },
         child: CachedNetworkImage(
           height: 48,
           width: 48,
-          imageUrl: _payee.qrCode ?? "",
+          imageUrl: _payee!.qrCode ?? "",
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
+          errorWidget: imageErrorWidget,
         ),
       );
     }
@@ -491,7 +500,7 @@ class _SendPaymentState extends State<SendPayment> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    _payee.displayName(),
+                    _payee!.displayName()!,
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -500,7 +509,7 @@ class _SendPaymentState extends State<SendPayment> {
                     maxLines: 1,
                   ),
                   subtitle: Text(
-                    _payee.userName,
+                    _payee!.userName!,
                     style: TextStyle(fontSize: 14, color: darkGrey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -509,7 +518,7 @@ class _SendPaymentState extends State<SendPayment> {
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUserName": _payee.userName});
+                        arguments: {"searchedUserName": _payee!.userName});
                   },
                 ),
               ),
@@ -524,21 +533,21 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).recipient,
+      labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
       enabled: isFromProfile,
       validator: (value) {
-        if (!isFromProfile && value != _payee.userName) {
-          return AppLocalization.of(context).invalidRecipient;
+        if (!isFromProfile! && value != _payee!.userName) {
+          return AppLocalization.of(context)!.invalidRecipient;
         }
         return null;
       },
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            if (!isFromProfile && _payee != null) {
-              recipient = _payee.userName;
+            if (!isFromProfile! && _payee != null) {
+              recipient = _payee!.userName;
             } else {
               recipient = val.toLowerCase();
             }
@@ -575,25 +584,25 @@ class _SendPaymentState extends State<SendPayment> {
               throw Exception("Invalid amount");
             }
           } catch (e) {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
       onTap: () async {
         isValidPayee = false;
         if (mounted) setState(() {});
         if (recipient != null) {
-          recipient = recipient.trim();
+          recipient = recipient!.trim();
 
-          _recipientController.text = recipient;
+          _recipientController.text = recipient!;
           if (mounted) setState(() {});
 
           var customerProfile =
               await UserAuth().fetchCustomerProfile(recipient);
 
           _payee = customerProfile;
-          isValidPayee = _payee.userName != userBloc.user.userName;
+          isValidPayee = _payee!.userName != userBloc.user.userName;
 
           if (mounted) setState(() {});
         }
@@ -606,7 +615,7 @@ class _SendPaymentState extends State<SendPayment> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          AppLocalization.of(context).category,
+          AppLocalization.of(context)!.category,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
         SizedBox(
@@ -625,7 +634,7 @@ class _SendPaymentState extends State<SendPayment> {
             child: ListTile(
               dense: true,
               title: Text(
-                selectedCategory != null ? selectedCategory : "",
+                selectedCategory != null ? selectedCategory! : "",
                 softWrap: false,
                 overflow: TextOverflow.fade,
                 style: TextStyle(
@@ -676,7 +685,7 @@ class _SendPaymentState extends State<SendPayment> {
                               child: ListTile(
                                 dense: true,
                                 title: Text(
-                                  category,
+                                  category!,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -697,7 +706,7 @@ class _SendPaymentState extends State<SendPayment> {
                           }
                           return ListTile(
                             title: Text(
-                              category,
+                              category!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -726,7 +735,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getReferenceField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).reference,
+      labelText: AppLocalization.of(context)!.reference,
       textCapitalization: TextCapitalization.sentences,
       controller: _referenceController,
       enabled: product == null && service == null,
@@ -764,7 +773,9 @@ class _SendPaymentState extends State<SendPayment> {
   }
 
   void sendMoneyAnonymousAlert() async {
-    FeeStructure feeStructure = await DatabaseHelper().getFeeStructure();
+    FeeStructure? feeStructure = await DatabaseHelper().getFeeStructure();
+
+    if (feeStructure == null) return;
 
     String anonymousFee =
         feeStructure.getFeeWithTax(type: FeesType.ANONYMOUS_TRANSACTION_FEE);
@@ -781,7 +792,7 @@ class _SendPaymentState extends State<SendPayment> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 content: Stack(
-                  overflow: Overflow.visible,
+                  clipBehavior: Clip.none,
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width - 40,
@@ -842,8 +853,7 @@ class _SendPaymentState extends State<SendPayment> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    FlatButton(
-                                      padding: EdgeInsets.zero,
+                                    TextButton(
                                       child: Text("OK",
                                           style: TextStyle(
                                               fontSize: 14,
@@ -907,21 +917,21 @@ class _SendPaymentState extends State<SendPayment> {
 
     if (!isValidPayee) {
       setState(() {
-        errorMessage = AppLocalization.of(context).invalidRecipient;
+        errorMessage = AppLocalization.of(context)!.invalidRecipient;
         return;
       });
     }
 
-    if (recipient == _payee.userName) {
+    if (recipient == _payee!.userName) {
       if (!isValidPayee) {
         setState(() {
-          errorMessage = AppLocalization.of(context).invalidRecipient;
+          errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
       }
 
       if (isValidPayee &&
-          _formKey.currentState.validate() &&
+          _formKey.currentState!.validate() &&
           validateDropdown()) {
         if (userBloc.user.userName != recipient) {
           var userLocation;
@@ -950,20 +960,17 @@ class _SendPaymentState extends State<SendPayment> {
 
                     errorMessage = "Insufficient funds !!";
                     setState(() {});
-                    Toast.show(errorMessage, context,
-                        gravity: Toast.BOTTOM,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white);
+                    showToast(message: errorMessage);
                     return;
                   }
 
                   deviceData = await getDeviceInfo();
                   var data = {
                     "from_customer": userBloc.user.userName,
-                    "to_customer": recipient.trim(),
+                    "to_customer": recipient!.trim(),
                     "currency": userBloc.user.currency,
                     "amount": moneyInputNormalizer(amount.toString()),
-                    "category": selectedCategory.trim(),
+                    "category": selectedCategory!.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),
                     "latitude": Platform.isIOS ? userLocation.latitude : "",
@@ -991,7 +998,7 @@ class _SendPaymentState extends State<SendPayment> {
 
                       debugPrint(" isFromChat:- $isFromChat");
 
-                      if (!isFromChat) {
+                      if (!isFromChat!) {
                         Navigator.of(context).pushNamed(
                           '/transactions',
                         );
@@ -1001,87 +1008,55 @@ class _SendPaymentState extends State<SendPayment> {
                       setState(() {
                         errorMessage = "${jsonDecode(value.body)["errors"]}";
 
-                        Toast.show(errorMessage, context,
-                            gravity: Toast.BOTTOM,
-                            backgroundColor: Colors.black,
-                            textColor: Colors.white);
+                        showToast(message: errorMessage);
                       });
                     } else if (response.statusCode == 500) {
                       Navigator.pop(context);
                       setState(() {
-                        errorMessage = AppLocalization.of(context).serverError;
-                        Toast.show(
-                          errorMessage,
-                          context,
-                          gravity: Toast.TOP,
-                          backgroundColor: Colors.black,
-                          textColor: Colors.white,
-                        );
+                        errorMessage = AppLocalization.of(context)!.serverError;
+                        showToast(message: errorMessage);
                       });
-                    }
-
-                    /// else if (response.statusCode == 800) {
-                    ///   Navigator.pop(context);
-                    ///   Navigator.pushNamed(context, "/add-document");
-                    /// }
-                    ///
-                    else {
+                    } else {
                       Navigator.pop(context);
-                      setState(() {
-                        errorMessage =
-                            AppLocalization.of(context).somethingWentWrong;
-                        Toast.show(
-                          errorMessage,
-                          context,
-                          gravity: Toast.TOP,
-                          backgroundColor: Colors.black,
-                          textColor: Colors.white,
-                        );
-                      });
+                      if (response.statusCode == 406) {
+                        errorMessage = jsonDecode(value.body)[0];
+                        showToast(message: "$errorMessage");
+                        setState(() {});
+                      } else {
+                        debugPrint("ERROR:- ${response.body}");
+                        setState(() {
+                          errorMessage =
+                              AppLocalization.of(context)!.somethingWentWrong;
+                          showToast(message: "$errorMessage");
+                        });
+                      }
                     }
                   });
                 },
                 cancelCallBack: () {
                   Navigator.pop(context);
-                  _sendPaymentScaffold.currentState.showSnackBar(SnackBar(
-                    content: Text(AppLocalization.of(context).invalidPassword),
+                  _sendPaymentScaffold.currentState!.showSnackBar(SnackBar(
+                    content: Text(AppLocalization.of(context)!.invalidPassword),
                   ));
                 });
           } catch (e) {
-            debugPrint(e);
-            Toast.show(
-              e,
-              context,
-              gravity: Toast.BOTTOM,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            debugPrint(e.toString());
+            showToast(message: e.toString());
           }
         } else {
-          Toast.show(
-            AppLocalization.of(context).invalidRecipient,
-            context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          showToast(message: AppLocalization.of(context)!.invalidRecipient);
         }
       }
     } else {
-      var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(
-        msg,
-        context,
-        gravity: Toast.CENTER,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
+      var msg = AppLocalization.of(context)!.invalidRecipient;
+      showToast(message: msg);
     }
   }
 
-  void popFromShoppingCart(Product product) {
+  void popFromShoppingCart(Product? product) {
     if (itemIndex != null) {
       try {
-        basketBloc.removeItemFromCart(basketBloc.items[itemIndex]);
+        basketBloc.removeItemFromCart(basketBloc.items[itemIndex!]);
       } catch (e) {
         debugPrint("SendPayment PopFromShopping cart : " + e.toString());
       }
@@ -1104,5 +1079,20 @@ class _SendPaymentState extends State<SendPayment> {
     _referenceController.dispose();
     _recipientFocus.dispose();
     super.dispose();
+  }
+
+  /// TODO: this function maybe deleted in future
+  void checkForUserDailyLimit() {
+    if (amount! >=
+        int.parse(
+            virtualAccount!.accountTier!.dailyCumulativeTransactionLimit!)) {
+      Navigator.pop(context);
+
+      errorMessage =
+          "you cannot exceed your payment limit of ${virtualAccount!.accountTier!.dailyCumulativeTransactionLimit} per transactions.";
+      setState(() {});
+      showToast(message: errorMessage);
+      return;
+    }
   }
 }

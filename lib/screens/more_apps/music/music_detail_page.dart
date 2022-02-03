@@ -23,11 +23,11 @@ class MusicDetailPage extends StatefulWidget {
 }
 
 class _MusicDetailPageState extends State<MusicDetailPage> {
-  MusicDashboardBloc _musicDashboardBloc;
+  late MusicDashboardBloc _musicDashboardBloc;
 
   // musicPlayer.audioPlayer musicPlayer.audioPlayer;
-  MusicPlayer musicPlayer;
-  int trackIndex;
+  MusicPlayer? musicPlayer;
+  int? trackIndex;
 
   bool isPlaying = false;
   bool isLoading = true;
@@ -44,13 +44,13 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
 
   void loadMusic() async {
     try {
-      if (musicPlayer.audioPlayer.isPlaying.value == true ||
-          musicPlayer.audioPlayer.playerState.value == PlayerState.pause) {
-        if (musicPlayer.audioPlayer.current.value.index != trackIndex) {
-          musicPlayer.audioPlayer.playlistPlayAtIndex(trackIndex);
+      if (musicPlayer!.audioPlayer.isPlaying.value == true ||
+          musicPlayer!.audioPlayer.playerState.value == PlayerState.pause) {
+        if (musicPlayer!.audioPlayer.current.value!.index != trackIndex) {
+          musicPlayer!.audioPlayer.playlistPlayAtIndex(trackIndex!);
         }
       } else {
-        musicPlayer.audioPlayer.playlistPlayAtIndex(trackIndex);
+        musicPlayer!.audioPlayer.playlistPlayAtIndex(trackIndex!);
       }
 
       isLoading = false;
@@ -73,7 +73,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -85,12 +85,12 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
-      title: musicPlayer.audioPlayer.builderRealtimePlayingInfos(
+      title: musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
           builder: (context, info) {
         return Text(
-          info == null || info.current == null
+          info.current == null
               ? "ERIGMA II"
-              : info.current.audio.audio.metas.title,
+              : info.current!.audio.audio.metas.title!,
           style: TextStyle(
               fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
         );
@@ -146,7 +146,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             height: 40,
           ),
         ),
-        musicPlayer.audioPlayer.builderRealtimePlayingInfos(
+        musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
             builder: (context, info) {
           return Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -154,9 +154,9 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  info == null || info.current == null
+                  info.current == null
                       ? "ERIGMA II"
-                      : info.current.audio.audio.metas.title,
+                      : info.current!.audio.audio.metas.title!,
                   style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
@@ -166,9 +166,9 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                   height: 8,
                 ),
                 Text(
-                  info == null || info.current == null
+                  info.current == null
                       ? "ERIGGA"
-                      : info.current.audio.audio.metas.artist,
+                      : info.current!.audio.audio.metas.artist!,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -208,9 +208,9 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   Widget progressIndicator() {
     return Column(
       children: [
-        musicPlayer.audioPlayer.builderRealtimePlayingInfos(
+        musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
             builder: (context, info) {
-          if (info == null || info.current == null) {
+          if (info.current == null) {
             return SizedBox(
               height: 50,
             );
@@ -219,7 +219,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             currentPosition: info.currentPosition,
             duration: info.duration,
             seekTo: (to) {
-              musicPlayer.audioPlayer.seek(to);
+              musicPlayer!.audioPlayer.seek(to!);
             },
           );
         }),
@@ -234,11 +234,11 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             icon: Icon(
               SlydoAppIcon.music_suffle,
               size: 16,
-              color: musicPlayer.audioPlayer.shuffle ? navyBlue : blackFont,
+              color: musicPlayer!.audioPlayer.shuffle ? navyBlue : blackFont,
             ),
             onPressed: () {
-              musicPlayer.toggleShuffle();
-              debugPrint("suffle:- ${musicPlayer.audioPlayer.shuffle}");
+              musicPlayer!.toggleShuffle();
+              debugPrint("suffle:- ${musicPlayer!.audioPlayer.shuffle}");
               setState(() {});
             }),
         flexibleSpace(),
@@ -249,17 +249,17 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
               color: blackFont,
             ),
             onPressed: () {
-              musicPlayer.audioPlayer.previous();
+              musicPlayer!.audioPlayer.previous();
               setState(() {});
             }),
         flexibleSpace(),
         InkWell(
           onTap: () {
-            if (musicPlayer.audioPlayer.isPlaying.value) {
-              musicPlayer.audioPlayer.pause();
+            if (musicPlayer!.audioPlayer.isPlaying.value) {
+              musicPlayer!.audioPlayer.pause();
               setState(() {});
             } else {
-              musicPlayer.audioPlayer.play();
+              musicPlayer!.audioPlayer.play();
               setState(() {});
             }
           },
@@ -274,11 +274,13 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                 width: 70,
                 child: StreamBuilder<bool>(
                     initialData: false,
-                    stream: musicPlayer.audioPlayer.isPlaying,
+                    stream: musicPlayer!.audioPlayer.isPlaying,
                     builder: (context, snapshot) {
                       return Icon(
-                        snapshot.data ? Icons.pause : SlydoAppIcon.music_play_1,
-                        size: snapshot.data ? 28 : 20,
+                        snapshot.data!
+                            ? Icons.pause
+                            : SlydoAppIcon.music_play_1,
+                        size: snapshot.data! ? 28 : 20,
                         color: blackFont,
                       );
                     }),
@@ -294,7 +296,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
               color: blackFont,
             ),
             onPressed: () {
-              musicPlayer.audioPlayer.next();
+              musicPlayer!.audioPlayer.next();
             }),
         flexibleSpace(),
         IconButton(
@@ -305,10 +307,10 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             ),
             onPressed: () {
               if (musicLoopMode == LoopMode.playlist) {
-                musicPlayer.audioPlayer.setLoopMode(LoopMode.single);
+                musicPlayer!.audioPlayer.setLoopMode(LoopMode.single);
                 musicLoopMode = LoopMode.single;
               } else if (musicLoopMode == LoopMode.single) {
-                musicPlayer.audioPlayer.setLoopMode(LoopMode.playlist);
+                musicPlayer!.audioPlayer.setLoopMode(LoopMode.playlist);
                 musicLoopMode = LoopMode.playlist;
               }
               setState(() {});
@@ -324,13 +326,14 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
       child: Container(
         child: AspectRatio(
           aspectRatio: 1,
-          child: musicPlayer.audioPlayer.builderRealtimePlayingInfos(
+          child: musicPlayer!.audioPlayer.builderRealtimePlayingInfos(
               builder: (context, info) {
             return CachedNetworkImage(
-              imageUrl: info == null || info.current == null
+              imageUrl: info.current == null
                   ? "https://www.naijaloaded.com.ng/wp-content/uploads/2019/10/erigga.jpg"
-                  : info.current.audio.audio.metas.image.path,
+                  : info.current!.audio.audio.metas.image!.path,
               fit: BoxFit.fill,
+              errorWidget: imageErrorWidget,
             );
           }),
         ),
@@ -342,12 +345,12 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
 class PositionSeekWidget extends StatefulWidget {
   final Duration currentPosition;
   final Duration duration;
-  final Function(Duration) seekTo;
+  final Function(Duration?) seekTo;
 
   const PositionSeekWidget({
-    @required this.currentPosition,
-    @required this.duration,
-    @required this.seekTo,
+    required this.currentPosition,
+    required this.duration,
+    required this.seekTo,
   });
 
   @override
@@ -355,11 +358,11 @@ class PositionSeekWidget extends StatefulWidget {
 }
 
 class _PositionSeekWidgetState extends State<PositionSeekWidget> {
-  Duration _visibleValue;
+  Duration? _visibleValue;
   bool listenOnlyUserInterraction = false;
   double get percent => widget.duration.inMilliseconds == 0
       ? 0
-      : _visibleValue.inMilliseconds / widget.duration.inMilliseconds;
+      : _visibleValue!.inMilliseconds / widget.duration.inMilliseconds;
 
   @override
   void initState() {
@@ -377,10 +380,12 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Max > ${widget.duration.inMilliseconds.toDouble().floor()}");
+    debugPrint("===>${percent * widget.duration.inMilliseconds.toDouble()}");
     return Container(
       height: 20,
       child: Stack(
-        overflow: Overflow.visible,
+        clipBehavior: Clip.none,
         children: [
           SliderTheme(
             data: Theme.of(context).sliderTheme.copyWith(
@@ -400,7 +405,8 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
               max: widget.duration.inMilliseconds.toDouble(),
               inactiveColor: dividerColor,
               activeColor: navyBlue,
-              value: percent * widget.duration.inMilliseconds.toDouble(),
+              value:
+                  (percent * widget.duration.inMilliseconds.toDouble()).abs(),
               onChangeEnd: (newValue) {
                 setState(() {
                   listenOnlyUserInterraction = false;

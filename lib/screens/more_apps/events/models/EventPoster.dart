@@ -1,6 +1,6 @@
 class EventPoster {
-  String image;
-  String name;
+  String? image;
+  String? name;
 
   EventPoster({this.image, this.name});
 

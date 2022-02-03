@@ -27,9 +27,9 @@ class _SearchProductState extends State<SearchProduct> {
     "2007"
   ];
 
-  String selectedMovieCategory;
-  String selectedMovieYear;
-  int selectedRating;
+  String? selectedMovieCategory;
+  String? selectedMovieYear;
+  int? selectedRating;
   RangeValues selectedPriceValue = RangeValues(5, 56);
 
   List<ShoppingProduct> products = [];
@@ -39,9 +39,9 @@ class _SearchProductState extends State<SearchProduct> {
   bool isLoading = false;
 
   //pagination variables
-  int count = 0;
-  String next = "";
-  String previous = "";
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   ScrollController _scrollController = new ScrollController();
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
@@ -96,16 +96,20 @@ class _SearchProductState extends State<SearchProduct> {
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic> result = await ShoppingAuthService()
+        Map<String, dynamic>? result = await ShoppingAuthService()
             .searchShoppingProducts(searchController.text, next, previous);
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
-        List tempList = result['results'];
+        List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
           try {
-            tempList.forEach((result) {
+            tempList!.forEach((result) {
               products.add(ShoppingProduct.fromJson(result));
             });
           } catch (e) {}
@@ -119,9 +123,9 @@ class _SearchProductState extends State<SearchProduct> {
           setState(() {});
         }
       } else if (next == null && products.length > 6) {
-        _scaffoldSearchKey.currentState.showSnackBar(SnackBar(
+        _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -133,7 +137,7 @@ class _SearchProductState extends State<SearchProduct> {
     return Scaffold(
       key: _scaffoldSearchKey,
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -199,7 +203,7 @@ class _SearchProductState extends State<SearchProduct> {
           isSearchIsEmpty
               ? Expanded(
                   child: NoItemInList(
-                    msg: AppLocalization.of(context)
+                    msg: AppLocalization.of(context)!
                         .pleaseTypeSomethingToGetResult,
                     isResult: false,
                   ),
@@ -207,7 +211,7 @@ class _SearchProductState extends State<SearchProduct> {
               : noItemInList
                   ? Expanded(
                       child: NoItemInList(
-                        msg: AppLocalization.of(context).noResultFound,
+                        msg: AppLocalization.of(context)!.noResultFound,
                       ),
                     )
                   : Expanded(
@@ -236,7 +240,9 @@ class _SearchProductState extends State<SearchProduct> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: TextFormField(
           controller: searchController,
@@ -379,7 +385,7 @@ class _SearchProductState extends State<SearchProduct> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          AppLocalization.of(context).category,
+          AppLocalization.of(context)!.category,
           style: TextStyle(color: blackFont, fontSize: 14),
         ),
         SizedBox(
@@ -396,7 +402,7 @@ class _SearchProductState extends State<SearchProduct> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedMovieCategory != null ? selectedMovieCategory : "",
+              selectedMovieCategory != null ? selectedMovieCategory! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -516,7 +522,7 @@ class _SearchProductState extends State<SearchProduct> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedMovieYear != null ? selectedMovieYear : "",
+              selectedMovieYear != null ? selectedMovieYear! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -658,7 +664,7 @@ class _SearchProductState extends State<SearchProduct> {
   }
 
   Widget movieRatingButton(StateSetter bottomSheetSetState,
-      {bool isSelected = false, int index}) {
+      {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 6, horizontal: 14),

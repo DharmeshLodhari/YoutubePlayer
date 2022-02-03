@@ -18,8 +18,8 @@ class SelectAddressScreen extends StatefulWidget {
 }
 
 class _SelectAddressScreenState extends State<SelectAddressScreen> {
-  TextEditingController chooseDestinationPointController;
-  TextEditingController chooseStartingPointController;
+  TextEditingController? chooseDestinationPointController;
+  TextEditingController? chooseStartingPointController;
 
   List<PlaceModal> searchedPlaces = [];
   bool isLoading = false;
@@ -29,7 +29,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
   FocusNode startingLocation = FocusNode();
   FocusNode destinationLocation = FocusNode();
 
-  TaxiBloc taxiBloc;
+  late TaxiBloc taxiBloc;
 
   @override
   void initState() {
@@ -39,12 +39,12 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
     chooseStartingPointController = TextEditingController();
   }
 
-  void searchPlaces({String query}) async {
+  void searchPlaces({String? query}) async {
     isLoading = true;
     if (mounted) setState(() {});
 
     TaxiAuth().searchPlaces(place: query).then((value) {
-      searchedPlaces = value;
+      searchedPlaces = value as List<PlaceModal>;
       isLoading = false;
       if (mounted) setState(() {});
     }).catchError((error) {
@@ -64,7 +64,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [MapUI(), getBottomUI(getSearchDestination())],
         ),
@@ -156,7 +156,7 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
     return items;
   }
 
-  Widget getPlaceTile({PlaceModal place}) {
+  Widget getPlaceTile({required PlaceModal place}) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       leading: RoundedBackgroundIcon(
@@ -171,18 +171,18 @@ class _SelectAddressScreenState extends State<SelectAddressScreen> {
         ),
       ),
       title: Text(
-        place.name,
+        place.name!,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.w400, fontSize: 16),
       ),
-      subtitle: Text(place.formattedAddress),
+      subtitle: Text(place.formattedAddress!),
       onTap: () {
         if (taxiBloc.startingPoint == null) {
           taxiBloc.startingPoint = place;
 
           if (mounted) setState(() {});
 
-          chooseStartingPointController.text = place.name;
+          chooseStartingPointController!.text = place.name!;
           startingLocation.unfocus();
           // destinationLocation.requestFocus();
         } else {

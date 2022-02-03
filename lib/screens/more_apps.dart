@@ -157,7 +157,7 @@ class _MoreAppsState extends State<MoreApps> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: foregroundScreen(),
     );
   }

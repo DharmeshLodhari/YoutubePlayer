@@ -19,7 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../music/models/music_album.dart';
 import '../shopping_auth.dart';
@@ -31,10 +30,10 @@ class MixCartItem extends StatefulWidget {
 }
 
 class _MixCartItemState extends State<MixCartItem> {
-  BasketBloc basketBloc;
-  CustomerProfileBloc customerProfileBloc;
-  UserBloc userBloc;
-  List<int> orders = List<int>();
+  late BasketBloc basketBloc;
+  late CustomerProfileBloc customerProfileBloc;
+  late UserBloc userBloc;
+  List<int?> orders = [];
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _auth = PaymentAndBankingAuth();
 
@@ -61,13 +60,9 @@ class _MixCartItemState extends State<MixCartItem> {
         initializeShoppingCart();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -91,7 +86,7 @@ class _MixCartItemState extends State<MixCartItem> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: SmartRefresher(
           enablePullDown: true,
           header: WaterDropHeader(
@@ -124,7 +119,7 @@ class _MixCartItemState extends State<MixCartItem> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context).basket,
+        AppLocalization.of(context)!.basket,
         style: TextStyle(
             color: blackFont, fontSize: 22, fontWeight: FontWeight.w700),
       ),
@@ -159,7 +154,7 @@ class _MixCartItemState extends State<MixCartItem> {
     return basketBloc.total == 0
         ? Center(
             child: NoItemInList(
-                msg: AppLocalization.of(context).shoppingCartIsEmpty),
+                msg: AppLocalization.of(context)!.shoppingCartIsEmpty),
           )
         : SingleChildScrollView(
             child: Column(
@@ -259,7 +254,7 @@ class _MixCartItemState extends State<MixCartItem> {
       ]
     });
 
-    Audio audio = album.audio[1];
+    Audio audio = album.audio![1];
     audioTile = CartMusicTile(audio: audio);
 
     return CartAlbumTile(
@@ -298,11 +293,11 @@ class _MixCartItemState extends State<MixCartItem> {
             Row(
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context).total + " : ",
+                  AppLocalization.of(context)!.total + " : ",
                   style: TextStyle(fontSize: 14, color: blackFont),
                 ),
                 Text(
-                  worldCurrencies[userBloc.user.currency],
+                  worldCurrencies[userBloc.user.currency!]!,
                   style: TextStyle(
                       fontFamily: "Roboto",
                       fontSize: 16,
@@ -335,13 +330,10 @@ class _MixCartItemState extends State<MixCartItem> {
                   if (basketBloc.items.length != 0) {
                     addNoteDialog();
                   } else {
-                    Toast.show(
-                        AppLocalization.of(context).pleaseAddSomeItemsFirst,
-                        context,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                        duration: Toast.LENGTH_LONG,
-                        gravity: Toast.CENTER);
+                    showToast(
+                      message:
+                          AppLocalization.of(context)!.pleaseAddSomeItemsFirst,
+                    );
                   }
                 },
               ),
@@ -403,7 +395,7 @@ class _MixCartItemState extends State<MixCartItem> {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
-    var mapData;
+    late var mapData;
     basketBloc.items.forEach((element) {
       if (element["item"].conversationId ==
           basketBloc.items[index]["item"].conversationId) {
@@ -424,7 +416,7 @@ class _MixCartItemState extends State<MixCartItem> {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    var mapData;
+    late var mapData;
     basketBloc.items.forEach((element) {
       if (element["item"].conversationId ==
           basketBloc.items[index]["item"].conversationId) {
@@ -444,7 +436,7 @@ class _MixCartItemState extends State<MixCartItem> {
   }
 
   List<Widget> listActionSlideActions(int index) {
-    String caption1 = AppLocalization.of(context).remove;
+    String caption1 = AppLocalization.of(context)!.remove;
 
     return [
       IconSlideAction(
@@ -502,14 +494,14 @@ class _MixCartItemState extends State<MixCartItem> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Text(
-            AppLocalization.of(context).confirmation,
+            AppLocalization.of(context)!.confirmation,
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
           ),
           content: Container(
             child: Text(
-              AppLocalization.of(context).areYouSureWantToPlaceThisOrderFor +
-                  '(${worldCurrencies[userBloc.user.currency]} ${basketBloc.total})?',
+              AppLocalization.of(context)!.areYouSureWantToPlaceThisOrderFor +
+                  '(${worldCurrencies[userBloc.user.currency!]} ${basketBloc.total})?',
               style: TextStyle(
                 fontSize: 16,
                 color: blackFont,
@@ -518,9 +510,9 @@ class _MixCartItemState extends State<MixCartItem> {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(
-                AppLocalization.of(context).cancel,
+                AppLocalization.of(context)!.cancel,
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
@@ -530,9 +522,9 @@ class _MixCartItemState extends State<MixCartItem> {
                 Navigator.pop(context, 'cancel');
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
-                AppLocalization.of(context).place,
+                AppLocalization.of(context)!.place,
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
@@ -548,11 +540,11 @@ class _MixCartItemState extends State<MixCartItem> {
     );
   }
 
-  void showMaterialDialog<T>({BuildContext context, Widget child}) {
+  void showMaterialDialog<T>({required BuildContext context, Widget? child}) {
     showDialog<T>(
       context: context,
-      builder: (BuildContext context) => child,
-    ).then<void>((T value) async {
+      builder: (BuildContext context) => child!,
+    ).then<void>((T? value) async {
       // The value passed to Navigator.pop() or null.
       if (value != null) {
         var data = {"note": value};
@@ -588,13 +580,8 @@ class _MixCartItemState extends State<MixCartItem> {
                     );
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
-                    Toast.show(
-                      AppLocalization.of(context).serverError,
-                      context,
-                      gravity: Toast.TOP,
-                      backgroundColor: Colors.black,
-                      textColor: Colors.white,
-                    );
+                    showToast(
+                        message: AppLocalization.of(context)!.serverError);
                   }
                   // else if (response.statusCode == 800) {
                   //   Navigator.pop(context);
@@ -631,9 +618,9 @@ class _MixCartItemState extends State<MixCartItem> {
 
 // ignore: must_be_immutable
 class VerticalListItem extends StatelessWidget {
-  Widget child;
+  Widget? child;
   var item;
-  String type;
+  String? type;
 
   VerticalListItem(Widget child, var item) {
     this.child = child;
@@ -646,12 +633,12 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (type == "product") {
-          Product product = item;
+          Product? product = item;
           Navigator.pushNamed(context, "/product",
               arguments: {"product": product});
         }
         if (type == "service") {
-          Service service = item;
+          Service? service = item;
           Navigator.pushNamed(context, "/service-detail",
               arguments: {"service": service});
         }

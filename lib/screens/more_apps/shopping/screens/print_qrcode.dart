@@ -10,15 +10,15 @@ import 'package:printing/printing.dart';
 class PrintQRCode extends StatefulWidget {
   var arguments;
 
-  PrintQRCode({@required this.arguments});
+  PrintQRCode({required this.arguments});
 
   @override
   _PrintQRCodeState createState() => _PrintQRCodeState();
 }
 
 class _PrintQRCodeState extends State<PrintQRCode> {
-  String imageUrl;
-  String itemName;
+  String? imageUrl;
+  String? itemName;
 
   @override
   void initState() {
@@ -71,21 +71,42 @@ class _PrintQRCodeState extends State<PrintQRCode> {
     );
   }
 
-  Future<Uint8List> _generatePdf(PdfPageFormat format, String title) async {
-    final pdf = pw.Document(title: itemName);
-    var imageProvider = NetworkImage(imageUrl);
-    // ignore: deprecated_member_use
-    final PdfImage image = await pdfImageFromImageProvider(
-        pdf: pdf.document, image: imageProvider);
+  /// TODO:Change the pdf library
+  Future<Uint8List> _generatePdf(PdfPageFormat format, String? title) async {
+    // final pdf = pw.Document(title: itemName);
 
-    pdf.addPage(
-      pw.Page(build: (pw.Context context) {
-        return pw.Container(
-          // ignore: deprecated_member_use
-          child: pw.Image(image),
-        ); // Center
-      }),
-    );
-    return pdf.save();
+    final pw.Document doc = pw.Document(title: itemName);
+    // // ignore: deprecated_member_use
+
+    // final image = await imageFromAssetBundle('assets/image.png');
+
+    var imageProvider = await networkImage(imageUrl!);
+
+    // final file = await getFileFromNetworkImage("<your network image Url here>");
+    //
+    // im.Image imageNew = im.Image.fromBytes(100,100,await file.readAsBytes());
+    // final PdfImage image = await PdfImage.fromImage(doc.document, image: imageNew);
+
+    doc.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Image(imageProvider),
+          ); // Center
+        },
+      ),
+    ); // Page
+    //
+    // PdfImage image = PdfImage.fromImage(pdf.document, image: im.Image());
+    //
+    // pdf.addPage(
+    //   pw.Page(build: (pw.Context context) {
+    //     return pw.Container(
+    //       // ignore: deprecated_member_use
+    //       child: pw.Image(image.),
+    //     ); // Center
+    //   }),
+    // );
+    return doc.save();
   }
 }

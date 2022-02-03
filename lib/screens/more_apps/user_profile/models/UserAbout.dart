@@ -1,7 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/utils/global_key.dart';
-import 'package:provider/provider.dart';
-
 import 'OpeningHour.dart';
 
 class UserAbout {
@@ -9,7 +5,7 @@ class UserAbout {
   String bio;
   String contact;
   String wallpaper;
-  List<OpeningHour> openingHours;
+  List<OpeningHourForDay> openingHours;
 
   UserAbout(
       {this.address = "",
@@ -19,14 +15,6 @@ class UserAbout {
       this.openingHours = const []});
 
   factory UserAbout.fromJson(Map<String, dynamic> json) {
-    UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.navigationKey.currentContext,
-        listen: false);
-
-    if (json['nickname'] != null && json['nickname'] != "") {
-      userBloc.user.nickName = json['nickname'];
-    }
-
     return UserAbout(
       address: json['address'] ?? "",
       bio: json['bio'] ?? "",
@@ -34,7 +22,7 @@ class UserAbout {
       contact: json['contact'] ?? "",
       openingHours: json['opening_hours'] != null
           ? (json['opening_hours'] as List)
-              .map((i) => OpeningHour.fromJson(i))
+              .map((i) => OpeningHourForDay.fromJson(i))
               .toList()
           : [],
     );
@@ -46,13 +34,11 @@ class UserAbout {
     data['address'] = this.address;
     data['bio'] = this.bio;
     data['contact'] = this.contact;
-    if (!this.wallpaper.contains("https")) {
+    if (!this.wallpaper.contains("https") && this.wallpaper != "") {
       data['wallpaper'] = this.wallpaper;
     }
 
-    if (this.openingHours != null) {
-      data['opening_hours'] = this.openingHours.map((v) => v.toJson()).toList();
-    }
+    data['opening_hours'] = this.openingHours.map((v) => v.toJson()).toList();
     return data;
   }
 }

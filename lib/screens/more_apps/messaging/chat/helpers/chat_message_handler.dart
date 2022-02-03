@@ -5,10 +5,12 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 
+/// This helper will perform all db operation related to chat message
 class ChatMessageHandler {
   DatabaseHelper _db = DatabaseHelper();
 
-  Future<List<ChatMessage>> saveChatMessages({List<String> messages}) async {
+  Future<List<ChatMessage>> saveChatMessages(
+      {required List<String> messages}) async {
     List<ChatMessage> chatMessages = [];
 
     /// Converting CustomerProfile in to Chat Users
@@ -21,20 +23,22 @@ class ChatMessageHandler {
     return insertedMessages;
   }
 
-  Future<List> insertMissedChatMessages({List<ChatMessage> messages}) async {
+  Future<List> insertMissedChatMessages(
+      {required List<ChatMessage> messages}) async {
     /// adding Chat User into DataBase
 
     return await _db.insertMissedMessages(messages);
   }
 
-  Future<int> insertMissedChatMessage({ChatMessage chatMessage}) async {
+  Future<int> insertMissedChatMessage(
+      {required ChatMessage chatMessage}) async {
     /// adding Chat User into DataBase
 
     return await _db.insertMissedMessage(chatMessage);
   }
 
   Future<List<ChatMessage>> getChatMessages(
-      {ChatConversation chatConversation}) async {
+      {required ChatConversation chatConversation}) async {
     List<ChatMessage> chatMessages;
 
     chatMessages =
@@ -43,7 +47,7 @@ class ChatMessageHandler {
   }
 
   Future<List<ChatMessage>> getLimitedChatMessages(
-      {String conversationId, int limit}) async {
+      {String? conversationId, int? limit}) async {
     List<ChatMessage> chatMessages;
 
     chatMessages = await _db.getLimitedChatMessages(
@@ -52,20 +56,20 @@ class ChatMessageHandler {
   }
 
   Future<int> updateReadByRecipientChatMessage(
-      {String checkId, String conversationId}) async {
+      {String? checkId, String? conversationId}) async {
     return await _db.updateChatMessageReadByRecipient(checkId, conversationId);
   }
 
   Future<int> updateDeliverStatusOfChatMessage(
-      {String checkId, String conversationId}) async {
+      {String? checkId, String? conversationId}) async {
     return await _db.updateChatMessageDeliverStatus(checkId, conversationId);
   }
 
-  Future<int> addChatMessage({ChatMessage chatMessage}) async {
+  Future<int> addChatMessage({required ChatMessage chatMessage}) async {
     return await _db.insertSingleChatMessage(chatMessage);
   }
 
-  Future<void> updateChatMessage({ChatMessage chatMessage}) async {
+  Future<int> updateChatMessage({required ChatMessage chatMessage}) async {
     return await _db.updateSingleChatMessage(chatMessage);
   }
 
@@ -73,38 +77,39 @@ class ChatMessageHandler {
     return await _db.deleteChatMessages();
   }
 
-  Future<int> deleteChatMessage({String checkId, String conversationId}) async {
+  Future<int> deleteChatMessage(
+      {String? checkId, String? conversationId}) async {
     return await _db.deleteChatMessage(checkId, conversationId);
   }
 
   Future<int> updateEditedChatMessage(
-      {String checkId,
-      String conversationId,
-      bool wasEdited,
-      String text}) async {
+      {String? checkId,
+      String? conversationId,
+      bool? wasEdited,
+      String? text}) async {
     return await _db.updateEditedChatMessage(
         checkId, conversationId, wasEdited, text);
   }
 
   Future<ChatMessagePagination> getChatMessagePagination(
-      {String conversationId}) async {
+      {String? conversationId}) async {
     ChatMessagePagination chatMessagePagination =
         await _db.getChatMessagePagination(conversationId);
     return chatMessagePagination;
   }
 
-  Future<void> saveChatMessagePagination(
-      {ChatMessagePagination chatMessagePagination}) async {
+  Future<int> saveChatMessagePagination(
+      {required ChatMessagePagination chatMessagePagination}) async {
     return await _db.saveChatMessagePagination(chatMessagePagination);
   }
 
   Future<void> updateChatMessagePagination(
-      {ChatMessagePagination chatMessagePagination}) async {
+      {required ChatMessagePagination chatMessagePagination}) async {
     await _db.updateChatMessagePagination(chatMessagePagination);
     return Future.value();
   }
 
-  Future<List<ChatMessage>> getLastChatMessage() async {
+  Future<List<ChatMessage>?> getLastChatMessage() async {
     return await _db.getLastChatMessage();
   }
 }

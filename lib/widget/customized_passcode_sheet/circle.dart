@@ -21,9 +21,9 @@ class Circle extends StatelessWidget {
   double extraSize = 0;
 
   Circle(
-      {Key key,
+      {Key? key,
       this.filled = false,
-      @required this.circleUIConfig,
+      required this.circleUIConfig,
       this.extraSize = 0})
       : super(key: key);
 

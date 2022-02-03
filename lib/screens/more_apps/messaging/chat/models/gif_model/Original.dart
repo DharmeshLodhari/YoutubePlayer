@@ -1,14 +1,14 @@
 class Original {
-  String frames;
-  String hash;
-  String height;
-  String mp4;
-  String mp4Size;
-  String size;
-  String url;
-  String webp;
-  String webpSize;
-  String width;
+  String? frames;
+  String? hash;
+  String? height;
+  String? mp4;
+  String? mp4Size;
+  String? size;
+  String? url;
+  String? webp;
+  String? webpSize;
+  String? width;
 
   Original(
       {this.frames,

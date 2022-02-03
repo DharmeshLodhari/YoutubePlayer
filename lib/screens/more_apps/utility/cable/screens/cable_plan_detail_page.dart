@@ -4,24 +4,24 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 class CablePlanDetail extends StatefulWidget {
-  final Map<String, dynamic> arguments;
+  final Map<String, dynamic>? arguments;
   CablePlanDetail({this.arguments});
   @override
   _CablePlanDetailState createState() => _CablePlanDetailState();
 }
 
 class _CablePlanDetailState extends State<CablePlanDetail> {
-  CablePlan plan;
+  CablePlan? plan;
 
   @override
   void initState() {
-    plan = widget.arguments["plan"];
-    plan.features.add("CSI");
-    plan.features.add("Sony Movies");
-    plan.features.add("Cartoon Network");
-    plan.features.add("Disney Junior");
-    plan.features.add("Showmax");
-    plan.features.add("53 Audio channels");
+    plan = widget.arguments!["plan"];
+    plan!.features!.add("CSI");
+    plan!.features!.add("Sony Movies");
+    plan!.features!.add("Cartoon Network");
+    plan!.features!.add("Disney Junior");
+    plan!.features!.add("Showmax");
+    plan!.features!.add("53 Audio channels");
 
     super.initState();
   }
@@ -30,7 +30,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -45,7 +45,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
               height: 16,
             ),
             Text(
-              plan.name,
+              plan!.name!,
               style: TextStyle(
                   fontSize: 26, fontWeight: FontWeight.w700, color: blackFont),
             ),
@@ -61,7 +61,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
                       fontFamily: "roberto"),
                 ),
                 Text(
-                  plan.price.replaceAll("₦", ""),
+                  plan!.price!.replaceAll("₦", ""),
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -86,7 +86,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: lightGrey, width: 0.2)),
                 child: Container(
-                  child: getPlanFeatures(plan: plan),
+                  child: getPlanFeatures(plan: plan!),
                 ),
               ),
             ),
@@ -114,16 +114,16 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
     );
   }
 
-  Widget getPlanFeatures({CablePlan plan}) {
+  Widget getPlanFeatures({required CablePlan plan}) {
     return Column(
         mainAxisSize: MainAxisSize.min,
         children: getColumnChildren(plan: plan));
   }
 
-  List<Widget> getColumnChildren({CablePlan plan}) {
+  List<Widget> getColumnChildren({required CablePlan plan}) {
     List<Widget> items = [];
 
-    for (int i = 0; i < plan.features.length; i++) {
+    for (int i = 0; i < plan.features!.length; i++) {
       items.add(
         Container(
           padding: EdgeInsets.symmetric(vertical: 8),
@@ -138,7 +138,7 @@ class _CablePlanDetailState extends State<CablePlanDetail> {
                 width: 12,
               ),
               Text(
-                plan.features[i],
+                plan.features![i],
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 14,

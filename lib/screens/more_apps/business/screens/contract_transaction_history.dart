@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -17,9 +19,9 @@ class _ContractTransactionHistoryState
     extends State<ContractTransactionHistory> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  int count = 0;
-  String next = "";
-  String previous = "";
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List transactionList = [];
   ScrollController _scrollController = new ScrollController();
   // RefreshController _refreshController =
@@ -48,8 +50,12 @@ class _ContractTransactionHistoryState
             isLoading = true;
           });
         }
-        Map<String, dynamic> result = await BusinessAuth()
+        Map<String, dynamic>? result = await BusinessAuth()
             .getContractTransactions(next, previous, false, false);
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -68,9 +74,9 @@ class _ContractTransactionHistoryState
           });
         }
       } else if (next == null && transactionList.length > 6) {
-        _scaffoldKey.currentState.showSnackBar(SnackBar(
+        _scaffoldKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -106,8 +112,9 @@ class _ContractTransactionHistoryState
         return Future.value(true);
       },
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -144,7 +151,7 @@ class _ContractTransactionHistoryState
   Widget _buildTransactionList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).transactionHistoryEmpty,
+            msg: AppLocalization.of(context)!.transactionHistoryEmpty,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),

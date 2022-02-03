@@ -1,19 +1,19 @@
 class PartialMessage {
-  String id;
-  String subtitle;
-  String subject;
-  String sender;
-  String senderAvatar;
+  String? id;
+  String? subtitle;
+  String? subject;
+  String? sender;
+  String? senderAvatar;
   String senderType;
-  String recipient;
-  String recipientAvatar;
+  String? recipient;
+  String? recipientAvatar;
   String recipientType;
-  String timeStamp;
-  bool isRead;
-  bool isArchivedByRecipient;
-  bool isStarredByRecipient;
-  bool isArchivedBySender;
-  bool isStarredBySender;
+  String? timeStamp;
+  bool? isRead;
+  bool? isArchivedByRecipient;
+  bool? isStarredByRecipient;
+  bool? isArchivedBySender;
+  bool? isStarredBySender;
 
   // Pass in as named parameter in constructor
   PartialMessage({
@@ -36,23 +36,23 @@ class PartialMessage {
 }
 
 class Message {
-  String id;
-  String body;
-  String subject;
-  String sender;
-  String senderAvatar;
+  String? id;
+  String? body;
+  String? subject;
+  String? sender;
+  String? senderAvatar;
   String senderType;
 
-  String recipient;
-  String recipientAvatar;
+  String? recipient;
+  String? recipientAvatar;
   String recipientType;
-  String timeStamp;
-  bool isRead;
-  bool isStarred;
-  bool isArchivedByRecipient;
-  bool isStarredByRecipient;
-  bool isArchivedBySender;
-  bool isStarredBySender;
+  String? timeStamp;
+  bool? isRead;
+  bool? isStarred;
+  bool? isArchivedByRecipient;
+  bool? isStarredByRecipient;
+  bool? isArchivedBySender;
+  bool? isStarredBySender;
 
   // Pass in as named parameter in constructor
   Message({

@@ -1,6 +1,6 @@
 class SecureUser {
-  String password;
-  String phoneNumber;
+  String? password;
+  String? phoneNumber;
 
   SecureUser({this.password, this.phoneNumber});
 

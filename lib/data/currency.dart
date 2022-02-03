@@ -1,4 +1,4 @@
-Map worldCurrencies = {
+Map<String, String> worldCurrencies = {
   "AED": r"د.إ",
   "AFN": r"؋",
   "ALL": r"L",

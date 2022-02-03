@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -14,25 +15,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../user_auth.dart';
 
 // ignore: must_be_immutable
 class UserQRCodeScreen extends StatefulWidget {
-  CustomerProfile user;
-
-  UserQRCodeScreen({@required this.user});
+  CustomerProfile? user;
+  UserQRCodeScreen({
+    required this.user,
+  });
 
   @override
-  _UserQRCodeScreenState createState() => _UserQRCodeScreenState(user: user);
+  _UserQRCodeScreenState createState() => _UserQRCodeScreenState();
 }
 
 class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
-  CustomerProfile user;
-  UserBloc userBloc;
-
-  _UserQRCodeScreenState({this.user});
+  late UserBloc userBloc;
 
   bool isLoading = true;
   bool isInContactList = false;
@@ -41,9 +39,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   final auth = AuthService();
   int counter = 0;
 
-  BankAccountBloc bankAccountBloc;
+  late BankAccountBloc bankAccountBloc;
 
-  int accountBalance = 0;
+  int? accountBalance = 0;
 
   @override
   void initState() {
@@ -51,9 +49,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   void checkCurrentUserIsInContact() async {
-    if (userBloc.user.userName != user.userName) {
+    if (userBloc.user.userName != widget.user!.userName) {
       UserAuth()
-          .checkInContactList(user.userName, userBloc.user.userName)
+          .checkInContactList(widget.user!.userName, userBloc.user.userName)
           .then((value) {
         if (mounted) {
           setState(() {
@@ -68,9 +66,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   void checkCurrentUserIsInRequestList() async {
-    if (userBloc.user.userName != user.userName) {
+    if (userBloc.user.userName != widget.user!.userName) {
       UserAuth()
-        ..checkInRequest(user.userName).then((value) {
+        ..checkInRequest(widget.user!.userName).then((value) {
           if (mounted) {
             setState(() {
               if (value) {
@@ -102,11 +100,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldUserInfoKey =
       new GlobalKey<ScaffoldState>();
 
-  CustomerProfileBloc customerProfileBloc;
-
   @override
   Widget build(BuildContext context) {
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     if (counter == 0) {
@@ -115,7 +110,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     }
     return WillPopScope(
       onWillPop: () async {
-        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -134,7 +128,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                 displayUserInfo(),
                 SizedBox(height: 30),
                 // displayPaymentButtons(),
-                //displayUserProfileUpgradeOptions(),
+                displayUserProfileUpgradeOptions(),
               ],
             ),
           ),
@@ -152,20 +146,20 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
               height: 45,
               width: 45,
               child: CachedNetworkImage(
-                imageUrl: user.avatar,
+                imageUrl: widget.user!.avatar!,
                 fit: BoxFit.fill,
                 errorWidget: imageErrorWidget,
               ),
             ),
           ),
-          title: Text(user.displayName()),
-          subtitle: Text(user.userName),
+          title: Text(widget.user!.displayName()!),
+          subtitle: Text(widget.user!.userName!),
           trailing: getTrailing()),
     );
   }
 
-  Widget getTrailing() {
-    if (userBloc.user.userName == user.userName) {
+  Widget? getTrailing() {
+    if (userBloc.user.userName == widget.user!.userName) {
       return null;
     }
     return IconButton(
@@ -174,7 +168,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         color: blackFont,
       ),
       onPressed: () {
-        UserAuth().fetchCustomerProfile(user.userName).then((fetchedUser) {
+        UserAuth()
+            .fetchCustomerProfile(widget.user!.userName)
+            .then((fetchedUser) {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
             'recipient': fetchedUser.userName,
             'subject': "",
@@ -198,7 +194,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                 padding:
                     EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
                 child: CachedNetworkImage(
-                  imageUrl: user.qrCode,
+                  imageUrl: widget.user!.qrCode!,
                   colorBlendMode: BlendMode.darken,
                   errorWidget: imageErrorWidget,
                   fit: BoxFit.fitWidth,
@@ -208,14 +204,14 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             SizedBox(
               height: 8,
             ),
-            userBloc.user.userName != user.userName
+            userBloc.user.userName != widget.user!.userName
                 ? Divider(
                     color: dividerColor,
                     height: 0,
                     thickness: 1,
                   )
                 : Container(),
-            userBloc.user.userName != user.userName
+            userBloc.user.userName != widget.user!.userName
                 ? Container(
                     height: 45,
                     child: Row(
@@ -235,15 +231,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                             height: double.infinity,
                             child: InkWell(
                               onTap: () {
-                                Toast.show(
-                                  "${user.displayName()} " +
-                                      AppLocalization.of(context).isBlocked,
-                                  context,
-                                  gravity: Toast.CENTER,
-                                  duration: Toast.LENGTH_LONG,
-                                  backgroundColor: Colors.black,
-                                  textColor: Colors.white,
-                                );
+                                showToast(
+                                    message: "${widget.user!.displayName()} " +
+                                        AppLocalization.of(context)!.isBlocked);
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -262,7 +252,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                                     width: 8,
                                   ),
                                   Text(
-                                    AppLocalization.of(context).blockUser,
+                                    AppLocalization.of(context)!.blockUser,
                                     style:
                                         TextStyle(color: mateRed, fontSize: 14),
                                   ),
@@ -292,7 +282,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   Widget displayUserType() {
-    if (userBloc.user.userName == user.userName) {
+    if (userBloc.user.userName == widget.user!.userName) {
       return Container(
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
         decoration: BoxDecoration(
@@ -303,7 +293,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                     : naturalGreen
                 : navyBlue),
         child: Text(
-          userBloc.user.type,
+          userBloc.user.type!,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -319,7 +309,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     return Container(
       height: double.infinity,
       child: InkWell(
-          onTap: contactPrimaryActionCall(), child: contactPrimaryAction()),
+          onTap: contactPrimaryActionCall() as void Function()?,
+          child: contactPrimaryAction()),
     );
   }
 
@@ -416,50 +407,26 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   Function contactPrimaryActionCall() {
     if (isInContactList) {
       return () {
-        UserAuth().removeFromContactList(user).then((value) {
+        UserAuth().removeFromContactList(widget.user!).then((value) {
           if (value) {
-            Toast.show(
-              "Connection Remove From Your Connection List Successfully .",
-              context,
-              gravity: Toast.CENTER,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            showToast(
+                message:
+                    "Connection Remove From Your Connection List Successfully .");
             checkCurrentUserState();
           } else {
-            Toast.show(
-              "Connection is Removed From Your Connection List Unsuccessfully .",
-              context,
-              gravity: Toast.CENTER,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            showToast(
+                message:
+                    "Connection is Removed From Your Connection List Unsuccessfully .");
           }
         });
       };
     } else if (isInRequestList) {
       return () {
-        UserAuth().rejectContactRequest(user).then((value) {
+        UserAuth().rejectContactRequest(widget.user!).then((value) {
           if (value) {
-            Toast.show(
-              "Connection request Canceled",
-              context,
-              gravity: Toast.CENTER,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            showToast(message: "Connection request Canceled");
           } else {
-            Toast.show(
-              "Connection request Canceled unsuccessfully",
-              context,
-              gravity: Toast.CENTER,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            showToast(message: "Connection request Canceled unsuccessfully");
           }
           checkCurrentUserState();
         });
@@ -467,26 +434,12 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     }
 
     return () {
-      UserAuth().makeContactRequest(user).then((value) {
+      UserAuth().makeContactRequest(widget.user!).then((value) {
         if (value) {
-          Toast.show(
-            "Connection Request Sent !!",
-            context,
-            gravity: Toast.CENTER,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          showToast(message: "Connection Request Sent !!");
         } else {
           checkCurrentUserIsInContact();
-          Toast.show(
-            "Request Not Sent.. ",
-            context,
-            gravity: Toast.CENTER,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          showToast(message: "Request Not Sent.. ");
         }
         checkCurrentUserState();
       });
@@ -494,7 +447,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   Widget displayPaymentButtons() {
-    if (userBloc.user.userName == user.userName) {
+    if (userBloc.user.userName == widget.user!.userName) {
       return Container();
     }
 
@@ -566,7 +519,13 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           ],
         ),
         onTap: () async {
-          UserAuth().fetchCustomerProfile(user.userName).then((fetchedUser) {
+          UserAuth()
+              .fetchCustomerProfile(widget.user!.userName)
+              .then((fetchedUser) {
+            CustomerProfileBloc customerProfileBloc =
+                Provider.of<CustomerProfileBloc>(
+                    myGlobals.navigationKey.currentContext!,
+                    listen: false);
             customerProfileBloc.customer = fetchedUser;
             Navigator.of(context).pushNamed('/request-payment',
                 arguments: <String, bool>{
@@ -615,7 +574,13 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           ],
         ),
         onTap: () {
-          UserAuth().fetchCustomerProfile(user.userName).then((fetchedUser) {
+          UserAuth()
+              .fetchCustomerProfile(widget.user!.userName)
+              .then((fetchedUser) {
+            CustomerProfileBloc customerProfileBloc =
+                Provider.of<CustomerProfileBloc>(
+                    myGlobals.navigationKey.currentContext!,
+                    listen: false);
             customerProfileBloc.customer = fetchedUser;
             Navigator.of(context).pushNamed('/send-payment',
                 arguments: <String, bool>{'isFromProfile': false});
@@ -637,13 +602,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
               Navigator.of(context)
                   .pushNamed('/scan-qr', arguments: {'isRequest': false});
             } else {
-              Toast.show(
-                AppLocalization.of(context).internetConnectionNotAvailable,
-                context,
-                gravity: Toast.BOTTOM,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-              );
+              showToast(
+                  message: AppLocalization.of(context)!
+                      .internetConnectionNotAvailable);
             }
           });
         },
@@ -680,7 +641,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   Widget displayUserProfileUpgradeOptions() {
-    if (userBloc.user.userName == user.userName) {
+    if (userBloc.user.userName == widget.user!.userName) {
       return userBloc.user.type == "User"
           ? CurvedButton(
               backgroundColor: navyBlue,
@@ -694,23 +655,11 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   void upgradeAccount() async {
-    if (bankAccountBloc.bankAccount == null ||
-        bankAccountBloc.bankAccount.bankName == null) {
-      Toast.show("Please add bank account first !!", context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          duration: Toast.LENGTH_LONG);
+    await getAccountBalance();
+    if (accountBalance! > 0) {
+      Navigator.pushNamed(context, "/upgrade-user-profile");
     } else {
-      debugPrint("accountBalance:- $accountBalance");
-      await getAccountBalance();
-      if (accountBalance > 0) {
-        Navigator.pushNamed(context, "/upgrade-user-profile");
-      } else {
-        Toast.show("You don't have money in Slydo account!!", context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
-      }
+      showToast(message: "Insufficient funds!!");
     }
   }
 
@@ -721,7 +670,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
     await PaymentAndBankingAuth().getAccountBalance().then((value) {
-      var data = value;
+      var data = value!;
       var spendableBalance = data["spendable_balance"];
       debugPrint("DATA:- $value");
       accountBalance = spendableBalance;

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class RoundedBackgroundIcon extends StatelessWidget {
-  Color backgroundColor;
-  Widget icon;
+  Color? backgroundColor;
+  Widget? icon;
   double height;
   double width;
-  Function onTap;
+  Function? onTap;
   bool enableMargin;
   double borderRadius;
 
@@ -38,7 +38,7 @@ class RoundedBackgroundIcon extends StatelessWidget {
         ),
         onTap: () {
           if (onTap != null) {
-            onTap();
+            onTap!();
           }
         },
       ),

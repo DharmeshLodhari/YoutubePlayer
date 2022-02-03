@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -7,54 +6,44 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class UserAboutScreen extends StatefulWidget {
-  CustomerProfile user;
+  CustomerProfile? user;
 
-  UserAboutScreen({@required this.user});
+  UserAboutScreen({required this.user});
 
   @override
-  _UserAboutScreenState createState() => _UserAboutScreenState(user: user);
+  _UserAboutScreenState createState() => _UserAboutScreenState();
 }
 
 class _UserAboutScreenState extends State<UserAboutScreen> {
-  CustomerProfile user;
+  UserAbout? userAbout;
 
-  UserAbout userAbout;
-
-  _UserAboutScreenState({this.user});
+  _UserAboutScreenState();
 
   bool isLoading = false;
 
   final GlobalKey<ScaffoldState> _scaffoldUserAboutKey =
       new GlobalKey<ScaffoldState>();
 
-  UserBloc userBloc;
-
-  List<OpeningHour> showOpeningHours = [
-    OpeningHour(day: "Monday", time: "Closed"),
-    OpeningHour(day: "Tuesday", time: "Closed"),
-    OpeningHour(day: "Wednesday", time: "Closed"),
-    OpeningHour(day: "Thursday", time: "Closed"),
-    OpeningHour(day: "Friday", time: "Closed"),
-    OpeningHour(day: "Saturday", time: "Closed"),
-    OpeningHour(day: "Sunday", time: "Closed"),
+  List<OpeningHourForDay> showOpeningHours = [
+    OpeningHourForDay(day: "Monday", time: "Closed"),
+    OpeningHourForDay(day: "Tuesday", time: "Closed"),
+    OpeningHourForDay(day: "Wednesday", time: "Closed"),
+    OpeningHourForDay(day: "Thursday", time: "Closed"),
+    OpeningHourForDay(day: "Friday", time: "Closed"),
+    OpeningHourForDay(day: "Saturday", time: "Closed"),
+    OpeningHourForDay(day: "Sunday", time: "Closed"),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void formatOpeningHour() {
     List<int> updatedIndex = [];
 
     for (int i = 0; i < showOpeningHours.length; i++) {
-      for (int j = 0; j < userAbout.openingHours.length; j++) {
-        if (showOpeningHours[i].day == userAbout.openingHours[j].day) {
-          showOpeningHours[i].time = userAbout.openingHours[j].time;
+      for (int j = 0; j < userAbout!.openingHours.length; j++) {
+        if (showOpeningHours[i].day == userAbout!.openingHours[j].day) {
+          showOpeningHours[i].time = userAbout!.openingHours[j].time;
           updatedIndex.add(i);
         }
       }
@@ -69,9 +58,8 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    userAbout = widget.user.userAbout;
+    userAbout = widget.user!.userAbout;
     formatOpeningHour();
-    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -112,12 +100,23 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              userAbout.openingHours.isEmpty
-                  ? Container()
+              userAbout!.openingHours.isEmpty
+                  ? Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Center(
+                          child: Text(
+                        "No Opening hours added yet.",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: blackFont),
+                      )),
+                    )
                   : Column(
                       children: [
                         Text(
-                          "Opening hour",
+                          "Opening hours",
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -143,13 +142,13 @@ class _UserAboutScreenState extends State<UserAboutScreen> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          e.day,
+                                          e.day!,
                                           style: TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w400),
                                         ),
                                         Text(
-                                          e.time,
+                                          e.time!,
                                           style: TextStyle(
                                               fontSize: 14,
                                               color: e.time == "Closed"

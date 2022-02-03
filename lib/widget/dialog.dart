@@ -6,7 +6,6 @@ import 'package:Slydo/widget/cutomized_alert/customized_alert.dart';
 import 'package:Slydo/widget/cutomized_alert/dialog_button.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'curved_btn.dart';
 import 'cutomized_alert/customized_alert_for_nudge.dart';
@@ -56,18 +55,18 @@ import 'cutomized_alert/customized_alert_for_nudge.dart';
 //   ).show();
 // }
 //
-Future<bool> showDialogBoxWithImage({
-  BuildContext context,
-  String title,
-  String description,
-  String actionOne,
+Future<bool?> showDialogBoxWithImage({
+  BuildContext? context,
+  String? title,
+  String? description,
+  String? actionOne,
   bool firstActionPrimary = true,
-  String image,
-  Color actionOneBgColor,
-  Color actionOneTextColor,
-  Color actionTwoBgColor,
-  Color actionTwoTextColor,
-  String actionTwo,
+  String? image,
+  Color? actionOneBgColor,
+  Color? actionOneTextColor,
+  Color? actionTwoBgColor,
+  Color? actionTwoTextColor,
+  String? actionTwo,
 }) {
   return CustomizedAlert(
     context: context,
@@ -81,14 +80,14 @@ Future<bool> showDialogBoxWithImage({
     buttons: [
       DialogButton(
         onPressed: () =>
-            Navigator.pop(context, firstActionPrimary ? true : false),
+            Navigator.pop(context!, firstActionPrimary ? true : false),
         textColor: actionOneTextColor,
         text: actionOne,
         backgroundColor: actionOneBgColor,
       ),
       DialogButton(
         onPressed: () =>
-            Navigator.pop(context, firstActionPrimary ? false : true),
+            Navigator.pop(context!, firstActionPrimary ? false : true),
         textColor: actionTwoTextColor,
         text: actionTwo,
         backgroundColor: actionTwoBgColor,
@@ -97,14 +96,14 @@ Future<bool> showDialogBoxWithImage({
   ).show();
 }
 
-Future<bool> showDialogBoxWithImageWithOneAction({
-  BuildContext context,
-  String title,
-  String description,
-  String actionOne,
-  String image,
-  Color actionOneBgColor,
-  Color actionOneTextColor,
+Future<bool?> showDialogBoxWithImageWithOneAction({
+  BuildContext? context,
+  String? title,
+  String? description,
+  String? actionOne,
+  String? image,
+  Color? actionOneBgColor,
+  Color? actionOneTextColor,
 }) {
   return CustomizedAlert(
     context: context,
@@ -117,7 +116,7 @@ Future<bool> showDialogBoxWithImageWithOneAction({
     ),
     buttons: [
       DialogButton(
-        onPressed: () => Navigator.pop(context, true),
+        onPressed: () => Navigator.pop(context!, true),
         textColor: actionOneTextColor,
         text: actionOne,
         backgroundColor: actionOneBgColor,
@@ -126,18 +125,18 @@ Future<bool> showDialogBoxWithImageWithOneAction({
   ).show();
 }
 
-Future<bool> showDialogBoxWithImageForNudge({
-  BuildContext context,
-  String title,
-  String description,
-  IconData actionOneIcon,
+Future<bool?> showDialogBoxWithImageForNudge({
+  BuildContext? context,
+  String? title,
+  String? description,
+  IconData? actionOneIcon,
   bool firstActionPrimary = true,
-  String image,
-  Color iconBgColor,
-  Color iconColor,
-  Color iconTwoBgColor,
-  Color iconTwoColor,
-  IconData actionTwoIcon,
+  String? image,
+  required Color iconBgColor,
+  Color? iconColor,
+  required Color iconTwoBgColor,
+  Color? iconTwoColor,
+  IconData? actionTwoIcon,
 }) {
   return CustomizedAlertForNudge(
     context: context,
@@ -159,7 +158,7 @@ Future<bool> showDialogBoxWithImageForNudge({
           color: iconBgColor,
           size: 18,
         ),
-        onTap: () => Navigator.pop(context, firstActionPrimary ? true : false),
+        onTap: () => Navigator.pop(context!, firstActionPrimary ? true : false),
       ),
       RoundedBackgroundIcon(
         backgroundColor: iconTwoBgColor.withOpacity(0.1),
@@ -171,25 +170,25 @@ Future<bool> showDialogBoxWithImageForNudge({
           color: iconTwoBgColor,
           size: 18,
         ),
-        onTap: () => Navigator.pop(context, firstActionPrimary ? false : true),
+        onTap: () => Navigator.pop(context!, firstActionPrimary ? false : true),
       ),
     ],
   ).show();
 }
 
-Future<bool> showDialogBox({
-  BuildContext context,
-  String title,
-  String description,
-  String actionOne,
+Future<bool?> showDialogBox({
+  BuildContext? context,
+  String? title,
+  String? description,
+  String? actionOne,
   bool firstActionPrimary = true,
-  String image,
-  RoundedBackgroundIcon roundedBackgroundIcon,
-  Color actionOneBgColor,
-  Color actionOneTextColor,
-  Color actionTwoBgColor,
-  Color actionTwoTextColor,
-  String actionTwo,
+  String? image,
+  RoundedBackgroundIcon? roundedBackgroundIcon,
+  Color? actionOneBgColor,
+  Color? actionOneTextColor,
+  Color? actionTwoBgColor,
+  Color? actionTwoTextColor,
+  String? actionTwo,
 }) {
   return CustomizedAlert(
     context: context,
@@ -203,14 +202,14 @@ Future<bool> showDialogBox({
     buttons: [
       DialogButton(
         onPressed: () =>
-            Navigator.pop(context, firstActionPrimary ? true : false),
+            Navigator.pop(context!, firstActionPrimary ? true : false),
         textColor: actionOneTextColor,
         text: actionOne,
         backgroundColor: actionOneBgColor,
       ),
       DialogButton(
         onPressed: () =>
-            Navigator.pop(context, firstActionPrimary ? false : true),
+            Navigator.pop(context!, firstActionPrimary ? false : true),
         textColor: actionTwoTextColor,
         text: actionTwo,
         backgroundColor: actionTwoBgColor,
@@ -219,7 +218,7 @@ Future<bool> showDialogBox({
   ).show();
 }
 
-void showSwipeHintCard({BuildContext context}) {
+void showSwipeHintCard({required BuildContext context}) {
   showDialog(
     barrierDismissible: true,
     context: context,
@@ -236,7 +235,7 @@ void showSwipeHintCard({BuildContext context}) {
   );
 }
 
-void showHoldHintCard({BuildContext context}) {
+void showHoldHintCard({required BuildContext context}) {
   showDialog(
     barrierDismissible: true,
     context: context,
@@ -253,9 +252,9 @@ void showHoldHintCard({BuildContext context}) {
   );
 }
 
-void showUserLogoutCard({BuildContext context}) {
+void showUserLogoutCard({required BuildContext context}) {
   debugPrint("WorkManager cancel");
-  Workmanager().cancelAll();
+  // Workmanager().cancelAll();
   showDialog(
     barrierDismissible: true,
     context: context,
@@ -296,7 +295,7 @@ void showUserLogoutCard({BuildContext context}) {
                   text: "Ok",
                   textColor: Colors.white,
                   onPressed: () async {
-                    Navigator.pop(myGlobals.navigationKey.currentContext);
+                    Navigator.pop(myGlobals.navigationKey.currentContext!);
                     //  logoutUser(context);
                   },
                 ),
@@ -308,8 +307,8 @@ void showUserLogoutCard({BuildContext context}) {
 }
 
 Future<bool> showInAppLocationAlertPopUp(
-    {BuildContext context, bool isForChat = true}) async {
-  bool result = await showDialog<bool>(
+    {required BuildContext context, bool isForChat = true}) async {
+  bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
     builder: (context) => WillPopScope(
@@ -402,7 +401,7 @@ Future<bool> showInAppLocationAlertPopUp(
                   ],
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
               ],
             ),

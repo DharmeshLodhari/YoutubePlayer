@@ -24,7 +24,7 @@ class ConnectionDashboard extends StatefulWidget {
 class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
-  var filterValue = "Connections";
+  var filterValue = "Contacts";
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    if (filterValue == 'Connections') filterValue = "Connections";
+    if (filterValue == 'Connections') filterValue = "Contacts";
 
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
@@ -56,7 +56,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
           length: 3,
           child: Scaffold(
             backgroundColor: Colors.white,
-            appBar: appBar(),
+            appBar: appBar() as PreferredSizeWidget?,
             body: tabViews(),
           ),
         ),
@@ -89,19 +89,20 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         maxLines: 1,
       ),
       actions: getActions(),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
     );
   }
 
   // ignore: missing_return
   String getTitle() {
     if (currentIndex == 0) {
-      return "Connections";
+      return "Contacts";
     } else if (currentIndex == 1) {
-      return AppLocalization.of(context).requests;
+      return AppLocalization.of(context)!.requests;
     } else if (currentIndex == 2) {
-      return AppLocalization.of(context).blocked;
+      return AppLocalization.of(context)!.blocked;
     }
+    return "";
   }
 
   Widget tabBar() {
@@ -147,7 +148,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     : Colors.white,
               ),
               child: Text(
-                AppLocalization.of(context).requests,
+                AppLocalization.of(context)!.requests,
                 style: TextStyle(
                   color: currentIndex == 1 ? navyBlue : blackFont,
                   fontSize: 14,
@@ -168,7 +169,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     : Colors.white,
               ),
               child: Text(
-                AppLocalization.of(context).blocked,
+                AppLocalization.of(context)!.blocked,
                 style: TextStyle(
                   color: currentIndex == 2 ? navyBlue : blackFont,
                   fontSize: 14,
@@ -185,6 +186,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   List<Widget> getActions() {
     List<Widget> list = [
+      ///TODO:- To be enabled in future version
       // synchronizeContactBtn(),
       // SizedBox(
       //   width: 8,

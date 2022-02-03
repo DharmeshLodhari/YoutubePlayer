@@ -1,9 +1,9 @@
 class SimilarProperty {
-  String currency;
-  String image;
-  String name;
-  String price;
-  String shortDescription;
+  String? currency;
+  String? image;
+  String? name;
+  String? price;
+  String? shortDescription;
 
   SimilarProperty(
       {this.currency,

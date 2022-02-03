@@ -1,14 +1,15 @@
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AppLifeCycle extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
 
-  AppLifeCycle({Key key, this.child});
+  AppLifeCycle({Key? key, this.child});
 
   @override
   _AppLifeCycleState createState() => _AppLifeCycleState();
@@ -16,12 +17,12 @@ class AppLifeCycle extends StatefulWidget {
 
 class _AppLifeCycleState extends State<AppLifeCycle>
     with WidgetsBindingObserver {
-  RefreshBlocForTransaction _refreshBlocForTransaction;
-  RefreshBlocForRequestPayment _refreshBlocForRequestPayment;
-  RefreshBlocForMessages _refreshBlocForMessages;
+  late RefreshBlocForTransaction _refreshBlocForTransaction;
+  late RefreshBlocForRequestPayment _refreshBlocForRequestPayment;
+  late RefreshBlocForMessages _refreshBlocForMessages;
   DatabaseHelper _db = DatabaseHelper();
   final _auth = AuthService();
-  Map<String, dynamic> device;
+  Map<String, dynamic>? device;
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +31,12 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     _refreshBlocForRequestPayment =
         Provider.of<RefreshBlocForRequestPayment>(context);
     _refreshBlocForMessages = Provider.of<RefreshBlocForMessages>(context);
-    return widget.child;
+    return widget.child!;
   }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
 
     // fetching device info from db
     fetchDeviceInfo();
@@ -52,7 +53,7 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -86,12 +87,14 @@ class _AppLifeCycleState extends State<AppLifeCycle>
     // refreshing the list on onResume
     // onRefresh();
 
+    AwesomeNotificationService().awesomeNotifications.cancelAll();
+
     //this will store the device data and the app state
-    Map<String, String> tempData = Map<String, String>();
-    tempData['token'] = device != null ? device['firebaseToken'] : "";
-    tempData['type'] = device != null ? device['type'] : "";
+    Map<String, String?> tempData = Map<String, String?>();
+    tempData['token'] = device != null ? device!['firebaseToken'] : "";
+    tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "active";
-    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    tempData['device_name'] = device != null ? device!['deviceName'] : "";
     if (device != null) {
       _auth.updateAppState(tempData);
     }
@@ -101,11 +104,11 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onInactive() {
     //this will store the device data and the app state
-    Map<String, String> tempData = Map<String, String>();
-    tempData['token'] = device != null ? device['firebaseToken'] : "";
-    tempData['type'] = device != null ? device['type'] : "";
+    Map<String, String?> tempData = Map<String, String?>();
+    tempData['token'] = device != null ? device!['firebaseToken'] : "";
+    tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "inActive";
-    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    tempData['device_name'] = device != null ? device!['deviceName'] : "";
     if (device != null) {
       _auth.updateAppState(tempData);
     }
@@ -115,11 +118,11 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onPause() {
     //this will store the device data and the app state
-    Map<String, String> tempData = Map<String, String>();
-    tempData['token'] = device != null ? device['firebaseToken'] : "";
-    tempData['type'] = device != null ? device['type'] : "";
+    Map<String, String?> tempData = Map<String, String?>();
+    tempData['token'] = device != null ? device!['firebaseToken'] : "";
+    tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "in-background";
-    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    tempData['device_name'] = device != null ? device!['deviceName'] : "";
     if (device != null) {
       _auth.updateAppState(tempData);
     }
@@ -129,11 +132,11 @@ class _AppLifeCycleState extends State<AppLifeCycle>
 
   void onDetached() {
     //this will store the device data and the app state
-    Map<String, String> tempData = Map<String, String>();
-    tempData['token'] = device != null ? device['firebaseToken'] : "";
-    tempData['type'] = device != null ? device['type'] : "";
+    Map<String, String?> tempData = Map<String, String?>();
+    tempData['token'] = device != null ? device!['firebaseToken'] : "";
+    tempData['type'] = device != null ? device!['type'] : "";
     tempData['state'] = "suspended";
-    tempData['device_name'] = device != null ? device['deviceName'] : "";
+    tempData['device_name'] = device != null ? device!['deviceName'] : "";
     if (device != null) {
       _auth.updateAppState(tempData);
     }

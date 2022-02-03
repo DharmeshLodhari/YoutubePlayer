@@ -17,8 +17,8 @@ class MovieDetailPage extends StatefulWidget {
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
-  VideoPlayerController _videoController;
-  ChewieController _chewieController;
+  late VideoPlayerController _videoController;
+  late ChewieController _chewieController;
 
   bool isLoading = false;
   MovieDetailItem movieDetailItem = MovieDetailItem();
@@ -35,7 +35,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 
     movieDetailItem = await MovieAuthService().getMovie();
     _videoController = VideoPlayerController.network(
-      movieDetailItem.video,
+      movieDetailItem.video!,
     );
 
     _chewieController = ChewieController(
@@ -74,7 +74,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       ],
     );
 
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
 
     super.dispose();
   }
@@ -88,7 +89,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: isLoading
             ? Center(
                 child: CircularLoadingIndicator(),
@@ -117,7 +118,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         },
       ),
       title: Text(
-        movieDetailItem.name,
+        movieDetailItem.name!,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -229,7 +230,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              movieDetailItem.name,
+              movieDetailItem.name!,
               style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
             ),
@@ -241,7 +242,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   size: 12,
                 ),
                 Text(
-                  movieDetailItem.price,
+                  movieDetailItem.price!,
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -265,7 +266,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               width: 4,
             ),
             Text(
-              movieDetailItem.rating,
+              movieDetailItem.rating!,
               style: TextStyle(fontSize: 14, color: blackFont),
             )
           ],
@@ -316,7 +317,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             Expanded(
               child: Text(
-                movieDetailItem.category,
+                movieDetailItem.category!,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -358,7 +359,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             Expanded(
               child: Text(
-                movieDetailItem.year,
+                movieDetailItem.year!,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -400,7 +401,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             Expanded(
               child: Text(
-                movieDetailItem.time,
+                movieDetailItem.time!,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -450,7 +451,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      movieDetailItem.viewingRating,
+                      movieDetailItem.viewingRating!,
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -480,7 +481,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           height: 12,
         ),
         Text(
-          movieDetailItem.starring,
+          movieDetailItem.starring!,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
         ),
@@ -501,7 +502,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           height: 12,
         ),
         Text(
-          movieDetailItem.description,
+          movieDetailItem.description!,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,

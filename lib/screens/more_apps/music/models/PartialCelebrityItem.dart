@@ -1,6 +1,6 @@
 class PartialCelebrityItem {
-  String image;
-  String name;
+  String? image;
+  String? name;
 
   PartialCelebrityItem({this.image, this.name});
 

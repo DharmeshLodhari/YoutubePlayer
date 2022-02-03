@@ -3,6 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -11,9 +12,9 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../shopping_auth.dart';
 import '../../tiles/order_tile.dart';
@@ -27,13 +28,13 @@ class _OrdersListState extends State<OrdersList> {
   final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
       new GlobalKey<ScaffoldState>();
   final _auth = ShoppingAuthService();
-  SlidableController _slideController;
-  int count = 0;
-  String next = "";
-  String previous = "";
+  SlidableController? _slideController;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List orderList = [];
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
@@ -43,9 +44,10 @@ class _OrdersListState extends State<OrdersList> {
 
   // variables for to getting filter orderList
   String filterValue = "";
+  DateTime? filterDate;
 
   GlobalKey _key = LabeledGlobalKey("orderListPopUpMenu");
-  CustomizedPopUpMenu menu;
+  late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
@@ -81,21 +83,27 @@ class _OrdersListState extends State<OrdersList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
   }
 
   void menuItemSelectionChange(String value, int index) {
-    selectedMenuItemIndex = index;
-    filterValue = value;
+    if (index == 7 || index == 8) {
+      if (index == 7) {
+        filterDate = null;
+      }
+      if (index == 8) {
+        filterValue = "";
+      }
+    } else {
+      selectedMenuItemIndex = index;
+      filterValue = value;
+    }
+
     setState(() {});
     _onRefresh();
   }
@@ -121,6 +129,8 @@ class _OrdersListState extends State<OrdersList> {
         CustomizedPopUpMenuItem(title: "On hold", value: "on hold"),
         CustomizedPopUpMenuItem(title: "Pending", value: "pending"),
         CustomizedPopUpMenuItem(title: "Processing", value: "processing"),
+        CustomizedPopUpMenuItem(title: "Clear Date", value: "clear"),
+        CustomizedPopUpMenuItem(title: "Clear Filter", value: "clear"),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -135,7 +145,7 @@ class _OrdersListState extends State<OrdersList> {
         child: Scaffold(
           key: _scaffoldOrderListKey,
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: SmartRefresher(
               enablePullDown: true,
               header: WaterDropHeader(
@@ -166,16 +176,52 @@ class _OrdersListState extends State<OrdersList> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context).orders,
+        AppLocalization.of(context)!.orders,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        dateFilterIcon(),
+        SizedBox(
+          width: 8,
+        ),
         popUpMenuButton(),
         SizedBox(
           width: 16,
         ),
       ],
+    );
+  }
+
+  Widget dateFilterIcon() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.date_range_rounded,
+            color: Colors.black,
+            size: 20,
+          ),
+          onPressed: () async {
+            filterDate = await showDatePicker(
+                builder: customThemeBuilder,
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime.parse("2020-01-01"),
+                lastDate: DateTime.now());
+            setState(() {});
+            _onRefresh();
+          },
+        ),
+      ),
     );
   }
 
@@ -193,7 +239,7 @@ class _OrdersListState extends State<OrdersList> {
         ),
         child: IconButton(
           icon: Icon(
-            Icons.more_vert,
+            Icons.filter_alt_rounded,
             color: isPopMenuOpen ? Colors.white : Colors.black,
             size: 20,
           ),
@@ -212,7 +258,7 @@ class _OrdersListState extends State<OrdersList> {
   Widget _buildOrderList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).noOrdersPresent,
+            msg: AppLocalization.of(context)!.noOrdersPresent,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -248,7 +294,15 @@ class _OrdersListState extends State<OrdersList> {
             isLoading = true;
           });
         }
-        var result = await _auth.listOrders(next, previous, filterValue);
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String? formattedDate;
+        if (filterDate != null) {
+          debugPrint("DOB:- ${dateFormat.format(filterDate!)}");
+          formattedDate = dateFormat.format(filterDate!);
+        }
+
+        var result =
+            await _auth.listOrders(next, previous, filterValue, formattedDate);
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -279,9 +333,9 @@ class _OrdersListState extends State<OrdersList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldOrderListKey.currentState.showSnackBar(SnackBar(
+        _scaffoldOrderListKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -303,13 +357,9 @@ class _OrdersListState extends State<OrdersList> {
                     'isFromProfile': true
                   });
             } else {
-              Toast.show(
-                AppLocalization.of(context).internetConnectionNotAvailable,
-                context,
-                gravity: Toast.BOTTOM,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-              );
+              showToast(
+                  message: AppLocalization.of(context)!
+                      .internetConnectionNotAvailable);
             }
           });
         },
@@ -318,9 +368,9 @@ class _OrdersListState extends State<OrdersList> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   List<Widget> listSecondaryActions(Order order, int index) {
     return [
@@ -334,13 +384,13 @@ class _OrdersListState extends State<OrdersList> {
 
             Navigator.of(context).pushNamed('/compose_message', arguments: {
               'recipient': recipient,
-              'subject': AppLocalization.of(context).orderDetail +
+              'subject': AppLocalization.of(context)!.orderDetail +
                   " : " +
-                  AppLocalization.of(context).ref +
+                  AppLocalization.of(context)!.ref +
                   " #${order.id}",
             });
           },
-          title: AppLocalization.of(context).message,
+          title: AppLocalization.of(context)!.message,
           slideController: _slideController),
     ];
   }
@@ -351,7 +401,7 @@ class _OrdersListState extends State<OrdersList> {
 
   Widget _getSlidableWithLists(BuildContext context, Order order, int index) {
     return Slidable(
-      key: Key(order.customer),
+      key: Key(order.customer!),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),

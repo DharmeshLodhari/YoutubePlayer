@@ -14,7 +14,7 @@ class EventTicketDetail extends StatefulWidget {
 }
 
 class _EventTicketDetailState extends State<EventTicketDetail> {
-  HotelDashboardBloc _hotelDashboardBloc;
+  late HotelDashboardBloc _hotelDashboardBloc;
 
   bool isSwap = false;
 
@@ -27,7 +27,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightGrey,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -106,6 +106,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                     height: 214,
                     width: 214,
                     child: CachedNetworkImage(
+                        errorWidget: imageErrorWidget,
                         imageUrl:
                             "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
                   ),
@@ -150,7 +151,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                   height: 20,
                 ),
                 Stack(
-                  overflow: Overflow.visible,
+                  clipBehavior: Clip.none,
                   children: [
                     Positioned(
                       left: -30,
@@ -182,6 +183,7 @@ class _EventTicketDetailState extends State<EventTicketDetail> {
                 Container(
                   padding: EdgeInsets.all(40),
                   child: CachedNetworkImage(
+                      errorWidget: imageErrorWidget,
                       imageUrl:
                           "https://www.pixavi.com/wp-content/uploads/2015/10/apb-qr-code.png"),
                 )

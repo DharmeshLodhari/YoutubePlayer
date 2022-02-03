@@ -1,18 +1,16 @@
-import 'package:flutter/cupertino.dart';
-
 class ChatMessageAction {
-  bool isDeletable;
-  bool isEditable;
-  bool isReplyable;
-  bool isCopyable;
-  String message;
+  bool? isDeletable;
+  bool? isEditable;
+  bool? isReplyable;
+  bool? isCopyable;
+  String? message;
 
   ChatMessageAction(
       {this.isDeletable = false,
       this.isEditable = false,
       this.isReplyable = false,
       this.isCopyable = false,
-      @required this.message});
+      required this.message});
 
   factory ChatMessageAction.fromJson(Map<String, dynamic> json) {
     return ChatMessageAction(

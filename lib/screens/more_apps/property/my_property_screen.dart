@@ -16,7 +16,7 @@ class MyPropertiesScreen extends StatefulWidget {
 class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
   int currentIndex = 0;
 
-  PropertyDashboardBloc _propertyDashboardBloc;
+  late PropertyDashboardBloc _propertyDashboardBloc;
   @override
   Widget build(BuildContext context) {
     _propertyDashboardBloc = Provider.of<PropertyDashboardBloc>(context);
@@ -29,7 +29,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
         length: 2,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
       ),
@@ -61,7 +61,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
       actions: [
         addPropertyButton(),
         SizedBox(

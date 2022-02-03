@@ -11,14 +11,13 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class SignUp extends StatefulWidget {
   var arguments;
 
-  SignUp({@required this.arguments});
+  SignUp({required this.arguments});
 
   @override
   _SignUpState createState() => _SignUpState(arguments: arguments);
@@ -27,39 +26,39 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   var arguments;
 
-  _SignUpState({@required this.arguments});
+  _SignUpState({required this.arguments});
 
   final _registrationFormKey = GlobalKey<FormState>();
   final _officialDetailFormKey = GlobalKey<FormState>();
 
-  String phoneNumber = '';
+  String? phoneNumber = '';
   String password = '';
 
-  TextEditingController _firstNameController;
-  TextEditingController _lastNameController;
-  TextEditingController _nickNameController;
-  TextEditingController _userNameController;
-  TextEditingController _phoneNumberController;
-  TextEditingController _passwordController;
-  TextEditingController _confirmPasswordController;
+  TextEditingController? _firstNameController;
+  TextEditingController? _lastNameController;
+  TextEditingController? _nickNameController;
+  TextEditingController? _userNameController;
+  TextEditingController? _phoneNumberController;
+  TextEditingController? _passwordController;
+  TextEditingController? _confirmPasswordController;
 
   DateTime dob = DateTime.now();
-  String gender;
+  String? gender;
 
-  UserBloc userBloc;
+  UserBloc? userBloc;
 
   List<String> genders = ["Male", "Female"];
 
   bool isOfficialInfoSet = false;
 
-  bool isValidAge;
+  bool? isValidAge;
 
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
 
     _phoneNumberController = TextEditingController();
-    _phoneNumberController.text = phoneNumber;
+    _phoneNumberController!.text = phoneNumber!;
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _nickNameController = TextEditingController();
@@ -141,7 +140,7 @@ class _SignUpState extends State<SignUp> {
                                 height: 10,
                               ),
                               getDOBField(),
-                              if (isValidAge != null && !isValidAge)
+                              if (isValidAge != null && !isValidAge!)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -250,6 +249,7 @@ class _SignUpState extends State<SignUp> {
       controller: _phoneNumberController,
       labelColor: darkGrey,
       labelText: "Phone number",
+      hintText: "08023000000",
       keyboardType: TextInputType.phone,
       isReadOnly: true,
     );
@@ -271,7 +271,7 @@ class _SignUpState extends State<SignUp> {
       labelColor: darkGrey,
       labelText: "First name",
       keyboardType: TextInputType.name,
-      // validator: fullNameValidator,
+      validator: fullNameValidator,
     );
   }
 
@@ -281,11 +281,11 @@ class _SignUpState extends State<SignUp> {
       labelColor: darkGrey,
       labelText: "Surname",
       keyboardType: TextInputType.name,
-      // validator: fullNameValidator,
+      validator: fullNameValidator,
     );
   }
 
-  String fullNameValidator(String enteredName) {
+  String? fullNameValidator(String enteredName) {
     List<String> nameList = enteredName.split(" ");
 
     /// For not allowing user to put any profession title
@@ -306,14 +306,17 @@ class _SignUpState extends State<SignUp> {
     if (!regExp.hasMatch(enteredName)) {
       return "Please enter valid name";
     }
-    if (nameList.length < 2) {
-      return "Please enter full name";
+    if (nameList.length >= 2) {
+      if (notValidProfessionTitles.contains(nameList[0].toLowerCase())) {
+        return "Please remove ${nameList[0]} from name";
+      }
+      if (nameList[0].length < 2 || nameList[1].length < 2) {
+        return "Please enter valid name";
+      }
     }
-    if (notValidProfessionTitles.contains(nameList[0].toLowerCase())) {
-      return "Please remove ${nameList[0]} from name";
-    }
-    if (nameList[0].length < 2 || nameList[1].length < 2) {
-      return "Please enter valid name";
+
+    for (int i = 0; i < nameList.length; i++) {
+      return checkSlydoName(nameList[i]);
     }
 
     return null;
@@ -329,7 +332,7 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  String userNameValidator(String username) {
+  String? userNameValidator(String username) {
     // alphanumeric and -_.
     RegExp validCharacters =
         RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');
@@ -338,7 +341,7 @@ class _SignUpState extends State<SignUp> {
       return "Username is not valid";
     }
 
-    return null;
+    return checkSlydoName(username);
   }
 
   Widget nickNameField() {
@@ -347,14 +350,15 @@ class _SignUpState extends State<SignUp> {
       labelColor: darkGrey,
       labelText: "Nick name",
       keyboardType: TextInputType.name,
+      validator: nickNameValidator,
     );
   }
 
-  String nickNameValidator(String nickName) {
-    if (_nickNameController.text.trim() == _userNameController.text.trim()) {
+  String? nickNameValidator(String nickName) {
+    if (_nickNameController?.text.trim() == _userNameController?.text.trim()) {
       return "Nickname and Username should not be same";
     }
-    return null;
+    return checkSlydoName(nickName);
   }
 
   Widget passwordInstruction() {
@@ -404,7 +408,7 @@ class _SignUpState extends State<SignUp> {
           lastDate: DateTime(
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
         ).then((value) {
-          dob = DateTime(value.year, value.month, value.day);
+          dob = DateTime(value!.year, value.month, value.day);
           setState(() {});
           validateDOB();
         }).catchError((error) {});
@@ -476,7 +480,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   void triggerInfoChange() {
-    if (_officialDetailFormKey.currentState.validate() && validateDOB()) {
+    if (_officialDetailFormKey.currentState!.validate() && validateDOB()) {
       isOfficialInfoSet = !isOfficialInfoSet;
       if (mounted) setState(() {});
     }
@@ -496,13 +500,13 @@ class _SignUpState extends State<SignUp> {
   }
 
   // validate password
-  String validateEnteredPassword(String val) {
+  String? validateEnteredPassword(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
     if (val.length != 6) {
-      return AppLocalization.of(context).invalidPassword;
+      return AppLocalization.of(context)!.invalidPassword;
     } else if ("0123456789".contains(val)) {
       return "you can not set this type of password";
     } else if ("9876543210".contains(val)) {
@@ -514,15 +518,15 @@ class _SignUpState extends State<SignUp> {
   }
 
   // validate confirm password
-  String validateEnteredConfirmPassword(String val) {
+  String? validateEnteredConfirmPassword(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
     if (val.length != 6) {
-      return AppLocalization.of(context).invalidPassword;
-    } else if (val != _passwordController.text) {
-      return AppLocalization.of(context).passwordMismatch;
+      return AppLocalization.of(context)!.invalidPassword;
+    } else if (val != _passwordController!.text) {
+      return AppLocalization.of(context)!.passwordMismatch;
     } else if ("0123456789".contains(val)) {
       return "you can not set this type of password";
     } else if ("9876543210".contains(val)) {
@@ -539,7 +543,7 @@ class _SignUpState extends State<SignUp> {
       child: ListTile(
         dense: true,
         title: Text(
-          gender != null ? gender : "",
+          gender != null ? gender! : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -629,11 +633,11 @@ class _SignUpState extends State<SignUp> {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
-    if (_registrationFormKey.currentState.validate()) {
-      phoneNumber = _phoneNumberController.text.trim();
-      password = _passwordController.text.trim();
+    if (_registrationFormKey.currentState!.validate()) {
+      phoneNumber = _phoneNumberController!.text.trim();
+      password = _passwordController!.text.trim();
 
-      DateFormat dateFormat = DateFormat('yyyy/MM/dd');
+      DateFormat dateFormat = DateFormat('yyyy-MM-dd');
       debugPrint("DOB:- ${dateFormat.format(dob)}");
 
       String selectedGender = "";
@@ -643,45 +647,39 @@ class _SignUpState extends State<SignUp> {
         selectedGender = "F";
       }
 
-      String firstName = _firstNameController.text.trim();
-      String lastName = _lastNameController.text.trim();
+      String firstName = _firstNameController!.text.trim();
+      String lastName = _lastNameController!.text.trim();
 
       Map<String, dynamic> data = {
-        "phone_number": _phoneNumberController.text.trim(),
+        "phone_number": _phoneNumberController!.text.trim(),
         "firstname": firstName,
         "lastname": lastName,
         "full_name": "$firstName $lastName",
         "dob": dateFormat.format(dob),
         "gender": selectedGender,
-        "username": _userNameController.text.trim(),
-        "nickname": _nickNameController.text.trim(),
-        "password1": _passwordController.text.trim(),
-        "password2": _confirmPasswordController.text.trim(),
+        "username": _userNameController!.text.trim(),
+        "nickname": _nickNameController!.text.trim(),
+        "password1": _passwordController!.text.trim(),
+        "password2": _confirmPasswordController!.text.trim(),
       };
       debugPrint("DATA SENT:- $data");
 
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       bool isRegistered;
-      UserAuth().userRegistration(data).then((value) {
+      await UserAuth().userRegistration(data).then((value) {
         isRegistered = value;
         if (isRegistered) {
           Navigator.pop(context);
           Navigator.of(context).popAndPushNamed("/login");
         }
       }).catchError((error) {
-        Toast.show(error.toString(), context,
-            textColor: Colors.white, backgroundColor: blackFont);
+        Navigator.pop(context);
+        showToast(message: error.toString());
       });
     } else {
-      var msg = AppLocalization.of(context).invalidDetails;
-      Toast.show(
-        msg,
-        context,
-        gravity: Toast.BOTTOM,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
+      var msg = AppLocalization.of(context)!.invalidDetails;
+      showToast(message: msg);
     }
   }
 }

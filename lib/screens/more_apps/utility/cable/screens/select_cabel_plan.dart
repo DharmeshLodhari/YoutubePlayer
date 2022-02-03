@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class SelectCablePlan extends StatefulWidget {
-  final Map<String, dynamic> arguments;
+  final Map<String, dynamic>? arguments;
   SelectCablePlan({this.arguments});
   @override
   _SelectCablePlanState createState() => _SelectCablePlanState();
@@ -167,7 +167,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -199,7 +199,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
     );
   }
 
-  Widget cablePlanTile({CablePlan plan}) {
+  Widget cablePlanTile({required CablePlan plan}) {
     return GestureDetector(
       onTap: () async {
         var selectedPlan = await Navigator.of(context)
@@ -233,7 +233,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          plan.name,
+                          plan.name!,
                           style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
@@ -250,7 +250,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                                   fontFamily: "roberto"),
                             ),
                             Text(
-                              plan.price.replaceAll("₦", ""),
+                              plan.price!.replaceAll("₦", ""),
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 14,
@@ -284,17 +284,18 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: CachedNetworkImage(
-                              imageUrl: plan.packs[0].image,
+                              imageUrl: plan.packs![0].image!,
                               fit: BoxFit.fill,
                               width: 32,
                               height: 32,
+                              errorWidget: imageErrorWidget,
                             ),
                           ),
                           SizedBox(
                             width: 8,
                           ),
                           Text(
-                            plan.packs[0].name,
+                            plan.packs![0].name!,
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
                           ),
@@ -306,10 +307,11 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                         children: [
                           ClipRRect(
                             child: CachedNetworkImage(
-                              imageUrl: plan.packs[1].image,
+                              imageUrl: plan.packs![1].image!,
                               fit: BoxFit.fill,
                               width: 32,
                               height: 32,
+                              errorWidget: imageErrorWidget,
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -317,7 +319,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                             width: 8,
                           ),
                           Text(
-                            plan.packs[1].name,
+                            plan.packs![1].name!,
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w400),
                           ),
@@ -334,14 +336,14 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
     );
   }
 
-  Widget getPlanFeatures({CablePlan plan}) {
+  Widget getPlanFeatures({required CablePlan plan}) {
     return Column(children: getColumnChildren(plan: plan));
   }
 
-  List<Widget> getColumnChildren({CablePlan plan}) {
+  List<Widget> getColumnChildren({required CablePlan plan}) {
     List<Widget> items = [];
 
-    for (int i = 0; i < plan.features.length; i = i + 2) {
+    for (int i = 0; i < plan.features!.length; i = i + 2) {
       items.add(
         Container(
           padding: EdgeInsets.only(bottom: 8),
@@ -358,7 +360,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                       width: 6,
                     ),
                     Text(
-                      plan.features[i],
+                      plan.features![i],
                       style: TextStyle(
                           fontWeight: FontWeight.w400,
                           fontSize: 14,
@@ -367,7 +369,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                   ],
                 ),
               ),
-              i + 1 < plan.features.length
+              i + 1 < plan.features!.length
                   ? Expanded(
                       child: Row(
                         children: [
@@ -379,7 +381,7 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
                             width: 6,
                           ),
                           Text(
-                            plan.features[i + 1],
+                            plan.features![i + 1],
                             style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 14,

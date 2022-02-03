@@ -1,8 +1,8 @@
 class FixedWidthSmallStill {
-  String height;
-  String size;
-  String url;
-  String width;
+  String? height;
+  String? size;
+  String? url;
+  String? width;
 
   FixedWidthSmallStill({this.height, this.size, this.url, this.width});
 

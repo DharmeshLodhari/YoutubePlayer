@@ -1,8 +1,8 @@
 class RentDuration {
-  bool atFewDays;
-  bool atFewMonths;
-  bool atFewWeeks;
-  bool atLeastAYear;
+  bool? atFewDays;
+  bool? atFewMonths;
+  bool? atFewWeeks;
+  bool? atLeastAYear;
 
   RentDuration(
       {this.atFewDays, this.atFewMonths, this.atFewWeeks, this.atLeastAYear});

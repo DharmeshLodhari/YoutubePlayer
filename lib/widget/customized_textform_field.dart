@@ -7,23 +7,23 @@ import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
-  Function validator;
-  Function onChanged;
-  Function onTap;
-  TextEditingController controller;
-  List<TextInputFormatter> inputFormatters;
+  Function? validator;
+  Function? onChanged;
+  Function? onTap;
+  TextEditingController? controller;
+  List<TextInputFormatter>? inputFormatters;
   TextInputType keyboardType;
   bool obscureText;
   bool isPassword;
   bool isReadOnly;
-  bool enabled;
+  bool? enabled;
   bool isAmount;
   String labelText;
   String hintText;
-  Color labelColor;
-  int maxLength;
+  Color? labelColor;
+  int? maxLength;
   int maxLines;
-  FocusNode focusNode;
+  FocusNode? focusNode;
   TextCapitalization textCapitalization;
 
   CustomizedTextFormField(
@@ -72,7 +72,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             ),
             widget.isPassword
                 ? Text(
-                    "${widget.controller.text.toString().length}/6",
+                    "${widget.controller!.text.toString().length}/6",
                     style: TextStyle(
                       color: widget.labelColor != null
                           ? widget.labelColor
@@ -94,7 +94,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               fontWeight: FontWeight.w600,
               letterSpacing: widget.isPassword ? 2 : 0),
           buildCounter: (BuildContext context,
-                  {int currentLength, int maxLength, bool isFocused}) =>
+                  {int? currentLength, int? maxLength, bool? isFocused}) =>
               null,
           cursorWidth: 1.5,
           enabled: widget.enabled,
@@ -181,7 +181,12 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           ),
           inputFormatters:
               widget.inputFormatters != null ? widget.inputFormatters : [],
-          validator: widget.validator,
+          validator: (value) {
+            if (widget.validator != null) {
+              return widget.validator!(value);
+            }
+            return null;
+          },
           controller: widget.controller,
           keyboardType: getKeyBoardType(widget.keyboardType),
           obscureText: widget.obscureText,
@@ -189,11 +194,11 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           maxLines: widget.maxLines,
           focusNode: widget.focusNode != null ? widget.focusNode : null,
           onChanged: (val) {
-            if (widget.onChanged != null) widget.onChanged(val);
+            if (widget.onChanged != null) widget.onChanged!(val);
             setState(() {});
           },
           onTap: () {
-            if (widget.onTap != null) widget.onTap();
+            if (widget.onTap != null) widget.onTap!();
             setState(() {});
           },
         ),
