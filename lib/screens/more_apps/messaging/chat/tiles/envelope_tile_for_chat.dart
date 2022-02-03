@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EnvelopeTileForChat extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
   EnvelopeTileForChat({this.message, this.chatConversation});
 
@@ -22,33 +22,33 @@ class EnvelopeTileForChat extends StatefulWidget {
 }
 
 class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  CustomerProfile customerProfile;
+  CustomerProfile? customerProfile;
 
-  Envelope envelope;
+  late Envelope envelope;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    Map<String, dynamic> data;
+    Map<String, dynamic>? data;
 
-    if (widget.message['meta_data'] is String) {
-      data = jsonDecode(widget.message['meta_data']);
-    } else if (widget.message['meta_data'] is Map) {
-      data = widget.message['meta_data'];
+    if (widget.message!['meta_data'] is String) {
+      data = jsonDecode(widget.message!['meta_data']);
+    } else if (widget.message!['meta_data'] is Map) {
+      data = widget.message!['meta_data'];
     }
 
     // debugPrint("data=> $data");
 
-    envelope = Envelope.fromJson(data);
+    envelope = Envelope.fromJson(data!);
 
     // customerProfile = CustomerProfile.fromJson(data);
 
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
 
-    Map<String, dynamic> message = widget.message;
+    Map<String, dynamic>? message = widget.message;
 
     return Column(
       children: [
@@ -71,7 +71,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     width: 20,
                     child: isSend
                         ? Center(
-                            child: getMessageTick(message: widget.message),
+                            child: getMessageTick(message: widget.message!),
                           )
                         : Container(),
                   )
@@ -91,7 +91,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     width: 20,
                   ),
             Text(
-              formatTime(widget.message['created_at']),
+              formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
@@ -107,7 +107,9 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
   }
 
   Widget getEnvelopeUI(
-      {Map<String, dynamic> message, Envelope envelope, bool isSend}) {
+      {Map<String, dynamic>? message,
+      required Envelope envelope,
+      required bool isSend}) {
     bool isEmptyEnvelope = false;
 
     if (envelope.type == "empty-envelop") {
@@ -155,7 +157,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        messageDecoderWithEmoji("${envelope.title ?? ""}"),
+                        messageDecoderWithEmoji("${envelope.title ?? ""}")!,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -165,17 +167,18 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(
-                        height:
-                            widget.chatConversation.isGroupConversation ? 2 : 4,
+                        height: widget.chatConversation!.isGroupConversation!
+                            ? 2
+                            : 4,
                       ),
                       Text(
                         isEmptyEnvelope
-                            ? message["author_full_name"] ?? message["author"]
+                            ? message!["author_full_name"] ?? message["author"]
                             : isSend
                                 ? envelope.isOpen
                                     ? "Opened"
                                     : "Closed"
-                                : message["author_full_name"] ??
+                                : message!["author_full_name"] ??
                                     message["author"],
                         style: TextStyle(
                             fontSize: 14,
@@ -202,7 +205,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                     ],
                   ),
                 ),
-                widget.chatConversation.isGroupConversation
+                widget.chatConversation!.isGroupConversation!
                     ? Container(
                         width: 60,
                         child: Stack(
@@ -223,7 +226,8 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                                       height: 34,
                                       width: 34,
                                       fit: BoxFit.fill,
-                                      imageUrl: message['to_customer_avatar'],
+                                      imageUrl: message!['to_customer_avatar'],
+                                      errorWidget: imageErrorWidget,
                                     ),
                                   ),
                                 ),
@@ -243,6 +247,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
                                     height: 34,
                                     width: 34,
                                     fit: BoxFit.fill,
+                                    errorWidget: imageErrorWidget,
                                     imageUrl: message['from_customer_avatar'],
                                   ),
                                 ),
@@ -261,9 +266,9 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
         if (isEmptyEnvelope) {
           if (envelope.toCustomer == userBloc.user.userName) {
             ChatConversation _chatConversation =
-                ChatConversation.fromChatConversation(widget.chatConversation);
+                ChatConversation.fromChatConversation(widget.chatConversation!);
 
-            if (widget.chatConversation.isGroupConversation) {
+            if (widget.chatConversation!.isGroupConversation!) {
               _chatConversation.userName = userBloc.user.userName;
               _chatConversation.fullName = userBloc.user.fullName;
               _chatConversation.avatar = userBloc.user.avatar;
@@ -283,7 +288,7 @@ class _EnvelopeTileForChatState extends State<EnvelopeTileForChat> {
         if (userBloc.user.userName == envelope.toCustomer ||
             userBloc.user.userName == envelope.fromCustomer) {
           Navigator.of(context).pushNamed("/envelope-detail", arguments: {
-            "searchedUserName": message["author"],
+            "searchedUserName": message!["author"],
             "data": message,
             "envelope": envelope
           });

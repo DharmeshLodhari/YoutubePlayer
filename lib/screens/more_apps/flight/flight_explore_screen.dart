@@ -26,19 +26,19 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
   DateTime departureDate = DateTime.now();
   DateTime arrivalDate = DateTime.now();
 
-  FlightDashboardBloc _flightDashboardBloc;
+  late FlightDashboardBloc _flightDashboardBloc;
 
   var selectedTripType = "One way";
 
-  String selectedAdultCount;
-  String selectedChildrenCount;
+  String? selectedAdultCount;
+  String? selectedChildrenCount;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -233,7 +233,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                     DateTime.now().day),
                 lastDate: DateTime(2101),
               ).then((value) {
-                departureDate = DateTime(value.year, value.month, value.day);
+                departureDate = DateTime(value!.year, value.month, value.day);
                 setState(() {});
               }).catchError((error) {});
             },
@@ -282,7 +282,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
                       lastDate: DateTime(2101),
                     ).then((value) {
                       arrivalDate =
-                          DateTime(value.year, value.month, value.day);
+                          DateTime(value!.year, value.month, value.day);
                       setState(() {});
                     }).catchError((error) {});
                   },
@@ -702,7 +702,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedAdultCount != null ? selectedAdultCount : "",
+              selectedAdultCount != null ? selectedAdultCount! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -819,7 +819,7 @@ class _FlightExploreScreenState extends State<FlightExploreScreen> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedChildrenCount != null ? selectedChildrenCount : "",
+              selectedChildrenCount != null ? selectedChildrenCount! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(

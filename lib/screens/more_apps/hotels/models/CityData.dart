@@ -1,6 +1,6 @@
 class CityData {
-  String image;
-  String name;
+  String? image;
+  String? name;
 
   CityData({this.image, this.name});
 

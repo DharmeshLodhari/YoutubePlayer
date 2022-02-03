@@ -1,8 +1,8 @@
 class Photo {
-  int height;
-  List<String> htmlAttributions;
-  String photoReference;
-  int width;
+  int? height;
+  List<String>? htmlAttributions;
+  String? photoReference;
+  int? width;
 
   Photo({this.height, this.htmlAttributions, this.photoReference, this.width});
 

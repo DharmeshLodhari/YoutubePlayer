@@ -1,14 +1,15 @@
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
+import 'package:Slydo/utils/util.dart';
 
 class Address {
-  String addressLineOne;
-  String addressLineTwo;
-  String city;
-  String state;
-  String country;
-  String countryIsoCode;
+  String? addressLineOne;
+  String? addressLineTwo;
+  String? city;
+  String? state;
+  String? country;
+  String? countryIsoCode;
 
   Address(
       {this.addressLineOne,
@@ -31,21 +32,22 @@ class Address {
 enum UserStatus { ACTIVE, AWAY, UNKNOWN }
 
 class User {
-  String uuid;
-  String url;
-  String phoneNumber;
-  String fullName;
-  String userName;
-  String nickName;
-  String type;
-  String avatar;
-  String qrCode;
-  String password;
-  String currency;
-  bool isVerified;
+  String? uuid;
+  String? url;
+  String? phoneNumber;
+  String? fullName;
+  String? userName;
+  String? nickName;
+  String? type;
+  String? avatar;
+  String? qrCode;
+  String? password;
+  String? currency;
+  bool? isVerified;
   String conversationId;
   UserStatus status;
-  UserAbout userAbout;
+  double? rating;
+  UserAbout? userAbout;
 
   // Pass in as named parameter in constructor
   User({
@@ -62,6 +64,7 @@ class User {
     this.currency = "₦",
     this.isVerified = false,
     this.conversationId = "",
+    this.rating = 0.0,
     this.userAbout,
     this.status = UserStatus.UNKNOWN,
   });
@@ -78,7 +81,8 @@ class User {
       phoneNumber: json['phone_number'],
       qrCode: json['qr_code'],
       url: json['url'],
-      userAbout: UserAbout.fromJson(json["profile"]) ?? null,
+      rating: formatRating(json['rating']),
+      userAbout: UserAbout.fromJson(json["profile"]),
       userName: json['username'],
       uuid: json['uuid'],
     );
@@ -96,6 +100,7 @@ class User {
     data['phone_number'] = this.phoneNumber;
     data['qr_code'] = this.qrCode;
     data['url'] = this.url;
+    data['rating'] = this.rating;
     data['username'] = this.userName;
     data['uuid'] = this.uuid;
     return data;
@@ -112,10 +117,11 @@ class User {
     map["avatar"] = avatar;
     map["qrCode"] = qrCode;
     map["url"] = url;
+    map["rating"] = rating;
     return map;
   }
 
-  String displayName() {
+  String? displayName() {
     if (this.nickName != "" && this.nickName != null) {
       if (this.type != null &&
           this.type != "" &&
@@ -133,45 +139,47 @@ class User {
 }
 
 class CustomerProfile {
-  String fullName;
-  String userName;
-  String avatar;
-  String qrCode;
-  String nickName;
-  String type;
-  String conversationId;
+  String? fullName;
+  String? userName;
+  String? avatar;
+  String? qrCode;
+  String? nickName;
+  String? type;
+  String? conversationId;
   String uuid;
   String defaultCurrency;
   bool isVerified;
-  UserAbout userAbout;
+  UserAbout? userAbout;
   UserStatus status;
+  double rating;
 
   // Pass in as named parameter in constructor
-  CustomerProfile({
-    this.fullName = "",
-    this.userName = "",
-    this.avatar = "",
-    this.userAbout,
-    this.qrCode = "",
-    this.nickName = "",
-    this.type = "user",
-    this.conversationId = "",
-    this.defaultCurrency = "NGN",
-    this.isVerified = false,
-    this.uuid = "",
-    this.status = UserStatus.UNKNOWN,
-  });
+  CustomerProfile(
+      {this.fullName = "",
+      this.userName = "",
+      this.avatar = "",
+      this.userAbout,
+      this.qrCode = "",
+      this.nickName = "",
+      this.type = "user",
+      this.conversationId = "",
+      this.defaultCurrency = "NGN",
+      this.isVerified = false,
+      this.uuid = "",
+      this.status = UserStatus.UNKNOWN,
+      this.rating = 0.0});
 
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
     CustomerProfile profile = CustomerProfile(
-        fullName: json['full_name'] ?? "",
+        fullName: json['full_name'] ?? json['name'] ?? "",
         userName: json['username'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
-        nickName: json['nickname'] ?? "",
+        nickName: json['nickname'] ?? json['name'] ?? "",
         type: json['type'] ?? json['account_type'] ?? "user",
         conversationId: json['conversation_id'] ?? "",
-        status: json['status'] ?? UserStatus.UNKNOWN);
+        status: json['status'] ?? UserStatus.UNKNOWN,
+        rating: json['rating'] ?? 0.0);
     if (json['default_currency'] != null) {
       profile.defaultCurrency = json['default_currency'] ?? "NGN";
     }
@@ -190,14 +198,14 @@ class CustomerProfile {
 
   factory CustomerProfile.fromDBJson(Map<String, dynamic> json) {
     CustomerProfile profile = CustomerProfile(
-      fullName: json['full_name'],
-      userName: json['username'],
-      avatar: json['avatar'],
-      nickName: json['nickname'],
-      qrCode: json['qr_code'],
-      type: json['type'],
-      conversationId: json['conversation_id'],
-    );
+        fullName: json['full_name'],
+        userName: json['username'],
+        avatar: json['avatar'],
+        nickName: json['nickname'],
+        qrCode: json['qr_code'],
+        type: json['type'],
+        conversationId: json['conversation_id'],
+        rating: json['rating'] ?? 0.0);
     return profile;
   }
 
@@ -237,7 +245,7 @@ class CustomerProfile {
     data['uuid'] = this.uuid;
     data['default_currency'] = this.defaultCurrency;
     data['is_verified'] = this.isVerified;
-    data['profile'] = this.userAbout.toJson();
+    data['profile'] = this.userAbout!.toJson();
     return data;
   }
 
@@ -250,6 +258,7 @@ class CustomerProfile {
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     data['conversation_id'] = this.conversationId;
+    data['rating'] = this.rating;
 
     return data;
   }
@@ -264,7 +273,7 @@ class CustomerProfile {
     return data;
   }
 
-  String displayName() {
+  String? displayName() {
     if (this.nickName != "" && this.nickName != null) {
       if (this.type != null &&
           this.type != "" &&
@@ -282,8 +291,8 @@ class CustomerProfile {
 }
 
 class UserLocation {
-  final double latitude;
-  final double longitude;
+  final double? latitude;
+  final double? longitude;
 
   UserLocation({this.latitude, this.longitude});
 }

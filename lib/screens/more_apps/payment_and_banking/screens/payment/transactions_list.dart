@@ -4,8 +4,8 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/secure_screen.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
@@ -31,34 +30,34 @@ class _TransactionListState extends State<TransactionList> {
 
   // Get list of users transactions
   final _auth = PaymentAndBankingAuth();
-  SlidableController _slideController;
-  int count = 0;
-  String next = "";
-  String previous = "";
+  SlidableController? _slideController;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List transactionList = [];
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  RefreshBlocForTransaction _refreshBloc;
+  RefreshBlocForTransaction? _refreshBloc;
 
   // variables for to getting filter transactions
   String filterValue = "all";
   bool moneyOut = false;
   bool moneyIn = false;
 
-  CustomerProfileBloc customerProfileBloc;
+  late CustomerProfileBloc customerProfileBloc;
 
   GlobalKey _key = LabeledGlobalKey("transactionListPopUpMenu");
-  CustomizedPopUpMenu menu;
+  late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
   bool isFirstTime = true;
 
   @override
   void initState() {
-    secureScreen();
+    // secureScreen();
     getList();
 
     super.initState();
@@ -73,17 +72,21 @@ class _TransactionListState extends State<TransactionList> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
+
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      initializePopMenu();
+    });
   }
 
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForTransaction>(context);
-    _refreshBloc
+    _refreshBloc!
       ..addListener(() {
-        if (_refreshBloc.isRefresh) {
+        if (_refreshBloc!.isRefresh) {
           if (mounted) {
             _onRefresh();
-            _refreshBloc.isRefresh = false;
+            _refreshBloc!.isRefresh = false;
           }
         }
       });
@@ -106,13 +109,9 @@ class _TransactionListState extends State<TransactionList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -143,8 +142,7 @@ class _TransactionListState extends State<TransactionList> {
     setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void initializePopMenu() {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
@@ -158,7 +156,10 @@ class _TransactionListState extends State<TransactionList> {
     );
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
+  }
 
+  @override
+  Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
@@ -166,13 +167,14 @@ class _TransactionListState extends State<TransactionList> {
 
     return WillPopScope(
       onWillPop: () async {
+        menu.closeMenu();
         customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
         key: _scaffoldTransactionKey,
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -198,13 +200,14 @@ class _TransactionListState extends State<TransactionList> {
           size: 24,
         ),
         onPressed: () {
+          menu.closeMenu();
           customerProfileBloc.customer = null;
           Navigator.pop(context);
         },
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context).transactions,
+        AppLocalization.of(context)!.transactions,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -252,7 +255,7 @@ class _TransactionListState extends State<TransactionList> {
         ),
         child: IconButton(
           icon: Icon(
-            Icons.more_vert,
+            Icons.filter_alt_rounded,
             color: isPopMenuOpen ? Colors.white : Colors.black,
             size: 20,
           ),
@@ -271,7 +274,7 @@ class _TransactionListState extends State<TransactionList> {
   Widget _buildTransactionList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).transactionHistoryEmpty,
+            msg: AppLocalization.of(context)!.transactionHistoryEmpty,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -309,8 +312,12 @@ class _TransactionListState extends State<TransactionList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result =
+        Map<String, dynamic>? result =
             await _auth.getTransactions(next, previous, moneyIn, moneyOut);
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -342,9 +349,9 @@ class _TransactionListState extends State<TransactionList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldTransactionKey.currentState.showSnackBar(SnackBar(
+        _scaffoldTransactionKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -363,12 +370,18 @@ class _TransactionListState extends State<TransactionList> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double> value) {}
+  void handleSlideAnimationChanged(Animation<double>? value) {}
 
-  void handleSlideIsOpenChanged(bool value) {}
+  void handleSlideIsOpenChanged(bool? value) {}
 
   List<Widget> listSecondaryActions(Transaction transaction) {
-    if (transaction.isAnonymous) return [];
+    if (transaction.payee! == "slydo_envelope" ||
+        transaction.payee! == "slydo" ||
+        transaction.displayCustomer == "slydo" ||
+        transaction.displayCustomer == "slydo_envelope") {
+      return [];
+    }
+    if (transaction.isAnonymous!) return [];
     return [
       SlideActionButton(
           backgroundColor: naturalGreen,
@@ -381,13 +394,19 @@ class _TransactionListState extends State<TransactionList> {
               'isFromProfile': false,
             });
           },
-          title: AppLocalization.of(context).send,
+          title: AppLocalization.of(context)!.send,
           slideController: _slideController),
     ];
   }
 
   List<Widget> listActionSlideActions(Transaction transaction) {
-    if (transaction.isAnonymous) return [];
+    if (transaction.payee! == "slydo_envelope" ||
+        transaction.payee! == "slydo" ||
+        transaction.displayCustomer == "slydo" ||
+        transaction.displayCustomer == "slydo_envelope") {
+      return [];
+    }
+    if (transaction.isAnonymous!) return [];
 
     return [
       SlideActionButton(
@@ -396,13 +415,15 @@ class _TransactionListState extends State<TransactionList> {
           onTap: () async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(transaction.payee);
-            Navigator.of(context).pushNamed('/request-payment',
-                arguments: <String, bool>{
-                  'isFromProfile': false,
-                  'isRequest': true
-                });
+            Navigator.of(context).pushNamed(
+              '/request-payment',
+              arguments: <String, bool>{
+                'isFromProfile': false,
+                'isRequest': true
+              },
+            );
           },
-          title: AppLocalization.of(context).request,
+          title: AppLocalization.of(context)!.request,
           slideController: _slideController),
     ];
   }
@@ -410,7 +431,7 @@ class _TransactionListState extends State<TransactionList> {
   Widget _getSlidableWithLists(
       BuildContext context, Transaction transaction, int index) {
     return Slidable(
-      key: Key(transaction.payee),
+      key: Key(transaction.payee!),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
@@ -418,7 +439,7 @@ class _TransactionListState extends State<TransactionList> {
       child: VerticalListItem(
         transaction,
         key: Key(
-            "Transaction:${transaction.amount.toString() + transaction.createdAt}"),
+            "Transaction:${transaction.amount.toString() + transaction.createdAt!}"),
       ),
       actions: listActionSlideActions(transaction),
       secondaryActions: listSecondaryActions(transaction),
@@ -427,7 +448,7 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   void dispose() {
-    unsecureScreen();
+    // unsecureScreen();
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -438,7 +459,7 @@ class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.transaction, {this.key}) : super(key: key);
 
   final Transaction transaction;
-  final Key key;
+  final Key? key;
 
   @override
   _VerticalListItemState createState() => _VerticalListItemState();
@@ -455,6 +476,13 @@ class _VerticalListItemState extends State<VerticalListItem> {
               ? Slidable.of(context)?.open()
               : Slidable.of(context)?.close(),
       onDoubleTap: () {
+        if (widget.transaction.payee == "slydo_envelope" ||
+            widget.transaction.payee == "slydo" ||
+            widget.transaction.displayCustomer == "slydo" ||
+            widget.transaction.displayCustomer == "slydo_envelope") {
+          return;
+        }
+
         if (widget.transaction.payee != "Slydo" &&
             widget.transaction.payee != "Private") {
           debugPrint(widget.transaction.payee);
@@ -541,7 +569,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization.of(context).message,
+              AppLocalization.of(context)!.message,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -586,12 +614,13 @@ class _VerticalListItemState extends State<VerticalListItem> {
                 });
               }
               if (result) {
-                Toast.show(
-                    "${widget.transaction.payee} " +
-                        AppLocalization.of(context).isBlocked,
-                    context);
+                showToast(
+                    message: "${widget.transaction.payee} " +
+                        AppLocalization.of(context)!.isBlocked);
               } else {
-                Toast.show(AppLocalization.of(context).error, context);
+                showToast(
+                  message: AppLocalization.of(context)!.error,
+                );
               }
             });
           });
@@ -613,7 +642,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization.of(context).blockUser,
+              AppLocalization.of(context)!.blockUser,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

@@ -1,7 +1,7 @@
 class SubscriptionItem {
-  int id;
-  String image;
-  String name;
+  int? id;
+  String? image;
+  String? name;
 
   SubscriptionItem({this.id, this.image, this.name});
 

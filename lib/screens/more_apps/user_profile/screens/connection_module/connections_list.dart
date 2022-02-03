@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
@@ -34,10 +36,10 @@ class ConnectionList extends StatefulWidget {
 class _ConnectionListState extends State<ConnectionList> {
   final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
       new GlobalKey<ScaffoldState>();
-  SlidableController _slideController;
-  int count = 0;
-  String next = "";
-  String previous = "";
+  SlidableController? _slideController;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List connectionsList = [];
   ScrollController _scrollController = new ScrollController();
 
@@ -45,13 +47,13 @@ class _ConnectionListState extends State<ConnectionList> {
   bool noItemInList = false;
   bool isLoadingFromDB = false;
 
-  ConnectionListBloc _connectionListBloc;
+  late ConnectionListBloc _connectionListBloc;
 
-  TextEditingController searchChatConversation;
+  TextEditingController? searchChatConversation;
   bool isUserIsSearching = false;
   List<ChatConversation> searchedChatConnection = [];
 
-  RefreshBlocForConnectionDashboard _refreshBloc;
+  RefreshBlocForConnectionDashboard? _refreshBloc;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -80,8 +82,8 @@ class _ConnectionListState extends State<ConnectionList> {
   void setupSearchChatConnection() {
     searchChatConversation = TextEditingController();
 
-    searchChatConversation.addListener(() {
-      if (searchChatConversation.text.isNotEmpty) {
+    searchChatConversation!.addListener(() {
+      if (searchChatConversation!.text.isNotEmpty) {
         isUserIsSearching = true;
         if (mounted) setState(() {});
         getSearchedChatConnections();
@@ -95,13 +97,13 @@ class _ConnectionListState extends State<ConnectionList> {
   void getSearchedChatConnections() async {
     searchedChatConnection = await ConnectionListManager()
         .getSearchedConnectionsFromDB(
-            searchedText: searchChatConversation.text.trim());
+            searchedText: searchChatConversation!.text.trim());
     if (mounted) setState(() {});
   }
 
   void fetchConnectionListFromDbIfAvailable() async {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.scaffoldKey.currentContext,
+        myGlobals.scaffoldKey.currentContext!,
         listen: false);
 
     isLoading = true;
@@ -158,14 +160,14 @@ class _ConnectionListState extends State<ConnectionList> {
   //   );
   // }
   Widget getRefreshIndicator() {
-    return StreamBuilder<bool>(
+    return StreamBuilder<bool?>(
         initialData: false,
         stream: ChatMessageSynchronizer().getChatMessageFetchingStream,
         builder: (context, snapshot) {
           return Stack(
             children: [
               IgnorePointer(
-                ignoring: snapshot.data,
+                ignoring: snapshot.data!,
                 child: SmartRefresher(
                   enablePullDown: true,
                   header: WaterDropHeader(
@@ -178,7 +180,7 @@ class _ConnectionListState extends State<ConnectionList> {
                   child: _buildConnectionsList(),
                 ),
               ),
-              if (snapshot.data) showFetchingMessageUI()
+              if (snapshot.data!) showFetchingMessageUI()
             ],
           );
         });
@@ -199,7 +201,7 @@ class _ConnectionListState extends State<ConnectionList> {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18), color: navyBlue),
             child: JumpingText(
-              'Updating Messages ...',
+              'Syncing Messages ...',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -214,17 +216,16 @@ class _ConnectionListState extends State<ConnectionList> {
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
-    _refreshBloc
+    _refreshBloc!
       ..addListener(() async {
-        if (_refreshBloc.isRefresh) {
+        if (_refreshBloc!.isRefresh) {
           await refreshList();
-          _refreshBloc.isRefresh = false;
+          _refreshBloc!.isRefresh = false;
         }
       });
   }
 
   Future<void> refreshList() async {
-    debugPrint("=====> Refresh");
     await ConnectionSynchronizer().fetch(isRefresh: true);
     _refreshController.refreshCompleted();
   }
@@ -316,7 +317,7 @@ class _ConnectionListState extends State<ConnectionList> {
     try {
       return _connectionListBloc.connectionUsers.length == 0
           ? NoItemInList(
-              msg: "No connection found !!",
+              msg: "No contact found !!",
               isResult: true,
             )
           : ListView.builder(
@@ -335,7 +336,7 @@ class _ConnectionListState extends State<ConnectionList> {
       debugPrint("ERROR=>:- $error");
       return _connectionListBloc.connectionUsers.length == 0
           ? NoItemInList(
-              msg: "No connection found !!",
+              msg: "No contact found !!",
               isResult: true,
             )
           : ListView.builder(
@@ -360,7 +361,12 @@ class _ConnectionListState extends State<ConnectionList> {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
-        Map<String, dynamic> result = await UserAuth().contacts(next, previous);
+        Map<String, dynamic>? result =
+            await UserAuth().contacts(next, previous);
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
@@ -369,7 +375,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
         // debugPrint("List:- $tempList");
 
-        List<ChatConversation> users = List<ChatConversation>();
+        List<ChatConversation> users = [];
 
         tempList.forEach(
             (element) => users.add(ChatConversation.fromJson(element)));
@@ -393,26 +399,26 @@ class _ConnectionListState extends State<ConnectionList> {
         if (mounted) setState(() {});
       } else if (next == null &&
           connectionListBloc.connectionUsers.length > 6) {
-        _scaffoldContactsListKey.currentState.showSnackBar(SnackBar(
+        _scaffoldContactsListKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactsListKey.currentState
+    _scaffoldContactsListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
-    if (user.isGroupConversation) {
+    if (user.isGroupConversation!) {
       return [];
     }
     CustomerProfile customerProfile =
@@ -425,7 +431,7 @@ class _ConnectionListState extends State<ConnectionList> {
         onTap: () {
           blockUserAlert(customerProfile, index);
         },
-        title: AppLocalization.of(context).block,
+        title: AppLocalization.of(context)!.block,
         slideController: _slideController,
       ),
     ];
@@ -435,7 +441,7 @@ class _ConnectionListState extends State<ConnectionList> {
       ChatConversation chatConversation, int index) {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    if (chatConversation.isGroupConversation) {
+    if (chatConversation.isGroupConversation!) {
       if (userBloc.user.userName == chatConversation.owner) {
         return [];
       }
@@ -462,14 +468,14 @@ class _ConnectionListState extends State<ConnectionList> {
         onTap: () {
           removeFromConnectionUserAlert(customerProfile, index);
         },
-        title: AppLocalization.of(context).remove,
+        title: AppLocalization.of(context)!.remove,
         slideController: _slideController,
       ),
     ];
   }
 
   void blockUserAlert(CustomerProfile user, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -487,20 +493,20 @@ class _ConnectionListState extends State<ConnectionList> {
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).block,
-      description: AppLocalization.of(context).areYouSureWantToBlock +
+      title: AppLocalization.of(context)!.block,
+      description: AppLocalization.of(context)!.areYouSureWantToBlock +
           " ${user.displayName()}",
-      actionOne: AppLocalization.of(context).block,
-      actionTwo: AppLocalization.of(context).cancel,
+      actionOne: AppLocalization.of(context)!.block,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
-    if (result) {
+    if (result != null && result) {
       bool done = await UserAuth().blockUser(user);
       done = true;
       if (done) {
         _showSnackBar(
             context,
             "${user.displayName()} " +
-                AppLocalization.of(context).isBlockedSuccessfully);
+                AppLocalization.of(context)!.isBlockedSuccessfully);
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
@@ -511,14 +517,14 @@ class _ConnectionListState extends State<ConnectionList> {
         // }
         setState(() {});
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
 
   Future<void> exitTheGroupAlert(
       ChatConversation chatConversation, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -539,11 +545,11 @@ class _ConnectionListState extends State<ConnectionList> {
       title: "Exit",
       description: "Are you sure want to leave ${chatConversation.fullName} ?",
       actionOne: "Exit",
-      actionTwo: AppLocalization.of(context).cancel,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
-    if (result) {
+    if (result != null && result) {
       bool done = await MessageAuth()
-          .exitFromGroup(conversationId: chatConversation.conversationId);
+          .exitFromGroup(conversationId: chatConversation.conversationId!);
       if (done) {
         _showSnackBar(context, "You left ${chatConversation.fullName}");
 
@@ -554,14 +560,14 @@ class _ConnectionListState extends State<ConnectionList> {
 
         setState(() {});
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
 
   Future<void> removeFromConnectionUserAlert(
       CustomerProfile user, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -579,20 +585,20 @@ class _ConnectionListState extends State<ConnectionList> {
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).delete,
-      description: AppLocalization.of(context).areYouSureWantToDelete +
+      title: AppLocalization.of(context)!.delete,
+      description: AppLocalization.of(context)!.areYouSureWantToDelete +
           " ${user.displayName()} " +
           "From Your Connection List",
-      actionOne: AppLocalization.of(context).delete,
-      actionTwo: AppLocalization.of(context).cancel,
+      actionOne: AppLocalization.of(context)!.delete,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
-    if (result) {
+    if (result != null && result) {
       bool done = await UserAuth().removeFromContactList(user);
       if (done) {
         _showSnackBar(
             context,
             "${user.displayName()} " +
-                AppLocalization.of(context).isRemovedSuccessfully);
+                AppLocalization.of(context)!.isRemovedSuccessfully);
 
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
@@ -600,7 +606,7 @@ class _ConnectionListState extends State<ConnectionList> {
             conversationId: user.conversationId);
         if (mounted) setState(() {});
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
@@ -608,7 +614,7 @@ class _ConnectionListState extends State<ConnectionList> {
   Widget _getSlidableWithLists(
       BuildContext context, ChatConversation user, int index) {
     return Slidable(
-      key: Key(user.userName),
+      key: Key(user.userName!),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),

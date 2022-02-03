@@ -1,5 +1,6 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,7 @@ class MainReview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(context),
+      appBar: appBar(context) as PreferredSizeWidget?,
       backgroundColor: Colors.white,
       body: scaffoldBody(),
     );
@@ -75,6 +76,7 @@ class ReviewTile extends StatelessWidget {
                         fit: BoxFit.fill,
                         width: double.infinity,
                         height: double.infinity,
+                        errorWidget: imageErrorWidget,
                       ),
                     ),
                   ),

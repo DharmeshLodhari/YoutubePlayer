@@ -40,7 +40,7 @@ class _CancelBookingState extends State<CancelBooking> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -104,7 +104,7 @@ class _CancelBookingState extends State<CancelBooking> {
     );
   }
 
-  Widget getReasoneTile({String reason}) {
+  Widget getReasoneTile({required String reason}) {
     bool isSelected = reason == selectedReason;
     return GestureDetector(
       onTap: () {
@@ -145,7 +145,7 @@ class _CancelBookingState extends State<CancelBooking> {
         ClipRRect(
           borderRadius: BorderRadius.circular(50),
           child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar,
+            imageUrl: userBloc.user.avatar!,
             height: 80,
             width: 80,
             fit: BoxFit.fill,

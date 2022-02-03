@@ -12,7 +12,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class AddInvoiceItem extends StatefulWidget {
@@ -27,18 +26,18 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
-  InvoiceItem _invoiceItem;
+  InvoiceItem? _invoiceItem;
 
   final _formKey = GlobalKey<FormState>();
   final _addItemScaffoldKey = GlobalKey<ScaffoldState>();
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  int amount;
+  int? amount;
 
   String errorMessage = "";
-  String recipient;
-  AddInvoiceBloc addInvoiceBloc;
+  String? recipient;
+  late AddInvoiceBloc addInvoiceBloc;
 
   @override
   void initState() {
@@ -58,7 +57,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
         backgroundColor: Colors.white,
         key: _addItemScaffoldKey,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -209,7 +208,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
             return null;
           } catch (e) {}
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
     );
   }
@@ -238,8 +237,8 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     size: 2,
                   ),
                   onTap: () {
-                    if (_invoiceItem.quantity > 1) {
-                      _invoiceItem.quantity--;
+                    if (_invoiceItem!.quantity! > 1) {
+                      _invoiceItem!.quantity = _invoiceItem!.quantity! - 1;
                       setState(() {});
                     }
                   }),
@@ -249,7 +248,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                 ),
               ),
               Text(
-                _invoiceItem.quantity.toString(),
+                _invoiceItem!.quantity.toString(),
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -268,7 +267,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     size: 16,
                   ),
                   onTap: () {
-                    _invoiceItem.quantity++;
+                    _invoiceItem!.quantity = _invoiceItem!.quantity! + 1;
                     setState(() {});
                   }),
             ],
@@ -292,7 +291,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       if (userBloc.user.userName != recipient) {
         try {
           var data = {
@@ -301,31 +300,20 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
 
           debugPrint(data.toString());
 
-          _invoiceItem.name = _descriptionController.text.trim();
-          _invoiceItem.amount = int.parse(_amountController.text.trim());
-          _invoiceItem.currency = userBloc.user.currency;
+          _invoiceItem!.name = _descriptionController.text.trim();
+          _invoiceItem!.amount = int.parse(_amountController.text.trim());
+          _invoiceItem!.currency = userBloc.user.currency;
 
           addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
 
           ///
           Navigator.pop(context);
         } catch (e) {
-          debugPrint(e);
-          Toast.show(
-            e,
-            context,
-            gravity: Toast.BOTTOM,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          debugPrint(e.toString());
+          showToast(message: e.toString());
         }
       } else {
-        Toast.show(
-          AppLocalization.of(context).invalidRecipient,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(message: AppLocalization.of(context)!.invalidRecipient);
       }
     }
   }

@@ -8,6 +8,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
@@ -17,7 +18,6 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../shopping_auth.dart';
 
@@ -37,27 +37,30 @@ class _EditProductState extends State<EditProduct> {
   _EditProductState({this.arguments});
 
   final _auth = ShoppingAuthService();
-  UserBloc userBloc;
+  UserBloc? userBloc;
   final _formKey = GlobalKey<FormState>();
 
-  String productId;
+  String? productId;
   Product currentProduct = Product();
 
   int imageCount = 5;
   ScrollController _scrollController = ScrollController();
   List<PickedFile> productLocalImages = [];
-  List<String> productImagesFromServer = List<String>();
-  String productName = "";
-  String productDescription = "";
-  String productShortDescription = "";
-  String productCategory = "";
-  String productCondition = "";
-  String productPrice = "";
-  ProductCategory selectedProductCategory;
-  ProductCondition selectedProductCondition;
-  String productManufacturer = "";
-  bool productIsAvailable = false;
-  DateTime productAvailableFrom = DateTime.now();
+  List<String?> productImagesFromServer = [];
+  String? productName = "";
+  String? productDescription = "";
+  String? productShortDescription = "";
+  String? productCategory = "";
+  String? productCondition = "";
+  String? productPrice = "";
+  ProductCategory? selectedProductCategory;
+  ProductCondition? selectedProductCondition;
+  String? productManufacturer = "";
+  bool? productIsAvailable = false;
+  DateTime? productAvailableFrom = DateTime.now();
+  List<ProductCategory>? productCategories;
+  bool isLoading = false;
+  bool isAPILoading = false;
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
@@ -76,30 +79,49 @@ class _EditProductState extends State<EditProduct> {
   @override
   void initState() {
     productId = arguments['productId'];
-    fetchProduct();
+    getCategories();
+
     super.initState();
   }
 
-  void fetchProduct() async {
+  void getCategories() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    try {
+      productCategories = await ShoppingAuthService().getProductCategories();
+    } catch (e) {
+      productCategories = [];
+    }
+
+    await fetchProduct();
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  Future<void> fetchProduct() async {
     //fetchProductFrom id to edit
-    _auth.getProduct(productId).then((value) {
+    await _auth.getProduct(productId!).then((value) {
       if (mounted) {
         setState(() {
           currentProduct = value;
           // assigning to our edit controllers
 
-          productTitleController.text = currentProduct.name;
-          productDescriptionController.text = currentProduct.description;
-          productPriceController.text = currentProduct.price;
-          productManufacturerController.text = currentProduct.manufacturer;
-          productShortDescriptionController.text =
-              currentProduct.shortDescription;
+          productTitleController.text = currentProduct.name!;
+          productDescriptionController.text = currentProduct.description!;
 
-          productImagesFromServer.addAll(currentProduct.serverImages);
+          productPriceController.text =
+              moneyNormalizer(int.parse(currentProduct.price!)).toString();
+
+          productManufacturerController.text = currentProduct.manufacturer!;
+          productShortDescriptionController.text =
+              currentProduct.shortDescription!;
+
+          productImagesFromServer.addAll(currentProduct.serverImages!);
           productName = currentProduct.name;
           productCategory = currentProduct.category;
           productCondition = currentProduct.condition;
-          productPrice = currentProduct.price;
+          productPrice = moneyNormalizer(int.parse(currentProduct.price!));
           productDescription = currentProduct.description;
           productManufacturer = currentProduct.manufacturer;
           productShortDescription = currentProduct.shortDescription;
@@ -107,7 +129,7 @@ class _EditProductState extends State<EditProduct> {
           productAvailableFrom = currentProduct.availableFrom;
 
           // assigning the dropdown from currentProduct
-          productCategories.forEach((catagory) {
+          productCategories?.forEach((catagory) {
             if (catagory.name == currentProduct.category) {
               selectedProductCategory = catagory;
             }
@@ -121,13 +143,7 @@ class _EditProductState extends State<EditProduct> {
         });
       }
     }).catchError((error) {
-      Toast.show(
-        error.toString(),
-        context,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        gravity: Toast.CENTER,
-      );
+      showToast(message: error.toString());
     });
   }
 
@@ -141,7 +157,7 @@ class _EditProductState extends State<EditProduct> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -173,60 +189,66 @@ class _EditProductState extends State<EditProduct> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 10),
-                checkImageLimitForServerImage()
-                    ? viewServerImages()
-                    : Container(),
-                checkImageLimitForServerImage()
-                    ? SizedBox(
-                        height: 8,
-                      )
-                    : Container(),
-                checkImageLimitForLocalImage() ? addLocalImages() : Container(),
-                SizedBox(
-                  height: 10,
+    return isLoading
+        ? Center(
+            child: CircularLoadingIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(height: 10),
+                      checkImageLimitForServerImage()
+                          ? viewServerImages()
+                          : Container(),
+                      checkImageLimitForServerImage()
+                          ? SizedBox(
+                              height: 8,
+                            )
+                          : Container(),
+                      checkImageLimitForLocalImage()
+                          ? addLocalImages()
+                          : Container(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      addTitleField(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getManufacturerField(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getAmountField(),
+                      SizedBox(height: 10),
+                      getCategoryField(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      getProductConditionField(),
+                      SizedBox(height: 16),
+                      getIsAvailableField(),
+                      SizedBox(height: 16),
+                      getAvailableFromField(),
+                      SizedBox(height: 10),
+                      getProductShortDescription(),
+                      SizedBox(height: 10),
+                      getProductDescription(),
+                      SizedBox(height: 10),
+                      getSubmitButton(),
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-                addTitleField(),
-                SizedBox(
-                  height: 10,
-                ),
-                getManufacturerField(),
-                SizedBox(
-                  height: 10,
-                ),
-                getAmountField(),
-                SizedBox(height: 10),
-                getCategoryField(),
-                SizedBox(
-                  height: 10,
-                ),
-                getProductConditionField(),
-                SizedBox(height: 16),
-                getIsAvailableField(),
-                SizedBox(height: 16),
-                getAvailableFromField(),
-                SizedBox(height: 10),
-                getProductShortDescription(),
-                SizedBox(height: 10),
-                getProductDescription(),
-                SizedBox(height: 10),
-                getSubmitButton(),
-                SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -297,7 +319,7 @@ class _EditProductState extends State<EditProduct> {
                   height: 4,
                 ),
                 Text(
-                  AppLocalization.of(context).addImage,
+                  AppLocalization.of(context)!.addImage,
                   style: TextStyle(color: darkGrey, fontSize: 14),
                 ),
               ],
@@ -315,24 +337,24 @@ class _EditProductState extends State<EditProduct> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context).selectTheImageSource),
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).camera),
+                  child: Text(AppLocalization.of(context)!.camera),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 MaterialButton(
-                  child: Text(AppLocalization.of(context).gallery),
+                  child: Text(AppLocalization.of(context)!.gallery),
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
                 )
               ],
             ));
 
     if (imageSource != null) {
-      ImagePicker().getImage(source: imageSource).then((value) async {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
         if (value != null) {
           /// for cropping the image
-          String croppedImage = await ImageCrop().cropImage(value.path);
+          String? croppedImage = await ImageCrop().cropImage(value.path);
           if (croppedImage == null) {
             return;
           }
@@ -416,7 +438,7 @@ class _EditProductState extends State<EditProduct> {
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
                       image: NetworkImage(
-                        productImagesFromServer[index],
+                        productImagesFromServer[index]!,
                       ),
                       fit: BoxFit.fill),
                 ),
@@ -487,12 +509,12 @@ class _EditProductState extends State<EditProduct> {
   Widget addTitleField() {
     return CustomizedTextFormField(
       controller: productTitleController,
-      labelText: AppLocalization.of(context).productName,
+      labelText: AppLocalization.of(context)!.productName,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).pleaseEnterProductName;
+        return AppLocalization.of(context)!.pleaseEnterProductName;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -506,7 +528,7 @@ class _EditProductState extends State<EditProduct> {
       controller: productDescriptionController,
       maxLines: 5,
       textCapitalization: TextCapitalization.sentences,
-      labelText: AppLocalization.of(context).description,
+      labelText: AppLocalization.of(context)!.description,
       onChanged: (val) {
         productDescription = val;
       },
@@ -521,7 +543,7 @@ class _EditProductState extends State<EditProduct> {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).shortDescription;
+        return AppLocalization.of(context)!.shortDescription;
       },
       onTap: () async {},
       onChanged: (val) {
@@ -532,11 +554,11 @@ class _EditProductState extends State<EditProduct> {
 
   Widget getCategoryField() {
     return CustomizedDropDownField(
-      title: AppLocalization.of(context).category,
+      title: AppLocalization.of(context)!.category,
       child: ListTile(
         dense: true,
         title: Text(
-          selectedProductCategory != null ? selectedProductCategory.name : "",
+          selectedProductCategory != null ? selectedProductCategory!.name : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -560,7 +582,7 @@ class _EditProductState extends State<EditProduct> {
           children: [
             Text(
               selectedProductCondition != null
-                  ? selectedProductCondition.name
+                  ? selectedProductCondition!.name
                   : "",
               style: TextStyle(
                   color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
@@ -568,7 +590,7 @@ class _EditProductState extends State<EditProduct> {
             Expanded(
               child: Text(
                 selectedProductCondition != null
-                    ? " (" + selectedProductCondition.description + ")"
+                    ? " (" + selectedProductCondition!.description + ")"
                     : "",
                 maxLines: 1,
                 style: TextStyle(
@@ -593,7 +615,6 @@ class _EditProductState extends State<EditProduct> {
 
   void selectItemCategory() async {
     final pressedCategory = await showDialog<ProductCategory>(
-        barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -613,46 +634,47 @@ class _EditProductState extends State<EditProduct> {
                     borderRadius: BorderRadius.circular(10),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: productCategories.map<Widget>((category) {
-                          if (selectedProductCategory == category) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
+                        children: productCategories?.map<Widget>((category) {
+                              if (selectedProductCategory == category) {
+                                return Container(
+                                  color: selectedListItemBackgroundBlue,
+                                  child: ListTile(
+                                    dense: true,
+                                    title: Text(
+                                      category.name,
+                                      overflow: TextOverflow.fade,
+                                      softWrap: false,
+                                      style: TextStyle(
+                                          color: navyBlue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    trailing: Icon(
+                                      SlydoAppIcon.checked,
+                                      color: navyBlue,
+                                      size: 12,
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context, category);
+                                    },
+                                  ),
+                                );
+                              }
+                              return ListTile(
                                 title: Text(
                                   category.name,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
                                   style: TextStyle(
-                                      color: navyBlue,
+                                      color: blackFont,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w600),
+                                      fontWeight: FontWeight.w400),
                                 ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
+                                dense: true,
                                 onTap: () {
                                   Navigator.pop(context, category);
                                 },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              category.name,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          );
-                        }).toList(),
+                              );
+                            }).toList() ??
+                            [],
                       ),
                     ),
                   ),
@@ -661,14 +683,13 @@ class _EditProductState extends State<EditProduct> {
             ));
     if (pressedCategory != null) {
       selectedProductCategory = pressedCategory;
-      productCategory = selectedProductCategory.name;
+      productCategory = selectedProductCategory!.name;
       setState(() {});
     }
   }
 
   void selectItemCondition() async {
     final pressedCondition = await showDialog<ProductCondition>(
-        barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -705,7 +726,7 @@ class _EditProductState extends State<EditProduct> {
                                       child: Text(
                                         selectedProductCondition != null
                                             ? " (" +
-                                                selectedProductCondition
+                                                selectedProductCondition!
                                                     .description +
                                                 ")"
                                             : "",
@@ -765,20 +786,20 @@ class _EditProductState extends State<EditProduct> {
             ));
     if (pressedCondition != null) {
       selectedProductCondition = pressedCondition;
-      productCondition = selectedProductCondition.name;
+      productCondition = selectedProductCondition!.name;
       setState(() {});
     }
   }
 
   Widget getManufacturerField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).manufacturer,
+      labelText: AppLocalization.of(context)!.manufacturer,
       controller: productManufacturerController,
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
-        return AppLocalization.of(context).pleaseEnterManufacturerName;
+        return AppLocalization.of(context)!.pleaseEnterManufacturerName;
       },
       onChanged: (val) {
         productManufacturer = val;
@@ -798,7 +819,7 @@ class _EditProductState extends State<EditProduct> {
           try {
             productPrice = double.parse(val).toString();
           } catch (e) {
-            Toast.show(e, context);
+            showToast(message: e.toString());
           }
         }
       },
@@ -808,10 +829,10 @@ class _EditProductState extends State<EditProduct> {
             double.parse(val);
             return null;
           } catch (e) {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
     );
   }
@@ -824,7 +845,7 @@ class _EditProductState extends State<EditProduct> {
             child: CurvedButton(
                 textColor: Colors.white,
                 backgroundColor: mateRed,
-                text: AppLocalization.of(context).delete,
+                text: AppLocalization.of(context)!.delete,
                 onPressed: () async {
                   FocusScope.of(context).unfocus();
                   deleteProduct();
@@ -835,21 +856,31 @@ class _EditProductState extends State<EditProduct> {
           ),
           Expanded(
             child: CurvedButton(
-                textColor: Colors.white,
-                text: AppLocalization.of(context).update,
-                backgroundColor: navyBlue,
-                onPressed: () async {
-                  FocusScope.of(context).unfocus();
-                  editProduct();
-                }),
+              textColor: Colors.white,
+              text: AppLocalization.of(context)!.update,
+              backgroundColor: navyBlue,
+              onPressed: isAPILoading
+                  ? () {}
+                  : () async {
+                      FocusScope.of(context).unfocus();
+                      isAPILoading = true;
+                      if (mounted) setState(() {});
+
+                      await editProduct();
+
+                      isAPILoading = false;
+                      if (mounted) setState(() {});
+                    },
+              isLoading: isAPILoading,
+            ),
           ),
         ],
       ),
     );
   }
 
-  void editProduct() {
-    if (_formKey.currentState.validate()) {
+  Future<void> editProduct() async {
+    if (_formKey.currentState!.validate()) {
       if (productLocalImages.length >= 0) {
         if (validateDropdown()) {
           // setting updated value
@@ -857,7 +888,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.description = productDescription;
           currentProduct.category = productCategory;
           currentProduct.condition = productCondition;
-          currentProduct.price = moneyInputNormalizer(productPrice).toString();
+          currentProduct.price = moneyInputNormalizer(productPrice!).toString();
           currentProduct.localImages =
               productLocalImages.map((file) => File(file.path)).toList();
           currentProduct.serverImages = productImagesFromServer;
@@ -866,30 +897,17 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.shortDescription = productShortDescription;
           currentProduct.manufacturer = productManufacturer;
 
-          _auth.editProduct(currentProduct).then((value) {
-            Toast.show(
-              AppLocalization.of(context).productEditedSuccessfully,
-              context,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
-            Navigator.pop(context);
+          await _auth.editProduct(currentProduct).then((value) {
+            showToast(
+                message:
+                    AppLocalization.of(context)!.productEditedSuccessfully);
+            Navigator.pop(context, "update_item");
           }).catchError((error) {
-            Toast.show(
-              error.toString(),
-              context,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            showToast(message: error.toString());
           });
         }
       } else {
-        Toast.show(
-          AppLocalization.of(context).pleaseAddImage,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(message: AppLocalization.of(context)!.pleaseAddImage);
       }
     }
   }
@@ -898,12 +916,9 @@ class _EditProductState extends State<EditProduct> {
     if (selectedProductCategory != null && selectedProductCondition != null) {
       return true;
     } else {
-      Toast.show(
-          AppLocalization.of(context).pleaseSelectProductCategoryAndCondition,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          gravity: Toast.CENTER);
+      showToast(
+          message: AppLocalization.of(context)!
+              .pleaseSelectProductCategoryAndCondition);
       return false;
     }
   }
@@ -911,7 +926,7 @@ class _EditProductState extends State<EditProduct> {
   Widget getIsAvailableField() {
     return CustomizedCheckBoxField(
       onTap: () {
-        productIsAvailable = !productIsAvailable;
+        productIsAvailable = !productIsAvailable!;
         setState(() {});
       },
       isChecked: productIsAvailable,
@@ -934,7 +949,7 @@ class _EditProductState extends State<EditProduct> {
           if (mounted) {
             setState(() {
               productAvailableFrom =
-                  DateTime(value.year, value.month, value.day);
+                  DateTime(value!.year, value.month, value.day);
             });
           }
         }).catchError((error) {});
@@ -945,7 +960,7 @@ class _EditProductState extends State<EditProduct> {
           child: ListTile(
             dense: true,
             title: Text(
-              formatDate(productAvailableFrom),
+              formatDate(productAvailableFrom!),
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w600,
@@ -969,20 +984,12 @@ class _EditProductState extends State<EditProduct> {
       builder: (context) => ConfirmDelete(),
     );
     if (result) {
-      _auth.deleteProduct(currentProduct.id).then((value) {
-        Navigator.pop(context);
-        Toast.show(
-          AppLocalization.of(context).productDeletedSuccessfully,
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          duration: 3,
-        );
+      await _auth.deleteProduct(currentProduct.id!).then((value) {
+        Navigator.pop(context, "delete_item");
+        showToast(
+            message: AppLocalization.of(context)!.productDeletedSuccessfully);
       }).catchError((error) {
-        Toast.show(error.toString(), context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
+        showToast(message: error.toString());
       });
     }
   }

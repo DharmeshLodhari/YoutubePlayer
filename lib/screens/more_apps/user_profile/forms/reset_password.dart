@@ -10,7 +10,7 @@ import '../user_auth.dart';
 class ResetPassword extends StatefulWidget {
   var arguments;
 
-  ResetPassword({@required this.arguments});
+  ResetPassword({required this.arguments});
 
   @override
   _ResetPasswordState createState() =>
@@ -20,16 +20,16 @@ class ResetPassword extends StatefulWidget {
 class _ResetPasswordState extends State<ResetPassword> {
   var arguments;
 
-  _ResetPasswordState({@required this.arguments});
+  _ResetPasswordState({required this.arguments});
 
   final _formKey = GlobalKey<FormState>();
   String newPassword = "";
   String confirmPassword = "";
-  String phoneNumber = "";
-  String resetToken = "";
+  String? phoneNumber = "";
+  String? resetToken = "";
 
-  TextEditingController _newPasswordController;
-  TextEditingController _confirmPasswordController;
+  TextEditingController? _newPasswordController;
+  TextEditingController? _confirmPasswordController;
 
   @override
   void initState() {
@@ -137,14 +137,14 @@ class _ResetPasswordState extends State<ResetPassword> {
   }
 
   // validate password
-  String validateEnteredPassword(String val) {
+  String? validateEnteredPassword(String val) {
     ///regexp for repeated number
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
     if (val.length != 6) {
-      return AppLocalization.of(context).invalidPassword;
+      return AppLocalization.of(context)!.invalidPassword;
     } else if ("0123456789".contains(val)) {
       return "you can not set this type of password";
     } else if ("9876543210".contains(val)) {
@@ -156,15 +156,15 @@ class _ResetPasswordState extends State<ResetPassword> {
   }
 
   // validate confirm password
-  String validateEnteredConfirmPassword(String val) {
+  String? validateEnteredConfirmPassword(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
     if (val.length != 6) {
-      return AppLocalization.of(context).invalidPassword;
-    } else if (val != _newPasswordController.text) {
-      return AppLocalization.of(context).passwordMismatch;
+      return AppLocalization.of(context)!.invalidPassword;
+    } else if (val != _newPasswordController!.text) {
+      return AppLocalization.of(context)!.passwordMismatch;
     } else if ("0123456789".contains(val)) {
       return "you can not set this type of password";
     } else if ("9876543210".contains(val)) {
@@ -180,7 +180,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       onPressed: verifyPassword,
       textColor: Colors.white,
       backgroundColor: navyBlue,
-      text: AppLocalization.of(context).resetPassword,
+      text: AppLocalization.of(context)!.resetPassword,
     );
   }
 
@@ -190,7 +190,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       UserAuth()
           .resetPassword(newPassword, confirmPassword, phoneNumber, resetToken)
           .then((value) {

@@ -14,17 +14,16 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
-  CustomerProfile user;
-  void Function(int index) changeIndex;
-  UserInfo({@required this.user, this.changeIndex});
+  CustomerProfile? user;
+  void Function(int index)? changeIndex;
+  UserInfo({required this.user, this.changeIndex});
 
   @override
-  _UserInfoState createState() => _UserInfoState(user: user);
+  _UserInfoState createState() => _UserInfoState();
 }
 
 class _UserInfoState extends State<UserInfo> {
-  CustomerProfile user;
-  UserBloc userBloc;
+  UserBloc? userBloc;
 
   bool isBioShowingLess = true;
 
@@ -33,17 +32,17 @@ class _UserInfoState extends State<UserInfo> {
   bool isServiceFetched = false;
   bool isServiceItemIsEmpty = true;
 
-  _UserInfoState({this.user});
+  _UserInfoState();
 
-  List<dynamic> popularProductItem = List<dynamic>();
-  List<dynamic> popularServiceItem = List<dynamic>();
+  List<dynamic> popularProductItem = [];
+  List<dynamic> popularServiceItem = [];
 
   bool isLoading = true;
   final auth = AuthService();
 
   @override
   void initState() {
-    if (user.type.toLowerCase() != "user") {
+    if (widget.user!.type!.toLowerCase() != "user") {
       getProductItems();
       getServiceItems();
     }
@@ -53,7 +52,8 @@ class _UserInfoState extends State<UserInfo> {
 
   void getProductItems() async {
     await ShoppingAuthService()
-        .ownersOrderProductsAndServices(type: "products", userId: user.userName)
+        .ownersOrderProductsAndServices(
+            type: "products", userId: widget.user!.userName)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -77,7 +77,8 @@ class _UserInfoState extends State<UserInfo> {
 
   void getServiceItems() async {
     await ShoppingAuthService()
-        .ownersOrderProductsAndServices(type: "services", userId: user.userName)
+        .ownersOrderProductsAndServices(
+            type: "services", userId: widget.user!.userName)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -99,15 +100,11 @@ class _UserInfoState extends State<UserInfo> {
     isServiceFetched = true;
   }
 
-  CustomerProfileBloc customerProfileBloc;
-
   @override
   Widget build(BuildContext context) {
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
-        customerProfileBloc.customer = null;
         return true;
       },
       child: Scaffold(
@@ -126,7 +123,7 @@ class _UserInfoState extends State<UserInfo> {
                       Column(
                         children: getUserAboutSection(),
                       ),
-                      (user.type.toLowerCase() != "user")
+                      (widget.user!.type!.toLowerCase() != "user")
                           ? Column(
                               children: [
                                 SizedBox(
@@ -180,14 +177,14 @@ class _UserInfoState extends State<UserInfo> {
                 ),
                 GestureDetector(
                   child: Text(
-                    AppLocalization.of(context).seeAll,
+                    AppLocalization.of(context)!.seeAll,
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                         color: navyBlue),
                   ),
                   onTap: () {
-                    widget.changeIndex(2);
+                    widget.changeIndex!(2);
                   },
                 ),
               ],
@@ -233,14 +230,14 @@ class _UserInfoState extends State<UserInfo> {
                 ),
                 GestureDetector(
                   child: Text(
-                    AppLocalization.of(context).seeAll,
+                    AppLocalization.of(context)!.seeAll,
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                         color: navyBlue),
                   ),
                   onTap: () {
-                    widget.changeIndex(3);
+                    widget.changeIndex!(3);
                   },
                 ),
               ],
@@ -268,11 +265,11 @@ class _UserInfoState extends State<UserInfo> {
   List<Widget> getUserAboutSection() {
     List<Widget> list = [];
 
-    if (user.userAbout.bio.isNotEmpty) {
+    if (widget.user!.userAbout!.bio.isNotEmpty) {
       list.addAll([
         // ExpandableText(searchedUserAbout.bio),
         ReadMoreText(
-          user.userAbout.bio,
+          widget.user!.userAbout!.bio,
           trimMode: TrimMode.Line,
           trimLines: 3,
           textAlign: TextAlign.justify,
@@ -295,7 +292,7 @@ class _UserInfoState extends State<UserInfo> {
       ]);
     }
 
-    if (user.userAbout.address.isNotEmpty) {
+    if (widget.user!.userAbout!.address.isNotEmpty) {
       list.addAll([
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,7 +312,7 @@ class _UserInfoState extends State<UserInfo> {
             ),
             Expanded(
               child: Text(
-                user.userAbout.address,
+                widget.user!.userAbout!.address,
                 // textAlign: TextAlign.justify,
               ),
             )
@@ -327,7 +324,7 @@ class _UserInfoState extends State<UserInfo> {
       ]);
     }
 
-    if (user.userAbout.contact.isNotEmpty) {
+    if (widget.user!.userAbout!.contact.isNotEmpty) {
       list.addAll([
         Row(
           children: [
@@ -344,7 +341,7 @@ class _UserInfoState extends State<UserInfo> {
             SizedBox(
               width: 12,
             ),
-            Expanded(child: Text(user.userAbout.contact))
+            Expanded(child: Text(widget.user!.userAbout!.contact))
           ],
         )
       ]);

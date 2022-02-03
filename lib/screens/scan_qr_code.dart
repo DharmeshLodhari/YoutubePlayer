@@ -3,6 +3,8 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -13,7 +15,7 @@ import 'more_apps/user_profile/user_auth.dart';
 class QRCodeView extends StatefulWidget {
   var arguments;
 
-  QRCodeView({this.arguments, Key key}) : super(key: key);
+  QRCodeView({this.arguments, Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _QRCodeViewState(arguments: arguments);
@@ -24,13 +26,13 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   _QRCodeViewState({this.arguments});
 
-  bool isRequest = false;
-  CustomerProfileBloc customerProfileBloc;
-  UserBloc userBloc;
+  bool? isRequest = false;
+  late CustomerProfileBloc customerProfileBloc;
+  late UserBloc userBloc;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
-  QRViewController controller;
+  QRViewController? controller;
 
   @override
   void initState() {
@@ -45,16 +47,22 @@ class _QRCodeViewState extends State<QRCodeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        actions: <Widget>[],
-      ),
-      backgroundColor: Colors.transparent,
-      body: Column(
+      backgroundColor: Colors.white,
+      body: Stack(
         children: <Widget>[
           qrCodeExpandedView(),
-          flipCameraExpandedView(),
+          AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            actions: <Widget>[],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: flipCameraExpandedView(),
+            ),
+          ),
         ],
       ),
     );
@@ -67,39 +75,43 @@ class _QRCodeViewState extends State<QRCodeView> {
   }
 
   Widget flipCameraExpandedView() {
-    return Expanded(
-        child: Column(children: <Widget>[getFlipButton()]), flex: 1);
+    return getFlipButton();
   }
 
   // Camera View of scanner
   Widget qrCodeExpandedView() {
-    return Expanded(
-      flex: 5,
-      child: QRView(
-        key: qrKey,
-        overlay: QrScannerOverlayShape(
-          //overlayColor: Colors.transparent,
-          borderRadius: 10,
-          borderColor: navyBlue,
-          borderLength: 30,
-          borderWidth: 10,
-          cutOutSize: 300,
-        ),
-        onQRViewCreated: _onQRViewCreated,
+    return QRView(
+      key: qrKey,
+      overlay: QrScannerOverlayShape(
+        //overlayColor: Colors.transparent,
+        borderRadius: 10,
+        borderColor: navyBlue,
+        borderLength: 30,
+        borderWidth: 10,
+        cutOutSize: 300,
       ),
+      onQRViewCreated: _onQRViewCreated,
     );
   }
 
   // Flip the camera around
   Widget getFlipButton() {
-    return RaisedButton(
-      onPressed: () async {
-        if (controller != null) {
-          controller.flipCamera();
-        }
-      },
-      child: Text(AppLocalization.of(context).flip,
-          style: TextStyle(fontSize: 20)),
+    return Container(
+      constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(myGlobals.navigationKey.currentContext!)
+                  .size
+                  .width /
+              2),
+      child: CurvedButton(
+        textColor: Colors.white,
+        backgroundColor: navyBlue,
+        text: AppLocalization.of(context)!.flip,
+        onPressed: () async {
+          if (controller != null) {
+            controller!.flipCamera();
+          }
+        },
+      ),
     );
   }
 
@@ -112,10 +124,10 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       //if we get a text that belongs to us then we process it
       if (scanData != null) {
-        if (scanData.startsWith(AppConfig.baseUrl) ||
-            scanData.startsWith(AppConfig.baseUrl) ||
-            scanData.startsWith(AppConfig.localHost)) {
-          var scanDataList = scanData.split('/');
+        if (scanData.code.startsWith(AppConfig.baseUrl) ||
+            scanData.code.startsWith(AppConfig.baseUrl) ||
+            scanData.code.startsWith(AppConfig.localHost)) {
+          var scanDataList = scanData.code.split('/');
           scanDataList.removeWhere((value) => value == "");
           getNavigationRoot(scanDataList);
         }
@@ -144,7 +156,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       getRecipient(recipient);
 
       Navigator.pop(context);
-      if (isRequest) {
+      if (isRequest!) {
         Navigator.of(context).pushNamed(
           '/request-payment',
           arguments: {

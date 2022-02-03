@@ -1,12 +1,12 @@
 class MovieItem {
-  String currency;
-  String genre;
-  int id;
-  String name;
-  String poster;
-  String price;
-  String rating;
-  String year;
+  String? currency;
+  String? genre;
+  int? id;
+  String? name;
+  String? poster;
+  String? price;
+  String? rating;
+  String? year;
 
   MovieItem(
       {this.currency,

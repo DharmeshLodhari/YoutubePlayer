@@ -1,24 +1,23 @@
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/data/socket_provider.dart';
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/services/fcm_push_notification.dart';
-import 'package:Slydo/services/secure_storage.dart';
-import 'package:Slydo/utils/cache_manager.dart';
+import 'package:Slydo/services/logout_helper.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/BottomSheetItemWithCheck.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
   @override
@@ -30,12 +29,14 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
       new GlobalKey<ScaffoldState>();
 
   bool isLoading = false;
-  BasketBloc basketBloc;
-  UserBloc userBloc;
-  DashboardBloc dashboardBloc;
-  BankAccountBloc bankAccountBloc;
-  MainSocketProvider socketProvider;
+  late BasketBloc basketBloc;
+  late UserBloc userBloc;
+  late DashboardBloc dashboardBloc;
+  late BankAccountBloc bankAccountBloc;
+
   final _auth = AuthService();
+
+  Language? language;
 
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
@@ -54,20 +55,37 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
   @protected
   void initState() {
     _initPackageInfo();
+    getLanguage();
     super.initState();
+  }
+
+  void getLanguage() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.containsKey("language")) {
+      String? languageCode = sharedPreferences.getString("language");
+      setState(() {
+        language = getLanguageByLanguageCode(languageCode);
+        debugPrint("Set language: => ${language?.name}");
+      });
+    } else {
+      setState(() {
+        language = getLanguageByLanguageCode("en");
+        debugPrint("Set default language: => ${language?.name}");
+      });
+    }
   }
 
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    basketBloc = Provider.of<BasketBloc>(context);
+
     dashboardBloc = Provider.of<DashboardBloc>(context);
     bankAccountBloc = Provider.of<BankAccountBloc>(context);
-    socketProvider = Provider.of<MainSocketProvider>(context);
+
     return Scaffold(
       key: _scaffoldGeneralSettingKey,
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -88,6 +106,28 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 ),
                 getIncomingSoundTile(),
                 getOutGoingSoundTile(),
+                getCurrencyTile(),
+                getLanguageTile(),
+                getSettingTile(
+                    title: "Terms & Conditions",
+                    onTap: () async {
+                      try {
+                        if (!await launch(AppConfig.termsAndCondition!))
+                          throw 'Could not launch ${AppConfig.termsAndCondition!}';
+                      } catch (error) {
+                        debugPrint("Error:- $error");
+                      }
+                    }),
+                getSettingTile(
+                    title: "Privacy Policy",
+                    onTap: () async {
+                      try {
+                        if (!await launch(AppConfig.privacyPolicy!))
+                          throw 'Could not launch ${AppConfig.privacyPolicy!}';
+                      } catch (error) {
+                        debugPrint("Error:- $error");
+                      }
+                    }),
                 getLogoutTile(),
               ],
             ),
@@ -118,7 +158,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(
-            AppLocalization.of(context).appVersion +
+            AppLocalization.of(context)!.appVersion +
                 ': ' +
                 _packageInfo.version +
                 " (${_packageInfo.buildNumber})",
@@ -154,6 +194,36 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     );
   }
 
+  Widget getSettingTile({String title = "", Function()? onTap}) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            title,
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          onTap: () {
+            if (onTap != null) {
+              onTap();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
   Widget getIncomingSoundTile() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -177,7 +247,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
           trailing: Container(
             width: 60,
             child: Switch(
-              value: userBloc.chatMessageSettings.playIncomingMessageSound,
+              value: userBloc.chatMessageSettings.playIncomingMessageSound!,
               onChanged: (value) {
                 ChatMessageSettings chatMessageSettings = ChatMessageSettings();
                 chatMessageSettings.playOutgoingMessageSound =
@@ -196,6 +266,128 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         ),
       ),
     );
+  }
+
+  Widget getCurrencyTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Currency",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Text(
+            worldCurrencies[userBloc.user.currency!]!,
+            maxLines: 1,
+            style: TextStyle(
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+                fontFamily: "Roberto"),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          onTap: () {},
+        ),
+      ),
+    );
+  }
+
+  Widget getLanguageTile() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          title: Text(
+            "Language",
+            maxLines: 1,
+            style: TextStyle(
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          trailing: Text(
+            language?.name ?? "",
+            maxLines: 1,
+            style: TextStyle(
+              color: darkGrey,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+            overflow: TextOverflow.fade,
+            softWrap: false,
+          ),
+          onTap: () {
+            changeLanguageBottomSheet();
+          },
+        ),
+      ),
+    );
+  }
+
+  void changeLanguageBottomSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: languages.map((data) {
+                    return BottomSheetItemWithCheck(
+                        icon: SlydoAppIcon.translation,
+                        title: data.name,
+                        isChecked:
+                            (language?.languageCode ?? "") == data.languageCode,
+                        onTap: () {
+                          language = data;
+                          setLanguage(data);
+                          Navigator.pop(context);
+                          saveIntoSharedPreference(data);
+                        });
+
+                    // return bottomSheetItemWithCheck(
+                    //     icon: SlydoAppIcon.translation,
+                    //     title: data.name,
+                    //     isChecked: language!.languageCode == data.languageCode,
+                    //     onTap: () {
+                    //       language = data;
+                    //       setLanguage(data);
+                    //       Navigator.pop(context);
+                    //       saveIntoSharedPreference(data);
+                    //     });
+                  }).toList(),
+                ),
+              ));
+        });
   }
 
   Widget getOutGoingSoundTile() {
@@ -221,7 +413,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
           trailing: Container(
             width: 60,
             child: Switch(
-              value: userBloc.chatMessageSettings.playOutgoingMessageSound,
+              value: userBloc.chatMessageSettings.playOutgoingMessageSound!,
               onChanged: (value) {
                 ChatMessageSettings chatMessageSettings = ChatMessageSettings();
                 chatMessageSettings.playIncomingMessageSound =
@@ -270,62 +462,40 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
               color: blackFont,
             ),
           ),
-          onTap: () {
+          onTap: () async {
             showDialog(
                 context: (context),
                 builder: (context) => Center(child: CircularLoadingIndicator()),
                 barrierDismissible: false);
-            logoutUser();
+            await LogoutHelper().logoutUser();
           },
         ),
       ),
     );
   }
 
-  void logoutUser() async {
-    BackgroundFetchStopBloc backgroundFetchBloc =
-        Provider.of<BackgroundFetchStopBloc>(
-            myGlobals.navigationKey.currentContext,
-            listen: false);
-
-    backgroundFetchBloc.isAllowed = false;
-
-    emptyBasketCart();
-    SharedPreferences _sharedPreferences;
-
-    MainSocketMessageHandler().dispose();
-
-    print("logout===>start");
-    await _auth.logOut();
-    print("logout===>stop");
-    CacheManager().deleteCache(clearAll: true);
-    await socketProvider?.close();
-
-    PushNotificationService().logout();
-
-    bankAccountBloc.bankAccount = BankAccount();
-    dashboardBloc.index = 0;
-    _sharedPreferences = await SharedPreferences.getInstance();
-    _sharedPreferences.setBool('isLoggedOut', true);
-
-    /// clearing all data when user is logout
-    if (!_sharedPreferences.getBool("isChecked")) {
-      debugPrint("WorkManager cancel");
-      // Workmanager().cancelAll();
-      await SecureStorage().clear();
-    }
-
-    if (mounted) {
-      Navigator.of(myGlobals.navigationKey.currentContext)
-          .popUntil(ModalRoute.withName('/splash'));
-
-      Navigator.of(myGlobals.navigationKey.currentContext)
-          .pushNamed("/index", arguments: {'isIntroDone': true});
-    }
+  void setLanguage(Language? language) {
+    setState(() {
+      AppLocalization.load(Locale(language!.languageCode, ""));
+      showToast(
+          message: AppLocalization.of(context)!.languageSwitchedTo +
+              " ${language.name}");
+    });
   }
 
-  void emptyBasketCart() {
-    basketBloc.items.clear();
-    basketBloc.total = 0;
+  //to save language in shared preference when user change the language
+  void saveIntoSharedPreference(Language? language) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    if (sharedPreferences.containsKey("language")) {
+      bool result =
+          await sharedPreferences.setString("language", language!.languageCode);
+      debugPrint(
+          "${language.name} Language is updated in sharedPreference => $result");
+    } else {
+      bool result =
+          await sharedPreferences.setString("language", language!.languageCode);
+      debugPrint(
+          "${language.name} Language is set in sharedPreference => $result");
+    }
   }
 }

@@ -4,39 +4,39 @@ import 'package:provider/provider.dart';
 
 class MyRouteObserver extends RouteObserver {
   @override
-  void didPop(Route route, Route previousRoute) {
+  void didPop(Route route, Route? previousRoute) {
     RouteProvider routeProvider =
-        Provider.of<RouteProvider>(route.navigator.context, listen: false);
+        Provider.of<RouteProvider>(route.navigator!.context, listen: false);
 
-    routeProvider.removeRoute(name: route?.settings?.name);
+    routeProvider.removeRoute(name: route.settings.name);
 
     debugPrint(
-        "POP: (Popped => Previous) ${route?.settings?.name} => ${previousRoute?.settings?.name}"); // note : take route name in stacks below
+        "POP: (Popped => Previous) ${route.settings.name} => ${previousRoute?.settings.name}"); // note : take route name in stacks below
     super.didPop(route, previousRoute);
   }
 
   @override
-  void didPush(Route route, Route previousRoute) {
+  void didPush(Route route, Route? previousRoute) {
     RouteProvider routeProvider =
-        Provider.of<RouteProvider>(route.navigator.context, listen: false);
+        Provider.of<RouteProvider>(route.navigator!.context, listen: false);
 
-    routeProvider.addRoute(name: route?.settings?.name);
+    routeProvider.addRoute(name: route.settings.name);
     debugPrint(
-        "PUSH: (Previous => New) ${previousRoute?.settings?.name} => ${route?.settings?.name}"); // note : take new route name that just pushed
+        "PUSH: (Previous => New) ${previousRoute?.settings.name} => ${route.settings.name}"); // note : take new route name that just pushed
     super.didPush(route, previousRoute);
   }
 
   @override
-  void didRemove(Route route, Route previousRoute) {
+  void didRemove(Route route, Route? previousRoute) {
     // debugPrint(
     //     "Route REMOVE :-- ${previousRoute?.settings?.name}  ${route?.settings?.name} ");
     super.didRemove(route, previousRoute);
   }
 
   @override
-  void didReplace({Route newRoute, Route oldRoute}) {
+  void didReplace({Route? newRoute, Route? oldRoute}) {
     debugPrint(
-        "Route REPLACE :--${oldRoute?.settings?.name}  ${newRoute?.settings?.name} ");
+        "Route REPLACE :--${oldRoute?.settings.name}  ${newRoute?.settings.name} ");
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
   }
 }

@@ -1,6 +1,6 @@
 class Looping {
-  String mp4;
-  String mp4Size;
+  String? mp4;
+  String? mp4Size;
 
   Looping({this.mp4, this.mp4Size});
 

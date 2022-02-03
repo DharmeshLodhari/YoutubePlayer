@@ -24,16 +24,32 @@
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+
+
 	<key>NSCameraUsageDescription</key>
 	<string>Can we access your camera in order to scan barcodes?</string>
+
 	<key>NFCReaderUsageDescription</key>
     <string>Can we access your nfc in order to scan payment-request?</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app requires access to your location.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requires access to your location.</string>
+
+	<!-- Permission options for the `location` group -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app requires access to your location.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app requires access to your location.</string>
+    <key>NSLocationUsageDescription</key>
+    <string>This app requires access to your location.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app requires access to your location.</string>
+
+    <!-- Permission options for the `microphone` group -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app requires to access your microphone.</string>
+
+
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Can we access your photo library to upload user photo?</string>
+
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

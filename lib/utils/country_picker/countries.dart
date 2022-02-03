@@ -4,22 +4,10 @@ import 'country.dart';
 
 final List<Country> countryList = [
   Country(
-    isoCode: "IE",
-    phoneCode: "353",
-    name: "Ireland",
-    iso3Code: "IRL",
-  ),
-  Country(
     isoCode: "NG",
     phoneCode: "234",
     name: "Nigeria",
     iso3Code: "NGA",
-  ),
-  Country(
-    isoCode: "GB",
-    phoneCode: "44",
-    name: "United Kingdom",
-    iso3Code: "GBR",
   ),
   Country(
     isoCode: "AF",
@@ -656,6 +644,12 @@ final List<Country> countryList = [
     phoneCode: "964",
     name: "Iraq",
     iso3Code: "IRQ",
+  ),
+  Country(
+    isoCode: "IE",
+    phoneCode: "353",
+    name: "Ireland",
+    iso3Code: "IRL",
   ),
   Country(
     isoCode: "IM",
@@ -1436,6 +1430,12 @@ final List<Country> countryList = [
     phoneCode: "971",
     name: "United Arab Emirates",
     iso3Code: "ARE",
+  ),
+  Country(
+    isoCode: "GB",
+    phoneCode: "44",
+    name: "United Kingdom",
+    iso3Code: "GBR",
   ),
   Country(
     isoCode: "US",
@@ -1537,22 +1537,10 @@ final List<Country> countryList = [
 
 final List<Country> countryListForLogin = [
   Country(
-    isoCode: "IE",
-    phoneCode: "353",
-    name: "Ireland",
-    iso3Code: "IRL",
-  ),
-  Country(
     isoCode: "NG",
     phoneCode: "234",
     name: "Nigeria",
     iso3Code: "NGA",
-  ),
-  Country(
-    isoCode: "GB",
-    phoneCode: "44",
-    name: "United Kingdom",
-    iso3Code: "GBR",
   ),
   Country(
     isoCode: "AF",
@@ -2189,6 +2177,12 @@ final List<Country> countryListForLogin = [
     phoneCode: "964",
     name: "Iraq",
     iso3Code: "IRQ",
+  ),
+  Country(
+    isoCode: "IE",
+    phoneCode: "353",
+    name: "Ireland",
+    iso3Code: "IRL",
   ),
   Country(
     isoCode: "IM",
@@ -2971,6 +2965,12 @@ final List<Country> countryListForLogin = [
     iso3Code: "ARE",
   ),
   Country(
+    isoCode: "GB",
+    phoneCode: "44",
+    name: "United Kingdom",
+    iso3Code: "GBR",
+  ),
+  Country(
     isoCode: "US",
     phoneCode: "1",
     name: "United States",
@@ -3069,12 +3069,12 @@ final List<Country> countryListForLogin = [
 ];
 
 final List<Country> countryListForRegistration = [
-  Country(
-    isoCode: "IE",
-    phoneCode: "353",
-    name: "Ireland",
-    iso3Code: "IRL",
-  ),
+  // Country(
+  //   isoCode: "IE",
+  //   phoneCode: "353",
+  //   name: "Ireland",
+  //   iso3Code: "IRL",
+  // ),
   Country(
     isoCode: "NG",
     phoneCode: "234",

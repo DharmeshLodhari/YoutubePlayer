@@ -9,7 +9,7 @@ import 'scrollable_positioned_list.dart';
 ///
 /// See [ScrollablePositionedList]
 class StickyGroupedListView<T, E> extends StatefulWidget {
-  final Key key;
+  final Key? key;
 
   /// Items of which [itemBuilder] or [indexedItemBuilder] produce the list.
   final List<T> elements;
@@ -24,13 +24,13 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
   ///
   /// If not set groups will be sorted with their natural sorting order or their
   /// specific [Comparable] implementation.
-  final int Function(E value1, E value2) groupComparator;
+  final int Function(E value1, E value2)? groupComparator;
 
   /// Can be used to define a custom sorting for the elements inside each group.
   ///
   /// If not set elements will be sorted with their natural sorting order or
   /// their specific [Comparable] implementation.
-  final int Function(T element1, T element2) itemComparator;
+  final int Function(T element1, T element2)? itemComparator;
 
   /// Called to build group separators for each group.
   /// element is always the first element of the group.
@@ -38,17 +38,17 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
 
   /// Called to build children for the list with
   /// 0 <= element < elements.length.
-  final Widget Function(BuildContext context, T element) itemBuilder;
+  final Widget Function(BuildContext context, T element)? itemBuilder;
 
   /// Called to build children for the list with
   /// 0 <= element, index < elements.length
-  final Widget Function(BuildContext context, T element, int index)
+  final Widget Function(BuildContext context, T element, int index)?
       indexedItemBuilder;
 
   /// Whether the sorting of the list is ascending or descending.
   ///
   /// Defaults to ASC.
-  final StickyGroupedListOrder order;
+  final StickyGroupedListOrder? order;
 
   /// Called to build separators for between each item in the list.
   final Widget separator;
@@ -61,10 +61,10 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
   final Color stickyHeaderBackgroundColor;
 
   /// Controller for jumping or scrolling to an item.
-  final GroupedItemScrollController itemScrollController;
+  final GroupedItemScrollController? itemScrollController;
 
   /// Notifier that reports the items laid out in the list after each frame.
-  final ItemPositionsListener itemPositionsListener;
+  final ItemPositionsListener? itemPositionsListener;
 
   /// The axis along which the scroll view scrolls.
   ///
@@ -74,10 +74,10 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
   /// How the scroll view should respond to user input.
   ///
   /// See [ScrollView.physics].
-  final ScrollPhysics physics;
+  final ScrollPhysics? physics;
 
   /// The amount of space by which to inset the children.
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// Whether the view scrolls in the reading direction.
   ///
@@ -108,12 +108,12 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
   /// scrolls, so using the [ScrollController.scrollTo] method may result
   /// in builds of widgets that would otherwise already be built in the
   /// cache extent.
-  final double minCacheExtent;
+  final double? minCacheExtent;
 
   /// The number of children that will contribute semantic information.
   ///
   /// See [ScrollView.semanticChildCount] for more information.
-  final int semanticChildCount;
+  final int? semanticChildCount;
 
   /// Index of an item to initially align within the viewport.
   final int initialScrollIndex;
@@ -124,9 +124,9 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
 
   /// Creates a [StickyGroupedListView].
   StickyGroupedListView({
-    @required this.elements,
-    @required this.groupBy,
-    @required this.groupSeparatorBuilder,
+    required this.elements,
+    required this.groupBy,
+    required this.groupSeparatorBuilder,
     this.groupComparator,
     this.itemBuilder,
     this.indexedItemBuilder,
@@ -158,29 +158,29 @@ class StickyGroupedListView<T, E> extends StatefulWidget {
 class _StickyGroupedListViewState<T, E>
     extends State<StickyGroupedListView<T, E>> {
   StreamController<int> _streamController = StreamController<int>();
-  ItemPositionsListener _listener;
-  GroupedItemScrollController _controller;
-  GlobalKey _groupHeaderKey;
+  ItemPositionsListener? _listener;
+  GroupedItemScrollController? _controller;
+  GlobalKey? _groupHeaderKey;
   List<T> _sortedElements = [];
   GlobalKey _key = GlobalKey();
   int _topElementIndex = 0;
-  RenderBox _headerBox;
-  RenderBox _listBox;
-  double _headerDimension;
-  bool Function(int) _isSeparator;
+  RenderBox? _headerBox;
+  RenderBox? _listBox;
+  double? _headerDimension;
+  late bool Function(int) _isSeparator;
 
   @override
   void initState() {
     super.initState();
     _controller = widget.itemScrollController ?? GroupedItemScrollController();
-    _controller._bind(this);
+    _controller!._bind(this);
     _listener = widget.itemPositionsListener ?? ItemPositionsListener.create();
-    _listener.itemPositions.addListener(_positionListener);
+    _listener!.itemPositions.addListener(_positionListener);
   }
 
   @override
   void dispose() {
-    _listener.itemPositions.removeListener(_positionListener);
+    _listener!.itemPositions.removeListener(_positionListener);
     _streamController.close();
     super.dispose();
   }
@@ -205,7 +205,7 @@ class _StickyGroupedListViewState<T, E>
           initialScrollIndex: widget.initialScrollIndex,
           minCacheExtent: widget.minCacheExtent,
           semanticChildCount: widget.semanticChildCount,
-          padding: widget.padding,
+          padding: widget.padding as EdgeInsets?,
           reverse: widget.reverse,
           itemCount: _sortedElements.length * 2,
           addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
@@ -259,16 +259,17 @@ class _StickyGroupedListViewState<T, E>
 
   Widget _buildItem(context, int actualIndex) {
     return widget.indexedItemBuilder == null
-        ? widget.itemBuilder(context, _sortedElements[actualIndex])
-        : widget.indexedItemBuilder(
+        ? widget.itemBuilder!(context, _sortedElements[actualIndex])
+        : widget.indexedItemBuilder!(
             context, _sortedElements[actualIndex], actualIndex);
   }
 
   _positionListener() {
-    _headerBox ??= _groupHeaderKey?.currentContext?.findRenderObject();
-    double headerHeight = _headerBox?.size?.height ?? 0;
-    _listBox ??= _key?.currentContext?.findRenderObject();
-    double height = _listBox?.size?.height ?? 0;
+    _headerBox ??=
+        _groupHeaderKey?.currentContext?.findRenderObject() as RenderBox?;
+    double headerHeight = _headerBox?.size.height ?? 0;
+    _listBox ??= _key.currentContext?.findRenderObject() as RenderBox?;
+    double height = _listBox?.size.height ?? 0;
     _headerDimension = headerHeight / height;
 
     ItemPosition reducePositions(ItemPosition pos, ItemPosition current) {
@@ -279,14 +280,14 @@ class _StickyGroupedListViewState<T, E>
     }
 
     try {
-      if (_listener.itemPositions.value.isNotEmpty) {
-        ItemPosition currentItem = _listener.itemPositions?.value
-            ?.where((ItemPosition position) =>
+      if (_listener!.itemPositions.value.isNotEmpty) {
+        ItemPosition? currentItem = _listener!.itemPositions.value
+            .where((ItemPosition position) =>
                 !_isSeparator(position.index) &&
-                position.itemTrailingEdge > _headerDimension)
-            ?.reduce(reducePositions);
+                position.itemTrailingEdge > _headerDimension!)
+            .reduce(reducePositions);
 
-        int index = (currentItem?.index ?? 0) ~/ 2;
+        int index = (currentItem.index) ~/ 2;
         if (_topElementIndex != index) {
           E curr = widget.groupBy(_sortedElements[index]);
           E prev = widget.groupBy(_sortedElements[_topElementIndex]);
@@ -309,7 +310,7 @@ class _StickyGroupedListViewState<T, E>
         // compare groups
         if (widget.groupComparator != null) {
           compareResult =
-              widget.groupComparator(widget.groupBy(e1), widget.groupBy(e2));
+              widget.groupComparator!(widget.groupBy(e1), widget.groupBy(e2));
         } else if (widget.groupBy(e1) is Comparable) {
           compareResult = (widget.groupBy(e1) as Comparable)
               .compareTo(widget.groupBy(e2) as Comparable);
@@ -317,7 +318,7 @@ class _StickyGroupedListViewState<T, E>
         // compare elements inside group
         if ((compareResult == null || compareResult == 0)) {
           if (widget.itemComparator != null) {
-            compareResult = widget.itemComparator(e1, e2);
+            compareResult = widget.itemComparator!(e1, e2);
           } else if (e1 is Comparable) {
             compareResult = e1.compareTo(e2);
           }
@@ -331,7 +332,7 @@ class _StickyGroupedListViewState<T, E>
     return elements;
   }
 
-  Widget _showFixedGroupHeader(int index) {
+  Widget _showFixedGroupHeader(int? index) {
     if (widget.elements.length > 0) {
       _groupHeaderKey = GlobalKey();
 
@@ -344,7 +345,7 @@ class _StickyGroupedListViewState<T, E>
         color:
             widget.floatingHeader ? null : widget.stickyHeaderBackgroundColor,
         width: widget.floatingHeader ? null : MediaQuery.of(context).size.width,
-        child: widget.groupSeparatorBuilder(_sortedElements[index]),
+        child: widget.groupSeparatorBuilder(_sortedElements[index!]),
       );
     }
 
@@ -356,7 +357,7 @@ class _StickyGroupedListViewState<T, E>
 ///
 /// See [ItemScrollController].
 class GroupedItemScrollController extends ItemScrollController {
-  _StickyGroupedListViewState _stickyGroupedListViewState;
+  _StickyGroupedListViewState? _stickyGroupedListViewState;
 
   /// Jumps to the element at [index]. The element will be placed under the
   /// group header.
@@ -365,7 +366,7 @@ class GroupedItemScrollController extends ItemScrollController {
   /// See [ItemScrollController.jumpTo]
   @override
   void jumpTo(
-      {@required int index,
+      {required int index,
       double alignment = 0,
       bool automaticAlignment = true}) {
     if (automaticAlignment) {
@@ -381,9 +382,9 @@ class GroupedItemScrollController extends ItemScrollController {
   /// See [ItemScrollController.scrollTo]
   @override
   Future<void> scrollTo(
-      {@required int index,
+      {required int index,
       double alignment = 0,
-      @required Duration duration,
+      required Duration duration,
       Curve curve = Curves.linear,
       List<double> opacityAnimationWeights = const [40, 20, 40]}) {
     alignment = _stickyGroupedListViewState?._headerDimension ?? alignment;
@@ -397,9 +398,9 @@ class GroupedItemScrollController extends ItemScrollController {
 
   @override
   Future<void> scrollToBottom(
-      {@required int index,
+      {required int index,
       double alignment = 0,
-      @required Duration duration,
+      required Duration duration,
       Curve curve = Curves.linear,
       List<double> opacityAnimationWeights = const [40, 20, 40]}) {
     alignment = _stickyGroupedListViewState?._headerDimension ?? alignment;

@@ -16,14 +16,14 @@ enum FeesType {
 }
 
 class FeeStructure {
-  int customerApiTransactionFee;
-  int businessTransactionFee;
-  int magicEnvelopeFee;
-  int emptyEnvelopeFee;
-  int anonymousTransactionFee;
-  int taxRate;
-  String country;
-  String currency;
+  int? customerApiTransactionFee;
+  int? businessTransactionFee;
+  int? magicEnvelopeFee;
+  int? emptyEnvelopeFee;
+  int? anonymousTransactionFee;
+  int? taxRate;
+  String? country;
+  String? currency;
 
   FeeStructure(
       {this.customerApiTransactionFee,
@@ -59,22 +59,22 @@ class FeeStructure {
     return map;
   }
 
-  String getFeeWithTax({FeesType type}) {
+  String getFeeWithTax({FeesType? type}) {
     switch (type) {
       case FeesType.BUSINESS_TRANSACTION_FEE:
-        return calculatePrice(businessTransactionFee);
+        return calculatePrice(businessTransactionFee!);
 
       case FeesType.CUSTOMER_API_TRANSACTION_FEE:
-        return calculatePrice(customerApiTransactionFee);
+        return calculatePrice(customerApiTransactionFee!);
 
       case FeesType.EMPTY_ENVELOPE_FEE:
-        return calculatePrice(emptyEnvelopeFee);
+        return calculatePrice(emptyEnvelopeFee!);
 
       case FeesType.MAGIC_ENVELOPE_FEE:
-        return calculatePrice(magicEnvelopeFee);
+        return calculatePrice(magicEnvelopeFee!);
 
       case FeesType.ANONYMOUS_TRANSACTION_FEE:
-        return calculatePrice(anonymousTransactionFee);
+        return calculatePrice(anonymousTransactionFee!);
 
       default:
         return "";
@@ -82,7 +82,7 @@ class FeeStructure {
   }
 
   String calculatePrice(int price) {
-    int total = price + (price * taxRate);
+    int total = price + (price * taxRate!);
     return (total / 100).toString();
   }
 }

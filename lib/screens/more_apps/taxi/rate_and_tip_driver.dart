@@ -30,7 +30,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -177,7 +177,7 @@ class _RateAndTipDriverState extends State<RateAndTipDriver> {
         ClipRRect(
           borderRadius: BorderRadius.circular(50),
           child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar,
+            imageUrl: userBloc.user.avatar!,
             height: 80,
             width: 80,
             fit: BoxFit.fill,

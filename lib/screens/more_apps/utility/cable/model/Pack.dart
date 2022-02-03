@@ -1,6 +1,6 @@
 class Pack {
-  String image;
-  String name;
+  String? image;
+  String? name;
 
   Pack({this.image, this.name});
 

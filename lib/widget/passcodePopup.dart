@@ -10,14 +10,14 @@ import 'package:provider/provider.dart';
 class PassCodePopup {
   BuildContext context;
   GestureTapCallback isValidCallback;
-  GestureTapCallback cancelCallBack;
+  GestureTapCallback? cancelCallBack;
   final StreamController<bool> _verificationNotifier =
       StreamController<bool>.broadcast();
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
   PassCodePopup(
-      {@required this.context,
-      @required this.isValidCallback,
+      {required this.context,
+      required this.isValidCallback,
       this.cancelCallBack}) {
     userBloc = Provider.of<UserBloc>(context, listen: false);
 
@@ -28,14 +28,14 @@ class PassCodePopup {
                 Expanded(
                   child: PasscodeScreen(
                     title: Text(
-                      AppLocalization.of(context).enterPassCode,
+                      AppLocalization.of(context)!.enterPassCode,
                       style: TextStyle(color: Colors.white),
                     ),
                     passwordEnteredCallback: _onPassCodeEntered,
                     cancelButton: Container(
                       padding: EdgeInsets.all(0),
                       child: Text(
-                        AppLocalization.of(context).cancel,
+                        AppLocalization.of(context)!.cancel,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -45,7 +45,7 @@ class PassCodePopup {
                     deleteButton: Container(
                       padding: EdgeInsets.all(0),
                       child: Text(
-                        AppLocalization.of(context).delete,
+                        AppLocalization.of(context)!.delete,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 10,

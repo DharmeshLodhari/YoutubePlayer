@@ -17,13 +17,13 @@ class ViewChatMedia extends StatefulWidget {
 }
 
 class _ViewChatMediaState extends State<ViewChatMedia> {
-  String type = "";
-  String url = "";
-  String message = "";
-  String poster;
+  String? type = "";
+  String? url = "";
+  String? message = "";
+  String? poster;
 
-  VideoPlayerController _videoController;
-  ChewieController _chewieController;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
 
   bool isLoading = false;
 
@@ -45,11 +45,11 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    _videoController = VideoPlayerController.network(url);
-    await _videoController.initialize();
+    _videoController = VideoPlayerController.network(url!);
+    await _videoController!.initialize();
     _chewieController = ChewieController(
-      videoPlayerController: _videoController,
-      aspectRatio: _videoController.value.aspectRatio,
+      videoPlayerController: _videoController!,
+      aspectRatio: _videoController!.value.aspectRatio,
       allowedScreenSleep: false, autoPlay: true,
       allowFullScreen: true,
       deviceOrientationsAfterFullScreen: [
@@ -83,7 +83,8 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
       ],
     );
 
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
 
     super.dispose();
   }
@@ -148,7 +149,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
                                 child: Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 16),
                                   child: Text(
-                                    message,
+                                    message!,
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 16),
                                     textAlign: TextAlign.justify,
@@ -172,7 +173,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     if (type == "image") {
       return ClipRect(
           child: PhotoView(
-        imageProvider: NetworkImage(url),
+        imageProvider: NetworkImage(url!),
       ));
     }
     if (type == "video") {
@@ -183,7 +184,7 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
               ),
             )
           : Chewie(
-              controller: _chewieController,
+              controller: _chewieController!,
               posterUrl: poster ?? "",
               titleName: "",
             );

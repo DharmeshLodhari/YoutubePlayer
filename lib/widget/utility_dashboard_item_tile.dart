@@ -11,10 +11,10 @@ class UtilityDashboardItemTile extends StatelessWidget {
   double height;
 
   UtilityDashboardItemTile(
-      {@required this.title,
-      @required this.icon,
-      @required this.iconColor,
-      @required this.onTap,
+      {required this.title,
+      required this.icon,
+      required this.iconColor,
+      required this.onTap,
       this.height = 100});
 
   @override
@@ -55,7 +55,7 @@ class UtilityDashboardItemTile extends StatelessWidget {
           ),
         ),
       ),
-      onTap: onTap,
+      onTap: onTap as void Function()?,
     );
   }
 }

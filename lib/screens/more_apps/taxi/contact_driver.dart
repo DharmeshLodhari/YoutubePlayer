@@ -6,7 +6,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 class ContactDriver extends StatefulWidget {
@@ -15,7 +15,7 @@ class ContactDriver extends StatefulWidget {
 }
 
 class _ContactDriverState extends State<ContactDriver> {
-  MapController mapController;
+  MapController? mapController;
 
   LatLng mapPoint = LatLng(6.605874, 3.349149);
 
@@ -32,7 +32,7 @@ class _ContactDriverState extends State<ContactDriver> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
             // Image.asset(
@@ -202,7 +202,7 @@ class _ContactDriverState extends State<ContactDriver> {
           ClipRRect(
             borderRadius: BorderRadius.circular(50),
             child: CachedNetworkImage(
-              imageUrl: userBloc.user.avatar,
+              imageUrl: userBloc.user.avatar!,
               height: 80,
               width: 80,
               fit: BoxFit.fill,
@@ -256,9 +256,9 @@ class _ContactDriverState extends State<ContactDriver> {
     );
   }
 
-  Widget getActionBtn({IconData icon, Function onTap}) {
+  Widget getActionBtn({IconData? icon, Function? onTap}) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap as void Function()?,
       child: Card(
         elevation: 5,
         borderOnForeground: true,

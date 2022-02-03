@@ -1,5 +1,5 @@
 class Onsent {
-  String url;
+  String? url;
 
   Onsent({this.url});
 

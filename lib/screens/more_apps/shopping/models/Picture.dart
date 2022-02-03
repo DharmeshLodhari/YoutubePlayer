@@ -1,7 +1,7 @@
 class Picture {
-  String path;
-  int id;
-  String title;
+  String? path;
+  int? id;
+  String? title;
 
   Picture({this.path, this.id, this.title});
 

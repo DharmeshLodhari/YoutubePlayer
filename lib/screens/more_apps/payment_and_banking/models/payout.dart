@@ -1,11 +1,11 @@
 class Payout {
-  String status;
-  String uuid;
-  String timeStamp;
-  String bankLogo;
-  String currency;
-  String bankName;
-  int amount;
+  String? status;
+  String? uuid;
+  String? timeStamp;
+  String? bankLogo;
+  String? currency;
+  String? bankName;
+  int? amount;
 
   // Pass in as named parameter in constructor
   Payout(

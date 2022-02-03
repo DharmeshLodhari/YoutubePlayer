@@ -17,7 +17,7 @@ import '../../../../../utils/colors.dart';
 class TransactionDetail extends StatefulWidget {
   var arguments;
 
-  TransactionDetail({@required this.arguments});
+  TransactionDetail({required this.arguments});
 
   @override
   _TransactionDetailState createState() =>
@@ -26,7 +26,7 @@ class TransactionDetail extends StatefulWidget {
 
 class _TransactionDetailState extends State<TransactionDetail> {
   var arguments;
-  Transaction transaction;
+  Transaction? transaction;
 
   _TransactionDetailState({this.arguments});
 
@@ -58,7 +58,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -81,7 +81,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
       ),
       centerTitle: false,
       title: Text(
-        AppLocalization.of(context).transaction,
+        AppLocalization.of(context)!.transaction,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -103,7 +103,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
         size: 16,
         color: blackFont,
       ),
-      onTap: transaction.latitude != "" ? goToMap : () {},
+      onTap: transaction!.latitude != "" ? goToMap : () {},
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
@@ -134,9 +134,15 @@ class _TransactionDetailState extends State<TransactionDetail> {
       subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
-        if (!transaction.isAnonymous) {
+        if (transaction?.payee == "slydo_envelope" ||
+            transaction?.payee == "slydo" ||
+            transaction?.displayCustomer == "slydo" ||
+            transaction?.displayCustomer == "slydo_envelope") {
+          return;
+        }
+        if (!transaction!.isAnonymous!) {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": transaction.payee});
+              arguments: {"searchedUserName": transaction!.payee});
         }
       },
     );
@@ -144,13 +150,13 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getDescriptionWidget() {
     return Text(
-      "${transaction.description}",
+      "${transaction!.description}",
       maxLines: 1,
     );
   }
 
   Widget getSubtitle() {
-    DateTime transactionTime = DateTime.parse(transaction.createdAt);
+    DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
 
@@ -164,7 +170,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getLeading() {
     return ClipOval(
-      child: transaction.isAnonymous
+      child: transaction!.isAnonymous!
           ? Container(
               padding: EdgeInsets.all(4.0),
               child: Image.asset(
@@ -176,13 +182,14 @@ class _TransactionDetailState extends State<TransactionDetail> {
               ),
             )
           : CachedNetworkImage(
-              imageUrl: transaction.avatar,
+              imageUrl: transaction!.avatar!,
               height: 48,
               width: 48,
               colorBlendMode: BlendMode.darken,
+              errorWidget: imageErrorWidget,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
-              placeholder: (context, url) => transaction.avatar == ""
+              placeholder: (context, url) => transaction!.avatar == ""
                   ? Icon(Icons.person)
                   : CircularLoadingIndicator(),
             ),
@@ -191,7 +198,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   Widget getSender() {
     return Text(
-      transaction.payee,
+      transaction!.displayCustomer,
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
@@ -205,18 +212,18 @@ class _TransactionDetailState extends State<TransactionDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[transaction.currency],
+          worldCurrencies[transaction!.currency!]!,
           style: TextStyle(
-            color: transaction.isCredit ? navyBlue : blackFont,
+            color: transaction!.isCredit! ? navyBlue : blackFont,
             fontWeight: FontWeight.bold,
             fontSize: 14,
             fontFamily: "Roboto",
           ),
         ),
         Text(
-          moneyDisplayNormalizer(int.parse(transaction.amount.toString())),
+          moneyDisplayNormalizer(int.parse(transaction!.amount.toString())),
           style: TextStyle(
-              color: transaction.isCredit ? navyBlue : blackFont,
+              color: transaction!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -258,23 +265,23 @@ class _TransactionDetailState extends State<TransactionDetail> {
           ),
           detailTile(
             SlydoAppIcon.user,
-            AppLocalization.of(context).status,
-            transaction.status,
+            AppLocalization.of(context)!.status,
+            transaction!.status!,
           ),
           detailTile(
             SlydoAppIcon.category,
-            AppLocalization.of(context).category,
-            transaction.category,
+            AppLocalization.of(context)!.category,
+            transaction!.category!,
           ),
           detailTile(
             SlydoAppIcon.note_filled,
-            AppLocalization.of(context).note,
-            transaction.note,
+            AppLocalization.of(context)!.note,
+            transaction!.note!,
           ),
           detailTile(
             SlydoAppIcon.note,
-            AppLocalization.of(context).description,
-            transaction.description,
+            AppLocalization.of(context)!.description,
+            transaction!.description!,
           ),
         ],
       ),
@@ -295,7 +302,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
           backgroundColor: iconBtnGrey,
         ),
         title: Text(
-          title ?? "",
+          title,
           style: TextStyle(
             fontWeight: FontWeight.w600,
             color: blackFont,
@@ -303,7 +310,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
           ),
         ),
         subtitle: Text(
-          getCurrency(subtitle, transaction.currency) ?? "",
+          getCurrency(subtitle, transaction!.currency),
           style: TextStyle(
             color: blackFont,
             fontSize: 14,
@@ -316,7 +323,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
 
   void goToMap() {
     debugPrint("go to Map Called !");
-    MapsLauncher.launchCoordinates(double.parse(transaction.latitude),
-        double.parse(transaction.longitude));
+    MapsLauncher.launchCoordinates(double.parse(transaction!.latitude!),
+        double.parse(transaction!.longitude!));
   }
 }

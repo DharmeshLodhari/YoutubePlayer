@@ -7,7 +7,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class VideoRecorder extends StatefulWidget {
@@ -22,19 +21,19 @@ class VideoRecorder extends StatefulWidget {
 }
 
 class _VideoRecorderState extends State<VideoRecorder> {
-  CameraController controller;
-  String videoPath;
+  CameraController? controller;
+  String? videoPath;
 
-  List<CameraDescription> cameras;
-  int selectedCameraIdx;
+  List<CameraDescription>? cameras;
+  int? selectedCameraIdx;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Timer timer;
+  Timer? timer;
 
-  Duration videoDuration;
+  Duration? videoDuration;
 
-  TimerService timerService;
+  late TimerService timerService;
 
   Widget recordingButton = Container(
       height: 58,
@@ -56,12 +55,12 @@ class _VideoRecorderState extends State<VideoRecorder> {
     availableCameras().then((availableCameras) {
       cameras = availableCameras;
 
-      if (cameras.length > 0) {
+      if (cameras!.length > 0) {
         setState(() {
           selectedCameraIdx = 0;
         });
 
-        _onCameraSwitched(cameras[selectedCameraIdx]).then((void v) {});
+        _onCameraSwitched(cameras![selectedCameraIdx!]).then((void v) {});
       }
     }).catchError((err) {
       print('Error: $err.code\nError Message: $err.message');
@@ -120,7 +119,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
                     color: Colors.transparent,
                     border: Border.all(
                       color: controller != null &&
-                              controller.value.isRecordingVideo
+                              controller!.value.isRecordingVideo
                           ? mateRed
                           : dividerColor,
                       width: 1.0,
@@ -177,7 +176,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
                   color: Colors.transparent,
                   border: Border.all(
                     color:
-                        controller != null && controller.value.isRecordingVideo
+                        controller != null && controller!.value.isRecordingVideo
                             ? mateRed
                             : dividerColor,
                     width: 1.0,
@@ -232,7 +231,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
     return Expanded(
         child: Align(
       alignment: Alignment.center,
-      child: FlatButton(
+      child: TextButton(
         onPressed: () {
           timerService.stop();
           timerService.reset();
@@ -261,7 +260,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   // Display 'Loading' text when the camera is still loading.
   Widget _cameraPreviewWidget() {
-    if (controller == null || !controller.value.isInitialized) {
+    if (controller == null || !controller!.value.isInitialized) {
       return const Text(
         'Loading',
         style: TextStyle(
@@ -274,10 +273,10 @@ class _VideoRecorderState extends State<VideoRecorder> {
     final size = MediaQuery.of(context).size;
     final deviceRatio = size.width / size.height;
     return Transform.scale(
-      scale: controller.value.aspectRatio / deviceRatio,
+      scale: controller!.value.aspectRatio / deviceRatio,
       child: AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
+        aspectRatio: controller!.value.aspectRatio,
+        child: CameraPreview(controller!),
       ),
     );
   }
@@ -288,13 +287,13 @@ class _VideoRecorderState extends State<VideoRecorder> {
       return Row();
     }
 
-    CameraDescription selectedCamera = cameras[selectedCameraIdx];
+    CameraDescription selectedCamera = cameras![selectedCameraIdx!];
     CameraLensDirection lensDirection = selectedCamera.lensDirection;
 
     return Expanded(
         child: Align(
       alignment: Alignment.center,
-      child: FlatButton(
+      child: TextButton(
         onPressed: _onSwitchCamera,
         child: Icon(
           _getCameraLensIcon(lensDirection),
@@ -314,8 +313,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             InkWell(
-              onTap: controller != null && controller.value.isInitialized
-                  ? !controller.value.isRecordingVideo
+              onTap: controller != null && controller!.value.isInitialized
+                  ? !controller!.value.isRecordingVideo
                       ? _onRecordButtonPressed
                       : _onStopButtonPressed
                   : null,
@@ -346,7 +345,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
   }
 
   void changeRecordIcon() {
-    if (controller.value.isRecordingVideo) {
+    if (controller!.value.isRecordingVideo) {
       recordingButton = Container(
         height: 58,
         width: 58,
@@ -361,7 +360,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
         ),
       );
       setState(() {});
-    } else if (!controller.value.isRecordingVideo) {
+    } else if (!controller!.value.isRecordingVideo) {
       recordingButton = Container(
           height: 58,
           width: 58,
@@ -378,28 +377,28 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   Future<void> _onCameraSwitched(CameraDescription cameraDescription) async {
     if (controller != null) {
-      await controller.dispose();
+      await controller!.dispose();
     }
 
     controller = CameraController(cameraDescription, ResolutionPreset.high,
         enableAudio: true);
 
     // If the controller is updated then update the UI.
-    controller.addListener(() {
-      debugPrint("===>> ${controller.value.aspectRatio} ");
+    controller!.addListener(() {
+      debugPrint("===>> ${controller!.value.aspectRatio} ");
 
       if (mounted) {
         setState(() {});
       }
 
-      if (controller.value.hasError) {
-        Toast.show(
-            'Camera error ${controller.value.errorDescription}', context);
+      if (controller!.value.hasError) {
+        showToast(
+            message: 'Camera error ${controller!.value.errorDescription}');
       }
     });
 
     try {
-      await controller.initialize();
+      await controller!.initialize();
     } on CameraException catch (e) {
       _showCameraException(e);
     }
@@ -411,8 +410,8 @@ class _VideoRecorderState extends State<VideoRecorder> {
 
   void _onSwitchCamera() {
     selectedCameraIdx =
-        selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
-    CameraDescription selectedCamera = cameras[selectedCameraIdx];
+        selectedCameraIdx! < cameras!.length - 1 ? selectedCameraIdx! + 1 : 0;
+    CameraDescription selectedCamera = cameras![selectedCameraIdx!];
 
     _onCameraSwitched(selectedCamera);
 
@@ -422,20 +421,20 @@ class _VideoRecorderState extends State<VideoRecorder> {
   }
 
   void _onRecordButtonPressed() {
-    _startVideoRecording().then((String filePath) {
+    _startVideoRecording().then((String? filePath) {
       if (filePath != null) {
         timerService.start();
         changeRecordIcon();
-        Toast.show('Recording video started', context);
+        showToast(message: 'Recording video started');
       }
 
       //Timer
-      timer = Timer.periodic(videoDuration, (Timer t) {
+      timer = Timer.periodic(videoDuration!, (Timer t) {
         _onStopButtonPressed();
         timerService.stop();
         timerService.reset();
 
-        timer.cancel();
+        timer!.cancel();
       });
     });
   }
@@ -445,24 +444,24 @@ class _VideoRecorderState extends State<VideoRecorder> {
       if (mounted) {
         setState(() {});
         changeRecordIcon();
-        timer.cancel(); //when user close it manually
+        timer!.cancel(); //when user close it manually
         timerService.stop();
         timerService.reset();
 
-        Toast.show('Video recorded to $videoPath', context);
+        showToast(message: 'Video recorded to $videoPath');
         Navigator.pop(context, videoPath);
       }
     });
   }
 
-  Future<String> _startVideoRecording() async {
-    if (!controller.value.isInitialized) {
-      Toast.show('Please wait', context);
+  Future<String?> _startVideoRecording() async {
+    if (!controller!.value.isInitialized) {
+      showToast(message: 'Please wait');
       return null;
     }
 
     // Do nothing if a recording is on progress
-    if (controller.value.isRecordingVideo) {
+    if (controller!.value.isRecordingVideo) {
       return null;
     }
 
@@ -473,8 +472,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
     final String filePath = '${tempDirectory.path}/captured_$currentTime.mp4';
 
     try {
-      await controller.startVideoRecording(filePath);
-      videoPath = filePath;
+      await controller!.startVideoRecording();
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -484,12 +482,13 @@ class _VideoRecorderState extends State<VideoRecorder> {
   }
 
   Future<void> _stopVideoRecording() async {
-    if (!controller.value.isRecordingVideo) {
+    if (!controller!.value.isRecordingVideo) {
       return null;
     }
 
     try {
-      await controller.stopVideoRecording();
+      XFile file = await controller!.stopVideoRecording();
+      videoPath = file.path;
     } on CameraException catch (e) {
       _showCameraException(e);
       return null;
@@ -499,7 +498,7 @@ class _VideoRecorderState extends State<VideoRecorder> {
   void _showCameraException(CameraException e) {
     String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
     print(errorText);
-    Toast.show('Error: ${e.code}\n${e.description}', context);
+    showToast(message: 'Error: ${e.code}\n${e.description}');
   }
 
   void dispose() {

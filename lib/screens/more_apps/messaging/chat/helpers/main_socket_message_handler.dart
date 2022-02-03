@@ -31,22 +31,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
 import 'message_sound_player.dart';
 
+/// For Handling the Messages which are coming From the socket
 class MainSocketMessageHandler {
-  final String message;
+  final String? message;
 
-  static List<String> _nudgingUsers = [];
+  static List<String?> _nudgingUsers = [];
 
-  static List<String> _audioPlayers = [];
+  static List<String?> _audioPlayers = [];
 
   static List<String> _hashedNudgingMessages = [];
 
-  static Timer _nudgeAlertTimer;
-  // static Duration nudgeAlertDuration = Duration(seconds: 15);
+  static Timer? _nudgeAlertTimer;
   static Duration nudgeAlertDuration = Duration(seconds: 10);
 
   MainSocketMessageHandler({this.message}) {
@@ -57,15 +56,15 @@ class MainSocketMessageHandler {
 
   ///Handle message according to message type
   void handleMessageAccordingToType() async {
-    Map<String, dynamic> messageData = jsonDecode(message);
+    Map<String, dynamic> messageData = jsonDecode(message!);
 
     MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
-    mainSocketProvider.removeFromTheQueue(message: message);
+    mainSocketProvider.removeFromTheQueue(message: message!);
 
-    String messageType = messageData["type"];
+    String? messageType = messageData["type"];
 
     switch (messageType) {
       case "chatroom_message":
@@ -73,10 +72,10 @@ class MainSocketMessageHandler {
             messageData.containsKey("conversation_id")) {
           MainSocketProvider mainSocketProvider =
               Provider.of<MainSocketProvider>(
-                  myGlobals.navigationKey.currentContext,
+                  myGlobals.navigationKey.currentContext!,
                   listen: false);
 
-          String conversationId = (messageData.containsKey("conversation")
+          String? conversationId = (messageData.containsKey("conversation")
               ? messageData["conversation"]
               : messageData["conversation_id"]);
 
@@ -101,7 +100,7 @@ class MainSocketMessageHandler {
 
           ///delete message from ChatTextMessage table in db if message came back from socket
 
-          String chatMessageKind = messageData['kind'];
+          String? chatMessageKind = messageData['kind'];
 
           ChatMessageSynchronizer().setStreamTrue();
 
@@ -177,7 +176,7 @@ class MainSocketMessageHandler {
 
       case "group_conversation_admin_actions":
         UserBloc user = Provider.of<UserBloc>(
-            MyGlobals().navigationKey.currentContext,
+            MyGlobals().navigationKey.currentContext!,
             listen: false);
 
         if (messageData['meta_data']['author'] != user.user.userName) {
@@ -213,17 +212,18 @@ class MainSocketMessageHandler {
   }
 
   Future<void> sendAcknowledgementOfMessageWithCheckingAuthor(
-      {ChatMessage chatMessage}) async {
-    String currentUserName;
+      {required ChatMessage chatMessage}) async {
+    String? currentUserName;
 
     UserBloc userBloc;
 
     try {
-      userBloc = Provider.of<UserBloc>(myGlobals.navigationKey.currentContext,
+      userBloc = Provider.of<UserBloc>(myGlobals.navigationKey.currentContext!,
           listen: false);
       currentUserName = userBloc.user.userName;
     } catch (error) {
-      User user = await DatabaseHelper().getUser();
+      User? user = await DatabaseHelper().getUser();
+      if (user == null) return;
       currentUserName = user.userName;
     }
 
@@ -241,8 +241,9 @@ class MainSocketMessageHandler {
     }
   }
 
+  ///  For Sending the message acknowledgement to server that user has received this message
   Future<void> sendAcknowledgementOfMessageWithOutCheckingAuthor(
-      {String checkId, String conversationId}) async {
+      {String? checkId, String? conversationId}) async {
     /// send acknowledgement to server through API that this message is received
     await sendAcknowledgementOfMessageThroughHttp(
             conversationId: conversationId, checkId: checkId)
@@ -253,12 +254,12 @@ class MainSocketMessageHandler {
     });
   }
 
-  void addChatConversation({Map<String, dynamic> messageData}) {
+  void addChatConversation({required Map<String, dynamic> messageData}) {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    Map<String, dynamic> json;
+    Map<String, dynamic>? json;
 
     if (messageData['meta_data'] is String) {
       json = jsonDecode(messageData['meta_data']);
@@ -266,16 +267,16 @@ class MainSocketMessageHandler {
       json = messageData['meta_data'];
     }
 
-    ChatConversation chatConversation = ChatConversation.fromJson(json);
+    ChatConversation chatConversation = ChatConversation.fromJson(json!);
     connectionListBloc.addConnectionUser(chatConversation: chatConversation);
   }
 
-  void handleConversationActions({Map<String, dynamic> messageData}) {
+  void handleConversationActions({required Map<String, dynamic> messageData}) {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    Map<String, dynamic> metaData;
+    Map<String, dynamic>? metaData;
 
     if (messageData['meta_data'] is String) {
       metaData = jsonDecode(messageData['meta_data']);
@@ -286,7 +287,7 @@ class MainSocketMessageHandler {
     if (!messageData.containsKey("meta_data")) {
       metaData = messageData;
     }
-    String action = metaData['action'];
+    String? action = metaData!['action'];
 
     switch (action) {
       case "delete_conversation":
@@ -302,7 +303,8 @@ class MainSocketMessageHandler {
     }
   }
 
-  void handleAcknowledgementMessage({Map<String, dynamic> messageData}) async {
+  void handleAcknowledgementMessage(
+      {required Map<String, dynamic> messageData}) async {
     await ChatMessageHandler().updateDeliverStatusOfChatMessage(
         checkId: messageData['check_id'],
         conversationId:
@@ -310,13 +312,13 @@ class MainSocketMessageHandler {
   }
 
   Future<void> saveAndUpdateUserMessageCount(
-      {Map<String, dynamic> messageData}) async {
+      {required Map<String, dynamic> messageData}) async {
     debugPrint("MESSAGE DATA:- $messageData");
 
     ChatMessage chatMessage = ChatMessage.fromJson(messageData);
 
     UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
     /// When any Message came we will check the author if the Author is
@@ -338,8 +340,8 @@ class MainSocketMessageHandler {
     }
   }
 
-  void showNudgeAlertToUser({Map<String, dynamic> messageData}) async {
-    String hashTheMessage = generateHashedMessage(message);
+  void showNudgeAlertToUser({Map<String, dynamic>? messageData}) async {
+    String hashTheMessage = generateHashedMessage(message!);
 
     /// if This message is already in the list we will return
     if (_hashedNudgingMessages.contains(hashTheMessage)) {
@@ -356,13 +358,13 @@ class MainSocketMessageHandler {
     /// username: black}
 
     UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.scaffoldKey.currentContext,
+        myGlobals.scaffoldKey.currentContext!,
         listen: false);
 
     /// if current user is not author of the nudge then we play nudge sound
-    if (userBloc.user.userName != messageData["author"]) {
+    if (userBloc.user.userName != messageData!["author"]) {
       MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-          myGlobals.scaffoldKey.currentContext,
+          myGlobals.scaffoldKey.currentContext!,
           listen: false);
 
       /// if user is on the chat screen of the user who is nudging then we will not play sound
@@ -377,30 +379,26 @@ class MainSocketMessageHandler {
           ChatConversation chatConversation =
               await UserAuth().fetchContactProfile(messageData["author"]);
 
-          if (chatConversation == null) {
-            return;
-          }
-
           _nudgingUsers.add(messageData["author"]);
-          String audioPlayerId =
+          String? audioPlayerId =
               MessageSoundPlayer(message: message).playSound();
           _audioPlayers.add(audioPlayerId);
 
           if (_nudgeAlertTimer?.isActive ?? false) {
-            _nudgeAlertTimer.cancel();
+            _nudgeAlertTimer!.cancel();
           }
 
           /// dispose the audio player if user not press anything
           _nudgeAlertTimer = Timer(nudgeAlertDuration, () {
             _nudgingUsers.remove(messageData["author"]);
 
-            Navigator.of(myGlobals.scaffoldKey.currentContext).pop();
+            Navigator.of(myGlobals.scaffoldKey.currentContext!).pop();
 
             /// dispose the audio player
-            AssetsAudioPlayer.withId(audioPlayerId)?.dispose();
+            AssetsAudioPlayer.withId(audioPlayerId).dispose();
           });
 
-          bool result = await showDialogBoxWithImageForNudge(
+          bool? result = await showDialogBoxWithImageForNudge(
             context: myGlobals.scaffoldKey.currentContext,
             iconBgColor: mateRed,
             iconColor: Colors.white,
@@ -417,11 +415,11 @@ class MainSocketMessageHandler {
           _nudgingUsers.remove(messageData["author"]);
 
           /// dispose the audio player
-          AssetsAudioPlayer.withId(audioPlayerId)?.dispose();
+          AssetsAudioPlayer.withId(audioPlayerId).dispose();
 
           /// stop timer when get any action from the user
           if (_nudgeAlertTimer?.isActive ?? false) {
-            _nudgeAlertTimer.cancel();
+            _nudgeAlertTimer!.cancel();
           }
 
           if (result != null) {
@@ -433,11 +431,11 @@ class MainSocketMessageHandler {
                   author: chatConversation,
                   type: "Accepted");
 
-              Navigator.of(myGlobals.scaffoldKey.currentContext)
+              Navigator.of(myGlobals.scaffoldKey.currentContext!)
                   .popUntil(ModalRoute.withName('/dashboard'));
 
               Navigator.pushNamed(
-                  myGlobals.scaffoldKey.currentContext, '/chat-screen',
+                  myGlobals.scaffoldKey.currentContext!, '/chat-screen',
                   arguments: {"searchedUser": chatConversation});
             } else {
               debugPrint("else executed");
@@ -455,14 +453,16 @@ class MainSocketMessageHandler {
       debugPrint("=================== $messageData");
 
       ChatShakeDetection chatShakeDetection = Provider.of<ChatShakeDetection>(
-          myGlobals.scaffoldKey.currentContext,
+          myGlobals.scaffoldKey.currentContext!,
           listen: false);
       chatShakeDetection.showShakingDialog();
     }
   }
 
   void sendNudgeAcknowledgement(
-      {ChatConversation author, UserBloc currentUser, String type}) {
+      {required ChatConversation author,
+      required UserBloc currentUser,
+      String? type}) {
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
       "conversation_id": author.conversationId,
@@ -478,7 +478,7 @@ class MainSocketMessageHandler {
 
   Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
     MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
-        myGlobals.scaffoldKey.currentContext,
+        myGlobals.scaffoldKey.currentContext!,
         listen: false);
 
     await mainSocketProvider.add(data);
@@ -486,8 +486,8 @@ class MainSocketMessageHandler {
     return true;
   }
 
-  void stopNudgeAlertToUser({Map<String, dynamic> messageData}) {
-    String hashTheMessage = generateHashedMessage(message);
+  void stopNudgeAlertToUser({Map<String, dynamic>? messageData}) {
+    String hashTheMessage = generateHashedMessage(message!);
 
     debugPrint("Message dat c>>>>> $messageData");
 
@@ -498,11 +498,11 @@ class MainSocketMessageHandler {
     _hashedNudgingMessages.add(hashTheMessage);
 
     UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.scaffoldKey.currentContext,
+        myGlobals.scaffoldKey.currentContext!,
         listen: false);
 
     /// if current user is not author of the nudge then we play nudge sound
-    if (userBloc.user.userName != messageData["author"]) {
+    if (userBloc.user.userName != messageData!["author"]) {
       /// if nudge alert is Already open then we will not open second nudge alert
       debugPrint(
           "nudgingUsers.contains(messageData['author'])  ${_nudgingUsers.contains(messageData["author"])}");
@@ -512,28 +512,26 @@ class MainSocketMessageHandler {
       if (_nudgingUsers.contains(messageData["author"])) {
         _nudgingUsers.remove(messageData["author"]);
 
-        Navigator.of(myGlobals.scaffoldKey.currentContext).pop();
+        Navigator.of(myGlobals.scaffoldKey.currentContext!).pop();
 
         /// dispose the audio player
-        AssetsAudioPlayer.withId(messageData["author"])?.dispose();
+        AssetsAudioPlayer.withId(messageData["author"]).dispose();
       } else if (messageData.containsKey("acknowledgement_type")) {
         ChatShakeDetection chatShakeDetection = Provider.of<ChatShakeDetection>(
-            myGlobals.scaffoldKey.currentContext,
+            myGlobals.scaffoldKey.currentContext!,
             listen: false);
         chatShakeDetection.stopAlertDialog();
 
-        Toast.show(
-            "${messageData["author"]} has ${messageData["acknowledgement_type"]} your Nudge !!",
-            myGlobals.scaffoldKey.currentContext,
-            textColor: Colors.white,
-            duration: 3);
+        showToast(
+            message:
+                "${messageData["author"]} has ${messageData["acknowledgement_type"]} your Nudge !!");
       }
     }
   }
 
   void dispose() {
     _audioPlayers.forEach((element) {
-      AssetsAudioPlayer.withId(element)?.dispose();
+      AssetsAudioPlayer.withId(element).dispose();
     });
 
     _audioPlayers.clear();
@@ -542,9 +540,8 @@ class MainSocketMessageHandler {
   }
 
   Future<void> updateConnectionListOrder(
-      {String conversationId, Map<String, dynamic> messageData}) async {
-    // debugPrint("MessageData:- $messageData");
-
+      {String? conversationId,
+      required Map<String, dynamic> messageData}) async {
     if (messageData.containsKey("created_at")) {
       DateTime dateTime = DateTime.parse(messageData["created_at"]).toLocal();
       int time = dateTime.millisecondsSinceEpoch;
@@ -552,7 +549,7 @@ class MainSocketMessageHandler {
       debugPrint("Last message Time => $time");
 
       ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-          myGlobals.scaffoldKey.currentContext,
+          myGlobals.scaffoldKey.currentContext!,
           listen: false);
 
       await connectionListBloc.updateLastMessageTime(
@@ -561,9 +558,9 @@ class MainSocketMessageHandler {
   }
 
   void sendAcknowledgementOfMessageThroughSocket(
-      {String checkId, String conversationId}) {
+      {String? checkId, String? conversationId}) {
     UserBloc userBloc = Provider.of<UserBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
     Map<String, dynamic> data = {
@@ -577,7 +574,7 @@ class MainSocketMessageHandler {
   }
 
   Future<void> sendAcknowledgementOfMessageThroughHttp(
-      {String checkId, String conversationId}) async {
+      {String? checkId, String? conversationId}) async {
     Map<String, dynamic> data = {
       "check_id": checkId,
       "conversation_id": conversationId,
@@ -594,17 +591,17 @@ class MainSocketMessageHandler {
   }
 
   Future<void> logoutUser() async {
-    Navigator.of(myGlobals.navigationKey.currentContext)
+    Navigator.of(myGlobals.navigationKey.currentContext!)
         .popUntil(ModalRoute.withName('/splash'));
 
-    Navigator.of(myGlobals.navigationKey.currentContext)
+    Navigator.of(myGlobals.navigationKey.currentContext!)
         .pushNamed("/index", arguments: {'isIntroDone': true});
 
-    showUserLogoutCard(context: myGlobals.navigationKey.currentContext);
+    showUserLogoutCard(context: myGlobals.navigationKey.currentContext!);
 
     BackgroundFetchStopBloc backgroundFetchBloc =
         Provider.of<BackgroundFetchStopBloc>(
-            myGlobals.navigationKey.currentContext,
+            myGlobals.navigationKey.currentContext!,
             listen: false);
 
     backgroundFetchBloc.isAllowed = false;
@@ -618,19 +615,19 @@ class MainSocketMessageHandler {
 
     CacheManager().deleteCache(clearAll: true);
     MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
-    await socketProvider?.close();
+    await socketProvider.close();
 
     await PushNotificationService().logout();
 
     BankAccountBloc bankAccountBloc = Provider.of<BankAccountBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
     bankAccountBloc.bankAccount = BankAccount();
 
     DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
     try {
       dashboardBloc.index = 0;
@@ -639,7 +636,7 @@ class MainSocketMessageHandler {
     }
     _sharedPreferences = await SharedPreferences.getInstance();
     _sharedPreferences.setBool('isLoggedOut', true);
-    await _sharedPreferences.clear();
+    // await _sharedPreferences.clear();
 
     /// clearing all data when user is logout
     await SecureStorage().clear();
@@ -647,7 +644,7 @@ class MainSocketMessageHandler {
 
   void emptyBasketCart() {
     BasketBloc basketBloc = Provider.of<BasketBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
     basketBloc.items.clear();
     basketBloc.total = 0;

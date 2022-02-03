@@ -1,20 +1,20 @@
 import 'dart:convert';
 
 class MainSocketMessageModel {
-  String author;
-  String conversation;
-  String createdAt;
-  bool deletedForAuthor;
-  bool deletedForRecipient;
-  bool delivered;
-  String id;
-  String kind;
-  bool readByAuthor;
-  bool readByRecipient;
-  String text;
-  String type;
-  String updatedAt;
-  bool wasEdited;
+  String? author;
+  String? conversation;
+  String? createdAt;
+  bool? deletedForAuthor;
+  bool? deletedForRecipient;
+  bool? delivered;
+  String? id;
+  String? kind;
+  bool? readByAuthor;
+  bool? readByRecipient;
+  String? text;
+  String? type;
+  String? updatedAt;
+  bool? wasEdited;
 
   MainSocketMessageModel(
       {this.author,

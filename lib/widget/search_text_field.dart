@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class SearchTextField extends StatefulWidget {
-  final TextEditingController textEditingController;
+  final TextEditingController? textEditingController;
   final Function onSubmit;
   final String hintText;
-  TextStyle textStyle;
-  TextStyle hintStyle;
+  TextStyle? textStyle;
+  TextStyle? hintStyle;
   bool isDisabled;
 
   SearchTextField(
-      {@required this.textEditingController,
-      @required this.onSubmit,
-      @required this.hintText,
+      {required this.textEditingController,
+      required this.onSubmit,
+      required this.hintText,
       this.textStyle,
       this.hintStyle,
       this.isDisabled = false});
@@ -37,7 +37,9 @@ class _SearchTextFieldState extends State<SearchTextField> {
         children: [
           Theme(
             data: Theme.of(context).copyWith(
-              textSelectionHandleColor: navyBlue,
+              textSelectionTheme: TextSelectionThemeData(
+                selectionHandleColor: navyBlue,
+              ),
             ),
             child: TextFormField(
               controller: widget.textEditingController,
@@ -118,7 +120,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
         color: darkGrey,
         size: 16,
       ),
-      onPressed: widget.onSubmit,
+      onPressed: widget.onSubmit as void Function()?,
     );
   }
 }

@@ -7,12 +7,13 @@ import 'package:provider/provider.dart';
 
 import 'get_connection_list_for_sharing.dart';
 
+/// For sharing items in the chat
 class ShareInChat {
-  Future<String> selectUsersToShare(BuildContext context) async {
+  Future<String?> selectUsersToShare(BuildContext context) async {
     return shareSheet(context);
   }
 
-  Future<String> shareSheet(BuildContext context) async {
+  Future<String?> shareSheet(BuildContext context) async {
     return await showModalBottomSheet<String>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -99,7 +100,7 @@ class ShareInChat {
         });
   }
 
-  Future<List<ChatConversation>> selectShareCustomer(
+  Future<List<ChatConversation?>> selectShareCustomer(
       BuildContext context) async {
     var result = await selectUsersToShare(context);
 
@@ -111,9 +112,9 @@ class ShareInChat {
       shareMessageToChatBloc.clearRecipient();
       return [];
     } else {
-      List<ChatConversation> tempList = shareMessageToChatBloc.getRecipients();
+      List<ChatConversation?> tempList = shareMessageToChatBloc.getRecipients();
 
-      List<ChatConversation> recipientList = List<ChatConversation>();
+      List<ChatConversation?> recipientList = [];
 
       tempList.forEach((element) {
         recipientList.add(element);

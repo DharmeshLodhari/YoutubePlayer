@@ -1,7 +1,9 @@
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -24,9 +26,9 @@ class _ChangePasswordState extends State<ChangePassword> {
   String oldPassword = "";
   String confirmPassword = "";
 
-  TextEditingController _newPasswordController;
-  TextEditingController _oldPasswordController;
-  TextEditingController _confirmPasswordController;
+  TextEditingController? _newPasswordController;
+  TextEditingController? _oldPasswordController;
+  TextEditingController? _confirmPasswordController;
 
   @override
   void initState() {
@@ -45,7 +47,7 @@ class _ChangePasswordState extends State<ChangePassword> {
         child: Scaffold(
             backgroundColor: Colors.white,
             resizeToAvoidBottomInset: true,
-            appBar: appBar(),
+            appBar: appBar() as PreferredSizeWidget?,
             body: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Container(
@@ -111,7 +113,7 @@ class _ChangePasswordState extends State<ChangePassword> {
       maxLength: 6,
       obscureText: true,
       keyboardType: TextInputType.number,
-      labelText: "Old password",
+      labelText: "Current password",
       controller: _oldPasswordController,
       isPassword: true,
       validator: validateOldEnteredPassword,
@@ -152,21 +154,21 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   // validate old password
-  String validateOldEnteredPassword(String val) {
+  String? validateOldEnteredPassword(String val) {
     if (val.length != 6) {
-      return AppLocalization.of(context).invalidPassword;
+      return AppLocalization.of(context)!.invalidPassword;
     }
     return null;
   }
 
-  String validateEnteredPassword(String val) {
+  String? validateEnteredPassword(String val) {
     ///regexp for repeated number
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
     if (val.length != 6) {
-      return AppLocalization.of(context).invalidPassword;
+      return AppLocalization.of(context)!.invalidPassword;
     } else if ("0123456789".contains(val)) {
       return "you can not set this type of password";
     } else if ("9876543210".contains(val)) {
@@ -178,15 +180,15 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   // validate confirm password
-  String validateEnteredConfirmPassword(String val) {
+  String? validateEnteredConfirmPassword(String val) {
     var matcher = RegExp(
       r'^(.)\1{1,}$',
       caseSensitive: true,
     );
     if (val.length != 6) {
-      return AppLocalization.of(context).invalidPassword;
-    } else if (val != _newPasswordController.text) {
-      return AppLocalization.of(context).passwordMismatch;
+      return AppLocalization.of(context)!.invalidPassword;
+    } else if (val != _newPasswordController!.text) {
+      return AppLocalization.of(context)!.passwordMismatch;
     } else if ("0123456789".contains(val)) {
       return "you can not set this type of password";
     } else if ("9876543210".contains(val)) {
@@ -212,46 +214,62 @@ class _ChangePasswordState extends State<ChangePassword> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
-      var data = {
-        "new_password1": newPassword,
-        "new_password2": confirmPassword,
-        "old_password": oldPassword,
-      };
+    UserBloc userBloc = Provider.of<UserBloc>(
+        myGlobals.navigationKey.currentContext!,
+        listen: false);
 
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => Center(
-                child: CircularLoadingIndicator(),
-              ));
+    if (_formKey.currentState!.validate()) {
+      debugPrint("userBloc.user.password ${userBloc.user.password}");
+      if (userBloc.user.password == oldPassword) {
+        var data = {
+          "new_password1": newPassword,
+          "new_password2": confirmPassword,
+          "old_password": oldPassword,
+        };
 
-      await UserAuth().changePassword(data).then((value) {
-        if (value != null) {
-          UserBloc userBloc = Provider.of<UserBloc>(
-              myGlobals.navigationKey.currentContext,
-              listen: false);
-          userBloc.user.password = value["new_password"];
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => Center(
+                  child: CircularLoadingIndicator(),
+                ));
 
-          storePasswordInSecureStorage(password: userBloc.user.password);
+        await UserAuth().changePassword(data).then((value) async {
+          if (value != null) {
+            userBloc.user.password = value["new_password"];
 
-          Navigator.popUntil(context, ModalRoute.withName('/dashboard'));
-        } else {
+            await storePasswordInSecureStorage(
+                password: userBloc.user.password);
+            await storePasswordInDB(password: userBloc.user.password);
+
+            showToast(message: "Password updated successfully !!");
+
+            Navigator.popUntil(context, ModalRoute.withName('/dashboard'));
+          } else {
+            Navigator.pop(context);
+          }
+        }).catchError((error) {
+          showToast(message: "Please enter correct password !!");
           Navigator.pop(context);
-        }
-      }).catchError((error) {
-        Navigator.pop(context);
-        debugPrint("ERROR:- $error");
-      });
+          debugPrint("ERROR:- $error");
+        });
+      } else {
+        showToast(message: "Please enter correct password !!");
+      }
     }
   }
 
-  void storePasswordInSecureStorage({String password}) async {
+  Future<void> storePasswordInSecureStorage({String? password}) async {
     SharedPreferences _sharedPreferences =
         await SharedPreferences.getInstance();
-    bool isRemember = _sharedPreferences.getBool('isChecked');
+    bool? isRemember = _sharedPreferences.getBool('isChecked');
     if (isRemember != null && isRemember) {
       await SecureStorage().updateUserPassword(password: password);
     }
+  }
+
+  Future<void> storePasswordInDB({String? password}) async {
+    int result = await DatabaseHelper().updateUserPassword(password!);
+    debugPrint("RESULT:- Password update:- $result");
   }
 }

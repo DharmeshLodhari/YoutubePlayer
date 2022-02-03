@@ -11,13 +11,13 @@ import 'typedefs.dart';
 
 class CountryPickerDialog extends StatefulWidget {
   /// Callback that is called with selected Country
-  final ValueChanged<Country> onValuePicked;
+  final ValueChanged<Country>? onValuePicked;
 
   /// The (optional) title of the dialog is displayed in a large font at the top
   /// of the dialog.
   ///
   /// Typically a [Text] widget.
-  final Widget title;
+  final Widget? title;
 
   /// Padding around the title.
   ///
@@ -29,7 +29,7 @@ class CountryPickerDialog extends StatefulWidget {
   /// provided (but see [contentPadding]). If it _is_ null, then an extra 20
   /// pixels of bottom padding is added to separate the [title] from the
   /// [actions].
-  final EdgeInsetsGeometry titlePadding;
+  final EdgeInsetsGeometry? titlePadding;
 
   /// Padding around the content.
 
@@ -46,20 +46,20 @@ class CountryPickerDialog extends StatefulWidget {
   ///
   ///  * [SemanticsConfiguration.isRouteName], for a description of how this
   ///    value is used.
-  final String semanticLabel;
+  final String? semanticLabel;
 
   /// Filters the available country list
-  final ItemFilter itemFilter;
+  final ItemFilter? itemFilter;
 
   /// [Comparator] to be used in sort of country list
-  final Comparator<Country> sortComparator;
+  final Comparator<Country>? sortComparator;
 
   /// List of countries that are placed on top
-  final List<Country> priorityList;
+  final List<Country>? priorityList;
 
   ///Callback that is called with selected item of type Country which returns a
   ///Widget to build list view item inside dialog
-  final ItemBuilder itemBuilder;
+  final ItemBuilder? itemBuilder;
 
   /// The (optional) horizontal separator used between title, content and
   /// actions.
@@ -76,13 +76,13 @@ class CountryPickerDialog extends StatefulWidget {
   final bool isSearchable;
 
   /// The optional [decoration] of search [TextField]
-  final InputDecoration searchInputDecoration;
+  final InputDecoration? searchInputDecoration;
 
   ///The optional [cursorColor] of search [TextField]
-  final Color searchCursorColor;
+  final Color? searchCursorColor;
 
   ///The search empty view is displayed if nothing returns from search result
-  final Widget searchEmptyView;
+  final Widget? searchEmptyView;
 
   ///By default the dialog will be popped of the navigator on selection of a value.
   ///Set popOnPick to false to prevent this behaviour.
@@ -91,7 +91,7 @@ class CountryPickerDialog extends StatefulWidget {
   final bool isForLogin;
 
   CountryPickerDialog({
-    Key key,
+    Key? key,
     this.onValuePicked,
     this.title,
     this.titlePadding,
@@ -120,9 +120,9 @@ class CountryPickerDialog extends StatefulWidget {
 }
 
 class SingleChoiceDialogState extends State<CountryPickerDialog> {
-  List<Country> _allCountries;
+  List<Country>? _allCountries;
 
-  List<Country> _filteredCountries;
+  List<Country>? _filteredCountries;
 
   @override
   void initState() {
@@ -137,13 +137,13 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
     }
 
     if (widget.sortComparator != null) {
-      _allCountries.sort(widget.sortComparator);
+      _allCountries!.sort(widget.sortComparator);
     }
 
     if (widget.priorityList != null) {
-      widget.priorityList.forEach((Country country) => _allCountries
+      widget.priorityList!.forEach((Country country) => _allCountries!
           .removeWhere((Country c) => country.isoCode == c.isoCode));
-      _allCountries.insertAll(0, widget.priorityList);
+      _allCountries!.insertAll(0, widget.priorityList!);
     }
 
     _filteredCountries = _allCountries;
@@ -164,16 +164,16 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
   }
 
   _buildContent(BuildContext context) {
-    return _filteredCountries.isNotEmpty
+    return _filteredCountries!.isNotEmpty
         ? ListView(
             shrinkWrap: true,
-            children: _filteredCountries
+            children: _filteredCountries!
                 .map((item) => SimpleDialogOption(
                       child: widget.itemBuilder != null
-                          ? widget.itemBuilder(item)
-                          : Text(item.name),
+                          ? widget.itemBuilder!(item)
+                          : Text(item.name!),
                       onPressed: () {
-                        widget.onValuePicked(item);
+                        widget.onValuePicked!(item);
                         if (widget.popOnPick) {
                           Navigator.pop(context);
                         }
@@ -201,7 +201,7 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
   _buildTitle() {
     return widget.titlePadding != null
         ? Padding(
-            padding: widget.titlePadding,
+            padding: widget.titlePadding!,
             child: widget.title,
           )
         : widget.title;
@@ -215,13 +215,13 @@ class SingleChoiceDialogState extends State<CountryPickerDialog> {
       onChanged: (String value) {
         if (mounted) {
           setState(() {
-            _filteredCountries = _allCountries
+            _filteredCountries = _allCountries!
                 .where((Country country) =>
-                    country.name
+                    country.name!
                         .toLowerCase()
                         .startsWith(value.toLowerCase()) ||
-                    country.phoneCode.startsWith(value) ||
-                    country.isoCode
+                    country.phoneCode!.startsWith(value) ||
+                    country.isoCode!
                         .toLowerCase()
                         .startsWith(value.toLowerCase()))
                 .toList();

@@ -1,5 +1,5 @@
 class Onclick {
-  String url;
+  String? url;
 
   Onclick({this.url});
 

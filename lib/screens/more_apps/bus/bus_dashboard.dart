@@ -13,7 +13,7 @@ class BusDashboard extends StatefulWidget {
 }
 
 class _BusDashboardState extends State<BusDashboard> {
-  BusDashboardBloc _busDashboardBloc;
+  late BusDashboardBloc _busDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class _BusDashboardState extends State<BusDashboard> {
         items: [
           bottomNavigationBarItem(
             icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context).explore,
+            title: AppLocalization.of(context)!.explore,
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
@@ -73,7 +73,7 @@ class _BusDashboardState extends State<BusDashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData icon, String title}) {
+      {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
       icon: Container(
         height: 50,
@@ -90,7 +90,7 @@ class _BusDashboardState extends State<BusDashboard> {
   }
 
 // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData icon, String title}) {
+  Widget activeIcon({IconData? icon, required String title}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(

@@ -5,23 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PhotoViewer extends StatefulWidget {
-  final String imageUrl;
+  final String? imageUrl;
 
-  PhotoViewer({Key key, @required this.imageUrl}) : super(key: key);
+  PhotoViewer({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   _PhotoViewerState createState() => _PhotoViewerState();
 }
 
 class _PhotoViewerState extends State<PhotoViewer> {
-  String imageUrl;
+  String? imageUrl;
 
   @override
   void initState() {
     imageUrl = widget.imageUrl;
     if (imageUrl == null || imageUrl == "") {
-      imageUrl =
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
+      imageUrl = defaultImage;
     }
     super.initState();
   }
@@ -35,7 +34,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
         backgroundColor: Colors.black,
       ),
       body: PhotoView(
-        imageProvider: NetworkImage(imageUrl),
+        imageProvider: NetworkImage(imageUrl!),
         backgroundDecoration: BoxDecoration(color: Colors.black),
         loadingBuilder: (context, event) {
           if (event != null) {
@@ -43,7 +42,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
               child: Center(
                 child: CircularProgressIndicator(
                   value: ((100 * event.cumulativeBytesLoaded) /
-                          event.expectedTotalBytes) /
+                          event.expectedTotalBytes!) /
                       100,
                   strokeWidth: 2.5,
                   valueColor: AlwaysStoppedAnimation(navyBlue),
@@ -55,9 +54,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
           return Center(child: CircularLoadingIndicator());
         },
         errorBuilder: (context, error, stackTrace) => Center(
-          child: CachedNetworkImage(
-              imageUrl:
-                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"),
+          child: CachedNetworkImage(imageUrl: defaultImage),
         ),
       ),
     );

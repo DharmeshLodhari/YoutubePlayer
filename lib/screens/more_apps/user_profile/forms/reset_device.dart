@@ -12,7 +12,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-import 'package:toast/toast.dart';
 
 class ResetDevice extends StatefulWidget {
   @override
@@ -25,14 +24,14 @@ class _ResetDeviceState extends State<ResetDevice> {
   String phoneNumber = '';
   String password = '';
 
-  TextEditingController phoneNumberController;
-  TextEditingController passwordController;
+  TextEditingController? phoneNumberController;
+  TextEditingController? passwordController;
 
   final FocusNode _pinPutFocusNode = FocusNode();
 
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
-  String selectedReason;
+  String? selectedReason;
 
   List<String> resetDeviceReasons = ["Replacement", "Missing device", "Stolen"];
 
@@ -40,7 +39,7 @@ class _ResetDeviceState extends State<ResetDevice> {
 
   bool isPhoneNumberIsVerified = false;
 
-  String resetDeviceToken = "";
+  String? resetDeviceToken = "";
 
   @override
   void initState() {
@@ -275,7 +274,7 @@ class _ResetDeviceState extends State<ResetDevice> {
               if (val.isNotEmpty && val.length >= 9) {
                 return null;
               }
-              return AppLocalization.of(context).invalidPhoneNumber;
+              return AppLocalization.of(context)!.invalidPhoneNumber;
             },
           ),
         ),
@@ -358,7 +357,7 @@ class _ResetDeviceState extends State<ResetDevice> {
         SizedBox(width: 8.0),
         Expanded(
           child: Text(
-            "(" + country.name + ")",
+            "(" + country.name! + ")",
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(
@@ -381,7 +380,7 @@ class _ResetDeviceState extends State<ResetDevice> {
             isForLogin: isForLogin,
             searchCursorColor: navyBlue,
             searchInputDecoration: InputDecoration(
-              hintText: AppLocalization.of(context).search,
+              hintText: AppLocalization.of(context)!.search,
               hintStyle: TextStyle(
                 fontSize: 16,
                 color: darkGrey,
@@ -390,7 +389,7 @@ class _ResetDeviceState extends State<ResetDevice> {
             ),
             isSearchable: true,
             title: Text(
-              AppLocalization.of(context).selectYourPhoneCode,
+              AppLocalization.of(context)!.selectYourPhoneCode,
               style: TextStyle(
                 fontSize: 14,
                 color: blackFont,
@@ -426,8 +425,8 @@ class _ResetDeviceState extends State<ResetDevice> {
             eachFieldWidth: 45,
             eachFieldHeight: 45,
             obscureText: '•',
-            validator: (val) => val.length < 4
-                ? AppLocalization.of(context).invalidPassword
+            validator: (val) => val!.length < 4
+                ? AppLocalization.of(context)!.invalidPassword
                 : null,
             fieldsCount: 6,
             focusNode: _pinPutFocusNode,
@@ -455,11 +454,11 @@ class _ResetDeviceState extends State<ResetDevice> {
   }
 
   void resetDevice() async {
-    if (_resetDevice.currentState.validate()) {
+    if (_resetDevice.currentState!.validate()) {
       if (isReasonIsSelected) {
         showDialog(context: context, builder: (context) => LoadingIndicator());
 
-        var phoneNumberFromTextField = phoneNumberController.text.trim();
+        var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
         if (phoneNumberFromTextField.substring(0, 1) == "0") {
           phoneNumberFromTextField =
@@ -467,8 +466,8 @@ class _ResetDeviceState extends State<ResetDevice> {
         }
 
         phoneNumber =
-            "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
-        password = passwordController.text.trim();
+            "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+        password = passwordController!.text.trim();
 
         var data = {};
         data["phone_number"] = phoneNumber;
@@ -489,25 +488,19 @@ class _ResetDeviceState extends State<ResetDevice> {
         }).catchError((error) {
           Navigator.pop(context);
           debugPrint("ERROR:- $error");
-          Toast.show("$error", context,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-              duration: Toast.LENGTH_LONG);
+          showToast(message: "$error");
         });
       } else {
-        Toast.show("Please select reset device reason !!", context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
+        showToast(message: "Please select reset device reason !!");
       }
     }
   }
 
   void sendOTP() async {
-    if (_resetDevice.currentState.validate()) {
+    if (_resetDevice.currentState!.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      var phoneNumberFromTextField = phoneNumberController.text.trim();
+      var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
       if (phoneNumberFromTextField.substring(0, 1) == "0") {
         phoneNumberFromTextField =
@@ -515,7 +508,7 @@ class _ResetDeviceState extends State<ResetDevice> {
       }
 
       phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
+          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
 
       UserAuth().sendOTPForResetDevice(phoneNumber).then((result) async {
         Navigator.pop(context);
@@ -537,10 +530,7 @@ class _ResetDeviceState extends State<ResetDevice> {
       }).catchError((error) {
         Navigator.pop(context);
         debugPrint("ERROR:- $error");
-        Toast.show("$error", context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
+        showToast(message: "$error");
       });
     }
   }
@@ -557,7 +547,7 @@ class _ResetDeviceState extends State<ResetDevice> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           content: Stack(
-            overflow: Overflow.visible,
+            clipBehavior: Clip.none,
             children: [
               Container(
                 width: MediaQuery.of(context).size.width - 40,
@@ -616,8 +606,7 @@ class _ResetDeviceState extends State<ResetDevice> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              FlatButton(
-                                padding: EdgeInsets.zero,
+                              TextButton(
                                 child: Text("OK",
                                     style: TextStyle(
                                         fontSize: 14,
@@ -672,8 +661,8 @@ class _ResetDeviceState extends State<ResetDevice> {
 
   @override
   void dispose() {
-    phoneNumberController.dispose();
-    passwordController.dispose();
+    phoneNumberController!.dispose();
+    passwordController!.dispose();
     super.dispose();
   }
 }

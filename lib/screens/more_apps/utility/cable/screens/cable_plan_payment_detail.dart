@@ -6,7 +6,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class CablePlanPaymentDetail extends StatefulWidget {
-  final Map<String, dynamic> arguments;
+  final Map<String, dynamic>? arguments;
 
   CablePlanPaymentDetail({this.arguments});
   @override
@@ -19,11 +19,11 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
     "name": "DStv Subscription"
   };
 
-  CablePlan plan;
+  CablePlan? plan;
 
   @override
   void initState() {
-    plan = widget.arguments["plan"];
+    plan = widget.arguments!["plan"];
     super.initState();
   }
 
@@ -36,7 +36,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
       },
       child: Scaffold(
         backgroundColor: lightGrey,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -127,7 +127,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
               height: 2,
             ),
             Text(
-              plan.name,
+              plan!.name!,
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
             ),
             SizedBox(
@@ -178,7 +178,7 @@ class _CablePlanPaymentDetailState extends State<CablePlanPaymentDetail> {
             fontSize: 14, fontWeight: FontWeight.w400, color: blackFont),
       ),
       subtitle: Text(
-        plan.price,
+        plan!.price!,
         style: TextStyle(
             fontFamily: "roborto",
             fontSize: 14,

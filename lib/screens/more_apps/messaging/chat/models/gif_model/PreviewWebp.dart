@@ -1,8 +1,8 @@
 class PreviewWebp {
-  String height;
-  String size;
-  String url;
-  String width;
+  String? height;
+  String? size;
+  String? url;
+  String? width;
 
   PreviewWebp({this.height, this.size, this.url, this.width});
 

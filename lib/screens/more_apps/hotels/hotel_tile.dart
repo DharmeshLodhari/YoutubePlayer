@@ -12,7 +12,7 @@ import 'models/HotelRoomItem.dart';
 
 // ignore: must_be_immutable
 class HotelTile extends StatelessWidget {
-  String imageUrl;
+  String? imageUrl;
   HotelTile({this.imageUrl});
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class HotelTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: imageUrl,
+                    imageUrl: imageUrl!,
                     fit: BoxFit.fill,
                     height: 86,
                     width: 68,
@@ -89,9 +89,9 @@ class HotelTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class HotelTileWithHeart extends StatefulWidget {
-  final HotelRoomItem hotelRoom;
+  final HotelRoomItem? hotelRoom;
 
-  const HotelTileWithHeart({Key key, this.hotelRoom}) : super(key: key);
+  const HotelTileWithHeart({Key? key, this.hotelRoom}) : super(key: key);
   @override
   _HotelTileWithHeartState createState() => _HotelTileWithHeartState();
 }
@@ -133,7 +133,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                                     });
                                   }
                                 }),
-                            items: widget.hotelRoom.images
+                            items: widget.hotelRoom!.images!
                                 .map(
                                   (image) => InkWell(
                                     child: CachedNetworkImage(
@@ -152,13 +152,13 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                           Positioned(
                             bottom: 0,
                             left: MediaQuery.of(context).size.width / 2 -
-                                ((5 * widget.hotelRoom.images.length) + 16),
+                                ((5 * widget.hotelRoom!.images!.length) + 16),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: widget.hotelRoom.images.map((url) {
+                              children: widget.hotelRoom!.images!.map((url) {
                                 int index =
-                                    widget.hotelRoom.images.indexOf(url);
+                                    widget.hotelRoom!.images!.indexOf(url);
                                 return Container(
                                   width: 5.0,
                                   height: 5.0,
@@ -186,7 +186,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  widget.hotelRoom.name,
+                                  widget.hotelRoom!.name!,
                                   softWrap: false,
                                   overflow: TextOverflow.fade,
                                   style: TextStyle(
@@ -210,7 +210,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                                               fontFamily: "Roborto"),
                                         ),
                                         Text(
-                                          widget.hotelRoom.price,
+                                          widget.hotelRoom!.price!,
                                           softWrap: false,
                                           overflow: TextOverflow.fade,
                                           style: TextStyle(
@@ -242,7 +242,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "${widget.hotelRoom.address1}, ${widget.hotelRoom.address2}",
+                                  "${widget.hotelRoom!.address1}, ${widget.hotelRoom!.address2}",
                                   softWrap: false,
                                   overflow: TextOverflow.fade,
                                   style: TextStyle(
@@ -262,7 +262,7 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
                                       width: 4,
                                     ),
                                     Text(
-                                      widget.hotelRoom.rating,
+                                      widget.hotelRoom!.rating!,
                                       style: TextStyle(
                                           fontSize: 14, color: blackFont),
                                     )
@@ -298,9 +298,9 @@ class _HotelTileWithHeartState extends State<HotelTileWithHeart> {
 }
 
 class HotelRoomImagesTile extends StatefulWidget {
-  final HotelRoomItem hotelRoom;
+  final HotelRoomItem? hotelRoom;
 
-  const HotelRoomImagesTile({Key key, this.hotelRoom}) : super(key: key);
+  const HotelRoomImagesTile({Key? key, this.hotelRoom}) : super(key: key);
   @override
   _HotelRoomImagesTileState createState() => _HotelRoomImagesTileState();
 }
@@ -338,7 +338,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                 });
                               }
                             }),
-                        items: widget.hotelRoom.images
+                        items: widget.hotelRoom!.images!
                             .map(
                               (e) => InkWell(
                                 child: CachedNetworkImage(
@@ -358,12 +358,12 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                       Positioned(
                         bottom: 0,
                         left: MediaQuery.of(context).size.width / 2 -
-                            ((5 * widget.hotelRoom.images.length) + 16),
+                            ((5 * widget.hotelRoom!.images!.length) + 16),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: widget.hotelRoom.images.map((url) {
-                            int index = widget.hotelRoom.images.indexOf(url);
+                          children: widget.hotelRoom!.images!.map((url) {
+                            int index = widget.hotelRoom!.images!.indexOf(url);
                             return Container(
                               width: 5.0,
                               height: 5.0,
@@ -390,7 +390,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              widget.hotelRoom.name,
+                              widget.hotelRoom!.name!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -414,7 +414,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                           fontFamily: "Roborto"),
                                     ),
                                     Text(
-                                      widget.hotelRoom.price,
+                                      widget.hotelRoom!.price!,
                                       softWrap: false,
                                       overflow: TextOverflow.fade,
                                       style: TextStyle(
@@ -446,7 +446,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "${widget.hotelRoom.address1}, ${widget.hotelRoom.address2}",
+                              "${widget.hotelRoom!.address1}, ${widget.hotelRoom!.address2}",
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -466,7 +466,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
                                   width: 4,
                                 ),
                                 Text(
-                                  widget.hotelRoom.rating,
+                                  widget.hotelRoom!.rating!,
                                   style:
                                       TextStyle(fontSize: 14, color: blackFont),
                                 )
@@ -486,7 +486,7 @@ class _HotelRoomImagesTileState extends State<HotelRoomImagesTile> {
 }
 
 class PartialHotelRoomItemTile extends StatelessWidget {
-  final PartialHotelRoomItem hotelRoom;
+  final PartialHotelRoomItem? hotelRoom;
 
   PartialHotelRoomItemTile({this.hotelRoom});
 
@@ -511,7 +511,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: hotelRoom.image,
+                    imageUrl: hotelRoom!.image!,
                     height: 150,
                     width: 150,
                     fit: BoxFit.fill,
@@ -549,7 +549,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
                                     fontFamily: "Roborto"),
                               ),
                               Text(
-                                hotelRoom.price,
+                                hotelRoom!.price!,
                                 softWrap: false,
                                 overflow: TextOverflow.fade,
                                 style: TextStyle(
@@ -574,7 +574,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      hotelRoom.shortDescription,
+                      hotelRoom!.shortDescription!,
                       softWrap: false,
                       overflow: TextOverflow.fade,
                       style: TextStyle(
@@ -595,7 +595,7 @@ class PartialHotelRoomItemTile extends StatelessWidget {
 }
 
 class CityItemCard extends StatelessWidget {
-  final CityData city;
+  final CityData? city;
 
   CityItemCard({this.city});
 
@@ -618,7 +618,7 @@ class CityItemCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  city.name,
+                  city!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -633,7 +633,7 @@ class CityItemCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: city.image,
+                    imageUrl: city!.image!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,

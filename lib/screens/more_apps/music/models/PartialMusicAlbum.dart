@@ -1,7 +1,7 @@
 class PartialMusicAlbum {
-  int id;
-  String name;
-  String poster;
+  int? id;
+  String? name;
+  String? poster;
 
   PartialMusicAlbum({this.id, this.name, this.poster});
 

@@ -6,21 +6,21 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class CustomizedAlertForNudge {
-  final BuildContext context;
+  final BuildContext? context;
   final AlertStyle style;
-  final String image;
-  final String title;
-  final String desc;
-  final Widget content;
-  final List<Widget> buttons;
-  final Function closeFunction;
-  final RoundedBackgroundIcon roundedBackgroundIcon;
+  final String? image;
+  final String? title;
+  final String? desc;
+  final Widget? content;
+  final List<Widget>? buttons;
+  final Function? closeFunction;
+  final RoundedBackgroundIcon? roundedBackgroundIcon;
 
   CustomizedAlertForNudge({
-    @required this.context,
+    required this.context,
     this.style = const AlertStyle(),
     this.image,
-    @required this.title,
+    required this.title,
     this.roundedBackgroundIcon,
     this.desc,
     this.content,
@@ -29,15 +29,15 @@ class CustomizedAlertForNudge {
   });
 
   /// Displays defined alert window
-  Future<bool> show() async {
+  Future<bool?> show() async {
     return await showGeneralDialog(
-      context: context,
+      context: context!,
       pageBuilder: (BuildContext buildContext, Animation<double> animation,
           Animation<double> secondaryAnimation) {
         return _buildDialog();
       },
       barrierDismissible: style.isOverlayTapDismiss,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierLabel: MaterialLocalizations.of(context!).modalBarrierDismissLabel,
       barrierColor: style.overlayColor,
       transitionDuration: style.animationDuration,
       transitionBuilder: (
@@ -62,11 +62,11 @@ class CustomizedAlertForNudge {
             child: AlertDialog(
               insetPadding: EdgeInsets.zero,
               backgroundColor: style.backgroundColor ??
-                  Theme.of(context).dialogBackgroundColor,
+                  Theme.of(context!).dialogBackgroundColor,
               shape: style.alertBorder ?? _defaultShape(),
               titlePadding: EdgeInsets.all(0.0),
               title: Container(
-                width: MediaQuery.of(context).size.width - 40,
+                width: MediaQuery.of(context!).size.width - 40,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -76,12 +76,12 @@ class CustomizedAlertForNudge {
                           SizedBox(
                             height: 24,
                           ),
-                          _getImage(),
+                          _getImage()!,
                           SizedBox(
                             height: 12,
                           ),
                           Text(
-                            title,
+                            title!,
                             style: TextStyle(
                                 color: blackFont,
                                 fontWeight: FontWeight.bold,
@@ -97,7 +97,7 @@ class CustomizedAlertForNudge {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 40),
                                   child: Text(
-                                    desc,
+                                    desc!,
                                     style: TextStyle(
                                         color: blackFont, fontSize: 16.0),
                                     textAlign: TextAlign.center,
@@ -106,7 +106,7 @@ class CustomizedAlertForNudge {
                           SizedBox(
                             height: 4,
                           ),
-                          content == null ? Container() : content,
+                          content == null ? Container() : content!,
                         ],
                       )
                     ],
@@ -116,7 +116,7 @@ class CustomizedAlertForNudge {
               contentPadding: style.buttonAreaPadding,
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: _getButtons(),
+                children: _getButtons()!,
               ),
             ),
           ),
@@ -133,8 +133,8 @@ class CustomizedAlertForNudge {
   }
 
   // Returns defined buttons. Default: Cancel Button
-  List<Widget> _getButtons() {
-    List<Widget> expandedButtons = buttons;
+  List<Widget>? _getButtons() {
+    List<Widget>? expandedButtons = buttons;
     // if (buttons != null) {
     //   var btnOne = Expanded(
     //     child: Padding(
@@ -157,14 +157,14 @@ class CustomizedAlertForNudge {
   }
 
 // Returns alert image for icon
-  Widget _getImage() {
+  Widget? _getImage() {
     return roundedBackgroundIcon != null
         ? roundedBackgroundIcon
         : image != null
             ? Container(
                 child: ClipOval(
                   child: Image.network(
-                    image,
+                    image!,
                     height: 170,
                     width: 170,
                     fit: BoxFit.fill,

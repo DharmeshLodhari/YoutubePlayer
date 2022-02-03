@@ -8,7 +8,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:toast/toast.dart';
 
 import '../../../../utils/colors.dart';
 
@@ -24,7 +23,7 @@ class _RegistrationState extends State<Registration> {
 
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
-  TextEditingController phoneNumberController;
+  TextEditingController? phoneNumberController;
 
   // this variable is responsible to enable and disable submit btn
   bool isValid = false;
@@ -140,6 +139,7 @@ class _RegistrationState extends State<Registration> {
     return CustomizedTextFormField(
       labelColor: darkGrey,
       labelText: "Phone number",
+      hintText: "08023000000",
       keyboardType: TextInputType.phone,
       controller: phoneNumberController,
       validator: validatePhoneNumber,
@@ -149,7 +149,7 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  String validatePhoneNumber(number) {
+  String? validatePhoneNumber(number) {
     if (number.contains('+') ||
         number.contains('-') ||
         number.contains('*') ||
@@ -166,11 +166,11 @@ class _RegistrationState extends State<Registration> {
     if (number.isNotEmpty && number.length >= 9) {
       return null;
     }
-    return AppLocalization.of(context).invalidPhoneNumber;
+    return AppLocalization.of(context)!.invalidPhoneNumber;
   }
 
   void validateField() {
-    if (phoneNumberController.text.length >= 9) {
+    if (phoneNumberController!.text.length >= 9) {
       isValid = true;
       setState(() {});
     } else {
@@ -193,7 +193,7 @@ class _RegistrationState extends State<Registration> {
   }
 
   void continuePressed() {
-    var phoneNumberFromTextField = phoneNumberController.text.trim();
+    var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
     if (phoneNumberFromTextField.substring(0, 1) == "0") {
       phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");
@@ -201,14 +201,14 @@ class _RegistrationState extends State<Registration> {
 
     //adding country code and '+' sign to phoneNumber
     phoneNumberWithCountryCode =
-        "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
+        "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
 
     //for closing the keypad if it is open
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
 
-    if (_registrationFormKey.currentState.validate()) {
+    if (_registrationFormKey.currentState!.validate()) {
       UserAuth().registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
         Navigator.of(context).popAndPushNamed(
           "/verify-registration-otp",
@@ -217,8 +217,7 @@ class _RegistrationState extends State<Registration> {
           },
         );
       }).catchError((error) {
-        Toast.show("$error", context,
-            textColor: Colors.white, backgroundColor: Colors.black);
+        showToast(message: "$error");
       });
     }
   }
@@ -228,7 +227,7 @@ class _RegistrationState extends State<Registration> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          AppLocalization.of(context).selectYourCountry,
+          AppLocalization.of(context)!.selectYourCountry,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
         SizedBox(
@@ -265,9 +264,9 @@ class _RegistrationState extends State<Registration> {
             titlePadding: EdgeInsets.all(8.0),
             searchCursorColor: Colors.pinkAccent,
             searchInputDecoration:
-                InputDecoration(hintText: AppLocalization.of(context).search),
+                InputDecoration(hintText: AppLocalization.of(context)!.search),
             isSearchable: true,
-            title: Text(AppLocalization.of(context).selectYourPhoneCode),
+            title: Text(AppLocalization.of(context)!.selectYourPhoneCode),
             onValuePicked: (Country country) =>
                 setState(() => _selectedDialogCountry = country),
             itemBuilder: _buildDialogItem,
@@ -288,7 +287,7 @@ class _RegistrationState extends State<Registration> {
         SizedBox(width: 8.0),
         Flexible(
             child: Text(
-          country.name,
+          country.name!,
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
         ))

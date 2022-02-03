@@ -2,7 +2,7 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
-  bool result = await showDialog<bool>(
+  bool? result = await showDialog<bool>(
     barrierDismissible: false,
     context: context,
     builder: (context) => StatefulBuilder(
@@ -13,7 +13,7 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           content: Stack(
-            overflow: Overflow.visible,
+            clipBehavior: Clip.none,
             children: [
               Container(
                 width: MediaQuery.of(context).size.width - 40,
@@ -71,8 +71,7 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              FlatButton(
-                                padding: EdgeInsets.zero,
+                              TextButton(
                                 child: Text("Cancel",
                                     style: TextStyle(
                                         fontSize: 14,
@@ -82,8 +81,7 @@ Future<bool> showDisclaimerDialogueForGoods(BuildContext context) async {
                                   Navigator.pop(context, false);
                                 },
                               ),
-                              FlatButton(
-                                padding: EdgeInsets.zero,
+                              TextButton(
                                 child: Text("OK",
                                     style: TextStyle(
                                         fontSize: 14,

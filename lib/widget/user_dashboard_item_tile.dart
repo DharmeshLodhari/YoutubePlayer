@@ -15,10 +15,10 @@ class UserDashboardItemTile extends StatelessWidget {
   bool isLocked;
 
   UserDashboardItemTile(
-      {@required this.title,
-      @required this.icon,
-      @required this.iconColor,
-      @required this.onTap,
+      {required this.title,
+      required this.icon,
+      required this.iconColor,
+      required this.onTap,
       this.isLocked = false,
       this.height = 100});
 
@@ -85,7 +85,7 @@ class UserDashboardItemTile extends StatelessWidget {
           ),
         ),
       ),
-      onTap: onTap,
+      onTap: onTap as void Function()?,
     );
   }
 }

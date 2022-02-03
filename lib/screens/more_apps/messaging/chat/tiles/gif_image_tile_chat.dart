@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class GIFImageForChatMessage extends StatelessWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
   GIFImageForChatMessage({this.message, this.chatConversation});
 
@@ -16,9 +16,9 @@ class GIFImageForChatMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message["author"] == userBloc.user.userName;
+    bool isSend = message!["author"] == userBloc.user.userName;
 
-    String gifImage = message['text'];
+    String gifImage = message!['text'];
 
     return Column(
       children: [
@@ -49,10 +49,10 @@ class GIFImageForChatMessage extends StatelessWidget {
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
                 ),
                 decoration: BoxDecoration(
-                  color: chatConversation.isGroupConversation
+                  color: chatConversation!.isGroupConversation!
                       ? isSend
                           ? Colors.transparent
-                          : chatBackgroundColor
+                          : Colors.white
                       : Colors.transparent,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
@@ -62,12 +62,12 @@ class GIFImageForChatMessage extends StatelessWidget {
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
-                    horizontal: chatConversation.isGroupConversation
+                    horizontal: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
                         : 0,
-                    vertical: chatConversation.isGroupConversation
+                    vertical: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 0
                             : 8
@@ -78,13 +78,13 @@ class GIFImageForChatMessage extends StatelessWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    chatConversation.isGroupConversation
-                        ? message['author'] != userBloc.user.userName
+                    chatConversation!.isGroupConversation!
+                        ? message!['author'] != userBloc.user.userName
                             ? Column(
                                 children: [
                                   Text(
-                                    message['author_full_name'] ??
-                                        message['author'],
+                                    message!['author_full_name'] ??
+                                        message!['author'],
                                     style: TextStyle(
                                         color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
@@ -133,7 +133,7 @@ class GIFImageForChatMessage extends StatelessWidget {
                     width: 20,
                     child: isSend
                         ? Center(
-                            child: getMessageTick(message: message),
+                            child: getMessageTick(message: message!),
                           )
                         : Container(),
                   )
@@ -153,7 +153,7 @@ class GIFImageForChatMessage extends StatelessWidget {
                     width: 20,
                   ),
             Text(
-              formatTime(message['created_at']),
+              formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),

@@ -20,8 +20,8 @@ List<String> videoExtensions = [
 ];
 List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
-Future<String> getVideoThumbnail(File file) async {
-  String path = await VideoThumbnail.thumbnailFile(
+Future<String?> getVideoThumbnail(File file) async {
+  String? path = await VideoThumbnail.thumbnailFile(
     video: file.path,
     imageFormat: ImageFormat.JPEG,
     maxWidth:
@@ -36,7 +36,7 @@ String getFileType(FilePickerResult pickedMedia) {
   debugPrint("File path :- ${pickedMedia.files.single.path}");
   debugPrint("File name :- ${pickedMedia.files.single.name}");
   debugPrint("File extension :- ${pickedMedia.files.single.extension}");
-  String extension = pickedMedia.files.single.extension;
+  String? extension = pickedMedia.files.single.extension;
   debugPrint(
       " pickedMedia.files.single.path => ${pickedMedia.files.single.path}");
 
@@ -50,7 +50,7 @@ String getFileExtension(FilePickerResult pickedMedia) {
   debugPrint("File path :- ${pickedMedia.files.single.path}");
   debugPrint("File name :- ${pickedMedia.files.single.name}");
   debugPrint("File extension :- ${pickedMedia.files.single.extension}");
-  String extension = pickedMedia.files.single.extension;
+  String? extension = pickedMedia.files.single.extension;
 
   if (imageExtensions.contains(extension)) return "image";
   if (videoExtensions.contains(extension)) return "video";
@@ -58,7 +58,7 @@ String getFileExtension(FilePickerResult pickedMedia) {
   return "";
 }
 
-Color getMessageTickColor({Map<String, dynamic> message}) {
+Color getMessageTickColor({required Map<String, dynamic> message}) {
   return message['delivered']
       ? message['read_by_recipient'] ?? false
           ? navyBlue
@@ -66,7 +66,7 @@ Color getMessageTickColor({Map<String, dynamic> message}) {
       : darkGrey;
 }
 
-Widget getMessageTick({Map<String, dynamic> message}) {
+Widget getMessageTick({required Map<String, dynamic> message}) {
   return Icon(
     message['delivered']
         ? Icons.check_circle_rounded
@@ -76,8 +76,8 @@ Widget getMessageTick({Map<String, dynamic> message}) {
   );
 }
 
-String getAuthorName(
-    {Map<String, dynamic> message, @required User currentUser}) {
+String? getAuthorName(
+    {required Map<String, dynamic> message, required User currentUser}) {
   bool isSend = currentUser.userName == message["author"];
 
   if (isSend) {
@@ -87,9 +87,9 @@ String getAuthorName(
   }
 }
 
-String getCurrency(String title, String symbol) {
-  if (title.contains("CURRENCY")) {
-    return title.replaceAll("CURRENCY", worldCurrencies[symbol]);
+String getCurrency(String title, String? symbol) {
+  if (title.contains("CURRENCY") && symbol != null) {
+    return title.replaceAll("CURRENCY", worldCurrencies[symbol]!);
   } else {
     return title;
   }

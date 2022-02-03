@@ -14,15 +14,15 @@ import 'constants.dart';
 class AlertStyle {
   final AnimationType animationType;
   final Duration animationDuration;
-  final ShapeBorder alertBorder;
+  final ShapeBorder? alertBorder;
   final bool isCloseButton;
   final bool isOverlayTapDismiss;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Color overlayColor;
   final TextStyle titleStyle;
   final TextStyle descStyle;
   final EdgeInsets buttonAreaPadding;
-  final BoxConstraints constraints;
+  final BoxConstraints? constraints;
 
   /// Alert style constructor function
   /// The [animationType] parameter is used for transitions. Default: "fromBottom"

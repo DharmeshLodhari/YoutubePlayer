@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 import '../../../../utils/colors.dart';
 
 class PayoutTile extends StatelessWidget {
-  final Payout payout;
-  final Key key;
+  final Payout? payout;
+  final Key? key;
 
   PayoutTile({this.payout, this.key}) : super(key: key);
 
@@ -35,17 +35,17 @@ class PayoutTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  worldCurrencies[payout.currency],
+                  worldCurrencies[payout!.currency!]!,
                   style: TextStyle(
                       fontFamily: "Roboto",
-                      color: getStatusColor(payout.status),
+                      color: getStatusColor(payout!.status),
                       fontWeight: FontWeight.bold,
                       fontSize: 14),
                 ),
                 Text(
-                  moneyDisplayNormalizer(payout.amount),
+                  moneyDisplayNormalizer(payout!.amount),
                   style: TextStyle(
-                      color: getStatusColor(payout.status),
+                      color: getStatusColor(payout!.status),
                       fontWeight: FontWeight.bold,
                       fontSize: 14),
                 )
@@ -61,17 +61,18 @@ class PayoutTile extends StatelessWidget {
     return ClipOval(
       child: GestureDetector(
         onTap: () {
-          Navigator.of(myGlobals.navigationKey.currentContext)
-              .pushNamed("/photo-viewer", arguments: payout.bankLogo);
+          Navigator.of(myGlobals.navigationKey.currentContext!)
+              .pushNamed("/photo-viewer", arguments: payout!.bankLogo);
         },
         child: CachedNetworkImage(
-          imageUrl: payout.bankLogo,
+          imageUrl: payout!.bankLogo!,
           height: 48,
           width: 48,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
+          errorWidget: imageErrorWidget,
           filterQuality: FilterQuality.high,
-          placeholder: (context, url) => payout.bankLogo == ""
+          placeholder: (context, url) => payout!.bankLogo == ""
               ? Icon(Icons.account_balance)
               : CircularLoadingIndicator(),
         ),
@@ -79,7 +80,7 @@ class PayoutTile extends StatelessWidget {
     );
   }
 
-  Color getStatusColor(String status) {
+  Color getStatusColor(String? status) {
     if (status == "Paid") {
       return navyBlue;
     } else if (status == "Pending") {
@@ -91,7 +92,7 @@ class PayoutTile extends StatelessWidget {
 
   Widget getTitle() {
     return Text(
-      payout.bankName,
+      payout!.bankName!,
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.w600,
@@ -101,7 +102,7 @@ class PayoutTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime dateTime = DateTime.parse(payout.timeStamp).toLocal();
+    DateTime dateTime = DateTime.parse(payout!.timeStamp!).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(dateTime);
     String time = DateFormat("hh:mm a").format(dateTime);
     return Text(

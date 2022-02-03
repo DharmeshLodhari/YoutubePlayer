@@ -1,8 +1,8 @@
 class ChatMessagePagination {
-  String conversationId;
-  int count;
-  String next;
-  String previous;
+  String? conversationId;
+  int? count;
+  String? next;
+  String? previous;
 
   ChatMessagePagination(
       {this.conversationId,

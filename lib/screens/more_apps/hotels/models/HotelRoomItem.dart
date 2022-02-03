@@ -1,11 +1,11 @@
 class HotelRoomItem {
-  String address1;
-  String address2;
-  String currency;
-  List<String> images;
-  String name;
-  String price;
-  String rating;
+  String? address1;
+  String? address2;
+  String? currency;
+  List<String>? images;
+  String? name;
+  String? price;
+  String? rating;
 
   HotelRoomItem(
       {this.address1,

@@ -10,7 +10,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 class GetUserConnectionList extends StatefulWidget {
   @override
@@ -78,7 +77,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
 
   void getList() async {
     ConnectionListBloc _connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
     connectionsList.addAll(_connectionListBloc.connectionUsers);
@@ -132,7 +131,7 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
 }
 
 class ShareToUserTile extends StatefulWidget {
-  final ChatConversation user;
+  final ChatConversation? user;
 
   ShareToUserTile({this.user});
 
@@ -142,15 +141,15 @@ class ShareToUserTile extends StatefulWidget {
 
 class _ShareToUserTileState extends State<ShareToUserTile> {
   bool isSelected = false;
-  Widget avatarImage;
+  Widget? avatarImage;
 
-  Color borderColor;
+  late Color borderColor;
 
-  ShareMessageToChatBloc _shareMessageToChatBloc;
+  late ShareMessageToChatBloc _shareMessageToChatBloc;
 
   @override
   void initState() {
-    borderColor = getUserTypeColorByType(type: widget.user.type);
+    borderColor = getUserTypeColorByType(type: widget.user!.type!);
     super.initState();
   }
 
@@ -171,9 +170,8 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
             border: Border.all(color: borderColor, width: 2)),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: widget.user.avatar == ""
-                ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : widget.user.avatar,
+            imageUrl:
+                widget.user!.avatar == "" ? defaultImage : widget.user!.avatar!,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
@@ -196,9 +194,8 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
               _shareMessageToChatBloc.addRecipient(
                   chatConversation: widget.user);
             } else {
-              Toast.show("You can only share with 5 people at a time !!",
-                  myGlobals.navigationKey.currentContext,
-                  backgroundColor: blackFont, textColor: Colors.white);
+              showToast(
+                  message: "You can only share with 5 people at a time !!");
             }
           } else {
             _shareMessageToChatBloc.removeRecipient(
@@ -223,7 +220,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
 
   Widget getTitle() {
     return Text(
-      widget.user.fullName,
+      widget.user!.fullName!,
       maxLines: 1,
       style: TextStyle(
         color: blackFont,
@@ -237,7 +234,7 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
 
   Widget getSubtitle() {
     return Text(
-      widget.user.userName,
+      widget.user!.userName!,
       maxLines: 1,
       style: TextStyle(
         color: darkGrey,

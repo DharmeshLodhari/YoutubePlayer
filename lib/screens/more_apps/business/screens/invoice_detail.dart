@@ -16,7 +16,7 @@ import '../models/Invoice.dart';
 class InvoiceDetail extends StatefulWidget {
   var arguments;
 
-  InvoiceDetail({@required this.arguments});
+  InvoiceDetail({required this.arguments});
 
   @override
   _InvoiceDetailState createState() =>
@@ -25,7 +25,7 @@ class InvoiceDetail extends StatefulWidget {
 
 class _InvoiceDetailState extends State<InvoiceDetail> {
   var arguments;
-  Invoice invoice;
+  late Invoice invoice;
   bool isLoading = false;
 
   _InvoiceDetailState({this.arguments});
@@ -66,7 +66,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -160,7 +160,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget getSubtitle() {
-    DateTime dateAndTime = DateTime.parse(invoice.createdAt);
+    DateTime dateAndTime = DateTime.parse(invoice.createdAt!);
     String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
     String time = DateFormat("hh:mm a").format(dateAndTime);
 
@@ -182,7 +182,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: invoice.toCustomerAvatar,
+        imageUrl: invoice.toCustomerAvatar!,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
@@ -197,7 +197,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   Widget getSender() {
     return Text(
-      invoice.toCustomer,
+      invoice.toCustomer!,
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
@@ -211,7 +211,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[invoice.currency],
+          worldCurrencies[invoice.currency!]!,
           style: TextStyle(
             color: navyBlue,
             fontWeight: FontWeight.bold,
@@ -265,18 +265,18 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           ),
           detailTile(
             Icons.history_edu,
-            AppLocalization.of(context).status,
-            invoice.status,
+            AppLocalization.of(context)!.status,
+            invoice.status!,
           ),
           detailTile(
             SlydoAppIcon.date,
             "Invoice date",
-            formatDate(invoice.invoiceDate),
+            formatDate(invoice.invoiceDate!),
           ),
           detailTile(
             SlydoAppIcon.date,
             "Due date",
-            formatDate(invoice.dueDate),
+            formatDate(invoice.dueDate!),
           ),
           getInvoiceItems()
         ],
@@ -374,7 +374,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               ),
               Column(
                 children:
-                    invoice.items.map((e) => getItemTile(item: e)).toList(),
+                    invoice.items!.map((e) => getItemTile(item: e)).toList(),
               ),
               SizedBox(
                 height: 8,
@@ -401,7 +401,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                     width: 8,
                   ),
                   Text(
-                    worldCurrencies[invoice.currency],
+                    worldCurrencies[invoice.currency!]!,
                     style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
@@ -424,7 +424,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  Widget getItemTile({InvoiceItem item}) {
+  Widget getItemTile({required InvoiceItem item}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -435,7 +435,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               children: [
                 Expanded(
                   child: Text(
-                    item.name,
+                    item.name!,
                     style: TextStyle(color: blackFont),
                   ),
                 ),
@@ -456,7 +456,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      worldCurrencies[item.currency],
+                      worldCurrencies[item.currency!]!,
                       style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
@@ -470,14 +470,14 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                 Row(
                   children: [
                     Text(
-                      worldCurrencies[item.currency],
+                      worldCurrencies[item.currency!]!,
                       style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text("${item.quantity * item.amount}"),
+                    Text("${item.quantity! * item.amount!}"),
                   ],
                 ),
               ],

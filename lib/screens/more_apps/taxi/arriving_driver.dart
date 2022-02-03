@@ -68,13 +68,13 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
 
   void getExistingMapStatus() {
     TaxiBloc taxiBloc =
-        Provider.of(myGlobals.navigationKey.currentContext, listen: false);
+        Provider.of(myGlobals.navigationKey.currentContext!, listen: false);
     TaxiAuth()
         .getDirections(
-      origin: LatLng(taxiBloc.startingPoint.geometry.location.lat - 0.0015,
-          taxiBloc.startingPoint.geometry.location.lng),
-      destination: LatLng(taxiBloc.startingPoint.geometry.location.lat,
-          taxiBloc.startingPoint.geometry.location.lng),
+      origin: LatLng(taxiBloc.startingPoint!.geometry!.location!.lat! - 0.0015,
+          taxiBloc.startingPoint!.geometry!.location!.lng!),
+      destination: LatLng(taxiBloc.startingPoint!.geometry!.location!.lat!,
+          taxiBloc.startingPoint!.geometry!.location!.lng!),
     )
         .then((value) {
       taxiBloc.driverToStartingPointDirections = value;
@@ -94,7 +94,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: Stack(
           children: [
             isLoading
@@ -369,7 +369,7 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
           ClipRRect(
             borderRadius: BorderRadius.circular(50),
             child: CachedNetworkImage(
-              imageUrl: userBloc.user.avatar,
+              imageUrl: userBloc.user.avatar!,
               height: 80,
               width: 80,
               fit: BoxFit.fill,
@@ -520,9 +520,9 @@ class _ArrivingDriverState extends State<ArrivingDriver> {
     );
   }
 
-  Widget getActionBtn({IconData icon, Function onTap}) {
+  Widget getActionBtn({IconData? icon, Function? onTap}) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap as void Function()?,
       child: Card(
         elevation: 5,
         borderOnForeground: true,

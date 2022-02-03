@@ -8,7 +8,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../../../locale/app_localization.dart';
 import '../user_auth.dart';
@@ -29,7 +28,7 @@ class _UserAddressState extends State<UserAddress> {
 
   Country selectedCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
-  AddressBloc addressBloc;
+  late AddressBloc addressBloc;
   bool isLoading = false;
 
   @override
@@ -41,12 +40,12 @@ class _UserAddressState extends State<UserAddress> {
       addressBloc.address = value;
       isLoading = false;
 
-      addressLineOneController.text = addressBloc.address.addressLineOne;
-      addressLineTwoController.text = addressBloc.address.addressLineTwo;
-      cityController.text = addressBloc.address.city;
-      stateController.text = addressBloc.address.state;
+      addressLineOneController.text = addressBloc.address!.addressLineOne!;
+      addressLineTwoController.text = addressBloc.address!.addressLineTwo!;
+      cityController.text = addressBloc.address!.city!;
+      stateController.text = addressBloc.address!.state!;
       selectedCountry = CountryPickerUtils.getCountryByIsoCode(
-          addressBloc.address.countryIsoCode);
+          addressBloc.address!.countryIsoCode);
       if (mounted) setState(() {});
     });
 
@@ -64,7 +63,7 @@ class _UserAddressState extends State<UserAddress> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -87,7 +86,7 @@ class _UserAddressState extends State<UserAddress> {
         },
       ),
       title: Text(
-        AppLocalization.of(context).addAddress,
+        AppLocalization.of(context)!.addAddress,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -145,35 +144,35 @@ class _UserAddressState extends State<UserAddress> {
     return CustomizedTextFormField(
       labelText: "Address line 1",
       controller: addressLineOneController,
-      validator: (val) =>
-          val.length == 0 ? AppLocalization.of(context).invalidAddress : null,
+      hintText: "1 Main Street",
+      validator: (val) => val.length == 0 ? "Field is required" : null,
     );
   }
 
   Widget getAddressLineTwo() {
     return CustomizedTextFormField(
       labelText: "Address line 2",
+      hintText: "Main Avenue",
       controller: addressLineTwoController,
-      validator: (val) =>
-          val.length == 0 ? AppLocalization.of(context).invalidAddress : null,
+      validator: (val) => val.length == 0 ? "Field is required" : null,
     );
   }
 
   Widget getCity() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).city,
+      labelText: AppLocalization.of(context)!.city,
       controller: cityController,
       validator: (val) =>
-          val.length == 0 ? AppLocalization.of(context).invalidCity : null,
+          val.length == 0 ? AppLocalization.of(context)!.invalidCity : null,
     );
   }
 
   Widget getState() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).state,
+      labelText: AppLocalization.of(context)!.state,
       controller: stateController,
       validator: (val) =>
-          val.length == 0 ? AppLocalization.of(context).invalidState : null,
+          val.length == 0 ? AppLocalization.of(context)!.invalidState : null,
     );
   }
 
@@ -182,7 +181,7 @@ class _UserAddressState extends State<UserAddress> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppLocalization.of(context).selectYourCountry,
+          AppLocalization.of(context)!.selectYourCountry,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
         SizedBox(
@@ -223,7 +222,7 @@ class _UserAddressState extends State<UserAddress> {
         SizedBox(width: 8.0),
         Flexible(
             child: Text(
-          country.name,
+          country.name!,
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w600, color: blackFont),
         ))
@@ -239,9 +238,9 @@ class _UserAddressState extends State<UserAddress> {
             titlePadding: EdgeInsets.all(8.0),
             searchCursorColor: Colors.pinkAccent,
             searchInputDecoration:
-                InputDecoration(hintText: AppLocalization.of(context).search),
+                InputDecoration(hintText: AppLocalization.of(context)!.search),
             isSearchable: true,
-            title: Text(AppLocalization.of(context).selectYourPhoneCode),
+            title: Text(AppLocalization.of(context)!.selectYourPhoneCode),
             onValuePicked: (Country country) =>
                 setState(() => selectedCountry = country),
             itemBuilder: _buildDialogItem,
@@ -252,14 +251,14 @@ class _UserAddressState extends State<UserAddress> {
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: onSubmit,
-      text: AppLocalization.of(context).submitButton,
+      text: AppLocalization.of(context)!.submitButton,
       textColor: Colors.white,
       backgroundColor: navyBlue,
     );
   }
 
   void onSubmit() async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       Map data = {
         "address_line_1": addressLineOneController.text,
         "address_line_2": addressLineTwoController.text,
@@ -269,18 +268,10 @@ class _UserAddressState extends State<UserAddress> {
         "coutry_iso_name": selectedCountry.isoCode,
       };
       UserAuth().addUserAddress(data).then((value) {
-        Toast.show(
-          AppLocalization.of(context).addressAddedSuccessFully + " !!!",
-          context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          duration: Toast.LENGTH_LONG,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.addressAddedSuccessFully + " !!!");
         Navigator.pop(context);
-      });
-    } else {
-      setState(() {
-        errorMessage = AppLocalization.of(context).errorMsg1;
       });
     }
   }

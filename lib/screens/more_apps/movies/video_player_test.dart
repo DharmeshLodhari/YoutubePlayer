@@ -15,10 +15,10 @@ class ChewieDemo extends StatefulWidget {
 }
 
 class _ChewieDemoState extends State<ChewieDemo> {
-  TargetPlatform _platform;
-  VideoPlayerController _videoPlayerController1;
-  VideoPlayerController _videoPlayerController2;
-  ChewieController _chewieController;
+  TargetPlatform? _platform;
+  late VideoPlayerController _videoPlayerController1;
+  late VideoPlayerController _videoPlayerController2;
+  late ChewieController _chewieController;
 
   @override
   void initState() {
@@ -76,7 +76,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
                 ),
               ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () {
                 _chewieController.enterFullScreen();
               },
@@ -85,7 +85,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () {
                       setState(() {
                         _chewieController.dispose();
@@ -106,7 +106,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
                   ),
                 ),
                 Expanded(
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () {
                       setState(() {
                         _chewieController.dispose();
@@ -131,7 +131,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
             Row(
               children: <Widget>[
                 Expanded(
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () {
                       setState(() {
                         _platform = TargetPlatform.android;
@@ -144,7 +144,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
                   ),
                 ),
                 Expanded(
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () {
                       setState(() {
                         _platform = TargetPlatform.iOS;

@@ -15,7 +15,7 @@ import 'music_player.dart';
 
 // ignore: must_be_immutable
 class MusicTile extends StatelessWidget {
-  String imageUrl;
+  String? imageUrl;
   MusicTile({this.imageUrl});
   @override
   Widget build(BuildContext context) {
@@ -33,10 +33,11 @@ class MusicTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: imageUrl,
+                    imageUrl: imageUrl!,
                     fit: BoxFit.fill,
                     height: 86,
                     width: 68,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
                 SizedBox(
@@ -92,9 +93,9 @@ class MusicTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class MusicTileWithHeart extends StatefulWidget {
-  final PartialMusicItem musicItem;
+  final PartialMusicItem? musicItem;
 
-  const MusicTileWithHeart({Key key, this.musicItem}) : super(key: key);
+  const MusicTileWithHeart({Key? key, this.musicItem}) : super(key: key);
 
   @override
   _MusicTileWithHeartState createState() => _MusicTileWithHeartState();
@@ -119,8 +120,9 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.musicItem.poster,
+                  imageUrl: widget.musicItem!.poster!,
                   fit: BoxFit.fill,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -128,7 +130,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.musicItem.name,
+                  widget.musicItem!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -138,7 +140,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
                   ),
                 ),
                 Text(
-                  widget.musicItem.name,
+                  widget.musicItem!.name!,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -156,7 +158,7 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
                   size: 10,
                 ),
                 Text(
-                  widget.musicItem.price,
+                  widget.musicItem!.price!,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -183,9 +185,9 @@ class _MusicTileWithHeartState extends State<MusicTileWithHeart> {
 
 // ignore: must_be_immutable
 class MusicTileGeneral extends StatefulWidget {
-  final PartialMusicItem partialMusicItem;
+  final PartialMusicItem? partialMusicItem;
 
-  const MusicTileGeneral({Key key, this.partialMusicItem}) : super(key: key);
+  const MusicTileGeneral({Key? key, this.partialMusicItem}) : super(key: key);
 
   @override
   _MusicTileGeneralState createState() => _MusicTileGeneralState();
@@ -212,8 +214,9 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.partialMusicItem.poster,
+                  imageUrl: widget.partialMusicItem!.poster!,
                   fit: BoxFit.fill,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -221,7 +224,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.partialMusicItem.name,
+                  widget.partialMusicItem!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -233,7 +236,7 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
               ],
             ),
             subtitle: Text(
-              widget.partialMusicItem.name,
+              widget.partialMusicItem!.name!,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 12,
@@ -266,10 +269,10 @@ class _MusicTileGeneralState extends State<MusicTileGeneral> {
 
 // ignore: must_be_immutable
 class AlbumSongTile extends StatefulWidget {
-  MusicPlayer musicPlayer;
-  musicAlbum.Audio audio;
-  int count;
-  int index;
+  MusicPlayer? musicPlayer;
+  musicAlbum.Audio? audio;
+  int? count;
+  int? index;
   AlbumSongTile({this.audio, this.count, this.musicPlayer, this.index});
 
   @override
@@ -293,20 +296,20 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
       child: Row(
         children: [
           StreamBuilder<RealtimePlayingInfos>(
-              stream: widget.musicPlayer.audioPlayer.realtimePlayingInfos,
+              stream: widget.musicPlayer!.audioPlayer.realtimePlayingInfos,
               initialData: RealtimePlayingInfos(
-                loopMode: null,
+                loopMode: LoopMode.none,
                 current: null,
-                currentPosition: null,
-                isBuffering: null,
-                playerId: null,
-                volume: null,
+                currentPosition: Duration.zero,
+                isBuffering: false,
+                playerId: "",
+                volume: 0.0,
                 isShuffling: null,
                 isPlaying: false,
               ),
               builder: (context, snapshot) {
-                return snapshot.data.isPlaying &&
-                        snapshot.data.current.index == widget.index
+                return snapshot.data!.isPlaying &&
+                        snapshot.data!.current!.index == widget.index
                     ? Row(
                         children: [
                           InkWell(
@@ -314,7 +317,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                               backgroundColor: dividerColor,
                               radius: 30.0,
                               lineWidth: 3.0,
-                              percent: snapshot.data.playingPercent,
+                              percent: snapshot.data!.playingPercent,
                               center: Icon(
                                 Icons.stop,
                                 color: navyBlue,
@@ -323,7 +326,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                               progressColor: navyBlue,
                             ),
                             onTap: () {
-                              widget.musicPlayer.audioPlayer.stop();
+                              widget.musicPlayer!.audioPlayer.stop();
                             },
                           ),
                           SizedBox(
@@ -361,7 +364,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  widget.audio.metas.title,
+                  widget.audio!.metas!.title!,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -374,7 +377,7 @@ class _AlbumSongTileState extends State<AlbumSongTile> {
                   height: 4,
                 ),
                 Text(
-                  widget.audio.metas.artist,
+                  widget.audio!.metas!.artist!,
                   style: TextStyle(
                       fontSize: 14,
                       color: blackFont,

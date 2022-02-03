@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 class KeepAlivePage extends StatefulWidget {
-  KeepAlivePage({
-    Key key,
-    @required this.child,
-  }) : super(key: key);
+  KeepAlivePage({Key? key, required this.child, this.wantKeepAlive = true})
+      : super(key: key);
 
   final Widget child;
+  final bool wantKeepAlive;
 
   @override
   _KeepAlivePageState createState() => _KeepAlivePageState();
@@ -24,5 +23,5 @@ class _KeepAlivePageState extends State<KeepAlivePage>
 
   @override
   // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => widget.wantKeepAlive;
 }

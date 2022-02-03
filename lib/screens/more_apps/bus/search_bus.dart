@@ -11,7 +11,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 class SearchBus extends StatefulWidget {
   @override
@@ -19,7 +18,7 @@ class SearchBus extends StatefulWidget {
 }
 
 class _SearchBusState extends State<SearchBus> {
-  BusDashboardBloc _busDashboardBloc;
+  late BusDashboardBloc _busDashboardBloc;
 
   bool isSwap = false;
 
@@ -54,9 +53,10 @@ class _SearchBusState extends State<SearchBus> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -66,7 +66,7 @@ class _SearchBusState extends State<SearchBus> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightGrey,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -88,7 +88,7 @@ class _SearchBusState extends State<SearchBus> {
           Navigator.pop(context);
         },
       ),
-      bottom: swapPlace(),
+      bottom: swapPlace() as PreferredSizeWidget?,
     );
   }
 

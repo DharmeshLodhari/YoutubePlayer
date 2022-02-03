@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
@@ -14,25 +15,26 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 
 class MainSocketProvider extends ChangeNotifier {
-  static IOWebSocketChannel _channel;
+  static IOWebSocketChannel? _channel;
 
-  static User _currentUser;
-  static var _headers;
-  static String _currentConversationId;
+  static User? _currentUser;
+  static Map<String, String>? _headers;
+  static String? _currentConversationId;
 
   static bool _isChatOnScreen = false;
 
   bool get isChatOnScreen => _isChatOnScreen;
 
-  static List<StreamSubscription> _streamSubscriptions = [];
+  static List<StreamSubscription?> _streamSubscriptions = [];
 
+  /// Queue for the messages which users sends in to the socket
   static List<String> _queueMessages = [];
 
-  static bool _isNetworkConnectionIsOn;
-
-  bool get isNetworkOn => _isNetworkConnectionIsOn;
+  /// Variable for listening the internet connections
+  static bool? _isNetworkConnectionIsOn;
+  bool? get isNetworkOn => _isNetworkConnectionIsOn;
   static bool _isFirstTime = true;
-  static StreamSubscription networkConnectionSubscription;
+  static StreamSubscription? networkConnectionSubscription;
 
   set isChatOnScreen(bool value) {
     _isChatOnScreen = value;
@@ -41,34 +43,47 @@ class MainSocketProvider extends ChangeNotifier {
 
   List<String> get queueMessages => _queueMessages;
 
-  String get currentConversationId => _currentConversationId;
+  String? get currentConversationId => _currentConversationId;
 
-  set currentConversationId(String value) {
+  set currentConversationId(String? value) {
     _currentConversationId = value;
     notifyListeners();
   }
 
   /// Reconnect server variables
   static bool _isConnected = false;
-  static Timer _timerForRetryConnection;
+  static Timer? _timerForRetryConnection;
   static int _numberOfRetry = 30;
   static int _countRetry = 0;
   static Duration _connectionRetryDuration = Duration(seconds: 3);
 
-  User get currentUser => _currentUser;
+  User? get currentUser => _currentUser;
 
   /// ping server variables
-  static Timer _timerForPingServer;
-  static Duration _timePeriodForSecond = Duration(seconds: 5);
+  static Timer? _timerForPingServer;
+  static Duration _pingInterval = Duration(seconds: 2);
   static DateTime _lastSent = DateTime.now();
   static DateTime _lastReceive = DateTime.now();
-  static Duration _socketTimeout = Duration(seconds: 4);
+  static Duration _socketTimeout = Duration(seconds: Platform.isIOS ? 2 : 1);
+  static int pingCount = 0;
 
-  set currentUser(User value) {
+  // set currentUser(User? value) {
+  //   _currentUser = value;
+  //   connect();
+  //   notifyListeners();
+  //   setupNetworkConnectionListener();
+  // }
+
+  Future<void> setCurrentUser(User? value) async {
     _currentUser = value;
-    connect();
+    try {
+      await connect();
+      setupNetworkConnectionListener();
+    } catch (error) {
+      return Future.error("Something went wrong");
+    }
     notifyListeners();
-    setupNetworkConnectionListener();
+    return Future.value();
   }
 
   /// This is a network connection listener which is continuously listening
@@ -91,12 +106,19 @@ class MainSocketProvider extends ChangeNotifier {
           if (_queueMessages.isNotEmpty) {
             await connect().then((value) async {
               if (_isConnected) {
-                await addDataInTheCorrectOrder();
-                debugPrint("Clearing Pending Messages 1!!");
-                _queueMessages.clear();
+                try {
+                  bool result = await addDataInTheCorrectOrder();
+                  if (result) {
+                    debugPrint("Clearing Pending Messages 1!!");
+                    _queueMessages.clear();
+                  }
+                } catch (error) {
+                  debugPrint(
+                      "Failed to Clear Pending Messages  Web Socket is Not connected1!!");
+                }
               } else {
                 debugPrint(
-                    "Failed to Clear Pending Messages  Web Socket is Not connected!!");
+                    "Failed to Clear Pending Messages  Web Socket is Not connected2!!");
               }
             });
           }
@@ -105,28 +127,28 @@ class MainSocketProvider extends ChangeNotifier {
       }
       debugPrint("_isNetworkConnectionIsOn:- $_isNetworkConnectionIsOn");
     })
-          ..onError((error) {
-            debugPrint("ERROR:- while closing network status stream $error");
-          });
+      ..onError((error) {
+        debugPrint("ERROR:- while closing network status stream $error");
+      });
   }
 
-  StreamController _streamController;
+  StreamController? _streamController;
 
-  Stream get socketStream => _streamController?.stream;
-  StreamSubscription streamSubscription;
+  Stream? get socketStream => _streamController?.stream;
+  StreamSubscription? streamSubscription;
 
-  IOWebSocketChannel get channel => _channel;
+  IOWebSocketChannel? get channel => _channel;
 
   /// this function will continually call periodically ping method to send
   /// ping to the server we need to call it when socket connection established
   /// in order to keep socket connection alive
   void pingServer() {
     if (_timerForPingServer?.isActive ?? false) {
-      _timerForPingServer.cancel();
+      _timerForPingServer!.cancel();
     }
 
     /// for reconnection the socket as define
-    _timerForPingServer = Timer.periodic(_timePeriodForSecond, (time) {
+    _timerForPingServer = Timer.periodic(_pingInterval, (time) {
       ping();
     });
   }
@@ -145,23 +167,28 @@ class MainSocketProvider extends ChangeNotifier {
 
       try {
         if (_isConnected) {
-          _channel.sink.add(jsonEncode(data));
+          _channel!.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          print("ping sent!!");
+
+          print(
+              "ping sent ${++pingCount} Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}!!");
           _isConnected = false;
         } else {
-          throw Exception("Not Connected");
+          throw Exception(
+              "Not Connected Status Code:  ${_channel!.closeCode} Reason: ${_channel!.closeReason}");
         }
       } catch (e) {
-        print("ERROR:- $e");
+        print("ERROR:- $e ");
 
         _numberOfRetry = 0;
         _isConnected = false;
 
         await connect().then((value) async {
-          _channel.sink.add(jsonEncode(data));
+          _channel!.sink.add(jsonEncode(data));
           _lastSent = DateTime.now();
-          print("ping Done!!");
+          print(
+              "ping Done ${++pingCount} Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}!!");
+          pingCount = 0;
           _isConnected = false;
           ChatMessageSynchronizer().updateFetchStream(isFetching: true);
 
@@ -181,10 +208,11 @@ class MainSocketProvider extends ChangeNotifier {
 
     /// change socket url according to recipient user url
     // var finalUrl = "$_socketUrl";
-    var finalUrl = "${AppConfig.socketUrl}/${_currentUser.userName}/";
+    var finalUrl = "${AppConfig.socketUrl}/${_currentUser!.userName}/";
 
     // Set auth headers or socket will be closed
     _headers = await MessageAuth().getAuthHeaders();
+
     log("$_headers");
 
     /// for connecting the socket
@@ -198,13 +226,13 @@ class MainSocketProvider extends ChangeNotifier {
       _streamController = StreamController.broadcast();
 
       debugPrint(
-          "WebSocket Connected to $finalUrl for user ${currentUser.userName}");
+          "WebSocket Connected to $finalUrl for user ${currentUser!.userName}");
       _isConnected = true;
 
       notifyListeners();
     } catch (e) {
       debugPrint(
-          "ERROR:- While connecting WebSocket for user ${currentUser.userName}");
+          "ERROR:- While connecting WebSocket for user ${currentUser!.userName}");
       await reconnectSocket();
     }
 
@@ -213,14 +241,14 @@ class MainSocketProvider extends ChangeNotifier {
       debugPrint("Listener called!!");
 
       try {
-        _streamController.addStream(_channel.stream);
+        _streamController!.addStream(_channel!.stream);
       } catch (error) {
         debugPrint("Stream is already in Adding state $error");
       }
       notifyListeners();
 
       streamSubscription?.cancel();
-      streamSubscription = _streamController.stream.listen((message) {
+      streamSubscription = _streamController!.stream.listen((message) {
         _isConnected = true;
 
         /// listen every message from the socket
@@ -233,11 +261,13 @@ class MainSocketProvider extends ChangeNotifier {
           /// if there is any error while listing the socket
 
           _isConnected = false;
-          debugPrint("ERROR:- While listening the Socket $error");
+          debugPrint(
+              "ERROR:- While listening the Socket $error Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}");
           await reconnectSocket();
         })
         ..onDone(() {
-          debugPrint("On Done called:-  Socket Closed !!!!");
+          debugPrint(
+              "On Done called:-  Socket Closed !!!! Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}");
           _isConnected = false;
         });
       _streamSubscriptions.add(streamSubscription);
@@ -257,7 +287,7 @@ class MainSocketProvider extends ChangeNotifier {
       _timerForRetryConnection?.cancel();
     }
     if (_timerForRetryConnection?.isActive ?? false) {
-      _timerForRetryConnection.cancel();
+      _timerForRetryConnection!.cancel();
     }
 
     /// for reconnection the socket as define
@@ -270,7 +300,7 @@ class MainSocketProvider extends ChangeNotifier {
 
           await connect();
         } else {
-          _timerForRetryConnection.cancel();
+          _timerForRetryConnection!.cancel();
         }
       });
     } else {
@@ -281,9 +311,9 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   /// for listening the user socket
-  StreamSubscription listen(Function(dynamic event) listener) {
-    StreamSubscription newStreamSubscription =
-        _streamController?.stream?.listen(listener);
+  StreamSubscription? listen(Function(dynamic event) listener) {
+    StreamSubscription? newStreamSubscription =
+        _streamController?.stream.listen(listener);
     _streamSubscriptions.add(newStreamSubscription);
     notifyListeners();
 
@@ -291,7 +321,7 @@ class MainSocketProvider extends ChangeNotifier {
   }
 
   /// from remove listening subscription from socket
-  void removeStreamSubscription(StreamSubscription streamSubscription) {
+  void removeStreamSubscription(StreamSubscription? streamSubscription) {
     _streamSubscriptions.forEach((element) {
       if (element == streamSubscription) {
         element?.cancel();
@@ -326,10 +356,11 @@ class MainSocketProvider extends ChangeNotifier {
     try {
       if (_isConnected) {
         _queueMessages.forEach((message) {
-          _channel.sink.add(message);
+          _channel!.sink.add(message);
         });
 
         _lastSent = DateTime.now();
+        pingCount = 0;
         debugPrint("Data added in webSocket :- $_queueMessages");
 
         if (await checkConnection()) {
@@ -341,21 +372,23 @@ class MainSocketProvider extends ChangeNotifier {
 
         return true;
       } else {
-        throw Exception("Not Connected");
+        throw Exception(
+            "Not Connected Status Code:  ${_channel?.closeCode} Reason: ${_channel?.closeReason}");
       }
     } catch (e) {
       debugPrint(
-          "ERROR:- While adding data in WebSocket for user ${currentUser.userName}");
+          "ERROR:- While adding data in WebSocket for user ${currentUser!.userName}");
 
       _numberOfRetry = 0;
       _isConnected = false;
 
       await connect().then((value) async {
         _queueMessages.forEach((message) {
-          _channel.sink.add(message);
+          _channel!.sink.add(message);
         });
 
         _lastSent = DateTime.now();
+        pingCount = 0;
         debugPrint("Data added in webSocket :- $_queueMessages");
         if (await checkConnection()) {
           _queueMessages.clear();
@@ -370,15 +403,15 @@ class MainSocketProvider extends ChangeNotifier {
     return false;
   }
 
-  void removeFromTheQueue({String message}) {
+  void removeFromTheQueue({required String message}) {
     Map<String, dynamic> decodedMessage = jsonDecode(message);
-    if (decodedMessage.containsKey("check_id") ?? false) {
-      int index;
+    if (decodedMessage.containsKey("check_id")) {
+      int? index;
 
       for (int i = 0; i < _queueMessages.length; i++) {
         Map<String, dynamic> decodeQueueMessage = jsonDecode(_queueMessages[i]);
 
-        if (decodeQueueMessage.containsKey("check_id") ?? false) {
+        if (decodeQueueMessage.containsKey("check_id")) {
           if (decodeQueueMessage["check_id"] == decodedMessage["check_id"]) {
             if (_queueMessages[i] == message) {
               index = i;
@@ -409,7 +442,7 @@ class MainSocketProvider extends ChangeNotifier {
     debugPrint("Sending $count Pending Text Message !!");
   }
 
-  void deleteQueueMessagesForSpecificConversation({String conversationId}) {
+  void deleteQueueMessagesForSpecificConversation({String? conversationId}) {
     List<int> messagesIndex = [];
     for (int i = 0; i < _queueMessages.length; i++) {
       Map<String, dynamic> message = jsonDecode(_queueMessages[i]);

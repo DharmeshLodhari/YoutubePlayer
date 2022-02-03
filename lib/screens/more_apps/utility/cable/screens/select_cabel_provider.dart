@@ -20,7 +20,7 @@ class _SelectCableProviderState extends State<SelectCableProvider> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -56,7 +56,7 @@ class _SelectCableProviderState extends State<SelectCableProvider> {
     );
   }
 
-  Widget cableProviderTile({Map<String, dynamic> item}) {
+  Widget cableProviderTile({required Map<String, dynamic> item}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/select-cable-plan-and-decoder-number",

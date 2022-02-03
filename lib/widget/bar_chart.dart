@@ -23,12 +23,12 @@ class _BarChartState extends State<BarChart> {
 
   _BarChartState({this.arguments});
 
-  UserBloc userBloc;
-  List<dynamic> expenses;
-  DateTime start;
-  DateTime end;
-  int week;
-  double mostExpensive;
+  late UserBloc userBloc;
+  List<dynamic>? expenses;
+  late DateTime start;
+  late DateTime end;
+  late int week;
+  double? mostExpensive;
   bool isLoading = true;
   List<double> barData = [0, 0, 0, 0, 0, 0, 0];
   bool isDataIsZero = false;
@@ -54,12 +54,12 @@ class _BarChartState extends State<BarChart> {
       mostExpensive = 0;
       barData = [0, 0, 0, 0, 0, 0, 0];
 
-      expenses.forEach((dynamic data) {
+      expenses!.forEach((dynamic data) {
         if (data["amount"] > mostExpensive) {
           mostExpensive = double.parse(data["amount"].toString());
         }
       });
-      getData(expenses);
+      getData(expenses!);
     });
   }
 
@@ -109,14 +109,14 @@ class _BarChartState extends State<BarChart> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Text(
-                AppLocalization.of(context).expenditure,
+                AppLocalization.of(context)!.expenditure,
                 style: TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,
                     color: blackFont),
               ),
               Text(
-                ' (${worldCurrencies[userBloc.user.currency]})',
+                ' (${worldCurrencies[userBloc.user.currency!]})',
                 style: TextStyle(
                     fontFamily: "Roboto",
                     fontSize: 14.0,
@@ -198,7 +198,7 @@ class _BarChartState extends State<BarChart> {
           height: 200,
           child: Center(
             child: Text(
-              AppLocalization.of(context).noTransactionDoneThisWeek,
+              AppLocalization.of(context)!.noTransactionDoneThisWeek,
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
@@ -210,9 +210,9 @@ class _BarChartState extends State<BarChart> {
 }
 
 class Bar extends StatefulWidget {
-  final String label;
-  final double amountSpent;
-  final double mostExpensive;
+  final String? label;
+  final double? amountSpent;
+  final double? mostExpensive;
 
   Bar({this.label, this.amountSpent, this.mostExpensive});
 
@@ -263,7 +263,7 @@ class _BarState extends State<Bar> {
           ),
           SizedBox(height: 8.0),
           Text(
-            widget.label,
+            widget.label!,
             style: TextStyle(fontSize: 12.0, color: darkGrey),
           ),
         ],
@@ -273,7 +273,7 @@ class _BarState extends State<Bar> {
 
   double getBarHeight() {
     if (widget.amountSpent != 0 && widget.mostExpensive != 0) {
-      return widget.amountSpent / widget.mostExpensive * _maxBarHeight;
+      return widget.amountSpent! / widget.mostExpensive! * _maxBarHeight;
     }
     return 1.0;
   }

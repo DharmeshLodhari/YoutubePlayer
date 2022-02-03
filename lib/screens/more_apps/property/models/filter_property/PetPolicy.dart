@@ -1,6 +1,6 @@
 class PetPolicy {
-  bool catAllowed;
-  bool dogAllowed;
+  bool? catAllowed;
+  bool? dogAllowed;
 
   PetPolicy({this.catAllowed, this.dogAllowed});
 

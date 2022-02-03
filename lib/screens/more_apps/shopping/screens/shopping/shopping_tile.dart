@@ -11,9 +11,9 @@ import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
 class ShoppingTile extends StatelessWidget {
-  final ShoppingProduct product;
+  final ShoppingProduct? product;
 
-  const ShoppingTile({Key key, this.product}) : super(key: key);
+  const ShoppingTile({Key? key, this.product}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +31,11 @@ class ShoppingTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: product.cover,
+                    imageUrl: product!.cover!,
                     fit: BoxFit.fill,
                     height: 60,
                     width: 68,
+                    errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
                 SizedBox(
@@ -48,7 +49,7 @@ class ShoppingTile extends StatelessWidget {
                       children: [
                         flexibleSpace(flex: 2),
                         Text(
-                          product.name,
+                          product!.name!,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -58,7 +59,7 @@ class ShoppingTile extends StatelessWidget {
                         ),
                         flexibleSpace(),
                         Text(
-                          product.shortDescription,
+                          product!.shortDescription!,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -83,7 +84,7 @@ class ShoppingTile extends StatelessWidget {
                           size: 10,
                         ),
                         Text(
-                          product.price.toString(),
+                          product!.price.toString(),
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
@@ -103,9 +104,9 @@ class ShoppingTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class ShoppingTileWithHeart extends StatefulWidget {
-  final ShoppingProduct product;
+  final ShoppingProduct? product;
 
-  const ShoppingTileWithHeart({Key key, this.product}) : super(key: key);
+  const ShoppingTileWithHeart({Key? key, this.product}) : super(key: key);
   @override
   _ShoppingTileWithHeartState createState() => _ShoppingTileWithHeartState();
 }
@@ -117,7 +118,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getProduct(widget.product.id).then((value) {
+        ShoppingAuthService().getProduct(widget.product!.id!).then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -136,10 +137,11 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: widget.product.cover,
+                    imageUrl: widget.product!.cover!,
                     fit: BoxFit.fill,
                     height: 60,
                     width: 60,
+                    errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
                 SizedBox(
@@ -153,7 +155,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          widget.product.name,
+                          widget.product!.name!,
                           maxLines: 1,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
@@ -165,7 +167,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                           height: 2,
                         ),
                         Text(
-                          widget.product.seller,
+                          widget.product!.seller!,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -184,7 +186,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                               size: 10,
                             ),
                             Text(
-                              widget.product.price.toString(),
+                              widget.product!.price.toString(),
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 14,
@@ -253,6 +255,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                   imageUrl:
                       "https://c1.iggcdn.com/indiegogo-media-prod-cld/image/upload/c_fill,f_auto,h_630,w_1200/v1506734779/wcsmythcukjuuglotjvb.jpg",
                   fit: BoxFit.fill,
+                  errorWidget: productAndServiceErrorWidget,
                 ),
               ),
             ),

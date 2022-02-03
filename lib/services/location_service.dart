@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 
 class LocationService {
-  UserLocation _currentLocation;
+  UserLocation? _currentLocation;
 
   var location = Location();
 
-  Future<UserLocation> getLocation() async {
+  Future<UserLocation?> getLocation() async {
     var userLocation;
     try {
       userLocation = await location.getLocation();

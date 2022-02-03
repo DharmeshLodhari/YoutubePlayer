@@ -1,6 +1,6 @@
 class ChatMessageSettings {
-  bool playIncomingMessageSound;
-  bool playOutgoingMessageSound;
+  bool? playIncomingMessageSound;
+  bool? playOutgoingMessageSound;
 
   ChatMessageSettings(
       {this.playIncomingMessageSound = true,
@@ -13,6 +13,10 @@ class ChatMessageSettings {
     );
   }
   factory ChatMessageSettings.fromDBJson(Map<String, dynamic> json) {
+    if (json.isEmpty) {
+      return ChatMessageSettings();
+    }
+
     return ChatMessageSettings(
       playIncomingMessageSound:
           json['playIncomingMessageSound'] == 1 ? true : false,

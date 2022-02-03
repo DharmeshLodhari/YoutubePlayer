@@ -3,17 +3,17 @@ import 'package:Slydo/screens/more_apps/events/models/PartialEventItem.dart';
 import 'Location.dart';
 
 class EventDetailItem {
-  String about;
-  String currency;
-  String eventTime;
-  String image;
-  List<Location> location;
-  String name;
-  String ownerAvatar;
-  String ownerName;
-  String ownerUserName;
-  String price;
-  List<PartialEventItem> similarEvent;
+  String? about;
+  String? currency;
+  String? eventTime;
+  String? image;
+  List<Location>? location;
+  String? name;
+  String? ownerAvatar;
+  String? ownerName;
+  String? ownerUserName;
+  String? price;
+  List<PartialEventItem>? similarEvent;
 
   EventDetailItem(
       {this.about,
@@ -62,10 +62,11 @@ class EventDetailItem {
     data['owner_user_name'] = this.ownerUserName;
     data['price'] = this.price;
     if (this.location != null) {
-      data['location'] = this.location.map((v) => v.toJson()).toList();
+      data['location'] = this.location!.map((v) => v.toJson()).toList();
     }
     if (this.similarEvent != null) {
-      data['similar_event'] = this.similarEvent.map((v) => v.toJson()).toList();
+      data['similar_event'] =
+          this.similarEvent!.map((v) => v.toJson()).toList();
     }
     return data;
   }

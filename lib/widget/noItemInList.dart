@@ -6,7 +6,7 @@ class NoItemInList extends StatelessWidget {
   String msg = "";
   bool isResult;
 
-  NoItemInList({@required this.msg, this.isResult = true});
+  NoItemInList({required this.msg, this.isResult = true});
 
   @override
   Widget build(BuildContext context) {

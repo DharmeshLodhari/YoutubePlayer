@@ -6,20 +6,20 @@ import 'PropertyType.dart';
 import 'RentDuration.dart';
 
 class FilterProperty {
-  Amenity amenity;
-  Bathroom bathroom;
-  Bedroom bedroom;
-  String checkInDate;
-  String checkOutDate;
-  bool isForBuy;
-  bool isFurnished;
-  bool isRoommatesNeeded;
-  int maxPrice;
-  int minPrice;
-  int noOfGuest;
-  PetPolicy petPolicy;
-  PropertyType propertyType;
-  RentDuration rentDuration;
+  Amenity? amenity;
+  Bathroom? bathroom;
+  Bedroom? bedroom;
+  String? checkInDate;
+  String? checkOutDate;
+  bool? isForBuy;
+  bool? isFurnished;
+  bool? isRoommatesNeeded;
+  int? maxPrice;
+  int? minPrice;
+  int? noOfGuest;
+  PetPolicy? petPolicy;
+  PropertyType? propertyType;
+  RentDuration? rentDuration;
 
   FilterProperty(
       {this.amenity,
@@ -76,22 +76,22 @@ class FilterProperty {
     data['min_price'] = this.minPrice;
     data['no_of_guest'] = this.noOfGuest;
     if (this.amenity != null) {
-      data['amenity'] = this.amenity.toJson();
+      data['amenity'] = this.amenity!.toJson();
     }
     if (this.bathroom != null) {
-      data['bathroom'] = this.bathroom.toJson();
+      data['bathroom'] = this.bathroom!.toJson();
     }
     if (this.bedroom != null) {
-      data['bedroom'] = this.bedroom.toJson();
+      data['bedroom'] = this.bedroom!.toJson();
     }
     if (this.petPolicy != null) {
-      data['pet_policy'] = this.petPolicy.toJson();
+      data['pet_policy'] = this.petPolicy!.toJson();
     }
     if (this.propertyType != null) {
-      data['property_type'] = this.propertyType.toJson();
+      data['property_type'] = this.propertyType!.toJson();
     }
     if (this.rentDuration != null) {
-      data['rent_duration'] = this.rentDuration.toJson();
+      data['rent_duration'] = this.rentDuration!.toJson();
     }
     return data;
   }

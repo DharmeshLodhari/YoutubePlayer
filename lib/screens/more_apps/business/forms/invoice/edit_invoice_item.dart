@@ -13,7 +13,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class EditInvoiceItem extends StatefulWidget {
@@ -29,19 +28,19 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  InvoiceItem _invoiceItem;
-  int itemIndex;
+  InvoiceItem? _invoiceItem;
+  int? itemIndex;
 
   final _formKey = GlobalKey<FormState>();
   final _addItemScaffoldKey = GlobalKey<ScaffoldState>();
 
-  int amount;
+  int? amount;
 
   String errorMessage = "";
-  String recipient;
-  AddInvoiceBloc addInvoiceBloc;
+  String? recipient;
+  late AddInvoiceBloc addInvoiceBloc;
   bool isLoading = false;
 
   @override
@@ -52,9 +51,9 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
   void getInvoiceItem() async {
     if (_invoiceItem == null) {
       itemIndex = widget.arguments["index"];
-      _invoiceItem = addInvoiceBloc.items.elementAt(itemIndex);
-      _descriptionController.text = _invoiceItem.name;
-      _amountController.text = _invoiceItem.amount.toString();
+      _invoiceItem = addInvoiceBloc.items.elementAt(itemIndex!);
+      _descriptionController.text = _invoiceItem!.name!;
+      _amountController.text = _invoiceItem!.amount.toString();
       setState(() {});
     }
   }
@@ -72,7 +71,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
         backgroundColor: Colors.white,
         key: _addItemScaffoldKey,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -227,7 +226,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
             return null;
           } catch (e) {}
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
     );
   }
@@ -256,8 +255,8 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                     size: 2,
                   ),
                   onTap: () {
-                    if (_invoiceItem.quantity > 1) {
-                      _invoiceItem.quantity--;
+                    if (_invoiceItem!.quantity! > 1) {
+                      _invoiceItem!.quantity = _invoiceItem!.quantity! - 1;
                       setState(() {});
                     }
                   }),
@@ -267,7 +266,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                 ),
               ),
               Text(
-                _invoiceItem.quantity.toString(),
+                _invoiceItem!.quantity.toString(),
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -286,7 +285,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                     size: 16,
                   ),
                   onTap: () {
-                    _invoiceItem.quantity++;
+                    _invoiceItem!.quantity = _invoiceItem!.quantity! + 1;
                     setState(() {});
                   }),
             ],
@@ -310,30 +309,24 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       try {
         var data = {
           "amount": amount.toString().trim(),
         };
         debugPrint("$data");
 
-        _invoiceItem.name = _descriptionController.text.trim();
-        _invoiceItem.amount = int.parse(_amountController.text.trim());
-        _invoiceItem.currency = userBloc.user.currency;
+        _invoiceItem!.name = _descriptionController.text.trim();
+        _invoiceItem!.amount = int.parse(_amountController.text.trim());
+        _invoiceItem!.currency = userBloc.user.currency;
 
-        addInvoiceBloc.updateItem(index: itemIndex, invoiceItem: _invoiceItem);
+        addInvoiceBloc.updateItem(index: itemIndex!, invoiceItem: _invoiceItem);
 
         ///
         Navigator.pop(context);
       } catch (e) {
-        debugPrint(e);
-        Toast.show(
-          e,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        debugPrint(e.toString());
+        showToast(message: e.toString());
       }
     }
   }

@@ -1,9 +1,9 @@
 class Bedroom {
-  bool fourPlus;
-  bool one;
-  bool studio;
-  bool three;
-  bool two;
+  bool? fourPlus;
+  bool? one;
+  bool? studio;
+  bool? three;
+  bool? two;
 
   Bedroom({this.fourPlus, this.one, this.studio, this.three, this.two});
 

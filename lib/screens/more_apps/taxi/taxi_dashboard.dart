@@ -22,9 +22,9 @@ class TaxiDashboard extends StatefulWidget {
 }
 
 class _TaxiDashboardState extends State<TaxiDashboard> {
-  TaxiBloc taxiBloc;
+  late TaxiBloc taxiBloc;
 
-  LatLng userCurrentLocation;
+  LatLng? userCurrentLocation;
   bool isLoading = false;
 
   @override
@@ -36,7 +36,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
   void getNearbyRides() async {
     isLoading = true;
     if (mounted) setState(() {});
-    UserLocation userLocation =
+    UserLocation? userLocation =
         await LocationService().getLocation().catchError((error) {
       isLoading = false;
       if (mounted) setState(() {});
@@ -45,7 +45,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 
     if (userLocation != null) {
       userCurrentLocation =
-          LatLng(userLocation.latitude, userLocation.longitude);
+          LatLng(userLocation.latitude!, userLocation.longitude!);
     }
     isLoading = false;
     if (mounted) setState(() {});
@@ -77,7 +77,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
         },
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: isLoading
               ? Center(
                   child: CircularLoadingIndicator(),
@@ -122,7 +122,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
 
 class ScaffoldBody extends StatefulWidget {
   ScaffoldBody({this.userCurrentLocation});
-  final LatLng userCurrentLocation;
+  final LatLng? userCurrentLocation;
 
   @override
   _ScaffoldBodyState createState() => _ScaffoldBodyState();
@@ -137,19 +137,19 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
   double _fabPosition = 0;
   double _fabPositionPadding = 10;
 
-  CameraPosition _initialCameraPosition;
+  late CameraPosition _initialCameraPosition;
 
   List<PlaceModal> places = [];
 
-  GoogleMapController googleMapController;
+  GoogleMapController? googleMapController;
 
-  Marker _carOneMarker;
-  Marker _bikeOneMarker;
-  Marker _tricycleOneMarker;
-  Circle _myLocationMarker;
+  Marker? _carOneMarker;
+  Marker? _bikeOneMarker;
+  Marker? _tricycleOneMarker;
+  Circle? _myLocationMarker;
 
-  TaxiBloc taxiBloc;
-  int index;
+  late TaxiBloc taxiBloc;
+  int? index;
 
   @override
   void initState() {
@@ -161,14 +161,14 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
 
     if (widget.userCurrentLocation != null) {
       _initialCameraPosition = CameraPosition(
-          target: LatLng(widget.userCurrentLocation.latitude,
-              widget.userCurrentLocation.longitude),
+          target: LatLng(widget.userCurrentLocation!.latitude,
+              widget.userCurrentLocation!.longitude),
           zoom: 14);
 
       _myLocationMarker = Circle(
           circleId: CircleId("MyLocation"),
-          center: LatLng(widget.userCurrentLocation.latitude,
-              widget.userCurrentLocation.longitude),
+          center: LatLng(widget.userCurrentLocation!.latitude,
+              widget.userCurrentLocation!.longitude),
           fillColor: navyBlue.withAlpha(70),
           radius: 100,
           visible: true,
@@ -179,40 +179,40 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
       assignMarkers();
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {
         // render the floating button on widget
-        _fabPosition = _initialSheetChildSize * context.size.height;
+        _fabPosition = _initialSheetChildSize * context.size!.height;
       });
     });
   }
 
   void assignMarkers() async {
     debugPrint(
-        "${widget.userCurrentLocation.latitude} => ${widget.userCurrentLocation.longitude}");
+        "${widget.userCurrentLocation!.latitude} => ${widget.userCurrentLocation!.longitude}");
     _carOneMarker = Marker(
       markerId: MarkerId("Taxi"),
       infoWindow: const InfoWindow(title: "Taxi"),
       icon: await BitmapDescriptor.fromAssetImage(
           ImageConfiguration.empty, "assets/images/car_top.png"),
-      position: LatLng(widget.userCurrentLocation.latitude - 0.003300,
-          widget.userCurrentLocation.longitude + 0.009100),
+      position: LatLng(widget.userCurrentLocation!.latitude - 0.003300,
+          widget.userCurrentLocation!.longitude + 0.009100),
     );
     _bikeOneMarker = Marker(
       markerId: MarkerId("Bike"),
       infoWindow: const InfoWindow(title: "Taxi"),
       icon: await BitmapDescriptor.fromAssetImage(
           ImageConfiguration.empty, "assets/images/bike_top.png"),
-      position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
-          widget.userCurrentLocation.longitude - 0.000100),
+      position: LatLng(widget.userCurrentLocation!.latitude - 0.010150,
+          widget.userCurrentLocation!.longitude - 0.000100),
     );
     _tricycleOneMarker = Marker(
       markerId: MarkerId("Tricycle"),
       infoWindow: const InfoWindow(title: "Taxi"),
       icon: await BitmapDescriptor.fromAssetImage(
           ImageConfiguration.empty, "assets/images/tricycle_top.png"),
-      position: LatLng(widget.userCurrentLocation.latitude - 0.010150,
-          widget.userCurrentLocation.longitude - 0.010100),
+      position: LatLng(widget.userCurrentLocation!.latitude - 0.010150,
+          widget.userCurrentLocation!.longitude - 0.010100),
     );
     if (mounted) setState(() {});
   }
@@ -235,12 +235,12 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
         googleMapController = controller;
       },
       circles: {
-        if (_myLocationMarker != null) _myLocationMarker,
+        if (_myLocationMarker != null) _myLocationMarker!,
       },
       markers: {
-        if (_carOneMarker != null) _carOneMarker,
-        if (_bikeOneMarker != null) _bikeOneMarker,
-        if (_tricycleOneMarker != null) _tricycleOneMarker,
+        if (_carOneMarker != null) _carOneMarker!,
+        if (_bikeOneMarker != null) _bikeOneMarker!,
+        if (_tricycleOneMarker != null) _tricycleOneMarker!,
       },
     ));
 
@@ -277,14 +277,14 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
         NotificationListener<DraggableScrollableNotification>(
           onNotification: (DraggableScrollableNotification notification) {
             setState(() {
-              _widgetHeight = context.size.height;
+              _widgetHeight = context.size!.height;
               _dragScrollSheetExtent = notification.extent;
 
               // Calculate FAB position based on parent widget height and DraggableScrollable position
               _fabPosition = _dragScrollSheetExtent * _widgetHeight;
             });
             return;
-          },
+          } as bool Function(DraggableScrollableNotification)?,
           child: DraggableScrollableSheet(
             initialChildSize: taxiBloc.destinationPoint != null
                 ? _initialSheetChildSizeAfterDestination
@@ -364,13 +364,14 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
                       ),
                     ),
                     title: Text(
-                      taxiBloc.destinationPoint.name,
+                      taxiBloc.destinationPoint!.name!,
                       style: TextStyle(
                           color: blackFont,
                           fontWeight: FontWeight.w400,
                           fontSize: 16),
                     ),
-                    subtitle: Text(taxiBloc.destinationPoint.formattedAddress),
+                    subtitle:
+                        Text(taxiBloc.destinationPoint!.formattedAddress!),
                   ),
                   SizedBox(
                     height: 12,
@@ -396,7 +397,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
         backgroundColor: Colors.white,
         onPressed: () async {
           final locationService = LocationService();
-          UserLocation userLocation =
+          UserLocation? userLocation =
               await locationService.getLocation().catchError((error) {
             debugPrint("ERROR:- $error");
           });
@@ -405,8 +406,8 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
             return null;
           }
           debugPrint("${userLocation.latitude}  ${userLocation.longitude}");
-          googleMapController.animateCamera(CameraUpdate.newLatLng(
-              LatLng(userLocation.latitude, userLocation.longitude)));
+          googleMapController!.animateCamera(CameraUpdate.newLatLng(
+              LatLng(userLocation.latitude!, userLocation.longitude!)));
 
           // mapPoint = LatLng(userLocation.latitude, userLocation.longitude);
           // if (mounted) setState(() {});
@@ -416,7 +417,7 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
     );
   }
 
-  Widget getSearchDestination({ScrollController scrollController}) {
+  Widget getSearchDestination({ScrollController? scrollController}) {
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, top: 20),
       child: ListView(
@@ -446,13 +447,13 @@ class _ScaffoldBodyState extends State<ScaffoldBody> {
                 ),
               ),
               title: Text(
-                places[i].name,
+                places[i].name!,
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w400,
                     fontSize: 16),
               ),
-              subtitle: Text(places[i].formattedAddress),
+              subtitle: Text(places[i].formattedAddress!),
               onTap: () {
                 taxiBloc.destinationPoint = places[i];
                 index = i;

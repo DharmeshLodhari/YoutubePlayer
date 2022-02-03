@@ -10,7 +10,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/CityData.dart';
 import 'models/PartialPropertyItem.dart';
@@ -37,7 +36,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  PropertyFilterBloc _propertyFilterBloc;
+  PropertyFilterBloc? _propertyFilterBloc;
 
   @override
   void initState() {
@@ -92,13 +91,9 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -110,7 +105,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -219,7 +214,9 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -358,7 +355,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
   }
 
   Widget exploreByCity(
-      {String categoryName, String movieName, String moviePoster}) {
+      {required String categoryName, String? movieName, String? moviePoster}) {
     return Container(
       child: Column(
         children: [
@@ -421,7 +418,7 @@ class _PropertyExploreScreenState extends State<PropertyExploreScreen> {
     );
   }
 
-  Widget cityCard({String cityName, String cityPoster}) {
+  Widget cityCard({required String cityName, String? cityPoster}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/property-detail");

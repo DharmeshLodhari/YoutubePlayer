@@ -8,7 +8,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
@@ -22,8 +21,8 @@ class _AlreadyHaveReferenceScreenState
     extends State<AlreadyHaveReferenceScreen> {
   final _formKeyTwo = GlobalKey<FormState>();
 
-  UserBloc userBloc;
-  BankAccountBloc bankAccountBloc;
+  UserBloc? userBloc;
+  late BankAccountBloc bankAccountBloc;
 
   String errorMessage = "";
 
@@ -46,7 +45,7 @@ class _AlreadyHaveReferenceScreenState
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -112,28 +111,29 @@ class _AlreadyHaveReferenceScreenState
         child: ListTile(
           dense: true,
           title: Text(
-            bankAccountBloc.bankAccount.bankName,
+            bankAccountBloc.bankAccount!.bankName!,
             style: TextStyle(
                 color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
           ),
           subtitle: Text(
             '******' +
-                bankAccountBloc.bankAccount.accountNumber
+                bankAccountBloc.bankAccount!.accountNumber
                     .toString()
                     .substring(5, 9),
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
           leading: CachedNetworkImage(
-            imageUrl: bankAccountBloc.bankAccount.bankAvatar,
+            imageUrl: bankAccountBloc.bankAccount!.bankAvatar!,
             height: 48,
             width: 48,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
             placeholder: (context, url) =>
-                bankAccountBloc.bankAccount.bankAvatar == ""
+                bankAccountBloc.bankAccount!.bankAvatar == ""
                     ? Icon(Icons.account_balance)
                     : CircularLoadingIndicator(),
+            errorWidget: imageErrorWidget,
           ),
         ),
       ),
@@ -187,7 +187,7 @@ class _AlreadyHaveReferenceScreenState
         context: context,
         builder: (context) => Center(child: CircularLoadingIndicator()));
 
-    if (_formKeyTwo.currentState.validate()) {
+    if (_formKeyTwo.currentState!.validate()) {
       PaymentAndBankingAuth().verifyReferenceNumber(data).then((value) {
         if (value != null) {
           Navigator.pop(context);
@@ -198,7 +198,7 @@ class _AlreadyHaveReferenceScreenState
       }).catchError((e) {
         Navigator.pop(context);
         debugPrint(e);
-        Toast.show(e, context, gravity: Toast.BOTTOM, textColor: Colors.white);
+        showToast(message: e);
       });
     } else {
       Navigator.pop(context);

@@ -1,14 +1,14 @@
 class Amenity {
-  bool ac;
-  bool any;
-  bool dishwasher;
-  bool doorman;
-  bool gatedEntry;
-  bool gym;
-  bool heating;
-  bool laundry;
-  bool parking;
-  bool pool;
+  bool? ac;
+  bool? any;
+  bool? dishwasher;
+  bool? doorman;
+  bool? gatedEntry;
+  bool? gym;
+  bool? heating;
+  bool? laundry;
+  bool? parking;
+  bool? pool;
 
   Amenity(
       {this.ac,

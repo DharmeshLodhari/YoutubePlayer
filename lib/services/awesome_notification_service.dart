@@ -15,9 +15,9 @@ class AwesomeNotificationService {
     return _notificationService;
   }
 
-  static StreamController<ReceivedAction> _streamController;
+  static StreamController<ReceivedAction>? _streamController;
 
-  Stream get notificationActionStream => _streamController?.stream;
+  Stream? get notificationActionStream => _streamController?.stream;
 
   AwesomeNotificationService._internal();
 
@@ -172,20 +172,20 @@ class AwesomeNotificationService {
           //     importance: NotificationImportance.High)
         ],
       );
-    } catch (ERROR) {
-      debugPrint("ERROR while initializing notification $ERROR");
+    } catch (error) {
+      debugPrint("ERROR while initializing notification $error");
     }
 
     if (_streamController == null) {
       _streamController = BehaviorSubject<ReceivedAction>();
 
-      _streamController.addStream(awesomeNotifications.actionStream);
+      _streamController!.addStream(awesomeNotifications.actionStream);
 
-      _streamController.stream.listen((receivedNotification) async {});
+      _streamController!.stream.listen((receivedNotification) async {});
     }
   }
 
-  void showNudgeNotification({Map<String, dynamic> message}) async {
+  void showNudgeNotification({required Map<String, dynamic> message}) async {
     try {
       int id = Random().nextInt(5000);
       Map<String, String> messagePayload =
@@ -202,27 +202,27 @@ class AwesomeNotificationService {
             largeIcon: message['data']['author_avatar'],
             payload: messagePayload,
             title: message['title'],
-            createdSource: NotificationSource.Local,
+            //createdSource: NotificationSource.Local,
           ),
           actionButtons: [
             NotificationActionButton(
                 label: "Accept",
                 enabled: true,
                 key: "accept_nudge",
-                autoCancel: true),
+                autoDismissible: true),
             NotificationActionButton(
                 label: "Reject",
                 enabled: true,
                 key: "reject_nudge",
-                autoCancel: true,
+                autoDismissible: true,
                 buttonType: ActionButtonType.KeepOnTop)
           ]);
     } catch (e) {
-      debugPrint("EERROR:- $e");
+      debugPrint("ERROR:- $e");
     }
   }
 
-  void showNotification({Map<String, dynamic> message}) async {
+  void showNotification({required Map<String, dynamic> message}) async {
     int id = Random().nextInt(50000);
 
     Map<String, String> notification =
@@ -244,7 +244,7 @@ class AwesomeNotificationService {
           payload: notification,
           largeIcon: notification['image'],
           title: notification['title'],
-          createdSource: NotificationSource.Local,
+          //createdSource: NotificationSource.Local,
         ),
       );
     } else {
@@ -255,7 +255,7 @@ class AwesomeNotificationService {
           body: notification['body'],
           payload: notification,
           title: notification['title'],
-          createdSource: NotificationSource.Local,
+          //createdSource: NotificationSource.Local,
         ),
       );
     }

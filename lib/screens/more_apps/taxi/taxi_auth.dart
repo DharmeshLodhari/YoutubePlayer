@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TaxiAuth extends AuthService {
-  Future<List> searchPlaces({String place = ""}) async {
+  Future<List> searchPlaces({String? place = ""}) async {
     String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
 
     url = url + "query=$place";
@@ -39,7 +39,7 @@ class TaxiAuth extends AuthService {
   }
 
   Future<Directions> getDirections(
-      {@required LatLng origin, @required LatLng destination}) async {
+      {required LatLng origin, required LatLng destination}) async {
     String url = "https://maps.googleapis.com/maps/api/directions/json?";
 
     url = url + "origin=${origin.latitude},${origin.longitude}";

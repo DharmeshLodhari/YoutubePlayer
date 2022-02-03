@@ -17,9 +17,9 @@ class VerifyRegistrationOTPScreen extends StatefulWidget {
 
 class _VerifyRegistrationOTPScreenState
     extends State<VerifyRegistrationOTPScreen> {
-  TextEditingController otpController;
-  String phoneNumber = '';
-  FocusNode _pinPutFocusNode;
+  TextEditingController? otpController;
+  String? phoneNumber = '';
+  FocusNode? _pinPutFocusNode;
 
   final _verifyOtpFormKey = GlobalKey<FormState>();
 
@@ -170,7 +170,7 @@ class _VerifyRegistrationOTPScreenState
           textStyle: TextStyle(
               color: blackFont, fontSize: 32, fontWeight: FontWeight.w600),
           validator: (val) {
-            if (val.length != 6) {
+            if (val!.length != 6) {
               return "Please enter code that sent to you";
             }
             return null;
@@ -190,8 +190,8 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void verifyOTP() {
-    if (_verifyOtpFormKey.currentState.validate()) {
-      String enteredOTP = otpController.text.trim();
+    if (_verifyOtpFormKey.currentState!.validate()) {
+      String enteredOTP = otpController!.text.trim();
       String passwordToken = "false";
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)

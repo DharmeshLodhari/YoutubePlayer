@@ -1,14 +1,14 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
-import 'package:Slydo/screens/more_apps/news/news_tile.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/NewsListItem.dart';
+import 'news_tile.dart';
 
 class LatestNewsList extends StatefulWidget {
   @override
@@ -50,9 +50,9 @@ class _LatestNewsListState extends State<LatestNewsList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -80,25 +80,28 @@ class _LatestNewsListState extends State<LatestNewsList> {
             controller: _refreshController,
             onRefresh: _onRefresh,
             child: SingleChildScrollView(
-              child: Column(
-                  children: newsListItem
-                      .map((news) => GestureDetector(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(
-                                children: [
-                                  NewsTile(newsListItem: news),
-                                  SizedBox(
-                                    height: 16,
-                                  )
-                                ],
+              child: Container(
+                padding: EdgeInsets.only(top: 32),
+                child: Column(
+                    children: newsListItem
+                        .map((news) => GestureDetector(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Column(
+                                  children: [
+                                    NewsTile(newsListItem: news),
+                                    SizedBox(
+                                      height: 16,
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pushNamed("/news-detail");
-                            },
-                          ))
-                      .toList()),
+                              onTap: () {
+                                Navigator.of(context).pushNamed("/news-detail");
+                              },
+                            ))
+                        .toList()),
+              ),
             ),
           );
   }

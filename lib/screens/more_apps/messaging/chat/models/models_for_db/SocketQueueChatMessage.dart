@@ -1,19 +1,19 @@
 import 'dart:convert';
 
 class SocketQueueChatMessage {
-  String author;
-  String authorName;
-  String authorAvatar;
-  String checkId;
-  String conversationId;
-  String createdAt;
-  bool delivered;
-  String kind;
-  String message;
-  bool readByAuthor;
-  bool readByRecipient;
-  String type;
-  String repliedTo;
+  String? author;
+  String? authorName;
+  String? authorAvatar;
+  String? checkId;
+  String? conversationId;
+  String? createdAt;
+  bool? delivered;
+  String? kind;
+  String? message;
+  bool? readByAuthor;
+  bool? readByRecipient;
+  String? type;
+  String? repliedTo;
 
   SocketQueueChatMessage(
       {this.author,
@@ -57,7 +57,7 @@ class SocketQueueChatMessage {
     data['check_id'] = this.checkId;
     data['conversation_id'] = this.conversationId;
     data['created_at'] = this.createdAt;
-    data['delivered'] = this.delivered
+    data['delivered'] = this.delivered!
         ? isForSendingToSocket
             ? true
             : 1
@@ -66,14 +66,14 @@ class SocketQueueChatMessage {
             : 0;
     data['kind'] = this.kind;
     data['message'] = this.message;
-    data['read_by_author'] = this.readByAuthor
+    data['read_by_author'] = this.readByAuthor!
         ? isForSendingToSocket
             ? true
             : 1
         : isForSendingToSocket
             ? false
             : 0;
-    data['read_by_recipient'] = this.readByRecipient
+    data['read_by_recipient'] = this.readByRecipient!
         ? isForSendingToSocket
             ? true
             : 1

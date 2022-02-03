@@ -19,7 +19,6 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
-import 'package:toast/toast.dart';
 
 import '../../business_auth.dart';
 
@@ -39,26 +38,26 @@ class _AddInvoiceState extends State<AddInvoice> {
   TextEditingController _invoiceController = TextEditingController(text: "021");
   TextEditingController _amountController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
-  http.Response response;
+  http.Response? response;
 
   final _formKey = GlobalKey<FormState>();
   final _addInvoiceScaffoldKey = GlobalKey<ScaffoldState>();
-  CustomerProfile _payee;
-  UserBloc userBloc;
+  CustomerProfile? _payee;
+  late UserBloc userBloc;
 
   bool isValidPayee = false;
-  int amount;
+  int? amount;
 
-  Invoice invoice;
+  Invoice? invoice;
 
   String errorMessage = "";
-  String recipient;
+  String? recipient;
 
   DateTime invoiceDate = DateTime.now();
   DateTime dueDate = DateTime.now();
 
-  PaymentDuration selectedDuration;
-  AddInvoiceBloc _addInvoiceBloc;
+  PaymentDuration? selectedDuration;
+  late AddInvoiceBloc _addInvoiceBloc;
 
   @override
   void initState() {
@@ -92,7 +91,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         backgroundColor: Colors.white,
         key: _addInvoiceScaffoldKey,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -146,7 +145,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": _payee.userName});
+              arguments: {"searchedUserName": _payee!.userName});
         },
         backgroundColor: iconBtnGrey,
         enableMargin: true,
@@ -273,7 +272,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         icon: Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": _payee.userName});
+              arguments: {"searchedUserName": _payee!.userName});
         },
       );
     }
@@ -296,7 +295,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                      indexedValue.value.name,
+                      indexedValue.value!.name!,
                       style: TextStyle(fontSize: 14, color: blackFont),
                       textAlign: TextAlign.justify,
                     ),
@@ -307,7 +306,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                           style: TextStyle(fontSize: 12, color: darkGrey),
                         ),
                         Text(
-                          indexedValue.value.quantity.toString(),
+                          indexedValue.value!.quantity.toString(),
                           style: TextStyle(
                             fontSize: 12,
                             color: blackFont,
@@ -333,7 +332,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                                   fontSize: 12),
                             ),
                             Text(
-                              indexedValue.value.amount.toString(),
+                              indexedValue.value!.amount.toString(),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: blackFont,
@@ -356,8 +355,8 @@ class _AddInvoiceState extends State<AddInvoice> {
                               fontSize: 14),
                         ),
                         Text(
-                          (indexedValue.value.amount *
-                                  indexedValue.value.quantity)
+                          (indexedValue.value!.amount! *
+                                  indexedValue.value!.quantity!)
                               .toString(),
                           style: TextStyle(
                               color: navyBlue,
@@ -426,10 +425,11 @@ class _AddInvoiceState extends State<AddInvoice> {
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: _payee.avatar,
+            imageUrl: _payee!.avatar!,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
           ),
         ),
       );
@@ -440,10 +440,11 @@ class _AddInvoiceState extends State<AddInvoice> {
       qrCodeImage = CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: _payee.qrCode ?? "",
+        imageUrl: _payee!.qrCode ?? "",
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
+        errorWidget: imageErrorWidget,
       );
     }
 
@@ -456,21 +457,21 @@ class _AddInvoiceState extends State<AddInvoice> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    _payee.fullName,
+                    _payee!.fullName!,
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
                   ),
                   subtitle: Text(
-                    _payee.userName,
+                    _payee!.userName!,
                     style: TextStyle(fontSize: 14, color: darkGrey),
                   ),
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUserName": _payee.userName});
+                        arguments: {"searchedUserName": _payee!.userName});
                   },
                 ),
               ),
@@ -485,12 +486,12 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).recipient,
+      labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
       validator: (value) {
-        if (value != _payee.userName) {
-          return AppLocalization.of(context).invalidRecipient;
+        if (value != _payee!.userName) {
+          return AppLocalization.of(context)!.invalidRecipient;
         }
         return null;
       },
@@ -498,7 +499,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         if (mounted) {
           setState(() {
             if (_payee != null) {
-              recipient = _payee.userName;
+              recipient = _payee!.userName;
             } else {
               recipient = val.toLowerCase();
             }
@@ -516,10 +517,10 @@ class _AddInvoiceState extends State<AddInvoice> {
           isValidPayee = false;
           setState(() {});
           if (recipient != null) {
-            recipient = recipient.trim();
+            recipient = recipient!.trim();
             if (mounted) {
               setState(() {
-                _recipientController.text = recipient;
+                _recipientController.text = recipient!;
               });
             }
             var customerProfile =
@@ -527,7 +528,7 @@ class _AddInvoiceState extends State<AddInvoice> {
             if (mounted) {
               setState(() {
                 _payee = customerProfile;
-                isValidPayee = _payee.userName != userBloc.user.userName;
+                isValidPayee = _payee!.userName != userBloc.user.userName;
               });
             }
           }
@@ -557,16 +558,16 @@ class _AddInvoiceState extends State<AddInvoice> {
             return null;
           } catch (e) {}
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
       onTap: () async {
         isValidPayee = false;
         setState(() {});
         if (recipient != null) {
-          recipient = recipient.trim();
+          recipient = recipient!.trim();
           if (mounted) {
             setState(() {
-              _recipientController.text = recipient;
+              _recipientController.text = recipient!;
             });
           }
           var customerProfile =
@@ -574,7 +575,7 @@ class _AddInvoiceState extends State<AddInvoice> {
           if (mounted) {
             setState(() {
               _payee = customerProfile;
-              isValidPayee = _payee.userName != userBloc.user.userName;
+              isValidPayee = _payee!.userName != userBloc.user.userName;
             });
           }
         }
@@ -597,7 +598,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                     DateTime.now().day),
                 lastDate: DateTime(2101),
               ).then((value) {
-                invoiceDate = DateTime(value.year, value.month, value.day);
+                invoiceDate = DateTime(value!.year, value.month, value.day);
                 setState(() {});
               }).catchError((error) {});
             },
@@ -642,7 +643,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                     DateTime.now().day),
                 lastDate: DateTime(2101),
               ).then((value) {
-                dueDate = DateTime(value.year, value.month, value.day);
+                dueDate = DateTime(value!.year, value.month, value.day);
                 setState(() {});
               }).catchError((error) {});
             },
@@ -698,7 +699,7 @@ class _AddInvoiceState extends State<AddInvoice> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedDuration != null ? selectedDuration.name : "",
+              selectedDuration != null ? selectedDuration!.name! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -746,7 +747,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                               child: ListTile(
                                 dense: true,
                                 title: Text(
-                                  duration.name,
+                                  duration.name!,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -767,7 +768,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                           }
                           return ListTile(
                             title: Text(
-                              duration.name,
+                              duration.name!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -808,29 +809,29 @@ class _AddInvoiceState extends State<AddInvoice> {
     }
 
     if (!isValidPayee) {
-      errorMessage = AppLocalization.of(context).invalidRecipient;
+      errorMessage = AppLocalization.of(context)!.invalidRecipient;
       setState(() {});
       return;
     }
 
-    if (recipient == _payee.userName) {
+    if (recipient == _payee!.userName) {
       if (!isValidPayee) {
         setState(() {
-          errorMessage = AppLocalization.of(context).invalidRecipient;
+          errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
       }
 
-      if (isValidPayee && _formKey.currentState.validate()) {
+      if (isValidPayee && _formKey.currentState!.validate()) {
         if (userBloc.user.userName != recipient) {
           try {
-            List<InvoiceItem> invoiceItem = List<InvoiceItem>();
+            List<InvoiceItem?> invoiceItem = [];
 
             invoiceItem = _addInvoiceBloc.items;
 
             var data = {
               "from_customer": userBloc.user.userName,
-              "to_customer": recipient.trim(),
+              "to_customer": recipient!.trim(),
               "invoice_number": _invoiceController.text.trim().toString(),
               "invoice_date": dateToString(invoiceDate),
               "due_date": dateToString(dueDate),
@@ -843,42 +844,21 @@ class _AddInvoiceState extends State<AddInvoice> {
                 Navigator.pop(context);
               }
             }).catchError((error) {
-              Toast.show(
-                error.toString(),
-                context,
-                gravity: Toast.BOTTOM,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
+              showToast(
+                message: error.toString(),
               );
             });
           } catch (e) {
-            debugPrint(e);
-            Toast.show(
-              e,
-              context,
-              gravity: Toast.BOTTOM,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            debugPrint(e.toString());
+            showToast(message: e.toString());
           }
         } else {
-          Toast.show(
-            AppLocalization.of(context).invalidRecipient,
-            context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          showToast(message: AppLocalization.of(context)!.invalidRecipient);
         }
       }
     } else {
-      var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(
-        msg,
-        context,
-        gravity: Toast.CENTER,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
+      var msg = AppLocalization.of(context)!.invalidRecipient;
+      showToast(message: msg);
     }
   }
 

@@ -1,10 +1,10 @@
 import 'package:Slydo/screens/more_apps/utility/cable/model/Pack.dart';
 
 class CablePlan {
-  List<String> features;
-  String name;
-  List<Pack> packs;
-  String price;
+  List<String>? features;
+  String? name;
+  List<Pack>? packs;
+  String? price;
 
   CablePlan({this.features, this.name, this.packs, this.price});
 
@@ -29,7 +29,7 @@ class CablePlan {
       data['features'] = this.features;
     }
     if (this.packs != null) {
-      data['packs'] = this.packs.map((v) => v.toJson()).toList();
+      data['packs'] = this.packs!.map((v) => v.toJson()).toList();
     }
     return data;
   }

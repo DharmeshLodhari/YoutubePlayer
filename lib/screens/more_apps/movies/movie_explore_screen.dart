@@ -11,7 +11,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 class MovieExploreScreen extends StatefulWidget {
   @override
@@ -101,13 +100,10 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -118,7 +114,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -189,7 +185,9 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -293,10 +291,11 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                             child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
-                            imageUrl: item.poster,
+                            imageUrl: item.poster!,
                             fit: BoxFit.fill,
                             height: double.infinity,
                             width: double.infinity,
+                            errorWidget: imageErrorWidget,
                           ),
                         )),
                       ),
@@ -429,7 +428,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
     );
   }
 
-  Widget movieItemWithDetail({MovieItem movieItem}) {
+  Widget movieItemWithDetail({required MovieItem movieItem}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/movie-detail");
@@ -449,7 +448,8 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: movieItem.poster,
+                    imageUrl: movieItem.poster!,
+                    errorWidget: imageErrorWidget,
                     height: 80,
                     width: 130,
                     fit: BoxFit.fill,
@@ -459,7 +459,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                   height: 12,
                 ),
                 Text(
-                  movieItem.name,
+                  movieItem.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -479,7 +479,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                       size: 8,
                     ),
                     Text(
-                      movieItem.price,
+                      movieItem.price!,
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
@@ -504,7 +504,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                           width: 4,
                         ),
                         Text(
-                          movieItem.rating,
+                          movieItem.rating!,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -596,7 +596,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
     );
   }
 
-  Widget moviePoster({PartialMovieItem partialMovieItem}) {
+  Widget moviePoster({required PartialMovieItem partialMovieItem}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/movie-detail");
@@ -604,7 +604,8 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: CachedNetworkImage(
-          imageUrl: partialMovieItem.poster,
+          imageUrl: partialMovieItem.poster!,
+          errorWidget: imageErrorWidget,
           height: 132,
           width: 218,
           fit: BoxFit.fill,

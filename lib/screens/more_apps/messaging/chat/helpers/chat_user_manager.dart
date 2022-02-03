@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
 
+/// For Performing all the db operation related to user connection's message count
 class ChatUserManager {
   DatabaseHelper _db = DatabaseHelper();
 
@@ -16,7 +19,7 @@ class ChatUserManager {
     _db.saveChatUserCount(dbUsers);
   }
 
-  Future<void> addUser({String conversationId}) async {
+  Future<void> addUser({String? conversationId}) async {
     /// Converting CustomerProfile in to Chat Users
 
     ChatUserModel chatUserModel =
@@ -27,7 +30,7 @@ class ChatUserManager {
     return;
   }
 
-  Future<ChatUserModel> getUser(String conversationId) async {
+  Future<ChatUserModel> getUser(String? conversationId) async {
     Map<String, dynamic> user = await _db.getChatUser(conversationId);
 
     ChatUserModel chatUserModel = ChatUserModel.fromJson(user);
@@ -40,13 +43,13 @@ class ChatUserManager {
   }
 
   Future<void> updateChatUserMessageCount(
-      {String conversationId, String hashedMessage}) async {
+      {String? conversationId, String? hashedMessage}) async {
     await _db.updateChatUserMessageCount(
         conversationId: conversationId, hashedMessage: hashedMessage);
     return;
   }
 
-  void clearChatUserMessageCount({String conversationId}) async {
+  void clearChatUserMessageCount({String? conversationId}) async {
     await _db.clearChatUserMessageCount(conversationId: conversationId);
     return;
   }

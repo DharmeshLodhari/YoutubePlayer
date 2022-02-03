@@ -42,7 +42,7 @@ class _TicketDetailState extends State<TicketDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: lightGrey,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -118,7 +118,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   child: Container(
                     height: 214,
                     width: 214,
-                    child: CachedNetworkImage(imageUrl: tickets[0].qrCode),
+                    child: CachedNetworkImage(imageUrl: tickets[0].qrCode!),
                   ),
                 )
               ],
@@ -161,7 +161,7 @@ class _TicketDetailState extends State<TicketDetail> {
                   height: 20,
                 ),
                 Stack(
-                  overflow: Overflow.visible,
+                  clipBehavior: Clip.none,
                   children: [
                     Positioned(
                       left: -30,
@@ -213,7 +213,7 @@ class _TicketDetailState extends State<TicketDetail> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              tickets[0].fromTime,
+              tickets[0].fromTime!,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
@@ -224,7 +224,7 @@ class _TicketDetailState extends State<TicketDetail> {
               height: 4,
             ),
             Text(
-              tickets[0].from,
+              tickets[0].from!,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -240,7 +240,7 @@ class _TicketDetailState extends State<TicketDetail> {
           width: 70,
           height: 40,
           child: Stack(
-            overflow: Overflow.visible,
+            clipBehavior: Clip.none,
             children: [
               Positioned(
                 top: 6,
@@ -255,7 +255,7 @@ class _TicketDetailState extends State<TicketDetail> {
                 top: -6,
                 left: 16,
                 child: Text(
-                  tickets[0].journeyTime,
+                  tickets[0].journeyTime!,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 12,
@@ -275,7 +275,7 @@ class _TicketDetailState extends State<TicketDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              tickets[0].toTime,
+              tickets[0].toTime!,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
@@ -286,7 +286,7 @@ class _TicketDetailState extends State<TicketDetail> {
               height: 4,
             ),
             Text(
-              tickets[0].to,
+              tickets[0].to!,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -334,7 +334,7 @@ class _TicketDetailState extends State<TicketDetail> {
                     width: 4,
                   ),
                   Text(
-                    tickets[0].gate,
+                    tickets[0].gate!,
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
@@ -377,7 +377,7 @@ class _TicketDetailState extends State<TicketDetail> {
                     width: 4,
                   ),
                   Text(
-                    tickets[0].seat,
+                    tickets[0].seat!,
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 14,

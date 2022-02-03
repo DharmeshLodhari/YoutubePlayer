@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../utils/colors.dart';
 
 class UtilityPaymentTile extends StatelessWidget {
-  final Map<String, dynamic> payment;
+  final Map<String, dynamic>? payment;
 
   UtilityPaymentTile({this.payment});
 
@@ -44,7 +44,7 @@ class UtilityPaymentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  payment['amount'],
+                  payment!['amount'],
                   style: TextStyle(
                       fontFamily: "Roboto",
                       color: blackFont,
@@ -68,7 +68,7 @@ class UtilityPaymentTile extends StatelessWidget {
 
   Widget getLeading() {
     return Image.asset(
-      payment['image'],
+      payment!['image'],
       height: 80,
       width: 80,
       fit: BoxFit.fill,
@@ -77,7 +77,7 @@ class UtilityPaymentTile extends StatelessWidget {
   }
 
   Widget getPaymentStatus() {
-    Color color = getStatusColor(payment['status']);
+    Color color = getStatusColor(payment!['status']);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -85,14 +85,14 @@ class UtilityPaymentTile extends StatelessWidget {
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8)),
       child: Text(
-        payment['status'],
+        payment!['status'],
         style:
             TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12),
       ),
     );
   }
 
-  Color getStatusColor(String status) {
+  Color getStatusColor(String? status) {
     if (status == "Processing") {
       return naturalGreen;
     } else if (status == "Complete") {
@@ -110,7 +110,7 @@ class UtilityPaymentTile extends StatelessWidget {
 
   Widget getTitle() {
     return Text(
-      payment['name'],
+      payment!['name'],
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.w600,
@@ -121,7 +121,7 @@ class UtilityPaymentTile extends StatelessWidget {
 
   Widget getDateTime() {
     return Text(
-      payment['time'],
+      payment!['time'],
       softWrap: false,
       overflow: TextOverflow.visible,
       style: TextStyle(color: darkGrey, fontSize: 10),

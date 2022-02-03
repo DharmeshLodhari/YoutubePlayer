@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
@@ -19,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
@@ -41,40 +41,40 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   var arguments;
 
-  DashboardBloc _dashboardBloc;
+  late DashboardBloc _dashboardBloc;
 
   _RequestPaymentState({this.arguments});
 
   final _auth = PaymentAndBankingAuth();
   final _formKey = GlobalKey<FormState>();
   final requestPaymentScaffold = GlobalKey<ScaffoldState>();
-  CustomerProfile _payee;
-  UserBloc userBloc;
-  CustomerProfileBloc customerProfileBloc;
+  CustomerProfile? _payee;
+  late UserBloc userBloc;
+  late CustomerProfileBloc customerProfileBloc;
 
-  http.Response response;
+  late http.Response response;
 
-  bool isFromProfile = false;
-  bool isFromChat = false;
+  bool? isFromProfile = false;
+  bool? isFromChat = false;
   bool isValidPayee = false;
-  double amount;
+  double? amount;
   String reference = "";
   String errorMessage = "";
-  String recipient;
+  String? recipient;
   final locationService = LocationService();
 
   bool showMoreOption = false;
 
-  String conversationId;
+  String? conversationId;
 
   //variables for categories
   bool isLoading = true;
 
-  List<String> paymentCategoriesTest = List();
-  String selectedCategory;
+  List<String?> paymentCategoriesTest = [];
+  String? selectedCategory;
 
-  PaymentCategory selectedPaymentCategory;
-  String paymentCategory;
+  PaymentCategory? selectedPaymentCategory;
+  String? paymentCategory;
 
   @override
   void initState() {
@@ -114,13 +114,13 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   void initializeDisplayCard() {
     if (mounted) {
-      if (!isFromProfile) {
+      if (!isFromProfile!) {
         if (customerProfileBloc.customer != null) {
           if (mounted) {
             setState(() {
               _payee = customerProfileBloc.customer;
-              recipient = _payee.userName;
-              _recipientController.text = recipient;
+              recipient = _payee!.userName;
+              _recipientController.text = recipient!;
             });
           }
         }
@@ -162,7 +162,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         key: requestPaymentScaffold,
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -186,7 +186,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         },
       ),
       title: Text(
-        AppLocalization.of(context).requestPayment,
+        AppLocalization.of(context)!.requestPayment,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -353,7 +353,7 @@ class _RequestPaymentState extends State<RequestPayment> {
     var avatarImage;
     var qrCodeImage;
     if (_payee != null) {
-      Color borderColor = getUserTypeColor(user: _payee);
+      Color borderColor = getUserTypeColor(user: _payee!);
 
       avatarImage = Container(
         height: 48,
@@ -366,14 +366,15 @@ class _RequestPaymentState extends State<RequestPayment> {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: _payee.avatar);
+                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
           },
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: _payee.avatar,
+              imageUrl: _payee!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fill,
               filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
             ),
           ),
         ),
@@ -382,15 +383,16 @@ class _RequestPaymentState extends State<RequestPayment> {
       qrCodeImage = GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: _payee.qrCode);
+              .pushNamed("/photo-viewer", arguments: _payee!.qrCode);
         },
         child: CachedNetworkImage(
           height: 48,
           width: 48,
-          imageUrl: _payee.qrCode,
+          imageUrl: _payee!.qrCode!,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
+          errorWidget: imageErrorWidget,
         ),
       );
     }
@@ -404,7 +406,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    _payee.displayName(),
+                    _payee!.displayName()!,
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -413,7 +415,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                     maxLines: 1,
                   ),
                   subtitle: Text(
-                    _payee.userName,
+                    _payee!.userName!,
                     style: TextStyle(fontSize: 14, color: darkGrey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -422,7 +424,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUserName": _payee.userName});
+                        arguments: {"searchedUserName": _payee!.userName});
                   },
                 ),
               ),
@@ -437,21 +439,21 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).recipient,
+      labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
       enabled: isFromProfile,
       validator: (value) {
-        if (!isFromProfile && value != _payee.userName) {
-          return AppLocalization.of(context).invalidRecipient;
+        if (!isFromProfile! && value != _payee!.userName) {
+          return AppLocalization.of(context)!.invalidRecipient;
         }
         return null;
       },
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            if (!isFromProfile && _payee != null) {
-              recipient = _payee.userName;
+            if (!isFromProfile! && _payee != null) {
+              recipient = _payee!.userName;
             } else {
               recipient = val.toLowerCase();
             }
@@ -486,24 +488,24 @@ class _RequestPaymentState extends State<RequestPayment> {
               throw Exception("Invalid amount");
             }
           } catch (e) {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
       onTap: () async {
         isValidPayee = false;
         if (mounted) setState(() {});
         if (recipient != null) {
-          recipient = recipient.trim();
+          recipient = recipient!.trim();
 
-          _recipientController.text = recipient;
+          _recipientController.text = recipient!;
           if (mounted) setState(() {});
           var customerProfile =
               await UserAuth().fetchCustomerProfile(recipient);
 
           _payee = customerProfile;
-          isValidPayee = _payee.userName != userBloc.user.userName;
+          isValidPayee = _payee!.userName != userBloc.user.userName;
 
           if (mounted) setState(() {});
         }
@@ -533,25 +535,25 @@ class _RequestPaymentState extends State<RequestPayment> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
+                child: Text(AppLocalization.of(context)!.category),
               ),
             ],
           ),
           value: selectedCategory,
-          onChanged: (String value) {
+          onChanged: (String? value) {
             if (mounted) {
               setState(() {
                 selectedCategory = value;
               });
             }
           },
-          items: paymentCategoriesTest.map((String category) {
+          items: paymentCategoriesTest.map((String? category) {
             return DropdownMenuItem<String>(
               value: category,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
                 child: Text(
-                  category,
+                  category!,
                   style: TextStyle(color: Colors.black),
                 ),
               ),
@@ -567,7 +569,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          AppLocalization.of(context).category,
+          AppLocalization.of(context)!.category,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
         SizedBox(
@@ -584,7 +586,7 @@ class _RequestPaymentState extends State<RequestPayment> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedCategory != null ? selectedCategory : "",
+              selectedCategory != null ? selectedCategory! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -635,7 +637,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                               child: ListTile(
                                 dense: true,
                                 title: Text(
-                                  category,
+                                  category!,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -656,7 +658,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                           }
                           return ListTile(
                             title: Text(
-                              category,
+                              category!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -684,7 +686,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   Widget getReferenceField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).reference,
+      labelText: AppLocalization.of(context)!.reference,
       textCapitalization: TextCapitalization.sentences,
       onChanged: (val) {
         if (mounted) {
@@ -701,7 +703,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context).requestPayment,
+      text: AppLocalization.of(context)!.requestPayment,
     );
   }
 
@@ -713,24 +715,24 @@ class _RequestPaymentState extends State<RequestPayment> {
     if (!isValidPayee) {
       if (mounted) {
         setState(() {
-          errorMessage = AppLocalization.of(context).invalidRecipient;
+          errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
       }
     }
 
-    if (recipient == _payee.userName) {
+    if (recipient == _payee!.userName) {
       if (!isValidPayee) {
         if (mounted) {
           setState(() {
-            errorMessage = AppLocalization.of(context).invalidRecipient;
+            errorMessage = AppLocalization.of(context)!.invalidRecipient;
             return;
           });
         }
       }
 
       if (isValidPayee &&
-          _formKey.currentState.validate() &&
+          _formKey.currentState!.validate() &&
           validateDropdown()) {
         if (userBloc.user.userName != recipient) {
           var userLocation;
@@ -748,11 +750,11 @@ class _RequestPaymentState extends State<RequestPayment> {
                   }
 
                   var data = {
-                    "from_customer": userBloc.user.userName.trim(),
-                    "to_customer": recipient.trim(),
+                    "from_customer": userBloc.user.userName!.trim(),
+                    "to_customer": recipient!.trim(),
                     "currency": userBloc.user.currency,
                     "amount": moneyInputNormalizer(amount.toString()),
-                    "category": selectedCategory.trim(),
+                    "category": selectedCategory!.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),
                     "latitude": Platform.isIOS ? userLocation.latitude : "",
@@ -763,10 +765,10 @@ class _RequestPaymentState extends State<RequestPayment> {
                     data["conversation_id"] = conversationId;
                   }
 
-                  _auth.createPaymentRequests(data).then((value) {
+                  await _auth.createPaymentRequests(data).then((value) {
                     response = value;
                     if (response.statusCode == 201) {
-                      if (!isFromChat) {
+                      if (!isFromChat!) {
                         _dashboardBloc.index = 1;
                         RefreshBlocForRequestPayment
                             refreshBlocForRequestPayment =
@@ -786,72 +788,47 @@ class _RequestPaymentState extends State<RequestPayment> {
                       if (mounted) {
                         setState(() {
                           errorMessage =
-                              AppLocalization.of(context).serverError;
-                          Toast.show(
-                            errorMessage,
-                            context,
-                            gravity: Toast.TOP,
-                            backgroundColor: Colors.black,
-                            textColor: Colors.white,
-                          );
+                              AppLocalization.of(context)!.serverError;
+                          showToast(message: errorMessage);
                         });
                       }
-                    }
-                    // else if (response.statusCode == 800) {
-                    //   Navigator.pop(context);
-                    //   Navigator.pushNamed(context, "/add-document");
-                    // }
-                    else {
+                    } else {
                       Navigator.pop(context);
                       if (mounted) {
-                        setState(() {
-                          errorMessage =
-                              AppLocalization.of(context).somethingWentWrong;
-                          Toast.show("${response.body}", context,
-                              backgroundColor: Colors.black,
-                              textColor: Colors.white,
-                              duration: Toast.LENGTH_LONG);
-                        });
+                        if (response.statusCode == 406) {
+                          errorMessage = jsonDecode(value.body)[0];
+                          showToast(message: "$errorMessage");
+                          setState(() {});
+                        } else {
+                          debugPrint("ERROR:- ${response.body}");
+                          setState(() {
+                            errorMessage =
+                                AppLocalization.of(context)!.somethingWentWrong;
+                            showToast(message: "$errorMessage");
+                          });
+                        }
                       }
                     }
                   });
                 },
                 cancelCallBack: () async {
                   Navigator.pop(context);
-                  requestPaymentScaffold.currentState.showSnackBar(SnackBar(
-                    content: Text(AppLocalization.of(context).invalidPassword),
+                  requestPaymentScaffold.currentState!.showSnackBar(SnackBar(
+                    content: Text(AppLocalization.of(context)!.invalidPassword),
                   ));
                 });
           } catch (e) {
-            debugPrint(e);
-            Toast.show(
-              e,
-              context,
-              gravity: Toast.BOTTOM,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            debugPrint(e.toString());
+            showToast(message: e.toString());
           }
         } else {
-          var msg = AppLocalization.of(context).invalidRecipient;
-          Toast.show(
-            msg,
-            context,
-            gravity: Toast.CENTER,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          var msg = AppLocalization.of(context)!.invalidRecipient;
+          showToast(message: msg);
         }
       }
     } else {
-      var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(
-        msg,
-        context,
-        gravity: Toast.CENTER,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
+      var msg = AppLocalization.of(context)!.invalidRecipient;
+      showToast(message: msg);
     }
   }
 

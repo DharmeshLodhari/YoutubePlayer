@@ -1,9 +1,9 @@
 class PartialMusicItem {
-  String currency;
-  int id;
-  String name;
-  String poster;
-  String price;
+  String? currency;
+  int? id;
+  String? name;
+  String? poster;
+  String? price;
 
   PartialMusicItem(
       {this.currency, this.id, this.name, this.poster, this.price});

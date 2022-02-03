@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -15,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../user_auth.dart';
 
@@ -27,11 +29,11 @@ class ConnectionRequestList extends StatefulWidget {
 class _ConnectionRequestListState extends State<ConnectionRequestList> {
   final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
       new GlobalKey<ScaffoldState>();
-  UserBloc userBloc;
-  SlidableController _slideController;
-  int count = 0;
-  String next = "";
-  String previous = "";
+  late UserBloc userBloc;
+  SlidableController? _slideController;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List connectionRequestList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
@@ -71,13 +73,9 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -150,7 +148,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result = await UserAuth()
+        Map<String, dynamic>? result = await UserAuth()
             .listContactRequests(next, previous)
             .catchError((error) {
           debugPrint("ERROR:- $error");
@@ -174,21 +172,21 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           });
         }
       } else if (next == null && connectionRequestList.length > 6) {
-        _scaffoldContactRequestListKey.currentState.showSnackBar(SnackBar(
+        _scaffoldContactRequestListKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
     }
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactRequestListKey.currentState
+    _scaffoldContactRequestListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
@@ -207,7 +205,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
                 acceptFriendRequestAlert(
                     isRequestSent ? toUser : fromUser, index);
               },
-              title: AppLocalization.of(context).accept,
+              title: AppLocalization.of(context)!.accept,
               slideController: _slideController,
             ),
           ];
@@ -228,16 +226,16 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
               isRequestSent: isRequestSent);
         },
         title: isRequestSent
-            ? AppLocalization.of(context).cancel
-            : AppLocalization.of(context).reject,
+            ? AppLocalization.of(context)!.cancel
+            : AppLocalization.of(context)!.reject,
         slideController: _slideController,
       ),
     ];
   }
 
   void rejectRequestAlert(CustomerProfile user, int index,
-      {bool isRequestSent}) async {
-    bool result = await showDialogBox(
+      {required bool isRequestSent}) async {
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -255,17 +253,17 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).reject,
+      title: AppLocalization.of(context)!.reject,
       description: isRequestSent
           ? "Are you sure want to cancel the request?"
-          : AppLocalization.of(context).areYouSureWantToRejectRequestFrom +
+          : AppLocalization.of(context)!.areYouSureWantToRejectRequestFrom +
               " ${user.displayName()}",
       actionOne: isRequestSent
-          ? AppLocalization.of(context).yes
-          : AppLocalization.of(context).reject,
-      actionTwo: AppLocalization.of(context).cancel,
+          ? AppLocalization.of(context)!.yes
+          : AppLocalization.of(context)!.reject,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
-    if (result) {
+    if (result != null && result) {
       bool done = await UserAuth().rejectContactRequest(user);
       done = true;
       if (done) {
@@ -273,9 +271,9 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
             context,
             isRequestSent
                 ? "Request canceled successfully !!"
-                : AppLocalization.of(context).requestFrom +
+                : AppLocalization.of(context)!.requestFrom +
                     " ${user.displayName()} " +
-                    AppLocalization.of(context).isRejectedSuccessfully);
+                    AppLocalization.of(context)!.isRejectedSuccessfully);
         setState(() {
           connectionRequestList.removeAt(index);
           if (connectionRequestList.length <= 9) {
@@ -283,13 +281,13 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           }
         });
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
 
   Future<void> acceptFriendRequestAlert(CustomerProfile user, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),
@@ -308,20 +306,20 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoBgColor: mateRed,
       actionTwoTextColor: Colors.white,
       firstActionPrimary: true,
-      title: AppLocalization.of(context).accept,
-      description: AppLocalization.of(context).areYouSureWantToAdd +
+      title: AppLocalization.of(context)!.accept,
+      description: "Are you sure you want to add" +
           " ${user.displayName()} " +
-          "In Your Connections",
-      actionOne: AppLocalization.of(context).accept,
-      actionTwo: AppLocalization.of(context).cancel,
+          "into your Connections?",
+      actionOne: AppLocalization.of(context)!.accept,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
-    if (result) {
+    if (result != null && result) {
       bool done = await UserAuth().acceptContactRequest(user);
       if (done) {
         _showSnackBar(
             context,
             "${user.displayName()} " +
-                AppLocalization.of(context).isAddedToYourContactList);
+                AppLocalization.of(context)!.isAddedToYourContactList);
 
         connectionRequestList.removeAt(index);
 
@@ -338,7 +336,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           getList();
         }
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
@@ -370,9 +368,9 @@ class VerticalListItem extends StatelessWidget {
 
   final Map data;
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  Map<String, dynamic> cleanDisplayData(var data) {
+  Map<String, dynamic>? cleanDisplayData(var data) {
     if (data["from_user"]["username"] == userBloc.user.userName) {
       return data["to_user"];
     } else {
@@ -384,7 +382,7 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    CustomerProfile user = CustomerProfile.fromJson(cleanDisplayData(data));
+    CustomerProfile user = CustomerProfile.fromJson(cleanDisplayData(data)!);
 
     return GestureDetector(
       onTap: () =>

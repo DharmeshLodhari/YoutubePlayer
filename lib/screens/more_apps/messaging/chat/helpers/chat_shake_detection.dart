@@ -12,24 +12,25 @@ import 'package:shake/shake.dart';
 import 'package:sizer/sizer.dart';
 import 'package:uuid/uuid.dart';
 
+/// For getting the shake Count while user is nudging by shaking the device
 class ChatShakeDetection extends ChangeNotifier {
   /// variables for shaking detection and nudge
-  ShakeDetector _detector;
+  ShakeDetector? _detector;
   bool _showShakingAlert = false;
-  Timer _nudgeAlertTimer;
+  Timer? _nudgeAlertTimer;
   Duration _nudgeAlertDuration = Duration(seconds: 11);
-  ChatConversation _recipientUser;
-  UserBloc _userBloc;
+  ChatConversation? _recipientUser;
+  late UserBloc _userBloc;
 
-  void setupShakeDetector({@required ChatConversation recipientUser}) {
+  void setupShakeDetector({required ChatConversation recipientUser}) {
     debugPrint("Setting up shake detection for ${recipientUser.userName}");
     _recipientUser = recipientUser;
-    _userBloc = Provider.of<UserBloc>(myGlobals.scaffoldKey.currentContext,
+    _userBloc = Provider.of<UserBloc>(myGlobals.scaffoldKey.currentContext!,
         listen: false);
     _detector = ShakeDetector.autoStart(
       onPhoneShake: () {
-        debugPrint("Shake Detected:- ${_detector.mShakeCount}");
-        if (_detector.mShakeCount == 5) {
+        debugPrint("Shake Detected:- ${_detector!.mShakeCount}");
+        if (_detector!.mShakeCount == 5) {
           ///send Nudge to Recipient
           _nudgeRecipient();
         }
@@ -45,7 +46,7 @@ class ChatShakeDetection extends ChangeNotifier {
 
   void stopAlertDialog() {
     if (_showShakingAlert == true) {
-      Navigator.of(myGlobals.scaffoldKey.currentContext).pop();
+      Navigator.of(myGlobals.scaffoldKey.currentContext!).pop();
       _showShakingAlert = false;
       notifyListeners();
       _resetShakeDetector();
@@ -55,8 +56,8 @@ class ChatShakeDetection extends ChangeNotifier {
   void _resetShakeDetector() {
     _detector = ShakeDetector.autoStart(
       onPhoneShake: () {
-        debugPrint("Shake Detected:- ${_detector.mShakeCount}");
-        if (_detector.mShakeCount == 5) {
+        debugPrint("Shake Detected:- ${_detector!.mShakeCount}");
+        if (_detector!.mShakeCount == 5) {
           ///send Nudge to Recipient
           _nudgeRecipient();
         }
@@ -73,11 +74,11 @@ class ChatShakeDetection extends ChangeNotifier {
   /// To stop shake detection when user left chat
   void stopShakeDetector() {
     if (_recipientUser != null) {
-      debugPrint("Stopping shake detection for ${_recipientUser.userName}");
+      debugPrint("Stopping shake detection for ${_recipientUser!.userName}");
 
       /// if nudge timer is already in action we stop it
       if (_nudgeAlertTimer?.isActive ?? false) {
-        _nudgeAlertTimer.cancel();
+        _nudgeAlertTimer!.cancel();
       }
 
       _detector?.stopListening();
@@ -86,7 +87,7 @@ class ChatShakeDetection extends ChangeNotifier {
     } else {
       /// if nudge timer is already in action we stop it
       if (_nudgeAlertTimer?.isActive ?? false) {
-        _nudgeAlertTimer.cancel();
+        _nudgeAlertTimer!.cancel();
       }
 
       _detector?.stopListening();
@@ -96,23 +97,21 @@ class ChatShakeDetection extends ChangeNotifier {
   }
 
   void showShakingDialog() async {
-    // debugPrint("showShake $_showShakingAlert");
     if (_showShakingAlert) {
       _showShakingAlert = false;
       notifyListeners();
     } else {
       _showShakingAlert = true;
-      // debugPrint("showShake $_showShakingAlert");
-      _detector.stopListening();
+      _detector!.stopListening();
       notifyListeners();
 
       /// if nudge timer is already in action we stop it
       if (_nudgeAlertTimer?.isActive ?? false) {
-        _nudgeAlertTimer.cancel();
+        _nudgeAlertTimer!.cancel();
       }
 
       _nudgeAlertTimer = Timer(_nudgeAlertDuration, () {
-        Navigator.of(myGlobals.scaffoldKey.currentContext).pop();
+        Navigator.of(myGlobals.scaffoldKey.currentContext!).pop();
         _showShakingAlert = false;
         notifyListeners();
         _resetShakeDetector();
@@ -120,8 +119,8 @@ class ChatShakeDetection extends ChangeNotifier {
 
       await Future.delayed(Duration(milliseconds: 1500));
 
-      String result = await showDialog<String>(
-          context: myGlobals.scaffoldKey.currentContext,
+      String? result = await showDialog<String>(
+          context: myGlobals.scaffoldKey.currentContext!,
           barrierColor: Colors.black38,
           builder: (context) => Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -196,9 +195,8 @@ class ChatShakeDetection extends ChangeNotifier {
               ));
 
       if (_nudgeAlertTimer?.isActive ?? false) {
-        _nudgeAlertTimer.cancel();
+        _nudgeAlertTimer!.cancel();
       }
-      // debugPrint("result $result");
       if (result != null) {
         if (result == "STOP") {
           _stopNudge();
@@ -214,10 +212,10 @@ class ChatShakeDetection extends ChangeNotifier {
 
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
-      "conversation_id": _recipientUser.conversationId,
+      "conversation_id": _recipientUser!.conversationId,
       "author": _userBloc.user.userName,
       "author_avatar": _userBloc.user.avatar,
-      "recipient": _recipientUser.userName,
+      "recipient": _recipientUser!.userName,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "nudge_user",
     };
@@ -229,10 +227,10 @@ class ChatShakeDetection extends ChangeNotifier {
 
     Map<String, dynamic> data = {
       "check_id": Uuid().v4(),
-      "conversation_id": _recipientUser.conversationId,
+      "conversation_id": _recipientUser!.conversationId,
       "author": _userBloc.user.userName,
       "author_avatar": _userBloc.user.avatar,
-      "recipient": _recipientUser.userName,
+      "recipient": _recipientUser!.userName,
       "created_at": DateTime.now().toUtc().toString(),
       "type": "stop_nudging",
     };

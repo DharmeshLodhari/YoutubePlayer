@@ -2,13 +2,13 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/business/tiles/contract_tile.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../business_auth.dart';
 
@@ -25,7 +25,7 @@ class _MyContractListState extends State<MyContractList> {
       RefreshController(initialRefresh: false);
 
   //slidable tile
-  SlidableController _slideController;
+  SlidableController? _slideController;
   @override
   void initState() {
     getResult();
@@ -55,9 +55,10 @@ class _MyContractListState extends State<MyContractList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -147,16 +148,12 @@ class _MyContractListState extends State<MyContractList> {
     switch (contract.status) {
       case "Paused":
         return naturalGreen;
-        break;
       case "Active":
         return starYellow;
-        break;
       case "Stopped":
         return naturalGreen;
-        break;
       case "Ended":
         return starYellow;
-        break;
       default:
         return navyBlue;
     }
@@ -167,16 +164,12 @@ class _MyContractListState extends State<MyContractList> {
     switch (contract.status) {
       case "Paused":
         return Icons.play_arrow_rounded;
-        break;
       case "Active":
         return Icons.pause;
-        break;
       case "Stopped":
         return Icons.play_arrow_rounded;
-        break;
       case "Ended":
         return Icons.pause;
-        break;
       default:
         return Icons.ac_unit;
     }
@@ -187,16 +180,12 @@ class _MyContractListState extends State<MyContractList> {
     switch (contract.status) {
       case "Paused":
         return "Resume";
-        break;
       case "Active":
         return "Pause";
-        break;
       case "Stopped":
         return "Resume";
-        break;
       case "Ended":
         return "Pause";
-        break;
       default:
         return "";
     }
@@ -207,16 +196,16 @@ class _MyContractListState extends State<MyContractList> {
     switch (contract.status) {
       case "Paused":
         return "Active";
-        break;
+
       case "Active":
         return "Paused";
-        break;
+
       case "Stopped":
         return "Ended";
-        break;
+
       case "Ended":
         return "Stopped";
-        break;
+
       default:
         return "";
     }
@@ -231,19 +220,9 @@ class _MyContractListState extends State<MyContractList> {
         .then((value) {
       contracts[index].status = action;
       setState(() {});
-      Toast.show(
-        "Status updated successfully",
-        context,
-        backgroundColor: blackFont,
-        textColor: Colors.white,
-      );
+      showToast(message: "Status updated successfully");
     }).catchError((error) {
-      Toast.show(
-        "Status updated unsuccessfully",
-        context,
-        backgroundColor: mateRed,
-        textColor: Colors.white,
-      );
+      showToast(message: "Status updated unsuccessfully");
     });
   }
 
@@ -260,9 +239,9 @@ class _MyContractListState extends State<MyContractList> {
     ];
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 }
 
 class VerticalListItem extends StatelessWidget {

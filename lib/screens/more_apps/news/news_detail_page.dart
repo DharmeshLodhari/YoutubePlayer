@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/news/models/NewsDetailItem.dart';
 import 'package:Slydo/screens/more_apps/news/news_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -13,7 +14,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 import 'package:video_player/video_player.dart';
 
 import 'news_auth.dart';
@@ -24,11 +24,11 @@ class NewsDetailPage extends StatefulWidget {
 }
 
 class _NewsDetailPageState extends State<NewsDetailPage> {
-  VideoPlayerController _mainVideoController;
-  VideoPlayerController _subVideoController;
+  late VideoPlayerController _mainVideoController;
+  late VideoPlayerController _subVideoController;
 
-  ChewieController _chewieMainController;
-  ChewieController _chewieSubController;
+  late ChewieController _chewieMainController;
+  late ChewieController _chewieSubController;
 
   bool isVideoPlaying = false;
 
@@ -51,9 +51,9 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -73,7 +73,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
     }
 
     _mainVideoController = VideoPlayerController.network(
-      newsDetailItem.video,
+      newsDetailItem.video!,
     );
 
     _chewieMainController = ChewieController(
@@ -97,7 +97,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
     );
 
     _subVideoController = VideoPlayerController.network(
-      newsDetailItem.video,
+      newsDetailItem.video!,
     );
 
     _chewieSubController = ChewieController(
@@ -136,7 +136,8 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       ],
     );
 
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
     super.dispose();
   }
 
@@ -145,7 +146,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -296,7 +297,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget newsTitle() {
     return Text(
-      newsDetailItem.title,
+      newsDetailItem.title!,
       style: TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: 18,
@@ -313,7 +314,8 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         width: 32,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: newsDetailItem.authorAvatar,
+            imageUrl: newsDetailItem.authorAvatar!,
+            errorWidget: imageErrorWidget,
           ),
         ),
       ),
@@ -350,7 +352,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget newsShortDescription() {
     return Text(
-      newsDetailItem.shortDescription,
+      newsDetailItem.shortDescription!,
       style: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 14,
@@ -362,7 +364,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget newsSubTitle() {
     return Text(
-      newsDetailItem.subHeader,
+      newsDetailItem.subHeader!,
       style: TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: 16,
@@ -374,7 +376,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget newsFullDescription() {
     return Text(
-      newsDetailItem.description,
+      newsDetailItem.description!,
       style: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 14,
@@ -388,7 +390,8 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
     return Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: newsDetailItem.tags.map((e) => CustomChip(text: e)).toList());
+        children:
+            newsDetailItem.tags!.map((e) => CustomChip(text: e)).toList());
   }
 
   Widget relatedPostTitle() {
@@ -405,7 +408,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
 
   Widget relatedPost() {
     return Column(
-        children: newsDetailItem.newsListItems
+        children: newsDetailItem.newsListItems!
             .map((news) => Container(
                   child: Column(
                     children: [

@@ -1,5 +1,7 @@
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
+import 'package:Slydo/screens/home.dart';
+import 'package:Slydo/screens/index.dart';
 import 'package:Slydo/screens/more_apps.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard.dart';
 import 'package:Slydo/screens/more_apps/bus/search_bus.dart';
@@ -35,6 +37,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_s
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/group_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/search_group_member.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/screens/view_chat_media.dart';
+import 'package:Slydo/screens/more_apps/messaging/detailed_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/forms/compose_message.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_list.dart';
 import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
@@ -51,12 +54,14 @@ import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bvn_number.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/payout_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/topup_option_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
@@ -68,12 +73,17 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard.dart';
 import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
 import 'package:Slydo/screens/more_apps/property/search_property.dart';
 import 'package:Slydo/screens/more_apps/property/specific_category_property_list.dart';
+import 'package:Slydo/screens/more_apps/review/forms/add_user_review.dart';
+import 'package:Slydo/screens/more_apps/review/forms/edit_user_review.dart';
 import 'package:Slydo/screens/more_apps/review/main_review.dart';
+import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
 import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
 import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
@@ -97,11 +107,13 @@ import 'package:Slydo/screens/more_apps/taxi/terms_and_condition.dart';
 import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
+import 'package:Slydo/screens/more_apps/user_post/user_post_detail.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/change_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/forgot_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/login.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/registration.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/reset_device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/reset_password.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/signup.dart';
@@ -126,15 +138,9 @@ import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/photo_viewer.dart';
 import 'package:Slydo/widget/video_recorder.dart';
+import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-
-import '../screens/home.dart';
-import '../screens/index.dart';
-import '../screens/more_apps/messaging/detailed_message.dart';
-import '../screens/more_apps/payment_and_banking/forms/banking/payout_screen.dart';
-import '../screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
-import '../screens/more_apps/user_profile/forms/registration.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -394,7 +400,9 @@ class RouteGenerator {
 
       case '/add-bvn-number':
         return PageTransition(
-          child: AddBvnNumber(),
+          child: AddBvnNumber(
+            arguments: settings.arguments,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -536,7 +544,8 @@ class RouteGenerator {
 
       case '/send-media-to-chat-message':
         return PageTransition(
-          child: AddMediaToChatMessage(arguments: settings.arguments),
+          child: AddMediaToChatMessage(
+              arguments: settings.arguments as Map<String, dynamic>?),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -750,14 +759,16 @@ class RouteGenerator {
 
       case '/select-cable-plan-and-decoder-number':
         return PageTransition(
-          child: SelectPlanAndDecoderNumber(arguments: settings.arguments),
+          child: SelectPlanAndDecoderNumber(
+              arguments: settings.arguments as Map<String, dynamic>?),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
       case '/select-cable-plan':
         return PageTransition(
-          child: SelectCablePlan(arguments: settings.arguments),
+          child: SelectCablePlan(
+              arguments: settings.arguments as Map<String, dynamic>?),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -765,7 +776,8 @@ class RouteGenerator {
 
       case '/cable-plan-detail':
         return PageTransition(
-          child: CablePlanDetail(arguments: settings.arguments),
+          child: CablePlanDetail(
+              arguments: settings.arguments as Map<String, dynamic>?),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -773,7 +785,8 @@ class RouteGenerator {
 
       case '/cable-plan-payment-detail':
         return PageTransition(
-          child: CablePlanPaymentDetail(arguments: settings.arguments),
+          child: CablePlanPaymentDetail(
+              arguments: settings.arguments as Map<String, dynamic>?),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -1258,7 +1271,78 @@ class RouteGenerator {
 
       case "/photo-viewer":
         return PageTransition(
-          child: PhotoViewer(imageUrl: settings.arguments),
+          child: PhotoViewer(imageUrl: settings.arguments as String?),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/review-detail-screen":
+        return PageTransition(
+          child: ReviewDetailScreen(
+              arguments: settings.arguments as Map<String, dynamic>),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      // case "/add-review":
+      //   return PageTransition(
+      //     child: AddReview(),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
+
+      case "/review-list-screen":
+        return PageTransition(
+          child: ReviewListScreen(
+            arguments: settings.arguments as Map<String, dynamic>,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/add-review":
+        return PageTransition(
+          child: AddReview(
+            arguments: settings.arguments as Map<String, dynamic>,
+          ),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/edit-review":
+        return PageTransition(
+          child: EditUserReview(
+              arguments: settings.arguments as Map<String, dynamic>),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case "/user-post-detail":
+        return PageTransition(
+          child: UserPostDetailPage(
+              arguments: settings.arguments as Map<String, dynamic>),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case "/top-up-options":
+        return PageTransition(
+          child: TopUpOptionSelection(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      /// Custom Services
+      case "/web-view":
+        return PageTransition(
+          child: CustomWebView(webUrl: settings.arguments as String),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

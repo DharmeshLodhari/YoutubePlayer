@@ -1,13 +1,13 @@
 class Transport {
-  String currency;
-  String date;
-  String from;
-  String logo;
-  String name;
-  String price;
-  String time;
-  String to;
-  String travelTime;
+  String? currency;
+  String? date;
+  String? from;
+  String? logo;
+  String? name;
+  String? price;
+  String? time;
+  String? to;
+  String? travelTime;
 
   Transport(
       {this.currency,

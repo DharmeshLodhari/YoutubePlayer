@@ -4,7 +4,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class VerifyResetDeviceOTPScreen extends StatefulWidget {
@@ -19,11 +18,11 @@ class VerifyResetDeviceOTPScreen extends StatefulWidget {
 
 class _VerifyResetDeviceOTPScreenState
     extends State<VerifyResetDeviceOTPScreen> {
-  TextEditingController otpController;
-  String phoneNumber = '';
-  String requireOtp;
+  TextEditingController? otpController;
+  String? phoneNumber = '';
+  String? requireOtp;
 
-  FocusNode _pinPutFocusNode;
+  FocusNode? _pinPutFocusNode;
 
   final _verifyOtpFormKey = GlobalKey<FormState>();
 
@@ -175,7 +174,7 @@ class _VerifyResetDeviceOTPScreenState
           textStyle: TextStyle(
               color: blackFont, fontSize: 32, fontWeight: FontWeight.w600),
           validator: (val) {
-            if (val.length != 6) {
+            if (val!.length != 6) {
               return "Please enter code that sent to you";
             }
             return null;
@@ -195,8 +194,8 @@ class _VerifyResetDeviceOTPScreenState
   }
 
   void verifyOTP() {
-    if (_verifyOtpFormKey.currentState.validate()) {
-      String enteredOTP = otpController.text.trim();
+    if (_verifyOtpFormKey.currentState!.validate()) {
+      String enteredOTP = otpController!.text.trim();
 
       if (enteredOTP == requireOtp) {
         showDialog(context: context, builder: (context) => LoadingIndicator());
@@ -210,16 +209,10 @@ class _VerifyResetDeviceOTPScreenState
         }).catchError((error) {
           Navigator.pop(context);
           debugPrint("ERROR:- $error");
-          Toast.show("$error", context,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-              duration: Toast.LENGTH_LONG);
+          showToast(message: "$error");
         });
       } else {
-        Toast.show("Invalid OTP !!", context,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG,
-            backgroundColor: Colors.black);
+        showToast(message: "Invalid OTP !!");
       }
     }
   }

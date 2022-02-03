@@ -13,9 +13,9 @@ import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatelessWidget {
-  final PaymentRequest paymentRequest;
-  Widget expandedWidget = Container();
-  Key key;
+  final PaymentRequest? paymentRequest;
+  Widget? expandedWidget = Container();
+  Key? key;
 
   PaymentRequestTile({this.paymentRequest, this.expandedWidget, this.key})
       : super(key: key);
@@ -39,12 +39,12 @@ class PaymentRequestTile extends StatelessWidget {
                   leading: getLeading(),
                   title: getTitle(),
                   trailing:
-                      moneyDisplayNormalizer(paymentRequest.amount).length > 6
+                      moneyDisplayNormalizer(paymentRequest!.amount).length > 6
                           ? null
                           : getTrailing(),
                   subtitle: getSubtitle(context)),
             ),
-            expandedWidget
+            expandedWidget!
           ],
         ),
       ),
@@ -54,8 +54,8 @@ class PaymentRequestTile extends StatelessWidget {
   Widget getLeading() {
     return GestureDetector(
       onTap: () {
-        Navigator.of(myGlobals.navigationKey.currentContext)
-            .pushNamed("/photo-viewer", arguments: paymentRequest.avatar);
+        Navigator.of(myGlobals.navigationKey.currentContext!)
+            .pushNamed("/photo-viewer", arguments: paymentRequest!.avatar);
       },
       child: Container(
         height: 48,
@@ -69,13 +69,14 @@ class PaymentRequestTile extends StatelessWidget {
         ),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: paymentRequest.avatar,
+            imageUrl: paymentRequest!.avatar!,
             height: 48,
             width: 48,
+            errorWidget: imageErrorWidget,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
-            placeholder: (context, url) => paymentRequest.avatar == ""
+            placeholder: (context, url) => paymentRequest!.avatar == ""
                 ? Icon(Icons.person)
                 : CircularLoadingIndicator(),
           ),
@@ -88,7 +89,7 @@ class PaymentRequestTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${paymentRequest.payee}",
+        "${paymentRequest!.displayCustomer}",
         maxLines: 1,
         style: TextStyle(
           color: blackFont,
@@ -106,17 +107,17 @@ class PaymentRequestTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[paymentRequest.currency],
+          worldCurrencies[paymentRequest!.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
-              color: paymentRequest.isCredit ? navyBlue : blackFont,
+              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(paymentRequest.amount),
+          moneyDisplayNormalizer(paymentRequest!.amount),
           style: TextStyle(
-              color: paymentRequest.isCredit ? navyBlue : blackFont,
+              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -128,14 +129,14 @@ class PaymentRequestTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        paymentRequest.description != ""
+        paymentRequest!.description != ""
             ? Text(
-                "${paymentRequest.description}",
+                "${paymentRequest!.description}",
                 style: TextStyle(color: darkGrey, fontSize: 12),
                 maxLines: 1,
               )
             : Container(),
-        moneyDisplayNormalizer(paymentRequest.amount).length > 6
+        moneyDisplayNormalizer(paymentRequest!.amount).length > 6
             ? getTrailing()
             : Container(),
         getDateTime(context)
@@ -144,7 +145,7 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime requestTime = DateTime.parse(paymentRequest.createdAt).toLocal();
+    DateTime requestTime = DateTime.parse(paymentRequest!.createdAt!).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return Text(
@@ -158,15 +159,15 @@ class PaymentRequestTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class TransactionTile extends StatelessWidget {
-  UserBloc userBloc;
+  UserBloc? userBloc;
 
-  final Transaction transaction;
-  Widget expandedWidget = Container();
+  final Transaction? transaction;
+  Widget? expandedWidget = Container();
 
   TransactionTile({this.transaction, this.expandedWidget, this.key})
       : super(key: key);
 
-  Key key;
+  Key? key;
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +189,7 @@ class TransactionTile extends StatelessWidget {
                 title: getTitle(),
                 subtitle: getSubTitle(context),
                 leading: getLeading(),
-                trailing: transaction.amount.toString().length > 6
+                trailing: transaction!.amount.toString().length > 6
                     ? null
                     : getAmount(),
                 onTap: () {
@@ -197,7 +198,7 @@ class TransactionTile extends StatelessWidget {
                 },
               ),
             ),
-            transaction.isAnonymous ? Container() : expandedWidget,
+            transaction!.isAnonymous! ? Container() : expandedWidget!,
           ],
         ),
       ),
@@ -208,7 +209,7 @@ class TransactionTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${transaction.payee}",
+        "${transaction!.displayCustomer}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -217,7 +218,7 @@ class TransactionTile extends StatelessWidget {
   }
 
   Widget getLeading() {
-    return transaction.isAnonymous
+    return transaction!.isAnonymous!
         ? Container(
             padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
             child: Image.asset(
@@ -240,18 +241,19 @@ class TransactionTile extends StatelessWidget {
             ),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(myGlobals.navigationKey.currentContext)
-                    .pushNamed("/photo-viewer", arguments: transaction.avatar);
+                Navigator.of(myGlobals.navigationKey.currentContext!)
+                    .pushNamed("/photo-viewer", arguments: transaction!.avatar);
               },
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: transaction.avatar,
+                  imageUrl: transaction!.avatar!,
                   height: 48,
+                  errorWidget: imageErrorWidget,
                   width: 48,
                   colorBlendMode: BlendMode.darken,
                   fit: BoxFit.cover,
                   filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => transaction.avatar == ""
+                  placeholder: (context, url) => transaction!.avatar == ""
                       ? Icon(Icons.person)
                       : CircularLoadingIndicator(),
                 ),
@@ -265,17 +267,17 @@ class TransactionTile extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[transaction.currency],
+          worldCurrencies[transaction!.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
-              color: transaction.isCredit ? navyBlue : blackFont,
+              color: transaction!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(transaction.amount),
+          moneyDisplayNormalizer(transaction!.amount),
           style: TextStyle(
-              color: transaction.isCredit ? navyBlue : blackFont,
+              color: transaction!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -287,21 +289,22 @@ class TransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        transaction.description != ""
+        transaction!.description != ""
             ? Text(
-                "${transaction.description}",
+                "${transaction!.description}",
                 style: TextStyle(color: darkGrey, fontSize: 12),
                 maxLines: 1,
               )
             : Container(),
-        transaction.amount.toString().length > 6 ? getAmount() : Container(),
+        transaction!.amount.toString().length > 6 ? getAmount() : Container(),
         getDateTime(context),
       ],
     );
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(transaction.createdAt).toLocal();
+    DateTime transactionTime =
+        DateTime.parse(transaction!.createdAt!).toLocal();
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(
@@ -314,7 +317,7 @@ class TransactionTile extends StatelessWidget {
 }
 
 class ContractTransactionTile extends StatefulWidget {
-  final Transaction transaction;
+  final Transaction? transaction;
   ContractTransactionTile({this.transaction});
 
   @override
@@ -323,7 +326,7 @@ class ContractTransactionTile extends StatefulWidget {
 }
 
 class _ContractTransactionTileState extends State<ContractTransactionTile> {
-  UserBloc userBloc;
+  UserBloc? userBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -342,7 +345,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
             title: getTitle(),
             subtitle: getSubTitle(context),
             leading: getLeading(),
-            trailing: widget.transaction.amount.toString().length > 6
+            trailing: widget.transaction!.amount.toString().length > 6
                 ? null
                 : getAmount(),
             onTap: () {
@@ -359,7 +362,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.transaction.payee}",
+        "${widget.transaction!.payee}",
         maxLines: 1,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -369,7 +372,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
 
   Widget getLeading() {
     return ClipOval(
-      child: widget.transaction.isAnonymous
+      child: widget.transaction!.isAnonymous!
           ? Container(
               padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
               child: Image.asset(
@@ -381,13 +384,14 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
               ),
             )
           : CachedNetworkImage(
-              imageUrl: widget.transaction.avatar,
+              imageUrl: widget.transaction!.avatar!,
               height: 48,
+              errorWidget: imageErrorWidget,
               width: 48,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
-              placeholder: (context, url) => widget.transaction.avatar == ""
+              placeholder: (context, url) => widget.transaction!.avatar == ""
                   ? Icon(Icons.person)
                   : CircularLoadingIndicator(),
             ),
@@ -399,17 +403,17 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[widget.transaction.currency],
+          worldCurrencies[widget.transaction!.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
-              color: widget.transaction.isCredit ? navyBlue : blackFont,
+              color: widget.transaction!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
-          moneyDisplayNormalizer(widget.transaction.amount),
+          moneyDisplayNormalizer(widget.transaction!.amount),
           style: TextStyle(
-              color: widget.transaction.isCredit ? navyBlue : blackFont,
+              color: widget.transaction!.isCredit! ? navyBlue : blackFont,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
@@ -422,11 +426,11 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${widget.transaction.description}",
+          "${widget.transaction!.description}",
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        widget.transaction.amount.toString().length > 6
+        widget.transaction!.amount.toString().length > 6
             ? getAmount()
             : Container(),
         getDateTime(context),
@@ -435,7 +439,7 @@ class _ContractTransactionTileState extends State<ContractTransactionTile> {
   }
 
   Widget getDateTime(BuildContext context) {
-    DateTime transactionTime = DateTime.parse(widget.transaction.createdAt);
+    DateTime transactionTime = DateTime.parse(widget.transaction!.createdAt!);
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     String time = DateFormat("hh:mm a").format(transactionTime);
     return Text(

@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import '../../music/models/music_album.dart';
 
 class CartAlbumTile extends StatelessWidget {
-  final MusicAlbum album;
+  final MusicAlbum? album;
 
-  const CartAlbumTile({Key key, this.album}) : super(key: key);
+  const CartAlbumTile({Key? key, this.album}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +28,9 @@ class CartAlbumTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: album.image,
+                  imageUrl: album!.image!,
                   fit: BoxFit.fill,
+                  errorWidget: productAndServiceErrorWidget,
                 ),
               ),
             ),
@@ -37,7 +38,7 @@ class CartAlbumTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  album.title,
+                  album!.title!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -47,7 +48,7 @@ class CartAlbumTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  album.title,
+                  album!.title!,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -80,9 +81,9 @@ class CartAlbumTile extends StatelessWidget {
 }
 
 class CartMusicTile extends StatelessWidget {
-  final Audio audio;
+  final Audio? audio;
 
-  const CartMusicTile({Key key, this.audio}) : super(key: key);
+  const CartMusicTile({Key? key, this.audio}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -100,8 +101,9 @@ class CartMusicTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: audio.metas.image,
+                  imageUrl: audio!.metas!.image!,
                   fit: BoxFit.fill,
+                  errorWidget: productAndServiceErrorWidget,
                 ),
               ),
             ),
@@ -109,7 +111,7 @@ class CartMusicTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  audio.metas.title,
+                  audio!.metas!.title!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -119,7 +121,7 @@ class CartMusicTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  audio.metas.album,
+                  audio!.metas!.album!,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -152,9 +154,9 @@ class CartMusicTile extends StatelessWidget {
 }
 
 class CartMovieTile extends StatelessWidget {
-  final MovieItem movie;
+  final MovieItem? movie;
 
-  const CartMovieTile({Key key, this.movie}) : super(key: key);
+  const CartMovieTile({Key? key, this.movie}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -172,8 +174,9 @@ class CartMovieTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: movie.poster,
+                  imageUrl: movie!.poster!,
                   fit: BoxFit.fill,
+                  errorWidget: productAndServiceErrorWidget,
                 ),
               ),
             ),
@@ -181,7 +184,7 @@ class CartMovieTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  movie.name,
+                  movie!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -191,7 +194,7 @@ class CartMovieTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  movie.genre,
+                  movie!.genre!,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
@@ -209,7 +212,7 @@ class CartMovieTile extends StatelessWidget {
                   size: 10,
                 ),
                 Text(
-                  movie.price,
+                  movie!.price!,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,

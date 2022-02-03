@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 
 class MapUI extends StatefulWidget {
   MapUI({
-    Key key,
+    Key? key,
     this.showRideToStartingPointPolyline = false,
     this.showStartingPointToDestinationPolyline = false,
     this.startRide = false,
@@ -27,26 +27,26 @@ class MapUI extends StatefulWidget {
 }
 
 class _MapUIState extends State<MapUI> {
-  CameraPosition _initialCameraPosition;
+  late CameraPosition _initialCameraPosition;
 
-  GoogleMapController googleMapController;
+  GoogleMapController? googleMapController;
 
-  Marker _rideMarker;
-  Marker _startingLocation;
-  Marker _destinationLocation;
-  TaxiBloc taxiBloc;
+  Marker? _rideMarker;
+  Marker? _startingLocation;
+  Marker? _destinationLocation;
+  late TaxiBloc taxiBloc;
 
-  StreamSubscription _locationSubscription;
+  StreamSubscription? _locationSubscription;
   Location _locationTracker = Location();
-  Marker _riderMarker;
-  Circle _rideAccuracyCircle;
+  Marker? _riderMarker;
+  Circle? _rideAccuracyCircle;
 
   String rideMarkerImage = "assets/images/car_top.png";
 
   @override
   void initState() {
     TaxiBloc taxiBloc = Provider.of<TaxiBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
     _initialCameraPosition =
@@ -57,8 +57,8 @@ class _MapUIState extends State<MapUI> {
         markerId: MarkerId('Starting Point'),
         infoWindow: const InfoWindow(title: 'Pickup Point'),
         icon: BitmapDescriptor.defaultMarkerWithHue(0),
-        position: LatLng(taxiBloc.startingPoint.geometry.location.lat,
-            taxiBloc.startingPoint.geometry.location.lng),
+        position: LatLng(taxiBloc.startingPoint!.geometry!.location!.lat!,
+            taxiBloc.startingPoint!.geometry!.location!.lng!),
       );
     }
     if (taxiBloc.destinationPoint != null) {
@@ -66,8 +66,8 @@ class _MapUIState extends State<MapUI> {
         markerId: MarkerId('Destination'),
         infoWindow: const InfoWindow(title: 'Destination'),
         icon: BitmapDescriptor.defaultMarkerWithHue(250),
-        position: LatLng(taxiBloc.destinationPoint.geometry.location.lat,
-            taxiBloc.destinationPoint.geometry.location.lng),
+        position: LatLng(taxiBloc.destinationPoint!.geometry!.location!.lat!,
+            taxiBloc.destinationPoint!.geometry!.location!.lng!),
       );
     }
 
@@ -75,9 +75,9 @@ class _MapUIState extends State<MapUI> {
       // BitmapDescriptor pin;
       // String markerName;
       //
-      if (taxiBloc.rideDetail["name"] == "Bike" ||
-          taxiBloc.rideDetail["name"] == "Tricycle") {
-        if (taxiBloc.rideDetail["name"] == "Bike") {
+      if (taxiBloc.rideDetail!["name"] == "Bike" ||
+          taxiBloc.rideDetail!["name"] == "Tricycle") {
+        if (taxiBloc.rideDetail!["name"] == "Bike") {
           //     pin = BitmapDescriptor.fromAsset("assets/images/bike_top.png");
           rideMarkerImage = "assets/images/bike_top.png";
           //     markerName = "Bike";
@@ -103,21 +103,21 @@ class _MapUIState extends State<MapUI> {
 
     if (widget.showStartingPointToDestinationPolyline) {
       _initialCameraPosition = CameraPosition(
-          target: LatLng(taxiBloc.startingPoint.geometry.location.lat,
-              taxiBloc.startingPoint.geometry.location.lng),
+          target: LatLng(taxiBloc.startingPoint!.geometry!.location!.lat!,
+              taxiBloc.startingPoint!.geometry!.location!.lng!),
           zoom: 14.5);
 
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         Future.delayed(Duration(seconds: 1)).then((value) {
           if (mounted) {
-            googleMapController.animateCamera(CameraUpdate.newLatLngBounds(
+            googleMapController!.animateCamera(CameraUpdate.newLatLngBounds(
                 LatLngBounds(
                     southwest: LatLng(
-                        taxiBloc.startingPoint.geometry.location.lat,
-                        taxiBloc.startingPoint.geometry.location.lng),
+                        taxiBloc.startingPoint!.geometry!.location!.lat!,
+                        taxiBloc.startingPoint!.geometry!.location!.lng!),
                     northeast: LatLng(
-                        taxiBloc.destinationPoint.geometry.location.lat,
-                        taxiBloc.destinationPoint.geometry.location.lng)),
+                        taxiBloc.destinationPoint!.geometry!.location!.lat!,
+                        taxiBloc.destinationPoint!.geometry!.location!.lng!)),
                 50));
           }
         });
@@ -126,8 +126,9 @@ class _MapUIState extends State<MapUI> {
 
     if (widget.showRideToStartingPointPolyline) {
       _initialCameraPosition = CameraPosition(
-          target: LatLng(taxiBloc.startingPoint.geometry.location.lat - 0.0015,
-              taxiBloc.startingPoint.geometry.location.lng),
+          target: LatLng(
+              taxiBloc.startingPoint!.geometry!.location!.lat! - 0.0015,
+              taxiBloc.startingPoint!.geometry!.location!.lng!),
           zoom: 14);
     }
 
@@ -149,13 +150,13 @@ class _MapUIState extends State<MapUI> {
       onMapCreated: (controller) {
         googleMapController = controller;
       },
-      markers: getMarkers(),
+      markers: getMarkers() as Set<Marker>,
       polylines: getPolylines(),
-      circles: getCircles(),
+      circles: getCircles() as Set<Circle>,
     );
   }
 
-  Set<Marker> getMarkers() {
+  Set<Marker?> getMarkers() {
     return {
       if (_rideMarker != null) _rideMarker,
       if (_startingLocation != null) _startingLocation,
@@ -164,7 +165,7 @@ class _MapUIState extends State<MapUI> {
     };
   }
 
-  Set<Circle> getCircles() {
+  Set<Circle?> getCircles() {
     return {
       if (_rideAccuracyCircle != null) _rideAccuracyCircle,
     };
@@ -178,7 +179,7 @@ class _MapUIState extends State<MapUI> {
           polylineId: PolylineId('startingPointToDestination'),
           color: navyBlue,
           width: 5,
-          points: taxiBloc.startingPointToDestinationDirections.polylinePoints
+          points: taxiBloc.startingPointToDestinationDirections!.polylinePoints
               .map((e) => LatLng(e.latitude, e.longitude))
               .toList(),
         ),
@@ -203,12 +204,12 @@ class _MapUIState extends State<MapUI> {
   }
 
   void updateMarkerAndCircle(LocationData newLocalData, Uint8List imageData) {
-    LatLng latlng = LatLng(newLocalData.latitude, newLocalData.longitude);
+    LatLng latlng = LatLng(newLocalData.latitude!, newLocalData.longitude!);
     this.setState(() {
       _riderMarker = Marker(
           markerId: MarkerId("home"),
           position: latlng,
-          rotation: newLocalData.heading + 40,
+          rotation: newLocalData.heading! + 40,
           draggable: false,
           zIndex: 2,
           flat: true,
@@ -216,7 +217,7 @@ class _MapUIState extends State<MapUI> {
           icon: BitmapDescriptor.fromBytes(imageData));
       _rideAccuracyCircle = Circle(
           circleId: CircleId("car"),
-          radius: newLocalData.accuracy,
+          radius: newLocalData.accuracy!,
           zIndex: 1,
           strokeColor: Colors.blue,
           center: latlng,
@@ -232,7 +233,7 @@ class _MapUIState extends State<MapUI> {
       updateMarkerAndCircle(location, imageData);
 
       if (_locationSubscription != null) {
-        _locationSubscription.cancel();
+        _locationSubscription!.cancel();
       }
 
       _locationSubscription =
@@ -242,10 +243,11 @@ class _MapUIState extends State<MapUI> {
         debugPrint("==>heading ${newLocalData.heading}");
 
         if (googleMapController != null) {
-          googleMapController.animateCamera(CameraUpdate.newCameraPosition(
+          googleMapController!.animateCamera(CameraUpdate.newCameraPosition(
               new CameraPosition(
-                  bearing: newLocalData.heading,
-                  target: LatLng(newLocalData.latitude, newLocalData.longitude),
+                  bearing: newLocalData.heading!,
+                  target:
+                      LatLng(newLocalData.latitude!, newLocalData.longitude!),
                   zoom: 18.00)));
           updateMarkerAndCircle(newLocalData, imageData);
         }
@@ -262,7 +264,7 @@ class _MapUIState extends State<MapUI> {
     googleMapController?.dispose();
 
     if (_locationSubscription != null) {
-      _locationSubscription.cancel();
+      _locationSubscription?.cancel();
     }
     super.dispose();
   }

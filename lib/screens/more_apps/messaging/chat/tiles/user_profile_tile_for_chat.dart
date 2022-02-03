@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserProfileTileForChat extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
   UserProfileTileForChat({this.message, this.chatConversation});
 
@@ -21,25 +21,25 @@ class UserProfileTileForChat extends StatefulWidget {
 }
 
 class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  CustomerProfile customerProfile;
+  CustomerProfile? customerProfile;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    Map<String, dynamic> data;
+    Map<String, dynamic>? data;
 
-    if (widget.message['meta_data'] is String) {
-      data = jsonDecode(widget.message['meta_data']);
-    } else if (widget.message['meta_data'] is Map) {
-      data = widget.message['meta_data'];
+    if (widget.message!['meta_data'] is String) {
+      data = jsonDecode(widget.message!['meta_data']);
+    } else if (widget.message!['meta_data'] is Map) {
+      data = widget.message!['meta_data'];
     }
 
-    customerProfile = CustomerProfile.fromJson(data);
+    customerProfile = CustomerProfile.fromJson(data!);
 
-    bool isSend = widget.message["author"] == userBloc.user.userName;
+    bool isSend = widget.message!["author"] == userBloc.user.userName;
 
     return Column(
       children: [
@@ -55,21 +55,21 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
                   minWidth: MediaQuery.of(context).size.width / 1.30,
                   minHeight: 50),
               padding: EdgeInsets.symmetric(
-                  horizontal: widget.chatConversation.isGroupConversation
+                  horizontal: widget.chatConversation!.isGroupConversation!
                       ? isSend
                           ? 0
                           : 8
                       : 0,
-                  vertical: widget.chatConversation.isGroupConversation
+                  vertical: widget.chatConversation!.isGroupConversation!
                       ? isSend
                           ? 0
                           : 8
                       : 0),
               decoration: BoxDecoration(
-                color: widget.chatConversation.isGroupConversation
+                color: widget.chatConversation!.isGroupConversation!
                     ? isSend
                         ? Colors.transparent
-                        : chatBackgroundColor
+                        : Colors.white
                     : Colors.transparent,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(!isSend ? 0 : 10),
@@ -82,13 +82,13 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  widget.chatConversation.isGroupConversation
-                      ? widget.message['author'] != userBloc.user.userName
+                  widget.chatConversation!.isGroupConversation!
+                      ? widget.message!['author'] != userBloc.user.userName
                           ? Column(
                               children: [
                                 Text(
-                                  widget.message['author_full_name'] ??
-                                      widget.message['author'],
+                                  widget.message!['author_full_name'] ??
+                                      widget.message!['author'],
                                   style: TextStyle(
                                       color: isSend ? Colors.white : navyBlue,
                                       fontSize: 12,
@@ -116,7 +116,7 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
                     width: 20,
                     child: isSend
                         ? Center(
-                            child: getMessageTick(message: widget.message),
+                            child: getMessageTick(message: widget.message!),
                           )
                         : Container(),
                   )
@@ -136,7 +136,7 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
                     width: 20,
                   ),
             Text(
-              formatTime(widget.message['created_at']),
+              formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
@@ -153,7 +153,7 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
 }
 
 class UserProfileTile extends StatefulWidget {
-  final CustomerProfile user;
+  final CustomerProfile? user;
 
   UserProfileTile({this.user});
 
@@ -162,13 +162,13 @@ class UserProfileTile extends StatefulWidget {
 }
 
 class _UserProfileTileState extends State<UserProfileTile> {
-  Widget avatarImage;
+  Widget? avatarImage;
 
-  Color borderColor;
+  late Color borderColor;
 
   @override
   Widget build(BuildContext context) {
-    borderColor = getUserTypeColor(user: widget.user);
+    borderColor = getUserTypeColor(user: widget.user!);
     return getTile();
   }
 
@@ -183,9 +183,8 @@ class _UserProfileTileState extends State<UserProfileTile> {
             border: Border.all(color: borderColor, width: 2)),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: widget.user.avatar == ""
-                ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                : widget.user.avatar,
+            imageUrl:
+                widget.user!.avatar == "" ? defaultImage : widget.user!.avatar!,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
@@ -209,7 +208,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
           leading: getAvatar(),
           onTap: () {
             Navigator.pushNamed(context, '/profile',
-                arguments: {"searchedUserName": widget.user.userName});
+                arguments: {"searchedUserName": widget.user!.userName});
           },
           // trailing: getTrailing(),
         ),
@@ -219,7 +218,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
 
   Widget getTitle() {
     return Text(
-      widget.user.displayName(),
+      widget.user!.displayName()!,
       maxLines: 1,
       style: TextStyle(
         color: blackFont,
@@ -233,7 +232,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
 
   Widget getSubtitle() {
     return Text(
-      widget.user.userName,
+      widget.user!.userName!,
       maxLines: 1,
       style: TextStyle(
         color: darkGrey,

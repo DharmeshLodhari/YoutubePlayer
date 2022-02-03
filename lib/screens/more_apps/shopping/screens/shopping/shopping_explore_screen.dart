@@ -15,7 +15,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../models/ShoppingProduct.dart';
 import 'shopping_tile.dart';
@@ -28,9 +27,9 @@ class ShoppingExploreScreen extends StatefulWidget {
 class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   CarouselController _carouselController = CarouselController();
 
-  ShoppingDashboardBloc shoppingDashboardBloc;
+  late ShoppingDashboardBloc shoppingDashboardBloc;
 
-  BasketBloc basketBloc;
+  late BasketBloc basketBloc;
 
   List<ShoppingProduct> sliderList = [];
   bool isSliderLoading = false;
@@ -65,7 +64,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     sliderList.clear();
     if (mounted) setState(() {});
 
-    sliderList = await ShoppingAuthService().getProductList("", "");
+    sliderList = (await ShoppingAuthService().getProductList("", ""))!;
 
     isSliderLoading = false;
     if (mounted) setState(() {});
@@ -76,7 +75,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     todayDeal.clear();
     if (mounted) setState(() {});
 
-    todayDeal = await ShoppingAuthService().getProductList("", "");
+    todayDeal = (await ShoppingAuthService().getProductList("", ""))!;
 
     isTodayDealLoading = false;
     if (mounted) setState(() {});
@@ -87,7 +86,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     trendingProduct.clear();
     if (mounted) setState(() {});
 
-    trendingProduct = await ShoppingAuthService().getProductList("", "");
+    trendingProduct = (await ShoppingAuthService().getProductList("", ""))!;
 
     isTrendingProductLoading = false;
     if (mounted) setState(() {});
@@ -98,7 +97,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     discountProductList.clear();
     if (mounted) setState(() {});
 
-    discountProductList = await ShoppingAuthService().getProductList("", "");
+    discountProductList = (await ShoppingAuthService().getProductList("", ""))!;
 
     isDiscountProductListLoading = false;
     if (mounted) setState(() {});
@@ -112,9 +111,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -127,7 +126,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -191,7 +190,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     );
   }
 
-  Widget getBadgeContent() {
+  Widget? getBadgeContent() {
     if (basketBloc.items.length == 0) {
       return null;
     }
@@ -205,7 +204,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
   int getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + element['qty'];
+      totalItem = totalItem + element['qty'] as int;
     });
     return totalItem;
   }
@@ -256,7 +255,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -353,7 +354,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                     (product) => GestureDetector(
                       onTap: () {
                         ShoppingAuthService()
-                            .getProduct(product.id)
+                            .getProduct(product.id!)
                             .then((value) {
                           Navigator.pushNamed(context, '/product',
                               arguments: {"product": value});
@@ -365,10 +366,11 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                             child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
-                            imageUrl: product.cover,
+                            imageUrl: product.cover!,
                             fit: BoxFit.fill,
                             height: double.infinity,
                             width: double.infinity,
+                            errorWidget: productAndServiceErrorWidget,
                           ),
                         )),
                       ),
@@ -442,10 +444,10 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     );
   }
 
-  Widget productNameCard({ShoppingProduct product}) {
+  Widget productNameCard({required ShoppingProduct product}) {
     return GestureDetector(
       onTap: () {
-        ShoppingAuthService().getProduct(product.id).then((value) {
+        ShoppingAuthService().getProduct(product.id!).then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -463,7 +465,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  product.name,
+                  product.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -479,10 +481,11 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: product.cover,
+                    imageUrl: product.cover!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
+                    errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
               ],
@@ -621,15 +624,17 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                             child: CachedNetworkImage(
                                               width: double.infinity,
                                               imageUrl: discountProductList
-                                                  .first.cover,
+                                                  .first.cover!,
                                               fit: BoxFit.fill,
+                                              errorWidget:
+                                                  productAndServiceErrorWidget,
                                               filterQuality: FilterQuality.high,
                                             ),
                                             onTap: () {
                                               ShoppingAuthService()
                                                   .getProduct(
                                                       discountProductList
-                                                          .first.id)
+                                                          .first.id!)
                                                   .then((value) {
                                                 Navigator.pushNamed(
                                                     context, '/product',
@@ -652,7 +657,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                                   children: [
                                                     Text(
                                                       discountProductList
-                                                          .first.name,
+                                                          .first.name!,
                                                       softWrap: false,
                                                       overflow:
                                                           TextOverflow.fade,
@@ -669,7 +674,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                                     ),
                                                     Text(
                                                       discountProductList.first
-                                                          .shortDescription,
+                                                          .shortDescription!,
                                                       // softWrap: false,
                                                       // overflow:
                                                       //     TextOverflow.fade,
@@ -729,7 +734,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                       child: InkWell(
                                         onTap: () {
                                           ShoppingAuthService()
-                                              .getProduct(product.id)
+                                              .getProduct(product.id!)
                                               .then((value) {
                                             Navigator.pushNamed(
                                                 context, '/product',
@@ -753,10 +758,10 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
     );
   }
 
-  Widget productPoster({ShoppingProduct product}) {
+  Widget productPoster({required ShoppingProduct product}) {
     return GestureDetector(
       onTap: () {
-        ShoppingAuthService().getProduct(product.id).then((value) {
+        ShoppingAuthService().getProduct(product.id!).then((value) {
           Navigator.pushNamed(context, '/product',
               arguments: {"product": value});
         });
@@ -773,14 +778,15 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 width: double.infinity,
                 color: Colors.black12,
                 colorBlendMode: BlendMode.darken,
-                imageUrl: product.cover,
+                imageUrl: product.cover!,
                 fit: BoxFit.fill,
+                errorWidget: productAndServiceErrorWidget,
               ),
             ),
             Align(
               alignment: Alignment.center,
               child: Text(
-                product.name,
+                product.name!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.w700,

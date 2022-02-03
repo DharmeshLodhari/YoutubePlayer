@@ -4,16 +4,16 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:crypto/crypto.dart';
 
 class ChatUserModel {
-  String conversationId;
-  int messageCount;
-  String hashedMessage;
+  String? conversationId;
+  int? messageCount;
+  String? hashedMessage;
 
   ChatUserModel(
-      {String conversationId, int messageCount, String hashedMessage}) {
+      {String? conversationId, int? messageCount, String? hashedMessage}) {
     this.conversationId = conversationId;
     this.messageCount = messageCount;
     this.hashedMessage =
-        hashedMessage ?? generateHashedMessage(input: conversationId);
+        hashedMessage ?? generateHashedMessage(input: conversationId!);
   }
 
   String generateHashedMessage({String input = ""}) {
@@ -41,7 +41,7 @@ class ChatUserModel {
       messageCount: 0,
     );
   }
-  factory ChatUserModel.fromConversationId(String conversationId) {
+  factory ChatUserModel.fromConversationId(String? conversationId) {
     return ChatUserModel(
       conversationId: conversationId,
       messageCount: 0,

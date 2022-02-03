@@ -1,4 +1,4 @@
-import 'package:flutter_money_formatter/flutter_money_formatter.dart';
+import 'package:Slydo/utils/money_formatter/flutter_money_formatter.dart';
 import 'package:intl/intl.dart';
 
 /// for graph date rendering
@@ -26,7 +26,7 @@ String moneyConverter(var amount, {bool isNotCompact = false}) {
   return fmf.output.compactNonSymbol;
 }
 
-int convertStringToMillisecondsSinceEpoch(String dateTime) {
+int? convertStringToMillisecondsSinceEpoch(String? dateTime) {
   if (dateTime != null) {
     DateTime date = DateTime.parse(dateTime);
     if (!date.isUtc) {

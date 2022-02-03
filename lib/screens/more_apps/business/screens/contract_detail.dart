@@ -15,7 +15,7 @@ import '../business_auth.dart';
 class ContractDetail extends StatefulWidget {
   var arguments;
 
-  ContractDetail({@required this.arguments});
+  ContractDetail({required this.arguments});
 
   @override
   _ContractDetailState createState() =>
@@ -24,7 +24,7 @@ class ContractDetail extends StatefulWidget {
 
 class _ContractDetailState extends State<ContractDetail> {
   var arguments;
-  Contract contract;
+  late Contract contract;
   // Contract contract;
   bool isLoading = false;
 
@@ -66,7 +66,7 @@ class _ContractDetailState extends State<ContractDetail> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -160,7 +160,7 @@ class _ContractDetailState extends State<ContractDetail> {
   }
 
   Widget getSubtitle() {
-    DateTime dateAndTime = DateTime.parse(contract.createdAt);
+    DateTime dateAndTime = DateTime.parse(contract.createdAt!);
     String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
     String time = DateFormat("hh:mm a").format(dateAndTime);
 
@@ -172,7 +172,7 @@ class _ContractDetailState extends State<ContractDetail> {
     );
   }
 
-  String formatDate(String datetime) {
+  String formatDate(String? datetime) {
     if (datetime == null) {
       return "";
     }
@@ -185,7 +185,7 @@ class _ContractDetailState extends State<ContractDetail> {
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: contract.contractorAvatar,
+        imageUrl: contract.contractorAvatar!,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
@@ -200,7 +200,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   Widget getSender() {
     return Text(
-      contract.contractor,
+      contract.contractor!,
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
@@ -214,7 +214,7 @@ class _ContractDetailState extends State<ContractDetail> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          worldCurrencies[contract.currency],
+          worldCurrencies[contract.currency!]!,
           style: TextStyle(
             color: navyBlue,
             fontWeight: FontWeight.bold,
@@ -268,18 +268,18 @@ class _ContractDetailState extends State<ContractDetail> {
           ),
           detailTile(
             Icons.history_edu,
-            AppLocalization.of(context).status,
-            contract.status,
+            AppLocalization.of(context)!.status,
+            contract.status!,
           ),
           detailTile(
             Icons.timer,
             "Payment duration",
-            contract.paymentDuration,
+            contract.paymentDuration!,
           ),
           detailTile(
             SlydoAppIcon.note_filled,
-            AppLocalization.of(context).note,
-            contract.note,
+            AppLocalization.of(context)!.note,
+            contract.note!,
           ),
           detailTile(
             SlydoAppIcon.date,

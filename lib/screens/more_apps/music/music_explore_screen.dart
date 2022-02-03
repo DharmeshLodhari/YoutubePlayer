@@ -14,13 +14,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'music_player.dart';
 
 // ignore: must_be_immutable
 class MusicExploreScreen extends StatefulWidget {
-  MusicPlayer musicPlayer;
+  MusicPlayer? musicPlayer;
 
   MusicExploreScreen({this.musicPlayer});
 
@@ -111,13 +110,10 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -128,7 +124,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -200,7 +196,9 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Theme(
         data: Theme.of(context).copyWith(
-          textSelectionHandleColor: navyBlue,
+          textSelectionTheme: TextSelectionThemeData(
+            selectionHandleColor: navyBlue,
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -305,12 +303,13 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                             child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           child: CachedNetworkImage(
-                            imageUrl: item.poster,
+                            imageUrl: item.poster!,
                             fit: BoxFit.fill,
                             color: Colors.black12,
                             colorBlendMode: BlendMode.darken,
                             height: double.infinity,
                             width: double.infinity,
+                            errorWidget: imageErrorWidget,
                           ),
                         )),
                       ),
@@ -386,7 +385,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
     );
   }
 
-  Widget musicCard({PartialMusicItem partialMusicItem}) {
+  Widget musicCard({required PartialMusicItem partialMusicItem}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/album-detail",
@@ -407,10 +406,11 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: partialMusicItem.poster,
+                    imageUrl: partialMusicItem.poster!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
                 SizedBox(
@@ -420,7 +420,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      partialMusicItem.name,
+                      partialMusicItem.name!,
                       softWrap: false,
                       overflow: TextOverflow.fade,
                       style: TextStyle(
@@ -442,7 +442,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                               fontFamily: "Roborto"),
                         ),
                         Text(
-                          partialMusicItem.price,
+                          partialMusicItem.price!,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -522,7 +522,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
     );
   }
 
-  Widget celebrityCard({PartialCelebrityItem celebrityItem}) {
+  Widget celebrityCard({required PartialCelebrityItem celebrityItem}) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed("/album-detail",
@@ -541,7 +541,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  celebrityItem.name,
+                  celebrityItem.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -556,10 +556,11 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: celebrityItem.image,
+                    imageUrl: celebrityItem.image!,
                     height: 130,
                     width: 130,
                     fit: BoxFit.fill,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
               ],
@@ -643,14 +644,15 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
     );
   }
 
-  Widget albumPoster({PartialMusicAlbum partialAlbum}) {
+  Widget albumPoster({required PartialMusicAlbum partialAlbum}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
-        imageUrl: partialAlbum.poster,
+        imageUrl: partialAlbum.poster!,
         height: 132,
         width: 218,
         fit: BoxFit.fill,
+        errorWidget: imageErrorWidget,
       ),
     );
   }
@@ -676,6 +678,7 @@ class _MusicExploreScreenState extends State<MusicExploreScreen> {
                 colorBlendMode: BlendMode.darken,
                 imageUrl: url,
                 fit: BoxFit.fill,
+                errorWidget: imageErrorWidget,
               ),
             ),
             Align(

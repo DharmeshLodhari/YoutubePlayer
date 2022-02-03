@@ -1,15 +1,14 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'arrow_clipper.dart';
 
 class CustomizedPopUpMenu {
   GlobalKey buttonKey;
-  OverlayEntry _overlayEntry;
-  Size buttonSize;
-  Offset buttonPosition;
+  OverlayEntry? _overlayEntry;
+  late Size buttonSize;
+  late Offset buttonPosition;
   bool isMenuOpen = false;
   BuildContext context;
   List children = [];
@@ -17,20 +16,20 @@ class CustomizedPopUpMenu {
   Alignment arrowPosition;
 
   double top;
-  double left;
-  double right;
+  double? left;
+  double? right;
   double arrowLeftPadding;
   double arrowRightPadding;
 
-  Function onChange;
-  Function menuState;
+  late Function onChange;
+  late Function menuState;
 
   int selectedIndex;
 
   CustomizedPopUpMenu({
-    @required this.buttonKey,
-    @required this.context,
-    @required this.children,
+    required this.buttonKey,
+    required this.context,
+    required this.children,
     this.right,
     this.left,
     this.arrowPosition = Alignment.topRight,
@@ -42,7 +41,8 @@ class CustomizedPopUpMenu {
   });
 
   void findButton() {
-    RenderBox renderBox = buttonKey.currentContext.findRenderObject();
+    RenderBox renderBox =
+        buttonKey.currentContext!.findRenderObject() as RenderBox;
     buttonSize = renderBox.size;
     buttonPosition = renderBox.localToGlobal(Offset.zero);
   }
@@ -50,14 +50,16 @@ class CustomizedPopUpMenu {
   void openMenu() {
     findButton();
     _overlayEntry = _overlayEntryBuilder();
-    Overlay.of(context).insert(_overlayEntry);
+    Overlay.of(context)?.insert(_overlayEntry!);
     isMenuOpen = !isMenuOpen;
     menuState(isMenuOpen);
   }
 
   void closeMenu() {
     if (_overlayEntry != null) {
-      _overlayEntry.remove();
+      try {
+        _overlayEntry?.remove();
+      } catch (e) {}
       isMenuOpen = !isMenuOpen;
       menuState(isMenuOpen);
     }
@@ -182,7 +184,7 @@ class CustomizedPopUpMenu {
     );
   }
 
-  Widget menuListTile({bool isSelected, int index}) {
+  Widget menuListTile({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
     bool isLast = index == children.length - 1;
     return Container(
@@ -245,7 +247,7 @@ class CustomizedPopUpMenu {
     );
   }
 
-  Widget menuListTileWithIcon({bool isSelected, int index}) {
+  Widget menuListTileWithIcon({required bool isSelected, required int index}) {
     // if the menu item is lat then we add the circular shape from bottom to menuListTile
     bool isLast = index == children.length - 1;
     return Container(
@@ -306,7 +308,7 @@ class CustomizedPopUpMenuItem {
   String title;
   String value;
 
-  CustomizedPopUpMenuItem({@required this.title, @required this.value});
+  CustomizedPopUpMenuItem({required this.title, required this.value});
 }
 
 class CustomizedPopUpMenuItemWithIcon {
@@ -315,5 +317,5 @@ class CustomizedPopUpMenuItemWithIcon {
   IconData icon;
 
   CustomizedPopUpMenuItemWithIcon(
-      {@required this.title, @required this.value, @required this.icon});
+      {required this.title, required this.value, required this.icon});
 }

@@ -7,7 +7,7 @@ import '../l10n/messages_all.dart';
 class AppLocalization {
   static Future<AppLocalization> load(Locale locale) {
     final String name =
-        locale.countryCode.isEmpty ? locale.languageCode : locale.toString();
+        locale.countryCode!.isEmpty ? locale.languageCode : locale.toString();
     final String localeName = Intl.canonicalizedLocale(name);
     return initializeMessages(localeName).then((_) {
       Intl.defaultLocale = localeName;
@@ -15,7 +15,7 @@ class AppLocalization {
     });
   }
 
-  static AppLocalization of(BuildContext context) {
+  static AppLocalization? of(BuildContext context) {
     return Localizations.of<AppLocalization>(context, AppLocalization);
   }
 
@@ -1516,6 +1516,20 @@ class AppLocalization {
     return Intl.message(
       "No Products",
       name: "noProducts",
+    );
+  }
+
+  String get noReviews {
+    return Intl.message(
+      "No Reviews",
+      name: "noReviews",
+    );
+  }
+
+  String get noPosts {
+    return Intl.message(
+      "No Posts",
+      name: "noPosts",
     );
   }
 

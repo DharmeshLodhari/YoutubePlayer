@@ -3,9 +3,9 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onload.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Onsent.dart';
 
 class Analytics {
-  Onclick onclick;
-  Onload onload;
-  Onsent onsent;
+  Onclick? onclick;
+  Onload? onload;
+  Onsent? onsent;
 
   Analytics({this.onclick, this.onload, this.onsent});
 
@@ -21,13 +21,13 @@ class Analytics {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.onclick != null) {
-      data['onclick'] = this.onclick.toJson();
+      data['onclick'] = this.onclick!.toJson();
     }
     if (this.onload != null) {
-      data['onload'] = this.onload.toJson();
+      data['onload'] = this.onload!.toJson();
     }
     if (this.onsent != null) {
-      data['onsent'] = this.onsent.toJson();
+      data['onsent'] = this.onsent!.toJson();
     }
     return data;
   }

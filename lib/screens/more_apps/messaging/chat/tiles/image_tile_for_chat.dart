@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:Slydo/data/state_notifier.dart';
@@ -12,8 +11,8 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class ImageTileForChat extends StatelessWidget {
-  final Map<String, dynamic> message;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final ChatConversation? chatConversation;
 
   ImageTileForChat({this.message, this.chatConversation});
 
@@ -21,8 +20,8 @@ class ImageTileForChat extends StatelessWidget {
   Widget build(BuildContext context) {
     UserBloc userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = message["author"] == userBloc.user.userName;
-    String messageText = message['text'] ?? "";
+    bool isSend = message!["author"] == userBloc.user.userName;
+    String? messageText = message!['text'] ?? "";
     bool isMessageEmpty = messageText == "";
 
     messageText = messageDecoderWithEmoji(messageText);
@@ -45,9 +44,9 @@ class ImageTileForChat extends StatelessWidget {
                   "/view-chat-media",
                   arguments: {
                     "type": "image",
-                    "file": message['media'],
-                    "message": message['text'],
-                    "poster": message["poster"] ?? null
+                    "file": message!['media'],
+                    "message": message!['text'],
+                    "poster": message!["poster"] ?? null
                   },
                 );
               },
@@ -59,15 +58,15 @@ class ImageTileForChat extends StatelessWidget {
                   minWidth: MediaQuery.of(context).size.width / 1.8,
                 ),
                 decoration: BoxDecoration(
-                  color: chatConversation.isGroupConversation
+                  color: chatConversation!.isGroupConversation!
                       ? isSend
                           ? isMessageEmpty
                               ? navyBlue
                               : navyBlue
-                          : chatBackgroundColor
+                          : Colors.white
                       : isSend
                           ? navyBlue
-                          : chatBackgroundColor,
+                          : Colors.white,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
                     bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -76,28 +75,28 @@ class ImageTileForChat extends StatelessWidget {
                   ),
                 ),
                 padding: EdgeInsets.only(
-                    top: chatConversation.isGroupConversation
+                    top: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 4
                             : 8
                         : isMessageEmpty
                             ? 4
                             : 8,
-                    bottom: chatConversation.isGroupConversation
+                    bottom: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 4
                             : 8
                         : isMessageEmpty
                             ? 4
                             : 8,
-                    left: chatConversation.isGroupConversation
+                    left: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 4
                             : 8
                         : isMessageEmpty
                             ? 4
                             : 0,
-                    right: chatConversation.isGroupConversation
+                    right: chatConversation!.isGroupConversation!
                         ? isSend
                             ? 4
                             : 8
@@ -110,13 +109,13 @@ class ImageTileForChat extends StatelessWidget {
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    chatConversation.isGroupConversation
-                        ? message['author'] != userBloc.user.userName
+                    chatConversation!.isGroupConversation!
+                        ? message!['author'] != userBloc.user.userName
                             ? Column(
                                 children: [
                                   Text(
-                                    message['author_full_name'] ??
-                                        message['author'],
+                                    message!['author_full_name'] ??
+                                        message!['author'],
                                     style: TextStyle(
                                         color: isSend ? Colors.white : navyBlue,
                                         fontSize: 12,
@@ -137,14 +136,15 @@ class ImageTileForChat extends StatelessWidget {
                         ? Container()
                         : Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: chatConversation.isGroupConversation
-                                    ? 0
-                                    : 8),
+                                horizontal:
+                                    chatConversation!.isGroupConversation!
+                                        ? 0
+                                        : 8),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
-                                    messageText,
+                                    messageText!,
                                     style: TextStyle(
                                         color:
                                             isSend ? Colors.white : blackFont,
@@ -162,63 +162,31 @@ class ImageTileForChat extends StatelessWidget {
                           ),
                     Container(
                       padding: EdgeInsets.symmetric(
-                          horizontal: chatConversation.isGroupConversation
+                          horizontal: chatConversation!.isGroupConversation!
                               ? 0
                               : isMessageEmpty
                                   ? 0
                                   : 8),
                       child: ClipRRect(
-                        /*child: CachedNetworkImage(
-                          height: MediaQuery.of(context).size.width / 3,
-                          width: MediaQuery.of(context).size.width / 1.8,
-                          // height: MediaQuery.of(context).size.width / 2.2,
-                          // width: MediaQuery.of(context).size.width / 1.30,
-                          imageUrl: message['media'],
+                        child: CachedNetworkImage(
+                          imageUrl: message!['media'],
                           fit: BoxFit.cover,
+                          imageBuilder: buildImage,
                           progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Center(
-                            child: CircularProgressIndicator(
-                              value: downloadProgress.progress,
-                              strokeWidth: 2.5,
-                              valueColor: AlwaysStoppedAnimation(
-                                  isSend ? Colors.white : navyBlue),
-                              backgroundColor: Colors.transparent,
+                              (context, url, downloadProgress) => Container(
+                            height: MediaQuery.of(context).size.width / 3,
+                            width: MediaQuery.of(context).size.width / 1.8,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                value: downloadProgress.progress,
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation(
+                                    isSend ? Colors.white : navyBlue),
+                                backgroundColor: Colors.transparent,
+                              ),
                             ),
                           ),
                           errorWidget: imageErrorWidget,
-                        ),*/
-                        child: new FutureBuilder<ui.Image>(
-                          future: _getImage(message['media']),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<ui.Image> snapshot) {
-                            if (snapshot.hasData) {
-                              ui.Image image = snapshot.data;
-                              if (image.width > image.height)
-                                return setImage(
-                                    context,
-                                    isSend,
-                                    MediaQuery.of(context).size.width / 3,
-                                    MediaQuery.of(context).size.width / 1.8);
-                              else
-                                return setImage(
-                                    context,
-                                    isSend,
-                                    MediaQuery.of(context).size.width,
-                                    MediaQuery.of(context).size.width / 1.8);
-                            } else {
-                              return Container(
-                                height: MediaQuery.of(context).size.width / 3,
-                                child: Center(
-                                  child: new CircularProgressIndicator(
-                                    strokeWidth: 2.5,
-                                    valueColor: AlwaysStoppedAnimation(
-                                        isSend ? Colors.white : navyBlue),
-                                    backgroundColor: Colors.transparent,
-                                  ),
-                                ),
-                              );
-                            }
-                          },
                         ),
                         borderRadius: BorderRadius.circular(3),
                       ),
@@ -232,7 +200,7 @@ class ImageTileForChat extends StatelessWidget {
                     width: 20,
                     child: isSend
                         ? Center(
-                            child: getMessageTick(message: message),
+                            child: getMessageTick(message: message!),
                           )
                         : Container(),
                   )
@@ -252,7 +220,7 @@ class ImageTileForChat extends StatelessWidget {
                     width: 20,
                   ),
             Text(
-              formatTime(message['created_at']),
+              formatTime(message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
@@ -267,35 +235,32 @@ class ImageTileForChat extends StatelessWidget {
     );
   }
 
-  Future<ui.Image> _getImage(String url) {
-    Completer<ui.Image> completer = new Completer<ui.Image>();
-    new NetworkImage(url).resolve(new ImageConfiguration()).addListener(
-      ImageStreamListener(
-        (ImageInfo info, bool _) {
-          if (!completer.isCompleted) {
-            completer.complete(info.image);
-          }
-        },
-      ),
-    );
-    return completer.future;
-  }
+  Widget buildImage(BuildContext context, ImageProvider imageProvider) {
+    late ui.Image image;
+    double width;
+    double height;
 
-  Widget setImage(BuildContext context, isSend, height, width) {
-    return CachedNetworkImage(
-        height: height,
-        width: width,
-        imageUrl: message['media'],
+    imageProvider.resolve(ImageConfiguration()).addListener(ImageStreamListener(
+      (ImageInfo info, bool _) {
+        image = info.image;
+      },
+    ));
+
+    if (image.width > image.height) {
+      height = MediaQuery.of(context).size.width / 3;
+      width = MediaQuery.of(context).size.width / 1.8;
+    } else {
+      height = MediaQuery.of(context).size.width;
+      width = MediaQuery.of(context).size.width / 1.8;
+    }
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: imageProvider,
         fit: BoxFit.cover,
-        progressIndicatorBuilder: (context, url, downloadProgress) => Center(
-              child: CircularProgressIndicator(
-                value: downloadProgress.progress,
-                strokeWidth: 2.5,
-                valueColor:
-                    AlwaysStoppedAnimation(isSend ? Colors.white : navyBlue),
-                backgroundColor: Colors.transparent,
-              ),
-            ),
-        errorWidget: imageErrorWidget);
+      )),
+    );
   }
 }

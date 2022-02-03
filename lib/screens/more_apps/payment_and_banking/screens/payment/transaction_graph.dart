@@ -23,10 +23,10 @@ class TransactionGraph extends StatefulWidget {
 class _TransactionGraphState extends State<TransactionGraph> {
   final transactionGraphKey = GlobalKey<ScaffoldState>();
   GlobalKey<FlipCardState> cardKey = GlobalKey<FlipCardState>();
-  UserBloc userBloc;
+  UserBloc? userBloc;
 
   //variables for category tile
-  dynamic categoryAndSpend = List();
+  dynamic categoryAndSpend = [];
   bool isLoading = true;
   final _auth = PaymentAndBankingAuth();
 
@@ -40,11 +40,11 @@ class _TransactionGraphState extends State<TransactionGraph> {
   bool showExpenditure = true;
 
   //variable for week
-  int week;
-  DateTime start;
-  DateTime end;
+  late int week;
+  late DateTime start;
+  late DateTime end;
   var barChartData;
-  Map<String, num> _measures;
+  Map<String?, num?>? _measures;
   var income;
   var expenditure;
   var firstData = [
@@ -82,7 +82,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     });
     _auth.getTransactionWeeklyReport(week).then((result) {
       setState(() {
-        categoryAndSpend = result["results"]["categories"];
+        categoryAndSpend = result!["results"]["categories"];
         barChartData = result["results"]["week"];
         income = result["results"]["income"];
         expenditure = result["results"]["expenditure"];
@@ -139,7 +139,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
           key: transactionGraphKey,
           resizeToAvoidBottomInset: true,
           backgroundColor: lightGrey,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Container(
@@ -278,7 +278,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            AppLocalization.of(context).incomeExpenditure,
+            AppLocalization.of(context)!.incomeExpenditure,
             style: TextStyle(
                 fontSize: 14.0, fontWeight: FontWeight.w600, color: blackFont),
           ),
@@ -310,7 +310,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                       width: 8,
                     ),
                     Text(
-                      AppLocalization.of(context).expenditure,
+                      AppLocalization.of(context)!.expenditure,
                       style: TextStyle(fontSize: 12, color: darkGrey),
                     )
                   ],
@@ -337,7 +337,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
                       width: 8,
                     ),
                     Text(
-                      AppLocalization.of(context).income,
+                      AppLocalization.of(context)!.income,
                       style: TextStyle(fontSize: 12, color: darkGrey),
                     )
                   ],
@@ -354,20 +354,20 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget chartBuilder() {
-    var series = [
-      charts.Series<GraphData, int>(
+    List<charts.Series<dynamic, num>> series = [
+      charts.Series<GraphData, num>(
           id: "income",
           colorFn: (_, __) => charts.Color.fromHex(code: "#3F61DB"),
-          domainFn: (GraphData data, _) => data.day,
+          domainFn: (GraphData data, _) => data.day!,
           measureFn: (GraphData data, _) => data.amount,
-          displayName: AppLocalization.of(context).income,
+          displayName: AppLocalization.of(context)!.income,
           data: firstData),
       charts.Series<GraphData, int>(
           id: "expenditure",
           colorFn: (_, __) => charts.Color.fromHex(code: "#F35B46"),
-          domainFn: (GraphData data, _) => data.day,
+          domainFn: (GraphData data, _) => data.day!,
           measureFn: (GraphData data, _) => data.amount,
-          displayName: AppLocalization.of(context).expenditure,
+          displayName: AppLocalization.of(context)!.expenditure,
           data: secondData)
     ];
 
@@ -376,16 +376,16 @@ class _TransactionGraphState extends State<TransactionGraph> {
         charts.Series<GraphData, int>(
             id: "income",
             colorFn: (_, __) => charts.Color.fromHex(code: "#3F61DB"),
-            domainFn: (GraphData data, _) => data.day,
+            domainFn: (GraphData data, _) => data.day!,
             measureFn: (GraphData data, _) => data.amount,
-            displayName: AppLocalization.of(context).income,
+            displayName: AppLocalization.of(context)!.income,
             data: firstData),
         charts.Series<GraphData, int>(
             id: "expenditure",
             colorFn: (_, __) => charts.Color.fromHex(code: "#F35B46"),
-            domainFn: (GraphData data, _) => data.day,
+            domainFn: (GraphData data, _) => data.day!,
             measureFn: (GraphData data, _) => data.amount,
-            displayName: AppLocalization.of(context).expenditure,
+            displayName: AppLocalization.of(context)!.expenditure,
             data: secondData)
       ];
     } else if (!showIncome && showExpenditure) {
@@ -393,9 +393,9 @@ class _TransactionGraphState extends State<TransactionGraph> {
         charts.Series<GraphData, int>(
             id: "expenditure",
             colorFn: (_, __) => charts.Color.fromHex(code: "#F35B46"),
-            domainFn: (GraphData data, _) => data.day,
+            domainFn: (GraphData data, _) => data.day!,
             measureFn: (GraphData data, _) => data.amount,
-            displayName: AppLocalization.of(context).expenditure,
+            displayName: AppLocalization.of(context)!.expenditure,
             data: secondData)
       ];
     } else if (!showExpenditure && showIncome) {
@@ -403,9 +403,9 @@ class _TransactionGraphState extends State<TransactionGraph> {
         charts.Series<GraphData, int>(
             id: "income",
             colorFn: (_, __) => charts.Color.fromHex(code: "#3F61DB"),
-            domainFn: (GraphData data, _) => data.day,
+            domainFn: (GraphData data, _) => data.day!,
             measureFn: (GraphData data, _) => data.amount,
-            displayName: AppLocalization.of(context).income,
+            displayName: AppLocalization.of(context)!.income,
             data: firstData),
       ];
     } else {
@@ -470,9 +470,9 @@ class _TransactionGraphState extends State<TransactionGraph> {
   }
 
   Widget getSelectedData() {
-    List<Widget> widgets = new List();
+    List<Widget> widgets = [];
     if (_measures != null) {
-      _measures.forEach((String series, num value) {
+      _measures!.forEach((String? series, num? value) {
         if (series == "Income") {
           widgets.add(Text(
             "$series : $value",
@@ -493,36 +493,35 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return Container();
   }
 
-  String formatDay(num day) {
+  String formatDay(num? day) {
     switch (day) {
       case 0:
         return "S";
-        break;
+
       case 1:
         return "M";
-        break;
+
       case 2:
         return "T";
-        break;
+
       case 3:
         return "W";
-        break;
+
       case 4:
         return "T";
-        break;
+
       case 5:
         return "F";
-        break;
+
       case 6:
         return "S";
-        break;
     }
-    return AppLocalization.of(context).day;
+    return AppLocalization.of(context)!.day;
   }
 
   _onSelectionChanged(charts.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
-    final measures = <String, num>{};
+    final measures = <String?, num?>{};
     if (selectedDatum.isNotEmpty) {
       selectedDatum.forEach((charts.SeriesDatum datumPair) {
         measures[datumPair.series.displayName] =
@@ -543,87 +542,87 @@ class _TransactionGraphState extends State<TransactionGraph> {
         color: getCategoryIconColor(categoryAndSpend["category"]));
   }
 
-  IconData getCategoryIcon(String category) {
+  IconData getCategoryIcon(String? category) {
     switch (category) {
       case "Bills":
         return SlydoAppIcon.bills_category;
-        break;
+
       case "Charity":
         return SlydoAppIcon.charity_category;
-        break;
+
       case "Eat out":
         return SlydoAppIcon.eatingout_category;
-        break;
+
       case "Entertainment":
         return SlydoAppIcon.entertainment_category;
-        break;
+
       case "Family":
         return SlydoAppIcon.family_category;
-        break;
+
       case "Finance":
         return SlydoAppIcon.finances_category;
-        break;
+
       case "General":
         return SlydoAppIcon.general_category;
-        break;
+
       case "Groceries":
         return SlydoAppIcon.gorceries_category;
-        break;
+
       case "Holidays":
         return SlydoAppIcon.holidays_category;
-        break;
+
       case "Personal Care":
         return SlydoAppIcon.personalcare_category;
-        break;
+
       case "Shopping":
         return SlydoAppIcon.shopping_category;
-        break;
+
       case "Transportation":
         return SlydoAppIcon.transport_category;
-        break;
+
       default:
         return SlydoAppIcon.shopping_category;
     }
   }
 
-  Color getCategoryIconColor(String category) {
+  Color getCategoryIconColor(String? category) {
     switch (category) {
       case "Bills":
         return HexColor("#3F61DB");
-        break;
+
       case "Charity":
         return HexColor("#F07097");
-        break;
+
       case "Eat out":
         return HexColor("#9B51E0");
-        break;
+
       case "Entertainment":
         return HexColor("#FFAB00");
-        break;
+
       case "Family":
         return HexColor("#F35B46");
-        break;
+
       case "Finance":
         return HexColor("#5218E9");
-        break;
+
       case "General":
         return HexColor("#EE78BF");
-        break;
+
       case "Groceries":
         return HexColor("#46CE7C");
-        break;
+
       case "Holidays":
         return HexColor("#3F61DB");
-        break;
+
       case "Personal Care":
         return HexColor("#FFAB00");
-        break;
+
       case "Shopping":
         return HexColor("#F07097");
-        break;
+
       case "Transportation":
         return HexColor("#374677");
-        break;
+
       default:
         return HexColor("#3F61DB");
     }
@@ -649,7 +648,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
           ),
           Column(children: <Widget>[
             Text(
-              AppLocalization.of(context).weekRange,
+              AppLocalization.of(context)!.weekRange,
               style: TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.bold,
@@ -702,7 +701,7 @@ class _TransactionGraphState extends State<TransactionGraph> {
     return IconButton(
       icon: Icon(Icons.flip),
       onPressed: () {
-        cardKey.currentState.toggleCard();
+        cardKey.currentState!.toggleCard();
         isLineGraph = !isLineGraph;
         setState(() {});
       },
@@ -711,10 +710,10 @@ class _TransactionGraphState extends State<TransactionGraph> {
 }
 
 class GraphData {
-  int day;
-  int amount;
+  int? day;
+  int? amount;
 
-  GraphData({@required int day, @required int amount}) {
+  GraphData({required int? day, required int? amount}) {
     this.day = day;
     this.amount = moneyDisplayNormalizerForGraph(amount);
   }

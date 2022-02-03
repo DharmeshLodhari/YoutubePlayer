@@ -1,12 +1,14 @@
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/utils/global_key.dart';
+import 'package:provider/provider.dart';
 
 class BankAccount {
-  String uuid;
-  String bankAvatar;
-  String bankName;
-  String accountName;
-  int accountNumber;
-  bool isDefault;
+  String? uuid;
+  String? bankAvatar;
+  String? bankName;
+  String? accountName;
+  String? accountNumber;
+  bool? isDefault;
 
   BankAccount({
     this.uuid,
@@ -19,23 +21,26 @@ class BankAccount {
 }
 
 class Transaction {
-  String status;
-  String uuid;
-  String description;
-  String payee;
-  String avatar;
-  String currency;
-  String createdAt;
-  String category;
-  String note;
-  String latitude;
-  String longitude;
+  String? status;
+  String? uuid;
+  String? description;
+  String? payee;
+  String? avatar;
+  String? currency;
+  String? createdAt;
+  String? category;
+  String? note;
+  String? latitude;
+  String? longitude;
   String userType;
-  int amount;
-  bool isCredit;
-  bool isAnonymous;
+  int? amount;
+  bool? isCredit;
+  bool? isAnonymous;
   String fromCustomer;
   String toCustomer;
+  String displayFromCustomer;
+  String displayToCustomer;
+  String displayCustomer;
 
   // Pass in as named parameter in constructor
   Transaction(
@@ -49,6 +54,9 @@ class Transaction {
       this.userType = "User",
       this.toCustomer = "",
       this.fromCustomer = "",
+      this.displayFromCustomer = "",
+      this.displayToCustomer = "",
+      this.displayCustomer = "",
       this.category,
       this.note,
       this.latitude,
@@ -59,9 +67,16 @@ class Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     bool isCredit = json["is_credit"];
-    var payee = isCredit ? json["from_customer"] : json['to_customer'];
-    var avatar =
-        isCredit ? json["from_customer_avatar"] : json['to_customer_avatar'];
+    var payee = (isCredit ? json["from_customer"] : json['to_customer']) ?? "";
+
+    var avatar = (isCredit
+            ? json["from_customer_avatar"]
+            : json['to_customer_avatar']) ??
+        "";
+    String displayCustomer = (isCredit
+            ? json["display_from_customer"]
+            : json['display_to_customer']) ??
+        "";
 
     return Transaction(
         status: json['status'],
@@ -77,6 +92,9 @@ class Transaction {
         latitude: json['latitude'] ?? "",
         longitude: json['longitude'] ?? "",
         amount: json['amount'],
+        displayFromCustomer: json["display_from_customer"] ?? "",
+        displayToCustomer: json["display_to_customer"] ?? "",
+        displayCustomer: displayCustomer,
         fromCustomer: json['from_customer'] ?? "",
         toCustomer: json['to_customer'] ?? "",
         isAnonymous: json['is_anonymous'] ?? false,
@@ -85,22 +103,26 @@ class Transaction {
 }
 
 class PaymentRequest {
-  String status;
-  String id;
-  String description;
-  String payee;
-  String fromCustomer;
-  String fromCustomerAvatar;
-  String toCustomer;
-  String toCustomerAvatar;
-  bool madeFromChat;
-  String conversationId;
-  String avatar;
-  String currency;
-  String createdAt;
-  int amount;
-  bool isCredit;
+  String? status;
+  String? id;
+  String? description;
+  String? payee;
+  String? fromCustomer;
+  String? fromCustomerAvatar;
+  String? toCustomer;
+  String? toCustomerAvatar;
+
+  bool? madeFromChat;
+  String? conversationId;
+  String? avatar;
+  String? currency;
+  String? createdAt;
+  int? amount;
+  bool? isCredit;
   String userType;
+  String displayFromCustomer;
+  String displayToCustomer;
+  String displayCustomer;
 
   // Pass in as named parameter in constructor
   PaymentRequest(
@@ -115,22 +137,34 @@ class PaymentRequest {
       this.amount,
       this.toCustomer = "",
       this.fromCustomer = "",
+      this.displayFromCustomer = "",
+      this.displayToCustomer = "",
+      this.displayCustomer = "",
       this.conversationId = "",
       this.fromCustomerAvatar = "",
       this.madeFromChat = false,
       this.toCustomerAvatar = "",
       this.isCredit});
 
-  factory PaymentRequest.fromJson(Map<String, dynamic> json,
-      {User currentUser}) {
-    bool isCredit = (json["from_customer"] != currentUser?.userName &&
-            json["to_customer"] == currentUser?.userName)
+  factory PaymentRequest.fromJson(Map<String, dynamic> json) {
+    UserBloc currentUser =
+        Provider.of(MyGlobals().navigationKey.currentContext!, listen: false);
+
+    bool isRequested = (json["from_customer"] != currentUser.user.userName &&
+            json["to_customer"] == currentUser.user.userName)
         ? true
         : false;
 
-    var payee = isCredit ? json["from_customer"] : json['to_customer'];
-    var avatar =
-        isCredit ? json["from_customer_avatar"] : json['to_customer_avatar'];
+    var payee =
+        (isRequested ? json["from_customer"] : json['to_customer']) ?? "";
+    var avatar = (isRequested
+            ? json["from_customer_avatar"]
+            : json['to_customer_avatar']) ??
+        "";
+    String displayCustomer = (isRequested
+            ? json["display_from_customer"]
+            : json['display_to_customer']) ??
+        "";
 
     return PaymentRequest(
         status: json['status'],
@@ -142,10 +176,13 @@ class PaymentRequest {
         currency: json['currency'],
         createdAt: json['created_at'],
         amount: json['amount'],
-        isCredit: isCredit,
+        isCredit: isRequested,
         conversationId: json['conversation_id'],
         fromCustomer: json['from_customer'],
         fromCustomerAvatar: json['from_customer_avatar'],
+        displayFromCustomer: json["display_from_customer"] ?? "",
+        displayToCustomer: json["display_to_customer"] ?? "",
+        displayCustomer: displayCustomer,
         madeFromChat: json['made_from_chat'],
         toCustomer: json['to_customer'],
         toCustomerAvatar: json['to_customer_avatar']);

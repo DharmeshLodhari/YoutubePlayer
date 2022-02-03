@@ -11,6 +11,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_m
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
@@ -27,10 +28,9 @@ import 'package:provider/provider.dart';
 
 bool isDialogueOpen = false;
 
-Future<dynamic> fcmBackgroundMessageHandler(
-    Map<String, dynamic> message) async {
+Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 // await Firebase.initializeApp();
-  print("onBackgroundMessage: $message");
+  print("onBackgroundMessage: ${remoteMessage.data}");
 
   try {
     /// {data:
@@ -49,21 +49,41 @@ Future<dynamic> fcmBackgroundMessageHandler(
 
     Map<String, dynamic> data = {};
 
+    Map<String, dynamic> notification =
+        remoteMessage.data["notification"] != null
+            ? jsonDecode(remoteMessage.data["notification"])
+            : {};
+
+    if (notification.isEmpty) {
+      print("Invalid Data Format:-  ${remoteMessage.data}");
+      return;
+    }
+
     AppConfig();
 
     AwesomeNotificationService().init();
 
-    if (message['data'].containsKey('data')) {
-      data['data'] = jsonDecode(message['data']['data']);
+    Map<String, dynamic> dataOfNotification = Platform.isIOS
+        ? decodeNotificationIOS(remoteMessage.data)
+        : decodeNotification(remoteMessage.data);
 
+    debugPrint("DATA:----- $dataOfNotification");
+    if (dataOfNotification['data'] != null &&
+        dataOfNotification["data"]["type"] != null &&
+        (dataOfNotification["data"]['type'] == "chatroom_message" ||
+            dataOfNotification["data"]['type'] == "nudge_user" ||
+            dataOfNotification["data"]['type'] == "acknowledge_message")) {
+      data['data'] = dataOfNotification['data'] is Map
+          ? dataOfNotification['data']
+          : jsonDecode(dataOfNotification['data']);
       if (data['data']['type'] == "nudge_user") {
-        data['actions'] = message['data']['actions'];
-        data['body'] = message['data']['body'];
-        data['title'] = message['data']['title'];
+        data['actions'] = notification['actions'];
+        data['body'] = notification['body'];
+        data['title'] = notification['title'];
 
         AwesomeNotificationService().showNudgeNotification(message: data);
       } else if (data['data']['type'] == "chatroom_message") {
-        data['notification'] = jsonDecode(message['data']['notification']);
+        data['notification'] = notification;
 
         ChatMessage textMessage = ChatMessage.fromJson(data['data']);
 
@@ -71,10 +91,10 @@ Future<dynamic> fcmBackgroundMessageHandler(
             await ChatMessageHandler().addChatMessage(chatMessage: textMessage);
 
         if (result == 1) {
-          int time =
+          int? time =
               convertStringToMillisecondsSinceEpoch(textMessage.createdAt);
 
-          String conversationId = textMessage.conversationId;
+          String? conversationId = textMessage.conversationId;
 
           /// move user to top of the list in the connection list
           await ConnectionListManager().updateLastMessageTime(
@@ -95,45 +115,51 @@ Future<dynamic> fcmBackgroundMessageHandler(
           AwesomeNotificationService().showNotification(message: data);
         }
       } else if (data['data']['type'] == "acknowledge_message") {
-        Map<String, dynamic> messageData = message['data']['data'] is Map
-            ? message['data']['data']
-            : jsonDecode(message['data']['data']);
+        Map<String, dynamic> messageData = dataOfNotification['data'] is Map
+            ? dataOfNotification['data']
+            : jsonDecode(dataOfNotification['data']);
 
         /// set delivery status true for the message
         MainSocketMessageHandler()
             .handleAcknowledgementMessage(messageData: messageData);
       }
     } else {
-      data['notification'] = jsonDecode(message['data']['notification']);
+      data['notification'] = notification;
 
-      if (data['notification']['actions'] == "/transaction") {
+      String action = data['notification']['actions'] ??
+          data['notification']['click_action'] ??
+          "";
+
+      if (action == "/transaction") {
         data['data'] = {"type": "transaction"};
-      } else if (data['notification']['actions'] == "/request-payment") {
+      } else if (action == "/request-payment") {
         data['data'] = {"type": "request-payment"};
-      } else if (data['notification']['actions'] == "/connection-request") {
+      } else if (action == "/connection-request") {
         data['data'] = {"type": "connection-request"};
-      } else if (data['notification']['actions'] == "/friends-dashboard") {
+      } else if (action == "/friends-dashboard") {
         data['data'] = {"type": "friends-dashboard"};
-      } else if (data['notification']['actions'].length > 15 &&
-          data['notification']['actions'].substring(0, 16) ==
-              "/detail_message/") {
+      } else if (action.toString().contains("/detail_message/")) {
         data['data'] = {"type": "detail_message"};
+      } else if (action.toString().contains("/orders-list")) {
+        data['data'] = {"type": "orders-list"};
+      } else if (action.toString().contains("/order-detail-page/")) {
+        data['data'] = {"type": "order-detail-page"};
       } else {
-        debugPrint("UNKNOWN NOTIFICATION TYPE $message");
+        debugPrint("UNKNOWN NOTIFICATION TYPE $remoteMessage");
         return;
       }
       AwesomeNotificationService().showNotification(message: data);
     }
   } catch (error) {
     print("ERROR IN BACKGROUND HANDLER : - $error");
-    print("DATA IN BACKGROUND HANDLER : - $message");
+    print("DATA IN BACKGROUND HANDLER : - $remoteMessage");
   }
 
   return Future<void>.value();
 }
 
 class PushNotificationService {
-  static FirebaseMessaging _fcm = FirebaseMessaging();
+  static FirebaseMessaging _fcm = FirebaseMessaging.instance;
   static AuthService _auth = AuthService();
   static DatabaseHelper _db = DatabaseHelper();
 
@@ -154,16 +180,15 @@ class PushNotificationService {
 
     if (Platform.isIOS) {
       // request permissions if we're on android
-      _fcm.requestNotificationPermissions(
-          const IosNotificationSettings(sound: true, badge: true, alert: true));
+      _fcm.requestPermission(sound: true, badge: true, alert: true);
 
-      _fcm.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
-        // debugPrint("Settings registered: $settings");
-      });
+      // _fcm.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
+      //   // debugPrint("Settings registered: $settings");
+      // });
     }
 
     var data = await getDeviceInfo();
-    await _fcm.getToken().then((String token) async {
+    await _fcm.getToken().then((String? token) async {
       data["token"] = token;
 
       print("FCM Token:- $token");
@@ -186,88 +211,79 @@ class PushNotificationService {
       await _auth.registerDevice(data);
     });
 
-    _fcm.configure(
-      // Called when the app is in the foreground and we receive a push notification
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
+    /// onMessage:
+    /// {notification: {"image":"https:\/\/slydo-assets.s3.amazonaws.com\/media\/customer\/avatar\/4f4470b6dbf44b62859ddf2b945d7472.jpg",
+    /// "body":"User Updated Order Status","title":"Order Update",
+    /// "priority":"normal","actions":"\/orders\/52"}}
 
-        if (notification["data"] != null) {
-          print("notification data = ${notification["data"]}");
-          print("notification data type = ${notification["data"] is String}");
-          Map<String, dynamic> decodeMessage;
-          try {
-            decodeMessage = notification["data"] is Map
-                ? notification["data"]
-                : jsonDecode(notification["data"]);
-          } catch (error) {
-            debugPrint(
-                "ERROR:- while adding data to db from FCM $notification");
-          }
-          if (decodeMessage != null) {
-            if (decodeMessage.isNotEmpty) {
-              MainSocketMessageHandler(message: jsonEncode(decodeMessage));
-            }
-          }
-        } else {
-          if ((notification["body"].toString().toLowerCase() == "hello" ||
-                      notification["body"].toString().toLowerCase() ==
-                          "null") &&
-                  notification['title'] == "" ||
-              notification["body"] == "" && notification['title'] == "") {
-            print("ERROR:- notification data = $notification");
-            return;
-          }
-          if (isDialogueOpen) {
-            Navigator.pop(myGlobals.scaffoldKey.currentContext);
-            isDialogueOpen = false;
-          }
-          if (!isDialogueOpen) {
-            showAlertMessage(
-                notification: notification,
-                context: myGlobals.scaffoldKey.currentContext);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("onMessage: ${message.data}");
+      // creating notification from server payload
+      Map<String, dynamic> notification = Platform.isIOS
+          ? decodeNotificationIOS(message.data)
+          : decodeNotification(message.data);
+
+      if (notification["data"] != null &&
+          notification["data"]["type"] != null &&
+          (notification["data"]['type'] == "chatroom_message" ||
+              notification["data"]['type'] == "nudge_user" ||
+              notification["data"]['type'] == "acknowledge_message")) {
+        print("notification data = ${notification["data"]}");
+        print("notification data type = ${notification["data"] is String}");
+        Map<String, dynamic>? decodeMessage;
+        try {
+          decodeMessage = notification["data"] is Map
+              ? notification["data"]
+              : jsonDecode(notification["data"]);
+        } catch (error) {
+          debugPrint("ERROR:- while adding data to db from FCM $notification");
+        }
+        if (decodeMessage != null) {
+          if (decodeMessage.isNotEmpty) {
+            MainSocketMessageHandler(message: jsonEncode(decodeMessage));
           }
         }
-      },
+      } else {
+        if ((notification["body"].toString().toLowerCase() == "hello" ||
+                    notification["body"].toString().toLowerCase() == "null") &&
+                notification['title'] == "" ||
+            notification["body"] == "" && notification['title'] == "") {
+          print("ERROR:- notification data = $notification");
+          return;
+        }
+        if (isDialogueOpen) {
+          Navigator.pop(myGlobals.scaffoldKey.currentContext!);
+          isDialogueOpen = false;
+        }
+        if (!isDialogueOpen) {
+          showAlertMessage(
+              notification: notification,
+              context: myGlobals.scaffoldKey.currentContext!);
+        }
+      }
+    });
 
-      // Called when the app has been closed completely and it's opened
-      // from the push notification.
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print("onLaunch: ${message.data}");
 
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
+      // creating notification from server payload
+      // var notification = Platform.isAndroid
+      //     ? getAndroidNotification(message.data)
+      //     : getIosNotification(message.data);
+      Map<String, dynamic> notification = Platform.isIOS
+          ? decodeNotificationIOS(message.data)
+          : decodeNotification(message.data);
 
-        //navigate to the particular screen
-        _navigateToItemDetail(
-            notification, myGlobals.scaffoldKey.currentContext);
-      },
-      // Called when the app is in the background and it's opened
-      // from the push notification.
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
+      //navigate to the particular screen
+      _navigateToItemDetail(notification, myGlobals.scaffoldKey.currentContext);
+    });
 
-        // creating notification from server payload
-        var notification = Platform.isAndroid
-            ? getAndroidNotification(message)
-            : getIosNotification(message);
-
-        //navigate to the particular screen
-        _navigateToItemDetail(
-            notification, myGlobals.scaffoldKey.currentContext);
-      },
-      onBackgroundMessage:
-          Platform.isAndroid ? fcmBackgroundMessageHandler : null,
-    );
+    FirebaseMessaging.onBackgroundMessage(fcmBackgroundMessageHandler);
   }
 
   // ignore: missing_return
-  void onSelectNotification(String payload, BuildContext context) async {
+  void onSelectNotification(String? payload, BuildContext? context,
+      Map<String, dynamic> notification) async {
     // example of notification response
     // {body: abiola.rasheed.2 sent you a message,
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
@@ -276,26 +292,26 @@ class PushNotificationService {
     try {
       debugPrint("payload : $payload");
       if (payload == "/request-payment") {
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         DashboardBloc _dashboardBloc =
             Provider.of<DashboardBloc>(context, listen: false);
         _dashboardBloc.index = 1;
       } else if (payload == "/transaction") {
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/transactions');
       } else if (payload == "/connection-request") {
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context)
             .pushNamed('/friends-dashboard', arguments: {"index": 1});
       } else if (payload == "/friends-dashboard") {
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context)
             .pushNamed('/friends-dashboard', arguments: {"index": 0});
-      } else if (payload.length > 15 &&
+      } else if (payload!.length > 15 &&
           payload.substring(0, 16) == "/detail_message/") {
         //this variable will fetch the id of message from the response
         String idOfMessage = payload.replaceAll("/detail_message/", "");
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/detail_message', arguments: {
           'id': idOfMessage,
         });
@@ -307,7 +323,7 @@ class PushNotificationService {
 
         if (recipientUsername != null) {
           showDialog(
-              context: context,
+              context: context!,
               builder: (context) => Center(child: CircularLoadingIndicator()));
 
           ChatConversation chatConversation =
@@ -321,6 +337,15 @@ class PushNotificationService {
           Navigator.pushNamed(context, '/chat-screen',
               arguments: {"searchedUser": chatConversation});
         }
+      } else if (payload.toString().contains("orders-list")) {
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed('/orders-list');
+      } else if (payload.toString().contains("order-detail-page")) {
+        Order order = Order.fromJson(notification["data"]);
+
+        Navigator.of(context!).pushNamed('/order-detail-page', arguments: {
+          'order': order,
+        });
       }
     } catch (error) {
       print("new error:- $error");
@@ -328,29 +353,30 @@ class PushNotificationService {
   }
 
   void _navigateToItemDetail(
-      Map<String, dynamic> notification, BuildContext context) async {
+      Map<String, dynamic> notification, BuildContext? context) async {
     print("navigate function is called");
-    onSelectNotification(notification['actions'], context);
+    onSelectNotification(notification['actions'], context, notification);
   }
 
-  Future<bool> logout() async {
+  Future<void> logout() async {
     debugPrint("logout called!");
-    bool result;
+
     try {
-      result = await _fcm.deleteInstanceID();
+      await FirebaseMessaging.instance.deleteToken();
     } catch (e) {
       debugPrint("logout error:- $e");
     }
 
-    debugPrint("LOGOUT=====> $result");
-    return result;
+    debugPrint("LOGOUT=====>");
   }
 
   void showAlertMessage(
-      {Map<String, dynamic> notification, BuildContext context}) async {
+      {required Map<String, dynamic> notification,
+      required BuildContext context}) async {
+    debugPrint("====> $notification");
     // show the notification in the dialog
     isDialogueOpen = true;
-    bool result = await showDialogBoxWithImage(
+    bool? result = await showDialogBoxWithImage(
       context: context,
       actionOneBgColor: greyBorderColor,
       actionOneTextColor: blackFont,
@@ -360,7 +386,7 @@ class PushNotificationService {
       title: notification['title'],
       description: notification['body'],
       image: notification['image'],
-      actionOne: AppLocalization.of(context).cancel,
+      actionOne: AppLocalization.of(context)!.cancel,
       actionTwo: "View",
     );
 
@@ -375,24 +401,33 @@ class PushNotificationService {
   }
 }
 
-Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
+Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
+  debugPrint("DATA:- $message");
   Map<String, dynamic> notification = {};
-  notification["body"] = message['notification']['body'] ?? "";
-  notification["title"] = message['notification']['title'] ?? "";
-  notification["actions"] = message['data']['actions'];
-  notification['image'] = message['data']['image'];
+  Map<String, dynamic> decodeNotification = jsonDecode(message["notification"]);
+  notification["body"] = decodeNotification["body"] ?? "";
+  notification["title"] = decodeNotification["title"] ?? "";
+  notification["actions"] =
+      decodeNotification["actions"] ?? decodeNotification["click_action"] ?? "";
+  notification['image'] = decodeNotification['image'];
 
-  notification["data"] = message['data']['data'];
+  if (message["data"] != null) {
+    Map<String, dynamic> decodedInnerData =
+        message["data"] is Map ? message["data"] : jsonDecode(message["data"]);
+    notification["data"] = decodedInnerData;
+  }
 
   try {
-    if (message['data']['notification'] != null) {
+    if (message["data"] != null && message['data']['notification'] != null) {
       Map<String, dynamic> notificationFromMessage =
           jsonDecode(message['data']['notification']);
 
       notification["body"] = notificationFromMessage['body'] ?? "";
       notification["title"] = notificationFromMessage['title'] ?? "";
       notification['image'] = notificationFromMessage['image'] ?? "";
-      notification["actions"] = notificationFromMessage['actions'] ?? "";
+      notification["actions"] = notificationFromMessage['actions'] ??
+          notificationFromMessage["click_action"] ??
+          "";
     }
   } catch (error) {
     debugPrint("ERROR:- $error");
@@ -402,18 +437,53 @@ Map<String, dynamic> getAndroidNotification(Map<String, dynamic> message) {
   return notification;
 }
 
-Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
+Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
+  debugPrint("DATA:- $message");
   Map<String, dynamic> notification = {};
+
+  notification["body"] = message["body"] ?? "";
+  notification["title"] = message["title"] ?? "";
+  notification["actions"] = message["actions"] ?? message["click_action"] ?? "";
+  notification['image'] = message['image'];
+
+  if (message["data"] != null) {
+    Map<String, dynamic> decodedInnerData =
+        message["data"] is Map ? message["data"] : jsonDecode(message["data"]);
+    notification["data"] = decodedInnerData;
+  }
+
   try {
-    Map<String, dynamic> notificationFromMessage =
-        jsonDecode(message['notification']);
-    notification["body"] = notificationFromMessage['body'] ?? "";
-    notification["title"] = notificationFromMessage['title'] ?? "";
-    notification["actions"] = notificationFromMessage['actions'];
-    notification['image'] = notificationFromMessage['image'];
-    debugPrint("notification from IOS $notification");
+    if (message["data"] != null && message['data']['notification'] != null) {
+      Map<String, dynamic> notificationFromMessage =
+          jsonDecode(message['data']['notification']);
+
+      notification["body"] = notificationFromMessage['body'] ?? "";
+      notification["title"] = notificationFromMessage['title'] ?? "";
+      notification['image'] = notificationFromMessage['image'] ?? "";
+      notification["actions"] = notificationFromMessage["actions"] ??
+          notificationFromMessage["click_action"] ??
+          "";
+    }
   } catch (error) {
     debugPrint("ERROR:- $error");
   }
+
+  print("notification from android $notification");
   return notification;
 }
+
+// Map<String, dynamic> getIosNotification(Map<String, dynamic> message) {
+//   Map<String, dynamic> notification = {};
+//   try {
+//     Map<String, dynamic> notificationFromMessage =
+//         jsonDecode(message['notification']);
+//     notification["body"] = notificationFromMessage['body'] ?? "";
+//     notification["title"] = notificationFromMessage['title'] ?? "";
+//     notification["actions"] = notificationFromMessage['actions'];
+//     notification['image'] = notificationFromMessage['image'];
+//     debugPrint("notification from IOS $notification");
+//   } catch (error) {
+//     debugPrint("ERROR:- $error");
+//   }
+//   return notification;
+// }

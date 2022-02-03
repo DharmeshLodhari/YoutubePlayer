@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 /// timer for video recorder
 
 class TimerService extends ChangeNotifier {
-  Stopwatch _watch;
-  Timer _timer;
+  late Stopwatch _watch;
+  Timer? _timer;
 
   Duration get currentDuration => _currentDuration;
   Duration _currentDuration = Duration.zero;

@@ -31,7 +31,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> sendSocketMessage(Map data, File media, {File poster}) async {
+  Future<bool> sendSocketMessage(Map data, File media, {File? poster}) async {
     var url = AppConfig.chatUrl + "/api/v1/chat/create/";
     // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
@@ -81,7 +81,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> sendReplyMessage(
-      {String messageId, String data, String conversationId}) async {
+      {String? messageId, String? data, String? conversationId}) async {
     var url = AppConfig.chatUrl +
         "/api/v1/chat/reply-chat-message/$messageId/$conversationId/";
     var headers = await getAuthHeaders();
@@ -165,14 +165,14 @@ class MessageAuth extends AuthService {
   }
 
   // List messages filters: [archived,sent,starred,all]
-  Future<Map<String, dynamic>> listMessages(String next, String previous,
-      {String filter}) async {
+  Future<Map<String, dynamic>?> listMessages(String? next, String? previous,
+      {String? filter}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/messaging/list/" + filter + "/";
+      url = AppConfig.baseUrl + "/api/v1/messaging/list/" + filter! + "/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -221,14 +221,14 @@ class MessageAuth extends AuthService {
   }
 
   // List messages filters: [archived,sent,starred,all]
-  Future<Map<String, dynamic>> getChatMessages(String next, String previous,
-      {String conversionId}) async {
+  Future<Map<String, dynamic>?> getChatMessages(String? next, String? previous,
+      {String? conversionId}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.chatUrl + "/api/v1/chat/messages/" + conversionId + "/";
+      url = AppConfig.chatUrl + "/api/v1/chat/messages/" + conversionId! + "/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -267,14 +267,13 @@ class MessageAuth extends AuthService {
   }
 
   // Get status of the user you are chatting with
-  Future<Map> getChatUserStatus(String id) async {
+  Future<Map?> getChatUserStatus(String id) async {
     var url = AppConfig.chatUrl +
         "/api/v1/chat/retrieve-user-chat-status/" +
         id +
         "/";
     var headers = await getAuthHeaders();
-    var response = await http
-        .get(url, headers: headers)
+    var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
@@ -288,8 +287,8 @@ class MessageAuth extends AuthService {
   }
 
   // List the  item with pagination
-  Future<Map<String, dynamic>> searchProductAndServiceOfUser(
-      String url, String next, String previous) async {
+  Future<Map<String, dynamic>?> searchProductAndServiceOfUser(
+      String url, String? next, String? previous) async {
     debugPrint("URl:- $url");
     if (next == null) {
       return null;
@@ -317,29 +316,30 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<ChatConversation> createGroupChat({AddGroupModel group}) async {
+  Future<ChatConversation> createGroupChat(
+      {required AddGroupModel group}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/group-conversation/";
     // debugPrint("URL:- $url");
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    List<String> listOfUser = [];
+    List<String?> listOfUser = [];
 
-    group.users.forEach((element) {
+    group.users!.forEach((element) {
       listOfUser.add(element.userName);
     });
 
     request.fields["participants"] = jsonEncode(listOfUser);
-    request.fields["group_name"] = group.groupName;
-    request.fields["description"] = group.groupDescription;
+    request.fields["group_name"] = group.groupName!;
+    request.fields["description"] = group.groupDescription!;
 
     request.fields["is_group_conversation"] = jsonEncode(true);
 
     if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
-          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto);
+          await http.MultipartFile.fromPath("banner", group.groupProfilePhoto!);
 
       // Add multipart to request
       request.files.add(multipartFile1);
@@ -376,8 +376,8 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> updateGroupChat(
-      {UpdateGroupDetailModel group}) async {
+  Future<Map<String, dynamic>?> updateGroupChat(
+      {required UpdateGroupDetailModel group}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/${group.groupConversationId}/";
     // debugPrint("URL:- $url");
@@ -385,12 +385,12 @@ class MessageAuth extends AuthService {
 
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    request.fields["group_name"] = group.name;
-    request.fields["description"] = group.description;
+    request.fields["group_name"] = group.name!;
+    request.fields["description"] = group.description!;
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
-          await http.MultipartFile.fromPath("banner", group.avatar);
+          await http.MultipartFile.fromPath("banner", group.avatar!);
 
       // Add multipart to request
       request.files.add(multipartFile1);
@@ -429,8 +429,7 @@ class MessageAuth extends AuthService {
         conversationID +
         "/";
     var headers = await getAuthHeaders();
-    var response = await http
-        .get(url, headers: headers)
+    var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     if (response.statusCode == 200) {
@@ -445,14 +444,15 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> addParticipantToGroup(
-      {String conversationId, List<CustomerProfile> users}) async {
+      {required String conversationId,
+      required List<CustomerProfile> users}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/add-user/" +
         conversationId +
         "/";
     var headers = await getAuthHeaders();
 
-    List<String> userList = users.map((user) => user.userName).toList();
+    List<String?> userList = users.map((user) => user.userName).toList();
 
     debugPrint("List of users to add:- $userList");
 
@@ -471,7 +471,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> removeParticipantFromAdmin(
-      {String conversationId, String userName}) async {
+      {required String conversationId, String? userName}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/remove-admin-user/" +
         conversationId +
@@ -493,7 +493,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> makeParticipantAdmin(
-      {String conversationId, String userName}) async {
+      {required String conversationId, String? userName}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/add-admin-user/" +
         conversationId +
@@ -515,7 +515,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> muteParticipantFromGroup(
-      {String conversationId, String userName}) async {
+      {required String conversationId, String? userName}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/mute-participant/" +
         conversationId +
@@ -537,7 +537,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> unMuteParticipantFromGroup(
-      {String conversationId, String userName}) async {
+      {required String conversationId, String? userName}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/unmute-participant/" +
         conversationId +
@@ -559,7 +559,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> blockParticipantFromGroup(
-      {String conversationId, String userName}) async {
+      {required String conversationId, String? userName}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/block-participants/" +
         conversationId +
@@ -581,7 +581,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> unBlockParticipantFromGroup(
-      {String conversationId, String userName}) async {
+      {required String conversationId, String? userName}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/unblock-participants/" +
         conversationId +
@@ -603,7 +603,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> removeParticipantFromGroup(
-      {String conversationId, String userName}) async {
+      {required String conversationId, String? userName}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/remove-user/" +
         conversationId +
@@ -624,7 +624,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> exitFromGroup({String conversationId}) async {
+  Future<bool> exitFromGroup({required String conversationId}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/exit-group/" +
         conversationId +
@@ -642,7 +642,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> deleteGroup({String conversationId}) async {
+  Future<bool> deleteGroup({required String conversationId}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/delete-group/" +
         conversationId +
@@ -665,9 +665,9 @@ class MessageAuth extends AuthService {
   }
 
   // Search User in Contact
-  Future<Map<String, dynamic>> searchParticipantInGroup(
-      String next, String previous,
-      {String conversationId, String query}) async {
+  Future<Map<String, dynamic>?> searchParticipantInGroup(
+      String? next, String? previous,
+      {String? conversationId, String? query}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/search-participants/$conversationId";
     if (query != "") {
@@ -699,7 +699,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  void sendStopNudge({Map<String, dynamic> dataToSend}) async {
+  void sendStopNudge({Map<String, dynamic>? dataToSend}) async {
     var url = AppConfig.chatUrl + "/api/v1/chat/conversation/stop-nudge/";
     var headers = await getAuthHeaders();
 
@@ -714,8 +714,8 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> fetchMissedMessages(
-      {String next, String previous}) async {
+  Future<Map<String, dynamic>?> fetchMissedMessages(
+      {String? next, String? previous}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -756,8 +756,8 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> acknowledgeMessagesToServer(
-      {List dataToBeSent}) async {
+  Future<Map<String, dynamic>?> acknowledgeMessagesToServer(
+      {List? dataToBeSent}) async {
     var url = AppConfig.chatUrl + "/api/v1/chat/acknowledge-messages/";
 
     debugPrint("URL:- $url");
@@ -802,8 +802,8 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> readByRecipientToServer(
-      {Map<String, dynamic> dataToBeSent}) async {
+  Future<Map<String, dynamic>?> readByRecipientToServer(
+      {Map<String, dynamic>? dataToBeSent}) async {
     var url = AppConfig.chatUrl +
         "/api/v1/chat/acknowledge-message-read-by-recipient/";
 
@@ -829,7 +829,8 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<bool> sendEnvelope({bool isEmpty, Map<String, dynamic> data}) async {
+  Future<bool> sendEnvelope(
+      {required bool isEmpty, Map<String, dynamic>? data}) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/magic-envelop/";
 
     if (isEmpty) {
@@ -853,7 +854,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> putMoneyInEnvelope(
-      {Map<String, dynamic> data, Envelope envelope}) async {
+      {Map<String, dynamic>? data, required Envelope envelope}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/transactions/empty-envelop/${envelope.id}/";
 
@@ -875,7 +876,7 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<Envelope> getEnvelope({Envelope envelope, String id}) async {
+  Future<Envelope> getEnvelope({required Envelope envelope, String? id}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/transactions/magic-envelop/${envelope.id.toString()}/?message_id=$id";
 
@@ -897,8 +898,8 @@ class MessageAuth extends AuthService {
   }
 
   Future<bool> cancelEnvelope(
-      {Envelope envelope, Map<String, dynamic> data}) async {
-    var type = envelope.type.replaceAll("-envelop", "");
+      {required Envelope envelope, required Map<String, dynamic> data}) async {
+    var type = envelope.type!.replaceAll("-envelop", "");
 
     // debugPrint("Message DATA:- $data");
 
@@ -930,7 +931,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<List<GIFModel>> searchGIF(
-      {String query, bool isRandom = false, bool isSticker = false}) async {
+      {String? query, bool isRandom = false, bool isSticker = false}) async {
     var url = "";
 
     url =

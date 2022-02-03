@@ -4,12 +4,12 @@ import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashb
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 class MyWishList extends StatefulWidget {
   @override
@@ -17,7 +17,7 @@ class MyWishList extends StatefulWidget {
 }
 
 class _MyWishListState extends State<MyWishList> {
-  ShoppingDashboardBloc shoppingDashboardBloc;
+  late ShoppingDashboardBloc shoppingDashboardBloc;
 
   List<ShoppingProduct> products = [];
   bool isLoading = false;
@@ -36,7 +36,7 @@ class _MyWishListState extends State<MyWishList> {
     products.clear();
     if (mounted) setState(() {});
 
-    products = await ShoppingAuthService().getProductList("", "");
+    products = (await ShoppingAuthService().getProductList("", ""))!;
 
     isLoading = false;
     if (mounted) setState(() {});
@@ -50,9 +50,9 @@ class _MyWishListState extends State<MyWishList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -62,7 +62,7 @@ class _MyWishListState extends State<MyWishList> {
   Widget build(BuildContext context) {
     shoppingDashboardBloc = Provider.of<ShoppingDashboardBloc>(context);
     return Scaffold(
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       backgroundColor: Colors.white,
       body: SmartRefresher(
         enablePullDown: true,
@@ -85,7 +85,7 @@ class _MyWishListState extends State<MyWishList> {
                           (product) => InkWell(
                             onTap: () {
                               ShoppingAuthService()
-                                  .getProduct(product.id)
+                                  .getProduct(product.id!)
                                   .then((value) {
                                 Navigator.pushNamed(context, '/product',
                                     arguments: {"product": value});

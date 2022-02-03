@@ -5,12 +5,12 @@ import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:toast/toast.dart';
 
 import 'colors.dart';
 
@@ -18,7 +18,7 @@ export 'colors.dart';
 export 'common.dart';
 
 // this function will build image frame by frame and load image from opacity 0 to 1 use this function in every image
-Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
+Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
     bool wasSynchronouslyLoaded) {
   if (wasSynchronouslyLoaded) {
     return child;
@@ -31,28 +31,80 @@ Widget imageFrameBuilder(BuildContext context, Widget child, int frame,
   );
 }
 
+Widget imageErrorForUserWidget(
+        BuildContext context, String url, dynamic error) =>
+    Image.network(
+      defaultImage,
+      colorBlendMode: BlendMode.darken,
+      fit: BoxFit.fill,
+      filterQuality: FilterQuality.high,
+    );
+
 Widget imageErrorWidget(BuildContext context, String url, dynamic error) =>
-    CachedNetworkImage(
-        imageUrl:
-            "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+    Container(
+      color: darkGrey.withOpacity(0.50),
+      child: Image.asset(
+        defaultProductAndServiceImage,
+        width: double.infinity,
+        height: double.infinity,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+      ),
+    );
+
+Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
+    Image.asset(
+      defaultWallPaper,
+      width: double.infinity,
+      height: double.infinity,
+      colorBlendMode: BlendMode.darken,
+      fit: BoxFit.cover,
+      filterQuality: FilterQuality.high,
+    );
+
+Widget productAndServiceErrorWidget(
+        BuildContext context, String url, dynamic error) =>
+    Container(
+      color: darkGrey.withOpacity(0.50),
+      child: Image.asset(
+        defaultProductAndServiceImage,
+        width: double.infinity,
+        height: double.infinity,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+      ),
+    );
+
+Widget productAndServiceBigErrorWidget(
+        BuildContext context, String url, dynamic error) =>
+    Container(
+      color: darkGrey.withOpacity(0.50),
+      child: Image.asset(
+        defaultProductAndServiceImage,
+        width: double.infinity,
+        height: double.infinity,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
-        filterQuality: FilterQuality.high);
+        filterQuality: FilterQuality.high,
+      ),
+    );
 
-Widget customThemeBuilder(BuildContext context, Widget child) {
+Widget customThemeBuilder(BuildContext context, Widget? child) {
   return Theme(
     data: ThemeData.light().copyWith(
       primaryColor: navyBlue,
-      accentColor: navyBlue,
-      colorScheme: ColorScheme.light(primary: navyBlue),
       buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+      colorScheme:
+          ColorScheme.light(primary: navyBlue).copyWith(secondary: navyBlue),
     ),
-    child: child,
+    child: child!,
   );
 }
 
 BoxDecoration decorateBox(
-    {Color borderColor, double borderRadius = 10, Color shadowColor}) {
+    {Color? borderColor, double borderRadius = 10, Color? shadowColor}) {
   if (shadowColor == null) shadowColor = boxShadowTwo;
   return BoxDecoration(
     boxShadow: <BoxShadow>[
@@ -108,7 +160,7 @@ List dayName = [
   "Sunday"
 ];
 
-String getDayName({@required int day}) {
+String getDayName({required int day}) {
   return dayName[day - 1];
 }
 
@@ -140,7 +192,7 @@ String formatDateInDigit(DateTime dateTime) {
   return date;
 }
 
-String formatDurationInSeconds({Duration duration}) {
+String formatDurationInSeconds({Duration? duration}) {
   String formattedDuration = "";
   if (int.parse(duration.toString().substring(0, 1)) > 0) {
     formattedDuration = duration.toString().substring(0, 7);
@@ -171,8 +223,8 @@ String durationToString(Duration duration) {
 }
 
 class PaymentDuration {
-  String name;
-  String value;
+  String? name;
+  String? value;
 
   PaymentDuration({this.name, this.value});
 }
@@ -191,20 +243,14 @@ List<String> errorImageList = [
   "https://slydo-assets.s3.amazonaws.com/media/customer/avatar/me.jpeg"
 ];
 
-String checkImageInErrorList(String url) {
-  errorImageList.forEach((element) {
-    if (element == url) {
-      return "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
-    }
-  });
-  return url;
-}
-
-void apiErrorHandler({String error, BuildContext context, int duration = 1}) {
-  Toast.show("$error", context,
-      backgroundColor: Colors.black,
-      textColor: Colors.white,
-      duration: duration);
+void apiErrorHandler({String? error, BuildContext? context, int duration = 1}) {
+  Fluttertoast.showToast(
+    msg: "$error",
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: Colors.black,
+    textColor: Colors.white,
+  );
 }
 
 int moneyInputNormalizer(String amount) {
@@ -213,7 +259,7 @@ int moneyInputNormalizer(String amount) {
   return value.toInt();
 }
 
-String moneyDisplayNormalizer(int amount) {
+String moneyDisplayNormalizer(int? amount) {
   // Format the money into double as server returns money in integer
   // amount = 1050500;
 
@@ -225,21 +271,28 @@ String moneyDisplayNormalizer(int amount) {
 
     if (getLastTwoDigit > 0) {
       return moneyConverter(
-          double.parse((amount / 100).toString()).toStringAsFixed(2),
+          double.parse((amount! / 100).toString()).toStringAsFixed(2),
           isNotCompact: true);
     } else {
       return moneyConverter(
-          double.parse((amount / 100).toString()).toStringAsFixed(2),
+          double.parse((amount! / 100).toString()).toStringAsFixed(2),
           isNotCompact: true);
     }
   } else {
     return moneyConverter(
-        double.parse((amount / 100).toString()).toStringAsFixed(2),
+        double.parse((amount! / 100).toString()).toStringAsFixed(2),
         isNotCompact: true);
   }
 }
 
-int moneyDisplayNormalizerForGraph(int amount) {
+String moneyNormalizer(int? amount) {
+  // Format the money into double as server returns money in integer
+  // amount = 1050500;
+
+  return (amount! / 100).toString();
+}
+
+int moneyDisplayNormalizerForGraph(int? amount) {
   // Format the money into double as server returns money in integer
   // amount = 1050500;
 
@@ -247,7 +300,7 @@ int moneyDisplayNormalizerForGraph(int amount) {
   return formattedAmount;
 }
 
-String getSecureUrl({String url}) {
+String getSecureUrl({required String url}) {
   String secureUrl;
   if (!url.startsWith("https://")) {
     url = url.replaceFirst("http", "https");
@@ -263,8 +316,9 @@ Future<String> saveImage(BuildContext context, Image image) {
   image.image
       .resolve(ImageConfiguration())
       .addListener(ImageStreamListener((imageInfo, _) async {
-    final byteData =
+    ByteData? byteData =
         await imageInfo.image.toByteData(format: ImageByteFormat.png);
+    if (byteData == null) return Future.error("ERROR while saving image");
     final pngBytes = byteData.buffer.asUint8List();
 
     final fileName = pngBytes.hashCode;
@@ -285,11 +339,59 @@ String generateHashedMessage(String input) {
 }
 
 Future<double> getAccountBalance() async {
-  Map<String, dynamic> data = await PaymentAndBankingAuth().getAccountBalance();
+  Map<String, dynamic>? data =
+      await PaymentAndBankingAuth().getAccountBalance();
+  if (data == null) return 0.0;
+
   int spendableBalance = data["spendable_balance"];
 
   double accountBalanceConverted = spendableBalance / 100;
   debugPrint("ACCOUNT BALANCE:- $accountBalanceConverted");
 
   return accountBalanceConverted;
+}
+
+const String defaultImage =
+    "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
+
+const String defaultWallPaper = "assets/images/home_screen_background.png";
+
+const String defaultProductAndServiceImage =
+    "assets/images/default_image/product_and_service.png";
+
+void showToast({String? message}) {
+  Fluttertoast.showToast(
+    msg: "$message",
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: Colors.black,
+    textColor: Colors.white,
+  );
+}
+
+String? checkSlydoName(String name) {
+  String? result;
+
+  if (name.isNotEmpty && name != "") {
+    List<String> listOfWords = name.split(" ").toList();
+    for (int i = 0; i < listOfWords.length; i++) {
+      if (listOfWords[i].toLowerCase() == "slydo") {
+        result = "You can not use slydo in name.";
+        break;
+      }
+    }
+  }
+  debugPrint("ERROR:- $result");
+
+  return result;
+}
+
+String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
+  return '******' +
+      accountNumber.substring(
+          accountNumber.length - 5, accountNumber.length - 1);
+}
+
+double formatRating(double rating) {
+  return double.parse(rating.toStringAsFixed(1));
 }

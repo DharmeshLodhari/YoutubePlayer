@@ -14,7 +14,7 @@ class MyHotelsScreen extends StatefulWidget {
 class _MyHotelsScreenState extends State<MyHotelsScreen> {
   int currentIndex = 0;
 
-  HotelDashboardBloc _hotelDashboardBloc;
+  late HotelDashboardBloc _hotelDashboardBloc;
   @override
   Widget build(BuildContext context) {
     _hotelDashboardBloc = Provider.of<HotelDashboardBloc>(context);
@@ -27,7 +27,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
         length: 2,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
       ),
@@ -59,7 +59,7 @@ class _MyHotelsScreenState extends State<MyHotelsScreen> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
     );
   }
 

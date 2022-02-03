@@ -18,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class AddContract extends StatefulWidget {
@@ -36,26 +35,26 @@ class _AddContractState extends State<AddContract> {
   TextEditingController _amountController = TextEditingController();
   TextEditingController _referenceController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
-  http.Response response;
+  http.Response? response;
 
   final _formKey = GlobalKey<FormState>();
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
-  CustomerProfile _payee;
-  UserBloc userBloc;
+  CustomerProfile? _payee;
+  late UserBloc userBloc;
 
   bool isValidPayee = false;
-  int amount;
+  int? amount;
   String reference = "";
   String category = "";
   String errorMessage = "";
-  String recipient;
+  String? recipient;
 
   DateTime startingDate = DateTime.now();
   DateTime endingDate = DateTime.now();
 
-  Contract contract;
+  Contract? contract;
 
-  PaymentDuration selectedDuration;
+  PaymentDuration? selectedDuration;
 
   @override
   void initState() {
@@ -86,7 +85,7 @@ class _AddContractState extends State<AddContract> {
         backgroundColor: Colors.white,
         key: _sendPaymentScaffold,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -139,7 +138,7 @@ class _AddContractState extends State<AddContract> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": _payee.userName});
+              arguments: {"searchedUserName": _payee!.userName});
         },
         backgroundColor: iconBtnGrey,
         enableMargin: true,
@@ -238,7 +237,7 @@ class _AddContractState extends State<AddContract> {
         icon: Icon(Icons.person),
         onPressed: () {
           Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": _payee.userName});
+              arguments: {"searchedUserName": _payee!.userName});
         },
       );
     }
@@ -267,7 +266,8 @@ class _AddContractState extends State<AddContract> {
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: _payee.avatar,
+            errorWidget: imageErrorWidget,
+            imageUrl: _payee!.avatar!,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
@@ -279,9 +279,10 @@ class _AddContractState extends State<AddContract> {
       });
 
       qrCodeImage = CachedNetworkImage(
+        errorWidget: imageErrorWidget,
         height: 48,
         width: 48,
-        imageUrl: _payee.qrCode ?? "",
+        imageUrl: _payee!.qrCode ?? "",
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
@@ -297,21 +298,21 @@ class _AddContractState extends State<AddContract> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    _payee.fullName,
+                    _payee!.fullName!,
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
                   ),
                   subtitle: Text(
-                    _payee.userName,
+                    _payee!.userName!,
                     style: TextStyle(fontSize: 14, color: darkGrey),
                   ),
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile',
-                        arguments: {"searchedUserName": _payee.userName});
+                        arguments: {"searchedUserName": _payee!.userName});
                   },
                 ),
               ),
@@ -326,12 +327,12 @@ class _AddContractState extends State<AddContract> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).recipient,
+      labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
       validator: (value) {
-        if (value != _payee.userName) {
-          return AppLocalization.of(context).invalidRecipient;
+        if (value != _payee!.userName) {
+          return AppLocalization.of(context)!.invalidRecipient;
         }
         return null;
       },
@@ -339,7 +340,7 @@ class _AddContractState extends State<AddContract> {
         if (mounted) {
           setState(() {
             if (_payee != null) {
-              recipient = _payee.userName;
+              recipient = _payee!.userName;
             } else {
               recipient = val.toLowerCase();
             }
@@ -372,16 +373,16 @@ class _AddContractState extends State<AddContract> {
             return null;
           } catch (e) {}
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
       onTap: () async {
         isValidPayee = false;
         setState(() {});
         if (recipient != null) {
-          recipient = recipient.trim();
+          recipient = recipient!.trim();
           if (mounted) {
             setState(() {
-              _recipientController.text = recipient;
+              _recipientController.text = recipient!;
             });
           }
           var customerProfile =
@@ -389,7 +390,7 @@ class _AddContractState extends State<AddContract> {
           if (mounted) {
             setState(() {
               _payee = customerProfile;
-              isValidPayee = _payee.userName != userBloc.user.userName;
+              isValidPayee = _payee!.userName != userBloc.user.userName;
             });
           }
         }
@@ -412,7 +413,7 @@ class _AddContractState extends State<AddContract> {
                     DateTime.now().day),
                 lastDate: DateTime(2101),
               ).then((value) {
-                startingDate = DateTime(value.year, value.month, value.day);
+                startingDate = DateTime(value!.year, value.month, value.day);
                 setState(() {});
               }).catchError((error) {});
             },
@@ -457,7 +458,7 @@ class _AddContractState extends State<AddContract> {
                     DateTime.now().day),
                 lastDate: DateTime(2101),
               ).then((value) {
-                endingDate = DateTime(value.year, value.month, value.day);
+                endingDate = DateTime(value!.year, value.month, value.day);
                 setState(() {});
               }).catchError((error) {});
             },
@@ -513,7 +514,7 @@ class _AddContractState extends State<AddContract> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedDuration != null ? selectedDuration.name : "",
+              selectedDuration != null ? selectedDuration!.name! : "",
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -561,7 +562,7 @@ class _AddContractState extends State<AddContract> {
                               child: ListTile(
                                 dense: true,
                                 title: Text(
-                                  duration.name,
+                                  duration.name!,
                                   overflow: TextOverflow.fade,
                                   softWrap: false,
                                   style: TextStyle(
@@ -582,7 +583,7 @@ class _AddContractState extends State<AddContract> {
                           }
                           return ListTile(
                             title: Text(
-                              duration.name,
+                              duration.name!,
                               softWrap: false,
                               overflow: TextOverflow.fade,
                               style: TextStyle(
@@ -624,30 +625,30 @@ class _AddContractState extends State<AddContract> {
 
     if (!isValidPayee) {
       setState(() {
-        errorMessage = AppLocalization.of(context).invalidRecipient;
+        errorMessage = AppLocalization.of(context)!.invalidRecipient;
         return;
       });
     }
 
-    if (recipient == _payee.userName) {
+    if (recipient == _payee!.userName) {
       if (!isValidPayee) {
         setState(() {
-          errorMessage = AppLocalization.of(context).invalidRecipient;
+          errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
       }
 
-      if (isValidPayee && _formKey.currentState.validate()) {
+      if (isValidPayee && _formKey.currentState!.validate()) {
         if (userBloc.user.userName != recipient) {
           try {
             var data = {
-              "contractor": recipient.trim().toString(),
+              "contractor": recipient!.trim().toString(),
               "contractee": userBloc.user.userName.toString(),
               "currency": userBloc.user.currency.toString(),
               "amount": amount.toString().trim(),
               "start_date": dateToString(startingDate),
               "end_date": dateToString(endingDate),
-              "payment_duration": selectedDuration.value.toString(),
+              "payment_duration": selectedDuration!.value.toString(),
               "note": " hello test contract",
             };
 
@@ -656,42 +657,19 @@ class _AddContractState extends State<AddContract> {
                 Navigator.pop(context);
               }
             }).catchError((error) {
-              Toast.show(
-                error.toString(),
-                context,
-                gravity: Toast.BOTTOM,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-              );
+              showToast(message: error.toString());
             });
           } catch (e) {
-            debugPrint(e);
-            Toast.show(
-              e,
-              context,
-              gravity: Toast.BOTTOM,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            debugPrint(e.toString());
+            showToast(message: e.toString());
           }
         } else {
-          Toast.show(
-            AppLocalization.of(context).invalidRecipient,
-            context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          showToast(message: AppLocalization.of(context)!.invalidRecipient);
         }
       }
     } else {
-      var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(
-        msg,
-        context,
-        gravity: Toast.CENTER,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
+      var msg = AppLocalization.of(context)!.invalidRecipient;
+      showToast(message: msg);
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -5,6 +7,7 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/search_text_field.dart';
@@ -26,14 +29,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   final GlobalKey<ScaffoldState> _scaffoldSelectUserForGroupKey =
       new GlobalKey<ScaffoldState>();
 
-  int count = 0;
-  String next = "";
-  String previous = "";
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List<CustomerProfile> connectionList = [];
   List<CustomerProfile> selectedConnectionList = [];
   ScrollController _scrollController = new ScrollController();
 
-  TextEditingController searchUserController;
+  TextEditingController? searchUserController;
 
   bool isLoading = false;
   bool isSearchIsEmpty = false;
@@ -42,7 +45,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   ///For checking if this page is oprn to add user is existingGroup or not
   bool isForAddingUserInGroup = false;
 
-  GroupDetailModel groupDetailModel;
+  GroupDetailModel? groupDetailModel;
 
   @protected
   void initState() {
@@ -66,8 +69,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       }
     });
 
-    searchUserController.addListener(() {
-      if (searchUserController.text.length >= 5) {
+    searchUserController!.addListener(() {
+      if (searchUserController!.text.length >= 5) {
         setState(() {
           count = 0;
           next = "";
@@ -77,7 +80,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
           getList();
         });
       }
-      if (connectionList.isNotEmpty || searchUserController.text.length != 0) {
+      if (connectionList.isNotEmpty || searchUserController!.text.length != 0) {
         if (mounted) {
           setState(() {
             isSearchIsEmpty = false;
@@ -105,7 +108,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     );
   }
 
-  Widget getFloatingActionBtn() {
+  Widget? getFloatingActionBtn() {
     return selectedConnectionList.isEmpty
         ? null
         : FloatingActionButton(
@@ -147,24 +150,6 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             )
           ],
         ));
-
-    // return AppBar(
-    //   elevation: 0,
-    //   backgroundColor: Colors.white,
-    //   titleSpacing: 0,
-    //   automaticallyImplyLeading: false,
-    //   leading: IconButton(
-    //     icon: Icon(
-    //       Icons.keyboard_arrow_left,
-    //       color: navyBlue,
-    //       size: 24,
-    //     ),
-    //     onPressed: () {
-    //       Navigator.pop(context);
-    //     },
-    //   ),
-    //   title: getSearchTextField(),
-    // );
   }
 
   Widget getSearchTextField() {
@@ -174,7 +159,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
       child: SearchTextField(
         hintText: "Search...",
         onSubmit: () {
-          debugPrint("Serached Text:- ${searchUserController.text}");
+          debugPrint("Serached Text:- ${searchUserController!.text}");
         },
         textEditingController: searchUserController,
       ),
@@ -213,19 +198,20 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         : Container();
   }
 
-  Widget getSelectedUserUI({int index}) {
+  Widget getSelectedUserUI({required int index}) {
     return Container(
       padding: EdgeInsets.only(right: 8),
       child: Stack(
-        overflow: Overflow.visible,
+        clipBehavior: Clip.none,
         children: [
           ClipOval(
             child: Container(
               height: 64,
               width: 64,
               child: CachedNetworkImage(
-                imageUrl: selectedConnectionList[index].avatar,
+                imageUrl: selectedConnectionList[index].avatar!,
                 fit: BoxFit.fill,
+                errorWidget: imageErrorWidget,
               ),
             ),
           ),
@@ -252,12 +238,12 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   Widget _buildConnectionsList() {
     return isSearchIsEmpty
         ? NoItemInList(
-            msg: AppLocalization.of(context).pleaseTypeSomethingToGetResult,
+            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
             isResult: false,
           )
         : noItemInList
             ? NoItemInList(
-                msg: AppLocalization.of(context).noResultFound,
+                msg: AppLocalization.of(context)!.noResultFound,
               )
             : ListView.builder(
                 padding: EdgeInsets.symmetric(
@@ -295,16 +281,20 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
             isLoading = true;
           });
         }
-        Map<String, dynamic> result = await UserAuth().searchUserInContact(
+        Map<String, dynamic>? result = await UserAuth().searchUserInContact(
             next, previous,
-            query: searchUserController.text.trim());
+            query: searchUserController!.text.trim());
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
 
         List tempList = result['results'];
 
-        List<CustomerProfile> users = List<CustomerProfile>();
+        List<CustomerProfile> users = [];
 
         tempList
             .forEach((element) => users.add(CustomerProfile.fromJson(element)));
@@ -318,9 +308,9 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && connectionList.length > 6) {
-        _scaffoldSelectUserForGroupKey.currentState.showSnackBar(SnackBar(
+        _scaffoldSelectUserForGroupKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -328,18 +318,18 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
   }
 
   /// If user is already present in the group then we will remove that user From List
-  void filterUsersIfTheyAlreadyInGroup({List<CustomerProfile> users}) {
+  void filterUsersIfTheyAlreadyInGroup({required List<CustomerProfile> users}) {
     List<CustomerProfile> existingList = [];
 
     for (int i = 0; i < users.length; i++) {
       existingList.add(users[i]);
     }
-    List<String> toBeRemoveUsername = [];
+    List<String?> toBeRemoveUsername = [];
 
     if (groupDetailModel != null) {
-      for (int i = 0; i < groupDetailModel.participants.length; i++) {
+      for (int i = 0; i < groupDetailModel!.participants.length; i++) {
         for (int j = 0; j < existingList.length; j++) {
-          if (groupDetailModel.participants[i].userName ==
+          if (groupDetailModel!.participants[i].userName ==
               existingList[j].userName) {
             toBeRemoveUsername.add(existingList[j].userName);
           }
@@ -364,19 +354,19 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     super.dispose();
   }
 
-  Widget getUserTile({CustomerProfile user}) {
+  Widget getUserTile({CustomerProfile? user}) {
     return GestureDetector(
       onTap: () async {
         bool isPresent = false;
         for (int i = 0; i < selectedConnectionList.length; i++) {
-          if (user.userName == selectedConnectionList[i].userName) {
+          if (user!.userName == selectedConnectionList[i].userName) {
             isPresent = true;
             break;
           }
         }
 
         if (!isPresent) {
-          selectedConnectionList.add(user);
+          selectedConnectionList.add(user!);
           setState(() {});
         }
       },

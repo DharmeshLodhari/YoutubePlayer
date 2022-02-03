@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -13,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
@@ -23,22 +24,42 @@ class PayoutScreen extends StatefulWidget {
 }
 
 class _PayoutScreenState extends State<PayoutScreen> {
-  http.Response response;
+  late http.Response response;
 
   final _auth = PaymentAndBankingAuth();
   final _formKey = GlobalKey<FormState>();
 
-  UserBloc userBloc;
-  BankAccountBloc bankAccountBloc;
+  late UserBloc userBloc;
+  late BankAccountBloc bankAccountBloc;
 
-  int amount;
+  int? amount;
   String errorMessage = "";
-  int accountBalance = 0;
+  int? accountBalance = 0;
+
+  VirtualAccount? virtualAccount;
+  bool isAccountFound = false;
+  bool isLoading = false;
 
   @override
   void initState() {
-    getAccountBalance();
+    getBankAccountDetail();
+
     super.initState();
+  }
+
+  void getBankAccountDetail() async {
+    isLoading = true;
+    setState(() {});
+    await getAccountBalance();
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+    }
+    if (virtualAccount != null) {
+      isAccountFound = true;
+    }
+    isLoading = false;
+    setState(() {});
   }
 
   @override
@@ -53,7 +74,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -76,7 +97,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
         },
       ),
       title: Text(
-        AppLocalization.of(context).payout,
+        "Cashout",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -84,37 +105,60 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Widget scaffoldBody() {
-    return SingleChildScrollView(
-      child: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height +
-                MediaQuery.of(context).padding.top),
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            Expanded(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    getUserBankAccount(),
-                    flexibleSpace(),
-                    displayAmountField(),
-                    flexibleSpace(),
-                    noteForUser(),
-                    flexibleSpace(),
-                    accountBalance <= 0 ? Container() : getSubmitButton(),
-                    flexibleSpace(flex: 2),
-                  ],
-                ),
+    return isLoading
+        ? Center(
+            child: Container(
+              child: CircularLoadingIndicator(),
+            ),
+          )
+        : SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                children: [
+                  isAccountFound
+                      ? Form(
+                          key: _formKey,
+                          child: Column(
+                            children: <Widget>[
+                              getUserBankAccount(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              displayAmountField(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              noteForUser(),
+                              SizedBox(
+                                height: 40,
+                              ),
+                              accountBalance! <= 0
+                                  ? Container()
+                                  : getSubmitButton(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(
+                          child: Center(
+                              child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Text(
+                              "Please add Bank Account for cashout.",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          )),
+                        ),
+                ],
               ),
             ),
-            flexibleSpace()
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget showBackArrow() {
@@ -137,26 +181,26 @@ class _PayoutScreenState extends State<PayoutScreen> {
         child: ListTile(
           dense: true,
           title: Text(
-            bankAccountBloc.bankAccount.bankName,
+            bankAccountBloc.bankAccount!.bankName!,
             style: TextStyle(
                 color: blackFont, fontWeight: FontWeight.w600, fontSize: 14),
           ),
           subtitle: Text(
-            '******' +
-                bankAccountBloc.bankAccount.accountNumber
-                    .toString()
-                    .substring(5, 9),
+            getFormattedAccountNumber(
+                accountNumber:
+                    bankAccountBloc.bankAccount!.accountNumber.toString()),
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
           leading: CachedNetworkImage(
-            imageUrl: bankAccountBloc.bankAccount.bankAvatar,
+            imageUrl: bankAccountBloc.bankAccount!.bankAvatar!,
             height: 48,
             width: 48,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
             placeholder: (context, url) =>
-                bankAccountBloc.bankAccount.bankAvatar == ""
+                bankAccountBloc.bankAccount!.bankAvatar == ""
                     ? Icon(Icons.account_balance)
                     : CircularLoadingIndicator(),
           ),
@@ -186,7 +230,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
             return null;
           } catch (e) {}
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
     );
   }
@@ -196,7 +240,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context).submitButton,
+      text: AppLocalization.of(context)!.submitButton,
     );
   }
 
@@ -207,84 +251,77 @@ class _PayoutScreenState extends State<PayoutScreen> {
     // duration for close keyboard and open passcode bottomsheet
     await Future.delayed(Duration(milliseconds: 500));
 
-    if (_formKey.currentState.validate()) {
-      try {
-        var data = {
-          "amount": moneyInputNormalizer(amount.toString()),
-          "currency": userBloc.user.currency,
-        };
-        BottomSheetPassCode(
-            context: context,
-            isValidCallback: () {
-              showDialog(
-                  context: context,
-                  builder: (context) =>
-                      Center(child: CircularLoadingIndicator()));
+    if (_formKey.currentState!.validate()) {
+      debugPrint(
+          "virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ${virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!}");
+      if (amount! <=
+          int.parse(
+              virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
+                  "0")) {
+        try {
+          var data = {
+            "amount": moneyInputNormalizer(amount.toString()),
+            "currency": userBloc.user.currency,
+          };
+          BottomSheetPassCode(
+              context: context,
+              isValidCallback: () {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        Center(child: CircularLoadingIndicator()));
 
-              _auth.accountPayout(data).then((value) {
-                response = value;
-                if (response.statusCode == 201) {
-                  Navigator.pop(context);
-                  Navigator.of(context).popAndPushNamed('/payout-list');
-                } else if (response.statusCode == 500) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage = AppLocalization.of(context).serverError;
-                      Toast.show(
-                        errorMessage,
-                        context,
-                        gravity: Toast.TOP,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                      );
-                    });
+                _auth.accountPayout(data).then((value) {
+                  response = value;
+                  if (response.statusCode == 201) {
+                    Navigator.pop(context);
+                    Navigator.of(context).popAndPushNamed('/payout-list');
+                  } else if (response.statusCode == 500) {
+                    Navigator.pop(context);
+                    if (mounted) {
+                      setState(() {
+                        errorMessage = AppLocalization.of(context)!.serverError;
+                        showToast(message: errorMessage);
+                      });
+                    }
                   }
-                }
-                // else if (response.statusCode == 800) {
-                //   Navigator.pop(context);
-                //   Navigator.pushNamed(context, "/add-document");
-                // }
-                else {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      errorMessage =
-                          AppLocalization.of(context).somethingWentWrong;
-                      Toast.show(
-                        errorMessage,
-                        context,
-                        gravity: Toast.TOP,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                      );
-                    });
+                  // else if (response.statusCode == 800) {
+                  //   Navigator.pop(context);
+                  //   Navigator.pushNamed(context, "/add-document");
+                  // }
+                  else {
+                    Navigator.pop(context);
+                    if (mounted) {
+                      setState(() {
+                        errorMessage =
+                            AppLocalization.of(context)!.somethingWentWrong;
+                        showToast(message: errorMessage);
+                      });
+                    }
                   }
-                }
+                });
+              },
+              cancelCallBack: () {
+                Navigator.pop(context);
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text(AppLocalization.of(context)!.invalidPassword),
+                ));
               });
-            },
-            cancelCallBack: () {
-              Navigator.pop(context);
-              Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text(AppLocalization.of(context).invalidPassword),
-              ));
-            });
-      } catch (e) {
-        debugPrint(e);
-        Toast.show(
-          e,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        } catch (e) {
+          debugPrint(e.toString());
+          showToast(message: e.toString());
+        }
+      } else {
+        showToast(
+            message:
+                "Please Upgrade your account tier to make bigger transactions.");
       }
     }
   }
 
   Widget noteForUser() {
     return Text(
-      AppLocalization.of(context).noteForUser,
+      AppLocalization.of(context)!.noteForUser,
       style: TextStyle(
           fontSize: 12, color: blackFont, fontWeight: FontWeight.w600),
     );
@@ -292,7 +329,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
 
   Future<void> getAccountBalance() async {
     await _auth.getAccountBalance().then((value) {
-      var data = value;
+      var data = value!;
       var spendableBalance = data["spendable_balance"];
       if (mounted) {
         setState(() {

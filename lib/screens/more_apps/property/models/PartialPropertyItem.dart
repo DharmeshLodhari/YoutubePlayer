@@ -1,9 +1,9 @@
 class PartialPropertyItem {
-  String currency;
-  String image;
-  String name;
-  String price;
-  String shortDescription;
+  String? currency;
+  String? image;
+  String? name;
+  String? price;
+  String? shortDescription;
 
   PartialPropertyItem(
       {this.currency,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
@@ -21,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import '../../payment_and_banking_auth.dart';
 
@@ -34,17 +34,17 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
       new GlobalKey<ScaffoldState>();
   final _auth = PaymentAndBankingAuth();
-  SlidableController _slideController;
-  int count = 0;
-  String next = "";
-  String previous = "";
+  SlidableController? _slideController;
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
   List requestPaymentList = [];
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  RefreshBlocForRequestPayment _refreshBloc;
+  RefreshBlocForRequestPayment? _refreshBloc;
 
   // variables for to getting filter requestPaymentList
   String filterValue = "all";
@@ -52,7 +52,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   bool toMe = false;
 
   GlobalKey _key = LabeledGlobalKey("paymentRequestListPopUpMenu");
-  CustomizedPopUpMenu menu;
+  late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
@@ -79,20 +79,26 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForRequestPayment>(context);
-    _refreshBloc
+    _refreshBloc!
       ..addListener(() {
-        if (_refreshBloc.isRefresh) {
+        if (_refreshBloc!.isRefresh) {
           debugPrint("refreshing !!");
           if (mounted) {
             _onRefresh();
-            _refreshBloc.isRefresh = false;
+            _refreshBloc!.isRefresh = false;
           }
         }
       });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _onRefresh();
+  }
+
   void _onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
+    await Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
@@ -105,13 +111,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         getList();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
@@ -165,7 +167,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       key: _scaffoldPaymentListKey,
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: SmartRefresher(
         enablePullDown: true,
         header: WaterDropHeader(
@@ -255,7 +257,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ),
         child: IconButton(
           icon: Icon(
-            Icons.more_vert,
+            Icons.filter_alt_rounded,
             color: isPopMenuOpen ? Colors.white : Colors.black,
             size: 20,
           ),
@@ -273,18 +275,18 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   Widget _threeItemPopup() => PopupMenuButton(
         padding: EdgeInsets.all(0),
-    //    captureInheritedThemes: true,
+        //    captureInheritedThemes: true,
         icon: Icon(
           SlydoAppIcon.menu,
           size: 16,
           color: blackFont,
         ),
         itemBuilder: (context) {
-          var list = List<PopupMenuEntry<Object>>();
+          List<PopupMenuEntry> list = [];
           list.add(
             PopupMenuItem(
               child: Text(
-                AppLocalization.of(context).filter,
+                AppLocalization.of(context)!.filter,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -301,7 +303,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                AppLocalization.of(context).all,
+                AppLocalization.of(context)!.all,
                 style: TextStyle(color: Colors.black),
               ),
               value: "all",
@@ -311,7 +313,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                AppLocalization.of(context).received,
+                AppLocalization.of(context)!.received,
                 style: TextStyle(color: Colors.black),
               ),
               value: "received",
@@ -322,7 +324,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           list.add(
             CheckedPopupMenuItem(
               child: Text(
-                AppLocalization.of(context).sent,
+                AppLocalization.of(context)!.sent,
                 style: TextStyle(color: Colors.black),
               ),
               value: "sent",
@@ -331,11 +333,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           );
           return list;
         },
-        onSelected: (Object object) {
+        onSelected: (dynamic object) {
           if (mounted) {
             setState(() {
               if (object != 1) {
-                filterValue = object;
+                filterValue = object as String;
                 filterValue = object;
                 switch (filterValue) {
                   case "received":
@@ -361,7 +363,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   Widget _buildRequestPaymentList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).noPendingPaymentRequest,
+            msg: AppLocalization.of(context)!.noPendingPaymentRequest,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -398,8 +400,13 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         if (mounted) setState(() {});
 
         try {
-          Map<String, dynamic> result =
+          Map<String, dynamic>? result =
               await _auth.listPaymentRequests(next, previous, toMe, fromMe);
+          if (result == null) {
+            isLoading = false;
+            return;
+          }
+
           count = result['count'];
           next = result['next'];
           previous = result['previous'];
@@ -436,9 +443,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldPaymentListKey.currentState.showSnackBar(SnackBar(
+        _scaffoldPaymentListKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -460,13 +467,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                     'isFromProfile': true
                   });
             } else {
-              Toast.show(
-                AppLocalization.of(context).internetConnectionNotAvailable,
-                context,
-                gravity: Toast.BOTTOM,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-              );
+              showToast(
+                  message: AppLocalization.of(context)!
+                      .internetConnectionNotAvailable);
             }
           });
         },
@@ -475,17 +478,17 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldPaymentListKey.currentState
+    _scaffoldPaymentListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
-    if (!paymentRequest.isCredit) {
+    if (!paymentRequest.isCredit!) {
       return [];
     } else {
       return [
@@ -503,15 +506,15 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   List<Widget> listActionSlideActions(
       PaymentRequest paymentRequest, int index) {
-    String caption = !paymentRequest.isCredit
-        ? AppLocalization.of(context).cancel
-        : AppLocalization.of(context).reject;
+    String caption = !paymentRequest.isCredit!
+        ? AppLocalization.of(context)!.cancel
+        : AppLocalization.of(context)!.reject;
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () {
-            if (!paymentRequest.isCredit) {
+            if (!paymentRequest.isCredit!) {
               cancelPaymentRequestAlert(paymentRequest, index);
             } else {
               rejectPaymentRequestAlert(paymentRequest, index);
@@ -523,36 +526,30 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   Future<bool> checkAccountBalance(PaymentRequest paymentRequest) async {
-    BankAccountBloc bankAccountBloc =
-        Provider.of<BankAccountBloc>(context, listen: false);
-    if (bankAccountBloc.bankAccount == null ||
-        bankAccountBloc.bankAccount.bankName == null) {
-      Navigator.of(context).pop();
-      Toast.show("Please add bank account first !!", context,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          duration: Toast.LENGTH_LONG);
+    // BankAccountBloc bankAccountBloc =
+    //     Provider.of<BankAccountBloc>(context, listen: false);
+    // if (bankAccountBloc.bankAccount == null ||
+    //     bankAccountBloc.bankAccount!.bankName == null) {
+    //   Navigator.of(context).pop();
+    //   showToast(message: "Please add bank account first !!");
+    //   return false;
+    // } else {
+    double accountBalance = await getAccountBalance();
+    Navigator.of(context).pop();
+    debugPrint("accountBalance:- $accountBalance");
+    double spendingAmount = paymentRequest.amount! / 100;
+    debugPrint("spendingAmount:- $spendingAmount");
+    if (spendingAmount > accountBalance) {
+      showToast(message: "You don't have enough money in Slydo account!!");
       return false;
-    } else {
-      double accountBalance = await getAccountBalance();
-      Navigator.of(context).pop();
-      debugPrint("accountBalance:- $accountBalance");
-      double spendingAmount = paymentRequest.amount / 100;
-      debugPrint("spendingAmount:- $spendingAmount");
-      if (spendingAmount > accountBalance) {
-        Toast.show("You don't have enough money in Slydo account!!", context,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            duration: Toast.LENGTH_LONG);
-        return false;
-      }
     }
+    // }
     return true;
   }
 
   void acceptPaymentRequestAlert(
       PaymentRequest paymentRequest, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: navyBlue.withOpacity(0.08),
@@ -573,11 +570,11 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       firstActionPrimary: true,
       title: "Pay",
       description:
-          AppLocalization.of(context).areYouSureWantToAcceptThisRequest,
+          AppLocalization.of(context)!.areYouSureWantToAcceptThisRequest,
       actionOne: "Pay",
-      actionTwo: AppLocalization.of(context).cancel,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
-    if (result) {
+    if (result != null && result) {
       BottomSheetPassCode(
           context: context,
           isValidCallback: () async {
@@ -593,7 +590,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             var response = await _auth.acceptPaymentRequests(paymentRequest);
             if (response.statusCode == 200) {
               _showSnackBar(
-                  context, AppLocalization.of(context).paymentRequestAccepted);
+                  context, AppLocalization.of(context)!.paymentRequestAccepted);
               if (mounted) {
                 setState(() {
                   requestPaymentList.removeAt(index);
@@ -603,24 +600,18 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                 });
               }
             } else if (response.statusCode == 500) {
-              Toast.show(
-                AppLocalization.of(context).serverError,
-                context,
-                gravity: Toast.TOP,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-              );
+              showToast(message: AppLocalization.of(context)!.serverError);
             }
             // else if (response.statusCode == 800) {
             //   Navigator.pushNamed(context, "/add-document");
             // }
             else {
               Map<String, dynamic> errorData = jsonDecode(response.body);
-              String error = "Error";
+              String? error = "Error";
               if (errorData.containsKey("errors")) {
                 error = errorData['errors'];
               }
-              _showSnackBar(context, error);
+              _showSnackBar(context, error!);
             }
           },
           cancelCallBack: () {
@@ -631,7 +622,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   Future<void> rejectPaymentRequestAlert(
       PaymentRequest paymentRequest, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -649,17 +640,17 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).reject,
+      title: AppLocalization.of(context)!.reject,
       description:
-          AppLocalization.of(context).areYouSureWantToRejectThisPayment,
-      actionOne: AppLocalization.of(context).reject,
-      actionTwo: AppLocalization.of(context).cancel,
+          AppLocalization.of(context)!.areYouSureWantToRejectThisPayment,
+      actionOne: AppLocalization.of(context)!.reject,
+      actionTwo: AppLocalization.of(context)!.cancel,
     );
-    if (result) {
+    if (result != null && result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);
       if (done) {
         _showSnackBar(
-            context, AppLocalization.of(context).paymentRequestRejected);
+            context, AppLocalization.of(context)!.paymentRequestRejected);
         if (mounted) {
           setState(() {
             requestPaymentList.removeAt(index);
@@ -669,14 +660,14 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           });
         }
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
 
   Future<void> cancelPaymentRequestAlert(
       PaymentRequest paymentRequest, int index) async {
-    bool result = await showDialogBox(
+    bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
         backgroundColor: mateRed.withOpacity(0.08),
@@ -694,16 +685,17 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context).cancel,
+      title: AppLocalization.of(context)!.cancel,
       description: "Are you sure want to cancel this request?",
-      actionOne: AppLocalization.of(context).cancel,
+      actionOne: AppLocalization.of(context)!.cancel,
       actionTwo: "Close",
     );
+    if (result == null) return;
     if (result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);
       if (done) {
         _showSnackBar(
-            context, AppLocalization.of(context).paymentRequestRejected);
+            context, AppLocalization.of(context)!.paymentRequestRejected);
         if (mounted) {
           setState(() {
             requestPaymentList.removeAt(index);
@@ -713,7 +705,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           });
         }
       } else {
-        _showSnackBar(context, AppLocalization.of(context).error);
+        _showSnackBar(context, AppLocalization.of(context)!.error);
       }
     }
   }
@@ -721,8 +713,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   Widget _getSlideLists(
       BuildContext context, PaymentRequest paymentRequest, int index) {
     return Slidable(
-      key:
-          Key("PaymentRequest:${paymentRequest.id + paymentRequest.createdAt}"),
+      key: Key(
+          "PaymentRequest:${paymentRequest.id! + paymentRequest.createdAt!}"),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
@@ -746,7 +738,7 @@ class VerticalListItem extends StatefulWidget {
   VerticalListItem(this.paymentRequest, {this.key}) : super(key: key);
 
   final PaymentRequest paymentRequest;
-  final Key key;
+  final Key? key;
 
   @override
   _VerticalListItemState createState() => _VerticalListItemState();
@@ -844,7 +836,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization.of(context).message,
+              AppLocalization.of(context)!.message,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -889,12 +881,11 @@ class _VerticalListItemState extends State<VerticalListItem> {
                 });
               }
               if (result) {
-                Toast.show(
-                    "${widget.paymentRequest.payee} " +
-                        AppLocalization.of(context).isBlocked,
-                    context);
+                showToast(
+                    message: "${widget.paymentRequest.payee} " +
+                        AppLocalization.of(context)!.isBlocked);
               } else {
-                Toast.show(AppLocalization.of(context).error, context);
+                showToast(message: AppLocalization.of(context)!.error);
               }
             });
           });
@@ -916,7 +907,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
               width: 10,
             ),
             Text(
-              AppLocalization.of(context).blockUser,
+              AppLocalization.of(context)!.blockUser,
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

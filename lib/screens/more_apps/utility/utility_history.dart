@@ -101,7 +101,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: foregroundScreen(),
     );
   }
@@ -121,7 +121,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
     );
   }
 
-  Widget getUtilityPaymentTile({Map<String, dynamic> item}) {
+  Widget getUtilityPaymentTile({Map<String, dynamic>? item}) {
     return UtilityPaymentTile(payment: item);
   }
 

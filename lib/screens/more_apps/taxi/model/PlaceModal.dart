@@ -4,22 +4,22 @@ import 'Photo.dart';
 import 'PlusCode.dart';
 
 class PlaceModal {
-  String businessStatus;
-  String formattedAddress;
-  Geometry geometry;
-  String icon;
-  String iconBackgroundColor;
-  String iconMaskBaseUri;
-  String name;
-  OpeningHours openingHours;
-  List<Photo> photos;
-  String placeId;
-  PlusCode plusCode;
-  int priceLevel;
-  double rating;
-  String reference;
-  List<String> types;
-  int userRatingsTotal;
+  String? businessStatus;
+  String? formattedAddress;
+  Geometry? geometry;
+  String? icon;
+  String? iconBackgroundColor;
+  String? iconMaskBaseUri;
+  String? name;
+  OpeningHours? openingHours;
+  List<Photo>? photos;
+  String? placeId;
+  PlusCode? plusCode;
+  int? priceLevel;
+  double? rating;
+  String? reference;
+  List<String>? types;
+  int? userRatingsTotal;
 
   PlaceModal(
       {this.businessStatus = "",
@@ -84,16 +84,16 @@ class PlaceModal {
     data['reference'] = this.reference;
     data['user_ratings_total'] = this.userRatingsTotal;
     if (this.geometry != null) {
-      data['geometry'] = this.geometry.toJson();
+      data['geometry'] = this.geometry!.toJson();
     }
     if (this.openingHours != null) {
-      data['opening_hours'] = this.openingHours.toJson();
+      data['opening_hours'] = this.openingHours!.toJson();
     }
     if (this.photos != null) {
-      data['photos'] = this.photos.map((v) => v.toJson()).toList();
+      data['photos'] = this.photos!.map((v) => v.toJson()).toList();
     }
     if (this.plusCode != null) {
-      data['plus_code'] = this.plusCode.toJson();
+      data['plus_code'] = this.plusCode!.toJson();
     }
     if (this.types != null) {
       data['types'] = this.types;

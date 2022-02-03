@@ -13,8 +13,10 @@ import 'package:provider/provider.dart';
 /// author: brijesh.sakariya},
 /// type: group_conversation_admin_actions}
 
+/// This Class is responsible for performing Group Operations Like Make Admin
+/// Block User, Mute participant
 class ChatGroupActionManager {
-  Map<String, dynamic> message;
+  Map<String, dynamic>? message;
 
   ChatGroupActionManager({this.message}) {
     handleMessageAction();
@@ -22,7 +24,7 @@ class ChatGroupActionManager {
 
   //perform action according to action type
   void handleMessageAction() {
-    String action = message['meta_data']['action'];
+    String? action = message!['meta_data']['action'];
 
     switch (action) {
       case "add_admin_user":
@@ -70,21 +72,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// Adding the admin user to Group
   void addAdminUser() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
     if (chatConversation != null) {
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -97,21 +100,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// Removing the admin user to Group
   void removeAdminUser() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
     if (chatConversation != null) {
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -124,21 +128,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// Mute the participant in Group
   void muteParticipant() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
     if (chatConversation != null) {
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -151,21 +156,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// UnMute the participant in Group
   void unMuteParticipant() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
     if (chatConversation != null) {
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -178,21 +184,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// Block the participant in Group
   void blockParticipant() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
     if (chatConversation != null) {
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -205,21 +212,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// unblock the participant in Group
   void unblockParticipant() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
     if (chatConversation != null) {
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -232,21 +240,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// add the participant in Group
   void addParticipant() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
 
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return;
     if (users.first == null || users.first == {}) return;
     Participant user = Participant.fromJson(users.first);
@@ -259,7 +268,7 @@ class ChatGroupActionManager {
       }
     }
     UserBloc userBloc = Provider.of<UserBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
     if (userBloc.user.userName == user.userName) {
@@ -269,14 +278,15 @@ class ChatGroupActionManager {
     }
   }
 
+  /// remove the participant in Group
   void removeParticipant() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
@@ -284,7 +294,7 @@ class ChatGroupActionManager {
     }
     if (chatConversation != null) {
       debugPrint("chatConversation:- ${chatConversation.toJson()}");
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -303,7 +313,7 @@ class ChatGroupActionManager {
       }
 
       UserBloc userBloc = Provider.of<UserBloc>(
-          MyGlobals().navigationKey.currentContext,
+          MyGlobals().navigationKey.currentContext!,
           listen: false);
       if (userBloc.user.userName == user) {
         connectionListBloc.deleteChatConversation(
@@ -312,21 +322,22 @@ class ChatGroupActionManager {
     }
   }
 
+  /// exit from the Group
   void exitConversation() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
       }
     }
     if (chatConversation != null) {
-      List users = message['meta_data']['users'];
+      List users = message!['meta_data']['users'];
       if (users.isEmpty) return;
       if (users.first == null || users.first == "") return;
       String user = users.first.toString();
@@ -338,7 +349,7 @@ class ChatGroupActionManager {
       }
 
       UserBloc userBloc = Provider.of<UserBloc>(
-          MyGlobals().navigationKey.currentContext,
+          MyGlobals().navigationKey.currentContext!,
           listen: false);
       if (userBloc.user.userName == user) {
         connectionListBloc.deleteChatConversation(
@@ -347,14 +358,15 @@ class ChatGroupActionManager {
     }
   }
 
+  /// delete the group
   void deleteGroup() {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        MyGlobals().navigationKey.currentContext,
+        MyGlobals().navigationKey.currentContext!,
         listen: false);
 
-    ChatConversation chatConversation;
+    ChatConversation? chatConversation;
     for (int i = 0; i < connectionListBloc.connectionUsers.length; i++) {
-      if (message['meta_data']['conversation_id'] ==
+      if (message!['meta_data']['conversation_id'] ==
           connectionListBloc.connectionUsers[i].conversationId) {
         chatConversation = connectionListBloc.connectionUsers[i];
         break;
@@ -368,17 +380,18 @@ class ChatGroupActionManager {
 }
 
 class ChatGroupActionManagerForLiveConversation {
-  Map<String, dynamic> message;
+  Map<String, dynamic>? message;
   bool isChatConversation = false;
   bool isGroupDetailModel = false;
-  ChatConversation chatConversationToUpdate;
-  GroupDetailModel groupDetailModelToUpdate;
+  ChatConversation? chatConversationToUpdate;
+  GroupDetailModel? groupDetailModelToUpdate;
 
   ChatGroupActionManagerForLiveConversation({this.message});
   //perform action according to action type
   dynamic handleMessageAction(
-      {ChatConversation chatConversation, GroupDetailModel groupDetailModel}) {
-    String action = message['meta_data']['action'];
+      {ChatConversation? chatConversation,
+      GroupDetailModel? groupDetailModel}) {
+    String? action = message!['meta_data']['action'];
 
     if (chatConversation != null) {
       isChatConversation = true;
@@ -392,39 +405,30 @@ class ChatGroupActionManagerForLiveConversation {
     switch (action) {
       case "add_admin_user":
         return addAdminUser();
-        break;
 
       case "remove_admin_user":
         return removeAdminUser();
-        break;
 
       case "mute_participant":
         return muteParticipant();
-        break;
 
       case "unmute_participant":
         return unMuteParticipant();
-        break;
 
       case "block_participants":
         return blockParticipant();
-        break;
 
       case "unblock_participants":
         return unBlockParticipant();
-        break;
 
       case "add_user":
         return addParticipant();
-        break;
 
       case "remove_user":
         return removeParticipant();
-        break;
 
       case "exit_group":
         return exitGroup();
-        break;
 
       default:
         debugPrint("UNKNOWN ACTION TYPE==> $action MESSAGE: $message");
@@ -433,21 +437,21 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic addAdminUser() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (!chatConversationToUpdate.adminUsers.contains(user)) {
-        chatConversationToUpdate.adminUsers.add(user);
+      if (!chatConversationToUpdate!.adminUsers.contains(user)) {
+        chatConversationToUpdate!.adminUsers.add(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      if (!groupDetailModelToUpdate.adminUsers.contains(user)) {
-        groupDetailModelToUpdate.adminUsers.add(user);
+      if (!groupDetailModelToUpdate!.adminUsers.contains(user)) {
+        groupDetailModelToUpdate!.adminUsers.add(user);
         return groupDetailModelToUpdate;
       }
     }
@@ -455,21 +459,21 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic removeAdminUser() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (chatConversationToUpdate.adminUsers.contains(user)) {
-        chatConversationToUpdate.adminUsers.remove(user);
+      if (chatConversationToUpdate!.adminUsers.contains(user)) {
+        chatConversationToUpdate!.adminUsers.remove(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      if (groupDetailModelToUpdate.adminUsers.contains(user)) {
-        groupDetailModelToUpdate.adminUsers.remove(user);
+      if (groupDetailModelToUpdate!.adminUsers.contains(user)) {
+        groupDetailModelToUpdate!.adminUsers.remove(user);
         return groupDetailModelToUpdate;
       }
     }
@@ -477,21 +481,21 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic muteParticipant() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (!chatConversationToUpdate.mutedParticipants.contains(user)) {
-        chatConversationToUpdate.mutedParticipants.add(user);
+      if (!chatConversationToUpdate!.mutedParticipants.contains(user)) {
+        chatConversationToUpdate!.mutedParticipants.add(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      if (!groupDetailModelToUpdate.mutedParticipants.contains(user)) {
-        groupDetailModelToUpdate.mutedParticipants.add(user);
+      if (!groupDetailModelToUpdate!.mutedParticipants.contains(user)) {
+        groupDetailModelToUpdate!.mutedParticipants.add(user);
         return groupDetailModelToUpdate;
       }
     }
@@ -499,21 +503,21 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic unMuteParticipant() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (chatConversationToUpdate.mutedParticipants.contains(user)) {
-        chatConversationToUpdate.mutedParticipants.remove(user);
+      if (chatConversationToUpdate!.mutedParticipants.contains(user)) {
+        chatConversationToUpdate!.mutedParticipants.remove(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      if (groupDetailModelToUpdate.mutedParticipants.contains(user)) {
-        groupDetailModelToUpdate.mutedParticipants.remove(user);
+      if (groupDetailModelToUpdate!.mutedParticipants.contains(user)) {
+        groupDetailModelToUpdate!.mutedParticipants.remove(user);
         return groupDetailModelToUpdate;
       }
     }
@@ -521,21 +525,21 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic blockParticipant() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (!chatConversationToUpdate.blockedParticipants.contains(user)) {
-        chatConversationToUpdate.blockedParticipants.add(user);
+      if (!chatConversationToUpdate!.blockedParticipants.contains(user)) {
+        chatConversationToUpdate!.blockedParticipants.add(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      if (!groupDetailModelToUpdate.blockedParticipants.contains(user)) {
-        groupDetailModelToUpdate.blockedParticipants.add(user);
+      if (!groupDetailModelToUpdate!.blockedParticipants.contains(user)) {
+        groupDetailModelToUpdate!.blockedParticipants.add(user);
         return groupDetailModelToUpdate;
       }
     }
@@ -543,21 +547,21 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic unBlockParticipant() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (chatConversationToUpdate.blockedParticipants.contains(user)) {
-        chatConversationToUpdate.blockedParticipants.remove(user);
+      if (chatConversationToUpdate!.blockedParticipants.contains(user)) {
+        chatConversationToUpdate!.blockedParticipants.remove(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      if (groupDetailModelToUpdate.blockedParticipants.contains(user)) {
-        groupDetailModelToUpdate.blockedParticipants.remove(user);
+      if (groupDetailModelToUpdate!.blockedParticipants.contains(user)) {
+        groupDetailModelToUpdate!.blockedParticipants.remove(user);
         return groupDetailModelToUpdate;
       }
     }
@@ -565,26 +569,24 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic addParticipant() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == {}) return null;
     Participant participant = Participant.fromJson(users.first);
 
-    if (participant != null) {
-      if (isChatConversation) {
-        if (!chatConversationToUpdate.participants
-            .contains(participant.userName)) {
-          chatConversationToUpdate.participants.add(participant.userName);
-          return chatConversationToUpdate;
-        }
+    if (isChatConversation) {
+      if (!chatConversationToUpdate!.participants
+          .contains(participant.userName)) {
+        chatConversationToUpdate!.participants.add(participant.userName);
+        return chatConversationToUpdate;
       }
+    }
 
-      if (isGroupDetailModel) {
-        if (!groupDetailModelToUpdate.participants
-            .contains(participant.userName)) {
-          groupDetailModelToUpdate.participants.add(participant);
-          return groupDetailModelToUpdate;
-        }
+    if (isGroupDetailModel) {
+      if (!groupDetailModelToUpdate!.participants
+          .contains(participant.userName)) {
+        groupDetailModelToUpdate!.participants.add(participant);
+        return groupDetailModelToUpdate;
       }
     }
 
@@ -592,41 +594,41 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic removeParticipant() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (chatConversationToUpdate.participants.contains(user)) {
-        chatConversationToUpdate.participants.remove(user);
+      if (chatConversationToUpdate!.participants.contains(user)) {
+        chatConversationToUpdate!.participants.remove(user);
 
-        if (chatConversationToUpdate.mutedParticipants.contains(user))
-          chatConversationToUpdate.mutedParticipants.remove(user);
+        if (chatConversationToUpdate!.mutedParticipants.contains(user))
+          chatConversationToUpdate!.mutedParticipants.remove(user);
 
-        if (chatConversationToUpdate.blockedParticipants.contains(user))
-          chatConversationToUpdate.blockedParticipants.remove(user);
+        if (chatConversationToUpdate!.blockedParticipants.contains(user))
+          chatConversationToUpdate!.blockedParticipants.remove(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      Participant participant;
-      for (int i = 0; i < groupDetailModelToUpdate.participants.length; i++) {
-        if (groupDetailModelToUpdate.participants[i].userName == user) {
-          participant = groupDetailModelToUpdate.participants[i];
+      Participant? participant;
+      for (int i = 0; i < groupDetailModelToUpdate!.participants.length; i++) {
+        if (groupDetailModelToUpdate!.participants[i].userName == user) {
+          participant = groupDetailModelToUpdate!.participants[i];
           break;
         }
       }
 
       if (participant != null) {
-        groupDetailModelToUpdate.participants.remove(participant);
+        groupDetailModelToUpdate!.participants.remove(participant);
 
-        if (groupDetailModelToUpdate.mutedParticipants.contains(user))
-          groupDetailModelToUpdate.mutedParticipants.remove(user);
+        if (groupDetailModelToUpdate!.mutedParticipants.contains(user))
+          groupDetailModelToUpdate!.mutedParticipants.remove(user);
 
-        if (groupDetailModelToUpdate.blockedParticipants.contains(user))
-          groupDetailModelToUpdate.blockedParticipants.remove(user);
+        if (groupDetailModelToUpdate!.blockedParticipants.contains(user))
+          groupDetailModelToUpdate!.blockedParticipants.remove(user);
 
         return groupDetailModelToUpdate;
       }
@@ -635,41 +637,41 @@ class ChatGroupActionManagerForLiveConversation {
   }
 
   dynamic exitGroup() {
-    List users = message['meta_data']['users'];
+    List users = message!['meta_data']['users'];
     if (users.isEmpty) return null;
     if (users.first == null || users.first == "") return null;
     String user = users.first.toString();
 
     if (isChatConversation) {
-      if (chatConversationToUpdate.participants.contains(user)) {
-        chatConversationToUpdate.participants.remove(user);
+      if (chatConversationToUpdate!.participants.contains(user)) {
+        chatConversationToUpdate!.participants.remove(user);
 
-        if (chatConversationToUpdate.mutedParticipants.contains(user))
-          chatConversationToUpdate.mutedParticipants.remove(user);
+        if (chatConversationToUpdate!.mutedParticipants.contains(user))
+          chatConversationToUpdate!.mutedParticipants.remove(user);
 
-        if (chatConversationToUpdate.blockedParticipants.contains(user))
-          chatConversationToUpdate.blockedParticipants.remove(user);
+        if (chatConversationToUpdate!.blockedParticipants.contains(user))
+          chatConversationToUpdate!.blockedParticipants.remove(user);
         return chatConversationToUpdate;
       }
     }
 
     if (isGroupDetailModel) {
-      Participant participant;
-      for (int i = 0; i < groupDetailModelToUpdate.participants.length; i++) {
-        if (groupDetailModelToUpdate.participants[i].userName == user) {
-          participant = groupDetailModelToUpdate.participants[i];
+      Participant? participant;
+      for (int i = 0; i < groupDetailModelToUpdate!.participants.length; i++) {
+        if (groupDetailModelToUpdate!.participants[i].userName == user) {
+          participant = groupDetailModelToUpdate!.participants[i];
           break;
         }
       }
 
       if (participant != null) {
-        groupDetailModelToUpdate.participants.remove(participant);
+        groupDetailModelToUpdate!.participants.remove(participant);
 
-        if (groupDetailModelToUpdate.mutedParticipants.contains(user))
-          groupDetailModelToUpdate.mutedParticipants.remove(user);
+        if (groupDetailModelToUpdate!.mutedParticipants.contains(user))
+          groupDetailModelToUpdate!.mutedParticipants.remove(user);
 
-        if (groupDetailModelToUpdate.blockedParticipants.contains(user))
-          groupDetailModelToUpdate.blockedParticipants.remove(user);
+        if (groupDetailModelToUpdate!.blockedParticipants.contains(user))
+          groupDetailModelToUpdate!.blockedParticipants.remove(user);
 
         return groupDetailModelToUpdate;
       }

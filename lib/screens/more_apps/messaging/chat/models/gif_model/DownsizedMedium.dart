@@ -1,8 +1,8 @@
 class DownsizedMedium {
-  String height;
-  String size;
-  String url;
-  String width;
+  String? height;
+  String? size;
+  String? url;
+  String? width;
 
   DownsizedMedium({this.height, this.size, this.url, this.width});
 

@@ -1,8 +1,8 @@
 class Downsized {
-  String height;
-  String size;
-  String url;
-  String width;
+  String? height;
+  String? size;
+  String? url;
+  String? width;
 
   Downsized({this.height, this.size, this.url, this.width});
 

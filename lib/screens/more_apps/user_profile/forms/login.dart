@@ -27,8 +27,6 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toast/toast.dart';
-import 'package:workmanager/workmanager.dart';
 
 class UserLogin extends StatefulWidget {
   @override
@@ -40,21 +38,21 @@ class _UserLoginState extends State<UserLogin> {
   final _loginFormKey = GlobalKey<FormState>();
   final _auth = AuthService();
   String phoneNumber = '';
-  String password = '';
+  String? password = '';
 
   //for remember user
   bool isChecked = false;
-  String countryFromPref;
-  String phoneNumberFromPref;
-  String passwordFromPref;
-  TextEditingController phoneNumberController;
-  TextEditingController passwordController;
-  SharedPreferences _sharedPreferences;
-  BasketBloc basketBloc;
+  String? countryFromPref;
+  String? phoneNumberFromPref;
+  String? passwordFromPref;
+  TextEditingController? phoneNumberController;
+  TextEditingController? passwordController;
+  late SharedPreferences _sharedPreferences;
+  late BasketBloc basketBloc;
 
   final FocusNode _pinPutFocusNode = FocusNode();
 
-  Country _selectedDialogCountry;
+  late Country _selectedDialogCountry;
 
   @override
   void initState() {
@@ -83,10 +81,10 @@ class _UserLoginState extends State<UserLogin> {
       passwordFromPref = secureUser.password;
 
       //setting fetched userdata into screen
-      phoneNumberController.text = phoneNumberFromPref;
-      passwordController.text = passwordFromPref;
+      phoneNumberController!.text = phoneNumberFromPref!;
+      passwordController!.text = passwordFromPref!;
       phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode + phoneNumberFromPref;
+          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromPref!;
       password = passwordFromPref;
     }
     if (mounted) setState(() {});
@@ -202,12 +200,13 @@ class _UserLoginState extends State<UserLogin> {
           child: CustomizedTextFormField(
             labelColor: darkGrey,
             keyboardType: TextInputType.phone,
+            hintText: "08023000000",
             controller: phoneNumberController,
             validator: (val) {
               if (val.isNotEmpty && val.length >= 9) {
                 return null;
               }
-              return AppLocalization.of(context).invalidPhoneNumber;
+              return AppLocalization.of(context)!.invalidPhoneNumber;
             },
           ),
         ),
@@ -290,7 +289,7 @@ class _UserLoginState extends State<UserLogin> {
         SizedBox(width: 8.0),
         Expanded(
           child: Text(
-            "(" + country.name + ")",
+            "(" + country.name! + ")",
             overflow: TextOverflow.fade,
             softWrap: false,
             style: TextStyle(
@@ -313,7 +312,7 @@ class _UserLoginState extends State<UserLogin> {
             titlePadding: EdgeInsets.all(8.0),
             searchCursorColor: navyBlue,
             searchInputDecoration: InputDecoration(
-              hintText: AppLocalization.of(context).search,
+              hintText: AppLocalization.of(context)!.search,
               hintStyle: TextStyle(
                 fontSize: 16,
                 color: darkGrey,
@@ -322,7 +321,7 @@ class _UserLoginState extends State<UserLogin> {
             ),
             isSearchable: true,
             title: Text(
-              AppLocalization.of(context).selectYourPhoneCode,
+              AppLocalization.of(context)!.selectYourPhoneCode,
               style: TextStyle(
                 fontSize: 14,
                 color: blackFont,
@@ -358,8 +357,8 @@ class _UserLoginState extends State<UserLogin> {
             eachFieldWidth: 45,
             eachFieldHeight: 45,
             obscureText: '•',
-            validator: (val) => val.length < 4
-                ? AppLocalization.of(context).invalidPassword
+            validator: (val) => val!.length < 4
+                ? AppLocalization.of(context)!.invalidPassword
                 : null,
             fieldsCount: 6,
             focusNode: _pinPutFocusNode,
@@ -437,7 +436,7 @@ class _UserLoginState extends State<UserLogin> {
             width: 12,
           ),
           Text(
-            AppLocalization.of(context).rememberMe,
+            AppLocalization.of(context)!.rememberMe,
             style: TextStyle(color: blackFont, fontSize: 14),
           ),
         ],
@@ -464,7 +463,7 @@ class _UserLoginState extends State<UserLogin> {
           Navigator.of(context).pushNamed('/forgot-password');
         },
         child: Text(
-          AppLocalization.of(context).forgotPassword,
+          AppLocalization.of(context)!.forgotPassword,
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w600, color: navyBlue),
         ),
@@ -495,13 +494,13 @@ class _UserLoginState extends State<UserLogin> {
     //   (Route<dynamic> route) => false,
     // );
 
-    if (_loginFormKey.currentState.validate()) {
+    if (_loginFormKey.currentState!.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       var _user;
-      BankAccount _bankAccount;
+      BankAccount? _bankAccount;
 
-      var phoneNumberFromTextField = phoneNumberController.text.trim();
+      var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
       if (phoneNumberFromTextField.substring(0, 1) == "0") {
         phoneNumberFromTextField =
@@ -509,8 +508,8 @@ class _UserLoginState extends State<UserLogin> {
       }
 
       phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode + phoneNumberFromTextField;
-      password = passwordController.text.trim();
+          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+      password = passwordController!.text.trim();
 
       await _auth.authenticate(phoneNumber, password).then((value) async {
         _user = value;
@@ -526,7 +525,11 @@ class _UserLoginState extends State<UserLogin> {
           DatabaseHelper()
               .saveGeneralSettings(userBloc.chatMessageSettings.toDBJson());
 
-          socketProvider.currentUser = _user;
+          try {
+            socketProvider.setCurrentUser(_user);
+          } catch (error) {
+            debugPrint("ERROR:- $error");
+          }
 
           // Get user's bank account if user is logged in
           if (_user != null) {
@@ -546,7 +549,7 @@ class _UserLoginState extends State<UserLogin> {
 
           BackgroundFetchStopBloc backgroundFetchBloc =
               Provider.of<BackgroundFetchStopBloc>(
-                  myGlobals.navigationKey.currentContext,
+                  myGlobals.navigationKey.currentContext!,
                   listen: false);
 
           backgroundFetchBloc.isAllowed = true;
@@ -559,58 +562,45 @@ class _UserLoginState extends State<UserLogin> {
           );
         } else {
           Navigator.pop(context);
-          Toast.show(AppLocalization.of(context).userIsNotRegistered, context,
-              gravity: Toast.BOTTOM,
-              backgroundColor: Colors.black,
-              textColor: Colors.white);
+          showToast(message: AppLocalization.of(context)!.userIsNotRegistered);
         }
       }).catchError((error) {
         if (mounted) {
           Navigator.pop(context);
-          Toast.show("$error", context,
-              gravity: Toast.BOTTOM,
-              backgroundColor: Colors.black,
-              textColor: Colors.white);
+          showToast(message: "$error");
         }
       });
     }
   }
 
   void startWorkManager() {
-    Workmanager().registerPeriodicTask(
-      "2",
-      "simplePeriodicTask",
-      // When no frequency is provided the default 15 minutes is set.
-      // Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
-      frequency: Duration(minutes: 5),
-    );
+    // Workmanager().registerPeriodicTask(
+    //   "2",
+    //   "simplePeriodicTask",
+    //   // When no frequency is provided the default 15 minutes is set.
+    //   // Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
+    //   frequency: Duration(minutes: 5),
+    // );
   }
 
   void isRememberChecked() async {
-    await _sharedPreferences.clear();
+    // await _sharedPreferences.clear();
     bool isLoggedOut = await _sharedPreferences.setBool('isLoggedOut', false);
-    if (true) {
-      bool isCheckedSet = await _sharedPreferences.setBool('isChecked', true);
 
-      bool countryCodeSet = await _sharedPreferences.setString(
-          'country', _selectedDialogCountry.isoCode);
+    bool isCheckedSet = await _sharedPreferences.setBool('isChecked', true);
 
-      if (!isCheckedSet || !isLoggedOut || !countryCodeSet) {
-        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
-      }
-    } else {
-      bool isSuccessFullyStored =
-          await _sharedPreferences.setBool('isChecked', true);
-      if (!isSuccessFullyStored) {
-        Toast.show(AppLocalization.of(context).userIsNotSaved, context);
-      }
+    bool countryCodeSet = await _sharedPreferences.setString(
+        'country', _selectedDialogCountry.isoCode!);
+
+    if (!isCheckedSet || !isLoggedOut || !countryCodeSet) {
+      showToast(message: AppLocalization.of(context)!.userIsNotSaved);
     }
   }
 
   void storeUserData() async {
     await SecureStorage().clear();
 
-    var phoneNumberFromTextField = phoneNumberController.text.trim();
+    var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
     if (phoneNumberFromTextField.substring(0, 1) == "0") {
       phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");
@@ -640,8 +630,8 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   void dispose() {
-    phoneNumberController.dispose();
-    passwordController.dispose();
+    phoneNumberController!.dispose();
+    passwordController!.dispose();
     super.dispose();
   }
 }

@@ -15,19 +15,19 @@ class CustomRangeThumbShapeForMovie extends RangeSliderThumbShape {
 
   @override
   void paint(PaintingContext context, Offset center,
-      {Animation<double> activationAnimation,
-      Animation<double> enableAnimation,
-      bool isDiscrete,
-      bool isEnabled,
-      bool isOnTop,
-      TextDirection textDirection,
-      SliderThemeData sliderTheme,
-      Thumb thumb,
-      bool isPressed}) {
+      {Animation<double>? activationAnimation,
+      Animation<double>? enableAnimation,
+      bool? isDiscrete,
+      bool? isEnabled,
+      bool? isOnTop,
+      TextDirection? textDirection,
+      required SliderThemeData sliderTheme,
+      Thumb? thumb,
+      bool? isPressed}) {
     final Canvas canvas = context.canvas;
 
     Paint paint = Paint();
-    paint.color = sliderTheme.thumbColor;
+    paint.color = sliderTheme.thumbColor!;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 2;
 
@@ -46,9 +46,9 @@ class CustomRangeThumbShapeForMovie extends RangeSliderThumbShape {
         fontWeight: FontWeight.w400,
         fontFamily: "OpenSans");
 
-    switch (textDirection) {
+    switch (textDirection ?? TextDirection.ltr) {
       case TextDirection.rtl:
-        switch (thumb) {
+        switch (thumb ?? Thumb.start) {
           case Thumb.start:
             final textSpan = TextSpan(children: [
               TextSpan(
@@ -114,7 +114,7 @@ class CustomRangeThumbShapeForMovie extends RangeSliderThumbShape {
 
         break;
       case TextDirection.ltr:
-        switch (thumb) {
+        switch (thumb ?? Thumb.start) {
           case Thumb.start:
             final textSpan = TextSpan(children: [
               TextSpan(
@@ -197,19 +197,19 @@ class CustomRangeThumbShapeForProperty extends RangeSliderThumbShape {
 
   @override
   void paint(PaintingContext context, Offset center,
-      {Animation<double> activationAnimation,
-      Animation<double> enableAnimation,
-      bool isDiscrete,
-      bool isEnabled,
-      bool isOnTop,
-      TextDirection textDirection,
-      SliderThemeData sliderTheme,
-      Thumb thumb,
-      bool isPressed}) {
+      {Animation<double>? activationAnimation,
+      Animation<double>? enableAnimation,
+      bool? isDiscrete,
+      bool? isEnabled,
+      bool? isOnTop,
+      TextDirection? textDirection,
+      required SliderThemeData sliderTheme,
+      Thumb? thumb,
+      bool? isPressed}) {
     final Canvas canvas = context.canvas;
 
     Paint paint = Paint();
-    paint.color = sliderTheme.thumbColor;
+    paint.color = sliderTheme.thumbColor!;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = 2;
 
@@ -228,9 +228,9 @@ class CustomRangeThumbShapeForProperty extends RangeSliderThumbShape {
         fontWeight: FontWeight.w400,
         fontFamily: "OpenSans");
 
-    switch (textDirection) {
+    switch (textDirection ?? TextDirection.ltr) {
       case TextDirection.rtl:
-        switch (thumb) {
+        switch (thumb ?? Thumb.start) {
           case Thumb.start:
             final textSpan = TextSpan(children: [
               TextSpan(
@@ -297,7 +297,7 @@ class CustomRangeThumbShapeForProperty extends RangeSliderThumbShape {
 
         break;
       case TextDirection.ltr:
-        switch (thumb) {
+        switch (thumb ?? Thumb.start) {
           case Thumb.start:
             final textSpan = TextSpan(children: [
               TextSpan(

@@ -1,14 +1,14 @@
 class NudgeNotification {
-  String actions;
-  String author;
-  String authorAvatar;
-  String checkId;
-  String conversationId;
-  String createdAt;
-  String notificationId;
-  String recipient;
-  String recipientUsername;
-  String type;
+  String? actions;
+  String? author;
+  String? authorAvatar;
+  String? checkId;
+  String? conversationId;
+  String? createdAt;
+  String? notificationId;
+  String? recipient;
+  String? recipientUsername;
+  String? type;
 
   NudgeNotification(
       {this.actions,

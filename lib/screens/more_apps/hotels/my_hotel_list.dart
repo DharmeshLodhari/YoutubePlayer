@@ -1,10 +1,10 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'hotel_auth.dart';
 import 'hotel_dashboard_bloc.dart';
@@ -48,15 +48,15 @@ class _MyHotelListState extends State<MyHotelList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _refreshController.refreshCompleted();
       }
     });
   }
 
-  HotelDashboardBloc _hotelDashboardBloc;
+  late HotelDashboardBloc _hotelDashboardBloc;
 
   @override
   Widget build(BuildContext context) {

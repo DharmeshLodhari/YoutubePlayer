@@ -2,26 +2,26 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Analytic
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/Images.dart';
 
 class GIFModel {
-  Analytics analytics;
-  String analyticsResponsePayload;
-  String bitlyGifUrl;
-  String bitlyUrl;
-  String contentUrl;
-  String embedUrl;
-  String id;
-  Images images;
-  String importDatetime;
-  int isSticker;
-  String rating;
-  String slug;
-  String source;
-  String sourcePostUrl;
-  String sourceTld;
-  String title;
-  String trendingDatetime;
-  String type;
-  String url;
-  String username;
+  Analytics? analytics;
+  String? analyticsResponsePayload;
+  String? bitlyGifUrl;
+  String? bitlyUrl;
+  String? contentUrl;
+  String? embedUrl;
+  String? id;
+  Images? images;
+  String? importDatetime;
+  int? isSticker;
+  String? rating;
+  String? slug;
+  String? source;
+  String? sourcePostUrl;
+  String? sourceTld;
+  String? title;
+  String? trendingDatetime;
+  String? type;
+  String? url;
+  String? username;
 
   GIFModel(
       {this.analytics,
@@ -93,10 +93,10 @@ class GIFModel {
     data['url'] = this.url;
     data['username'] = this.username;
     if (this.analytics != null) {
-      data['analytics'] = this.analytics.toJson();
+      data['analytics'] = this.analytics!.toJson();
     }
     if (this.images != null) {
-      data['images'] = this.images.toJson();
+      data['images'] = this.images!.toJson();
     }
     return data;
   }

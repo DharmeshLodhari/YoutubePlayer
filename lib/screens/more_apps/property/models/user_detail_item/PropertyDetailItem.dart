@@ -4,18 +4,18 @@ import 'Review.dart';
 import 'SimilarProperty.dart';
 
 class PropertyDetailItem {
-  String about;
-  List<String> images;
-  List<Location> location;
-  String name;
-  String ownerAvatar;
-  String ownerName;
-  String ownerUserName;
-  List<Partner> partners;
-  List<Review> reviews;
-  String shortDetail;
-  List<SimilarProperty> similarProperties;
-  String video;
+  String? about;
+  List<String>? images;
+  List<Location>? location;
+  String? name;
+  String? ownerAvatar;
+  String? ownerName;
+  String? ownerUserName;
+  List<Partner>? partners;
+  List<Review>? reviews;
+  String? shortDetail;
+  List<SimilarProperty>? similarProperties;
+  String? video;
 
   PropertyDetailItem(
       {this.about = "",
@@ -72,17 +72,17 @@ class PropertyDetailItem {
       data['images'] = this.images;
     }
     if (this.location != null) {
-      data['location'] = this.location.map((v) => v.toJson()).toList();
+      data['location'] = this.location!.map((v) => v.toJson()).toList();
     }
     if (this.partners != null) {
-      data['partners'] = this.partners.map((v) => v.toJson()).toList();
+      data['partners'] = this.partners!.map((v) => v.toJson()).toList();
     }
     if (this.reviews != null) {
-      data['reviews'] = this.reviews.map((v) => v.toJson()).toList();
+      data['reviews'] = this.reviews!.map((v) => v.toJson()).toList();
     }
     if (this.similarProperties != null) {
       data['similar_properties'] =
-          this.similarProperties.map((v) => v.toJson()).toList();
+          this.similarProperties!.map((v) => v.toJson()).toList();
     }
     return data;
   }

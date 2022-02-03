@@ -3,16 +3,18 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_post/user_post_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_info.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_qr_code_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
@@ -20,13 +22,16 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
   final arguments;
-  UserProfileScreen({@required this.arguments});
+  User? user;
+  UserProfileScreen({required this.arguments, this.user});
 
   @override
   _UserProfileScreenState createState() =>
@@ -39,29 +44,32 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isLoading = true;
 
-  TabController _tabController;
+  TabController? _tabController;
 
   _UserProfileScreenState({this.arguments});
 
   int currentIndex = 0;
-  CustomerProfile searchedUser;
-  String searchedUserName;
+  BehaviorSubject<int> selectedIndexStream = BehaviorSubject<int>();
+  CustomerProfile? searchedUser;
+  String? searchedUserName;
 
   // this variable will responsible for is the user is owner of the products and add
   // edit button on the product if user is owner
   bool isOwner = false;
-  UserBloc userBloc;
-  double top;
+  late UserBloc userBloc;
+  double? top;
 
   // pageview controller
-  PageController pageController;
+  PageController? pageController;
 
-  CustomerProfileBloc customerProfileBloc;
+  late CustomerProfileBloc customerProfileBloc;
 
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
   bool appBarStatus = true;
 
   bool isUserIsSimpleUser = false;
+  bool showProductTab = false;
+  bool showServiceTab = false;
 
   @override
   void initState() {
@@ -73,15 +81,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   void initializeVariables() async {
     await getSearchedUser();
     currentIndex = arguments['index'] ?? 0;
+    selectedIndexStream.sink.add(currentIndex);
     pageController = PageController(initialPage: currentIndex);
     if (mounted) setState(() {});
 
     _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+    _scrollController?.addListener(_scrollListener);
   }
 
   Future<void> dispose() async {
     super.dispose();
+    selectedIndexStream.close();
     _scrollController?.removeListener(_scrollListener);
     _scrollController?.dispose();
   }
@@ -94,17 +104,29 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     CustomerProfile user =
         await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
     searchedUser = user;
-    debugPrint("searchUserName===>${searchedUser.nickName}");
-    isLoading = false;
-    if (searchedUser.type.toLowerCase() == "user") {
+    debugPrint("searchUserName===>${searchedUser!.nickName}");
+
+    if (searchedUser!.type!.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
     }
 
-    if (mounted) setState(() {});
+    int tabCount = 2;
 
-    _tabController = TabController(
-        length: searchedUser.type.toLowerCase() == "user" ? 1 : 5, vsync: this);
+    if (searchedUser?.type?.toLowerCase() != "user") {
+      tabCount = 5;
+      showProductTab = await getIsShowProduct();
+      showServiceTab = await getIsShowService();
 
+      if (showProductTab) {
+        tabCount++;
+      }
+      if (showServiceTab) {
+        tabCount++;
+      }
+    }
+
+    _tabController = TabController(length: tabCount, vsync: this);
+    isLoading = false;
     if (mounted) setState(() {});
   }
 
@@ -116,8 +138,36 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   bool get isShrink {
-    return _scrollController.hasClients &&
-        _scrollController.offset > (150 - kToolbarHeight);
+    return (_scrollController?.hasClients ?? false) &&
+        (_scrollController?.offset ?? 0) > (150 - kToolbarHeight);
+  }
+
+  Future<bool> getIsShowProduct() async {
+    Map<String, dynamic>? data;
+    try {
+      data = await ShoppingAuthService()
+          .listOfProduct("", "", userName: searchedUser?.userName);
+    } catch (error) {}
+    if (data != null) {
+      int count = data["count"] ?? 0;
+      if (count > 0) return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> getIsShowService() async {
+    Map<String, dynamic>? data;
+    try {
+      data = await ShoppingAuthService()
+          .listServicesByProvider("", "", userName: searchedUser?.userName);
+    } catch (error) {}
+    if (data != null) {
+      int count = data["count"] ?? 0;
+      if (count > 0) return true;
+    }
+
+    return false;
   }
 
   @override
@@ -127,14 +177,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (isLoading) {
       return Scaffold(
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: Center(
           child: CircularLoadingIndicator(),
         ),
       );
     }
 
-    if (userBloc.user.userName == searchedUser?.userName ?? false) {
+    if (userBloc.user.userName == searchedUser?.userName) {
       isOwner = true;
     }
 
@@ -143,35 +193,40 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         return await Future.value(true);
       },
       child: SafeArea(
+        top: false,
         bottom: false,
         child: Scaffold(
           body: NestedScrollView(
-              controller: _scrollController,
-              headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
-                return <Widget>[
-                  getAppbar(context),
-                  getUserBio(),
-                  SliverPersistentHeader(
-                    floating: true,
-                    pinned: true,
-                    delegate: _SliverAppBarDelegate(
-                      TabBar(
-                        controller: _tabController,
-                        isScrollable: searchedUser.type.toLowerCase() == "user"
-                            ? false
-                            : true,
-                        labelPadding: EdgeInsets.zero,
-                        indicator: BoxDecoration(),
-                        onTap: (int index) {
-                          changeIndex(index);
-                        },
-                        tabs: getTabs(),
-                      ),
+            controller: _scrollController,
+            headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+              return <Widget>[
+                getAppbar(context),
+                getUserBio(),
+                SliverPersistentHeader(
+                  key: UniqueKey(),
+                  floating: true,
+                  pinned: true,
+                  delegate: _SliverAppBarDelegate(
+                    TabBar(
+                      controller: _tabController,
+                      isScrollable: true,
+                      labelPadding: EdgeInsets.zero,
+                      indicator: BoxDecoration(),
+                      onTap: (int index) {
+                        changeIndex(index);
+                      },
+                      tabs: getTabs(),
                     ),
-                  )
-                ];
-              },
-              body: SafeArea(bottom: false, top: false, child: tabViews())),
+                  ),
+                )
+              ];
+            },
+            body: SafeArea(
+              bottom: false,
+              top: false,
+              child: tabViews(),
+            ),
+          ),
         ),
       ),
     );
@@ -179,11 +234,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   void changeIndex(int index) {
     currentIndex = index;
-    if (mounted) setState(() {});
-    pageController.jumpToPage(currentIndex);
+
+    pageController?.jumpToPage(currentIndex);
+
+    setState(() {});
   }
 
-  Widget getAppbar(var context) {
+  Widget getAppbar(BuildContext context) {
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -191,9 +248,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         bottom: false,
         sliver: SliverAppBar(
           forceElevated: false,
-          expandedHeight: 250,
+          expandedHeight: 240,
           elevation: 0,
           stretch: true,
+          shadowColor: Colors.transparent,
           pinned: true,
           floating: true,
           leading: IconButton(
@@ -211,7 +269,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           title: isShrink
               ? Container(
                   child: Text(
-                    searchedUser.displayName(),
+                    searchedUser!.displayName()!,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22,
@@ -273,14 +331,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           height: 16,
                         ),
                         Text(
-                          searchedUser.displayName(),
+                          searchedUser!.displayName()!,
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: blackFont),
                         ),
                         Text(
-                          "@" + searchedUser.userName,
+                          searchedUser!.userName!,
                           style: TextStyle(
                               fontSize: 14.0,
                               color: darkGrey,
@@ -306,7 +364,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 backgroundColor: Colors.transparent,
               ),
             )
-          : searchedUser.userAbout == null
+          : searchedUser!.userAbout == null
               ? Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
@@ -314,7 +372,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     backgroundColor: Colors.transparent,
                   ),
                 )
-              : searchedUser.userAbout.wallpaper == ""
+              : searchedUser!.userAbout!.wallpaper == ""
                   ? Image.asset(
                       "assets/images/home_screen_background.png",
                       width: double.infinity,
@@ -323,27 +381,31 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   : GestureDetector(
                       onTap: () {
                         Navigator.of(context).pushNamed("/photo-viewer",
-                            arguments: searchedUser.userAbout.wallpaper);
+                            arguments: searchedUser!.userAbout!.wallpaper);
                       },
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        height: double.infinity,
-                        imageUrl: searchedUser.userAbout.wallpaper,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Center(child: CircularLoadingIndicator()),
-                        color: blackFont.withOpacity(0.4),
-                        colorBlendMode: BlendMode.darken,
-                        filterQuality: FilterQuality.high,
+                      child: Container(
+                        color: navyBlue,
+                        child: CachedNetworkImage(
+                          width: double.infinity,
+                          height: double.infinity,
+                          errorWidget: wallpaperErrorWidget,
+                          imageUrl: searchedUser!.userAbout!.wallpaper,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              Center(child: CircularLoadingIndicator()),
+                          color: blackFont.withOpacity(0.4),
+                          colorBlendMode: BlendMode.darken,
+                          filterQuality: FilterQuality.high,
+                        ),
                       ),
                     ),
     );
   }
 
   Widget getProfilePhoto() {
-    Color borderColor = getUserTypeColor(user: searchedUser);
-
+    Color borderColor = getUserTypeColor(user: searchedUser!);
     return Container(
+      padding: EdgeInsets.only(bottom: 16),
       alignment: Alignment.bottomLeft,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -355,25 +417,78 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 shape: BoxShape.circle),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context)
-                    .pushNamed("/photo-viewer", arguments: searchedUser.avatar);
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: searchedUser!.avatar);
               },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: Container(
-                  color: Colors.white,
-                  child: CachedNetworkImage(
-                    height: 88,
-                    width: 88,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.high,
-                    imageUrl: searchedUser.avatar,
-                  ),
-                ),
-              ),
+              child: searchedUser?.type?.toLowerCase() != "user" &&
+                      searchedUser?.rating != 0.0
+                  ? Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        getUserProfilePic(),
+                        Positioned.fill(
+                          bottom: -14,
+                          left: 0,
+                          right: 0,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(60),
+                                border: Border.all(
+                                  color: dividerColor,
+                                ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 5),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    SlydoAppIcon.star,
+                                    color: starYellow,
+                                    size: 14,
+                                  ),
+                                  SizedBox(
+                                    width: 4,
+                                  ),
+                                  Text(
+                                    searchedUser?.rating.toString() ?? "0.0",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: blackFont,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  : getUserProfilePic(),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget getUserProfilePic() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(50),
+      child: Container(
+        color: Colors.white,
+        child: CachedNetworkImage(
+          height: 88,
+          width: 88,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+          imageUrl: searchedUser!.avatar!,
+          errorWidget: imageErrorWidget,
+        ),
       ),
     );
   }
@@ -390,7 +505,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getChatIcon() {
-    return searchedUser.conversationId != ""
+    return searchedUser!.conversationId != ""
         ? Row(
             children: [
               chatIcon(),
@@ -403,7 +518,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getSearchIcon() {
-    return searchedUser.type.toLowerCase() != "user"
+    return searchedUser!.type!.toLowerCase() != "user"
         ? Row(
             children: [
               searchIcon(),
@@ -426,7 +541,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
       onTap: () {
         Navigator.pushNamed(context, '/chat-screen',
-            arguments: {"recipientUserName": searchedUser.userName});
+            arguments: {"recipientUserName": searchedUser!.userName});
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
@@ -468,151 +583,85 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
+  Widget getTabUI({
+    String title = "",
+    @required int? tabIndex,
+  }) {
+    return Tab(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+            horizontal: _tabController?.index == tabIndex ? 16 : 18,
+            vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          shape: BoxShape.rectangle,
+          color: _tabController?.index == tabIndex
+              ? navyBlue.withOpacity(0.1)
+              : Colors.white,
+        ),
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.visible,
+          style: TextStyle(
+            color: _tabController?.index == tabIndex ? navyBlue : blackFont,
+            fontSize: 14,
+            fontWeight: _tabController?.index == tabIndex
+                ? FontWeight.w600
+                : FontWeight.w400,
+          ),
+        ),
+      ),
+    );
+  }
+
   List<Widget> getTabs() {
     List<Widget> tabs = [];
 
-    if (searchedUser.type.toLowerCase() == "user") {
-      tabs.add(Tab(
-        child: Container(
-          padding: EdgeInsets.symmetric(
-              horizontal: currentIndex == 0 ? 14 : 16, vertical: 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            shape: BoxShape.rectangle,
-            color: currentIndex == 0 ? navyBlue.withOpacity(0.1) : Colors.white,
-          ),
-          child: Text(
-            "QR code",
-            maxLines: 1,
-            overflow: TextOverflow.visible,
-            style: TextStyle(
-              color: currentIndex == 0 ? navyBlue : blackFont,
-              fontSize: 14,
-              fontWeight: currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
-            ),
-          ),
-        ),
-      ));
-    } else {
-      tabs.addAll([
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: currentIndex == 0 ? 14 : 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              shape: BoxShape.rectangle,
-              color:
-                  currentIndex == 0 ? navyBlue.withOpacity(0.1) : Colors.white,
-            ),
-            child: Text(
-              "Info",
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              style: TextStyle(
-                color: currentIndex == 0 ? navyBlue : blackFont,
-                fontSize: 14,
-                fontWeight:
-                    currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: currentIndex == 1 ? 14 : 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              shape: BoxShape.rectangle,
-              color:
-                  currentIndex == 1 ? navyBlue.withOpacity(0.1) : Colors.white,
-            ),
-            child: Text(
-              "QR code",
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              style: TextStyle(
-                color: currentIndex == 1 ? navyBlue : blackFont,
-                fontSize: 14,
-                fontWeight:
-                    currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: currentIndex == 2 ? 14 : 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              shape: BoxShape.rectangle,
-              color:
-                  currentIndex == 2 ? navyBlue.withOpacity(0.1) : Colors.white,
-            ),
-            child: Text(
-              "Products",
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              style: TextStyle(
-                color: currentIndex == 2 ? navyBlue : blackFont,
-                fontSize: 14,
-                fontWeight:
-                    currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: currentIndex == 3 ? 14 : 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              shape: BoxShape.rectangle,
-              color:
-                  currentIndex == 3 ? navyBlue.withOpacity(0.1) : Colors.white,
-            ),
-            child: Text(
-              "Services",
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              style: TextStyle(
-                color: currentIndex == 3 ? navyBlue : blackFont,
-                fontSize: 14,
-                fontWeight:
-                    currentIndex == 3 ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-        Tab(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: currentIndex == 4 ? 14 : 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              shape: BoxShape.rectangle,
-              color:
-                  currentIndex == 4 ? navyBlue.withOpacity(0.1) : Colors.white,
-            ),
-            child: Text(
-              "Hours",
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              style: TextStyle(
-                color: currentIndex == 4 ? navyBlue : blackFont,
-                fontSize: 14,
-                fontWeight:
-                    currentIndex == 4 ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ),
-        )
-      ]);
-    }
+    if (searchedUser?.type?.toLowerCase() == "user") {
+      int index = 0;
+      tabs.add(
+        getTabUI(title: "QR code", tabIndex: index),
+      );
+      index++;
 
+      tabs.add(
+        getTabUI(title: "Post", tabIndex: index),
+      );
+    } else {
+      int index = 0;
+      tabs.add(
+        getTabUI(title: "QR code", tabIndex: index),
+      );
+      index++;
+      tabs.add(
+        getTabUI(title: "Info", tabIndex: index),
+      );
+      index++;
+      if (showProductTab) {
+        tabs.add(
+          getTabUI(title: "Products", tabIndex: index),
+        );
+        index++;
+      }
+      if (showServiceTab) {
+        tabs.add(
+          getTabUI(title: "Services", tabIndex: index),
+        );
+        index++;
+      }
+      tabs.add(
+        getTabUI(title: "Post", tabIndex: index),
+      );
+      index++;
+      tabs.add(
+        getTabUI(title: "Reviews", tabIndex: index),
+      );
+      index++;
+      tabs.add(
+        getTabUI(title: "Hours", tabIndex: index),
+      );
+    }
     return tabs;
   }
 
@@ -621,9 +670,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       controller: pageController,
       children: getTabViewLayout(),
       onPageChanged: (int index) {
-        _tabController.index = index;
+        _tabController!.index = index;
         currentIndex = index;
-        debugPrint("currentIndex:- $currentIndex");
         if (mounted) setState(() {});
       },
     );
@@ -632,34 +680,63 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   List<Widget> getTabViewLayout() {
     List<Widget> list = [];
 
-    if (searchedUser.type.toLowerCase() == "user") {
-      list.add(KeepAlivePage(
-        child: UserQRCodeScreen(user: searchedUser),
-      ));
-    } else {
-      list.addAll([
-        KeepAlivePage(
-          child: UserInfo(user: searchedUser, changeIndex: changeIndex),
-        ),
+    if (searchedUser!.type!.toLowerCase() == "user") {
+      list.add(
         KeepAlivePage(
           child: UserQRCodeScreen(user: searchedUser),
         ),
+      );
+      list.add(
         KeepAlivePage(
-          child: UserProductList(
-            user: searchedUser,
-            isOwner: isOwner,
-          ),
+          child: UserPostList(user: searchedUser),
         ),
+      );
+    } else {
+      list.add(
         KeepAlivePage(
-          child: UserServiceList(
-            user: searchedUser,
-            isOwner: isOwner,
-          ),
+          child: UserQRCodeScreen(user: searchedUser),
         ),
+      );
+      list.add(
+        KeepAlivePage(
+          child: UserInfo(user: searchedUser, changeIndex: changeIndex),
+        ),
+      );
+      if (showProductTab) {
+        list.add(
+          KeepAlivePage(
+            child: UserProductList(
+              user: searchedUser,
+              isOwner: isOwner,
+            ),
+          ),
+        );
+      }
+      if (showServiceTab) {
+        list.add(
+          KeepAlivePage(
+            child: UserServiceList(
+              user: searchedUser,
+              isOwner: isOwner,
+            ),
+          ),
+        );
+      }
+      list.add(
+        KeepAlivePage(
+          child: UserPostList(user: searchedUser),
+        ),
+      );
+      list.add(
+        KeepAlivePage(
+          child: UserReviewList(user: searchedUser),
+        ),
+      );
+      list.add(
         KeepAlivePage(
           child: UserAboutScreen(user: searchedUser),
         ),
-      ]);
+      );
     }
     return list;
   }
@@ -682,7 +759,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         },
       ),
       title: Text(
-        isLoading ? "" : searchedUser.displayName(),
+        isLoading ? "" : searchedUser!.displayName()!,
         style: TextStyle(
             color: blackFont, fontSize: 22, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -702,14 +779,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           height: 8,
         ),
         Text(
-          isLoading ? "" : searchedUser.displayName(),
+          isLoading ? "" : searchedUser!.displayName()!,
           style: TextStyle(
             color: Colors.white,
             fontSize: 14.0,
           ),
         ),
         Text(
-          isLoading ? "" : searchedUser.userName,
+          isLoading ? "" : searchedUser!.userName!,
           style: TextStyle(
             color: Colors.white,
             fontSize: 10.0,
@@ -745,7 +822,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
-    if (searchedUser.userName == userBloc.user.userName) {
+    if (searchedUser!.userName == userBloc.user.userName) {
       list.add(
         bottomSheetItem(
           title: "Edit",
@@ -758,8 +835,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
             if (result != null) {
               if (result is Map) {
-                searchedUser.userAbout = result["userAbout"];
-                searchedUser.avatar = result["user_avatar"];
+                searchedUser!.userAbout = result["userAbout"];
+                searchedUser!.avatar = result["user_avatar"];
               }
 
               if (mounted) setState(() {});
@@ -779,16 +856,34 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
     }
 
+    if (searchedUser?.type?.toLowerCase() != "user") {
+      list.add(
+        bottomSheetItem(
+          title: "Terms and Condition",
+          icon: Icons.insert_link_sharp,
+          onTap: () async {
+            Navigator.pop(context);
+            String termsAndConditionUrl =
+                "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
+            try {
+              if (!await launch(termsAndConditionUrl))
+                throw 'Could not launch $termsAndConditionUrl';
+            } catch (error) {
+              debugPrint("Error:- $error");
+            }
+          },
+        ),
+      );
+    }
+
     list.add(
       bottomSheetItem(
         title: "Share",
         icon: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          var shareBody = "${searchedUser.displayName()}\n" +
-              "http://slydo.co/user/" +
-              searchedUser.userName;
-          Share.share(shareBody, subject: "${searchedUser.displayName()}");
+          var shareBody = "https://slydo.co/" + searchedUser!.userName!;
+          Share.share(shareBody, subject: "${searchedUser!.displayName()}");
         },
       ),
     );
@@ -796,8 +891,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        isLast: userBloc.user.userName == searchedUser.userName,
         icon: SlydoAppIcon.text_message,
+        isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);
           sendProfileToUsersInChat();
@@ -805,7 +900,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
 
-    if (userBloc.user.userName != searchedUser.userName) {
+    if (searchedUser!.userName != userBloc.user.userName) {
+      if (searchedUser?.type?.toLowerCase() != "user") {
+        list.add(
+          bottomSheetItem(
+            title: "Write Review",
+            icon: SlydoAppIcon.star,
+            isLast: userBloc.user.userName == searchedUser!.userName,
+            onTap: () async {
+              Navigator.pop(context);
+              Navigator.of(context).pushNamed("/add-review",
+                  arguments: {"searchedUser": searchedUser});
+            },
+          ),
+        );
+      }
+    }
+
+    if (userBloc.user.userName != searchedUser!.userName) {
       list.addAll([
         bottomSheetItem(
           title: "Message",
@@ -814,7 +926,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             Navigator.pop(context);
             if (!isOwner) {
               Navigator.of(context).pushNamed('/compose_message', arguments: {
-                'recipient': searchedUser.userName,
+                'recipient': searchedUser!.userName,
                 'subject': "",
               });
             }
@@ -858,21 +970,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   void sendProfileToUsersInChat() async {
-    List<ChatConversation> listOfRecipient =
+    List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    Map<String, dynamic> itemData = searchedUser.toJsonToSendInToChat();
+    Map<String, dynamic> itemData = searchedUser!.toJsonToSendInToChat();
 
     listOfRecipient.forEach((recipient) {
-      addUserProfileToChat(itemData: itemData, recipientUser: recipient);
+      addUserProfileToChat(itemData: itemData, recipientUser: recipient!);
     });
   }
 
   void addUserProfileToChat(
-      {Map<String, dynamic> itemData,
-      ChatConversation recipientUser,
-      String url}) async {
+      {Map<String, dynamic>? itemData,
+      required ChatConversation recipientUser,
+      String? url}) async {
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
       "check_id": Uuid().v4(),
@@ -906,13 +1018,15 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     overlapsContent = false;
 
     return Theme(
-      data: ThemeData(accentColor: Colors.white),
+      data: ThemeData(
+          colorScheme:
+              ColorScheme.fromSwatch().copyWith(secondary: Colors.white)),
       child: new Container(
         padding: EdgeInsets.only(
           left: 16,
         ),
         color: Colors.white,
-        child: _tabBar,
+        child: Center(child: _tabBar),
       ),
     );
   }

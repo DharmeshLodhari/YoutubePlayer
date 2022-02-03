@@ -1,30 +1,31 @@
 import 'dart:convert';
 
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/util.dart';
 
 class ChatMessage {
-  String author;
-  String authorFullName;
-  String checkId;
-  String conversationId;
-  String createdAt;
-  bool deletedForAuthor;
-  bool deletedForRecipient;
-  bool delivered;
-  String messageId;
-  String kind;
-  String media;
-  String metaData;
-  String poster;
-  bool readByAuthor;
-  bool readByRecipient;
-  String repliedTo;
-  String text;
-  String type;
-  String updatedAt;
-  bool wasEdited;
-  String fromCustomerAvatar;
-  String toCustomerAvatar;
+  String? author;
+  String? authorFullName;
+  String? checkId;
+  String? conversationId;
+  String? createdAt;
+  bool? deletedForAuthor;
+  bool? deletedForRecipient;
+  bool? delivered;
+  String? messageId;
+  String? kind;
+  String? media;
+  String? metaData;
+  String? poster;
+  bool? readByAuthor;
+  bool? readByRecipient;
+  String? repliedTo;
+  String? text;
+  String? type;
+  String? updatedAt;
+  bool? wasEdited;
+  String? fromCustomerAvatar;
+  String? toCustomerAvatar;
 
   ChatMessage(
       {this.author,
@@ -47,10 +48,8 @@ class ChatMessage {
       this.type,
       this.updatedAt,
       this.wasEdited,
-      this.toCustomerAvatar =
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-      this.fromCustomerAvatar =
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"});
+      this.toCustomerAvatar = defaultImage,
+      this.fromCustomerAvatar = defaultImage});
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
@@ -80,10 +79,8 @@ class ChatMessage {
       type: json['type'],
       updatedAt: json['updated_at'],
       wasEdited: json['was_edited'],
-      fromCustomerAvatar: json['from_customer_avatar'] ??
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-      toCustomerAvatar: json['to_customer_avatar'] ??
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+      fromCustomerAvatar: json['from_customer_avatar'] ?? defaultImage,
+      toCustomerAvatar: json['to_customer_avatar'] ?? defaultImage,
     );
   }
 
@@ -110,10 +107,8 @@ class ChatMessage {
       updatedAt: json['updated_at'] != null
           ? convertMillisecondsSinceEpochToString(json['updated_at'])
           : "",
-      fromCustomerAvatar: json['from_customer_avatar'] ??
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
-      toCustomerAvatar: json['to_customer_avatar'] ??
-          "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+      fromCustomerAvatar: json['from_customer_avatar'] ?? defaultImage,
+      toCustomerAvatar: json['to_customer_avatar'] ?? defaultImage,
       wasEdited: convertIntToBool(
         json['was_edited'],
       ),
@@ -173,21 +168,19 @@ class ChatMessage {
     data['type'] = this.type ?? "chatroom_message";
     data['updated_at'] = convertStringToMillisecondsSinceEpoch(this.updatedAt);
     data['was_edited'] = convertBoolToInt(this.wasEdited, defaultValue: false);
-    data["to_customer_avatar"] = this.toCustomerAvatar ??
-        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
-    data["from_customer_avatar"] = this.fromCustomerAvatar ??
-        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png";
+    data["to_customer_avatar"] = this.toCustomerAvatar ?? defaultImage;
+    data["from_customer_avatar"] = this.fromCustomerAvatar ?? defaultImage;
     return data;
   }
 
-  static int convertBoolToInt(bool value, {bool defaultValue}) {
+  static int convertBoolToInt(bool? value, {bool? defaultValue}) {
     if (value == null) {
-      return defaultValue ? 1 : 0;
+      return defaultValue! ? 1 : 0;
     }
     return value ? 1 : 0;
   }
 
-  static bool convertIntToBool(int value) {
+  static bool convertIntToBool(int? value) {
     if (value == null) {
       return false;
     }

@@ -6,8 +6,10 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/more_apps/review/models/review.dart';
+import 'package:Slydo/screens/more_apps/review/review_auth.dart';
+import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -15,16 +17,16 @@ import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/item_display_card.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
-import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../user_profile/user_auth.dart';
@@ -34,7 +36,7 @@ import '../../shopping_auth.dart';
 class ProductDetailPage extends StatefulWidget {
   var arguments;
 
-  ProductDetailPage({@required this.arguments});
+  ProductDetailPage({required this.arguments});
 
   @override
   _ProductDetailPageState createState() =>
@@ -44,35 +46,40 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage>
     with TickerProviderStateMixin {
   var arguments;
+  bool canRate = false;
 
   _ProductDetailPageState({this.arguments});
 
   final _auth = ShoppingAuthService();
-  Product product;
-  CustomerProfileBloc customerProfileBloc;
-  UserBloc userBloc;
-  BasketBloc basketBloc;
-  List<String> imgList = [];
+  Product? product;
+  late CustomerProfileBloc customerProfileBloc;
+  late UserBloc userBloc;
+  late BasketBloc basketBloc;
+  List<String?>? imgList = [];
 
-  bool isValidCustomer;
-  bool isOtherItemFetched = false;
-  bool isOtherItemIsEmpty = true;
+  late bool isValidCustomer;
+
   ScrollController _scrollController = new ScrollController();
 
-  DashboardBloc _dashboardBloc;
+  late DashboardBloc _dashboardBloc;
 
-  List<dynamic> sellersOtherItems = List<dynamic>();
+  List<dynamic> sellersOtherItems = [];
 
-  int _current = 0;
+  BehaviorSubject<int> sliderIndex = BehaviorSubject<int>();
+
+  bool isOtherItemIsEmpty = false;
+  bool isOtherItemFetched = false;
+
+  /// variables for reviews
+  List<Review> reviewList = [];
+  bool isReviewLoading = false;
+  int? reviewCount;
 
   @override
   void initState() {
-    if (mounted) {
-      setState(() {
-        product = arguments['product'];
-      });
-    }
-    fetchProduct(product.id.toString());
+    product = arguments['product'];
+    if (mounted) setState(() {});
+    fetchProduct(product!.id.toString());
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -81,24 +88,47 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         }
       }
     });
+    fetchReviewList();
     super.initState();
   }
 
   void fetchProduct(String productId) async {
-    _auth.getProduct(productId).then((value) {
-      if (mounted) {
-        setState(() {
-          product = value;
-          imgList = product.serverImages;
-        });
-      }
+    await _auth.getProduct(productId).then((value) {
+      product = value;
+      imgList = product!.serverImages;
+      if (mounted) setState(() {});
+    });
+  }
+
+  void fetchReviewList() async {
+    isReviewLoading = true;
+    if (mounted) setState(() {});
+
+    await ReviewAuth().fetchProductReviews(product: product).then((value) {
+      List? tempList =
+          value.containsKey('results') ? value['results'] as List : [];
+      value.containsKey('count') ? reviewCount = value["count"] : 0;
+      canRate = value['can_rate'];
+
+      reviewList = [];
+
+      tempList.forEach((element) {
+        reviewList.add(Review.fromJson(element));
+      });
+
+      isReviewLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      debugPrint("Error:- $error");
+      isReviewLoading = false;
+      if (mounted) setState(() {});
     });
   }
 
   void getOtherItems() {
     _auth
         .ownersOrderProductsAndServices(
-            type: "products", userId: product.seller, exclude: product.id)
+            type: "products", userId: product!.seller, exclude: product!.id)
         .then((value) {
       if (value.isNotEmpty) {
         if (mounted) {
@@ -124,8 +154,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
-    isValidCustomer = userBloc.user.userName != product.seller;
-
+    isValidCustomer = userBloc.user.userName != product!.seller;
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -133,7 +162,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         floatingActionButton: isValidCustomer ? floatingActionBar() : null,
         body: _buildProductDetailsPage(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -158,7 +187,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         },
       ),
       title: Text(
-        AppLocalization.of(context).productDetail,
+        AppLocalization.of(context)!.productDetail,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -225,10 +254,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       icon: SlydoAppIcon.share,
       onTap: () async {
         Navigator.pop(context);
-        var shareBody = "${product.name}\n" +
-            "http://slydo.co/products/" +
-            product.id.toString();
-        Share.share(shareBody, subject: "${product.name}");
+        var shareBody =
+            "http://slydo.co/store/product/" + product!.id.toString();
+        Share.share(shareBody, subject: "${product!.name}");
       },
     ));
 
@@ -248,31 +276,31 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   void sendItemToUsersInChat() async {
-    List<ChatConversation> listOfRecipient =
+    List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     String url = AppConfig.baseUrl +
         "/api/v1/${product is Product ? "products" : "services"}/" +
-        product.id +
+        product!.id! +
         "/";
 
-    Map<String, dynamic> itemData =
+    Map<String, dynamic>? itemData =
         await ShoppingAuthService().getProductOrService(url);
 
     listOfRecipient.forEach((recipient) {
       addProductOrServiceToChat(
           item: product,
           itemData: itemData,
-          recipientUser: recipient,
+          recipientUser: recipient!,
           url: url);
     });
   }
 
   void addProductOrServiceToChat(
-      {Map<String, dynamic> itemData,
-      ChatConversation recipientUser,
-      String url,
+      {Map<String, dynamic>? itemData,
+      required ChatConversation recipientUser,
+      String? url,
       dynamic item}) async {
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(itemData),
@@ -321,16 +349,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           height: 40,
           width: 40,
           child: CachedNetworkImage(
-            imageUrl: product.sellerAvatar != null
-                ? product.sellerAvatar
-                : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+            imageUrl: product!.sellerAvatar != null
+                ? product!.sellerAvatar!
+                : defaultImage,
             fit: BoxFit.fill,
+            errorWidget: productAndServiceErrorWidget,
           ),
         ),
       ),
       onTap: () async {
         Navigator.pushNamed(context, '/profile',
-            arguments: {"searchedUserName": product.seller});
+            arguments: {"searchedUserName": product!.seller});
       },
     );
   }
@@ -349,12 +378,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       onTap: () {
         if (isValidCustomer) {
           Navigator.of(context).pushNamed('/compose_message', arguments: {
-            'recipient': product.seller,
-            'subject': product.name,
+            'recipient': product!.seller,
+            'subject': product!.name,
           });
         } else {
-          Toast.show("You can not message yourself !!", context,
-              textColor: Colors.white, duration: Toast.LENGTH_LONG);
+          showToast(message: "You can not message yourself !!");
         }
       },
     );
@@ -375,9 +403,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         if (isValidCustomer) {
           String type = product is Product ? "product" : "service";
           basketBloc.addItemToCart(item: product, type: type);
-          var mapData;
+          late var mapData;
           basketBloc.items.forEach((element) {
-            if (element["item"].id == product.id) {
+            if (element["item"].id == product!.id) {
               mapData = element;
               return;
             }
@@ -390,9 +418,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           debugPrint("Data From Product Page : $data");
           await _auth.addItemToShoppingCart(data);
         } else {
-          Toast.show(
-              AppLocalization.of(context).youCanNotPurchaseThisItem, context,
-              textColor: Colors.white, duration: Toast.LENGTH_LONG);
+          showToast(
+              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
         }
       },
     );
@@ -422,7 +449,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  Widget getBadgeContent() {
+  Widget? getBadgeContent() {
     if (basketBloc.items.length == 0) {
       return null;
     }
@@ -436,7 +463,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   int getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + element['qty'];
+      totalItem = totalItem + element['qty'] as int;
     });
     return totalItem;
   }
@@ -524,12 +551,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     thickness: 1,
                   ),
                   SizedBox(
-                    height: 12,
+                    height: 10,
                   ),
                   _buildSellerInfoWidget(),
                   SizedBox(
+                    height: 10,
+                  ),
+                  _buildReviewList(),
+                  SizedBox(
                     height: 16,
                   ),
+                  _buildWriteReview(),
                 ],
               ),
             ),
@@ -549,99 +581,206 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
   }
 
-  Widget _buildProductImagesWidgets() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4.0),
-      child: imgList.length == 0
-          ? AspectRatio(
-              aspectRatio: 1.7,
-              child: Center(
-                child: CircularLoadingIndicator(),
-              ),
-            )
-          : imgList.length == 1
-              ? AspectRatio(
-                  aspectRatio: 1.7,
-                  child: Container(
-                    child: Center(
-                        child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) =>
-                            Center(child: CircularLoadingIndicator()),
-                        imageUrl: imgList[0],
-                        fit: BoxFit.fill,
-                        height: double.infinity,
-                        width: double.infinity,
-                      ),
-                    )),
-                  ),
-                )
-              : Column(
-                  children: <Widget>[
-                    Stack(
-                      children: <Widget>[
-                        CarouselSlider(
-                          options: CarouselOptions(
-                              enableInfiniteScroll: false,
-                              viewportFraction: 1.0,
-                              enlargeCenterPage: true,
-                              autoPlay: false,
-                              aspectRatio: 1.7,
-                              onPageChanged: (index, _) {
-                                if (mounted) {
-                                  setState(() {
-                                    _current = index;
-                                  });
-                                }
-                              }),
-                          items: imgList
-                              .map((item) => Container(
-                                    child: Center(
-                                        child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      child: CachedNetworkImage(
-                                        placeholder: (context, url) => Center(
-                                            child: CircularLoadingIndicator()),
-                                        imageUrl: item,
-                                        fit: BoxFit.fill,
-                                        height: double.infinity,
-                                        width: double.infinity,
-                                      ),
-                                    )),
-                                  ))
-                              .toList(),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: MediaQuery.of(context).size.width / 2 -
-                              (5 * imgList.length),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: imgList.map((url) {
-                              int index = imgList.indexOf(url);
-                              return Container(
-                                width: 5.0,
-                                height: 5.0,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 2.0),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: _current == index
-                                      ? navyBlue
-                                      : navyBlueLight,
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
+  Widget buildReviewTitle() {
+    return Text(
+      reviewCount != null ? "Review ($reviewCount)" : "Reviews",
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: blackFont,
+      ),
     );
+  }
+
+  Widget _buildReviewList() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            buildReviewTitle(),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/review-list-screen",
+                    arguments: {"reviewedProduct": product});
+              },
+              child: Text(
+                "See all",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: navyBlue,
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 12,
+        ),
+        reviewList.length == 0
+            ? Container(
+                height: 200,
+                child: Center(
+                    child: NoItemInList(
+                  msg: "No Review yet",
+                )),
+              )
+            : Column(
+                children: reviewList
+                    .map(
+                      (review) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: ReviewTile(
+                          review: review,
+                          product: product,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+      ],
+    );
+  }
+
+  Widget _buildWriteReview() {
+    if (product?.seller == userBloc.user.userName && canRate) {
+      return Container();
+    }
+
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () async {
+            var result = await Navigator.of(context).pushNamed(
+              "/add-review",
+              arguments: {
+                "product": product,
+              },
+            );
+
+            if (result != null) {
+              if (result is bool) {
+                if (result) fetchReviewList();
+              }
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            child: Center(
+              child: Text(
+                "Write a review",
+                style: TextStyle(
+                    color: navyBlue, fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 16,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProductImagesWidgets() {
+    return StreamBuilder<int>(
+        initialData: 0,
+        stream: sliderIndex.stream,
+        builder: (context, snapshot) {
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 4.0),
+            child: imgList!.length == 0
+                ? AspectRatio(
+                    aspectRatio: 1.7,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : imgList?.length == 1
+                    ? AspectRatio(
+                        aspectRatio: 1.7,
+                        child: Container(
+                          child: Center(
+                              child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) =>
+                                  Center(child: CircularLoadingIndicator()),
+                              imageUrl: imgList?[0] ?? "",
+                              fit: BoxFit.fill,
+                              height: double.infinity,
+                              width: double.infinity,
+                              errorWidget: productAndServiceBigErrorWidget,
+                            ),
+                          )),
+                        ),
+                      )
+                    : Column(
+                        children: <Widget>[
+                          Stack(
+                            children: <Widget>[
+                              CarouselSlider(
+                                options: CarouselOptions(
+                                    enableInfiniteScroll: false,
+                                    viewportFraction: 1.0,
+                                    enlargeCenterPage: true,
+                                    autoPlay: false,
+                                    aspectRatio: 1.7,
+                                    onPageChanged: (index, _) {
+                                      sliderIndex.sink.add(index);
+                                    }),
+                                items: imgList!
+                                    .map((item) => Container(
+                                          child: Center(
+                                              child: ClipRRect(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10)),
+                                            child: CachedNetworkImage(
+                                              placeholder: (context, url) => Center(
+                                                  child:
+                                                      CircularLoadingIndicator()),
+                                              imageUrl: item!,
+                                              fit: BoxFit.fill,
+                                              height: double.infinity,
+                                              width: double.infinity,
+                                              errorWidget:
+                                                  productAndServiceBigErrorWidget,
+                                            ),
+                                          )),
+                                        ))
+                                    .toList(),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: MediaQuery.of(context).size.width / 2 -
+                                    (5 * imgList!.length),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: imgList!.map((url) {
+                                    int index = imgList!.indexOf(url);
+                                    return Container(
+                                      width: 5.0,
+                                      height: 5.0,
+                                      margin: EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 2.0),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: snapshot.data == index
+                                            ? navyBlue
+                                            : navyBlueLight,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+          );
+        });
   }
 
   Widget _buildProductTitleAndPriceWidget() {
@@ -655,7 +794,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             children: <Widget>[
               Text(
                 //name,
-                product.name,
+                messageDecoderWithEmoji(product!.name)!,
                 style: TextStyle(
                     fontSize: 16,
                     color: blackFont,
@@ -667,7 +806,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      worldCurrencies[product.currency],
+                      worldCurrencies[product!.currency!]!,
                       style: TextStyle(
                           fontFamily: "Roboto",
                           fontSize: 18.0,
@@ -676,7 +815,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ),
                     Text(
                       moneyDisplayNormalizer(
-                          int.parse(product.price.toString())),
+                          int.parse(product!.price.toString())),
                       style: TextStyle(
                           fontSize: 18.0,
                           color: navyBlue,
@@ -684,6 +823,27 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ),
                   ],
                 ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(
+                    SlydoAppIcon.star,
+                    color: starYellow,
+                    size: 11,
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    product?.rating.toString() ?? "0.0",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -705,17 +865,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             border: Border.all(color: dividerColor)),
         padding: EdgeInsets.all(10),
         child: InkWell(
-          child: product.qrCode == ""
+          child: product!.qrCode == ""
               ? Center(child: CircularLoadingIndicator())
               : GestureDetector(
                   onTap: () {
                     Navigator.of(context)
-                        .pushNamed("/photo-viewer", arguments: product.qrCode);
+                        .pushNamed("/photo-viewer", arguments: product!.qrCode);
                   },
                   child: CachedNetworkImage(
-                    imageUrl: product.qrCode,
+                    imageUrl: product!.qrCode!,
                     height: 40,
                     width: 40,
+                    errorWidget: imageErrorWidget,
                     filterQuality: FilterQuality.high,
                     fit: BoxFit.fill,
                     placeholder: (context, url) =>
@@ -723,15 +884,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                 ),
           onTap: () {
-            Clipboard.setData(new ClipboardData(text: product.qrCode));
-            Toast.show(
-              AppLocalization.of(context).copied,
-              context,
-              gravity: Toast.CENTER,
-              duration: Toast.LENGTH_LONG,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            Clipboard.setData(new ClipboardData(text: product!.qrCode));
+            showToast(message: AppLocalization.of(context)!.copied);
           },
         ),
       ),
@@ -754,7 +908,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           children: <Widget>[
             Expanded(
               child: Text(
-                product.shortDescription,
+                messageDecoderWithEmoji(product!.shortDescription)!,
                 style: TextStyle(
                   color: darkGrey,
                   fontSize: 14,
@@ -796,7 +950,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 width: 8.0,
               ),
               Text(
-                "${product.availableFrom.day}/${product.availableFrom.month}/${product.availableFrom.year}",
+                "${product!.availableFrom!.day}/${product!.availableFrom!.month}/${product!.availableFrom!.year}",
                 style: TextStyle(
                   color: blackFont,
                   fontSize: 14,
@@ -822,7 +976,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
           height: 8,
         ),
         Text(
-          product.description,
+          messageDecoderWithEmoji(product?.description ?? "")!,
           style: TextStyle(
             fontSize: 14,
             color: darkGrey,
@@ -834,7 +988,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildSellerInfoWidget() {
-    return product.sellerAvatar == null
+    return product!.sellerAvatar == null
         ? Container()
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -855,14 +1009,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed("/photo-viewer",
-                        arguments: product.sellerAvatar);
+                        arguments: product!.sellerAvatar);
                   },
                   child: Container(
                     height: 48,
                     width: 48,
                     child: ClipOval(
                       child: CachedNetworkImage(
-                        imageUrl: product.sellerAvatar,
+                        imageUrl: product!.sellerAvatar!,
                         fit: BoxFit.fill,
                         errorWidget: imageErrorWidget,
                         filterQuality: FilterQuality.high,
@@ -871,16 +1025,24 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                 ),
                 title: Text(
-                  product.sellerFullName ?? product.seller,
+                  product!.sellerFullName ?? "",
                   style: TextStyle(
-                    fontSize: 14,
-                    color: blackFont,
+                      fontSize: 14,
+                      color: blackFont,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.justify,
+                ),
+                subtitle: Text(
+                  product!.seller ?? "",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: darkGrey,
                   ),
                   textAlign: TextAlign.justify,
                 ),
                 onTap: () {
                   Navigator.pushNamed(context, '/profile',
-                      arguments: {"searchedUserName": product.seller});
+                      arguments: {"searchedUserName": product!.seller});
                 },
               ),
             ],
@@ -899,7 +1061,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  AppLocalization.of(context).sellersOtherProduct,
+                  AppLocalization.of(context)!.sellersOtherProduct,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -908,7 +1070,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ),
                 GestureDetector(
                   child: Text(
-                    AppLocalization.of(context).seeAll,
+                    AppLocalization.of(context)!.seeAll,
                     style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
@@ -916,7 +1078,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                   onTap: () {
                     Navigator.pushNamed(context, '/profile', arguments: {
-                      "searchedUserName": product.seller,
+                      "searchedUserName": product!.seller,
                       "index": 2
                     });
                   },
@@ -937,7 +1099,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 product: sellersOtherItems[index],
               ),
             ),
-          ),
+          )
         ],
       ),
     );
@@ -957,9 +1119,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               navigateToSendPayment();
             }
           } else {
-            Toast.show(
-                AppLocalization.of(context).youCanNotPurchaseThisItem, context,
-                textColor: Colors.white, duration: Toast.LENGTH_LONG);
+            showToast(
+                message:
+                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
           }
         },
       ),
@@ -969,7 +1131,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   // Pull the user from the server
   void getRecipient() async {
     customerProfileBloc.customer =
-        await UserAuth().fetchCustomerProfile(product.seller);
+        await UserAuth().fetchCustomerProfile(product!.seller);
   }
 
   void navigateToSendPayment() {
@@ -981,8 +1143,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   void dispose() {
-    imgList.clear();
+    imgList!.clear();
     _scrollController.dispose();
+    sliderIndex.close();
     super.dispose();
   }
 }

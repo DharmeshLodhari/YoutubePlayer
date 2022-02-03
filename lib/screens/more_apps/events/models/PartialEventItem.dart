@@ -1,12 +1,12 @@
 class PartialEventItem {
-  String currency;
-  String dateTime;
-  String image;
-  String location;
-  String name;
-  String price;
-  String shortDescription;
-  String title;
+  String? currency;
+  String? dateTime;
+  String? image;
+  String? location;
+  String? name;
+  String? price;
+  String? shortDescription;
+  String? title;
 
   PartialEventItem(
       {this.currency,

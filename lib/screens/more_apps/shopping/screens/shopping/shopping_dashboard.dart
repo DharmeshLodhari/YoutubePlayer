@@ -13,7 +13,7 @@ class ShoppingDashboard extends StatefulWidget {
 }
 
 class _ShoppingDashboardState extends State<ShoppingDashboard> {
-  ShoppingDashboardBloc _shoppingDashboardBloc;
+  late ShoppingDashboardBloc _shoppingDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _ShoppingDashboardState extends State<ShoppingDashboard> {
         items: [
           bottomNavigationBarItem(
             icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context).explore,
+            title: AppLocalization.of(context)!.explore,
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
@@ -72,7 +72,7 @@ class _ShoppingDashboardState extends State<ShoppingDashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData icon, String title}) {
+      {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
       icon: Container(
         height: 50,
@@ -89,7 +89,7 @@ class _ShoppingDashboardState extends State<ShoppingDashboard> {
   }
 
 // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData icon, String title}) {
+  Widget activeIcon({IconData? icon, required String title}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(

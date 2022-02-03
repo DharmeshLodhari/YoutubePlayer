@@ -1,4 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/utils/country_picker/country.dart';
+import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
+import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
@@ -15,43 +18,20 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   bool isOTPSent = false;
   final _formKey = GlobalKey<FormState>();
   String sentOTP = "";
-  String phoneNumber = "";
+
+  late Country _selectedDialogCountry;
+
+  TextEditingController? phoneNumberController = TextEditingController();
+
+  @override
+  void initState() {
+    _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // return WillPopScope(
-    //     onWillPop: () async {
-    //       return true;
-    //     },
-    //     child: Scaffold(
-    //         backgroundColor: lightBlue(),
-    //         resizeToAvoidBottomInset: true,
-    //         appBar: AppBar(
-    //             title: Center(
-    //                 child: Text(AppLocalization.of(context).forgotPassword)),
-    //             backgroundColor: darkBlue()),
-    //         body: SingleChildScrollView(
-    //           padding: EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
-    //           scrollDirection: Axis.vertical,
-    //           child: Form(
-    //             key: _formKey,
-    //             child: Column(
-    //               children: <Widget>[
-    //                 getPhoneNumberWidget(),
-    //                 isOTPSent
-    //                     ? SizedBox(
-    //                         height: 20,
-    //                       )
-    //                     : Container(),
-    //                 isOTPSent ? getVerificationOTPWidget() : Container(),
-    //                 SizedBox(
-    //                   height: 20,
-    //                 ),
-    //                 submitButton()
-    //               ],
-    //             ),
-    //           ),
-    //         )));
     return WillPopScope(
         onWillPop: () async {
           return true;
@@ -89,7 +69,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       SizedBox(
                         height: 20,
                       ),
-                      getPhoneNumberWidget(),
+                      phoneNumberField(),
                       isOTPSent
                           ? SizedBox(
                               height: 20,
@@ -117,51 +97,153 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     );
   }
 
-  Widget getPhoneNumberWidget() {
-    // return TextFormField(
-    //   cursorColor: darkBlue(),
-    //   enabled: isOTPSent ? false : true,
-    //   autofocus: false,
-    //   obscureText: false,
-    //   keyboardType: TextInputType.phone,
-    //   decoration: InputDecoration(
-    //       prefixIcon: Icon(
-    //           Platform.isAndroid ? Icons.phone_android : Icons.phone_iphone),
-    //       fillColor: Colors.white,
-    //       filled: true,
-    //       hintText: AppLocalization.of(context).enterYourPhoneNumber,
-    //       labelStyle: TextStyle(
-    //         color: darkBlue(),
-    //         fontSize: 16,
-    //       ),
-    //       border: OutlineInputBorder(
-    //           borderRadius: BorderRadius.all(Radius.circular(4)),
-    //           borderSide: BorderSide(
-    //               width: 1, color: Colors.white, style: BorderStyle.solid))),
-    //   validator: (val) {
-    //     if (val.isNotEmpty && val.length == 13) {
-    //       return null;
-    //     }
-    //     return AppLocalization.of(context).invalidPhoneNumber;
-    //   },
-    //   onChanged: (val) {
-    //     phoneNumber = val;
-    //   },
-    // );
-    return CustomizedTextFormField(
-      keyboardType: TextInputType.phone,
-      labelText: "Phone number",
-      validator: (val) {
-        if (val.isNotEmpty && val.length > 9) {
-          return null;
-        }
-        return AppLocalization.of(context).invalidPhoneNumber;
-      },
-      onChanged: (val) {
-        phoneNumber = val;
-      },
+  Widget phoneNumberField() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(flex: 3, child: getCountryDropdown()),
+        SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          flex: 5,
+          child: CustomizedTextFormField(
+            labelColor: darkGrey,
+            keyboardType: TextInputType.phone,
+            controller: phoneNumberController,
+            hintText: "08023000000",
+            validator: (val) {
+              if (val.isNotEmpty && val.length >= 9) {
+                return null;
+              }
+              return AppLocalization.of(context)!.invalidPhoneNumber;
+            },
+          ),
+        ),
+      ],
     );
   }
+
+  Widget getCountryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Phone number",
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(
+          height: 6,
+        ),
+        Card(
+          color: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: greyBorderColor)),
+          margin: EdgeInsets.all(0),
+          borderOnForeground: true,
+          child: ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+            onTap: () {
+              _openCountryPickerDialog(isForLogin: true);
+            },
+            title: _buildDialogItem(_selectedDialogCountry),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDialogItem(Country country) {
+    return Row(
+      children: <Widget>[
+        SizedBox(width: 4.0),
+        CountryPickerUtils.getDefaultFlagImage(country),
+        SizedBox(width: 8.0),
+        Expanded(
+          child: Text(
+            "+${country.phoneCode}",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Icon(
+          Icons.keyboard_arrow_down,
+          color: blackFont,
+        ),
+        SizedBox(width: 4.0),
+      ],
+    );
+  }
+
+  Widget _buildDialogItemWithName(Country country) {
+    return Row(
+      children: <Widget>[
+        CountryPickerUtils.getDefaultFlagImage(country),
+        SizedBox(width: 8.0),
+        Text(
+          "+${country.phoneCode}",
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(width: 8.0),
+        Expanded(
+          child: Text(
+            "(" + country.name! + ")",
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  void _openCountryPickerDialog({bool isForLogin = false}) => showDialog(
+        context: context,
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(primaryColor: navyBlue),
+          child: CountryPickerDialog(
+            isForLogin: isForLogin,
+            titlePadding: EdgeInsets.all(8.0),
+            searchCursorColor: navyBlue,
+            searchInputDecoration: InputDecoration(
+              hintText: AppLocalization.of(context)!.search,
+              hintStyle: TextStyle(
+                fontSize: 16,
+                color: darkGrey,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            isSearchable: true,
+            title: Text(
+              AppLocalization.of(context)!.selectYourPhoneCode,
+              style: TextStyle(
+                fontSize: 14,
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            onValuePicked: (Country country) =>
+                setState(() => _selectedDialogCountry = country),
+            itemBuilder: _buildDialogItemWithName,
+          ),
+        ),
+      );
 
   Widget getVerificationOTPWidget() {
     return TextFormField(
@@ -173,7 +255,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           prefixIcon: Icon(Icons.dialpad),
           fillColor: Colors.white,
           filled: true,
-          hintText: AppLocalization.of(context).enterYourOtpHere,
+          hintText: AppLocalization.of(context)!.enterYourOtpHere,
           labelStyle: TextStyle(
             color: blackFont,
             fontSize: 16,
@@ -183,10 +265,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               borderSide: BorderSide(
                   width: 1, color: Colors.white, style: BorderStyle.solid))),
       validator: (val) {
-        if (val.isEmpty) {
-          return AppLocalization.of(context).pleaseEnterOtp;
+        if (val!.isEmpty) {
+          return AppLocalization.of(context)!.pleaseEnterOtp;
         } else if (val.length != 6 || val != sentOTP) {
-          return AppLocalization.of(context).invalidOtp;
+          return AppLocalization.of(context)!.invalidOtp;
         }
         return null;
       },
@@ -212,7 +294,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return CurvedButton(
       textColor: Colors.white,
       backgroundColor: navyBlue,
-      text: AppLocalization.of(context).continueMsg,
+      text: AppLocalization.of(context)!.continueMsg,
       onPressed: sendOTP,
     );
   }
@@ -223,12 +305,24 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       String passwordToken = "true";
+
+      var phoneNumberFromTextField = phoneNumberController!.text.trim();
+
+      if (phoneNumberFromTextField.substring(0, 1) == "0") {
+        phoneNumberFromTextField =
+            phoneNumberFromTextField.replaceFirst("0", "");
+      }
+
+      String phoneNumber =
+          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+
       UserAuth()
           .verifyPhoneNumber(phoneNumber, sentOTP, passwordToken)
           .then((value) {
-        String resetToken = value;
+        String? resetToken = value;
+
         Navigator.of(context).popAndPushNamed('/reset-password',
             arguments: {'phoneNumber': phoneNumber, "resetToken": resetToken});
       });
@@ -240,7 +334,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
+      var phoneNumberFromTextField = phoneNumberController!.text.trim();
+
+      if (phoneNumberFromTextField.substring(0, 1) == "0") {
+        phoneNumberFromTextField =
+            phoneNumberFromTextField.replaceFirst("0", "");
+      }
+
+      String phoneNumber =
+          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromTextField;
+
       UserAuth().registerPhoneNumber(phoneNumber).then((value) {
         Navigator.of(context).popAndPushNamed(
           "/verify-reset-password-otp",

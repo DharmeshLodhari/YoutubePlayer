@@ -1,12 +1,12 @@
 class Ticket {
-  String from;
-  String fromTime;
-  String gate;
-  String journeyTime;
-  String qrCode;
-  String seat;
-  String to;
-  String toTime;
+  String? from;
+  String? fromTime;
+  String? gate;
+  String? journeyTime;
+  String? qrCode;
+  String? seat;
+  String? to;
+  String? toTime;
 
   Ticket(
       {this.from = "",

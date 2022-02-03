@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
@@ -17,7 +18,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 class SetNameAndProfileOfGroup extends StatefulWidget {
   final arguments;
@@ -35,8 +35,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   List<CustomerProfile> selectedConnectionList = [];
 
-  TextEditingController groupNameController;
-  TextEditingController groupDescriptionController;
+  TextEditingController? groupNameController;
+  TextEditingController? groupDescriptionController;
 
   AddGroupModel groupModel = AddGroupModel();
 
@@ -51,7 +51,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
   }
 
   void fetchConnectionList() async {
-    selectedConnectionList = widget.arguments["users"];
+    selectedConnectionList = widget.arguments["users"] ?? [];
   }
 
   @override
@@ -59,14 +59,14 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     return Scaffold(
       key: _scaffoldSetNameAndProfileKey,
       backgroundColor: Colors.white,
-      appBar: getAppBar(),
+      appBar: getAppBar() as PreferredSizeWidget?,
       body: getScaffoldBody(),
       floatingActionButton: getFloatingActionBtn(),
     );
   }
 
-  Widget getFloatingActionBtn() {
-    return groupNameController.text.isEmpty
+  Widget? getFloatingActionBtn() {
+    return groupNameController!.text.isEmpty
         ? null
         : FloatingActionButton(
             backgroundColor: navyBlue,
@@ -198,7 +198,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                 height: 64,
                 width: 64,
                 child: Image.file(
-                  File(groupModel.groupProfilePhoto),
+                  File(groupModel.groupProfilePhoto!),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -213,13 +213,13 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               title: Text(
-                AppLocalization.of(context).selectTheImageSource,
+                AppLocalization.of(context)!.selectTheImageSource,
                 style: TextStyle(fontSize: 18, color: blackFont),
               ),
               actions: <Widget>[
                 MaterialButton(
                   child: Text(
-                    AppLocalization.of(context).camera,
+                    AppLocalization.of(context)!.camera,
                     style: TextStyle(fontSize: 16, color: blackFont),
                   ),
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
@@ -236,10 +236,10 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
     if (imageSource != null) {
       final file =
-          await ImagePicker().getImage(source: imageSource, imageQuality: 70);
+          await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String croppedImage = await ImageCrop().cropImage(file.path);
+        String? croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
           return;
         }
@@ -284,7 +284,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     );
   }
 
-  Widget getUserTile({CustomerProfile user}) {
+  Widget getUserTile({CustomerProfile? user}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2),
       child: UserTile(user: user),
@@ -293,8 +293,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   void createGroup() async {
     groupModel.users = selectedConnectionList;
-    groupModel.groupName = groupNameController.text.trim();
-    groupModel.groupDescription = groupDescriptionController.text.trim();
+    groupModel.groupName = groupNameController!.text.trim();
+    groupModel.groupDescription = groupDescriptionController!.text.trim();
 
     showDialog(
         context: context,
@@ -305,23 +305,18 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
     await MessageAuth().createGroupChat(group: groupModel).then((value) async {
       Navigator.pop(context);
-      if (value != null) {
-        ChatUserModel chatUserModel = ChatUserModel.fromChatConversation(value);
-        ChatUserManager().addUser(conversationId: chatUserModel.conversationId);
-        if (mounted) setState(() {});
+      ChatUserModel chatUserModel = ChatUserModel.fromChatConversation(value);
+      ChatUserManager().addUser(conversationId: chatUserModel.conversationId);
+      if (mounted) setState(() {});
 
-        ConnectionListBloc connectionListBloc =
-            Provider.of<ConnectionListBloc>(context, listen: false);
-        connectionListBloc.addConnectionUser(chatConversation: value);
+      ConnectionListBloc connectionListBloc =
+          Provider.of<ConnectionListBloc>(context, listen: false);
+      connectionListBloc.addConnectionUser(chatConversation: value);
 
-        Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
-      }
+      Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
     }).catchError((error) {
       debugPrint("ERROR While creating Group :- $error");
-      Toast.show("$error", context,
-          duration: Toast.LENGTH_LONG,
-          textColor: Colors.white,
-          backgroundColor: blackFont);
+      showToast(message: "$error");
     });
   }
 }

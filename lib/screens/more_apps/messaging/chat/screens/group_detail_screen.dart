@@ -21,7 +21,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final arguments;
@@ -36,18 +35,18 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   final GlobalKey<ScaffoldState> _scaffoldGroupDetailScreen =
       new GlobalKey<ScaffoldState>();
 
-  SlidableController _slideController;
+  SlidableController? _slideController;
 
-  GroupDetailModel groupDetail;
+  GroupDetailModel? groupDetail;
   bool isLoading = false;
 
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
   bool muteNotification = false;
 
   /// Socket
-  MainSocketProvider mainSocketProvider;
-  StreamSubscription streamSubscription;
+  late MainSocketProvider mainSocketProvider;
+  StreamSubscription? streamSubscription;
 
   @protected
   void initState() {
@@ -62,7 +61,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   void initializeListener() {
     streamSubscription?.cancel();
-    streamSubscription = mainSocketProvider.socketStream.listen((event) {
+    streamSubscription = mainSocketProvider.socketStream!.listen((event) {
       determineMessageType(event);
     });
   }
@@ -79,14 +78,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     switch (messageData['type']) {
       case "group_conversation_admin_actions":
         if (messageData['meta_data']['conversation_id'] ==
-            groupDetail.conversationId) {
+            groupDetail!.conversationId) {
           if (messageData['meta_data']['action'] == "delete_group") {
-            Toast.show(
-                "${messageData['meta_data']['author']} has deleted this group !!",
-                context,
-                textColor: Colors.white,
-                backgroundColor: Colors.black,
-                duration: Toast.LENGTH_LONG);
+            showToast(
+                message:
+                    "${messageData['meta_data']['author']} has deleted this group !!");
+
             Navigator.popUntil(
                 context, ModalRoute.withName("/friends-dashboard"));
             return;
@@ -96,12 +93,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             if (users.first == null || users.first == "") return;
             String user = users.first.toString();
             if (user == userBloc.user.userName) {
-              Toast.show(
-                  "${messageData['meta_data']['author']} has removed you from group !!",
-                  context,
-                  textColor: Colors.white,
-                  backgroundColor: Colors.black,
-                  duration: Toast.LENGTH_LONG);
+              showToast(
+                  message:
+                      "${messageData['meta_data']['author']} has removed you from group !!");
+
               Navigator.popUntil(
                   context, ModalRoute.withName("/friends-dashboard"));
               return;
@@ -109,7 +104,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           }
         }
         UserBloc user = Provider.of<UserBloc>(
-            MyGlobals().navigationKey.currentContext,
+            MyGlobals().navigationKey.currentContext!,
             listen: false);
 
         if (messageData['meta_data']['author'] != user.user.userName) {
@@ -135,9 +130,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    debugPrint("groupDetail.conversationId:- ${groupDetail.conversationId}");
+    debugPrint("groupDetail.conversationId:- ${groupDetail!.conversationId}");
     MessageAuth()
-        .getGroupConversationDetail(groupDetail.conversationId)
+        .getGroupConversationDetail(groupDetail!.conversationId!)
         .then((value) {
       groupDetail = value;
       isLoading = false;
@@ -164,7 +159,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       child: Scaffold(
         key: _scaffoldGroupDetailScreen,
         backgroundColor: Colors.white,
-        appBar: getAppBar(),
+        appBar: getAppBar() as PreferredSizeWidget?,
         body: getScaffoldBody(),
       ),
     );
@@ -194,7 +189,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             width: 12,
           ),
           Text(
-            groupDetail.fullName,
+            groupDetail!.fullName!,
             style: TextStyle(
                 color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
             overflow: TextOverflow.fade,
@@ -208,7 +203,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   Widget getUserIcon() {
-    Color borderColor = getUserTypeColorByType(type: groupDetail.type);
+    Color borderColor = getUserTypeColorByType(type: groupDetail!.type!);
 
     return Container(
       height: 36,
@@ -225,16 +220,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           onTap: () {
             Navigator.of(context).pushNamed("/photo-viewer",
                 arguments: groupDetail != null
-                    ? groupDetail.avatar ??
-                        "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                    : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png");
+                    ? groupDetail!.avatar ?? defaultImage
+                    : defaultImage);
           },
           child: ClipOval(
             child: CachedNetworkImage(
               imageUrl: groupDetail != null
-                  ? groupDetail.avatar ??
-                      "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                  : "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+                  ? groupDetail!.avatar ?? defaultImage
+                  : defaultImage,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fill,
               filterQuality: FilterQuality.high,
@@ -247,7 +240,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   List<Widget> getGroupActions() {
-    if (groupDetail.adminUsers.contains(userBloc.user.userName)) {
+    if (groupDetail!.adminUsers.contains(userBloc.user.userName)) {
       return [
         isLoading ? Container() : editGroupBtn(),
         SizedBox(width: 8),
@@ -293,7 +286,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
         if (result != null) {
           debugPrint("Result:- $result");
-          groupDetail = result;
+          groupDetail = result as GroupDetailModel?;
           if (mounted) setState(() {});
         }
       },
@@ -317,7 +310,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   Widget getGroupDescription() {
-    return groupDetail.description == ""
+    return groupDetail!.description == ""
         ? Container()
         : Container(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -335,7 +328,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                   height: 8,
                 ),
                 Text(
-                  "${groupDetail.description}",
+                  "${groupDetail!.description}",
                   style: TextStyle(color: blackFont),
                 ),
               ],
@@ -361,7 +354,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Members (${groupDetail.participants.length})",
+                  "Members (${groupDetail!.participants.length})",
                   style: TextStyle(
                       color: darkGrey,
                       fontSize: 12,
@@ -384,7 +377,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             height: 8,
           ),
           Column(
-              children: groupDetail.participants
+              children: groupDetail!.participants
                   .asMap()
                   .map((index, value) =>
                       MapEntry(index, getUserTile(index: index, user: value)))
@@ -413,7 +406,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           SizedBox(
             height: 16,
           ),
-          userBloc.user.userName != groupDetail.owner
+          userBloc.user.userName != groupDetail!.owner
               ? getExitGroupTile()
               : getDeleteGroupTile(),
         ],
@@ -428,7 +421,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
     if (result != null) {
       debugPrint("Result:- $result");
-      groupDetail = result;
+      groupDetail = result as GroupDetailModel?;
 
       if (mounted) setState(() {});
     }
@@ -541,7 +534,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     );
   }
 
-  Widget getUserTile({Participant user, int index}) {
+  Widget getUserTile({required Participant user, int? index}) {
     CustomerProfile customerProfile = CustomerProfile(
         fullName: user.fullName,
         avatar: user.avatar,
@@ -551,7 +544,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     return _getSlideLists(context, customerProfile, index);
   }
 
-  Widget _getSlideLists(BuildContext context, CustomerProfile user, int index) {
+  Widget _getSlideLists(
+      BuildContext context, CustomerProfile user, int? index) {
     return Slidable(
       key: UniqueKey(),
       controller: _slideController,
@@ -567,7 +561,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     );
   }
 
-  List<Widget> listActionSlideActions(CustomerProfile user, int index) {
+  List<Widget> listActionSlideActions(CustomerProfile user, int? index) {
     bool isOwner = false;
     bool isAdmin = false;
     bool isBlocked = false;
@@ -575,22 +569,22 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     bool isCurrentUser = false;
     bool isCurrentUserIsAdmin = false;
 
-    if (groupDetail.owner == user.userName) {
+    if (groupDetail!.owner == user.userName) {
       isOwner = true;
     }
-    if (groupDetail.adminUsers.contains(user.userName)) {
+    if (groupDetail!.adminUsers.contains(user.userName)) {
       isAdmin = true;
     }
-    if (groupDetail.blockedParticipants.contains(user.userName)) {
+    if (groupDetail!.blockedParticipants.contains(user.userName)) {
       isBlocked = true;
     }
-    if (groupDetail.mutedParticipants.contains(user.userName)) {
+    if (groupDetail!.mutedParticipants.contains(user.userName)) {
       isMuted = true;
     }
     if (user.userName == userBloc.user.userName) {
       isCurrentUser = true;
     }
-    if (groupDetail.adminUsers.contains(userBloc.user.userName)) {
+    if (groupDetail!.adminUsers.contains(userBloc.user.userName)) {
       isCurrentUserIsAdmin = true;
     }
 
@@ -604,7 +598,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             backgroundColor: mateRed,
             icon: SlydoAppIcon.remove,
             onTap: () {
-              removeParticipantFromGroup(index);
+              removeParticipantFromGroup(index!);
             },
             title: "Remove",
             slideController: _slideController),
@@ -618,7 +612,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             icon: SlydoAppIcon.block,
             iconColor: blackFont,
             onTap: () {
-              blockParticipantFromGroup(index);
+              blockParticipantFromGroup(index!);
             },
             title: "Block",
             slideController: _slideController),
@@ -632,7 +626,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             icon: SlydoAppIcon.mute,
             iconColor: blackFont,
             onTap: () {
-              muteParticipantFromGroup(index);
+              muteParticipantFromGroup(index!);
             },
             title: "Mute",
             slideController: _slideController),
@@ -646,7 +640,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             icon: SlydoAppIcon.remove_admin,
             iconColor: blackFont,
             onTap: () {
-              removeParticipantFromAdmin(index);
+              removeParticipantFromAdmin(index!);
             },
             title: "Remove from admin",
             slideController: _slideController),
@@ -656,7 +650,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     return leftSwipeActions;
   }
 
-  List<Widget> listSecondaryActions(CustomerProfile user, int index) {
+  List<Widget> listSecondaryActions(CustomerProfile user, int? index) {
     bool isOwner = false;
     bool isAdmin = false;
     bool isBlocked = false;
@@ -664,22 +658,22 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     bool isCurrentUser = false;
     bool isCurrentUserIsAdmin = false;
 
-    if (groupDetail.owner == user.userName) {
+    if (groupDetail!.owner == user.userName) {
       isOwner = true;
     }
-    if (groupDetail.adminUsers.contains(user.userName)) {
+    if (groupDetail!.adminUsers.contains(user.userName)) {
       isAdmin = true;
     }
-    if (groupDetail.blockedParticipants.contains(user.userName)) {
+    if (groupDetail!.blockedParticipants.contains(user.userName)) {
       isBlocked = true;
     }
-    if (groupDetail.mutedParticipants.contains(user.userName)) {
+    if (groupDetail!.mutedParticipants.contains(user.userName)) {
       isMuted = true;
     }
     if (user.userName == userBloc.user.userName) {
       isCurrentUser = true;
     }
-    if (groupDetail.adminUsers.contains(userBloc.user.userName)) {
+    if (groupDetail!.adminUsers.contains(userBloc.user.userName)) {
       isCurrentUserIsAdmin = true;
     }
 
@@ -693,7 +687,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           icon: SlydoAppIcon.unmute,
           iconColor: blackFont,
           onTap: () {
-            unMuteParticipantFromGroup(index);
+            unMuteParticipantFromGroup(index!);
           },
           title: "Unmute",
           slideController: _slideController));
@@ -706,7 +700,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             icon: SlydoAppIcon.unblock,
             iconColor: blackFont,
             onTap: () {
-              unBlockParticipantFromGroup(index);
+              unBlockParticipantFromGroup(index!);
             },
             title: "Unblock",
             slideController: _slideController),
@@ -719,7 +713,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             backgroundColor: naturalGreen,
             icon: SlydoAppIcon.make_admin,
             onTap: () {
-              makeParticipantAdmin(index);
+              makeParticipantAdmin(index!);
             },
             title: "Make admin",
             slideController: _slideController),
@@ -729,21 +723,21 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     return rightSwipeAction;
   }
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {}
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
-  void handleSlideIsOpenChanged(bool isOpen) {}
+  void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void removeParticipantFromAdmin(int index) {
-    Participant participant = groupDetail.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .removeParticipantFromAdmin(
-            conversationId: groupDetail.conversationId,
+            conversationId: groupDetail!.conversationId!,
             userName: participant.userName)
         .then((value) {
       if (value) {
-        groupDetail.adminUsers.remove(participant.userName);
+        groupDetail!.adminUsers.remove(participant.userName);
         if (mounted) setState(() {});
-        Toast.show("${participant.userName} is removed from admin !!", context);
+        showToast(message: "${participant.userName} is removed from admin !!");
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");
@@ -751,16 +745,16 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void makeParticipantAdmin(int index) {
-    Participant participant = groupDetail.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .makeParticipantAdmin(
-            conversationId: groupDetail.conversationId,
+            conversationId: groupDetail!.conversationId!,
             userName: participant.userName)
         .then((value) {
       if (value) {
-        groupDetail.adminUsers.add(participant.userName);
+        groupDetail!.adminUsers.add(participant.userName);
         if (mounted) setState(() {});
-        Toast.show("${participant.userName} is now admin !!", context);
+        showToast(message: "${participant.userName} is now admin !!");
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");
@@ -768,16 +762,16 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void muteParticipantFromGroup(int index) {
-    Participant participant = groupDetail.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .muteParticipantFromGroup(
-            conversationId: groupDetail.conversationId,
+            conversationId: groupDetail!.conversationId!,
             userName: participant.userName)
         .then((value) {
       if (value) {
-        groupDetail.mutedParticipants.add(participant.userName);
+        groupDetail!.mutedParticipants.add(participant.userName);
         if (mounted) setState(() {});
-        Toast.show("${participant.userName} is muted!!", context);
+        showToast(message: "${participant.userName} is muted!!");
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");
@@ -785,16 +779,16 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void unMuteParticipantFromGroup(int index) {
-    Participant participant = groupDetail.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .unMuteParticipantFromGroup(
-            conversationId: groupDetail.conversationId,
+            conversationId: groupDetail!.conversationId!,
             userName: participant.userName)
         .then((value) {
       if (value) {
-        groupDetail.mutedParticipants.remove(participant.userName);
+        groupDetail!.mutedParticipants.remove(participant.userName);
         if (mounted) setState(() {});
-        Toast.show("${participant.userName} is unmuted!!", context);
+        showToast(message: "${participant.userName} is unmuted!!");
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");
@@ -802,16 +796,16 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void blockParticipantFromGroup(int index) {
-    Participant participant = groupDetail.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .blockParticipantFromGroup(
-            conversationId: groupDetail.conversationId,
+            conversationId: groupDetail!.conversationId!,
             userName: participant.userName)
         .then((value) {
       if (value) {
-        groupDetail.blockedParticipants.add(participant.userName);
+        groupDetail!.blockedParticipants.add(participant.userName);
         if (mounted) setState(() {});
-        Toast.show("${participant.userName} is blocked!!", context);
+        showToast(message: "${participant.userName} is blocked!!");
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");
@@ -819,16 +813,16 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void unBlockParticipantFromGroup(int index) {
-    Participant participant = groupDetail.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .unBlockParticipantFromGroup(
-            conversationId: groupDetail.conversationId,
+            conversationId: groupDetail!.conversationId!,
             userName: participant.userName)
         .then((value) {
       if (value) {
-        groupDetail.blockedParticipants.remove(participant.userName);
+        groupDetail!.blockedParticipants.remove(participant.userName);
         if (mounted) setState(() {});
-        Toast.show("${participant.userName} is unblocked!!", context);
+        showToast(message: "${participant.userName} is unblocked!!");
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");
@@ -836,15 +830,15 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void removeParticipantFromGroup(int index) {
-    Participant participant = groupDetail.participants[index];
+    Participant participant = groupDetail!.participants[index];
     MessageAuth()
         .removeParticipantFromGroup(
-            conversationId: groupDetail.conversationId,
+            conversationId: groupDetail!.conversationId!,
             userName: participant.userName)
         .then((value) {
       if (value) {
-        Toast.show("${participant.userName} is removed!!", context);
-        groupDetail.participants.removeAt(index);
+        showToast(message: "${participant.userName} is removed!!");
+        groupDetail!.participants.removeAt(index);
         if (mounted) setState(() {});
       }
     }).catchError((error) {
@@ -862,7 +856,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     if (selectedUsers != null) {
       MessageAuth()
           .addParticipantToGroup(
-              conversationId: groupDetail.conversationId, users: selectedUsers)
+              conversationId: groupDetail!.conversationId!,
+              users: selectedUsers as List<CustomerProfile>)
           .then((value) {
         if (value) {
           if (selectedUsers is List<CustomerProfile>) {
@@ -876,8 +871,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                   userName: element.userName));
             });
 
-            groupDetail.participants.addAll(usersAdded);
-            Toast.show("Users are added in group !!", context);
+            groupDetail!.participants.addAll(usersAdded);
+            showToast(message: "Users are added in group !!");
             if (mounted) setState(() {});
           }
         }
@@ -889,15 +884,15 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   void exitFromGroup() {
     MessageAuth()
-        .exitFromGroup(conversationId: groupDetail.conversationId)
+        .exitFromGroup(conversationId: groupDetail!.conversationId!)
         .then((value) {
       if (value) {
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
-            conversationId: groupDetail.conversationId);
+            conversationId: groupDetail!.conversationId);
 
-        Toast.show("You left the ${groupDetail.fullName}!!", context);
+        showToast(message: "You left the ${groupDetail!.fullName}!!");
         Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
       }
     }).catchError((error) {
@@ -907,14 +902,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   void deleteGroup() {
     MessageAuth()
-        .deleteGroup(conversationId: groupDetail.conversationId)
+        .deleteGroup(conversationId: groupDetail!.conversationId!)
         .then((value) {
       if (value) {
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
-            conversationId: groupDetail.conversationId);
-        Toast.show("You deleted the ${groupDetail.fullName}!!", context);
+            conversationId: groupDetail!.conversationId);
+        showToast(message: "You deleted the ${groupDetail!.fullName}!!");
         Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
       }
     }).catchError((error) {
@@ -947,7 +942,7 @@ class VerticalListItem extends StatefulWidget {
 
   final CustomerProfile user;
 
-  final GroupDetailModel groupDetail;
+  final GroupDetailModel? groupDetail;
 
   @override
   _VerticalListItemState createState() => _VerticalListItemState();

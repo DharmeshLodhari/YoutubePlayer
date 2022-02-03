@@ -3,12 +3,12 @@ import 'package:Slydo/screens/more_apps/flight/flight_auth.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_ticket_tile.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'models/Transport.dart';
 
@@ -18,7 +18,7 @@ class MyFlightTicketList extends StatefulWidget {
 }
 
 class _MyFlightTicketListState extends State<MyFlightTicketList> {
-  FlightDashboardBloc _flightDashboardBloc;
+  late FlightDashboardBloc _flightDashboardBloc;
 
   List<Transport> transports = [];
   bool isLoading = false;
@@ -51,9 +51,10 @@ class _MyFlightTicketListState extends State<MyFlightTicketList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -63,7 +64,7 @@ class _MyFlightTicketListState extends State<MyFlightTicketList> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }

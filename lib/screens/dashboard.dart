@@ -6,22 +6,23 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/nudge_notification/NudgeNotification.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
@@ -30,7 +31,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 import 'package:uuid/uuid.dart';
 
 import '../utils/colors.dart';
@@ -50,31 +50,31 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   //newUI Variables
-  DashboardBloc _dashboardBloc;
+  late DashboardBloc _dashboardBloc;
   DatabaseHelper _db = DatabaseHelper();
 
   int _currentIndex = 0;
   var arguments;
-  List<Widget> screens;
-  BasketBloc basketBloc;
+  List<Widget>? screens;
+  late BasketBloc basketBloc;
 
-  MainSocketProvider mainSocketProvider;
-  StreamSubscription streamSubscription;
+  MainSocketProvider? mainSocketProvider;
+  StreamSubscription? streamSubscription;
 
-  bool isNFCPermissionAccepted;
+  bool? isNFCPermissionAccepted;
 
   _DashboardState({this.arguments});
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       ShareManager().initializeShareManager();
     });
     if (mounted) MainSocketMessageHandler().dispose();
     if (mounted) {
       setState(() {
         if (arguments != null) {
-          int indexFromRoute = arguments['dashboardIndex'];
+          int? indexFromRoute = arguments['dashboardIndex'];
 
           if (indexFromRoute != null) {
             setState(() {
@@ -100,12 +100,12 @@ class _DashboardState extends State<Dashboard> {
 
   void fetchConnections() async {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.navigationKey.currentContext,
+        myGlobals.navigationKey.currentContext!,
         listen: false);
 
     BackgroundFetchStopBloc backgroundFetchStopBloc =
         Provider.of<BackgroundFetchStopBloc>(
-            myGlobals.navigationKey.currentContext);
+            myGlobals.navigationKey.currentContext!);
 
     /// to show updating Messaging in connection list
     ChatMessageSynchronizer().updateFetchStream(isFetching: true);
@@ -142,132 +142,19 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-  void checkNotificationToNavigate() async {
-    NudgeNotification nudgeNotification =
-        await DatabaseHelper().getNudgeNotification();
-    if (nudgeNotification != null) {
-      debugPrint("NOTIFICATION FOUND :- ${nudgeNotification.toJson()}");
-      showDialog(
-          context: context,
-          builder: (context) => Center(child: CircularLoadingIndicator()));
-
-      UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-
-      await DatabaseHelper().deleteNudgeNotification();
-
-      ChatConversation chatConversation = await UserAuth()
-          .fetchContactProfile(nudgeNotification.recipientUsername);
-
-      MainSocketMessageHandler().sendNudgeAcknowledgement(
-          author: chatConversation, currentUser: userBloc, type: "Accepted");
-
-      /// if User is not added in database
-      try {
-        ConnectionListBloc connectionListBloc =
-            Provider.of<ConnectionListBloc>(context, listen: false);
-
-        connectionListBloc.setConnectionUsers(users: [chatConversation]);
-
-        ChatUserManager().addUsers([chatConversation]);
-      } catch (error) {
-        debugPrint("ERRORR:- $error");
-      }
-
-      if (chatConversation == null) {
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
-        return;
-      }
-      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
-      Navigator.pushNamed(context, '/chat-screen',
-          arguments: {"searchedUser": chatConversation});
-      return;
-    } else {
-      Map<String, dynamic> notificationList =
-          await DatabaseHelper().getNotification();
-
-      if (notificationList == null) return;
-
-      Map<String, dynamic> notification =
-          jsonDecode(notificationList['notification']);
-
-      if (notification['type'] == "chatroom_message") {
-        String recipientUsername =
-            notification['actions'].replaceAll("/chat-screen/", "");
-        print("Recipient user name = $recipientUsername");
-
-        if (recipientUsername != null) {
-          showDialog(
-              context: MyGlobals().navigationKey.currentContext,
-              builder: (context) => Center(child: CircularLoadingIndicator()));
-
-          await DatabaseHelper().deleteNotification();
-
-          ChatConversation chatConversation =
-              await UserAuth().fetchContactProfile(recipientUsername);
-
-          if (chatConversation == null) {
-            Navigator.of(MyGlobals().navigationKey.currentContext)
-                .popUntil(ModalRoute.withName('/dashboard'));
-            return;
-          }
-          Navigator.of(MyGlobals().navigationKey.currentContext)
-              .popUntil(ModalRoute.withName('/dashboard'));
-          Navigator.pushNamed(
-              MyGlobals().navigationKey.currentContext, '/chat-screen',
-              arguments: {"searchedUser": chatConversation});
-        }
-      } else if (notification['type'] == "request-payment") {
-        await DatabaseHelper().deleteNotification();
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .popUntil(ModalRoute.withName('/dashboard'));
-        DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
-            MyGlobals().navigationKey.currentContext,
-            listen: false);
-        _dashboardBloc.index = 1;
-      } else if (notification['type'] == "transaction") {
-        await DatabaseHelper().deleteNotification();
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .pushNamed('/transactions');
-      } else if (notification['type'] == "connection-request") {
-        await DatabaseHelper().deleteNotification();
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .pushNamed('/friends-dashboard', arguments: {"index": 1});
-      } else if (notification['type'] == "friends-dashboard") {
-        await DatabaseHelper().deleteNotification();
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(MyGlobals().navigationKey.currentContext)
-            .pushNamed('/friends-dashboard', arguments: {"index": 0});
-      } else if (notification['type'] == "detail_message") {
-        await DatabaseHelper().deleteNotification();
-        //this variable will fetch the id of message from the response
-        String idOfMessage =
-            notification['actions'].replaceAll("/detail_message/", "");
-        Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(context).pushNamed('/detail_message', arguments: {
-          'id': idOfMessage,
-        });
-      }
-    }
-  }
-
   void listenNotificationTap() async {
     MyGlobals.notificationStream = AwesomeNotificationService()
-        .notificationActionStream
+        .notificationActionStream!
         .listen((receivedNotification) async {
       debugPrint("action:-  ${receivedNotification.buttonKeyPressed}");
       debugPrint("data:-  ${receivedNotification.payload}");
 
-      Map<String, dynamic> payload = receivedNotification.payload;
+      Map<String, dynamic>? payload = receivedNotification.payload;
 
       if (receivedNotification.buttonKeyPressed == "reject_nudge") {
         Map<String, dynamic> data = {
           "check_id": Uuid().v4(),
-          "conversation_id": payload['conversation_id'],
+          "conversation_id": payload!['conversation_id'],
           "author": payload['recipient'],
           "recipient": payload['author'],
           "created_at": DateTime.now().toUtc().toString(),
@@ -282,14 +169,14 @@ class _DashboardState extends State<Dashboard> {
       } else if (receivedNotification.buttonKeyPressed == "accept_nudge") {
         // saveNudgeNotification(receivedNotification.payload);
 
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
           navigateToNotification(receivedNotification.toMap());
         });
       } else {
         debugPrint("===> ${receivedNotification.toMap()}");
 
         // saveNotification(payload);
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
           navigateToNotification(receivedNotification.toMap());
         });
       }
@@ -335,102 +222,77 @@ class _DashboardState extends State<Dashboard> {
 
     if (notification['type'] == "chatroom_message" ||
         notification['type'] == "nudge_user") {
-      String recipientUsername =
+      String? recipientUsername =
           notification['actions'].replaceAll("/chat-screen/", "");
       print("Recipient user name = $recipientUsername");
 
       if (recipientUsername != null) {
         showDialog(
-            context: MyGlobals().navigationKey.currentContext,
+            context: MyGlobals().navigationKey.currentContext!,
             builder: (context) => Center(child: CircularLoadingIndicator()));
-
-        await DatabaseHelper().deleteNotification();
 
         ChatConversation chatConversation =
             await UserAuth().fetchContactProfile(recipientUsername);
 
-        if (chatConversation == null) {
-          Navigator.of(MyGlobals().navigationKey.currentContext)
-              .popUntil(ModalRoute.withName('/dashboard'));
-          return;
-        }
-        Navigator.of(MyGlobals().navigationKey.currentContext)
+        Navigator.of(MyGlobals().navigationKey.currentContext!)
             .popUntil(ModalRoute.withName('/dashboard'));
         Navigator.pushNamed(
-            MyGlobals().navigationKey.currentContext, '/chat-screen',
+            MyGlobals().navigationKey.currentContext!, '/chat-screen',
             arguments: {"searchedUser": chatConversation});
       }
     } else if (notification['type'] == "request-payment") {
-      await DatabaseHelper().deleteNotification();
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
       DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
-          MyGlobals().navigationKey.currentContext,
+          MyGlobals().navigationKey.currentContext!,
           listen: false);
       _dashboardBloc.index = 1;
     } else if (notification['type'] == "transaction") {
-      await DatabaseHelper().deleteNotification();
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed('/transactions');
     } else if (notification['type'] == "connection-request") {
-      await DatabaseHelper().deleteNotification();
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed('/friends-dashboard', arguments: {"index": 1});
     } else if (notification['type'] == "friends-dashboard") {
-      await DatabaseHelper().deleteNotification();
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed('/friends-dashboard', arguments: {"index": 0});
     } else if (notification['type'] == "detail_message") {
-      await DatabaseHelper().deleteNotification();
       //this variable will fetch the id of message from the response
-      String idOfMessage =
+      String? idOfMessage =
           notification['actions'].replaceAll("/detail_message/", "");
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
-      Navigator.of(MyGlobals().navigationKey.currentContext)
+      Navigator.of(MyGlobals().navigationKey.currentContext!)
           .pushNamed('/detail_message', arguments: {
         'id': idOfMessage,
+      });
+    } else if (notification['type'].toString().contains("orders-list")) {
+      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.of(context).pushNamed('/orders-list');
+    } else if (notification['type'].toString().contains("order-detail-page")) {
+      Order order = Order.fromJson(notification["data"] is String
+          ? jsonDecode(notification["data"])
+          : notification["data"]);
+
+      Navigator.of(context).pushNamed('/order-detail-page', arguments: {
+        'order': order,
       });
     }
   }
 
-  Future<void> saveNudgeNotification(Map<String, dynamic> payload) async {
-    NudgeNotification nudgeNotification = NudgeNotification.fromJson(payload);
-    nudgeNotification.recipientUsername = payload['author'];
-    try {
-      await DatabaseHelper().saveNudgeNotification(nudgeNotification);
-    } catch (error) {
-      debugPrint("DATA ${nudgeNotification.toJson()}");
-      debugPrint("ERROR WHILE INSERTING $error");
-    }
-    return;
-  }
-
-  void saveNotification(Map<String, dynamic> payload) async {
-    try {
-      await DatabaseHelper().saveNotification(jsonEncode(payload));
-    } catch (error) {
-      debugPrint("DATA $payload");
-      debugPrint("ERROR WHILE INSERTING $error");
-    }
-    return;
-  }
-
   void getFeeStructureData() {
     PaymentAndBankingAuth().getFeeStructure().then((value) async {
-      if (value != null) {
-        //  deleteFeeStructure();
-        await DatabaseHelper().saveFeeStructure(value);
-      }
+      //  deleteFeeStructure();
+      await DatabaseHelper().saveFeeStructure(value);
     }).catchError((e) {
       debugPrint(e.toString());
-      Toast.show(e, context, gravity: Toast.BOTTOM, textColor: Colors.white);
+      showToast(message: e);
     });
   }
 
@@ -454,7 +316,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget getBadgeContent() {
+  Widget? getBadgeContent() {
     if (basketBloc.items.length == 0) {
       return null;
     }
@@ -468,7 +330,7 @@ class _DashboardState extends State<Dashboard> {
   int getBadgeCount() {
     int totalItem = 0;
     basketBloc.items.forEach((element) {
-      totalItem = totalItem + element['qty'];
+      totalItem = totalItem + element['qty'] as int;
     });
     return totalItem;
   }
@@ -488,7 +350,7 @@ class _DashboardState extends State<Dashboard> {
     return WillPopScope(
       onWillPop: () async {
         if (_dashboardBloc.index == 0) {
-          bool result = await showDialogBox(
+          bool? result = await showDialogBox(
             context: context,
             actionOneBgColor: mateRed,
             actionOneTextColor: Colors.white,
@@ -496,10 +358,10 @@ class _DashboardState extends State<Dashboard> {
             actionTwoTextColor: blackFont,
             title: "Exit app",
             description: "Are you sure want to exit app?",
-            actionOne: AppLocalization.of(context).exit,
-            actionTwo: AppLocalization.of(context).cancel,
+            actionOne: AppLocalization.of(context)!.exit,
+            actionTwo: AppLocalization.of(context)!.cancel,
           );
-          if (result) {
+          if (result != null && result) {
             SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
           }
         }
@@ -523,11 +385,20 @@ class _DashboardState extends State<Dashboard> {
             FocusScope.of(context).unfocus();
           },
           children: <Widget>[
-            KeepAlivePage(child: Home()),
-            KeepAlivePage(child: PaymentRequestList()),
+            KeepAlivePage(
+              child: Home(),
+              wantKeepAlive: false,
+            ),
+            KeepAlivePage(
+              child: PaymentRequestList(),
+              wantKeepAlive: false,
+            ),
             KeepAlivePage(child: SearchModule()),
             KeepAlivePage(child: ShoppingCart()),
-            KeepAlivePage(child: UserDashboard()),
+            KeepAlivePage(
+              child: UserDashboard(),
+              wantKeepAlive: false,
+            ),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -557,23 +428,27 @@ class _DashboardState extends State<Dashboard> {
         items: [
           bottomNavigationBarItem(
             icon: SlydoAppIcon.home,
-            title: AppLocalization.of(context).home,
+            title: AppLocalization.of(context)!.home,
           ),
           bottomNavigationBarItem(
+            key: tutorialRequestPaymentListKey,
             icon: SlydoAppIcon.receive,
-            title: AppLocalization.of(context).requests,
+            title: AppLocalization.of(context)!.requests,
           ),
           bottomNavigationBarItem(
+            key: tutorialSearchItemsKey,
             icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context).search,
+            title: AppLocalization.of(context)!.search,
           ),
           bottomNavigationBarItem(
+            key: tutorialShoppingCartKey,
             icon: SlydoAppIcon.cart,
-            title: AppLocalization.of(context).basket,
+            title: AppLocalization.of(context)!.basket,
           ),
           bottomNavigationBarItem(
+            key: tutorialProfileKey,
             icon: SlydoAppIcon.user,
-            title: AppLocalization.of(context).explore,
+            title: AppLocalization.of(context)!.explore,
           ),
         ],
       ),
@@ -582,9 +457,10 @@ class _DashboardState extends State<Dashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData icon, String title}) {
+      {IconData? icon, required String title, Key? key}) {
     return BottomNavigationBarItem(
       icon: Container(
+        key: key,
         height: 50,
         width: 60,
         child: Icon(
@@ -599,7 +475,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData icon, String title}) {
+  Widget activeIcon({IconData? icon, required String title}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(

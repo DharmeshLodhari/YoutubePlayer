@@ -1,12 +1,12 @@
 class FixedHeight {
-  String height;
-  String mp4;
-  String mp4Size;
-  String size;
-  String url;
-  String webp;
-  String webpSize;
-  String width;
+  String? height;
+  String? mp4;
+  String? mp4Size;
+  String? size;
+  String? url;
+  String? webp;
+  String? webpSize;
+  String? width;
 
   FixedHeight(
       {this.height,

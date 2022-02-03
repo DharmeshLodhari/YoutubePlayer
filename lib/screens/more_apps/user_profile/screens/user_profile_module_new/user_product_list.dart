@@ -15,14 +15,13 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class UserProductList extends StatefulWidget {
-  CustomerProfile user;
+  CustomerProfile? user;
   bool isOwner;
 
-  UserProductList({@required this.user, this.isOwner = false});
+  UserProductList({required this.user, this.isOwner = false});
 
   @override
   _UserProductListState createState() => _UserProductListState();
@@ -30,9 +29,9 @@ class UserProductList extends StatefulWidget {
 
 class _UserProductListState extends State<UserProductList> {
   // this variable responsible for product pagination
-  int productCount = 0;
-  String productNext = "";
-  String productPrevious = "";
+  int? productCount = 0;
+  String? productNext = "";
+  String? productPrevious = "";
   List<Product> productList = [];
   ScrollController _productScrollController = new ScrollController();
   final GlobalKey<ScaffoldState> _productScaffoldKey =
@@ -41,6 +40,8 @@ class _UserProductListState extends State<UserProductList> {
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
   bool noProductInList = false;
+
+  Product? product;
 
   @override
   void initState() {
@@ -69,13 +70,9 @@ class _UserProductListState extends State<UserProductList> {
         getProductList();
         _productsRefreshController.refreshCompleted();
       } else {
-        Toast.show(
-          AppLocalization.of(context).internetConnectionNotAvailable,
-          context,
-          gravity: Toast.BOTTOM,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-        );
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         _productsRefreshController.refreshCompleted();
       }
     });
@@ -87,7 +84,7 @@ class _UserProductListState extends State<UserProductList> {
       key: _productScaffoldKey,
       body: Container(
         color: lightGrey,
-        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+        padding: EdgeInsets.fromLTRB(4, 34, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -104,14 +101,21 @@ class _UserProductListState extends State<UserProductList> {
   void getProductList() async {
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
-        if (mounted) {
-          setState(() {
-            isProductLoading = true;
-          });
+        isProductLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .listOfProduct(productNext, productPrevious,
+                userName: widget.user!.userName);
+
+        if (result == null) {
+          isProductLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
         }
-        Map<String, dynamic> result = await ShoppingAuthService().listOfProduct(
-            productNext, productPrevious,
-            userId: widget.user.userName);
+
         productCount = result['count'];
         productNext = result['next'];
         productPrevious = result['previous'];
@@ -131,9 +135,9 @@ class _UserProductListState extends State<UserProductList> {
           });
         }
       } else if (productNext == null && productList.length > 6) {
-        _productScaffoldKey.currentState.showSnackBar(SnackBar(
+        _productScaffoldKey.currentState!.showSnackBar(SnackBar(
           content:
-              Text(AppLocalization.of(context).youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
       }
@@ -143,7 +147,7 @@ class _UserProductListState extends State<UserProductList> {
   Widget _buildProductList() {
     return noProductInList
         ? NoItemInList(
-            msg: AppLocalization.of(context).noProducts,
+            msg: AppLocalization.of(context)!.noProducts,
           )
         : StaggeredGridView.countBuilder(
             physics: ClampingScrollPhysics(),
@@ -182,7 +186,8 @@ class _UserProductListState extends State<UserProductList> {
                     InkWell(
                       child: CachedNetworkImage(
                         width: double.infinity,
-                        imageUrl: getDisplayImage(index, productList),
+                        errorWidget: productAndServiceBigErrorWidget,
+                        imageUrl: getDisplayImage(index, productList)!,
                         fit: BoxFit.fill,
                         filterQuality: FilterQuality.high,
                       ),
@@ -228,57 +233,109 @@ class _UserProductListState extends State<UserProductList> {
                                   color: blackFont,
                                   size: 12,
                                 ),
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(
+                                onTap: () async {
+                                  var result =
+                                      await Navigator.of(context).pushNamed(
                                     '/edit-product',
                                     arguments: {
                                       "productId":
                                           productList[index].id.toString(),
                                     },
                                   );
+
+                                  if (result != null) {
+                                    if (result is String) {
+                                      if (result == "delete_item" ||
+                                          result == "update_item") {
+                                        _onProductRefresh();
+                                      }
+                                    }
+                                  }
                                 }),
                           )
                         : Container()
                   ]),
                 ),
                 ListTile(
-                    dense: true,
-                    title: Text(
-                      productList[index].name,
-                      maxLines: 1,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: blackFont),
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
-                    ),
-                    subtitle: Text(
-                      productList[index].shortDescription,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 14, color: darkGrey),
-                      softWrap: false,
-                      overflow: TextOverflow.fade,
-                    ),
-                    trailing: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: worldCurrencies[productList[index].currency],
-                            style: TextStyle(
-                                fontFamily: "Roboto",
-                                color: navyBlue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14)),
-                        TextSpan(
-                            text: moneyDisplayNormalizer(
-                                int.parse(productList[index].price.toString())),
-                            style: TextStyle(
-                              color: navyBlue,
-                              fontSize: 14,
+                  dense: true,
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          messageDecoderWithEmoji(productList[index].name!) ??
+                              "",
+                          maxLines: 1,
+                          style: TextStyle(
                               fontWeight: FontWeight.bold,
-                            ))
-                      ]),
-                    )),
+                              fontSize: 14,
+                              color: blackFont),
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                              text:
+                                  worldCurrencies[productList[index].currency!],
+                              style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  color: navyBlue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14)),
+                          TextSpan(
+                              text: moneyDisplayNormalizer(int.parse(
+                                  productList[index].price.toString())),
+                              style: TextStyle(
+                                color: navyBlue,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ))
+                        ]),
+                      ),
+                    ],
+                  ),
+                  subtitle: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          messageDecoderWithEmoji(
+                                  productList[index].shortDescription) ??
+                              "",
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 14, color: darkGrey),
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                      (productList[index].rating ?? 0.0) != 0.0
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Icon(
+                                  SlydoAppIcon.star,
+                                  color: starYellow,
+                                  size: 11,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  productList[index].rating?.toString() ?? "",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Container(),
+                    ],
+                  ),
+                ),
               ],
             ),
           )),
@@ -296,7 +353,7 @@ class _UserProductListState extends State<UserProductList> {
     );
   }
 
-  String getDisplayImage(int index, List<Product> productList) {
-    return productList[index].serverImages[0];
+  String? getDisplayImage(int index, List<Product> productList) {
+    return productList[index].serverImages![0];
   }
 }

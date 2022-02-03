@@ -17,7 +17,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class PutMoneyInEnvelope extends StatefulWidget {
@@ -36,19 +35,19 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
 
   final _formKey = GlobalKey<FormState>();
   final _putMoneyInEnvelopeScaffold = GlobalKey<ScaffoldState>();
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  double amount;
+  double? amount;
   String errorMessage = "";
 
-  Map<String, dynamic> message;
+  Map<String, dynamic>? message;
 
-  Envelope envelope;
+  Envelope? envelope;
 
-  ChatConversation chatConversation;
+  ChatConversation? chatConversation;
 
   bool isLoading = false;
-  CustomerProfile customerProfile;
+  CustomerProfile? customerProfile;
 
   /// {"id": "f608d81c-6a49-4679-b6fa-f064d3d5fb20",
   /// "check_id": "b46c11fb-1c21-4fda-b797-a0e5b040c563",
@@ -83,7 +82,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
     if (mounted) setState(() {});
 
     customerProfile =
-        await UserAuth().fetchCustomerProfile(envelope.fromCustomer);
+        await UserAuth().fetchCustomerProfile(envelope!.fromCustomer);
     isLoading = false;
     if (mounted) setState(() {});
   }
@@ -100,7 +99,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
         backgroundColor: Colors.white,
         key: _putMoneyInEnvelopeScaffold,
         resizeToAvoidBottomInset: true,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -139,10 +138,11 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
         width: 48,
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: customerProfile.avatar,
+            imageUrl: customerProfile!.avatar!,
             colorBlendMode: BlendMode.darken,
             fit: BoxFit.fill,
             filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
           ),
         ),
       );
@@ -150,10 +150,11 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       qrCodeImage = CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: customerProfile.qrCode ?? "",
+        imageUrl: customerProfile!.qrCode ?? "",
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
+        errorWidget: imageErrorWidget,
       );
     }
 
@@ -164,7 +165,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
-              customerProfile.displayName(),
+              customerProfile!.displayName()!,
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -173,7 +174,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
               maxLines: 1,
             ),
             subtitle: Text(
-              customerProfile.userName,
+              customerProfile!.userName!,
               style: TextStyle(fontSize: 14, color: darkGrey),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
@@ -182,7 +183,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
             trailing: qrCodeImage,
             onTap: () {
               Navigator.pushNamed(context, '/profile',
-                  arguments: {"searchedUserName": customerProfile.userName});
+                  arguments: {"searchedUserName": customerProfile!.userName});
             },
           ),
         ),
@@ -313,7 +314,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                     "Title",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                   )),
-              Expanded(flex: 4, child: Text("${envelope.title}")),
+              Expanded(flex: 4, child: Text("${envelope!.title}")),
             ],
           ),
           SizedBox(
@@ -327,7 +328,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                 "Message",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               )),
-              Expanded(flex: 4, child: Text("${envelope.message}")),
+              Expanded(flex: 4, child: Text("${envelope!.message}")),
             ],
           ),
         ],
@@ -342,7 +343,6 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
@@ -361,10 +361,10 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
               throw Exception("Invalid amount");
             }
           } catch (e) {
-            return AppLocalization.of(context).invalidAmount;
+            return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        return AppLocalization.of(context).invalidAmount;
+        return AppLocalization.of(context)!.invalidAmount;
       },
     );
   }
@@ -417,7 +417,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       FocusScope.of(context).unfocus();
     }
 
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       await Future.delayed(Duration(milliseconds: 300));
       BottomSheetPassCode(
           context: context,
@@ -429,32 +429,32 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
                     Center(child: CircularLoadingIndicator()));
             Map<String, dynamic> data = {
               "from_customer": userBloc.user.userName,
-              "to_customer": chatConversation.userName,
+              "to_customer": chatConversation!.userName,
               "notes": "",
               "description": "",
               "is_anonymous": false,
               "made_from_chat": true,
               "message": _messageController.text.trim(),
               "title": _titleController.text.trim(),
-              "conversation_id": chatConversation.conversationId
+              "conversation_id": chatConversation!.conversationId
             };
             data["currency"] = userBloc.user.currency;
             data["amount"] = moneyInputNormalizer(amount.toString());
             data["category"] = "General";
 
-            data['check_id'] = message['check_id'];
+            data['check_id'] = message!['check_id'];
 
             await MessageAuth()
-                .putMoneyInEnvelope(data: data, envelope: envelope)
+                .putMoneyInEnvelope(data: data, envelope: envelope!)
                 .catchError((error) {
-              Toast.show("ERROR:- $error", context, duration: 2);
+              showToast(message: "ERROR:- $error");
             });
 
             Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
           },
           cancelCallBack: () {
-            _putMoneyInEnvelopeScaffold.currentState.showSnackBar(SnackBar(
-              content: Text(AppLocalization.of(context).invalidPassword),
+            _putMoneyInEnvelopeScaffold.currentState!.showSnackBar(SnackBar(
+              content: Text(AppLocalization.of(context)!.invalidPassword),
             ));
           });
     }

@@ -13,7 +13,7 @@ class MovieDashboard extends StatefulWidget {
 }
 
 class _MovieDashboardState extends State<MovieDashboard> {
-  MovieDashboardBloc _movieDashboardBloc;
+  late MovieDashboardBloc _movieDashboardBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
         items: [
           bottomNavigationBarItem(
             icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context).explore,
+            title: AppLocalization.of(context)!.explore,
           ),
           bottomNavigationBarItem(
             icon: SlydoAppIcon.user,
@@ -72,7 +72,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData icon, String title}) {
+      {IconData? icon, required String title}) {
     return BottomNavigationBarItem(
       icon: Container(
         height: 50,
@@ -89,7 +89,7 @@ class _MovieDashboardState extends State<MovieDashboard> {
   }
 
 // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData icon, String title}) {
+  Widget activeIcon({IconData? icon, required String title}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(

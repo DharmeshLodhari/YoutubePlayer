@@ -8,22 +8,23 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/common.dart';
+import 'package:Slydo/utils/link_preview/flutter_link_preview.dart';
+import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/flutter_gifimage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_link_preview/flutter_link_preview.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class TextMessageRendererForChat extends StatefulWidget {
-  Map<String, dynamic> message;
-  ChatConversation chatConversation;
-  Function onReplyMessageTap;
+  Map<String, dynamic>? message;
+  ChatConversation? chatConversation;
+  Function? onReplyMessageTap;
   TextMessageRendererForChat(
-      {Key key, this.message, this.chatConversation, this.onReplyMessageTap})
+      {Key? key, this.message, this.chatConversation, this.onReplyMessageTap})
       : super(key: key);
 
   @override
@@ -33,17 +34,17 @@ class TextMessageRendererForChat extends StatefulWidget {
 
 class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     with SingleTickerProviderStateMixin {
-  UserBloc userBloc;
+  late UserBloc userBloc;
 
-  GifController gifController;
-  Function onReplyMessageTap;
+  GifController? gifController;
+  Function? onReplyMessageTap;
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     onReplyMessageTap = widget.onReplyMessageTap;
 
-    Map<String, dynamic> message = widget.message;
+    Map<String, dynamic> message = widget.message!;
 
     bool isSend = message["author"] == userBloc.user.userName;
 
@@ -104,7 +105,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                       padding: EdgeInsets.symmetric(
                           horizontal: isReplyMessage ? 8 : 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: isSend ? navyBlue : chatBackgroundColor,
+                        color: isSend ? navyBlue : Colors.white,
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(!isSend ? 0 : 10),
                           bottomRight: Radius.circular(isSend ? 0 : 10),
@@ -203,7 +204,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     }
   }
 
-  Widget renderMessage({Map<String, dynamic> message, bool isSend}) {
+  Widget renderMessage({required Map<String, dynamic> message, bool? isSend}) {
     /// check if message is reply message then render reply UI of message
     /// {id: 58fb1dce-d430-4074-9b4c-6f06e856dd15, check_id: f42e6f87-891a-415a-ab57-0fcfd83fe1f1, conversation: {id: 9ae68069-b342-4e04-b568-602bde6fe901, group_name: null, banner: null, participants: [black, brijesh.sakariya], blocked_participants: null, is_group_conversation: false, updated_at: 2021-03-09T08:14:18.467461+01:00, created_at: 2021-03-09T08:14:18.467517+01:00}, author: black, text: teset123, read_by_author: true, read_by_recipient: false, was_edited: false, media: null, poster: null, updated_at: 2021-04-13T09:21:24.922145+01:00, created_at: 2021-04-13T09:21:24.922169+01:00, kind: text, deleted_for_recipient: false, deleted_for_author: false, delivered: true, meta_data: {}, replied_to: {id: 736ab0e9-1c57-4452-98b4-13664a262b81, check_id: 5da0bcd7-831d-4d02-97bd-dd9e1f78ebef, author: black, text: test, media: null, poster: null, kind: text, read_by_author: true, read_by_recipient: false, deleted_for_recipient: false, deleted_for_author: false, delivered: true, was_edited
 
@@ -213,11 +214,11 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
 
     if (isReplyTo.isNotEmpty) {
       return getReplyMessageUI(
-          newMessage: message, isSend: isSend, repliedTo: isReplyTo);
+          newMessage: message, isSend: isSend!, repliedTo: isReplyTo);
     }
 
     Map<String, dynamic> linkData = detectLinkInMessages(
-        messageDecoderWithEmoji(message['text'].toString()));
+        messageDecoderWithEmoji(message['text'].toString())!);
 
     if (linkData["hasLink"]) {
       String linkToBePreview = linkData['links'][0];
@@ -229,16 +230,16 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          widget.chatConversation.isGroupConversation
+          widget.chatConversation!.isGroupConversation!
               ? message['author'] != userBloc.user.userName
                   ? Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          widget.message['author_full_name'] ??
-                              widget.message['author'],
+                          widget.message!['author_full_name'] ??
+                              widget.message!['author'],
                           style: TextStyle(
-                              color: isSend ? Colors.white : navyBlue,
+                              color: isSend! ? Colors.white : navyBlue,
                               fontSize: 12,
                               fontWeight: FontWeight.w700),
                         ),
@@ -264,12 +265,13 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                 );
               if (info is WebImageInfo) {
                 return CachedNetworkImage(
-                  imageUrl: info.image,
+                  imageUrl: info.image!,
                   fit: BoxFit.contain,
+                  errorWidget: imageErrorWidget,
                 );
               }
 
-              final WebInfo webInfo = info;
+              final WebInfo webInfo = info as WebInfo;
               if (!WebAnalyzer.isNotEmpty(webInfo.title))
                 return const SizedBox(
                   height: 0,
@@ -290,9 +292,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             },
           ),
           LinkWell(
-            messageDecoderWithEmoji(message['text'].toString()),
+            messageDecoderWithEmoji(message['text'].toString())!,
             style: TextStyle(
-                color: isSend ? Colors.white : blackFont,
+                color: isSend! ? Colors.white : blackFont,
                 fontSize: 17,
                 fontFamily: "OpenSans"),
             textScaleFactor: 0.8,
@@ -306,7 +308,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       );
     }
 
-    return getSimpleMessage(message: message, isSend: isSend);
+    return getSimpleMessage(message: message, isSend: isSend!);
   }
 
   List<Widget> getPreview(WebInfo webInfo) {
@@ -316,6 +318,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           children: <Widget>[
             CachedNetworkImage(
               imageUrl: webInfo.icon ?? "",
+              errorWidget: imageErrorWidget,
               imageBuilder: (context, imageProvider) {
                 return Image(
                   image: imageProvider,
@@ -331,7 +334,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                webInfo.title,
+                webInfo.title!,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -344,7 +347,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
       children.addAll([
         const SizedBox(height: 4),
         Text(
-          webInfo.description,
+          webInfo.description!,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(color: blackFont, fontSize: 14),
@@ -361,7 +364,8 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.width / 2.5),
             child: CachedNetworkImage(
-              imageUrl: webInfo.image,
+              errorWidget: imageErrorWidget,
+              imageUrl: webInfo.image!,
               width: double.infinity,
               fit: BoxFit.fill,
             ),
@@ -373,11 +377,12 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     return children;
   }
 
-  Widget getSimpleMessage({Map<String, dynamic> message, bool isSend}) {
+  Widget getSimpleMessage(
+      {required Map<String, dynamic> message, required bool isSend}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.chatConversation.isGroupConversation
+        widget.chatConversation!.isGroupConversation!
             ? message['author'] != userBloc.user.userName
                 ? Column(
                     children: [
@@ -400,7 +405,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                 width: 0,
               ),
         Text(
-          messageDecoderWithEmoji(message['text'].toString()),
+          messageDecoderWithEmoji(message['text'].toString())!,
           style:
               TextStyle(color: isSend ? Colors.white : blackFont, fontSize: 16),
         ),
@@ -409,9 +414,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget getReplyMessageUI(
-      {Map<String, dynamic> newMessage,
-      bool isSend,
-      Map<String, dynamic> repliedTo}) {
+      {required Map<String, dynamic> newMessage,
+      required bool isSend,
+      required Map<String, dynamic> repliedTo}) {
     bool isRepliedSend = repliedTo["author"] == userBloc.user.userName;
 
     return Column(
@@ -430,7 +435,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              widget.chatConversation.isGroupConversation
+              widget.chatConversation!.isGroupConversation!
                   ? newMessage['author'] != userBloc.user.userName
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
@@ -455,7 +460,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                       width: 0,
                     ),
               GestureDetector(
-                onTap: onReplyMessageTap ?? null,
+                onTap: onReplyMessageTap as void Function()? ?? null,
                 child: getRepliedMessageUI(
                     messageData: repliedTo,
                     isSend: isSend,
@@ -468,7 +473,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           height: 2,
         ),
         Text(
-          messageDecoderWithEmoji(newMessage['text'].toString()),
+          messageDecoderWithEmoji(newMessage['text'].toString())!,
           style:
               TextStyle(color: isSend ? Colors.white : blackFont, fontSize: 16),
         ),
@@ -477,82 +482,98 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget getRepliedMessageUI(
-      {Map<String, dynamic> messageData, bool isSend, bool isRepliedSend}) {
-    String messageType = messageData["kind"];
+      {required Map<String, dynamic> messageData,
+      bool? isSend,
+      bool? isRepliedSend}) {
+    String? messageType = messageData["kind"];
     switch (messageType) {
       case "text":
         Widget getMessageUi = renderReplyMessage(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getMessageUi;
-        break;
 
       case "image":
         Widget getMessageUi = renderImageMedia(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getMessageUi;
-        break;
 
       case "video":
         Widget getMessageUi = renderVideoMedia(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getMessageUi;
-        break;
 
       case "audio":
         Widget getMessageUi = renderAudioMedia(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getMessageUi;
-        break;
 
       case "transaction":
         Widget getPaymentUI = renderSendPayment(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getPaymentUI;
 
-        break;
       case "payment-request":
         Widget getPaymentUI = renderPaymentRequest(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getPaymentUI;
-        break;
 
       case "product":
         Widget getProductUI = renderProduct(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getProductUI;
-        break;
 
       case "service":
         Widget getServiceUI = renderService(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getServiceUI;
-        break;
 
       case "user-profile":
         Widget getUserProfileUI = renderUserProfile(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getUserProfileUI;
 
       case "user_location":
         Widget getUserLocationUI = renderUserLocation(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getUserLocationUI;
-        break;
 
       case "gif_image":
         if (gifController == null) {
           gifController = GifController(vsync: this);
-          gifController.value = 0;
+          gifController!.value = 0;
         }
 
         Widget getGIFImageUI = renderGIFImage(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getGIFImageUI;
-        break;
 
       case "envelope":
         Widget getEnvelopeUI = renderEnvelope(
-            message: messageData, isSend: isSend, isRepliedSend: isRepliedSend);
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
         return getEnvelopeUI;
 
       default:
@@ -564,7 +585,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderReplyMessage(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -580,7 +603,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            getAuthorName(message: message, currentUser: userBloc.user),
+            getAuthorName(message: message, currentUser: userBloc.user)!,
             style: TextStyle(
                 color: getTitleAndDividerColor(
                     isSend: isSend, isRepliedSend: isRepliedSend),
@@ -594,7 +617,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             height: 4,
           ),
           Text(
-            messageDecoderWithEmoji(message["text"]),
+            messageDecoderWithEmoji(message["text"])!,
             style: TextStyle(
                 color: getDescriptionColor(
                     isSend: isSend, isRepliedSend: isRepliedSend),
@@ -609,7 +632,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderImageMedia(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -625,6 +650,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: CachedNetworkImage(
+              errorWidget: imageErrorWidget,
               height: 48,
               width: 48,
               fit: BoxFit.cover,
@@ -640,7 +666,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: getTitleAndDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),
@@ -672,7 +698,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderVideoMedia(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -690,6 +718,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             child: Stack(
               children: [
                 CachedNetworkImage(
+                  errorWidget: imageErrorWidget,
                   height: 48,
                   width: 48,
                   fit: BoxFit.cover,
@@ -716,7 +745,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: getTitleAndDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),
@@ -748,7 +777,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderAudioMedia(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -764,7 +795,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            getAuthorName(message: message, currentUser: userBloc.user),
+            getAuthorName(message: message, currentUser: userBloc.user)!,
             style: TextStyle(
                 color: getTitleAndDividerColor(
                     isSend: isSend, isRepliedSend: isRepliedSend),
@@ -793,8 +824,10 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderSendPayment(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-    Map<String, dynamic> transaction;
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    Map<String, dynamic>? transaction;
 
     if (message['text'] is String) {
       transaction = jsonDecode(message['text']);
@@ -817,10 +850,11 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            transaction["description"] == ""
-                ? getAuthorName(message: message, currentUser: userBloc.user)
+            transaction!["description"] == ""
+                ? getAuthorName(message: message, currentUser: userBloc.user)!
                 : transaction["description"] ??
-                    getAuthorName(message: message, currentUser: userBloc.user),
+                    getAuthorName(
+                        message: message, currentUser: userBloc.user)!,
             style: TextStyle(
                 color: getDividerColor(
                     isSend: isSend, isRepliedSend: isRepliedSend),
@@ -865,8 +899,10 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderPaymentRequest(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-    Map<String, dynamic> paymentRequest;
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    Map<String, dynamic>? paymentRequest;
 
     if (message['text'] is String) {
       paymentRequest = jsonDecode(message['text']);
@@ -889,10 +925,11 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            paymentRequest["description"] == ""
-                ? getAuthorName(message: message, currentUser: userBloc.user)
+            paymentRequest!["description"] == ""
+                ? getAuthorName(message: message, currentUser: userBloc.user)!
                 : paymentRequest["description"] ??
-                    getAuthorName(message: message, currentUser: userBloc.user),
+                    getAuthorName(
+                        message: message, currentUser: userBloc.user)!,
             style: TextStyle(
                 color: getDividerColor(
                     isSend: isSend, isRepliedSend: isRepliedSend),
@@ -937,8 +974,10 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderProduct(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-    Product product;
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    late Product product;
     if (message["meta_data"] is String) {
       product = Product.fromJson(jsonDecode(message["meta_data"]));
     } else if (message["meta_data"] is Map) {
@@ -960,10 +999,11 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: CachedNetworkImage(
+              errorWidget: imageErrorWidget,
               height: 48,
               width: 48,
               fit: BoxFit.cover,
-              imageUrl: product.cover,
+              imageUrl: product.cover!,
             ),
           ),
           SizedBox(
@@ -975,7 +1015,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  product.name,
+                  product.name!,
                   style: TextStyle(
                       color: getDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),
@@ -1021,8 +1061,10 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderService(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-    Service service;
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    late Service service;
     if (message["meta_data"] is String) {
       service = Service.fromJson(jsonDecode(message["meta_data"]));
     } else if (message["meta_data"] is Map) {
@@ -1044,10 +1086,11 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: CachedNetworkImage(
+              errorWidget: imageErrorWidget,
               height: 48,
               width: 48,
               fit: BoxFit.cover,
-              imageUrl: service.cover,
+              imageUrl: service.cover!,
             ),
           ),
           SizedBox(
@@ -1059,7 +1102,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  service.name,
+                  service.name!,
                   style: TextStyle(
                       color: getDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),
@@ -1105,8 +1148,10 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderUserProfile(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-    CustomerProfile customerProfile;
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    late CustomerProfile customerProfile;
 
     if (message['meta_data'] is String) {
       customerProfile =
@@ -1140,12 +1185,12 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: customerProfile.avatar == ""
-                      ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                      : customerProfile.avatar,
+                      ? defaultImage
+                      : customerProfile.avatar!,
+                  errorWidget: imageErrorWidget,
                   colorBlendMode: BlendMode.darken,
                   fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
-                  errorWidget: imageErrorWidget,
                 ),
               )),
           SizedBox(
@@ -1189,8 +1234,10 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderEnvelope(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
-    Envelope envelope;
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    late Envelope envelope;
 
     bool isEmptyEnvelope = false;
 
@@ -1236,7 +1283,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  messageDecoderWithEmoji("${envelope.title ?? ""}"),
+                  messageDecoderWithEmoji("${envelope.title ?? ""}")!,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -1268,12 +1315,12 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               ],
             ),
           ),
-          widget.chatConversation.isGroupConversation
+          widget.chatConversation!.isGroupConversation!
               ? Container(
                   height: 50,
                   width: 80,
                   child: Stack(
-                    overflow: Overflow.visible,
+                    clipBehavior: Clip.none,
                     children: [
                       Positioned(
                         left: 30,
@@ -1288,8 +1335,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                               height: 40,
                               width: 40,
                               fit: BoxFit.fill,
-                              imageUrl: message['to_customer_avatar'] ??
-                                  "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+                              errorWidget: imageErrorWidget,
+                              imageUrl:
+                                  message['to_customer_avatar'] ?? defaultImage,
                             ),
                           ),
                         ),
@@ -1302,11 +1350,12 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                             border: Border.all(color: naturalGreen, width: 2)),
                         child: ClipOval(
                           child: CachedNetworkImage(
+                            errorWidget: imageErrorWidget,
                             height: 40,
                             width: 40,
                             fit: BoxFit.fill,
-                            imageUrl: message['from_customer_avatar'] ??
-                                "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png",
+                            imageUrl:
+                                message['from_customer_avatar'] ?? defaultImage,
                           ),
                         ),
                       ),
@@ -1323,7 +1372,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderUserLocation(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -1339,6 +1390,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: CachedNetworkImage(
+              errorWidget: imageErrorWidget,
               height: 48,
               width: 48,
               fit: BoxFit.cover,
@@ -1356,7 +1408,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: getTitleAndDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),
@@ -1388,7 +1440,9 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
   }
 
   Widget renderGIFImage(
-      {Map<String, dynamic> message, bool isSend, bool isRepliedSend}) {
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -1420,7 +1474,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  getAuthorName(message: message, currentUser: userBloc.user),
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
                   style: TextStyle(
                       color: getTitleAndDividerColor(
                           isSend: isSend, isRepliedSend: isRepliedSend),
@@ -1455,15 +1509,15 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     return Container();
   }
 
-  Color getTitleAndDividerColor({bool isSend, bool isRepliedSend}) {
+  Color getTitleAndDividerColor({required bool isSend, bool? isRepliedSend}) {
     if (isSend) {
-      if (isRepliedSend) {
+      if (isRepliedSend!) {
         return naturalGreen;
       } else {
         return Colors.white;
       }
     } else {
-      if (isRepliedSend) {
+      if (isRepliedSend!) {
         return naturalGreen;
       } else {
         return blackFont;
@@ -1471,7 +1525,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     }
   }
 
-  Color getDividerColor({bool isSend, bool isRepliedSend}) {
+  Color getDividerColor({required bool isSend, bool? isRepliedSend}) {
     if (isSend) {
       return Colors.white;
     } else {
@@ -1479,7 +1533,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     }
   }
 
-  Color getDescriptionColor({bool isSend, bool isRepliedSend}) {
+  Color getDescriptionColor({required bool isSend, bool? isRepliedSend}) {
     if (isSend) {
       return Colors.white;
     } else {

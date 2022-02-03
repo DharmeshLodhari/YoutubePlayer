@@ -6,9 +6,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class EventTile extends StatelessWidget {
-  final PartialEventItem partialEventItem;
+  final PartialEventItem? partialEventItem;
 
-  const EventTile({Key key, this.partialEventItem}) : super(key: key);
+  const EventTile({Key? key, this.partialEventItem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +26,11 @@ class EventTile extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: partialEventItem.image,
+                    imageUrl: partialEventItem!.image!,
                     fit: BoxFit.fill,
                     height: 86,
                     width: 68,
+                    errorWidget: imageErrorWidget,
                   ),
                 ),
                 SizedBox(
@@ -42,7 +43,7 @@ class EventTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          partialEventItem.dateTime,
+                          partialEventItem!.dateTime!,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -53,7 +54,7 @@ class EventTile extends StatelessWidget {
                         ),
                         flexibleSpace(flex: 2),
                         Text(
-                          partialEventItem.name,
+                          partialEventItem!.name!,
                           softWrap: false,
                           overflow: TextOverflow.fade,
                           style: TextStyle(
@@ -64,7 +65,7 @@ class EventTile extends StatelessWidget {
                         ),
                         flexibleSpace(),
                         Text(
-                          partialEventItem.location,
+                          partialEventItem!.location!,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
@@ -85,9 +86,9 @@ class EventTile extends StatelessWidget {
 
 // ignore: must_be_immutable
 class EventTileWithHeart extends StatefulWidget {
-  final PartialEventItem partialEvent;
+  final PartialEventItem? partialEvent;
 
-  const EventTileWithHeart({Key key, this.partialEvent}) : super(key: key);
+  const EventTileWithHeart({Key? key, this.partialEvent}) : super(key: key);
   @override
   _EventTileWithHeartState createState() => _EventTileWithHeartState();
 }
@@ -111,10 +112,11 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.partialEvent.image,
+                  imageUrl: widget.partialEvent!.image!,
                   fit: BoxFit.fill,
                   height: 86,
                   width: 68,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
               SizedBox(
@@ -128,7 +130,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        widget.partialEvent.dateTime,
+                        widget.partialEvent!.dateTime!,
                         softWrap: false,
                         overflow: TextOverflow.fade,
                         style: TextStyle(
@@ -139,7 +141,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                       ),
                       flexibleSpace(flex: 2),
                       Text(
-                        widget.partialEvent.name,
+                        widget.partialEvent!.name!,
                         softWrap: false,
                         overflow: TextOverflow.fade,
                         style: TextStyle(
@@ -150,7 +152,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                       ),
                       flexibleSpace(),
                       Text(
-                        widget.partialEvent.location,
+                        widget.partialEvent!.location!,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -167,7 +169,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                             size: 10,
                           ),
                           Text(
-                            widget.partialEvent.price,
+                            widget.partialEvent!.price!,
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 14,

@@ -1,17 +1,17 @@
 class Contract {
-  int amount;
-  String contractee;
-  String contracteeAvatar;
-  String contractor;
-  String contractorAvatar;
-  String createdAt;
-  String currency;
-  String endDate;
-  int id;
-  String note;
-  String paymentDuration;
-  String startDate;
-  String status;
+  int? amount;
+  String? contractee;
+  String? contracteeAvatar;
+  String? contractor;
+  String? contractorAvatar;
+  String? createdAt;
+  String? currency;
+  String? endDate;
+  int? id;
+  String? note;
+  String? paymentDuration;
+  String? startDate;
+  String? status;
 
   Contract(
       {this.amount,

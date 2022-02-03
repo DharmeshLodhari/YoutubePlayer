@@ -13,7 +13,7 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       backgroundColor: Colors.white,
       body: scaffoldBody(),
     );
@@ -108,7 +108,10 @@ class _PartnerDetailPageState extends State<PartnerDetailPage> {
   }
 
   Widget partnerDetailTile(
-      {Color iconColor, IconData icon, String title, String detail}) {
+      {required Color iconColor,
+      IconData? icon,
+      required String title,
+      required String detail}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

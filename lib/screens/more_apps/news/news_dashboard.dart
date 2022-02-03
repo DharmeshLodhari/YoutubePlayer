@@ -22,7 +22,7 @@ class _NewsDashboardState extends State<NewsDashboard> {
         length: 3,
         child: Scaffold(
           backgroundColor: Colors.white,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: tabViews(),
         ),
       ),
@@ -53,7 +53,7 @@ class _NewsDashboardState extends State<NewsDashboard> {
         softWrap: false,
         maxLines: 1,
       ),
-      bottom: tabBar(),
+      bottom: tabBar() as PreferredSizeWidget?,
     );
   }
 

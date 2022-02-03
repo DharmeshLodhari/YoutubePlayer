@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class UserTileForGroupDetail extends StatefulWidget {
-  CustomerProfile user;
+  CustomerProfile? user;
 
-  GroupDetailModel groupDetail;
+  GroupDetailModel? groupDetail;
 
   UserTileForGroupDetail({this.user, this.groupDetail});
 
@@ -23,17 +23,17 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
   Widget build(BuildContext context) {
     Widget avatarImage;
 
-    Color borderColor = getUserTypeColor(user: widget.user);
+    Color borderColor = getUserTypeColor(user: widget.user!);
 
     avatarImage = GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/photo-viewer", arguments: widget.user.avatar);
+            .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
       },
       child: GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: widget.user.avatar);
+              .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
         },
         child: Container(
             height: 48,
@@ -45,13 +45,13 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
                 border: Border.all(color: borderColor, width: 2)),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl: widget.user.avatar == ""
-                    ? "https://slydo-assets.s3.amazonaws.com/static/images/User_Avatar.png"
-                    : widget.user.avatar,
+                errorWidget: imageErrorWidget,
+                imageUrl: widget.user!.avatar == ""
+                    ? defaultImage
+                    : widget.user!.avatar!,
                 colorBlendMode: BlendMode.darken,
                 fit: BoxFit.fill,
                 filterQuality: FilterQuality.high,
-                errorWidget: imageErrorWidget,
               ),
             )),
       ),
@@ -67,7 +67,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
         child: ListTile(
           dense: true,
           title: Text(
-            widget.user.displayName(),
+            widget.user!.displayName()!,
             maxLines: 1,
             style: TextStyle(
               color: blackFont,
@@ -82,7 +82,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
           trailing: getTrailing(),
           onTap: () async {
             await Navigator.pushNamed(context, '/profile',
-                arguments: {"searchedUserName": widget.user.userName});
+                arguments: {"searchedUserName": widget.user!.userName});
           },
         ),
       ),
@@ -92,7 +92,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
 
   Widget getSubtitle(BuildContext context) {
     return Text(
-      widget.user.userName,
+      widget.user!.userName!,
       maxLines: 1,
       style: TextStyle(
         color: darkGrey,
@@ -111,16 +111,17 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
 
     bool hasNoStatus = true;
 
-    if (widget.groupDetail.owner == widget.user.userName) {
+    if (widget.groupDetail!.owner == widget.user!.userName) {
       isOwner = true;
     }
-    if (widget.groupDetail.adminUsers.contains(widget.user.userName)) {
+    if (widget.groupDetail!.adminUsers.contains(widget.user!.userName)) {
       isAdmin = true;
     }
-    if (widget.groupDetail.blockedParticipants.contains(widget.user.userName)) {
+    if (widget.groupDetail!.blockedParticipants
+        .contains(widget.user!.userName)) {
       isBlocked = true;
     }
-    if (widget.groupDetail.mutedParticipants.contains(widget.user.userName)) {
+    if (widget.groupDetail!.mutedParticipants.contains(widget.user!.userName)) {
       isMuted = true;
     }
 

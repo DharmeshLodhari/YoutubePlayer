@@ -2,12 +2,12 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_ticket_tile.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:toast/toast.dart';
 
 import 'bus_auth.dart';
 import 'models/Transport.dart';
@@ -18,7 +18,7 @@ class MyBusTicketList extends StatefulWidget {
 }
 
 class _MyBusTicketListState extends State<MyBusTicketList> {
-  BusDashboardBloc _busDashboardBloc;
+  late BusDashboardBloc _busDashboardBloc;
 
   List<Transport> transports = [];
   bool isLoading = false;
@@ -51,9 +51,10 @@ class _MyBusTicketListState extends State<MyBusTicketList> {
         getResult();
         _refreshController.refreshCompleted();
       } else {
-        Toast.show(
-            AppLocalization.of(context).internetConnectionNotAvailable, context,
-            gravity: Toast.BOTTOM, backgroundColor: navyBlue);
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
         _refreshController.refreshCompleted();
       }
     });
@@ -63,7 +64,7 @@ class _MyBusTicketListState extends State<MyBusTicketList> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }

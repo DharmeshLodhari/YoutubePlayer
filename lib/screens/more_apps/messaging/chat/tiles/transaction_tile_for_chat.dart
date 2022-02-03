@@ -13,12 +13,11 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:toast/toast.dart';
 
 class TransactionTileForChat extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final UserBloc userBloc;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final UserBloc? userBloc;
+  final ChatConversation? chatConversation;
 
   TransactionTileForChat({this.message, this.userBloc, this.chatConversation});
   @override
@@ -26,7 +25,7 @@ class TransactionTileForChat extends StatefulWidget {
 }
 
 class _TransactionTileForChatState extends State<TransactionTileForChat> {
-  Transaction transaction;
+  late Transaction transaction;
 
   @override
   void initState() {
@@ -35,20 +34,20 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> data;
+    Map<String, dynamic>? data;
 
-    if (widget.message['text'] is String) {
-      data = jsonDecode(widget.message['text']);
-    } else if (widget.message['text'] is Map) {
-      data = widget.message['text'];
+    if (widget.message!['text'] is String) {
+      data = jsonDecode(widget.message!['text']);
+    } else if (widget.message!['text'] is Map) {
+      data = widget.message!['text'];
     }
-    bool isCredit = widget.userBloc.user.userName == data['to_customer'];
+    bool isCredit = widget.userBloc!.user.userName == data!['to_customer'];
 
     data['is_credit'] = isCredit;
 
     transaction = Transaction.fromJson(data);
 
-    bool isSend = widget.message["author"] == widget.userBloc.user.userName;
+    bool isSend = widget.message!["author"] == widget.userBloc!.user.userName;
 
     bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
@@ -66,7 +65,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                   minWidth: MediaQuery.of(context).size.width / 1.40,
                   minHeight: 50),
               decoration: BoxDecoration(
-                color: chatBackgroundColor,
+                color: Colors.white,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(!isSend ? 0 : 6),
                   bottomRight: Radius.circular(isSend ? 0 : 6),
@@ -87,6 +86,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                           borderRadius: BorderRadius.circular(10)),
                       margin: EdgeInsets.zero,
                       shadowColor: boxShadowTwo,
+                      color: chatBackgroundColor,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
@@ -97,7 +97,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                               Expanded(
                                 child: Text(
                                   messageDecoderWithEmoji(
-                                      transaction.description),
+                                      transaction.description)!,
                                   maxLines: 1,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
@@ -154,7 +154,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                         : FontWeight.w600,
                                     fontSize: isScreenSmall ? 12 : 14)),
                             Text(
-                                "${getDateTime(dateAndTime: widget.message['created_at'])}",
+                                "${getDateTime(dateAndTime: widget.message!['created_at'])}",
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: false,
@@ -168,7 +168,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                       ],
                     ),
                   ),
-                  widget.chatConversation.isGroupConversation
+                  widget.chatConversation!.isGroupConversation!
                       ? Column(
                           children: [
                             SizedBox(
@@ -177,7 +177,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                             Container(
                               width: 42,
                               child: Stack(
-                                overflow: Overflow.visible,
+                                clipBehavior: Clip.none,
                                 children: [
                                   Positioned(
                                     left: 26,
@@ -196,8 +196,9 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                             height: 34,
                                             width: 34,
                                             fit: BoxFit.fill,
+                                            errorWidget: imageErrorWidget,
                                             imageUrl: widget
-                                                .message['to_customer_avatar'],
+                                                .message!['to_customer_avatar'],
                                           ),
                                         ),
                                       ),
@@ -218,8 +219,9 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                                           height: 34,
                                           width: 34,
                                           fit: BoxFit.fill,
+                                          errorWidget: imageErrorWidget,
                                           imageUrl: widget
-                                              .message['from_customer_avatar'],
+                                              .message!['from_customer_avatar'],
                                         ),
                                       ),
                                     ),
@@ -238,7 +240,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                     width: 20,
                     child: isSend
                         ? Center(
-                            child: getMessageTick(message: widget.message),
+                            child: getMessageTick(message: widget.message!),
                           )
                         : Container(),
                   )
@@ -258,7 +260,7 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                     width: 20,
                   ),
             Text(
-              formatTime(widget.message['created_at']),
+              formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
@@ -273,31 +275,31 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
     );
   }
 
-  String getDateTime({String dateAndTime}) {
+  String getDateTime({required String dateAndTime}) {
     DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
     String date = DateFormat("dd/MM/yy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
     return " • $date • $time";
   }
 
-  String getTransactionStatus({bool isSend}) {
-    if (widget.chatConversation.isGroupConversation) {
-      if (widget.userBloc.user.userName == transaction.fromCustomer) {
+  String getTransactionStatus({bool? isSend}) {
+    if (widget.chatConversation!.isGroupConversation!) {
+      if (widget.userBloc!.user.userName == transaction.fromCustomer) {
         return "You were paid";
       }
-      if (widget.userBloc.user.userName == transaction.toCustomer) {
+      if (widget.userBloc!.user.userName == transaction.toCustomer) {
         return "You have paid";
       }
       return "Payment made";
     }
-    return isSend ? "You have paid" : "You were paid";
+    return isSend! ? "You have paid" : "You were paid";
   }
 }
 
 class PaymentRequestTileForChat extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final UserBloc userBloc;
-  final ChatConversation chatConversation;
+  final Map<String, dynamic>? message;
+  final UserBloc? userBloc;
+  final ChatConversation? chatConversation;
 
   PaymentRequestTileForChat(
       {this.message, this.userBloc, this.chatConversation});
@@ -308,7 +310,7 @@ class PaymentRequestTileForChat extends StatefulWidget {
 }
 
 class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
-  PaymentRequest paymentRequest;
+  late PaymentRequest paymentRequest;
   String paymentActionStatus = "None";
   String paymentActionTime = DateTime.now().toString();
   @override
@@ -324,23 +326,21 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     /// Canceled
     /// None
 
-    Map<String, dynamic> details;
+    Map<String, dynamic>? details;
 
-    if (widget.message['meta_data'] is Map) {
-      details = widget.message['meta_data'];
-    } else if (widget.message['meta_data'] is String) {
-      details = jsonDecode(widget.message['meta_data']);
+    if (widget.message!['meta_data'] is Map) {
+      details = widget.message!['meta_data'];
+    } else if (widget.message!['meta_data'] is String) {
+      details = jsonDecode(widget.message!['meta_data']);
     }
 
-    if (details.isNotEmpty) {
+    if (details!.isNotEmpty) {
       try {
         if (details['payment_action_status'] != null) {
-          paymentActionStatus =
-              details['payment_action_status'].toString() ?? "None";
+          paymentActionStatus = details['payment_action_status'].toString();
         }
         if (details['updated_at'] != null) {
-          paymentActionTime =
-              details['updated_at'].toString() ?? DateTime.now().toString();
+          paymentActionTime = details['updated_at'].toString();
         }
       } catch (e) {
         paymentActionStatus = "None";
@@ -352,16 +352,14 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
       paymentActionTime = DateTime.now().toString();
     }
 
-    if (widget.message['text'] is String) {
-      paymentRequest = PaymentRequest.fromJson(
-          jsonDecode(widget.message['text']),
-          currentUser: widget.userBloc.user);
-    } else if (widget.message['text'] is Map) {
-      paymentRequest = PaymentRequest.fromJson(widget.message['text'],
-          currentUser: widget.userBloc.user);
+    if (widget.message!['text'] is String) {
+      paymentRequest =
+          PaymentRequest.fromJson(jsonDecode(widget.message!['text']));
+    } else if (widget.message!['text'] is Map) {
+      paymentRequest = PaymentRequest.fromJson(widget.message!['text']);
     }
 
-    bool isSend = widget.message["author"] == widget.userBloc.user.userName;
+    bool isSend = widget.message!["author"] == widget.userBloc!.user.userName;
 
     bool isScreenSmall = MediaQuery.of(context).size.width <= 400;
 
@@ -379,7 +377,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                   minWidth: MediaQuery.of(context).size.width / 1.40,
                   minHeight: 50),
               decoration: BoxDecoration(
-                color: chatBackgroundColor,
+                color: Colors.white,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(!isSend ? 0 : 6),
                   bottomRight: Radius.circular(isSend ? 0 : 6),
@@ -400,6 +398,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                           borderRadius: BorderRadius.circular(10)),
                       margin: EdgeInsets.zero,
                       shadowColor: boxShadowTwo,
+                      color: chatBackgroundColor,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
@@ -410,7 +409,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                               Expanded(
                                 child: Text(
                                   messageDecoderWithEmoji(
-                                      paymentRequest.description),
+                                      paymentRequest.description)!,
                                   style: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
@@ -449,12 +448,12 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                           height: 12,
                         )
                       : Container(),
-                  widget.chatConversation.isGroupConversation
+                  widget.chatConversation!.isGroupConversation!
                       ? paymentActionStatus == "None"
                           ? paymentRequest.toCustomer ==
-                                      widget.userBloc.user.userName ||
+                                      widget.userBloc!.user.userName ||
                                   paymentRequest.fromCustomer ==
-                                      widget.userBloc.user.userName
+                                      widget.userBloc!.user.userName
                               ? Container(
                                   child: isSend
                                       ? Row(
@@ -605,7 +604,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                           ),
                         )
                       : Container(),
-                  widget.chatConversation.isGroupConversation
+                  widget.chatConversation!.isGroupConversation!
                       ? Column(
                           children: [
                             SizedBox(
@@ -614,7 +613,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                             Container(
                               width: 42,
                               child: Stack(
-                                overflow: Overflow.visible,
+                                clipBehavior: Clip.none,
                                 children: [
                                   Positioned(
                                     left: 26,
@@ -633,8 +632,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                             height: 34,
                                             width: 34,
                                             fit: BoxFit.fill,
-                                            imageUrl:
-                                                paymentRequest.toCustomerAvatar,
+                                            errorWidget: imageErrorWidget,
+                                            imageUrl: paymentRequest
+                                                .toCustomerAvatar!,
                                           ),
                                         ),
                                       ),
@@ -655,8 +655,9 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                           height: 34,
                                           width: 34,
                                           fit: BoxFit.fill,
-                                          imageUrl:
-                                              paymentRequest.fromCustomerAvatar,
+                                          errorWidget: imageErrorWidget,
+                                          imageUrl: paymentRequest
+                                              .fromCustomerAvatar!,
                                         ),
                                       ),
                                     ),
@@ -678,7 +679,7 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                       child: isSend
                           ? Align(
                               alignment: Alignment.bottomCenter,
-                              child: getMessageTick(message: widget.message))
+                              child: getMessageTick(message: widget.message!))
                           : Container(),
                     ),
                   )
@@ -719,11 +720,10 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
         isValidCallback: () async {
           var response = await PaymentAndBankingAuth().acceptPaymentRequests(
               paymentRequest,
-              messageId: widget.message["id"]);
+              messageId: widget.message!["id"]);
 
           if (response.statusCode == 200) {
-            Toast.show("Payment request fulfilled !!", context,
-                textColor: Colors.white);
+            showToast(message: "Payment request fulfilled !!");
           } else {
             debugPrint(
                 "RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
@@ -735,15 +735,15 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
   }
 
   void rejectOrCancelPaymentRequest() async {
-    var result = await PaymentAndBankingAuth()
-        .rejectPaymentRequests(paymentRequest, messageId: widget.message["id"]);
+    var result = await PaymentAndBankingAuth().rejectPaymentRequests(
+        paymentRequest,
+        messageId: widget.message!["id"]);
     if (result) {
-      Toast.show("Payment status updated successfully !!", context,
-          textColor: Colors.white);
+      showToast(message: "Payment status updated successfully !!");
     }
   }
 
-  String getDateTime({String dateAndTime}) {
+  String getDateTime({required String dateAndTime}) {
     DateTime requestTime = DateTime.parse(dateAndTime).toLocal();
     String date = DateFormat("dd/MM/yy").format(requestTime);
     String time = DateFormat("hh:mm a").format(requestTime);
@@ -754,11 +754,11 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
     if (paymentActionStatus == "Rejected") {
       return "Request Rejected";
     } else if (paymentActionStatus == "Accepted") {
-      if (widget.chatConversation.isGroupConversation) {
-        if (widget.userBloc.user.userName == paymentRequest.fromCustomer) {
+      if (widget.chatConversation!.isGroupConversation!) {
+        if (widget.userBloc!.user.userName == paymentRequest.fromCustomer) {
           return "You were paid";
         }
-        if (widget.userBloc.user.userName == paymentRequest.toCustomer) {
+        if (widget.userBloc!.user.userName == paymentRequest.toCustomer) {
           return "You have paid";
         }
         return "Request Accepted";

@@ -8,9 +8,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class MovieTile extends StatelessWidget {
-  final MovieItem movieItem;
+  final MovieItem? movieItem;
 
-  const MovieTile({Key key, this.movieItem}) : super(key: key);
+  const MovieTile({Key? key, this.movieItem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +28,9 @@ class MovieTile extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: movieItem.poster,
+                  imageUrl: movieItem!.poster!,
                   fit: BoxFit.fill,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -37,7 +38,7 @@ class MovieTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  movieItem.name,
+                  movieItem!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -57,7 +58,7 @@ class MovieTile extends StatelessWidget {
                       width: 4,
                     ),
                     Text(
-                      movieItem.rating,
+                      movieItem!.rating!,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -77,7 +78,7 @@ class MovieTile extends StatelessWidget {
                   size: 10,
                 ),
                 Text(
-                  movieItem.price,
+                  movieItem!.price!,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -92,9 +93,9 @@ class MovieTile extends StatelessWidget {
 }
 
 class MovieTileWithHeart extends StatefulWidget {
-  final MovieItem movieItem;
+  final MovieItem? movieItem;
 
-  const MovieTileWithHeart({Key key, this.movieItem}) : super(key: key);
+  const MovieTileWithHeart({Key? key, this.movieItem}) : super(key: key);
 
   @override
   _MovieTileWithHeartState createState() => _MovieTileWithHeartState();
@@ -119,8 +120,9 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.movieItem.poster,
+                  imageUrl: widget.movieItem!.poster!,
                   fit: BoxFit.fill,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -128,7 +130,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.movieItem.name,
+                  widget.movieItem!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -148,7 +150,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
                       width: 4,
                     ),
                     Text(
-                      widget.movieItem.rating,
+                      widget.movieItem!.rating!,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -168,7 +170,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
                   size: 10,
                 ),
                 Text(
-                  widget.movieItem.price,
+                  widget.movieItem!.price!,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
@@ -194,9 +196,9 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
 }
 
 class MovieTileGeneral extends StatefulWidget {
-  final MovieItem movieItem;
+  final MovieItem? movieItem;
 
-  const MovieTileGeneral({Key key, this.movieItem}) : super(key: key);
+  const MovieTileGeneral({Key? key, this.movieItem}) : super(key: key);
   @override
   _MovieTileGeneralState createState() => _MovieTileGeneralState();
 }
@@ -222,8 +224,9 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: widget.movieItem.poster,
+                  imageUrl: widget.movieItem!.poster!,
                   fit: BoxFit.fill,
+                  errorWidget: imageErrorWidget,
                 ),
               ),
             ),
@@ -231,7 +234,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.movieItem.name,
+                  widget.movieItem!.name!,
                   softWrap: false,
                   overflow: TextOverflow.fade,
                   style: TextStyle(
@@ -251,7 +254,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                       width: 4,
                     ),
                     Text(
-                      widget.movieItem.rating,
+                      widget.movieItem!.rating!,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
@@ -271,7 +274,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
                   size: 10,
                 ),
                 Text(
-                  widget.movieItem.price,
+                  widget.movieItem!.price!,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,

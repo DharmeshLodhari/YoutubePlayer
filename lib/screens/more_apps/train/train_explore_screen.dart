@@ -25,7 +25,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
   DateTime departureDate = DateTime.now();
   DateTime arrivalDate = DateTime.now();
 
-  TrainDashboardBloc _trainDashboardBloc;
+  late TrainDashboardBloc _trainDashboardBloc;
 
   var selectedTripType = "One way";
 
@@ -34,7 +34,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar(),
+      appBar: appBar() as PreferredSizeWidget?,
       body: scaffoldBody(),
     );
   }
@@ -222,7 +222,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                     DateTime.now().day),
                 lastDate: DateTime(2101),
               ).then((value) {
-                departureDate = DateTime(value.year, value.month, value.day);
+                departureDate = DateTime(value!.year, value.month, value.day);
                 setState(() {});
               }).catchError((error) {});
             },
@@ -271,7 +271,7 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
                       lastDate: DateTime(2101),
                     ).then((value) {
                       arrivalDate =
-                          DateTime(value.year, value.month, value.day);
+                          DateTime(value!.year, value.month, value.day);
                       setState(() {});
                     }).catchError((error) {});
                   },
@@ -328,12 +328,12 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
+                child: Text(AppLocalization.of(context)!.category),
               ),
             ],
           ),
           value: selectedFromPlace,
-          onChanged: (String value) {
+          onChanged: (String? value) {
             setState(() {
               selectedFromPlace = value;
             });
@@ -494,12 +494,12 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
+                child: Text(AppLocalization.of(context)!.category),
               ),
             ],
           ),
           value: selectedFromPlace,
-          onChanged: (String value) {
+          onChanged: (String? value) {
             setState(() {
               selectedFromPlace = value;
             });
@@ -660,12 +660,12 @@ class _TrainExploreScreenState extends State<TrainExploreScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Text(AppLocalization.of(context).category),
+                child: Text(AppLocalization.of(context)!.category),
               ),
             ],
           ),
           value: selectedClass,
-          onChanged: (String value) {
+          onChanged: (String? value) {
             setState(() {
               selectedClass = value;
             });

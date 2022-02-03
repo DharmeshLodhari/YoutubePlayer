@@ -6,20 +6,20 @@ import 'package:Slydo/utils/date_time_and_money_converter.dart';
 
 /// Model for user's connection list
 class ChatConversation {
-  List<String> adminUsers;
-  String avatar;
-  List<String> blockedParticipants;
-  String conversationId;
-  String description;
-  String fullName;
-  bool isGroupConversation;
-  List<String> mutedParticipants;
-  String createdAt;
-  String owner;
-  List<String> participants;
-  String qrCode;
-  String type;
-  String userName;
+  List<String?> adminUsers;
+  String? avatar;
+  List<String?> blockedParticipants;
+  String? conversationId;
+  String? description;
+  String? fullName;
+  bool? isGroupConversation;
+  List<String?> mutedParticipants;
+  String? createdAt;
+  String? owner;
+  List<String?> participants;
+  String? qrCode;
+  String? type;
+  String? userName;
 
   ChatConversation(
       {this.adminUsers = const [],
@@ -80,18 +80,10 @@ class ChatConversation {
     data['created_at'] = this.createdAt;
     data['type'] = this.type;
     data['username'] = this.userName;
-    if (this.adminUsers != null) {
-      data['admin_users'] = this.adminUsers;
-    }
-    if (this.blockedParticipants != null) {
-      data['blocked_participants'] = this.blockedParticipants;
-    }
-    if (this.mutedParticipants != null) {
-      data['muted_participants'] = this.mutedParticipants;
-    }
-    if (this.participants != null) {
-      data['participants'] = this.participants;
-    }
+    data['admin_users'] = this.adminUsers;
+    data['blocked_participants'] = this.blockedParticipants;
+    data['muted_participants'] = this.mutedParticipants;
+    data['participants'] = this.participants;
     return data;
   }
 
@@ -130,24 +122,16 @@ class ChatConversation {
     data['conversation_id'] = this.conversationId;
     data['description'] = this.description;
     data['full_name'] = this.fullName;
-    data['is_group_conversation'] = this.isGroupConversation ? 1 : 0;
+    data['is_group_conversation'] = this.isGroupConversation! ? 1 : 0;
     data['owner'] = this.owner;
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     data['username'] = this.userName;
     data['created_at'] = convertStringToMillisecondsSinceEpoch(this.createdAt);
-    if (this.adminUsers != null) {
-      data['admin_users'] = jsonEncode(this.adminUsers);
-    }
-    if (this.blockedParticipants != null) {
-      data['blocked_participants'] = jsonEncode(this.blockedParticipants);
-    }
-    if (this.mutedParticipants != null) {
-      data['muted_participants'] = jsonEncode(this.mutedParticipants);
-    }
-    if (this.participants != null) {
-      data['participants'] = jsonEncode(this.participants);
-    }
+    data['admin_users'] = jsonEncode(this.adminUsers);
+    data['blocked_participants'] = jsonEncode(this.blockedParticipants);
+    data['muted_participants'] = jsonEncode(this.mutedParticipants);
+    data['participants'] = jsonEncode(this.participants);
 
     return data;
   }
@@ -173,7 +157,7 @@ class ChatConversation {
     );
   }
 
-  static List<String> getParticipants(List<Participant> participants) {
+  static List<String?> getParticipants(List<Participant> participants) {
     return participants.map((e) => e.userName).toList();
   }
 

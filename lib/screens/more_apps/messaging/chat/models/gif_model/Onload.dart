@@ -1,5 +1,5 @@
 class Onload {
-  String url;
+  String? url;
 
   Onload({this.url});
 

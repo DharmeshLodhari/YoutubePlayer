@@ -1,9 +1,9 @@
 class Device {
-  String firebaseToken;
-  String type; // Android OR IOS
-  String mode;
-  String deviceId;
-  String deviceName;
+  String? firebaseToken;
+  String? type; // Android OR IOS
+  String? mode;
+  String? deviceId;
+  String? deviceName;
 
   Device(
       {this.firebaseToken,
@@ -33,8 +33,8 @@ List<Language> languages = <Language>[
 //  Language('Amharic', "am"),
 ];
 
-Language getLanguageByLanguageCode(String languageCode) {
-  Language language;
+Language? getLanguageByLanguageCode(String? languageCode) {
+  Language? language;
   languages.forEach((lang) {
     if (languageCode == lang.languageCode) {
       language = lang;

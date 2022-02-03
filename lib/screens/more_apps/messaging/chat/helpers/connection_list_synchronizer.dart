@@ -6,6 +6,7 @@ import 'package:Slydo/utils/global_key.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
+/// For synchronizing the the user's connection list From server to db
 class ConnectionSynchronizer {
   static final ConnectionSynchronizer _connectionSynchronizer =
       ConnectionSynchronizer._internal();
@@ -16,8 +17,8 @@ class ConnectionSynchronizer {
     return _connectionSynchronizer;
   }
 
-  static String _next = "";
-  static String _previous = "";
+  static String? _next = "";
+  static String? _previous = "";
 
   Future<void> fetch({bool isRefresh = false}) async {
     if (isRefresh) {
@@ -26,12 +27,12 @@ class ConnectionSynchronizer {
     }
 
     MyGlobals myGlobals = MyGlobals();
-    BuildContext context = myGlobals.navigationKey.currentContext;
+    BuildContext context = myGlobals.navigationKey.currentContext!;
 
     ConnectionListBloc connectionListBloc =
         Provider.of<ConnectionListBloc>(context, listen: false);
     if (_next != null) {
-      Map<String, dynamic> result =
+      Map<String, dynamic>? result =
           await UserAuth().contacts(_next, _previous).catchError((error) {
         debugPrint("ERROR:- $error");
       });
@@ -42,7 +43,7 @@ class ConnectionSynchronizer {
 
       List tempList = result['results'];
 
-      List<ChatConversation> users = List<ChatConversation>();
+      List<ChatConversation> users = [];
 
       tempList
           .forEach((element) => users.add(ChatConversation.fromJson(element)));
@@ -57,7 +58,7 @@ class ConnectionSynchronizer {
   }
 
   Future<void> update() async {
-    ChatConversation chatConversation = await ConnectionListManager()
+    ChatConversation? chatConversation = await ConnectionListManager()
         .getLastChatConversation()
         .catchError((error) {
       debugPrint("ERROR:- While calling Contact Synchronizer $error");
@@ -69,13 +70,13 @@ class ConnectionSynchronizer {
         "Last ChatConversation:- ${chatConversation.fullName}  ${chatConversation.userName} ");
 
     ///[{"id":"18d67b2b-c79f-4b8c-978c-2d12cdc4f780","owner":"brijesh.sakariya","group_name":"test beta three","description":"Beta three","banner":"https://slydo-assets.s3.amazonaws.com/media/image_cropper_1622353806759.jpg","participants":["abiola.rasheed.2","black","brijesh.sakariya","pankaj.sakariya"],"blocked_participants":null,"muted_participants":null,"admin_users":["brijesh.sakariya"],"is_group_conversation":true,"updated_at":"2021-05-30T06:51:11.016495+01:00","created_at":"2021-05-30T06:50:16.061634+01:00"},{"id":"14fd3371-9358-4067-b19c-f309123cbed1","owner":"brijesh.sakariya","group_name":"Test Group Beta","description":"Hello Test Group","banner":"https://slydo-assets.s3.amazonaws.com/media/image_cropper_1622353494477.jpg","participants":["abiola.rasheed.2","black","brijesh.sakariya","pankaj.sakariya"],"blocked_participants":null,"muted_participants":null,"admin_users":["brijesh.sakariya"],"is_group_conversation":true,"updated_at":"2021-05-30T06:45:19.697305+01:00","created_at":"2
-    List chatConversations = await UserAuth().fetchMissedContact(
+    List? chatConversations = await UserAuth().fetchMissedContact(
         conversationId: chatConversation.conversationId,
-        createdAt: chatConversation.createdAt);
+        createdAt: chatConversation.createdAt!);
 
     if (chatConversations == null) return;
 
-    List<ChatConversation> chatConversationToBeAdded = List<ChatConversation>();
+    List<ChatConversation> chatConversationToBeAdded = [];
     chatConversations.forEach((element) {
       chatConversationToBeAdded.add(ChatConversation.fromJson(element));
     });

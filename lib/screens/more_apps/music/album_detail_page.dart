@@ -27,16 +27,16 @@ class AlbumDetailPage extends StatefulWidget {
 }
 
 class _AlbumDetailPageState extends State<AlbumDetailPage> {
-  MusicDashboardBloc _musicDashboardBloc;
+  late MusicDashboardBloc _musicDashboardBloc;
 
-  MusicPlayer musicPlayer;
+  MusicPlayer? musicPlayer;
   bool isLoading = false;
-  MusicAlbum.MusicAlbum musicAlbum;
+  late MusicAlbum.MusicAlbum musicAlbum;
 
   @override
   void initState() {
     musicPlayer = widget.arguments["musicPlayer"];
-    musicAlbum = musicPlayer.musicAlbum;
+    musicAlbum = musicPlayer!.musicAlbum;
     if (musicAlbum.id == null) {
       getMusicAlbum();
     }
@@ -49,21 +49,21 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
     setState(() {});
     MusicAuthService().getMusicAlbum().then((album) async {
       musicAlbum = album;
-      musicPlayer.musicAlbum = album;
+      musicPlayer!.musicAlbum = album;
       isLoading = false;
-      await musicPlayer.audioPlayer.open(
+      await musicPlayer!.audioPlayer.open(
         Playlist(
-          audios: musicAlbum.audio
+          audios: musicAlbum.audio!
               .map((audio) => Audio.network(
-                    audio.src,
+                    audio.src!,
                     cached: true,
                     metas: Metas(
-                      id: audio.metas.id,
-                      title: audio.metas.title,
-                      artist: audio.metas.artist,
-                      album: audio.metas.title,
+                      id: audio.metas!.id,
+                      title: audio.metas!.title,
+                      artist: audio.metas!.artist,
+                      album: audio.metas!.title,
                       image: MetasImage.network(
-                          audio.metas.image), //can be MetasImage.network
+                          audio.metas!.image!), //can be MetasImage.network
                     ),
                   ))
               .toList(),
@@ -94,7 +94,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBar(),
+        appBar: appBar() as PreferredSizeWidget?,
         body: scaffoldBody(),
       ),
     );
@@ -107,7 +107,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
       titleSpacing: 0,
       automaticallyImplyLeading: false,
       title: Text(
-        musicAlbum.title,
+        musicAlbum.title!,
         style: TextStyle(
             fontSize: 18, fontWeight: FontWeight.w700, color: blackFont),
       ),
@@ -242,7 +242,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
                     Container(
                       padding: EdgeInsets.only(right: 20, left: 10),
                       child: Column(
-                        children: musicAlbum.audio
+                        children: musicAlbum.audio!
                             .asMap()
                             .map(
                               (i, audio) => MapEntry(
@@ -288,8 +288,9 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
           CachedNetworkImage(
             width: double.infinity,
             height: double.infinity,
-            imageUrl: musicAlbum.image,
+            imageUrl: musicAlbum.image!,
             fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
           ),
           Positioned(
             right: 12,
@@ -319,7 +320,7 @@ class _AlbumDetailPageState extends State<AlbumDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              musicAlbum.title,
+              musicAlbum.title!,
               style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700, color: blackFont),
             ),

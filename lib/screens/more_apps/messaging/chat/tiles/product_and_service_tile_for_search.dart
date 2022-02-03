@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 class SearchProductTile extends StatefulWidget {
   Product product;
 
-  SearchProductTile({@required this.product});
+  SearchProductTile({required this.product});
 
   @override
   _SearchProductTileState createState() => _SearchProductTileState();
@@ -26,13 +26,9 @@ class _SearchProductTileState extends State<SearchProductTile> {
   @override
   Widget build(BuildContext context) {
     try {
-      itemCover = widget.product.cover ??
-          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+      itemCover = widget.product.cover!;
     } catch (e) {
       itemCover = "";
-    }
-    if (itemCover == "") {
-      itemCover = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
     }
 
     return Container(
@@ -56,12 +52,13 @@ class _SearchProductTileState extends State<SearchProductTile> {
                         imageUrl: itemCover,
                         fit: BoxFit.fill,
                         filterQuality: FilterQuality.high,
+                        errorWidget: productAndServiceErrorWidget,
                       ),
                     ),
                     ListTile(
                         dense: true,
                         title: Text(
-                          widget.product.name,
+                          widget.product.name!,
                           maxLines: 1,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -71,7 +68,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
                           overflow: TextOverflow.fade,
                         ),
                         subtitle: Text(
-                          widget.product.shortDescription,
+                          widget.product.shortDescription!,
                           maxLines: 1,
                           style: TextStyle(fontSize: 14, color: darkGrey),
                           softWrap: false,
@@ -80,7 +77,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
                         trailing: RichText(
                           text: TextSpan(children: [
                             TextSpan(
-                                text: worldCurrencies[widget.product.currency],
+                                text: worldCurrencies[widget.product.currency!],
                                 style: TextStyle(
                                     fontFamily: "Roboto",
                                     color: navyBlue,
@@ -110,7 +107,7 @@ class _SearchProductTileState extends State<SearchProductTile> {
 class SearchServiceTile extends StatefulWidget {
   Service service;
 
-  SearchServiceTile({@required this.service});
+  SearchServiceTile({required this.service});
 
   @override
   _SearchServiceTileState createState() => _SearchServiceTileState();
@@ -127,15 +124,10 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
   @override
   Widget build(BuildContext context) {
     try {
-      itemCover = widget.service.cover ??
-          "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
+      itemCover = widget.service.cover!;
     } catch (e) {
       itemCover = "";
     }
-    if (itemCover == "") {
-      itemCover = "https://homepages.cae.wisc.edu/~ece533/images/peppers.png";
-    }
-
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: CustomBoxShadow(
@@ -157,12 +149,13 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
                         imageUrl: itemCover,
                         fit: BoxFit.fill,
                         filterQuality: FilterQuality.high,
+                        errorWidget: productAndServiceBigErrorWidget,
                       ),
                     ),
                     ListTile(
                         dense: true,
                         title: Text(
-                          widget.service.name,
+                          widget.service.name!,
                           maxLines: 1,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -172,7 +165,7 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
                           overflow: TextOverflow.fade,
                         ),
                         subtitle: Text(
-                          widget.service.shortDescription,
+                          widget.service.shortDescription!,
                           maxLines: 1,
                           style: TextStyle(
                               fontSize: 14,
@@ -184,7 +177,7 @@ class _SearchServiceTileState extends State<SearchServiceTile> {
                         trailing: RichText(
                           text: TextSpan(children: [
                             TextSpan(
-                                text: worldCurrencies[widget.service.currency],
+                                text: worldCurrencies[widget.service.currency!],
                                 style: TextStyle(
                                     fontFamily: "Roboto",
                                     color: navyBlue,

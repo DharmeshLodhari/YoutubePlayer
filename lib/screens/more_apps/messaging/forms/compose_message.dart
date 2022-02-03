@@ -11,7 +11,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:toast/toast.dart';
 
 // ignore: must_be_immutable
 class ComposeMessage extends StatefulWidget {
@@ -27,7 +26,7 @@ class ComposeMessage extends StatefulWidget {
 class _ComposeMessageState extends State<ComposeMessage> {
   var arguments;
 
-  DashboardBloc _dashboardBloc;
+  late DashboardBloc _dashboardBloc;
 
   _ComposeMessageState({this.arguments});
 
@@ -40,12 +39,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
   bool isSubjectIsPresent = false;
   final _messageAuth = MessageAuth();
   final _formKey = GlobalKey<FormState>();
-  CustomerProfile messageReceiver;
-  UserBloc userBloc;
-  String subject = "";
+  CustomerProfile? messageReceiver;
+  late UserBloc userBloc;
+  String? subject = "";
   String message = "";
   String errorMessage = "";
-  String recipient;
+  String? recipient;
 
   @override
   void initState() {
@@ -58,17 +57,17 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
     if (arguments != null) {
       setState(() {
-        isReplyMessage = arguments['isReply'] == 1 ? true : false ?? false;
+        isReplyMessage = arguments['isReply'] == 1 ? true : false;
       });
       recipient = arguments['recipient'];
-      _recipientController.text = recipient;
+      _recipientController.text = recipient!;
       subject = arguments['subject'];
       if (subject != "") {
         setState(() {
           isSubjectIsPresent = true;
         });
       }
-      _subjectController.text = subject;
+      _subjectController.text = subject!;
       fetchCustomer();
     }
 
@@ -79,7 +78,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
     var customerProfile = await UserAuth().fetchCustomerProfile(recipient);
 
     messageReceiver = customerProfile;
-    isValidRecipient = messageReceiver.userName != userBloc.user.userName;
+    isValidRecipient = messageReceiver!.userName != userBloc.user.userName;
 
     if (mounted) {
       setState(() {});
@@ -112,7 +111,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
       child: Scaffold(
           backgroundColor: Colors.white,
           resizeToAvoidBottomInset: true,
-          appBar: appBar(),
+          appBar: appBar() as PreferredSizeWidget?,
           body: scaffoldBody()),
     );
   }
@@ -135,7 +134,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
         },
       ),
       title: Text(
-        AppLocalization.of(context).composeMessage,
+        AppLocalization.of(context)!.composeMessage,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -228,22 +227,22 @@ class _ComposeMessageState extends State<ComposeMessage> {
   void onSubmit() {
     if (!isValidRecipient) {
       setState(() {
-        errorMessage = AppLocalization.of(context).invalidRecipient;
+        errorMessage = AppLocalization.of(context)!.invalidRecipient;
         return;
       });
     } else if (recipient == userBloc.user.userName) {
       setState(() {
-        errorMessage = AppLocalization.of(context).invalidRecipient;
+        errorMessage = AppLocalization.of(context)!.invalidRecipient;
         return;
       });
-    } else if (recipient == messageReceiver.userName) {
+    } else if (recipient == messageReceiver!.userName) {
       if (!isValidRecipient) {
         setState(() {
-          errorMessage = AppLocalization.of(context).invalidRecipient;
+          errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
       }
-      if (_formKey.currentState.validate()) {
+      if (_formKey.currentState!.validate()) {
         if (userBloc.user.userName != recipient) {
           showDialog(
               context: context,
@@ -251,9 +250,9 @@ class _ComposeMessageState extends State<ComposeMessage> {
           try {
             var data = {
               "sender": userBloc.user.userName,
-              "recipient": recipient.trim(),
+              "recipient": recipient!.trim(),
               "body": message.trim(),
-              "subject": subject.trim(),
+              "subject": subject!.trim(),
             };
             _messageAuth.sendMessage(data).then((value) {
               if (value) {
@@ -267,46 +266,22 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 // );
               } else {
                 Navigator.pop(context);
-                var msg = AppLocalization.of(context).error;
-                Toast.show(
-                  msg,
-                  context,
-                  gravity: Toast.CENTER,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                );
+                var msg = AppLocalization.of(context)!.error;
+                showToast(message: msg);
               }
             });
           } catch (e) {
             Navigator.pop(context);
-            Toast.show(
-              e,
-              context,
-              gravity: Toast.BOTTOM,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            showToast(message: e.toString());
           }
         } else {
-          var msg = AppLocalization.of(context).invalidRecipient;
-          Toast.show(
-            msg,
-            context,
-            gravity: Toast.CENTER,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-          );
+          var msg = AppLocalization.of(context)!.invalidRecipient;
+          showToast(message: msg);
         }
       }
     } else {
-      var msg = AppLocalization.of(context).invalidRecipient;
-      Toast.show(
-        msg,
-        context,
-        gravity: Toast.CENTER,
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-      );
+      var msg = AppLocalization.of(context)!.invalidRecipient;
+      showToast(message: msg);
     }
   }
 
@@ -316,22 +291,22 @@ class _ComposeMessageState extends State<ComposeMessage> {
         onPressed: () {
           if (!isValidRecipient) {
             setState(() {
-              errorMessage = AppLocalization.of(context).invalidRecipient;
+              errorMessage = AppLocalization.of(context)!.invalidRecipient;
               return;
             });
           } else if (recipient == userBloc.user.userName) {
             setState(() {
-              errorMessage = AppLocalization.of(context).invalidRecipient;
+              errorMessage = AppLocalization.of(context)!.invalidRecipient;
               return;
             });
-          } else if (recipient == messageReceiver.userName) {
+          } else if (recipient == messageReceiver!.userName) {
             if (!isValidRecipient) {
               setState(() {
-                errorMessage = AppLocalization.of(context).invalidRecipient;
+                errorMessage = AppLocalization.of(context)!.invalidRecipient;
                 return;
               });
             }
-            if (_formKey.currentState.validate()) {
+            if (_formKey.currentState!.validate()) {
               if (userBloc.user.userName != recipient) {
                 showDialog(
                     context: context,
@@ -339,9 +314,9 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 try {
                   var data = {
                     "sender": userBloc.user.userName,
-                    "recipient": recipient.trim(),
+                    "recipient": recipient!.trim(),
                     "body": message.trim(),
-                    "subject": subject.trim(),
+                    "subject": subject!.trim(),
                   };
                   _messageAuth.sendMessage(data).then((value) {
                     if (value) {
@@ -352,46 +327,22 @@ class _ComposeMessageState extends State<ComposeMessage> {
                       );
                     } else {
                       Navigator.pop(context);
-                      var msg = AppLocalization.of(context).error;
-                      Toast.show(
-                        msg,
-                        context,
-                        gravity: Toast.CENTER,
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                      );
+                      var msg = AppLocalization.of(context)!.error;
+                      showToast(message: msg);
                     }
                   });
                 } catch (e) {
                   Navigator.pop(context);
-                  Toast.show(
-                    e,
-                    context,
-                    gravity: Toast.BOTTOM,
-                    backgroundColor: Colors.black,
-                    textColor: Colors.white,
-                  );
+                  showToast(message: e.toString());
                 }
               } else {
-                var msg = AppLocalization.of(context).invalidRecipient;
-                Toast.show(
-                  msg,
-                  context,
-                  gravity: Toast.CENTER,
-                  backgroundColor: Colors.black,
-                  textColor: Colors.white,
-                );
+                var msg = AppLocalization.of(context)!.invalidRecipient;
+                showToast(message: msg);
               }
             }
           } else {
-            var msg = AppLocalization.of(context).invalidRecipient;
-            Toast.show(
-              msg,
-              context,
-              gravity: Toast.CENTER,
-              backgroundColor: Colors.black,
-              textColor: Colors.white,
-            );
+            var msg = AppLocalization.of(context)!.invalidRecipient;
+            showToast(message: msg);
           }
         });
   }
@@ -409,7 +360,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
     var avatarImage;
     var qrCodeImage;
     if (messageReceiver != null) {
-      Color borderColor = getUserTypeColor(user: messageReceiver);
+      Color borderColor = getUserTypeColor(user: messageReceiver!);
 
       avatarImage = Container(
         height: 48,
@@ -422,14 +373,15 @@ class _ComposeMessageState extends State<ComposeMessage> {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: messageReceiver.avatar);
+                .pushNamed("/photo-viewer", arguments: messageReceiver!.avatar);
           },
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: messageReceiver.avatar,
+              imageUrl: messageReceiver!.avatar!,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.fill,
               filterQuality: FilterQuality.high,
+              errorWidget: imageErrorWidget,
             ),
           ),
         ),
@@ -437,10 +389,11 @@ class _ComposeMessageState extends State<ComposeMessage> {
       qrCodeImage = CachedNetworkImage(
         height: 48,
         width: 48,
-        imageUrl: messageReceiver.qrCode,
+        imageUrl: messageReceiver!.qrCode!,
         colorBlendMode: BlendMode.darken,
         fit: BoxFit.fitWidth,
         filterQuality: FilterQuality.high,
+        errorWidget: imageErrorWidget,
       );
     }
 
@@ -453,21 +406,21 @@ class _ComposeMessageState extends State<ComposeMessage> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    messageReceiver.displayName(),
+                    messageReceiver!.displayName()!,
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
                   ),
                   subtitle: Text(
-                    messageReceiver.userName,
+                    messageReceiver!.userName!,
                     style: TextStyle(fontSize: 14, color: darkGrey),
                   ),
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
                     Navigator.pushNamed(context, '/profile', arguments: {
-                      "searchedUserName": messageReceiver.userName
+                      "searchedUserName": messageReceiver!.userName
                     });
                   },
                 ),
@@ -483,20 +436,21 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
-        labelText: AppLocalization.of(context).recipient,
+        labelText: AppLocalization.of(context)!.recipient,
+        hintText: "Enter user's slydo username",
         controller: _recipientController,
         focusNode: _recipientFocus,
         enabled: !isReplyMessage && !isSubjectIsPresent,
         validator: (value) {
-          if (value != messageReceiver.userName) {
-            return AppLocalization.of(context).invalidRecipient;
+          if (value != messageReceiver!.userName) {
+            return AppLocalization.of(context)!.invalidRecipient;
           }
           return null;
         },
         onChanged: (val) {
           setState(() {
             if (isReplyMessage && messageReceiver != null) {
-              recipient = messageReceiver.userName;
+              recipient = messageReceiver!.userName;
             } else {
               recipient = val.toLowerCase();
             }
@@ -506,7 +460,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getSubjectField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).subject,
+      labelText: AppLocalization.of(context)!.subject,
       controller: _subjectController,
       enabled: !isReplyMessage && !isSubjectIsPresent,
       validator: (val) {
@@ -522,10 +476,10 @@ class _ComposeMessageState extends State<ComposeMessage> {
       },
       onTap: () async {
         if (recipient != null) {
-          recipient = recipient.trim();
+          recipient = recipient!.trim();
           if (mounted) {
             setState(() {
-              _recipientController.text = recipient;
+              _recipientController.text = recipient!;
             });
           }
           var customerProfile =
@@ -533,7 +487,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
           setState(() {
             messageReceiver = customerProfile;
             isValidRecipient =
-                messageReceiver.userName != userBloc.user.userName;
+                messageReceiver!.userName != userBloc.user.userName;
           });
         }
       },
@@ -542,7 +496,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getContentField() {
     return CustomizedTextFormField(
-      labelText: AppLocalization.of(context).message,
+      labelText: AppLocalization.of(context)!.message,
       maxLines: 5,
       validator: (val) {
         if (val.length == 0) {

@@ -8,10 +8,10 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class SpendOnCategoryTile extends StatefulWidget {
-  String name;
-  int amount;
-  IconData icon;
-  Color color;
+  String? name;
+  int? amount;
+  IconData? icon;
+  Color? color;
 
   SpendOnCategoryTile({this.name, this.amount, this.icon, this.color});
 
@@ -41,14 +41,14 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
                 color: widget.color,
                 size: 20,
               ),
-              backgroundColor: widget.color.withOpacity(0.08),
+              backgroundColor: widget.color!.withOpacity(0.08),
               borderRadius: 20,
               height: 50,
               width: 50,
               onTap: () {},
             ),
             title: Text(
-              widget.name,
+              widget.name!,
               maxLines: 1,
               style: TextStyle(
                 color: blackFont,
@@ -60,7 +60,7 @@ class _SpendOnCategoryTileState extends State<SpendOnCategoryTile> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  '${worldCurrencies[userBloc.user.currency]}',
+                  '${worldCurrencies[userBloc.user.currency!]}',
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

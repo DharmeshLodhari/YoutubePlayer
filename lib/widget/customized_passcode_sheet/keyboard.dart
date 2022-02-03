@@ -15,7 +15,7 @@ class KeyboardUIConfig {
   final EdgeInsetsGeometry digitInnerMargin;
 
   //Size for the keyboard can be define and provided from the app. If it will not be provided the size will be adjusted to a screen size.
-  final Size keyboardSize;
+  final Size? keyboardSize;
 
   const KeyboardUIConfig({
     this.digitBorderWidth = 1,
@@ -35,12 +35,12 @@ class Keyboard extends StatelessWidget {
   final KeyboardTapCallback onKeyboardTap;
 
   //should have a proper order [1...9, 0]
-  final List<String> digits;
+  final List<String>? digits;
 
   Keyboard({
-    Key key,
-    @required this.keyboardUIConfig,
-    @required this.onKeyboardTap,
+    Key? key,
+    required this.keyboardUIConfig,
+    required this.onKeyboardTap,
     this.digits,
   }) : super(key: key);
 
@@ -48,8 +48,8 @@ class Keyboard extends StatelessWidget {
   Widget build(BuildContext context) => _buildKeyboard(context);
 
   Widget _buildKeyboard(BuildContext context) {
-    List<String> keyboardItems = List.filled(10, '0');
-    if (digits == null || digits.isEmpty) {
+    List<String>? keyboardItems = List.filled(10, '0');
+    if (digits == null || digits!.isEmpty) {
       keyboardItems = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
     } else {
       keyboardItems = digits;
@@ -65,7 +65,7 @@ class Keyboard extends StatelessWidget {
       child: AlignedGrid(
         keyboardSize: keyboardSize,
         children: List.generate(10, (index) {
-          return _buildKeyboardDigit(keyboardItems[index]);
+          return _buildKeyboardDigit(keyboardItems![index]);
         }),
       ),
     );
@@ -116,7 +116,7 @@ class AlignedGrid extends StatelessWidget {
   final Size keyboardSize;
 
   const AlignedGrid(
-      {Key key, @required this.children, @required this.keyboardSize})
+      {Key? key, required this.children, required this.keyboardSize})
       : listSize = children.length,
         super(key: key);
 

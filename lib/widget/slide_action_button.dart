@@ -3,12 +3,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 // ignore: must_be_immutable
 class SlideActionButton extends StatelessWidget {
-  Function onTap;
-  IconData icon;
-  String title;
-  Color backgroundColor;
-  Color iconColor;
-  SlidableController slideController;
+  Function? onTap;
+  IconData? icon;
+  String? title;
+  Color? backgroundColor;
+  Color? iconColor;
+  SlidableController? slideController;
 
   SlideActionButton(
       {this.backgroundColor,
@@ -41,7 +41,7 @@ class SlideActionButton extends StatelessWidget {
                 height: 6,
               ),
               Text(
-                title,
+                title!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 12,
@@ -52,8 +52,8 @@ class SlideActionButton extends StatelessWidget {
           ),
         ),
         onTap: () {
-          slideController.activeState.close();
-          onTap();
+          slideController!.activeState!.close();
+          onTap!();
         },
       ),
     );
