@@ -603,10 +603,24 @@ class AppLocalization {
     );
   }
 
+  String get creditCards {
+    return Intl.message(
+      "Credit Cards",
+      name: "creditCards",
+    );
+  }
+
   String get youCanAddMaximumTwoAccount {
     return Intl.message(
       "You can add maximum two bank account",
       name: "youCanAddMaximumTwoAccount",
+    );
+  }
+
+  String get youCanAddMaximumTwoCreditCards {
+    return Intl.message(
+      "You can add maximum two credit cards",
+      name: "youCanAddMaximumTwoCreditCards",
     );
   }
 

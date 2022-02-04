@@ -60,6 +60,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/reques
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/topup_option_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
@@ -635,6 +636,14 @@ class RouteGenerator {
         );
 
       /// TopUp
+
+      case '/credit-card-list':
+        return PageTransition(
+          child: CreditCardList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       case '/add-money-to-slydo-one':
         return PageTransition(

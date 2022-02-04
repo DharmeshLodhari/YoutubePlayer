@@ -47,7 +47,7 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                     icon: Icons.credit_card,
                     iconColor: naturalGreen,
                     onTap: () async {
-                      Navigator.of(context).pushNamed('/card-payment-page');
+                      Navigator.of(context).pushNamed('/credit-card-list');
                     }),
                 getSettingTile(
                     title: "Virtual Account",

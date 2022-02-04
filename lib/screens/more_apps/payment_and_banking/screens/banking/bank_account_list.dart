@@ -16,6 +16,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../utils/colors.dart';
 import '../../payment_and_banking_auth.dart';
+import 'package:Slydo/widget/vertical_list_item.dart';
 
 class BankAccountList extends StatefulWidget {
   @override
@@ -447,25 +448,5 @@ class _BankAccountListState extends State<BankAccountList> {
     _scrollController.dispose();
     _refreshController.dispose();
     super.dispose();
-  }
-}
-
-class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child);
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
-        child: child,
-      ),
-    );
   }
 }
