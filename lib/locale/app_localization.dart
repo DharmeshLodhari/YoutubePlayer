@@ -420,6 +420,13 @@ class AppLocalization {
     );
   }
 
+  String get chat {
+    return Intl.message(
+      "Chat",
+      name: "chat",
+    );
+  }
+
   String get selectYourPhoneCode {
     return Intl.message(
       "Select your phone code",

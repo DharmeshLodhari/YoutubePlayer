@@ -208,12 +208,12 @@ class _HomeState extends State<Home> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
-                      SlydoAppIcon.text_message,
+                      SlydoAppIcon.search,
                       size: 16,
                     ),
                   ),
                   onTap: () async {
-                    await Navigator.of(context).pushNamed('/friends-dashboard');
+                    await Navigator.of(context).pushNamed('/search-module');
 
                     setState(() {});
                   },

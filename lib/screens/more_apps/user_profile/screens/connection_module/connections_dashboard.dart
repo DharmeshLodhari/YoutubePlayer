@@ -70,16 +70,8 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
+      leading: SizedBox.shrink(),
+      leadingWidth: 22,
       title: Text(
         getTitle(),
         style: TextStyle(

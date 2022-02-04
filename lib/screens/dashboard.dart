@@ -37,6 +37,7 @@ import '../utils/colors.dart';
 import 'home.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
+import 'more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -393,7 +394,7 @@ class _DashboardState extends State<Dashboard> {
               child: PaymentRequestList(),
               wantKeepAlive: false,
             ),
-            KeepAlivePage(child: SearchModule()),
+            KeepAlivePage(child: ConnectionDashboard()),
             KeepAlivePage(child: ShoppingCart()),
             KeepAlivePage(
               child: UserDashboard(),
@@ -437,8 +438,8 @@ class _DashboardState extends State<Dashboard> {
           ),
           bottomNavigationBarItem(
             key: tutorialSearchItemsKey,
-            icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context)!.search,
+            icon: SlydoAppIcon.text_message,
+            title: AppLocalization.of(context)!.chat,
           ),
           bottomNavigationBarItem(
             key: tutorialShoppingCartKey,
