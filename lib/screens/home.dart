@@ -172,11 +172,11 @@ class _HomeState extends State<Home> {
         ],
       ),
       actions: <Widget>[
-        _scanQRBtn(),
+        _searchBtn(),
         SizedBox(
           width: 8.0,
         ),
-        _chatBtn(),
+        _scanQRBtn(),
         SizedBox(
           width: 8.0,
         ),
@@ -188,7 +188,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _chatBtn() {
+  Widget _searchBtn() {
     return Stack(
       key: tutorialChatMessageKey,
       clipBehavior: Clip.none,
