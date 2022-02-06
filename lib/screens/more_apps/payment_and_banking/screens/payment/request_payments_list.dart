@@ -188,6 +188,16 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
       title: Text(
         "Payment request",
         style: TextStyle(

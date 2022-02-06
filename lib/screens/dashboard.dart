@@ -13,6 +13,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
@@ -391,7 +392,7 @@ class _DashboardState extends State<Dashboard> {
               wantKeepAlive: false,
             ),
             KeepAlivePage(
-              child: PaymentRequestList(),
+              child: QRCodeView(arguments: {'isRequest': false}),
               wantKeepAlive: false,
             ),
             KeepAlivePage(child: ConnectionDashboard()),
@@ -433,8 +434,8 @@ class _DashboardState extends State<Dashboard> {
           ),
           bottomNavigationBarItem(
             key: tutorialRequestPaymentListKey,
-            icon: SlydoAppIcon.receive,
-            title: AppLocalization.of(context)!.requests,
+            icon: SlydoAppIcon.qr_code,
+            title: AppLocalization.of(context)!.qrCode,
           ),
           bottomNavigationBarItem(
             key: tutorialSearchItemsKey,
@@ -446,10 +447,18 @@ class _DashboardState extends State<Dashboard> {
             icon: SlydoAppIcon.cart,
             title: AppLocalization.of(context)!.basket,
           ),
-          bottomNavigationBarItem(
-            key: tutorialProfileKey,
-            icon: SlydoAppIcon.user,
-            title: AppLocalization.of(context)!.explore,
+          BottomNavigationBarItem(
+            icon: Container(
+              height: 50,
+              width: 60,
+              child: Icon(
+                Icons.explore,
+                color: blackFont,
+                size: 18,
+              ),
+            ),
+            label: "",
+            activeIcon: activeIcon(title: 'Explore', icon: Icons.explore),
           ),
         ],
       ),

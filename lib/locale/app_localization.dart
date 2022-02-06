@@ -723,6 +723,13 @@ class AppLocalization {
     );
   }
 
+  String get qrCode {
+    return Intl.message(
+      "QR Code",
+      name: "qrCode",
+    );
+  }
+
   String get transactions {
     return Intl.message(
       "Transactions",

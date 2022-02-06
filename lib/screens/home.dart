@@ -176,7 +176,7 @@ class _HomeState extends State<Home> {
         SizedBox(
           width: 8.0,
         ),
-        _scanQRBtn(),
+        _receivePaymentBtn(),
         SizedBox(
           width: 8.0,
         ),
@@ -252,7 +252,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _scanQRBtn() {
+  Widget _receivePaymentBtn() {
     return SizedBox(
       key: tutorialScanQrCodeKey,
       height: 34,
@@ -266,13 +266,12 @@ class _HomeState extends State<Home> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
-            SlydoAppIcon.qr_code,
+            SlydoAppIcon.receive,
             size: 16,
           ),
         ),
         onTap: () {
-          Navigator.of(context)
-              .pushNamed('/scan-qr', arguments: {'isRequest': false});
+          Navigator.of(context).pushNamed('/accounts');
         },
       ),
     );
