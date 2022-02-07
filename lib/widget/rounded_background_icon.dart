@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class RoundedBackgroundIcon extends StatelessWidget {
   Color? backgroundColor;
   Widget? icon;
+  Widget? image;
   double height;
   double width;
   Function? onTap;
@@ -13,6 +14,7 @@ class RoundedBackgroundIcon extends StatelessWidget {
   RoundedBackgroundIcon(
       {this.backgroundColor,
       this.icon,
+      this.image,
       this.height = 34,
       this.width = 34,
       this.borderRadius = 10,
@@ -34,7 +36,7 @@ class RoundedBackgroundIcon extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          child: icon,
+          child: image ?? icon,
         ),
         onTap: () {
           if (onTap != null) {

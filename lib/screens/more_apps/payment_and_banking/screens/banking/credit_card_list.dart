@@ -105,13 +105,7 @@ class _CreditCardListState extends State<CreditCardList> {
       ),
       onTap: () {
         //for adding new account
-        if (bankAccountList.length < 2) {
-          Navigator.of(context).pushNamed('/card-payment-page');
-        } else {
-          showToast(
-              message:
-                  AppLocalization.of(context)!.youCanAddMaximumTwoCreditCards);
-        }
+        Navigator.of(context).pushNamed('/card-payment-page');
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

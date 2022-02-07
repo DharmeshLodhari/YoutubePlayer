@@ -433,7 +433,7 @@ class _DashboardState extends State<Dashboard> {
             title: AppLocalization.of(context)!.home,
           ),
           bottomNavigationBarItem(
-            key: tutorialRequestPaymentListKey,
+            key: tutorialScanQrCodeKey,
             icon: SlydoAppIcon.qr_code,
             title: AppLocalization.of(context)!.qrCode,
           ),

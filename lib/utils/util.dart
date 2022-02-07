@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -128,22 +129,115 @@ BoxDecoration decorateBox(
 void androidBottomSheet(
     {required BuildContext context, required Widget child}) {
   showModalBottomSheet<void>(
-      backgroundColor: Colors.transparent,
-      context: context,
-      builder: (BuildContext context) {
-        return Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+    backgroundColor: Colors.transparent,
+    context: context,
+    builder: (BuildContext context) {
+      return Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        color: Colors.white,
+        margin: EdgeInsets.zero,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
+Widget getSettingTile(
+    {Widget? image,
+    String title = "",
+    Function()? onTap,
+    IconData? icon,
+    Color? iconColor}) {
+  if (iconColor == null) {
+    iconColor = navyBlue;
+  }
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    shadowColor: boxShadowTwo,
+    elevation: 6,
+    child: Container(
+      decoration: decorateBox(),
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: ListTile(
+        leading: RoundedBackgroundIcon(
+          height: 50,
+          width: 50,
+          icon: image ??
+              Icon(
+                icon,
+                color: iconColor,
+                size: 20,
+              ),
+          backgroundColor: iconColor.withOpacity(0.08),
+          borderRadius: 20,
+          onTap: onTap,
+        ),
+        title: Text(
+          title,
+          maxLines: 1,
+          style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
-          color: Colors.white,
-          margin: EdgeInsets.zero,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-            child: child,
-          ),
-        );
-      });
+          overflow: TextOverflow.fade,
+          softWrap: false,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_right_outlined,
+          color: Color(0XFF1A399D),
+        ),
+        onTap: () {
+          if (onTap != null) {
+            onTap();
+          }
+        },
+      ),
+    ),
+  );
+}
+
+Widget getChatSettingTitle() {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 20),
+    child: Text(
+      "How would you like to pay?",
+      style:
+          TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: darkGrey),
+    ),
+  );
+}
+
+Widget customAppBar({required BuildContext context, required String title}) {
+  return AppBar(
+    elevation: 0,
+    titleSpacing: 0,
+    backgroundColor: Colors.white,
+    automaticallyImplyLeading: false,
+    leading: IconButton(
+      icon: Icon(
+        Icons.keyboard_arrow_left,
+        color: navyBlue,
+        size: 24,
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    ),
+    centerTitle: false,
+    title: Text(
+      title,
+      style: TextStyle(
+          color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+  );
 }
 
 // for having expanded space

@@ -617,6 +617,27 @@ class AppLocalization {
     );
   }
 
+  String get addCreditCard {
+    return Intl.message(
+      "Add Credit Card",
+      name: "addCreditCard",
+    );
+  }
+
+  String get walletFunding {
+    return Intl.message(
+      "Wallet Funding",
+      name: "walletFunding",
+    );
+  }
+
+  String get youWillGetAmount {
+    return Intl.message(
+      "You will get following amount in your card",
+      name: "youWillGetAmount",
+    );
+  }
+
   String get youCanAddMaximumTwoAccount {
     return Intl.message(
       "You can add maximum two bank account",
@@ -1807,6 +1828,20 @@ class AppLocalization {
     );
   }
 
+  String get slydoPayAccepts {
+    return Intl.message(
+      "Slydopay accepts the following credit card:",
+      name: "slydoPayAccepts",
+    );
+  }
+
+  String get securelySaveCard {
+    return Intl.message(
+      "Securely save this card",
+      name: "securelySaveCard",
+    );
+  }
+
   String get expiredDate {
     return Intl.message(
       "Expied Date",
@@ -1832,6 +1867,13 @@ class AppLocalization {
     return Intl.message(
       "Top Up",
       name: "topUp",
+    );
+  }
+
+  String get topUpByCreditCard {
+    return Intl.message(
+      "Top up by credit card",
+      name: "topUpByCreditCard",
     );
   }
 

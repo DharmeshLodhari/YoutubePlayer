@@ -1,29 +1,24 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class TopUpOptionSelection extends StatefulWidget {
-  @override
-  _TopUpOptionSelectionState createState() => _TopUpOptionSelectionState();
-}
-
-class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
-  final GlobalKey<ScaffoldState> _scaffoldTopUpOptionSelectionKey =
-      new GlobalKey<ScaffoldState>();
+class CreditCardOptionSelection extends StatelessWidget {
+  const CreditCardOptionSelection({Key? key}) : super(key: key);
 
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldTopUpOptionSelectionKey,
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: customAppBar(
-        title: 'Top Up',
+        title: 'Top up',
         context: context,
       ) as PreferredSizeWidget?,
-      body: scaffoldBody(),
+      body: scaffoldBody(context),
     );
   }
 
-  Widget scaffoldBody() {
+  Widget scaffoldBody(BuildContext context) {
     return Column(
       children: [
         Expanded(
@@ -38,33 +33,26 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                   height: 8,
                 ),
                 getSettingTile(
-                    title: "Credit Card",
+                    title: AppLocalization.of(context)!.creditCards,
                     icon: Icons.credit_card,
                     iconColor: naturalGreen,
                     onTap: () async {
-                      Navigator.of(context)
-                          .pushNamed('/credit-card-option-selection');
+                      Navigator.of(context).pushNamed('/credit-card-list');
                     }),
                 getSettingTile(
-                    title: "Virtual Account",
+                    title: AppLocalization.of(context)!.topUpByCreditCard,
                     icon: Icons.account_balance_wallet,
+                    image: SvgPicture.asset('assets/images/top_up_icon.svg'),
                     iconColor: HexColor("#3F61DB"),
                     onTap: () async {
                       Navigator.of(context)
-                          .pushNamed('/add-money-to-slydo-one');
+                          .pushNamed('/card-payment-page', arguments: true);
                     }),
-                getSettingTile(
-                    title: "Bank Account",
-                    icon: Icons.account_balance,
-                    iconColor: HexColor("#F35B46"),
-                    onTap: () async {}),
               ],
             ),
           ),
         )),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20),
       ],
     );
   }

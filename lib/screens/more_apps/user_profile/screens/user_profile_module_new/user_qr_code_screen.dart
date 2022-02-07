@@ -655,12 +655,14 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   void upgradeAccount() async {
-    await getAccountBalance();
-    if (accountBalance! > 0) {
-      Navigator.pushNamed(context, "/upgrade-user-profile");
-    } else {
-      showToast(message: "Insufficient funds!!");
-    }
+    Navigator.pushNamed(context, "/choose-subscription");
+
+    // await getAccountBalance();
+    // if (accountBalance! > 0) {
+    //   Navigator.pushNamed(context, "/upgrade-user-profile");
+    // } else {
+    //   showToast(message: "Insufficient funds!!");
+    // }
   }
 
   Future<void> getAccountBalance() async {

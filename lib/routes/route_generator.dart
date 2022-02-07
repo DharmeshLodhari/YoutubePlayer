@@ -61,6 +61,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_p
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_list.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_option_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/topup_option_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
@@ -123,6 +124,7 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/choose_subscription.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
@@ -317,6 +319,13 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+      case '/choose-subscription':
+        return PageTransition(
+          child: ChooseSubscription(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
 
       case '/user-product-and-service-search':
         return PageTransition(
@@ -499,7 +508,7 @@ class RouteGenerator {
         );
       case '/card-payment-page':
         return PageTransition(
-          child: CardPaymentPage(),
+          child: CardPaymentPage(argument: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -640,6 +649,13 @@ class RouteGenerator {
       case '/credit-card-list':
         return PageTransition(
           child: CreditCardList(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+      case '/credit-card-option-selection':
+        return PageTransition(
+          child: CreditCardOptionSelection(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

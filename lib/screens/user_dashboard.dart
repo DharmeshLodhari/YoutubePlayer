@@ -681,65 +681,49 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   void profileAndroidSheet() {
-    showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
+    androidBottomSheet(
         context: context,
-        builder: (BuildContext context) {
-          return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-              ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    bottomSheetItem(
-                      title: "My profile",
-                      icon: SlydoAppIcon.user,
-                      onTap: () async {
-                        await UserAuth()
-                            .fetchCustomerProfile(userBloc.user.userName)
-                            .then((user) {
-                          if (mounted) {
-                            Navigator.pop(
-                                myGlobals.navigationKey.currentContext!);
-                            Navigator.pushNamed(
-                                myGlobals.navigationKey.currentContext!,
-                                '/profile',
-                                arguments: {"searchedUserName": user.userName});
-                          }
-                        });
-                      },
-                    ),
-                    bottomSheetItem(
-                      title: "Update my avatar",
-                      icon: SlydoAppIcon.image,
-                      onTap: () {
-                        Navigator.pop(context);
-                        pickImage();
-                      },
-                    ),
-                    bottomSheetItem(
-                      title: "My address",
-                      icon: SlydoAppIcon.location,
-                      isLast: true,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(
-                          context,
-                          '/user-address',
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ));
-        });
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            bottomSheetItem(
+              title: "My profile",
+              icon: SlydoAppIcon.user,
+              onTap: () async {
+                await UserAuth()
+                    .fetchCustomerProfile(userBloc.user.userName)
+                    .then((user) {
+                  if (mounted) {
+                    Navigator.pop(myGlobals.navigationKey.currentContext!);
+                    Navigator.pushNamed(
+                        myGlobals.navigationKey.currentContext!, '/profile',
+                        arguments: {"searchedUserName": user.userName});
+                  }
+                });
+              },
+            ),
+            bottomSheetItem(
+              title: "Update my avatar",
+              icon: SlydoAppIcon.image,
+              onTap: () {
+                Navigator.pop(context);
+                pickImage();
+              },
+            ),
+            bottomSheetItem(
+              title: "My address",
+              icon: SlydoAppIcon.location,
+              isLast: true,
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(
+                  context,
+                  '/user-address',
+                );
+              },
+            ),
+          ],
+        ));
   }
 
   void transactionAndroidSheet() {

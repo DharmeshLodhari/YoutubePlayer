@@ -186,7 +186,7 @@ class _HomeState extends State<Home> {
 
   Widget _searchBtn() {
     return Stack(
-      key: tutorialChatMessageKey,
+      key: tutorialSearchItemsKey,
       clipBehavior: Clip.none,
       children: [
         Column(
