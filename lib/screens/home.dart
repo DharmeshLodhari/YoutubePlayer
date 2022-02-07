@@ -176,10 +176,6 @@ class _HomeState extends State<Home> {
         SizedBox(
           width: 8.0,
         ),
-        _receivePaymentBtn(),
-        SizedBox(
-          width: 8.0,
-        ),
         _messageBtn(),
         SizedBox(
           width: 4.0,
@@ -249,31 +245,6 @@ class _HomeState extends State<Home> {
                   });
             })
       ],
-    );
-  }
-
-  Widget _receivePaymentBtn() {
-    return SizedBox(
-      key: tutorialScanQrCodeKey,
-      height: 34,
-      width: 34,
-      child: InkWell(
-        child: Card(
-          elevation: 0,
-          color: lightGrey.withOpacity(0.1),
-          margin: EdgeInsets.symmetric(vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            SlydoAppIcon.receive,
-            size: 16,
-          ),
-        ),
-        onTap: () {
-          Navigator.of(context).pushNamed('/accounts');
-        },
-      ),
     );
   }
 

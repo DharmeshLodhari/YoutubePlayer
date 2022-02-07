@@ -125,6 +125,27 @@ BoxDecoration decorateBox(
   );
 }
 
+void androidBottomSheet(
+    {required BuildContext context, required Widget child}) {
+  showModalBottomSheet<void>(
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (BuildContext context) {
+        return Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          ),
+          color: Colors.white,
+          margin: EdgeInsets.zero,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+            child: child,
+          ),
+        );
+      });
+}
+
 // for having expanded space
 Widget flexibleSpace({int flex = 1}) {
   return Expanded(

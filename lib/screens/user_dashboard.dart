@@ -370,17 +370,10 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.transactions,
-          title: "Transaction",
+          title: AppLocalization.of(context)!.transaction,
           onTap: () {
             hideBalance();
-            BottomSheetPassCode(
-                context: context,
-                isValidCallback: () {
-                  Navigator.pushNamed(context, "/transactions");
-                },
-                cancelCallBack: () {
-                  Navigator.pop(context);
-                });
+            transactionAndroidSheet();
           },
           iconColor: HexColor("#3F61DB"),
         )),
@@ -747,6 +740,39 @@ class _UserDashboardState extends State<UserDashboard> {
                 ),
               ));
         });
+  }
+
+  void transactionAndroidSheet() {
+    androidBottomSheet(
+        context: context,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            bottomSheetItem(
+              title: AppLocalization.of(context)!.transaction,
+              icon: SlydoAppIcon.transactions,
+              onTap: () {
+                hideBalance();
+                BottomSheetPassCode(
+                    context: context,
+                    isValidCallback: () {
+                      Navigator.pushNamed(context, "/transactions");
+                    },
+                    cancelCallBack: () {
+                      Navigator.pop(context);
+                    });
+              },
+            ),
+            bottomSheetItem(
+              title: "Payment Request",
+              icon: SlydoAppIcon.receive,
+              onTap: () {
+                hideBalance();
+                Navigator.pushNamed(context, "/accounts");
+              },
+            ),
+          ],
+        ));
   }
 
   void bankAndroidSheet() {
