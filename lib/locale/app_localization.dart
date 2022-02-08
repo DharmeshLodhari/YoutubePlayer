@@ -2117,8 +2117,29 @@ class AppLocalization {
 
   String get myProfile {
     return Intl.message(
-      "MyProfile",
+      "My Profile",
       name: "myProfile",
+    );
+  }
+
+  String get business {
+    return Intl.message(
+      "Business",
+      name: "business",
+    );
+  }
+
+  String get more {
+    return Intl.message(
+      "More",
+      name: "more",
+    );
+  }
+
+  String get madeInNigeria {
+    return Intl.message(
+      "Made in Nigeria",
+      name: "madeInNigeria",
     );
   }
 

@@ -157,7 +157,7 @@ class _UserDashboardState extends State<UserDashboard> {
           flexibleSpace(flex: 1),
           secondRowOfUserDashboardItem(),
           flexibleSpace(flex: 1),
-          thirdRowOfUserDashboardItem(),
+          // thirdRowOfUserDashboardItem(),
           flexibleSpace(flex: 4),
           appVersionDataUI(),
           flexibleSpace(flex: 3),
@@ -422,7 +422,7 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: Icons.business_center_rounded,
-          title: "Business",
+          title: AppLocalization.of(context)!.business,
           isLocked: storeLocked,
           onTap: () {
             hideBalance();
@@ -435,11 +435,10 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
-        // Expanded(child: Container()),
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.more,
-          title: "More",
+          title: AppLocalization.of(context)!.more,
           onTap: () {
             Navigator.pushNamed(context, "/more-apps");
           },
@@ -463,7 +462,7 @@ class _UserDashboardState extends State<UserDashboard> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text("Made in Nigeria",
+          Text(AppLocalization.of(context)!.madeInNigeria,
               style: TextStyle(
                   color: navyBlue,
                   fontSize: 12,
@@ -687,7 +686,7 @@ class _UserDashboardState extends State<UserDashboard> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             bottomSheetItem(
-              title: "My profile",
+              title: AppLocalization.of(context)!.myProfile,
               icon: SlydoAppIcon.user,
               onTap: () async {
                 await UserAuth()
