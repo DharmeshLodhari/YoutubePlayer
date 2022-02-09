@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 enum SubscriptionType { ANNUALLY, MONTHLY, WEEKLY }
 
+// _subscriptionType can be null
 SubscriptionType? _subscriptionType;
 
 class ChooseSubscription extends StatefulWidget {
@@ -95,7 +96,7 @@ class SubscriptionTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    subscriptionType.name,
+                    subscriptionType.toString().split('.').last,
                     style: TextStyle(
                       color: Color(0Xff75818F),
                       fontWeight: FontWeight.w600,
