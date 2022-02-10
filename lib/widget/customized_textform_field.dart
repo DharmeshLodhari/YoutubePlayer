@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
+bool isNumberOnlyInput;
   Function? validator;
   Function? onChanged;
   Function? onTap;
@@ -31,6 +32,7 @@ class CustomizedTextFormField extends StatefulWidget {
       this.onChanged,
       this.onTap,
       this.controller,
+      this.isNumberOnlyInput = false,
       this.keyboardType = TextInputType.text,
       this.obscureText = false,
       this.isPassword = false,
@@ -87,6 +89,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           height: 6,
         ),
         TextFormField(
+
           readOnly: widget.isReadOnly,
           style: TextStyle(
               fontSize: widget.isPassword ? 20 : 16,
@@ -180,10 +183,10 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             ),
           ),
           inputFormatters:
-              widget.inputFormatters != null ? widget.inputFormatters : [],
+              widget.inputFormatters != null ?  widget.inputFormatters : [],
           validator: (value) {
             if (widget.validator != null) {
-              return widget.validator!(value);
+              return widget.validator!(value!);
             }
             return null;
           },

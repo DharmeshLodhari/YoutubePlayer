@@ -376,7 +376,7 @@ class _UserDashboardState extends State<UserDashboard> {
             transactionAndroidSheet();
           },
           iconColor: HexColor("#3F61DB"),
-        )),
+        ),),
         SizedBox(
           width: 12,
         ),
@@ -389,14 +389,14 @@ class _UserDashboardState extends State<UserDashboard> {
             bankAndroidSheet();
           },
           iconColor: HexColor("#46CE7C"),
-        )),
+        ),),
         SizedBox(
           width: 12,
         ),
         Expanded(
             child: UserDashboardItemTile(
           icon: Icons.account_balance_wallet_rounded,
-          title: "TopUp",
+          title: AppLocalization.of(context)!.topUp,
           onTap: () {
             Navigator.of(context).pushNamed("/top-up-options");
           },

@@ -376,6 +376,19 @@ class AppLocalization {
       name: "invalidAmount",
     );
   }
+  String get invalidFormat {
+    return Intl.message(
+      "Invalid Format",
+      name: "invalidFormat",
+    );
+  }
+
+  String get invalidDate {
+    return Intl.message(
+      "Invalid Date",
+      name: "invalidDate",
+    );
+  }
 
   String get serverError {
     return Intl.message(
@@ -614,6 +627,13 @@ class AppLocalization {
     return Intl.message(
       "Credit Cards",
       name: "creditCards",
+    );
+  }
+
+  String get myCreditCards {
+    return Intl.message(
+      "My Credit Cards",
+      name: "myCreditCards",
     );
   }
 
@@ -1863,9 +1883,15 @@ class AppLocalization {
     );
   }
 
-  String get topUp {
+  String get top_Up {
     return Intl.message(
       "Top Up",
+      name: "top_Up",
+    );
+  }
+  String get topUp {
+    return Intl.message(
+      "TopUp",
       name: "topUp",
     );
   }
@@ -1874,6 +1900,20 @@ class AppLocalization {
     return Intl.message(
       "Top up by credit card",
       name: "topUpByCreditCard",
+    );
+  }
+
+  String get creditDebitCard {
+    return Intl.message(
+      "Credit/Debit Card",
+      name: "creditDebitCard",
+    );
+  }
+
+  String get virtualAccount {
+    return Intl.message(
+      "Virtual Account",
+      name: "virtualAccount",
     );
   }
 
@@ -2430,6 +2470,7 @@ class AppLocalization {
       name: "contactRequestSent",
     );
   }
+
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {

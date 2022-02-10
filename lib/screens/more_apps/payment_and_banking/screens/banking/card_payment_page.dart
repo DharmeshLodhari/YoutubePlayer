@@ -5,6 +5,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -62,89 +63,101 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
   }
 
   Widget creditCardForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CreditCardWidget(
-          cardNumber: cardNumber,
-          expiryDate: expiryDate,
-          cardHolderName: cardHolderName,
-          cvvCode: cvvCode,
-          showBackView: isCvvFocused,
-          onCreditCardWidgetChange: (creditCardBrand) {},
-          cardBgColor: navyBlue,
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Text(
-            AppLocalization.of(context)!.slydoPayAccepts,
-            style: TextStyle(color: Color(0XFF75818f)),
-          ),
-        ),
-        SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: Row(
-            children: [
-              Image.asset(
-                'assets/images/visa_icon.png',
-              ),
-              SizedBox(width: 10),
-              Image.asset('assets/images/mastercard_icon.png'),
-            ],
-          ),
-        ),
-        Card(
-          color: Colors.white,
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          elevation: 5,
-          shadowColor: boxShadow,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-            child: CustomizedTextFormField(
-              controller: _amountController,
-              isAmount: true,
-              labelText: "Amount",
-              onChanged: (val) {
-                setState(() {
-                  amount = int.parse(val);
-                });
-              },
-              validator: (val) {
-                try {
-                  int.parse(val!);
-                } catch (e) {
-                  return AppLocalization.of(context)!.invalidAmount;
-                }
-                return null;
-              },
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // CreditCardWidget(
+          //   cardNumber: cardNumber,
+          //   expiryDate: expiryDate,
+          //   cardHolderName: cardHolderName,
+          //   cvvCode: cvvCode,
+          //   showBackView: isCvvFocused,
+          //   onCreditCardWidgetChange: (creditCardBrand) {},
+          //   cardBgColor: navyBlue,
+          // ),
+          // SizedBox(
+          //   height: 16,
+          // ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text(
+              AppLocalization.of(context)!.slydoPayAccepts,
+              style: TextStyle(color: Color(0XFF75818f)),
             ),
           ),
-        ),
-        Card(
-          color: Colors.white,
-          margin: EdgeInsets.symmetric(
-            horizontal: 16,
+          SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Row(
+              children: [
+                Image.asset(
+                  'assets/images/visa_icon.png',
+                ),
+                SizedBox(width: 10),
+                Image.asset('assets/images/mastercard_icon.png'),
+              ],
+            ),
           ),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          elevation: 5,
-          shadowColor: boxShadow,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            child: Form(
-              key: formKey,
+          Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            elevation: 5,
+            shadowColor: boxShadow,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+              child: CustomizedTextFormField(
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                keyboardType: TextInputType.number,
+                controller: _amountController,
+                isAmount: true,
+                labelText: AppLocalization.of(context)!.amount,
+                onChanged: (val) {
+                  setState(() {
+                    amount = int.parse(val);
+                  });
+                },
+                validator: (val) {
+                  try {
+                    int.parse(val);
+                  } catch (e) {
+                    return AppLocalization.of(context)!.invalidAmount;
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ),
+          Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            elevation: 5,
+            shadowColor: boxShadow,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+
               child: Column(
                 children: <Widget>[
                   CustomizedTextFormField(
                     controller: _cardNumberController,
                     hintText: 'xxxx xxxx xxxx xxxx',
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    keyboardType: TextInputType.number,
                     labelText: AppLocalization.of(context)!.cardNumber,
+                    validator: (value){
+                      try {
+                        int.parse(value.replaceAll(' ', ''));
+                      } catch (e) {
+                        return AppLocalization.of(context)!.invalidFormat;
+                      }
+                    },
                     onChanged: (val) {
                       setState(() {
                         cardNumber = val;
@@ -161,6 +174,32 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                             controller: _expiryDateController,
                             hintText: 'MM/YY',
                             labelText: "Expiry date",
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            keyboardType: TextInputType.number,
+                            validator: (value){
+                              if(value.isNotEmpty){
+                                String yearInputted = value.split('/').last;
+                                String monthInputted = value.split('/').first;
+                                String currentYear = DateTime.now().year.toString();
+                                String monthInDigit = DateTime.now().month.toString();
+                                //To get the last two digit of the year
+                                String formattedYear = currentYear.substring(currentYear.toString().length - 2);
+
+                                if(int.parse(yearInputted) < int.parse(formattedYear)){
+                                  return AppLocalization.of(context)!.invalidDate;
+                                }
+                                if(int.parse(monthInputted) < 1 || int.parse(monthInputted) > 12){
+                                  return AppLocalization.of(context)!.invalidDate;
+                                }
+                                if(int.parse(yearInputted) <= int.parse(formattedYear) && int.parse(monthInputted) < int.parse(monthInDigit)){
+                                  return AppLocalization.of(context)!.invalidDate;
+                              }
+                              }else{
+                                return AppLocalization.of(context)!.invalidDate;
+                              }
+
+                              return null;
+                            },
                             onChanged: (val) {
                               setState(() {
                                 expiryDate = val;
@@ -176,6 +215,15 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                             focusNode: cvvFocusNode,
                             hintText: '123',
                             labelText: "CVV",
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            keyboardType: TextInputType.number,
+                            validator: (value){
+                              try {
+                                int.parse(value);
+                              } catch (e) {
+                                return AppLocalization.of(context)!.invalidFormat;
+                              }
+                            },
                             onChanged: (val) {
                               setState(() {
                                 cvvCode = val;
@@ -309,24 +357,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   //   ),
                   // ),
 
-                  CustomizedTextFormField(
-                    controller: _amountController,
-                    isAmount: true,
-                    labelText: "Amount",
-                    onChanged: (val) {
-                      setState(() {
-                        amount = int.parse(val);
-                      });
-                    },
-                    validator: (val) {
-                      try {
-                        int.parse(val!);
-                      } catch (e) {
-                        return AppLocalization.of(context)!.invalidAmount;
-                      }
-                      return null;
-                    },
-                  ),
                   // Container(
                   //   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
@@ -368,13 +398,18 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   SizedBox(height: 10),
                   Row(
                     children: [
-                      Checkbox(
-                        value: securelySaveCardChecked,
-                        onChanged: (isChecked) {
-                          setState(() {
-                            securelySaveCardChecked = isChecked!;
-                          });
-                        },
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Checkbox(
+                          value: securelySaveCardChecked,
+                          onChanged: (isChecked) {
+                            setState(() {
+                              securelySaveCardChecked = isChecked!;
+                            });
+                          },
+                        ),
+
                       ),
                       SizedBox(width: 10),
                       Text(AppLocalization.of(context)!.securelySaveCard),
@@ -384,53 +419,53 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
               ),
             ),
           ),
-        ),
-        SizedBox(height: 20),
-        widget.argument
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+          SizedBox(height: 20),
+          widget.argument
+              ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                AppLocalization.of(context)!.youWillGetAmount,
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Icon(SlydoAppIcon.naira, color: navyBlue),
+                  SizedBox(width: 5),
                   Text(
-                    AppLocalization.of(context)!.youWillGetAmount,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(SlydoAppIcon.naira, color: navyBlue),
-                      SizedBox(width: 5),
-                      Text(
-                        '97',
-                        style: TextStyle(
-                            color: navyBlue,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
+                    '97',
+                    style: TextStyle(
+                        color: navyBlue,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold),
+                  )
                 ],
-              )
-            : SizedBox.shrink(),
-        SizedBox(height: 30),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: CurvedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                sendPaymentData();
-              } else {
-                showToast(
-                    message:
-                        AppLocalization.of(context)!.invalidDetails + " !!");
-              }
-            },
-            text: AppLocalization.of(context)!.topUp,
-            textColor: Colors.white,
+              ),
+            ],
+          )
+              : SizedBox.shrink(),
+          SizedBox(height: 30),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: CurvedButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  // sendPaymentData();
+                } else {
+                  showToast(
+                      message:
+                      AppLocalization.of(context)!.invalidDetails + " !!");
+                }
+              },
+              text: AppLocalization.of(context)!.top_Up,
+              textColor: Colors.white,
+            ),
           ),
-        ),
-        SizedBox(height: 20),
-      ],
+          SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
@@ -438,7 +473,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
     PaymentAndBankingAuth().topUpAccountByCC({"data": "data"}).then((value) {
       if (value == true) {
         showToast(
-          message: AppLocalization.of(context)!.topUp +
+          message: AppLocalization.of(context)!.top_Up +
               " " +
               AppLocalization.of(context)!.done,
         );

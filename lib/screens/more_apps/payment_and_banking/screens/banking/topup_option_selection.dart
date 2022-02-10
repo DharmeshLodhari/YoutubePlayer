@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
@@ -38,15 +39,15 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                   height: 8,
                 ),
                 getSettingTile(
-                    title: "Credit Card",
+                    title: AppLocalization.of(context)!.creditDebitCard,
                     icon: Icons.credit_card,
                     iconColor: naturalGreen,
                     onTap: () async {
                       Navigator.of(context)
                           .pushNamed('/credit-card-option-selection');
-                    }),
+                    },),
                 getSettingTile(
-                    title: "Virtual Account",
+                    title: AppLocalization.of(context)!.virtualAccount,
                     icon: Icons.account_balance_wallet,
                     iconColor: HexColor("#3F61DB"),
                     onTap: () async {
@@ -54,7 +55,7 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                           .pushNamed('/add-money-to-slydo-one');
                     }),
                 getSettingTile(
-                    title: "Bank Account",
+                    title: AppLocalization.of(context)!.bankAccount,
                     icon: Icons.account_balance,
                     iconColor: HexColor("#F35B46"),
                     onTap: () async {}),

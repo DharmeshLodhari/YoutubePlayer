@@ -11,7 +11,7 @@ class CreditCardOptionSelection extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: customAppBar(
-        title: 'Top up',
+        title: AppLocalization.of(context)!.top_Up,
         context: context,
       ) as PreferredSizeWidget?,
       body: scaffoldBody(context),
@@ -33,7 +33,7 @@ class CreditCardOptionSelection extends StatelessWidget {
                   height: 8,
                 ),
                 getSettingTile(
-                    title: AppLocalization.of(context)!.creditCards,
+                    title: AppLocalization.of(context)!.myCreditCards,
                     icon: Icons.credit_card,
                     iconColor: naturalGreen,
                     onTap: () async {
