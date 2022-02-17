@@ -457,7 +457,9 @@ class _DashboardState extends State<Dashboard> {
               ),
             ),
             label: "",
-            activeIcon: activeIcon(title: 'Explore', icon: Icons.explore),
+            activeIcon: activeIcon(
+                title: AppLocalization.of(context)!.explore,
+                icon: Icons.explore),
           ),
         ],
       ),
@@ -466,7 +468,7 @@ class _DashboardState extends State<Dashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData? icon, required String title, Key? key}) {
+      {IconData? icon, required String title, double? size, Key? key}) {
     return BottomNavigationBarItem(
       icon: Container(
         key: key,
@@ -475,7 +477,7 @@ class _DashboardState extends State<Dashboard> {
         child: Icon(
           icon,
           color: blackFont,
-          size: 16,
+          size: size ?? 16,
         ),
       ),
       label: "",

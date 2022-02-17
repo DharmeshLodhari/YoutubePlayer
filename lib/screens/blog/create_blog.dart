@@ -10,6 +10,7 @@ import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 import '../../locale/app_localization.dart';
 import '../../utils/colors.dart';
 import '../../widget/LoadingIndicator.dart';
+import '../../widget/curved_btn.dart';
 
 class CreateBlogScreen extends StatefulWidget {
   const CreateBlogScreen({Key? key}) : super(key: key);
@@ -162,6 +163,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
               showAlignmentButtons: false,
               controller: _quillBodyTextController,
             ),
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -175,29 +177,53 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
       File? blogImage}) async {
     if (formKey.currentState!.validate()) {
       if (_quillBodyTextController.document.toPlainText().length > 1) {
-        showDialog(context: context, builder: (context) => LoadingIndicator());
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Are you sure you want to post your content now?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('Not yet'),
+                  ),
+                  CurvedButton(
+                    text: 'Post',
+                    width: 80,
+                    onPressed: () {
+                      Navigator.pop(context);
+                      showDialog(
+                          context: context,
+                          builder: (context) => LoadingIndicator());
+                      UserPostAuth()
+                          .postUserBlogPost(
+                              title: title,
+                              tagLine: tagLine,
+                              blogBodyText: blogBodyText)
+                          .then(
+                        (posted) {
+                          Navigator.pop(context);
 
-        UserPostAuth()
-            .postUserBlogPost(
-                title: title, tagLine: tagLine, blogBodyText: blogBodyText)
-            .then(
-          (posted) {
-            Navigator.pop(context);
+                          if (posted) {
+                            showToast(message: 'Blog post created');
+                            Navigator.pop(
+                                context); // To go to the user's profile page.
 
-            if (posted) {
-              showToast(message: 'Blog post created');
-              Navigator.pop(context); // To go to the user's profile page.
-
-            } else {
-              showToast(message: 'Something went wrong');
-            }
-          },
-        ).catchError(
-          (error) {
-            Navigator.pop(context);
-            showToast(message: error.toString());
-          },
-        );
+                          } else {
+                            showToast(message: 'Something went wrong');
+                          }
+                        },
+                      ).catchError(
+                        (error) {
+                          Navigator.pop(context);
+                          showToast(message: error.toString());
+                        },
+                      );
+                    },
+                  ),
+                ],
+              );
+            });
       } else {
         showToast(message: 'Blog must have a body');
       }
