@@ -5,9 +5,15 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+typedef Widget? BuildCounterWidget(
+    int? currentLength, int? maxLength, bool? isFocused);
+
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
-bool isNumberOnlyInput;
+  bool hasLabel;
+  bool hasBorder;
+  BuildCounterWidget? buildCounterWidget;
+  bool isNumberOnlyInput;
   Function? validator;
   Function? onChanged;
   Function? onTap;
@@ -20,18 +26,21 @@ bool isNumberOnlyInput;
   bool? enabled;
   bool isAmount;
   String labelText;
-  String hintText;
+  String? hintText;
   Color? labelColor;
   int? maxLength;
-  int maxLines;
+  int? maxLines;
   FocusNode? focusNode;
   TextCapitalization textCapitalization;
 
   CustomizedTextFormField(
-      {this.validator,
+      {this.hasBorder = true,
+      this.hasLabel = true,
+      this.validator,
       this.onChanged,
       this.onTap,
       this.controller,
+      this.buildCounterWidget,
       this.isNumberOnlyInput = false,
       this.keyboardType = TextInputType.text,
       this.obscureText = false,
@@ -62,16 +71,21 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              widget.labelText,
-              style: TextStyle(
-                  color:
-                      widget.labelColor != null ? widget.labelColor : darkGrey,
-                  fontSize: 14),
-            ),
-            SizedBox(
-              height: 6,
-            ),
+            widget.hasLabel
+                ? Text(
+                    widget.labelText,
+                    style: TextStyle(
+                        color: widget.labelColor != null
+                            ? widget.labelColor
+                            : darkGrey,
+                        fontSize: 14),
+                  )
+                : SizedBox.shrink(),
+            widget.hasLabel
+                ? SizedBox(
+                    height: 6,
+                  )
+                : SizedBox.shrink(),
             widget.isPassword
                 ? Text(
                     "${widget.controller!.text.toString().length}/6",
@@ -89,7 +103,6 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           height: 6,
         ),
         TextFormField(
-
           readOnly: widget.isReadOnly,
           style: TextStyle(
               fontSize: widget.isPassword ? 20 : 16,
@@ -98,7 +111,10 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               letterSpacing: widget.isPassword ? 2 : 0),
           buildCounter: (BuildContext context,
                   {int? currentLength, int? maxLength, bool? isFocused}) =>
-              null,
+              widget.buildCounterWidget != null
+                  ? widget.buildCounterWidget!(
+                      currentLength, maxLength, isFocused)
+                  : null,
           cursorWidth: 1.5,
           enabled: widget.enabled,
           textCapitalization: widget.textCapitalization,
@@ -145,45 +161,56 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     ],
                   )
                 : null,
+            border: widget.hasBorder ? null : InputBorder.none,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
+            enabledBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            disabledBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            focusedBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: navyBlue,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            errorBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            focusedErrorBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
           ),
           inputFormatters:
-              widget.inputFormatters != null ?  widget.inputFormatters : [],
+              widget.inputFormatters != null ? widget.inputFormatters : [],
           validator: (value) {
             if (widget.validator != null) {
               return widget.validator!(value!);

@@ -150,6 +150,101 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
+  Future<String> addCreditCard(Map data) async {
+    var url = AppConfig.baseUrl + "/api/v1/transactions/credit-card/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+    print('ADD CREDIT CARD RESPONSE ----> ${response.body}');
+    if (response.statusCode == 201) {
+      return 'SUCCESSFUL';
+    } else {
+      return 'Something went wrong';
+    }
+  }
+
+  Future<bool> fundWallet(Map data) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/transactions/credit-card/credit-wallet-account";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+    print('FUND WALLET ----> ${response.body}');
+    return response.statusCode == 201;
+  }
+
+  Future<Map<String, dynamic>?> getCreditCardPagination(
+      String? next, String? previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/transactions/credit-card/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      List resultData = jsonData['results'];
+      List<CreditCard> creditCardList =
+          resultData.map((json) => CreditCard.fromJson(json)).toList();
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": creditCardList
+      };
+
+      return result;
+    } else {
+      throw "Can't get https.";
+    }
+  }
+
+  // delete credit card
+  Future<bool> deleteCreditCard(int cardId) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/transactions/credit-card/" +
+        '$cardId' +
+        "/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    debugPrint(
+        "status code :- ${response.statusCode} DELETE ---> response ${response.body}");
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // update credit card information
+  Future<bool> updateCreditCard(int id) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/transactions/credit-card/" + '$id' + '/';
+    var headers = await getAuthHeaders();
+    late var response;
+    var _data = jsonEncode({"is_default_cc": true});
+    try {
+      response = await httpPatch(url, headers: headers, body: _data);
+      print('RESPONSE -----> ${response.body}');
+    } catch (e) {
+      debugPrint("update credit card : " + e.toString());
+    }
+    if (response.statusCode != 200) {
+      var jsonData = response.body;
+      debugPrint(jsonData);
+    }
+    return response.statusCode == 200;
+  }
+
   // Transactions graph and Category
   Future<Map<String, dynamic>?> getTransactionWeeklyReport(
       String weekNumber) async {

@@ -376,6 +376,7 @@ class AppLocalization {
       name: "invalidAmount",
     );
   }
+
   String get invalidFormat {
     return Intl.message(
       "Invalid Format",
@@ -630,6 +631,13 @@ class AppLocalization {
     );
   }
 
+  String get cashOut {
+    return Intl.message(
+      "Cashout",
+      name: "cashOut",
+    );
+  }
+
   String get myCreditCards {
     return Intl.message(
       "My Credit Cards",
@@ -702,8 +710,15 @@ class AppLocalization {
 
   String get youCanNotDeleteOnlyBankAccount {
     return Intl.message(
-      "You can not delete only bank account",
+      "You can not delete your only bank account",
       name: "youCanNotDeleteOnlyBankAccount",
+    );
+  }
+
+  String get youCanNotDeleteOnlyCreditAccount {
+    return Intl.message(
+      "You can not delete your only credit card",
+      name: "youCanNotDeleteOnlyCreditAccount",
     );
   }
 
@@ -714,10 +729,24 @@ class AppLocalization {
     );
   }
 
+  String get cardDeletedSuccessfully {
+    return Intl.message(
+      "Credit Card Deleted Successfully",
+      name: "cardDeletedSuccessfully",
+    );
+  }
+
   String get accountIsNotDeleted {
     return Intl.message(
       "Account is not deleted !!",
       name: "accountIsNotDeleted",
+    );
+  }
+
+  String get cardIsNotDeleted {
+    return Intl.message(
+      "Credit Card not deleted !!",
+      name: "cardIsNotDeleted",
     );
   }
 
@@ -730,8 +759,15 @@ class AppLocalization {
 
   String get thisAccountIsAlreadyDefaultAccount {
     return Intl.message(
-      "This Account is Alerady Default Account",
+      "This Account is already the default Account",
       name: "thisAccountIsAlreadyDefaultAccount",
+    );
+  }
+
+  String get thisCardIsAlreadyDefaultCard {
+    return Intl.message(
+      "This credit card is already the default card",
+      name: "thisCardIsAlreadyDefaultCard",
     );
   }
 
@@ -742,10 +778,24 @@ class AppLocalization {
     );
   }
 
+  String get creditCardUpdatedSuccessfully {
+    return Intl.message(
+      "Credit Card updated successfully !!",
+      name: "creditCardUpdatedSuccessfully",
+    );
+  }
+
   String get accountIsNotUpdated {
     return Intl.message(
       "Account is not updated !!",
       name: "accountIsNotUpdated",
+    );
+  }
+
+  String get cardNotUpdated {
+    return Intl.message(
+      "Credit Card not updated !!",
+      name: "cardNotUpdated",
     );
   }
 
@@ -1848,6 +1898,20 @@ class AppLocalization {
     );
   }
 
+  String get cardHolderName {
+    return Intl.message(
+      "Card Holder's Name",
+      name: "cardHolderName",
+    );
+  }
+
+  String get fieldCannotBeEmpty {
+    return Intl.message(
+      "Field cannot be empty",
+      name: "fieldCannotBeEmpty",
+    );
+  }
+
   String get slydoPayAccepts {
     return Intl.message(
       "Slydopay accepts the following credit card:",
@@ -1889,6 +1953,7 @@ class AppLocalization {
       name: "top_Up",
     );
   }
+
   String get topUp {
     return Intl.message(
       "TopUp",
@@ -2190,6 +2255,20 @@ class AppLocalization {
     );
   }
 
+  String get createABlog {
+    return Intl.message(
+      "Create a blog",
+      name: "createABlog",
+    );
+  }
+
+  String get createBlog {
+    return Intl.message(
+      "Create blog",
+      name: "createBlog",
+    );
+  }
+
   String get address {
     return Intl.message(
       "Address",
@@ -2470,7 +2549,6 @@ class AppLocalization {
       name: "contactRequestSent",
     );
   }
-
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalization> {

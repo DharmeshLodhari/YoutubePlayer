@@ -73,29 +73,30 @@ class _UserDashboardState extends State<UserDashboard> {
     }
 
     return Scaffold(
-        key: _scaffoldSettingKey,
-        body: Container(
-          height: MediaQuery.of(context).size.height -
-              (AppBar().preferredSize.height),
-          width: MediaQuery.of(context).size.width,
-          color: Colors.white,
-          child: Stack(
-            children: <Widget>[
-              backgroundScreen(),
-              foregroundScreen(),
-              isLoading
-                  ? Container(
-                      color: Colors.black45,
-                      height: double.infinity,
-                      width: double.infinity,
-                      child: Center(
-                        child: CircularLoadingIndicator(),
-                      ),
-                    )
-                  : Container()
-            ],
-          ),
-        ));
+      key: _scaffoldSettingKey,
+      body: Container(
+        height: MediaQuery.of(context).size.height -
+            (AppBar().preferredSize.height),
+        width: MediaQuery.of(context).size.width,
+        color: Colors.white,
+        child: Stack(
+          children: <Widget>[
+            backgroundScreen(),
+            foregroundScreen(),
+            isLoading
+                ? Container(
+                    color: Colors.black45,
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  )
+                : Container()
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -324,7 +325,7 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.user,
-          title: "Profile",
+          title: AppLocalization.of(context)!.profile,
           onTap: () {
             hideBalance();
             profileAndroidSheet();
@@ -368,28 +369,30 @@ class _UserDashboardState extends State<UserDashboard> {
     return Row(
       children: [
         Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.transactions,
-          title: AppLocalization.of(context)!.transaction,
-          onTap: () {
-            hideBalance();
-            transactionAndroidSheet();
-          },
-          iconColor: HexColor("#3F61DB"),
-        ),),
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.transactions,
+            title: AppLocalization.of(context)!.transaction,
+            onTap: () {
+              hideBalance();
+              transactionAndroidSheet();
+            },
+            iconColor: HexColor("#3F61DB"),
+          ),
+        ),
         SizedBox(
           width: 12,
         ),
         Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.naira,
-          title: "Cashout",
-          onTap: () {
-            hideBalance();
-            bankAndroidSheet();
-          },
-          iconColor: HexColor("#46CE7C"),
-        ),),
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.naira,
+            title: "Cashout",
+            onTap: () {
+              hideBalance();
+              bankAndroidSheet();
+            },
+            iconColor: HexColor("#46CE7C"),
+          ),
+        ),
         SizedBox(
           width: 12,
         ),
@@ -518,92 +521,56 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   void pickImage() async {
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              title: Text(
-                AppLocalization.of(context)!.selectTheImageSource,
-                style: TextStyle(fontSize: 18, color: blackFont),
-              ),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text(
-                    AppLocalization.of(context)!.camera,
-                    style: TextStyle(fontSize: 16, color: blackFont),
-                  ),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text(
-                    "Gallery",
-                    style: TextStyle(fontSize: 16, color: blackFont),
-                  ),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
+    String? croppedImage = await getCroppedImage(context);
 
-    if (imageSource != null) {
-      final file =
-          await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
-      if (file != null) {
-        /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
-        if (croppedImage == null) {
+    if (croppedImage != null) {
+      try {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        User? _user = await DatabaseHelper().getUser();
+
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        String countryFromPref = sharedPreferences.getString('country') ?? "NG";
+
+        Country country =
+            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
+        SecureUser secureUser = await SecureStorage().getUser();
+        String phoneNumber = secureUser.phoneNumber ?? "";
+        String password = secureUser.password ?? "";
+
+        if (phoneNumber != "") {
+          phoneNumber = "+" + country.phoneCode! + phoneNumber;
+        }
+
+        if (phoneNumber == "" || password == "") {
+          phoneNumber = _user?.phoneNumber ?? "";
+          password = _user?.password ?? "";
+        }
+
+        if (phoneNumber == "" || password == "") {
+          isLoading = false;
+          if (mounted) setState(() {});
           return;
         }
 
-        try {
-          isLoading = true;
-          if (mounted) setState(() {});
+        // Upload Image new image
+        await UserAuth().updateUserAvatar(File(croppedImage));
 
-          User? _user = await DatabaseHelper().getUser();
-
-          SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
-          String countryFromPref =
-              sharedPreferences.getString('country') ?? "NG";
-
-          Country country =
-              CountryPickerUtils.getCountryByIsoCode(countryFromPref);
-
-          SecureUser secureUser = await SecureStorage().getUser();
-          String phoneNumber = secureUser.phoneNumber ?? "";
-          String password = secureUser.password ?? "";
-
-          if (phoneNumber != "") {
-            phoneNumber = "+" + country.phoneCode! + phoneNumber;
-          }
-
-          if (phoneNumber == "" || password == "") {
-            phoneNumber = _user?.phoneNumber ?? "";
-            password = _user?.password ?? "";
-          }
-
-          if (phoneNumber == "" || password == "") {
-            isLoading = false;
-            if (mounted) setState(() {});
-            return;
-          }
-
-          // Upload Image new image
-          await UserAuth().updateUserAvatar(File(croppedImage));
-
-          // Get New updated user data and set new user data to userBloc
-          await _auth.authenticate(phoneNumber, password).then((value) {
-            userBloc.user = value;
-            isLoading = false;
-            if (mounted) setState(() {});
-            dashboardBloc.index = 0;
-          });
-        } catch (err) {
+        // Get new updated user data and set new user data to userBloc.
+        await _auth.authenticate(phoneNumber, password).then((value) {
+          userBloc.user = value;
           isLoading = false;
           if (mounted) setState(() {});
-          // showToast(message: err.toString());
-          debugPrint("Cannot Update Avatar : " + err.toString());
-        }
+          dashboardBloc.index = 0;
+        });
+      } catch (err) {
+        isLoading = false;
+        if (mounted) setState(() {});
+        // showToast(message: err.toString());
+        debugPrint("Cannot Update Avatar : " + err.toString());
       }
     }
   }
@@ -702,7 +669,7 @@ class _UserDashboardState extends State<UserDashboard> {
               },
             ),
             bottomSheetItem(
-              title: "Update my avatar",
+              title: AppLocalization.of(context)!.updateMyAvatar,
               icon: SlydoAppIcon.image,
               onTap: () {
                 Navigator.pop(context);
@@ -776,7 +743,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   bottomSheetItem(
-                    title: "Bank accounts",
+                    title: AppLocalization.of(context)!.bankAccounts,
                     icon: SlydoAppIcon.bank,
                     onTap: () {
                       Navigator.pop(context);
@@ -784,7 +751,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     },
                   ),
                   bottomSheetItem(
-                    title: "Cashout",
+                    title: AppLocalization.of(context)!.cashOut,
                     icon: SlydoAppIcon.payout,
                     onTap: () {
                       BottomSheetPassCode(

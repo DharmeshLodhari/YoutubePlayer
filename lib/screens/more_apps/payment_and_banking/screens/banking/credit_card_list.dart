@@ -1,15 +1,19 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CreditCardList extends StatefulWidget {
   @override
@@ -17,36 +21,63 @@ class CreditCardList extends StatefulWidget {
 }
 
 class _CreditCardListState extends State<CreditCardList> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
+  bool isLoading = false;
+  List<CreditCard> creditCardList = [];
+  bool noItemInList = false;
+  ScrollController _scrollController = new ScrollController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
-  List bankAccountList = [
-    BankAccount(
-        isDefault: true,
-        bankAvatar:
-            'https://res.cloudinary.com/depbpm8dn/image/upload/v1643984424/Rectangle_96_mztco3.png',
-        bankName: 'Zenith',
-        accountName: 'Ibukunoluwa Oladipo',
-        uuid: 'franklin-uuid-13',
-        accountNumber: '0179184481'),
-    BankAccount(
-        isDefault: false,
-        bankAvatar:
-            'https://res.cloudinary.com/depbpm8dn/image/upload/v1643984442/Rectangle_96_z9woru.png',
-        bankName: 'Gtbank',
-        accountName: 'Franklin Oladipo',
-        uuid: 'franklin-uuid-12',
-        accountNumber: '0179146531'),
-  ];
+  PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   // //slidable tile
   SlidableController? _slideController;
 
   @override
   void initState() {
+    this.getList();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
+
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getList();
+      }
+    });
+    _slideController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
+  }
+
+  void _onRefresh() async {
+    //check network connectivity and if true then refresh the list
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        creditCardList = [];
+        getList();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
   }
 
   @override
@@ -59,7 +90,7 @@ class _CreditCardListState extends State<CreditCardList> {
         key: _scaffoldKey,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: _buildBankAccountList(),
+        body: _buildCreditCardList(),
       ),
     );
   }
@@ -112,23 +143,73 @@ class _CreditCardListState extends State<CreditCardList> {
     );
   }
 
-  Widget _buildBankAccountList() {
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(vertical: 16),
-      //+1 for progressbar
-      itemCount: bankAccountList.length,
-      itemBuilder: (BuildContext context, int index) {
-        return _getSlidableWithLists(
-            context,
-            bankAccountTile(
-              account: bankAccountList[index],
-            ),
-            bankAccountList[index]);
-      },
-    );
+  void getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
+        Map<String, dynamic>? result =
+            await _auth.getCreditCardPagination(next, previous);
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            creditCardList.addAll(tempList);
+          });
+        }
+      }
+      if (creditCardList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noItemInList = true;
+          });
+        }
+      } else if (next == null && creditCardList.length > 6) {
+        _scaffoldKey.currentState!.showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
-  Widget bankAccountTile({required BankAccount account}) {
+  Widget _buildCreditCardList() {
+    return noItemInList
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.youDontHaveAnyAccountPleaseAddOne,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            //+1 for progressbar
+            itemCount: creditCardList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == creditCardList.length) {
+                return buildIndicator(isLoading);
+              } else {
+                return _getSlidableWithLists(
+                  context,
+                  creditCardTile(
+                    creditCard: creditCardList[index],
+                  ),
+                  creditCardList[index],
+                );
+              }
+            },
+          );
+  }
+
+  Widget creditCardTile({required CreditCard creditCard}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -137,29 +218,20 @@ class _CreditCardListState extends State<CreditCardList> {
       child: Container(
         decoration: decorateBox(),
         child: ListTile(
-          dense: account.isDefault! ? true : false,
-          title: getTitle(account: account),
-          subtitle: getSubtitle(account: account),
+          dense: creditCard.isDefault! ? true : false,
+          title: getTitle(creditCard: creditCard),
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: account.bankAvatar);
+                  .pushNamed("/photo-viewer", arguments: creditCard.icon);
             },
-            child: CachedNetworkImage(
-              imageUrl: account.bankAvatar!,
+            child: Image.asset(
+              creditCard.icon!,
               height: 48,
               width: 48,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
-              placeholder: (context, url) => account.bankAvatar == ""
-                  ? Icon(
-                      Icons.account_balance,
-                      size: 45,
-                      color: navyBlue,
-                    )
-                  : CircularLoadingIndicator(),
-              errorWidget: imageErrorWidget,
             ),
           ),
         ),
@@ -167,32 +239,8 @@ class _CreditCardListState extends State<CreditCardList> {
     );
   }
 
-  Widget getTitle({required BankAccount account}) {
-    if (account.isDefault!) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            height: 8,
-          ),
-          Text(
-            account.bankName!,
-            maxLines: 1,
-            style: TextStyle(
-                color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-        ],
-      );
-    }
-    return Text(
-      account.bankName!,
-      style: TextStyle(
-          color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
-    );
-  }
-
-  Widget getSubtitle({required BankAccount account}) {
-    if (account.isDefault!) {
+  Widget getTitle({required CreditCard creditCard}) {
+    if (creditCard.isDefault!) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -201,7 +249,7 @@ class _CreditCardListState extends State<CreditCardList> {
           ),
           Text(
             getFormattedAccountNumber(
-                accountNumber: account.accountNumber!.toString()),
+                accountNumber: creditCard.cardNumber!.toString()),
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
           SizedBox(
@@ -219,56 +267,95 @@ class _CreditCardListState extends State<CreditCardList> {
     }
     return Text(
       getFormattedAccountNumber(
-          accountNumber: account.accountNumber!.toString()),
+          accountNumber: creditCard.cardNumber.toString()),
       style: TextStyle(color: darkGrey, fontSize: 12),
     );
   }
 
   Widget _getSlidableWithLists(
-      BuildContext context, Widget bankAccountTile, BankAccount account) {
+      BuildContext context, Widget creditCardTile, CreditCard creditCard) {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(bankAccountTile),
-      actions: listActionSlideActions(account: account),
-      secondaryActions: listSecondaryActions(account: account),
+      child: VerticalListItem(creditCardTile),
+      actions: listActionSlideActions(creditCard: creditCard),
+      secondaryActions: listSecondaryActions(creditCard: creditCard),
     );
   }
 
-  List<Widget> listSecondaryActions({required BankAccount account}) {
+  List<Widget> listSecondaryActions({required CreditCard creditCard}) {
     return [
       SlideActionButton(
           backgroundColor: naturalGreen,
           icon: Icons.device_hub,
-          onTap: account.isDefault!
+          onTap: creditCard.isDefault!
               ? () {
                   showToast(
                       message: AppLocalization.of(context)!
-                          .thisAccountIsAlreadyDefaultAccount);
+                          .thisCardIsAlreadyDefaultCard);
                 }
               : () {
-                  // updateBankAccount(account);
+                  updateCreditCard(creditCard);
                 },
-          title: account.isDefault!
+          title: creditCard.isDefault!
               ? AppLocalization.of(context)!.defaultMsg
               : AppLocalization.of(context)!.makeDefault,
           slideController: _slideController),
     ];
   }
 
-  List<Widget> listActionSlideActions({BankAccount? account}) {
+  List<Widget> listActionSlideActions({CreditCard? creditCard}) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () {
-            // deleteBankAccount(account);
+            deleteCreditCard(creditCard);
           },
           title: AppLocalization.of(context)!.delete,
           slideController: _slideController),
     ];
+  }
+
+  void deleteCreditCard(CreditCard? creditCard) {
+    {
+      if (creditCardList.length == 1) {
+        showToast(
+            message:
+                AppLocalization.of(context)!.youCanNotDeleteOnlyCreditAccount);
+      } else {
+        _auth.deleteCreditCard(creditCard!.cardId!).then((value) {
+          if (value) {
+            showToast(
+                message: AppLocalization.of(context)!.cardDeletedSuccessfully);
+            _onRefresh();
+          } else {
+            showToast(message: AppLocalization.of(context)!.cardIsNotDeleted);
+          }
+        }).catchError((error) {
+          showToast(message: error.toString());
+        });
+      }
+    }
+  }
+
+  void updateCreditCard(CreditCard creditCard) {
+    _auth.updateCreditCard(creditCard.cardId!).then((value) {
+      if (value) {
+        showToast(
+            message:
+                AppLocalization.of(context)!.creditCardUpdatedSuccessfully);
+
+        _onRefresh();
+      } else {
+        showToast(message: AppLocalization.of(context)!.cardNotUpdated);
+      }
+    }).catchError((error) {
+      showToast(message: error.toString());
+    });
+    _onRefresh();
   }
 
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}

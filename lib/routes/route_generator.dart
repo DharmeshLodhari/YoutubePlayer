@@ -144,6 +144,7 @@ import 'package:Slydo/widget/video_recorder.dart';
 import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:Slydo/screens/blog/create_blog.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -319,6 +320,15 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
+      case '/create-blog':
+        return PageTransition(
+          child: CreateBlogScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/choose-subscription':
         return PageTransition(
           child: ChooseSubscription(),
@@ -508,7 +518,7 @@ class RouteGenerator {
         );
       case '/card-payment-page':
         return PageTransition(
-          child: CardPaymentPage(argument: settings.arguments),
+          child: CardPaymentPage(isWalletFunding: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

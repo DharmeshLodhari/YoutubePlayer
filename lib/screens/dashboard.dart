@@ -438,7 +438,6 @@ class _DashboardState extends State<Dashboard> {
             title: AppLocalization.of(context)!.qrCode,
           ),
           bottomNavigationBarItem(
-            key: tutorialSearchItemsKey,
             icon: SlydoAppIcon.text_message,
             title: AppLocalization.of(context)!.chat,
           ),

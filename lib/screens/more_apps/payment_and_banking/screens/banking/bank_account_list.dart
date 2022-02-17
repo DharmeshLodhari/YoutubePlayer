@@ -174,7 +174,7 @@ class _BankAccountListState extends State<BankAccountList> {
             itemCount: bankAccountList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == bankAccountList.length) {
-                return _buildIndicator();
+                return buildIndicator(isLoading);
               } else {
                 return _getSlidableWithLists(
                     context,
@@ -186,18 +186,6 @@ class _BankAccountListState extends State<BankAccountList> {
             },
             controller: _scrollController,
           );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
   }
 
   void getList() async {

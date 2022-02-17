@@ -67,7 +67,7 @@ class UserAuth extends AuthService {
   }
 
   // Update User Avatar
-  Future<CustomerProfile> updateUserAvatar(File avatar) async {
+  Future<CustomerProfile> updateUserAvatar(File? avatar) async {
     User? user = await getUser();
     if (user == null) return Future.error("Try after Some time");
     var headers = await getAuthHeaders();
@@ -86,7 +86,7 @@ class UserAuth extends AuthService {
       request.fields["full_name"] = user.fullName!;
       request.fields["avatar"] = user.avatar!;
 
-      //create multipart using filepath, string or bytes
+      //create multipart using filepath, string or bytes.
       var multipartFile =
           await http.MultipartFile.fromPath("avatar", avatarPath);
 

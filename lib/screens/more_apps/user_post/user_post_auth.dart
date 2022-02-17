@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class UserPostAuth extends AuthService {
   // Fetch User Posts Details
@@ -20,6 +22,59 @@ class UserPostAuth extends AuthService {
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     return Future.error("${response.body}");
+  }
+
+  Future<bool> postUserBlogPost(
+      {required title,
+      required tagLine,
+      required String blogBodyText,
+      File? blogImage}) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/posts/";
+    var headers = await getAuthHeaders();
+
+    if (blogImage != null) {
+      var blogImagePath = blogImage.path;
+      //create multipart request for POST or PATCH method
+      var request = http.MultipartRequest("POST", Uri.parse(url));
+
+      //add fields
+      request.fields["tag_line"] = tagLine;
+      request.fields["title"] = title;
+      request.fields["text"] = blogBodyText;
+
+      //create multipart using filepath, string or bytes.
+      var multipartFile =
+          await http.MultipartFile.fromPath("image", blogImagePath);
+
+      //add multipart to request
+      request.files.add(multipartFile);
+      headers.forEach((k, v) => request.headers[k] = v);
+      var response = await request.send();
+
+      if (response.statusCode == 413) {
+        return Future.error(
+            "Please upload smaller image, This image is too large.");
+      }
+      var responseBody = await response.stream.bytesToString();
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${responseBody}");
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return Future.error(
+            "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
+      }
+    } else {
+      Map<String, dynamic> _body = {
+        "tag_line": tagLine,
+        "title": title,
+        "text": blogBodyText
+      };
+      var response =
+          await httpPost(url, headers: headers, body: jsonEncode(_body));
+
+      return response.statusCode == 201;
+    }
   }
 
   Future<UserPost> likeUserPost(UserPost post) async {

@@ -27,6 +27,8 @@ import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../locale/app_localization.dart';
+
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
   final arguments;
@@ -823,6 +825,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     List<Widget> list = [];
 
     if (searchedUser!.userName == userBloc.user.userName) {
+      list.add(bottomSheetItem(
+        title: AppLocalization.of(context)!.createABlog,
+        icon: Icons.add_circle_outlined,
+        onTap: () {
+          Navigator.of(context).pushNamed('/create-blog');
+        },
+      ));
       list.add(
         bottomSheetItem(
           title: "Edit",

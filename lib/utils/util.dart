@@ -10,13 +10,60 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../locale/app_localization.dart';
+import '../widget/LoadingIndicator.dart';
+import '../widget/image_crop.dart';
 import 'colors.dart';
 
 export 'colors.dart';
 export 'common.dart';
+
+Future<String?> getCroppedImage(BuildContext context) async {
+  String? croppedImage;
+  final imageSource = await showDialog<ImageSource>(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      title: Text(
+        AppLocalization.of(context)!.selectTheImageSource,
+        style: TextStyle(fontSize: 18, color: blackFont),
+      ),
+      actions: <Widget>[
+        MaterialButton(
+          child: Text(
+            AppLocalization.of(context)!.camera,
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.camera),
+        ),
+        MaterialButton(
+          child: Text(
+            "Gallery",
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.gallery),
+        ),
+      ],
+    ),
+  );
+
+  if (imageSource != null) {
+    final file =
+        await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
+    if (file != null) {
+      /// for cropping the image
+      croppedImage = await ImageCrop().cropImage(file.path);
+      if (croppedImage == null) {
+        return null;
+      }
+    }
+  }
+  return croppedImage;
+}
 
 // this function will build image frame by frame and load image from opacity 0 to 1 use this function in every image
 Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
@@ -211,6 +258,18 @@ Widget getChatSettingTitle() {
       "How would you like to pay?",
       style:
           TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: darkGrey),
+    ),
+  );
+}
+
+Widget buildIndicator(bool isLoading) {
+  return new Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: new Center(
+      child: new Opacity(
+        opacity: isLoading ? 1.0 : 00,
+        child: CircularLoadingIndicator(),
+      ),
     ),
   );
 }
@@ -502,6 +561,9 @@ String? checkSlydoName(String name) {
 }
 
 String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
+  if (accountNumber.length != 10) {
+    accountNumber = '0000' + accountNumber;
+  }
   return '******' +
       accountNumber.substring(
           accountNumber.length - 5, accountNumber.length - 1);
