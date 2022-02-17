@@ -1,10 +1,8 @@
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
-import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
@@ -22,15 +20,11 @@ class CreateBlogScreen extends StatefulWidget {
 
 class _CreateBlogScreenState extends State<CreateBlogScreen> {
   String? _imageFile;
-  AuthService _auth = AuthService();
-  flutterQuill.QuillController _quillTitleController =
-      flutterQuill.QuillController.basic();
-  flutterQuill.QuillController _quillTaglineController =
+  flutterQuill.QuillController _quillBodyTextController =
       flutterQuill.QuillController.basic();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController blogTitleCtrl = TextEditingController();
   TextEditingController blogTagLineCtrl = TextEditingController();
-  TextEditingController blogBodyTextCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +62,12 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
         TextButton(
           child: Text('POST'),
           onPressed: () {
-            print(_quillTitleController.document.toDelta());
+            submitBlogPost(
+              title: blogTitleCtrl.text,
+              tagLine: blogTagLineCtrl.text,
+              blogBodyText: _quillBodyTextController.document.toPlainText(),
+              blogImage: _imageFile != null ? File(_imageFile!) : null,
+            );
           },
         ),
       ],
@@ -84,80 +83,84 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Column(
-                children: [
-                  CustomizedTextFormField(
-                    hintText: 'Title',
-                    hasBorder: false,
-                    maxLength: 150,
-                    maxLines: 2,
-                    controller: blogTitleCtrl,
-                    validator: (value) {
-                      return value.toString().isEmpty
-                          ? 'Field cannot be empty'
-                          : null;
-                    },
-                  ),
-                  CustomizedTextFormField(
-                    hintText: 'Tag Line',
-                    hasBorder: false,
-                    controller: blogTagLineCtrl,
-                    validator: (value) {
-                      return value.toString().isEmpty
-                          ? 'Field cannot be empty'
-                          : null;
-                    },
-                  ),
-                  InkWell(
-                    onTap: () => _pickBlogImage(),
-                    child: _imageFile != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.file(File(_imageFile!),
-                                width: 200, height: 200, fit: BoxFit.cover),
-                          )
-                        : Container(
-                            padding: EdgeInsets.symmetric(vertical: 50),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: greyBorderColor),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Icon(SlydoAppIcon.image),
-                          ),
-                  ),
-                  Expanded(
-                    child: flutterQuill.QuillEditor.basic(
-                      controller: _quillTitleController,
-                      readOnly: false, // true for view only mode
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    CustomizedTextFormField(
+                      hintText: 'Title',
+                      hasBorder: false,
+                      maxLength: 150,
+                      textStyle: TextStyle(
+                        color: blackFont,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      controller: blogTitleCtrl,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Field cannot be empty'
+                            : null;
+                      },
                     ),
-                  ),
-                  Divider(thickness: 1),
-                ],
+                    Divider(thickness: 1),
+                    CustomizedTextFormField(
+                      hintText: 'Tag Line',
+                      hasBorder: false,
+                      textStyle: TextStyle(
+                        color: blackFont,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      controller: blogTagLineCtrl,
+                      validator: (value) {
+                        return value.toString().isEmpty
+                            ? 'Field cannot be empty'
+                            : null;
+                      },
+                    ),
+                    SizedBox(height: 10),
+                    InkWell(
+                      onTap: () => _pickBlogImage(),
+                      child: _imageFile != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(File(_imageFile!),
+                                  width: 200, height: 200, fit: BoxFit.cover),
+                            )
+                          : Container(
+                              padding: EdgeInsets.symmetric(vertical: 50),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: greyBorderColor),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Icon(SlydoAppIcon.image),
+                            ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Body of your blog',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    SizedBox(
+                      height: 100,
+                      child: flutterQuill.QuillEditor.basic(
+                        controller: _quillBodyTextController,
+                        readOnly: false, // true for view only mode
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            InkWell(
-              onTap: () => _pickBlogImage(),
-              child: _imageFile != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(File(_imageFile!),
-                          width: 200, height: 200, fit: BoxFit.cover),
-                    )
-                  : Container(
-                      padding: EdgeInsets.symmetric(vertical: 50),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: greyBorderColor),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Icon(SlydoAppIcon.image),
-                    ),
-            ),
-            SizedBox(height: 20),
             flutterQuill.QuillToolbar.basic(
               showLink: false,
               showDividers: false,
               showColorButton: false,
               showSmallButton: false,
-              controller: _quillTitleController,
+              showImageButton: false,
+              showCameraButton: false,
               showAlignmentButtons: false,
+              controller: _quillBodyTextController,
             ),
           ],
         ),
@@ -171,29 +174,33 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
       required String blogBodyText,
       File? blogImage}) async {
     if (formKey.currentState!.validate()) {
-      showDialog(context: context, builder: (context) => LoadingIndicator());
+      if (_quillBodyTextController.document.toPlainText().length > 1) {
+        showDialog(context: context, builder: (context) => LoadingIndicator());
 
-      UserPostAuth()
-          .postUserBlogPost(
-              title: title, tagLine: tagLine, blogBodyText: blogBodyText)
-          .then(
-        (posted) {
-          Navigator.pop(context);
+        UserPostAuth()
+            .postUserBlogPost(
+                title: title, tagLine: tagLine, blogBodyText: blogBodyText)
+            .then(
+          (posted) {
+            Navigator.pop(context);
 
-          if (posted) {
-            showToast(message: 'Blog post created');
-            Navigator.pop(context); // To go to the user's profile page.
+            if (posted) {
+              showToast(message: 'Blog post created');
+              Navigator.pop(context); // To go to the user's profile page.
 
-          } else {
-            showToast(message: 'Something went wrong');
-          }
-        },
-      ).catchError(
-        (error) {
-          Navigator.pop(context);
-          showToast(message: error.toString());
-        },
-      );
+            } else {
+              showToast(message: 'Something went wrong');
+            }
+          },
+        ).catchError(
+          (error) {
+            Navigator.pop(context);
+            showToast(message: error.toString());
+          },
+        );
+      } else {
+        showToast(message: 'Blog must have a body');
+      }
     }
   }
 

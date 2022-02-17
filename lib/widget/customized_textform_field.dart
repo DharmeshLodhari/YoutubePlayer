@@ -12,6 +12,7 @@ typedef Widget? BuildCounterWidget(
 class CustomizedTextFormField extends StatefulWidget {
   bool hasLabel;
   bool hasBorder;
+  TextStyle? textStyle;
   BuildCounterWidget? buildCounterWidget;
   bool isNumberOnlyInput;
   Function? validator;
@@ -38,6 +39,7 @@ class CustomizedTextFormField extends StatefulWidget {
       this.hasLabel = true,
       this.validator,
       this.onChanged,
+      this.textStyle,
       this.onTap,
       this.controller,
       this.buildCounterWidget,
@@ -104,11 +106,12 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
         ),
         TextFormField(
           readOnly: widget.isReadOnly,
-          style: TextStyle(
-              fontSize: widget.isPassword ? 20 : 16,
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              letterSpacing: widget.isPassword ? 2 : 0),
+          style: widget.textStyle ??
+              TextStyle(
+                  fontSize: widget.isPassword ? 20 : 16,
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: widget.isPassword ? 2 : 0),
           buildCounter: (BuildContext context,
                   {int? currentLength, int? maxLength, bool? isFocused}) =>
               widget.buildCounterWidget != null

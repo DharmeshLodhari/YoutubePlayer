@@ -57,7 +57,9 @@ class UserPostAuth extends AuthService {
       }
       var responseBody = await response.stream.bytesToString();
       debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${responseBody}");
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+      print('CREATE BLOG RESPONSE ----> $responseBody');
+
       if (response.statusCode == 201) {
         return true;
       } else {
@@ -72,7 +74,7 @@ class UserPostAuth extends AuthService {
       };
       var response =
           await httpPost(url, headers: headers, body: jsonEncode(_body));
-
+      print('CREATE BLOG RESPONSE ----> ${response.body}');
       return response.statusCode == 201;
     }
   }
