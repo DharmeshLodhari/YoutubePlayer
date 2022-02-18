@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/blog/blog_settings.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
@@ -324,6 +325,14 @@ class RouteGenerator {
       case '/create-blog':
         return PageTransition(
           child: CreateBlogScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/blog-settings':
+        return PageTransition(
+          child: BlogSettings(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

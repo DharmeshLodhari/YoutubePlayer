@@ -113,7 +113,6 @@ class _UserPostListState extends State<UserPostList> {
         tempList.forEach((element) {
           reviews.add(UserPost.fromJson(element));
         });
-
         if (mounted) {
           setState(() {
             noPostInList = false;

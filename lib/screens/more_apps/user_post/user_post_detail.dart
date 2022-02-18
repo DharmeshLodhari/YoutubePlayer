@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 class UserPostDetailPage extends StatefulWidget {
   UserPostDetailPage({required this.arguments});
@@ -33,12 +35,22 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
   CustomerProfile? postOfUser;
   UserBloc? userBloc;
   bool isAuthor = false;
+  dynamic blogBodyTextJson;
+  late flutterQuill.QuillController _quillController;
 
   @override
   void initState() {
     userPost = widget.arguments["post"];
     log("User Post ==> ${userPost?.toJson()}");
     postOfUser = widget.arguments["postOfUser"];
+
+    // Try if blog text is decodable, if it isn't the try blog won't run.
+    try {
+      blogBodyTextJson = jsonDecode(userPost!.text!);
+      _quillController = flutterQuill.QuillController(
+          document: flutterQuill.Document.fromJson(blogBodyTextJson),
+          selection: TextSelection.collapsed(offset: -1));
+    } catch (e) {}
 
     super.initState();
     getResult();
@@ -182,7 +194,7 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
   Widget postImage() {
     return Container(
       child: CachedNetworkImage(
-        imageUrl: userPost?.image ?? "",
+        imageUrl: userPost?.authorAvatar ?? "",
         fit: BoxFit.fill,
         width: double.infinity,
         height: 250,
@@ -259,15 +271,20 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
   }
 
   Widget newsFullDescription() {
-    return Text(
-      messageDecoderWithEmoji(userPost?.text) ?? "",
-      style: TextStyle(
-        fontWeight: FontWeight.w400,
-        fontSize: 14,
-        color: blackFont,
-      ),
-      textAlign: TextAlign.justify,
-    );
+    return blogBodyTextJson != null
+        ? flutterQuill.QuillEditor.basic(
+            controller: _quillController,
+            readOnly: true,
+          )
+        : Text(
+            messageDecoderWithEmoji(userPost?.text) ?? "",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+              color: blackFont,
+            ),
+            textAlign: TextAlign.justify,
+          );
   }
 
   Widget newsChips() {

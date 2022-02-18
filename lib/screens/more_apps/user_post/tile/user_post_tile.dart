@@ -63,7 +63,7 @@ class _PostTileState extends State<PostTile> {
                         width: double.infinity,
                         fit: BoxFit.fill,
                         errorWidget: imageErrorWidget,
-                        imageUrl: widget.post?.image ?? "",
+                        imageUrl: widget.post?.authorAvatar ?? "",
                       ),
                     ),
                     Positioned(
@@ -104,7 +104,7 @@ class _PostTileState extends State<PostTile> {
                         height: 4,
                       ),
                       Text(
-                        messageDecoderWithEmoji(widget.post?.text) ?? "",
+                        messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,

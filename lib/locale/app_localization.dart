@@ -2262,6 +2262,13 @@ class AppLocalization {
     );
   }
 
+  String get blogSettings {
+    return Intl.message(
+      "Blog settings",
+      name: "blogSettings",
+    );
+  }
+
   String get createBlog {
     return Intl.message(
       "Create blog",

@@ -829,7 +829,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         title: AppLocalization.of(context)!.createABlog,
         icon: Icons.add_circle_outlined,
         onTap: () {
+          Navigator.pop(context);
           Navigator.of(context).pushNamed('/create-blog');
+        },
+      ));
+      list.add(bottomSheetItem(
+        title: AppLocalization.of(context)!.blogSettings,
+        icon: Icons.settings,
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.of(context).pushNamed('/blog-settings');
         },
       ));
       list.add(

@@ -17,6 +17,8 @@ class UserPostAuth extends AuthService {
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+      print('USER POST JSON ----> ${jsonData}');
       return jsonData;
     }
     debugPrint(
@@ -38,8 +40,8 @@ class UserPostAuth extends AuthService {
       var request = http.MultipartRequest("POST", Uri.parse(url));
 
       //add fields
-      request.fields["tag_line"] = tagLine;
       request.fields["title"] = title;
+      request.fields["tag_line"] = tagLine;
       request.fields["text"] = blogBodyText;
 
       //create multipart using filepath, string or bytes.

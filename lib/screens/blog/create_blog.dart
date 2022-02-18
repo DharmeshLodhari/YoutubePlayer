@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
@@ -179,7 +180,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
       if (_quillBodyTextController.document.toPlainText().length > 1) {
         showDialog(
             context: context,
-            builder: (context) {
+            builder: (dialogContext) {
               return AlertDialog(
                 title: Text('Are you sure you want to post your content now?'),
                 actions: [
@@ -194,12 +195,16 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
                       Navigator.pop(context);
                       showDialog(
                           context: context,
-                          builder: (context) => LoadingIndicator());
+                          builder: (dialogLoadingContext) =>
+                              LoadingIndicator());
                       UserPostAuth()
                           .postUserBlogPost(
                               title: title,
                               tagLine: tagLine,
-                              blogBodyText: blogBodyText)
+                              blogBodyText: jsonEncode(_quillBodyTextController
+                                  .document
+                                  .toDelta()
+                                  .toJson()))
                           .then(
                         (posted) {
                           Navigator.pop(context);
