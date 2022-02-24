@@ -5,6 +5,8 @@ import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
@@ -178,61 +180,61 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
       File? blogImage}) async {
     if (formKey.currentState!.validate()) {
       if (_quillBodyTextController.document.toPlainText().length > 1) {
-        showDialog(
-            context: context,
-            builder: (dialogContext) {
-              return AlertDialog(
-                title: Text('Are you sure you want to post your content now?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Not yet'),
-                  ),
-                  CurvedButton(
-                    text: 'Post',
-                    width: 80,
-                    onPressed: () {
-                      Navigator.pop(context);
-                      showDialog(
-                          context: context,
-                          builder: (dialogLoadingContext) =>
-                              LoadingIndicator());
-                      UserPostAuth()
-                          .postUserBlogPost(
-                              title: title,
-                              tagLine: tagLine,
-                              blogBodyText: jsonEncode(_quillBodyTextController
-                                  .document
-                                  .toDelta()
-                                  .toJson()))
-                          .then(
-                        (posted) {
-                          Navigator.pop(context);
-
-                          if (posted) {
-                            showToast(message: 'Blog post created');
-                            Navigator.pop(
-                                context); // To go to the user's profile page.
-
-                          } else {
-                            showToast(message: 'Something went wrong');
-                          }
-                        },
-                      ).catchError(
-                        (error) {
-                          Navigator.pop(context);
-                          showToast(message: error.toString());
-                        },
-                      );
-                    },
-                  ),
-                ],
-              );
-            });
+        showDialogBox(
+          context: context,
+          actionOneTextColor: blackFont,
+          actionTwoBgColor: naturalGreen,
+          actionTwoTextColor: Colors.white,
+          actionOneBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.post,
+          actionTwoText: AppLocalization.of(context)!.post,
+          actionOneText: AppLocalization.of(context)!.notNow,
+          description: 'Are you sure you want to post\nyour content now?',
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            enableMargin: false,
+            width: 90,
+            height: 90,
+            image: Image.asset('assets/images/accept_dialog_icon.png'),
+          ),
+          rightButtonOnPressed: () {
+            Navigator.pop(context);
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+            _postBlog(title: title, tagLine: tagLine);
+          },
+        );
       } else {
         showToast(message: 'Blog must have a body');
       }
     }
+  }
+
+  _postBlog({required String title, required String tagLine}) {
+    UserPostAuth()
+        .postUserBlogPost(
+            title: title,
+            tagLine: tagLine,
+            blogBodyText: jsonEncode(
+                _quillBodyTextController.document.toDelta().toJson()))
+        .then(
+      (posted) {
+        Navigator.pop(context); // To dismiss loading indicator.
+
+        if (posted) {
+          showToast(message: 'Blog post created');
+          Navigator.pop(context); // To go to the user's profile page.
+
+        } else {
+          showToast(message: 'Something went wrong');
+        }
+      },
+    ).catchError(
+      (error) {
+        Navigator.pop(context);
+        showToast(message: error.toString());
+      },
+    );
   }
 
   _pickBlogImage() async {
@@ -245,110 +247,3 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
     }
   }
 }
-
-//
-// Expanded(
-// child: SingleChildScrollView(
-// child: Column(
-// crossAxisAlignment: CrossAxisAlignment.stretch,
-// children: [
-// SizedBox(height: 20),
-// InkWell(
-// onTap: () => _pickBlogImage(),
-// child: _imageFile != null
-// ? ClipRRect(
-// borderRadius: BorderRadius.circular(12),
-// child: Image.file(File(_imageFile!),
-// width: 200, height: 200, fit: BoxFit.cover),
-// )
-// : Container(
-// padding: EdgeInsets.symmetric(vertical: 50),
-// decoration: BoxDecoration(
-// border: Border.all(color: greyBorderColor),
-// borderRadius: BorderRadius.circular(10)),
-// child: Icon(SlydoAppIcon.image),
-// ),
-// ),
-// SizedBox(height: 10),
-// blogBodyTextCtrl.text.isNotEmpty
-// ? Text(
-// blogBodyTextCtrl.text,
-// style: TextStyle(
-// fontSize: 18,
-// color: blackFont,
-// fontWeight: FontWeight.w600,
-// ),
-// )
-// : Text(
-// 'Body text',
-// style: TextStyle(color: Colors.grey, fontSize: 24),
-// ),
-// ],
-// ),
-// ),
-// ),
-
-//
-// CustomizedTextFormField(
-// hintText: 'Title',
-// hasBorder: false,
-// maxLength: 150,
-// maxLines: 2,
-// controller: blogTitleCtrl,
-// validator: (value) {
-// return value.toString().isEmpty
-// ? 'Field cannot be empty'
-//     : null;
-// },
-// ),
-// CustomizedTextFormField(
-// hintText: 'Tag Line',
-// hasBorder: false,
-// controller: blogTagLineCtrl,
-// validator: (value) {
-// return value.toString().isEmpty
-// ? 'Field cannot be empty'
-//     : null;
-// },
-// ),
-
-// Padding(
-// padding: const EdgeInsets.symmetric(vertical: 12.0),
-// child: Row(
-// children: [
-// Expanded(
-// child: CustomizedTextFormField(
-// hintText: 'Blog Text',
-// hasLabel: false,
-// maxLines: null,
-// onChanged: (value) {
-// //To update the blog body text (with  blogBodyTextCtrl.text), whenever the value changes.
-// setState(() {});
-// },
-// controller: blogBodyTextCtrl,
-// validator: (value) {
-// return value.toString().isEmpty
-// ? 'Field cannot be empty'
-//     : null;
-// },
-// ),
-// ),
-// SizedBox(width: 10),
-// Padding(
-// padding: const EdgeInsets.only(top: 4.0),
-// child: InkWell(
-// onTap: () => submitBlogPost(
-// title: blogTitleCtrl.text,
-// text: blogBodyTextCtrl.text,
-// blogImage:
-// _imageFile != null ? File(_imageFile!) : null,
-// ),
-// child: CircleAvatar(
-// backgroundColor: navyBlue,
-// child: Icon(Icons.send, color: Colors.white),
-// ),
-// ),
-// ),
-// ],
-// ),
-// ),

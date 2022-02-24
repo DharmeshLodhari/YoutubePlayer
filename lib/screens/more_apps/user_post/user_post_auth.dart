@@ -81,6 +81,43 @@ class UserPostAuth extends AuthService {
     }
   }
 
+  Future<bool> updateBlogSettings({
+    required String blogId,
+    String? tags,
+    bool isPublished = false,
+    bool enableLikes = false,
+    bool enableCommenting = false,
+    bool isPublic = false,
+    String? publishedDate,
+  }) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    var headers = await getAuthHeaders();
+
+    Map<String, dynamic> body = {
+      'public_read': isPublic,
+      'is_published': isPublished,
+      'enable_like': enableLikes,
+      'enable_commenting': enableCommenting,
+      'published_date': publishedDate,
+    };
+
+    if (tags != null) {
+      body['tags'] = tags.replaceAll(' ', '').split(',');
+    }
+    print('BODY:::: $body');
+
+    var response =
+        await httpPatch(url, headers: headers, body: jsonEncode(body));
+
+    print('UPDATE BLOG SETTINGS -----> ${response.body}');
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<UserPost> likeUserPost(UserPost post) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/like/${post.id}/";
     Map<String, String> headers = await getAuthHeaders();

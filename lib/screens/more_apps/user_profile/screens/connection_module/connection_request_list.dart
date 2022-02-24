@@ -258,10 +258,10 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           ? "Are you sure want to cancel the request?"
           : AppLocalization.of(context)!.areYouSureWantToRejectRequestFrom +
               " ${user.displayName()}",
-      actionOne: isRequestSent
+      actionOneText: isRequestSent
           ? AppLocalization.of(context)!.yes
           : AppLocalization.of(context)!.reject,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await UserAuth().rejectContactRequest(user);
@@ -310,8 +310,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       description: "Are you sure you want to add" +
           " ${user.displayName()} " +
           "into your Connections?",
-      actionOne: AppLocalization.of(context)!.accept,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.accept,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await UserAuth().acceptContactRequest(user);

@@ -581,8 +581,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       title: "Pay",
       description:
           AppLocalization.of(context)!.areYouSureWantToAcceptThisRequest,
-      actionOne: "Pay",
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: "Pay",
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       BottomSheetPassCode(
@@ -653,8 +653,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       title: AppLocalization.of(context)!.reject,
       description:
           AppLocalization.of(context)!.areYouSureWantToRejectThisPayment,
-      actionOne: AppLocalization.of(context)!.reject,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.reject,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);
@@ -697,8 +697,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.cancel,
       description: "Are you sure want to cancel this request?",
-      actionOne: AppLocalization.of(context)!.cancel,
-      actionTwo: "Close",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: "Close",
     );
     if (result == null) return;
     if (result) {

@@ -410,8 +410,8 @@ class _MessageListState extends State<MessageList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.delete,
       description: AppLocalization.of(context)!.areYouSureWantToDeleteThisMsg,
-      actionOne: AppLocalization.of(context)!.delete,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.delete,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result == null) return;
     if (result) {

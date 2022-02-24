@@ -110,6 +110,7 @@ import 'package:Slydo/screens/more_apps/taxi/terms_and_condition.dart';
 import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
+import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_detail.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
@@ -332,7 +333,9 @@ class RouteGenerator {
 
       case '/blog-settings':
         return PageTransition(
-          child: BlogSettings(),
+          child: BlogSettings(
+            userPost: settings.arguments as UserPost,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

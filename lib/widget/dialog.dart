@@ -177,18 +177,20 @@ Future<bool?> showDialogBoxWithImageForNudge({
 }
 
 Future<bool?> showDialogBox({
-  BuildContext? context,
+  required BuildContext context,
   String? title,
   String? description,
-  String? actionOne,
+  required String actionOneText,
   bool firstActionPrimary = true,
   String? image,
-  RoundedBackgroundIcon? roundedBackgroundIcon,
   Color? actionOneBgColor,
   Color? actionOneTextColor,
   Color? actionTwoBgColor,
   Color? actionTwoTextColor,
-  String? actionTwo,
+  Function()? leftButtonOnPressed,
+  Function()? rightButtonOnPressed,
+  required String actionTwoText, // DialogButton's text
+  RoundedBackgroundIcon? roundedBackgroundIcon,
 }) {
   return CustomizedAlert(
     context: context,
@@ -202,16 +204,20 @@ Future<bool?> showDialogBox({
     buttons: [
       DialogButton(
         onPressed: () =>
-            Navigator.pop(context!, firstActionPrimary ? true : false),
+            Navigator.pop(context, firstActionPrimary ? true : false),
         textColor: actionOneTextColor,
-        text: actionOne,
+        text: actionOneText,
         backgroundColor: actionOneBgColor,
       ),
       DialogButton(
-        onPressed: () =>
-            Navigator.pop(context!, firstActionPrimary ? false : true),
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (rightButtonOnPressed != null) {
+            rightButtonOnPressed();
+          }
+        },
         textColor: actionTwoTextColor,
-        text: actionTwo,
+        text: actionTwoText,
         backgroundColor: actionTwoBgColor,
       )
     ],

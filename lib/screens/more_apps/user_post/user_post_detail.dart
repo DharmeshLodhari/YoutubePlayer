@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
@@ -17,6 +18,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+
+import '../../../widget/bottom_sheet_item.dart';
+import '../../../widget/dialog.dart';
 
 class UserPostDetailPage extends StatefulWidget {
   UserPostDetailPage({required this.arguments});
@@ -112,7 +116,8 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
         },
       ),
       actions: <Widget>[
-        shareBtn(),
+        menuIcon(),
+        // shareBtn(),
         SizedBox(
           width: 16,
         ),
@@ -120,19 +125,99 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
     );
   }
 
-  Widget shareBtn() {
+  Widget menuIcon() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.share,
+        SlydoAppIcon.menu,
         size: 16,
         color: blackFont,
       ),
-      onTap: () {},
       backgroundColor: iconBtnGrey,
+      onTap: () {
+        userProfileActionsSheet();
+      },
       enableMargin: true,
     );
+  }
+
+  void userProfileActionsSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+    list.add(
+      bottomSheetItem(
+        title: AppLocalization.of(context)!.share,
+        icon: SlydoAppIcon.share,
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: AppLocalization.of(context)!.deletePost,
+        icon: SlydoAppIcon.delete,
+        onTap: () {
+          Navigator.pop(context);
+          showDialogBox(
+            context: context,
+            actionOneTextColor: white,
+            actionOneBgColor: mateRed,
+            actionTwoTextColor: blackFont,
+            actionTwoBgColor: greyBorderColor,
+            title: AppLocalization.of(context)!.delete,
+            actionTwoText: AppLocalization.of(context)!.cancel,
+            actionOneText: AppLocalization.of(context)!.delete,
+            description: 'Are you sure you want to delete this blog post?',
+            roundedBackgroundIcon: RoundedBackgroundIcon(
+              enableMargin: false,
+              width: 90,
+              height: 90,
+              image: Image.asset('assets/images/delete_dialog_icon.png'),
+            ),
+            rightButtonOnPressed: () {},
+          );
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: AppLocalization.of(context)!.postSettings,
+        icon: SlydoAppIcon.settings,
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/blog-settings', arguments: userPost);
+        },
+      ),
+    );
+
+    return list;
   }
 
   Widget scaffoldBody() {
@@ -168,7 +253,9 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
                       SizedBox(
                         height: 20,
                       ),
-                      _buildLikeUnLikeReportTile(),
+                      widget.arguments['post'].enableLike
+                          ? _buildLikeUnLikeReportTile()
+                          : SizedBox.shrink(),
                       SizedBox(
                         height: 20,
                       ),
@@ -233,7 +320,7 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
           Row(
             children: [
               Text(
-                "${userPost?.authorUsername ?? ""} • ",
+                "${userPost?.authorName ?? ""} • ",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -289,7 +376,10 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
 
   Widget newsChips() {
     return Wrap(
-        spacing: 8, runSpacing: 8, children: [CustomChip(text: "Post")]);
+      spacing: 8,
+      runSpacing: 8,
+      children: userPost!.tags!.map((tag) => CustomChip(text: tag)).toList(),
+    );
   }
 
   String formatDate(DateTime dateTime) {

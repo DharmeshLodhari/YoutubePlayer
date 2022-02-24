@@ -19,6 +19,7 @@
 class UserPost {
   UserPost({
     this.id,
+    this.tags,
     this.authorAvatar,
     this.title,
     this.tagLine,
@@ -35,10 +36,13 @@ class UserPost {
     this.publishedDate,
     this.likes,
     this.dislikes,
+    this.publicRead,
+    this.authorName,
   });
 
   UserPost.fromJson(dynamic json) {
     id = json['id'];
+    tags = json['tags'];
     authorAvatar = json['author_avatar'];
     title = json['title'];
     tagLine = json['tag_line'];
@@ -46,9 +50,11 @@ class UserPost {
     image = json['image'];
     video = json['video'];
     isPublished = json['is_published'];
+    publicRead = json['public_read'];
     enableCommenting = json['enable_commenting'];
     enableLike = json['enable_like'];
     authorUsername = json['author_username'];
+    authorName = json['author_name'];
     viewers = json['viewers'];
     createdAt =
         json['created_at'] != null ? DateTime.parse(json['created_at']) : null;
@@ -62,13 +68,16 @@ class UserPost {
     dislikes = json['dislikes'];
   }
   String? id;
+  List<dynamic>? tags;
   String? authorAvatar;
   String? title;
   String? tagLine;
   String? text;
   String? image;
   String? video;
+  String? authorName;
   bool? isPublished;
+  bool? publicRead;
   bool? enableCommenting;
   bool? enableLike;
   String? authorUsername;

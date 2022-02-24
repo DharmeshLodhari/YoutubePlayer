@@ -10,6 +10,8 @@ typedef Widget? BuildCounterWidget(
 
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
+  TextInputAction? textInputAction;
+  Function(String? value)? onFieldSubmitted;
   bool hasLabel;
   bool hasBorder;
   TextStyle? textStyle;
@@ -37,10 +39,12 @@ class CustomizedTextFormField extends StatefulWidget {
   CustomizedTextFormField(
       {this.hasBorder = true,
       this.hasLabel = true,
+      this.textInputAction,
       this.validator,
       this.onChanged,
       this.textStyle,
       this.onTap,
+      this.onFieldSubmitted,
       this.controller,
       this.buildCounterWidget,
       this.isNumberOnlyInput = false,
@@ -105,6 +109,8 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           height: 6,
         ),
         TextFormField(
+          onFieldSubmitted: widget.onFieldSubmitted,
+          textInputAction: widget.textInputAction,
           readOnly: widget.isReadOnly,
           style: widget.textStyle ??
               TextStyle(

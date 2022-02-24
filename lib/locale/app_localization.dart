@@ -1645,10 +1645,24 @@ class AppLocalization {
     );
   }
 
+  String get post {
+    return Intl.message(
+      "Post ",
+      name: "post",
+    );
+  }
+
   String get noPosts {
     return Intl.message(
       "No Posts",
       name: "noPosts",
+    );
+  }
+
+  String get notNow {
+    return Intl.message(
+      "Not now",
+      name: "notNow",
     );
   }
 
@@ -2262,10 +2276,17 @@ class AppLocalization {
     );
   }
 
-  String get blogSettings {
+  String get deletePost {
     return Intl.message(
-      "Blog settings",
-      name: "blogSettings",
+      "Delete Post",
+      name: "deleteBlog",
+    );
+  }
+
+  String get postSettings {
+    return Intl.message(
+      "Post settings",
+      name: "postSettings",
     );
   }
 

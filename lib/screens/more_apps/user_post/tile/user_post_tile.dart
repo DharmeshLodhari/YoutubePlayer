@@ -50,6 +50,7 @@ class _PostTileState extends State<PostTile> {
           decoration: decorateBox(),
           child: Container(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Stack(
                   children: [
@@ -116,7 +117,9 @@ class _PostTileState extends State<PostTile> {
                       SizedBox(
                         height: 10,
                       ),
-                      _buildLikeUnLikeReportTile()
+                      widget.post!.enableLike!
+                          ? _buildLikeUnLikeReportTile()
+                          : SizedBox.shrink()
                     ],
                   ),
                 ),

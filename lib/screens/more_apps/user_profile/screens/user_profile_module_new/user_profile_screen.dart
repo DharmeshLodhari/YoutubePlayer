@@ -731,7 +731,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
       list.add(
         KeepAlivePage(
-          child: UserReviewList(user: searchedUser),
+          child: Center(child: UserReviewList(user: searchedUser)),
         ),
       );
       list.add(
@@ -834,7 +834,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         },
       ));
       list.add(bottomSheetItem(
-        title: AppLocalization.of(context)!.blogSettings,
+        title: AppLocalization.of(context)!.postSettings,
         icon: Icons.settings,
         onTap: () {
           Navigator.pop(context);

@@ -19,10 +19,10 @@ class UserPostList extends StatefulWidget {
 }
 
 class _UserPostListState extends State<UserPostList> {
-  bool isPostLoading = false;
   int? postCount = 0;
   String? postNext = "";
   String? postPrevious = "";
+  bool isPostLoading = false;
   List<UserPost> postList = [];
   ScrollController _postScrollController = new ScrollController();
 
@@ -68,6 +68,8 @@ class _UserPostListState extends State<UserPostList> {
 
   @override
   Widget build(BuildContext context) {
+    print('USER POST LIST ---->');
+
     return Scaffold(
       key: _postScaffoldKey,
       backgroundColor: Colors.white,

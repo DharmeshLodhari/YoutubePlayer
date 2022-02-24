@@ -223,8 +223,8 @@ class _BlockListState extends State<BlockList> {
       title: AppLocalization.of(context)!.unblock,
       description: AppLocalization.of(context)!.areYouSureWantToUnblock +
           " ${user.displayName()}",
-      actionOne: AppLocalization.of(context)!.cancel,
-      actionTwo: AppLocalization.of(context)!.accept,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.accept,
     );
     if (result != null && result) {
       bool done = await UserAuth().unBlockUser(user);

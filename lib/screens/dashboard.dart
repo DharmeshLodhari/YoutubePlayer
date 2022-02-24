@@ -360,8 +360,8 @@ class _DashboardState extends State<Dashboard> {
             actionTwoTextColor: blackFont,
             title: "Exit app",
             description: "Are you sure want to exit app?",
-            actionOne: AppLocalization.of(context)!.exit,
-            actionTwo: AppLocalization.of(context)!.cancel,
+            actionOneText: AppLocalization.of(context)!.exit,
+            actionTwoText: AppLocalization.of(context)!.cancel,
           );
           if (result != null && result) {
             SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');

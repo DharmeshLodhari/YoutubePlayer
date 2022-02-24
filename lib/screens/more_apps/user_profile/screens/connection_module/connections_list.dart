@@ -496,8 +496,8 @@ class _ConnectionListState extends State<ConnectionList> {
       title: AppLocalization.of(context)!.block,
       description: AppLocalization.of(context)!.areYouSureWantToBlock +
           " ${user.displayName()}",
-      actionOne: AppLocalization.of(context)!.block,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.block,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await UserAuth().blockUser(user);
@@ -544,8 +544,8 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoTextColor: blackFont,
       title: "Exit",
       description: "Are you sure want to leave ${chatConversation.fullName} ?",
-      actionOne: "Exit",
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: "Exit",
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await MessageAuth()
@@ -589,8 +589,8 @@ class _ConnectionListState extends State<ConnectionList> {
       description: AppLocalization.of(context)!.areYouSureWantToDelete +
           " ${user.displayName()} " +
           "From Your Connection List",
-      actionOne: AppLocalization.of(context)!.delete,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.delete,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await UserAuth().removeFromContactList(user);
