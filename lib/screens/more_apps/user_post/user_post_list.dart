@@ -1,3 +1,4 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
@@ -9,6 +10,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserPostList extends StatefulWidget {
@@ -19,6 +21,7 @@ class UserPostList extends StatefulWidget {
 }
 
 class _UserPostListState extends State<UserPostList> {
+  UserBloc? userBloc;
   int? postCount = 0;
   String? postNext = "";
   String? postPrevious = "";
@@ -68,7 +71,11 @@ class _UserPostListState extends State<UserPostList> {
 
   @override
   Widget build(BuildContext context) {
-    print('USER POST LIST ---->');
+    userBloc = Provider.of<UserBloc>(context);
+
+    if (context.watch<UserBloc>().shouldReloadPostPage) {
+      print('RELOADED POST PAGE ------>');
+    }
 
     return Scaffold(
       key: _postScaffoldKey,

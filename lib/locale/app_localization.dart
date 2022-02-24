@@ -2269,10 +2269,10 @@ class AppLocalization {
     );
   }
 
-  String get createABlog {
+  String get createAPost {
     return Intl.message(
-      "Create a blog",
-      name: "createABlog",
+      "Create a post",
+      name: "createAPost",
     );
   }
 

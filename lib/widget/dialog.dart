@@ -203,8 +203,12 @@ Future<bool?> showDialogBox({
     ),
     buttons: [
       DialogButton(
-        onPressed: () =>
-            Navigator.pop(context, firstActionPrimary ? true : false),
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? true : false);
+          if (leftButtonOnPressed != null) {
+            leftButtonOnPressed();
+          }
+        },
         textColor: actionOneTextColor,
         text: actionOneText,
         backgroundColor: actionOneBgColor,

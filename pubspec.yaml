@@ -15,8 +15,9 @@ dependencies:
   provider: ^6.0.1
   sqflite: ^2.0.0+4
   flutter_svg: ^1.0.3
-  flutter_quill: ^4.0.1
+  flutter_quill: ^3.9.7
   path_provider: ^2.0.5
+  textfield_tags: ^1.4.2
   qr_code_scanner: ^0.5.2
   page_view_indicators: ^2.0.0
   image_picker: ^0.8.4+2

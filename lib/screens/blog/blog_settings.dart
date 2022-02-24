@@ -1,17 +1,18 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 
 import '../../locale/app_localization.dart';
 import '../../utils/colors.dart';
 import '../../widget/LoadingIndicator.dart';
-import '../more_apps/news/CustomChip.dart';
 
 class BlogSettings extends StatefulWidget {
   final UserPost userPost;
@@ -22,10 +23,12 @@ class BlogSettings extends StatefulWidget {
 }
 
 class _BlogSettingsState extends State<BlogSettings> {
-  DateTime? filterDate;
+  DateTime? datePicked;
+  TimeOfDay? timePicked;
   bool isPublic = false;
   bool isPublished = false;
   bool enableLikes = false;
+  List<String> userTags = [];
   bool enableCommenting = false;
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   TextEditingController _tagController = TextEditingController();
@@ -33,11 +36,10 @@ class _BlogSettingsState extends State<BlogSettings> {
   @override
   void initState() {
     super.initState();
-    _tagController =
-        TextEditingController(text: widget.userPost.tags!.join(', '));
     isPublic = widget.userPost.publicRead!;
     enableLikes = widget.userPost.enableLike!;
     isPublished = widget.userPost.isPublished!;
+    userTags = List<String>.from(widget.userPost.tags!);
     enableCommenting = widget.userPost.enableCommenting!;
   }
 
@@ -141,6 +143,11 @@ class _BlogSettingsState extends State<BlogSettings> {
                   enableLikes: likeEnabled,
                   onUpdated: () {
                     setState(() => enableLikes = likeEnabled);
+                    print('OKAY');
+                    Provider.of<UserBloc>(context, listen: false)
+                        .shouldReloadPostPage = true;
+                    print(
+                        'SHOULD RELOAD PAGE ---> ${context.read<UserBloc>().shouldReloadPostPage}');
                   },
                 );
               },
@@ -148,20 +155,37 @@ class _BlogSettingsState extends State<BlogSettings> {
             BlogSettingsTitles(
               hasSwitch: false,
               onTap: () async {
-                filterDate = await showDatePicker(
+                datePicked = await showDatePicker(
                     builder: customThemeBuilder,
                     context: context,
                     initialDate: DateTime.now(),
                     firstDate: DateTime.now(),
-                    lastDate: DateTime.parse("2022-03-22"));
-                String formattedDate = dateFormat.format(filterDate!);
+                    lastDate: DateTime(2030));
+                print('CURRENT DATE TIME ----> ${DateTime.now()}');
+                print('DATE PICKED: $datePicked}');
+                String formattedDate = dateFormat.format(datePicked!);
                 print('FILTER DATE ----> $formattedDate');
+
+                timePicked = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.now(),
+                );
+                print('TIME PICKED ----> $timePicked');
+                DateTime finalDateTime = DateTime(
+                    datePicked!.year,
+                    datePicked!.month,
+                    datePicked!.day,
+                    timePicked!.hour,
+                    timePicked!.minute);
+
+                print('FINAL DATE TIME -----> ${finalDateTime.toString()}');
 
                 _updateBlogSettings(
                   blogId: widget.userPost.id!,
-                  publishedDate: '2022-02-28T13:35:43.590377+01:00',
+                  publishedDate: finalDateTime.toString(),
                   onUpdated: () {},
                 );
+                // '2022-02-28T13:35:43.590377+01:00'
                 // setState(() {});
                 // _onRefresh();
               },
@@ -176,20 +200,54 @@ class _BlogSettingsState extends State<BlogSettings> {
               controller: _tagController,
               textInputAction: TextInputAction.go,
               hintText: 'Add your tags separated by commas.',
-              onFieldSubmitted: (value) {
-                if (_tagController.text.isNotEmpty) {
-                  _updateBlogSettings(
-                    blogId: widget.userPost.id!,
-                    tags: value!,
-                    onUpdated: () {
-                      print('UPDATED');
-                    },
-                  );
-                } else {
-                  showToast(message: 'Enter a tag to send');
-                }
+              onFieldSubmitted: (value) {},
+            ),
+            TextFieldTags(
+              initialTags: userTags,
+              tagsStyler: TagsStyler(
+                tagDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: HexColor("#F7F7F9"),
+                ),
+                tagTextStyle: TextStyle(
+                    color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
+                tagCancelIconPadding: EdgeInsets.only(left: 12),
+                tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+              ),
+              textFieldStyler: TextFieldStyler(),
+              onTag: (tag) {
+                setState(() {
+                  userTags.add(tag);
+                });
+              },
+              onDelete: (tag) {
+                setState(() {
+                  userTags.remove(tag);
+                });
               },
             ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: CurvedButton(
+                width: 120,
+                onPressed: () {
+                  userTags.removeWhere((element) => element.isEmpty);
+                  print('USER TAGS:: --> ${userTags.join(',')}');
+                  if (userTags.isNotEmpty) {
+                    _updateBlogSettings(
+                      blogId: widget.userPost.id!,
+                      tags: userTags.join(','),
+                      onUpdated: () {
+                        showToast(message: 'Tag saved');
+                      },
+                    );
+                  } else {
+                    showToast(message: 'Enter a tag to send');
+                  }
+                },
+                text: 'Save tag(s)',
+              ),
+            )
           ],
         ),
       ),

@@ -826,7 +826,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (searchedUser!.userName == userBloc.user.userName) {
       list.add(bottomSheetItem(
-        title: AppLocalization.of(context)!.createABlog,
+        title: AppLocalization.of(context)!.createAPost,
         icon: Icons.add_circle_outlined,
         onTap: () {
           Navigator.pop(context);

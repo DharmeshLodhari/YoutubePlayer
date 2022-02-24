@@ -118,6 +118,24 @@ class UserPostAuth extends AuthService {
     }
   }
 
+  Future<bool> deleteBlog({required String blogId}) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
   Future<UserPost> likeUserPost(UserPost post) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/like/${post.id}/";
     Map<String, String> headers = await getAuthHeaders();

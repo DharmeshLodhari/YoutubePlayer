@@ -14,10 +14,10 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 import '../../../widget/bottom_sheet_item.dart';
 import '../../../widget/dialog.dart';
@@ -200,7 +200,10 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
               height: 90,
               image: Image.asset('assets/images/delete_dialog_icon.png'),
             ),
-            rightButtonOnPressed: () {},
+            leftButtonOnPressed: () {
+              print('RIGHT BUTTON ---->');
+              _deleteBlogPost(blogId: widget.arguments['post'].id);
+            },
           );
         },
       ),
@@ -505,5 +508,28 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
         ),
       ),
     );
+  }
+
+  void _deleteBlogPost({required String blogId}) {
+    print('show dialog----->');
+
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+
+    UserPostAuth().deleteBlog(blogId: blogId).then(
+      (deleted) {
+        Navigator.pop(context); // Dismiss loading indicator
+
+        if (deleted) {
+          Navigator.pop(context); // Dismiss user post detail page
+          showToast(message: 'Deleted');
+        } else {
+          showToast(message: 'Something went wrong, please try again');
+        }
+      },
+    ).catchError((e) {
+      print('DELETE BLOG POST CATCH ERROR: $e');
+    });
   }
 }
