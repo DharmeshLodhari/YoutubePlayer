@@ -2276,6 +2276,13 @@ class AppLocalization {
     );
   }
 
+  String get editPost {
+    return Intl.message(
+      "Edit post",
+      name: "editPost",
+    );
+  }
+
   String get deletePost {
     return Intl.message(
       "Delete Post",
@@ -2290,7 +2297,7 @@ class AppLocalization {
     );
   }
 
-  String get createBlog {
+  String get createPost {
     return Intl.message(
       "Create blog",
       name: "createBlog",

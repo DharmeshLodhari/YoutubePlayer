@@ -180,6 +180,17 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
 
     list.add(
       bottomSheetItem(
+        title: AppLocalization.of(context)!.editPost,
+        icon: SlydoAppIcon.edit,
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.pushNamed(context, '/create-blog', arguments: userPost);
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
         title: AppLocalization.of(context)!.deletePost,
         icon: SlydoAppIcon.delete,
         onTap: () {

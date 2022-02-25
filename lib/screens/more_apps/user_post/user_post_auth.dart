@@ -30,7 +30,8 @@ class UserPostAuth extends AuthService {
       {required title,
       required tagLine,
       required String blogBodyText,
-      File? blogImage}) async {
+      File? blogImage,
+      required List<String>? tags}) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/";
     var headers = await getAuthHeaders();
 
@@ -40,6 +41,11 @@ class UserPostAuth extends AuthService {
       var request = http.MultipartRequest("POST", Uri.parse(url));
 
       //add fields
+      if (tags != null) {
+        request.fields["tags"] = tags.join(',');
+      } else {
+        request.fields["tags"] = [''].join(',');
+      }
       request.fields["title"] = title;
       request.fields["tag_line"] = tagLine;
       request.fields["text"] = blogBodyText;
@@ -70,6 +76,7 @@ class UserPostAuth extends AuthService {
       }
     } else {
       Map<String, dynamic> _body = {
+        "tags": tags == null ? [''].join(',') : tags,
         "tag_line": tagLine,
         "title": title,
         "text": blogBodyText

@@ -7,6 +7,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
@@ -14,21 +15,38 @@ import '../../locale/app_localization.dart';
 import '../../utils/colors.dart';
 import '../../widget/LoadingIndicator.dart';
 import '../../widget/curved_btn.dart';
+import '../more_apps/user_post/models/user_post.dart';
 
-class CreateBlogScreen extends StatefulWidget {
-  const CreateBlogScreen({Key? key}) : super(key: key);
+class CreatePostScreen extends StatefulWidget {
+  final UserPost? userPost;
+
+  const CreatePostScreen({Key? key, this.userPost}) : super(key: key);
 
   @override
-  State<CreateBlogScreen> createState() => _CreateBlogScreenState();
+  State<CreatePostScreen> createState() => _CreatePostScreenState();
 }
 
-class _CreateBlogScreenState extends State<CreateBlogScreen> {
+class _CreatePostScreenState extends State<CreatePostScreen> {
   String? _imageFile;
   flutterQuill.QuillController _quillBodyTextController =
       flutterQuill.QuillController.basic();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController blogTitleCtrl = TextEditingController();
   TextEditingController blogTagLineCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.userPost != null) {
+      blogTitleCtrl = TextEditingController(text: widget.userPost!.title);
+      blogTagLineCtrl = TextEditingController(text: widget.userPost!.tagLine);
+      _quillBodyTextController = flutterQuill.QuillController(
+        document:
+            flutterQuill.Document.fromJson(jsonDecode(widget.userPost!.text!)),
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +69,36 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          if (widget.userPost != null) {
+            showDialogBox(
+              context: context,
+              actionOneTextColor: white,
+              actionOneBgColor: mateRed,
+              actionTwoTextColor: blackFont,
+              actionTwoBgColor: greyBorderColor,
+              title: 'Exit editing post',
+              actionTwoText: AppLocalization.of(context)!.cancel,
+              actionOneText: AppLocalization.of(context)!.exit,
+              description: 'Are you sure you want to exit editing this post?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                enableMargin: false,
+                width: 90,
+                height: 90,
+                image: Icon(SlydoAppIcon.remove),
+              ),
+              leftButtonOnPressed: () {
+                Navigator.pop(context);
+              },
+            );
+          } else {
+            Navigator.pop(context);
+          }
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.createBlog,
+        widget.userPost == null
+            ? AppLocalization.of(context)!.createPost
+            : AppLocalization.of(context)!.editPost,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -64,13 +107,13 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
           width: 16,
         ),
         TextButton(
-          child: Text('POST'),
+          child: Text(AppLocalization.of(context)!.post),
           onPressed: () {
             submitBlogPost(
               title: blogTitleCtrl.text,
               tagLine: blogTagLineCtrl.text,
-              blogBodyText: _quillBodyTextController.document.toPlainText(),
               blogImage: _imageFile != null ? File(_imageFile!) : null,
+              blogBodyText: _quillBodyTextController.document.toPlainText(),
             );
           },
         ),
@@ -126,19 +169,24 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
                     SizedBox(height: 10),
                     InkWell(
                       onTap: () => _pickBlogImage(),
-                      child: _imageFile != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.file(File(_imageFile!),
-                                  width: 200, height: 200, fit: BoxFit.cover),
-                            )
-                          : Container(
-                              padding: EdgeInsets.symmetric(vertical: 50),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: greyBorderColor),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Icon(SlydoAppIcon.image),
-                            ),
+                      child: widget.userPost != null
+                          ? postImage()
+                          : _imageFile != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.file(File(_imageFile!),
+                                      width: 200,
+                                      height: 200,
+                                      fit: BoxFit.cover),
+                                )
+                              : Container(
+                                  padding: EdgeInsets.symmetric(vertical: 50),
+                                  decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: greyBorderColor),
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Icon(SlydoAppIcon.image),
+                                ),
                     ),
                     SizedBox(height: 10),
                     Text(
@@ -173,11 +221,24 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
     );
   }
 
-  void submitBlogPost(
-      {required title,
-      required tagLine,
-      required String blogBodyText,
-      File? blogImage}) async {
+  Widget postImage() {
+    return Container(
+      child: CachedNetworkImage(
+        imageUrl: widget.userPost?.authorAvatar ?? "",
+        fit: BoxFit.fill,
+        width: 200,
+        height: 200,
+      ),
+    );
+  }
+
+  void submitBlogPost({
+    required title,
+    required tagLine,
+    required String blogBodyText,
+    File? blogImage,
+    List<String>? tags,
+  }) async {
     if (formKey.currentState!.validate()) {
       if (_quillBodyTextController.document.toPlainText().length > 1) {
         showDialogBox(
@@ -197,11 +258,14 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
             image: Image.asset('assets/images/accept_dialog_icon.png'),
           ),
           rightButtonOnPressed: () {
-            Navigator.pop(context);
             showDialog(
                 context: context,
                 builder: (dialogLoadingContext) => LoadingIndicator());
-            _postBlog(title: title, tagLine: tagLine);
+            _postBlog(
+                title: title,
+                tagLine: tagLine,
+                blogImage: blogImage,
+                tags: tags);
           },
         );
       } else {
@@ -210,21 +274,25 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
     }
   }
 
-  _postBlog({required String title, required String tagLine}) {
+  _postBlog(
+      {required String title,
+      required List<String>? tags,
+      required String tagLine,
+      File? blogImage}) {
     UserPostAuth()
         .postUserBlogPost(
+            tags: tags,
             title: title,
             tagLine: tagLine,
+            blogImage: blogImage,
             blogBodyText: jsonEncode(
                 _quillBodyTextController.document.toDelta().toJson()))
         .then(
       (posted) {
         Navigator.pop(context); // To dismiss loading indicator.
-
         if (posted) {
           showToast(message: 'Blog post created');
           Navigator.pop(context); // To go to the user's profile page.
-
         } else {
           showToast(message: 'Something went wrong');
         }
@@ -239,6 +307,7 @@ class _CreateBlogScreenState extends State<CreateBlogScreen> {
 
   _pickBlogImage() async {
     String? croppedImage = await getCroppedImage(context);
+    print('CROPPED IMAGE: $croppedImage');
 
     if (croppedImage != null) {
       setState(() {

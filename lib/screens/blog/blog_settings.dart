@@ -90,15 +90,16 @@ class _BlogSettingsState extends State<BlogSettings> {
               icon: Icon(Icons.public_outlined, color: blackFont),
               onChanged: (makePostPublic) {
                 _updateBlogSettings(
-                    onUpdated: () {
-                      setState(() => isPublic = makePostPublic);
-                      Navigator.pushNamed(
-                        context,
-                        '/profile',
-                      );
-                    },
-                    blogId: widget.userPost.id!,
-                    isPublic: makePostPublic);
+                  onUpdated: () {
+                    setState(() => isPublic = makePostPublic);
+                    Navigator.pushNamed(
+                      context,
+                      '/profile',
+                    );
+                  },
+                  blogId: widget.userPost.id!,
+                  isPublic: makePostPublic,
+                );
               },
             ),
             BlogSettingsTitles(
@@ -192,16 +193,11 @@ class _BlogSettingsState extends State<BlogSettings> {
               title: 'Published Date',
               description: 'Pick a date to publish your post',
               icon: Icon(Icons.event_outlined, color: blackFont),
-              trailingWidget:
-                  Text(dateFormat.format(widget.userPost.publishedDate!)),
+              trailingWidget: widget.userPost.publishedDate != null
+                  ? Text(dateFormat.format(widget.userPost.publishedDate!))
+                  : Text(''),
             ),
             SizedBox(height: 10),
-            CustomizedTextFormField(
-              controller: _tagController,
-              textInputAction: TextInputAction.go,
-              hintText: 'Add your tags separated by commas.',
-              onFieldSubmitted: (value) {},
-            ),
             TextFieldTags(
               initialTags: userTags,
               tagsStyler: TagsStyler(

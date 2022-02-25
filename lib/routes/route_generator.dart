@@ -146,7 +146,7 @@ import 'package:Slydo/widget/video_recorder.dart';
 import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:Slydo/screens/blog/create_blog.dart';
+import 'package:Slydo/screens/blog/create_post.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -325,7 +325,11 @@ class RouteGenerator {
 
       case '/create-blog':
         return PageTransition(
-          child: CreateBlogScreen(),
+          child: CreatePostScreen(
+            userPost: settings.arguments != null
+                ? settings.arguments as UserPost
+                : null,
+          ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

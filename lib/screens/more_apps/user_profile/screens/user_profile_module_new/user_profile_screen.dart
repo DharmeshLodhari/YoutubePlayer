@@ -833,17 +833,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           Navigator.of(context).pushNamed('/create-blog');
         },
       ));
-      list.add(bottomSheetItem(
-        title: AppLocalization.of(context)!.postSettings,
-        icon: Icons.settings,
-        onTap: () {
-          Navigator.pop(context);
-          Navigator.of(context).pushNamed('/blog-settings');
-        },
-      ));
+
       list.add(
         bottomSheetItem(
-          title: "Edit",
+          title: "Edit bio",
           icon: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context);
