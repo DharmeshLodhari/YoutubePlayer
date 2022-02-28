@@ -21,7 +21,6 @@ class UserPostList extends StatefulWidget {
 }
 
 class _UserPostListState extends State<UserPostList> {
-  UserBloc? userBloc;
   int? postCount = 0;
   String? postNext = "";
   String? postPrevious = "";
@@ -71,12 +70,6 @@ class _UserPostListState extends State<UserPostList> {
 
   @override
   Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
-
-    if (context.watch<UserBloc>().shouldReloadPostPage) {
-      print('RELOADED POST PAGE ------>');
-    }
-
     return Scaffold(
       key: _postScaffoldKey,
       backgroundColor: Colors.white,
@@ -102,8 +95,8 @@ class _UserPostListState extends State<UserPostList> {
         isPostLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await UserPostAuth()
-            .getUserPostList(userName: widget.user!.userName);
+        Map<String, dynamic>? result =
+            await UserPostAuth().listUserPosts(userName: widget.user!.userName);
 
         if (result == null) {
           isPostLoading = false;

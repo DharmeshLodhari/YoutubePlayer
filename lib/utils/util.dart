@@ -572,3 +572,81 @@ String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
 double formatRating(double rating) {
   return double.parse(rating.toStringAsFixed(1));
 }
+
+class BlogSettingsTitles extends StatefulWidget {
+  final Function()? onTap;
+  bool? isSwitched;
+  final Widget icon;
+  final String title;
+  final bool hasSwitch;
+  final String description;
+  final bool addElevation;
+  final Widget? trailingWidget;
+  final Function(bool isSwitched)? onChanged;
+  BlogSettingsTitles(
+      {required this.icon,
+      required this.title,
+      this.onChanged,
+      this.onTap,
+      this.isSwitched,
+      required this.description,
+      this.hasSwitch = true,
+      this.trailingWidget,
+      this.addElevation = true,
+      Key? key})
+      : super(key: key);
+
+  @override
+  State<BlogSettingsTitles> createState() => _BlogSettingsTitlesState();
+}
+
+class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: widget.addElevation ? 2 : 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        onTap: widget.onTap,
+        contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        leading: CircleAvatar(
+          backgroundColor: lightGrey,
+          child: widget.icon,
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.title,
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              overflow: TextOverflow.fade,
+              softWrap: false,
+            ),
+            Text(
+              widget.description,
+              style: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+        trailing: widget.hasSwitch
+            ? Switch(
+                activeColor: navyBlue,
+                value: widget.isSwitched!,
+                onChanged: widget.onChanged,
+                activeTrackColor: navyBlueLight,
+                inactiveTrackColor: navyBlueLight,
+              )
+            : widget.trailingWidget ?? SizedBox.shrink(),
+      ),
+    );
+  }
+}

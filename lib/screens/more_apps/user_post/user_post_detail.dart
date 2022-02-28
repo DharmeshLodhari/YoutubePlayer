@@ -212,7 +212,6 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
               image: Image.asset('assets/images/delete_dialog_icon.png'),
             ),
             leftButtonOnPressed: () {
-              print('RIGHT BUTTON ---->');
               _deleteBlogPost(blogId: widget.arguments['post'].id);
             },
           );
@@ -295,7 +294,7 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
   Widget postImage() {
     return Container(
       child: CachedNetworkImage(
-        imageUrl: userPost?.authorAvatar ?? "",
+        imageUrl: userPost?.image ?? "",
         fit: BoxFit.fill,
         width: double.infinity,
         height: 250,

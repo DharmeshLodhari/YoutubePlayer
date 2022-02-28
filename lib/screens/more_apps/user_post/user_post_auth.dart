@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 class UserPostAuth extends AuthService {
   // Fetch User Posts Details
-  Future<Map<String, dynamic>> getUserPostList({String? userName}) async {
+  Future<Map<String, dynamic>> listUserPosts({String? userName}) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/user/$userName/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -26,12 +26,18 @@ class UserPostAuth extends AuthService {
     return Future.error("${response.body}");
   }
 
-  Future<bool> postUserBlogPost(
-      {required title,
-      required tagLine,
-      required String blogBodyText,
-      File? blogImage,
-      required List<String>? tags}) async {
+  Future<bool> createBlogPost({
+    required String title,
+    required String tagLine,
+    File? blogImage,
+    List<String>? tags,
+    required String blogPostBody,
+    bool isPublic = false,
+    String? publishedDate,
+    bool isPublished = false,
+    bool enableLikes = false,
+    bool enableCommenting = false,
+  }) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/";
     var headers = await getAuthHeaders();
 
@@ -42,13 +48,15 @@ class UserPostAuth extends AuthService {
 
       //add fields
       if (tags != null) {
-        request.fields["tags"] = tags.join(',');
-      } else {
-        request.fields["tags"] = [''].join(',');
+        request.fields["tags"] = jsonEncode(tags);
       }
       request.fields["title"] = title;
       request.fields["tag_line"] = tagLine;
-      request.fields["text"] = blogBodyText;
+      request.fields["text"] = blogPostBody;
+      request.fields['public_read'] = jsonEncode(isPublic);
+      request.fields['enable_like'] = jsonEncode(enableLikes);
+      request.fields['is_published'] = jsonEncode(isPublished);
+      request.fields['enable_commenting'] = jsonEncode(enableCommenting);
 
       //create multipart using filepath, string or bytes.
       var multipartFile =
@@ -76,11 +84,17 @@ class UserPostAuth extends AuthService {
       }
     } else {
       Map<String, dynamic> _body = {
-        "tags": tags == null ? [''].join(',') : tags,
         "tag_line": tagLine,
         "title": title,
-        "text": blogBodyText
+        "text": blogPostBody,
+        'public_read': isPublic,
+        'enable_like': enableLikes,
+        'is_published': isPublished,
+        'enable_commenting': enableCommenting,
       };
+      if (tags != null) {
+        _body['tags'] = tags;
+      }
       var response =
           await httpPost(url, headers: headers, body: jsonEncode(_body));
       print('CREATE BLOG RESPONSE ----> ${response.body}');
@@ -88,40 +102,104 @@ class UserPostAuth extends AuthService {
     }
   }
 
-  Future<bool> updateBlogSettings({
+  Future<bool> updateBlogPost({
+    String? title,
+    String? tagLine,
+    File? blogImage,
+    List<String>? tags,
+    String? blogPostBody,
+    bool isPublic = false,
+    String? publishedDate,
     required String blogId,
-    String? tags,
     bool isPublished = false,
     bool enableLikes = false,
     bool enableCommenting = false,
-    bool isPublic = false,
-    String? publishedDate,
   }) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
     var headers = await getAuthHeaders();
 
-    Map<String, dynamic> body = {
-      'public_read': isPublic,
-      'is_published': isPublished,
-      'enable_like': enableLikes,
-      'enable_commenting': enableCommenting,
-      'published_date': publishedDate,
-    };
+    if (blogImage != null) {
+      var blogImagePath = blogImage.path;
+      //create multipart request for POST or PATCH method
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
 
-    if (tags != null) {
-      body['tags'] = tags.replaceAll(' ', '').split(',');
-    }
-    print('BODY:::: $body');
+      request.fields['public_read'] = jsonEncode(isPublic);
+      request.fields['enable_like'] = jsonEncode(enableLikes);
+      request.fields['is_published'] = jsonEncode(isPublished);
+      request.fields['enable_commenting'] = jsonEncode(enableCommenting);
+      if (title != null) {
+        request.fields['title'] = title;
+      }
 
-    var response =
-        await httpPatch(url, headers: headers, body: jsonEncode(body));
+      if (tagLine != null) {
+        request.fields['tag_line'] = tagLine;
+      }
+      if (tags != null) {
+        request.fields['tags'] = jsonEncode(tags);
+      }
+      if (blogPostBody != null) {
+        request.fields['text'] = blogPostBody;
+      }
+      if (publishedDate != null) {
+        request.fields['published_date'] = publishedDate;
+      }
 
-    print('UPDATE BLOG SETTINGS -----> ${response.body}');
+      //create multipart using filepath, string or bytes.
+      var multipartFile =
+          await http.MultipartFile.fromPath("image", blogImagePath);
 
-    if (response.statusCode == 200) {
-      return true;
+      //add multipart to request
+      request.files.add(multipartFile);
+      headers.forEach((k, v) => request.headers[k] = v);
+      var response = await request.send();
+
+      if (response.statusCode == 413) {
+        return Future.error(
+            "Please upload smaller image, This image is too large.");
+      }
+      var responseBody = await response.stream.bytesToString();
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+      print('CREATE BLOG RESPONSE ----> $responseBody');
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return Future.error(
+            "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
+      }
     } else {
-      return false;
+      Map<String, dynamic> body = {
+        'public_read': isPublic,
+        'enable_like': enableLikes,
+        'is_published': isPublished,
+        'enable_commenting': enableCommenting,
+      };
+      if (title != null) {
+        body['title'] = title;
+      }
+      if (tagLine != null) {
+        body['tag_line'] = tagLine;
+      }
+      if (tags != null) {
+        body['tags'] = tags;
+      }
+      if (blogPostBody != null) {
+        body['text'] = blogPostBody;
+      }
+      if (publishedDate != null) {
+        body['published_date'] = publishedDate;
+      }
+      var response =
+          await httpPatch(url, headers: headers, body: jsonEncode(body));
+
+      print('UPDATE BLOG SETTINGS -----> ${response.body}');
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 

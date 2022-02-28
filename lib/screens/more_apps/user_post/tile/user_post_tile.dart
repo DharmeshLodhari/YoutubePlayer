@@ -64,7 +64,7 @@ class _PostTileState extends State<PostTile> {
                         width: double.infinity,
                         fit: BoxFit.fill,
                         errorWidget: imageErrorWidget,
-                        imageUrl: widget.post?.authorAvatar ?? "",
+                        imageUrl: widget.post?.image ?? "",
                       ),
                     ),
                     Positioned(

@@ -33,10 +33,11 @@ class UserBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get shouldReloadPostPage => false;
+  bool get shouldReloadPostPage => _shouldReloadPostPage;
+  bool _shouldReloadPostPage = false;
 
   set shouldReloadPostPage(bool shouldReload) {
-    shouldReloadPostPage = shouldReload;
+    _shouldReloadPostPage = shouldReload;
     notifyListeners();
   }
 

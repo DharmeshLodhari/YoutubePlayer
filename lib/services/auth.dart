@@ -437,6 +437,14 @@ class AuthService {
     return response;
   }
 
+  // Future<Response> imageUploader(
+  //   String url, {
+  //   Map<String, dynamic>? headers,
+  //   String? body,
+  // }) {
+  //   var request = http.MultipartRequest("PATCH", Uri.parse(url));
+  // }
+
   Future<Response> httpDelete(String url,
       {Map<String, dynamic>? headers}) async {
     Uri uri = Uri.parse(url);

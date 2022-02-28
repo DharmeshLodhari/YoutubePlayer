@@ -14,15 +14,15 @@ import '../../locale/app_localization.dart';
 import '../../utils/colors.dart';
 import '../../widget/LoadingIndicator.dart';
 
-class BlogSettings extends StatefulWidget {
+class PostSettings extends StatefulWidget {
   final UserPost userPost;
-  const BlogSettings({Key? key, required this.userPost}) : super(key: key);
+  const PostSettings({Key? key, required this.userPost}) : super(key: key);
 
   @override
-  State<BlogSettings> createState() => _BlogSettingsState();
+  State<PostSettings> createState() => _PostSettingsState();
 }
 
-class _BlogSettingsState extends State<BlogSettings> {
+class _PostSettingsState extends State<PostSettings> {
   DateTime? datePicked;
   TimeOfDay? timePicked;
   bool isPublic = false;
@@ -92,12 +92,7 @@ class _BlogSettingsState extends State<BlogSettings> {
                 _updateBlogSettings(
                   onUpdated: () {
                     setState(() => isPublic = makePostPublic);
-                    Navigator.pushNamed(
-                      context,
-                      '/profile',
-                    );
                   },
-                  blogId: widget.userPost.id!,
                   isPublic: makePostPublic,
                 );
               },
@@ -115,7 +110,6 @@ class _BlogSettingsState extends State<BlogSettings> {
                     onUpdated: () {
                       setState(() => isPublished = publishPost);
                     },
-                    blogId: widget.userPost.id!,
                     isPublished: publishPost);
               },
             ),
@@ -129,7 +123,6 @@ class _BlogSettingsState extends State<BlogSettings> {
                     onUpdated: () {
                       setState(() => enableCommenting = commentingEnabled);
                     },
-                    blogId: widget.userPost.id!,
                     enableCommenting: enableCommenting);
               },
             ),
@@ -140,15 +133,9 @@ class _BlogSettingsState extends State<BlogSettings> {
               icon: Icon(Icons.thumb_up, color: blackFont),
               onChanged: (likeEnabled) {
                 _updateBlogSettings(
-                  blogId: widget.userPost.id!,
                   enableLikes: likeEnabled,
                   onUpdated: () {
                     setState(() => enableLikes = likeEnabled);
-                    print('OKAY');
-                    Provider.of<UserBloc>(context, listen: false)
-                        .shouldReloadPostPage = true;
-                    print(
-                        'SHOULD RELOAD PAGE ---> ${context.read<UserBloc>().shouldReloadPostPage}');
                   },
                 );
               },
@@ -182,7 +169,6 @@ class _BlogSettingsState extends State<BlogSettings> {
                 print('FINAL DATE TIME -----> ${finalDateTime.toString()}');
 
                 _updateBlogSettings(
-                  blogId: widget.userPost.id!,
                   publishedDate: finalDateTime.toString(),
                   onUpdated: () {},
                 );
@@ -228,18 +214,9 @@ class _BlogSettingsState extends State<BlogSettings> {
                 width: 120,
                 onPressed: () {
                   userTags.removeWhere((element) => element.isEmpty);
-                  print('USER TAGS:: --> ${userTags.join(',')}');
-                  if (userTags.isNotEmpty) {
-                    _updateBlogSettings(
-                      blogId: widget.userPost.id!,
-                      tags: userTags.join(','),
-                      onUpdated: () {
-                        showToast(message: 'Tag saved');
-                      },
-                    );
-                  } else {
-                    showToast(message: 'Enter a tag to send');
-                  }
+                  _updateBlogSettings(
+                    onUpdated: () {},
+                  );
                 },
                 text: 'Save tag(s)',
               ),
@@ -250,32 +227,33 @@ class _BlogSettingsState extends State<BlogSettings> {
     );
   }
 
-  void _updateBlogSettings(
-      {required String blogId,
-      bool isPublished = false,
-      bool enableLikes = false,
-      bool enableCommenting = false,
-      bool isPublic = false,
-      String? tags,
-      String? publishedDate,
-      required Function() onUpdated}) {
+  void _updateBlogSettings({
+    String? publishedDate,
+    bool isPublic = false,
+    bool isPublished = false,
+    bool enableLikes = false,
+    required Function() onUpdated,
+    bool enableCommenting = false,
+  }) {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
     UserPostAuth()
-        .updateBlogSettings(
-            blogId: blogId,
-            isPublished: isPublished,
-            enableLikes: enableLikes,
-            enableCommenting: enableCommenting,
-            isPublic: isPublic,
-            tags: tags,
-            publishedDate: publishedDate)
+        .updateBlogPost(
+      tags: userTags,
+      isPublic: isPublic,
+      isPublished: isPublished,
+      enableLikes: enableLikes,
+      blogId: widget.userPost.id!,
+      publishedDate: publishedDate,
+      enableCommenting: enableCommenting,
+    )
         .then(
       (updated) {
         if (updated) {
           Navigator.pop(context);
+          showToast(message: 'Updated');
           onUpdated();
         } else {
           Navigator.pop(context);
@@ -286,82 +264,6 @@ class _BlogSettingsState extends State<BlogSettings> {
       (e) {
         print('Update blog settings catch error ---> $e');
       },
-    );
-  }
-}
-
-class BlogSettingsTitles extends StatefulWidget {
-  final Function()? onTap;
-  bool? isSwitched;
-  final Widget icon;
-  final String title;
-  final bool hasSwitch;
-  final String description;
-  final Widget? trailingWidget;
-  final Function(bool isSwitched)? onChanged;
-  BlogSettingsTitles(
-      {required this.icon,
-      required this.title,
-      this.onChanged,
-      this.onTap,
-      this.isSwitched,
-      required this.description,
-      this.hasSwitch = true,
-      this.trailingWidget,
-      Key? key})
-      : super(key: key);
-
-  @override
-  State<BlogSettingsTitles> createState() => _BlogSettingsTitlesState();
-}
-
-class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        onTap: widget.onTap,
-        contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        leading: CircleAvatar(
-          backgroundColor: lightGrey,
-          child: widget.icon,
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.title,
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-              overflow: TextOverflow.fade,
-              softWrap: false,
-            ),
-            Text(
-              widget.description,
-              style: TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-        trailing: widget.hasSwitch
-            ? Switch(
-                activeColor: navyBlue,
-                value: widget.isSwitched!,
-                onChanged: widget.onChanged,
-                activeTrackColor: navyBlueLight,
-                inactiveTrackColor: navyBlueLight,
-              )
-            : widget.trailingWidget ?? SizedBox.shrink(),
-      ),
     );
   }
 }

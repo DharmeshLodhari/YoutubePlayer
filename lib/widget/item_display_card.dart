@@ -175,7 +175,7 @@ Widget displayService(
                 children: [
                   Expanded(
                     child: Text(
-                      service.name!,
+                      messageDecoderWithEmoji(service.name) ?? "",
                       style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
@@ -215,7 +215,7 @@ Widget displayService(
                 children: [
                   Expanded(
                     child: Text(
-                      service.shortDescription ?? "",
+                      messageDecoderWithEmoji(service.shortDescription) ?? "",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
