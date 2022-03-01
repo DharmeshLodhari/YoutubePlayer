@@ -53,6 +53,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (widget.userPost != null) {
       isPublic = widget.userPost!.publicRead!;
       enableLikes = widget.userPost!.enableLike!;
+      isPublished = widget.userPost!.isPublished!;
       publishedDateTime = widget.userPost!.publishedDate;
       userTags = List<String>.from(widget.userPost!.tags!);
       enableCommenting = widget.userPost!.enableCommenting!;
@@ -261,8 +262,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     hasSwitch: false,
                     addElevation: false,
                     trailingWidget: finalDateTime_dialog != null
-                        ? Text(
-                            DateFormat('yMd H:m').format(finalDateTime_dialog!))
+                        ? Text(DateFormat('yyyy-MM-dd H:m')
+                            .format(finalDateTime_dialog!))
                         : Text(''),
                     onTap: () async {
                       datePicked = await showDatePicker(
@@ -271,16 +272,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           initialDate: DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2030));
-                      print('CURRENT DATE TIME ----> ${DateTime.now()}');
-                      print('DATE PICKED: $datePicked}');
-                      String formattedDate = dateFormat.format(datePicked!);
-                      print('FILTER DATE ----> $formattedDate');
 
                       timePicked = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.now(),
                       );
-                      print('TIME PICKED ----> $timePicked');
                       publishedDateTime = DateTime(
                           datePicked!.year,
                           datePicked!.month,
@@ -315,18 +311,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       tagCancelIcon:
                           Icon(SlydoAppIcon.close_2, color: blackFont),
                     ),
-                    textFieldStyler: TextFieldStyler(),
+                    textFieldStyler: TexusertFieldStyler(),
                     onTag: (tag) {
                       userTags.add(tag);
                       setState(() {
                         userTags_dialog.add(tag);
                       });
+                      userTags.removeWhere((tag) => tag.isEmpty);
                     },
                     onDelete: (tag) {
                       userTags.remove(tag);
                       setState(() {
                         userTags_dialog.remove(tag);
                       });
+                      userTags.removeWhere((tag) => tag.isEmpty);
                     },
                   ),
                 ],
@@ -408,7 +406,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     SizedBox(height: 10),
                     Text(
                       'Body of your blog',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(
                       height: 100,

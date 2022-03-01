@@ -539,7 +539,7 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
 
         if (deleted) {
           Navigator.pop(context); // Dismiss user post detail page
-          showToast(message: 'Deleted');
+          showToast(message: 'Post Deleted');
         } else {
           showToast(message: 'Something went wrong, please try again');
         }
