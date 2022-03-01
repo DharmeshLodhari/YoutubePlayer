@@ -350,9 +350,15 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
               ),
             ],
           ),
-          CustomChip(
-            text: "5 min read",
-          )
+          userPost?.readTime != null
+              ? userPost?.readTime! == 0
+                  ? CustomChip(
+                      text: '1 min read',
+                    )
+                  : CustomChip(
+                      text: '${userPost!.readTime!} min read',
+                    )
+              : SizedBox.shrink()
         ],
       ),
     );

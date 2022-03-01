@@ -40,7 +40,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   DateTime? datePicked;
   TimeOfDay? timePicked;
   bool isPublic = false;
-  DateTime? finalDateTime;
+  DateTime? publishedDateTime;
   bool isPublished = false;
   bool enableLikes = false;
   List<String> userTags = [];
@@ -51,6 +51,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   void initState() {
     super.initState();
     if (widget.userPost != null) {
+      isPublic = widget.userPost!.publicRead!;
+      enableLikes = widget.userPost!.enableLike!;
+      publishedDateTime = widget.userPost!.publishedDate;
+      userTags = List<String>.from(widget.userPost!.tags!);
+      enableCommenting = widget.userPost!.enableCommenting!;
       blogTitleCtrl = TextEditingController(text: widget.userPost!.title);
       blogTagLineCtrl = TextEditingController(text: widget.userPost!.tagLine);
       _quillBodyTextController = flutterQuill.QuillController(
@@ -111,7 +116,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       title: Text(
         widget.userPost == null
             ? AppLocalization.of(context)!.createPost
-            : AppLocalization.of(context)!.editPost,
+            : AppLocalization.of(context)!.post,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -119,14 +124,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         SizedBox(
           width: 16,
         ),
-        widget.userPost != null
-            ? TextButton(
-                child: Text(AppLocalization.of(context)!.post),
-                onPressed: () {
-                  submitBlogPost();
-                },
-              )
-            : menuIcon()
+        menuIcon()
       ],
     );
   }
@@ -167,7 +165,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     bottomSheetItem(
-                      title: AppLocalization.of(context)!.createAPost,
+                      title: widget.userPost != null
+                          ? AppLocalization.of(context)!.editPost
+                          : AppLocalization.of(context)!.createAPost,
                       icon: Icons.public_outlined,
                       onTap: () {
                         Navigator.pop(context);
@@ -196,7 +196,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         bool isPublished_dialog = isPublished;
         bool enableLikes_dialog = enableLikes;
         List<String> userTags_dialog = userTags;
-        DateTime? finalDateTime_dialog = finalDateTime;
+        DateTime? finalDateTime_dialog = publishedDateTime;
         bool enableCommenting_dialog = enableCommenting;
         return AlertDialog(
           backgroundColor: Colors.white,
@@ -281,7 +281,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         initialTime: TimeOfDay.now(),
                       );
                       print('TIME PICKED ----> $timePicked');
-                      finalDateTime = DateTime(
+                      publishedDateTime = DateTime(
                           datePicked!.year,
                           datePicked!.month,
                           datePicked!.day,
@@ -289,8 +289,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           timePicked!.minute);
 
                       print(
-                          'FINAL DATE TIME -----> ${finalDateTime.toString()}');
-                      setState(() => finalDateTime_dialog = finalDateTime);
+                          'FINAL DATE TIME -----> ${publishedDateTime.toString()}');
+                      setState(() => finalDateTime_dialog = publishedDateTime);
                       // '2022-02-28T13:35:43.590377+01:00'
                       // setState(() {});
                       // _onRefresh();
@@ -495,7 +495,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             tagLine: blogTagLineCtrl.text,
             blogImage: _imageFile != null ? File(_imageFile!) : null,
             isPublic: isPublic,
-            publishedDate: finalDateTime.toString(),
+            publishedDate: publishedDateTime.toString(),
             isPublished: isPublished,
             enableLikes: enableLikes,
             enableCommenting: enableCommenting,
@@ -522,6 +522,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   _updateBlog() {
     UserPostAuth()
         .updateBlogPost(
+            tags: userTags,
+            isPublic: isPublic,
+            isPublished: isPublished,
+            enableLikes: enableLikes,
+            publishedDate: publishedDateTime.toString(),
+            enableCommenting: enableCommenting,
             title: blogTitleCtrl.text,
             tagLine: blogTagLineCtrl.text,
             blogImage: _imageFile != null ? File(_imageFile!) : null,

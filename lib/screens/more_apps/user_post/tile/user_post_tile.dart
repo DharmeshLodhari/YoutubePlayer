@@ -1,4 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -83,7 +84,20 @@ class _PostTileState extends State<PostTile> {
                           setState(() {});
                         },
                       ),
-                    )
+                    ),
+                    widget.post!.isPublished!
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            left: 10,
+                            top: 10,
+                            child: CustomChip(
+                              textColor: blackFont,
+                              color: starYellow,
+                              text: 'Unpublished',
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 4, vertical: 4),
+                            ),
+                          ),
                   ],
                 ),
                 Container(
