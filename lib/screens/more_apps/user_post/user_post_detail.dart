@@ -57,26 +57,6 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
     } catch (e) {}
 
     super.initState();
-    getResult();
-  }
-
-  void getResult() async {
-    isLoading = true;
-    if (mounted) {
-      setState(() {});
-    }
-
-    // newsDetailItem = await NewsAuthService().getNewsDetail();
-
-    isLoading = false;
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -219,16 +199,16 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
       ),
     );
 
-    list.add(
-      bottomSheetItem(
-        title: AppLocalization.of(context)!.postSettings,
-        icon: SlydoAppIcon.settings,
-        onTap: () {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, '/blog-settings', arguments: userPost);
-        },
-      ),
-    );
+    // list.add(
+    //   bottomSheetItem(
+    //     title: AppLocalization.of(context)!.postSettings,
+    //     icon: SlydoAppIcon.settings,
+    //     onTap: () {
+    //       Navigator.pop(context);
+    //       Navigator.pushNamed(context, '/blog-settings', arguments: userPost);
+    //     },
+    //   ),
+    // );
 
     return list;
   }
@@ -527,8 +507,6 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
   }
 
   void _deleteBlogPost({required String blogId}) {
-    print('show dialog----->');
-
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());

@@ -19,6 +19,7 @@ dependencies:
   path_provider: ^2.0.5
   textfield_tags: ^1.4.2
   qr_code_scanner: ^0.5.2
+
   page_view_indicators: ^2.0.0
   image_picker: ^0.8.4+2
   firebase_crashlytics: ^2.2.1

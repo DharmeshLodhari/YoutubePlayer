@@ -1230,6 +1230,13 @@ class AppLocalization {
     );
   }
 
+  String get selectTheVideoSource {
+    return Intl.message(
+      "Select the video Source",
+      name: "selectTheVideoSource",
+    );
+  }
+
   String get camera {
     return Intl.message(
       "Camera",

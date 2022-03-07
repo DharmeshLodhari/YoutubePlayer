@@ -3,11 +3,18 @@ import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/post_detail_page.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
+
+import '../../../../utils/video_player_controller/chewie_player.dart';
 
 class PostTile extends StatefulWidget {
   UserPost? post;
@@ -25,6 +32,29 @@ class _PostTileState extends State<PostTile> {
   UserBloc? userBloc;
   bool isAuthor = false;
   bool isSelected = false;
+  ChewieController? _chewieMainController;
+  VideoPlayerController? _mainVideoController;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.post?.video != null) {
+      _mainVideoController = VideoPlayerController.network(widget.post!.video!);
+
+      _chewieMainController = ChewieController(
+          videoPlayerController: _mainVideoController!,
+          aspectRatio: 16 / 9,
+          allowFullScreen: false,
+          systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+          autoInitialize: true,
+          materialProgressColors: ChewieProgressColors(
+            backgroundColor: Colors.transparent,
+            handleColor: Colors.transparent,
+            bufferedColor: Colors.transparent,
+            playedColor: Colors.transparent,
+          ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +68,19 @@ class _PostTileState extends State<PostTile> {
   Widget _buildUserPostList() {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/user-post-detail", arguments: {
-          "post": widget.post!,
-          "postOfUser": widget.postOfUser!
-        });
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return PostDetailPage(
+            postType: PostType.blog,
+            blogPostArguments: {
+              "post": widget.post!,
+              "postOfUser": widget.postOfUser,
+            },
+          );
+        }));
+        // Navigator.of(context).pushNamed("/user-post-detail", arguments: {
+        //   "post": widget.post!,
+        //   "postOfUser": widget.postOfUser!
+        // });
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -60,13 +99,17 @@ class _PostTileState extends State<PostTile> {
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),
                       ),
-                      child: CachedNetworkImage(
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.fill,
-                        errorWidget: imageErrorWidget,
-                        imageUrl: widget.post?.image ?? "",
-                      ),
+                      child: widget.post?.video != null
+                          ? Chewie(
+                              controller: _chewieMainController!,
+                            )
+                          : CachedNetworkImage(
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.fill,
+                              errorWidget: imageErrorWidget,
+                              imageUrl: widget.post?.image ?? "",
+                            ),
                     ),
                     Positioned(
                       right: 0,

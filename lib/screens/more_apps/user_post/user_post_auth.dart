@@ -18,7 +18,8 @@ class UserPostAuth extends AuthService {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
 
-      print('USER POST JSON ----> ${jsonData}');
+      print('USER POST JSON ----> ${jsonData['results'][0]}');
+      print('SECOND USER POST JSON ----> ${jsonData['results'][1]}');
       return jsonData;
     }
     debugPrint(
@@ -26,10 +27,36 @@ class UserPostAuth extends AuthService {
     return Future.error("${response.body}");
   }
 
-  Future<bool> createBlogPost({
+  Future<List<UserPost>> getSimilarPosts({required String postID}) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/social/posts/list-similar-post/$postID/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      List jsonData = jsonDecode(response.body)['results'];
+      print('JSON RESULT :::: $jsonData');
+
+      List<UserPost> userPostList =
+          jsonData.map((json) => UserPost.fromJson(json)).toList();
+
+      return userPostList;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return Future.error("${response.body}");
+    }
+  }
+
+  Future<bool> _postBlogWithMedia({
     required String title,
     required String tagLine,
-    File? blogImage,
+    required String authorUserName,
+    String? blogId,
+    bool isUpdating = false,
+    required File blogImage,
+    File? blogVideo,
     List<String>? tags,
     required String blogPostBody,
     bool isPublic = false,
@@ -38,170 +65,207 @@ class UserPostAuth extends AuthService {
     bool enableLikes = false,
     bool enableCommenting = false,
   }) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/";
+    var urlToPostBlog = AppConfig.baseUrl + "/api/v1/social/posts/";
+    var urlToUpdateBlog = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
     var headers = await getAuthHeaders();
 
-    if (blogImage != null) {
-      var blogImagePath = blogImage.path;
-      //create multipart request for POST or PATCH method
-      var request = http.MultipartRequest("POST", Uri.parse(url));
+    String? blogImagePath;
+    String? blogVideoPath;
+    http.MultipartFile imageMultipartFile;
+    http.MultipartFile videoMultipartFile;
+    var request =
+        http.MultipartRequest(isUpdating ? "PATCH" : "POST", Uri.parse(url));
 
-      //add fields
-      if (tags != null) {
-        request.fields["tags"] = jsonEncode(tags);
-      }
-      request.fields["title"] = title;
-      request.fields["tag_line"] = tagLine;
-      request.fields["text"] = blogPostBody;
-      request.fields['public_read'] = jsonEncode(isPublic);
-      request.fields['enable_like'] = jsonEncode(enableLikes);
-      request.fields['is_published'] = jsonEncode(isPublished);
-      request.fields['enable_commenting'] = jsonEncode(enableCommenting);
+    blogImagePath = blogImage.path;
+    imageMultipartFile =
+        await http.MultipartFile.fromPath("image", blogImagePath);
+    request.files.add(imageMultipartFile);
 
-      //create multipart using filepath, string or bytes.
-      var multipartFile =
-          await http.MultipartFile.fromPath("image", blogImagePath);
+    if (blogVideo != null) {
+      blogVideoPath = blogVideo.path;
+      videoMultipartFile =
+          await http.MultipartFile.fromPath("video", blogVideoPath);
+      request.files.add(videoMultipartFile);
+    }
 
-      //add multipart to request
-      request.files.add(multipartFile);
-      headers.forEach((k, v) => request.headers[k] = v);
-      var response = await request.send();
+    //add fields
+    if (tags != null) {
+      request.fields["tags"] = jsonEncode(tags);
+    }
+    request.fields["title"] = title;
+    request.fields["tag_line"] = tagLine;
+    request.fields["text"] = blogPostBody;
+    request.fields["author_username"] = authorUserName;
+    request.fields['public_read'] = jsonEncode(isPublic);
+    request.fields['enable_like'] = jsonEncode(enableLikes);
+    request.fields['is_published'] = jsonEncode(isPublished);
+    request.fields['enable_commenting'] = jsonEncode(enableCommenting);
 
-      if (response.statusCode == 413) {
-        return Future.error(
-            "Please upload smaller image, This image is too large.");
-      }
-      var responseBody = await response.stream.bytesToString();
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
-      print('CREATE BLOG RESPONSE ----> $responseBody');
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
 
-      if (response.statusCode == 201) {
-        return true;
-      } else {
-        return Future.error(
-            "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
-      }
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller video, This video is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return true;
     } else {
-      Map<String, dynamic> _body = {
-        "tag_line": tagLine,
-        "title": title,
-        "text": blogPostBody,
-        'public_read': isPublic,
-        'enable_like': enableLikes,
-        'is_published': isPublished,
-        'enable_commenting': enableCommenting,
-      };
-      if (tags != null) {
-        _body['tags'] = tags;
-      }
-      var response =
-          await httpPost(url, headers: headers, body: jsonEncode(_body));
-      print('CREATE BLOG RESPONSE ----> ${response.body}');
-      return response.statusCode == 201;
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
     }
   }
 
-  Future<bool> updateBlogPost({
-    String? title,
-    String? tagLine,
-    File? blogImage,
+  Future<bool> createOrUpdateBlogPost({
+    String? blogId,
+    required File blogImage,
+    File? blogVideo,
     List<String>? tags,
-    String? blogPostBody,
+    required String title,
     bool isPublic = false,
     String? publishedDate,
-    required String blogId,
+    required String tagLine,
     bool isPublished = false,
     bool enableLikes = false,
+    required bool isUpdating,
+    required String blogPostBody,
     bool enableCommenting = false,
+    required String authorUserName,
   }) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+    http.Response? response;
+    var urlToPostBlog = AppConfig.baseUrl + "/api/v1/social/posts/";
+    var urlToUpdateBlog = AppConfig.baseUrl + "/api/v1/social/posts/$blogId";
+    String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
+
     var headers = await getAuthHeaders();
 
-    if (blogImage != null) {
-      var blogImagePath = blogImage.path;
-      //create multipart request for POST or PATCH method
-      var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    return _postBlogWithMedia(
+      tags: tags,
+      title: title,
+      blogId: blogId,
+      tagLine: tagLine,
+      isPublic: isPublic,
+      blogImage: blogImage,
+      blogVideo: blogVideo,
+      isUpdating: isUpdating,
+      isPublished: isPublished,
+      enableLikes: enableLikes,
+      blogPostBody: blogPostBody,
+      publishedDate: publishedDate,
+      authorUserName: authorUserName,
+      enableCommenting: enableCommenting,
+    );
 
-      request.fields['public_read'] = jsonEncode(isPublic);
-      request.fields['enable_like'] = jsonEncode(enableLikes);
-      request.fields['is_published'] = jsonEncode(isPublished);
-      request.fields['enable_commenting'] = jsonEncode(enableCommenting);
-      if (title != null) {
-        request.fields['title'] = title;
-      }
+    // if (blogImage != null || blogVideo != null) {
+    //   return _postBlogWithMedia(
+    //     tags: tags,
+    //     title: title,
+    //     blogId: blogId,
+    //     tagLine: tagLine,
+    //     isPublic: isPublic,
+    //     blogImage: blogImage,
+    //     blogVideo: blogVideo,
+    //     isUpdating: isUpdating,
+    //     isPublished: isPublished,
+    //     enableLikes: enableLikes,
+    //     blogPostBody: blogPostBody,
+    //     publishedDate: publishedDate,
+    //     authorUserName: authorUserName,
+    //     enableCommenting: enableCommenting,
+    //   );
+    // }
 
-      if (tagLine != null) {
-        request.fields['tag_line'] = tagLine;
-      }
-      if (tags != null) {
-        request.fields['tags'] = jsonEncode(tags);
-      }
-      if (blogPostBody != null) {
-        request.fields['text'] = blogPostBody;
-      }
-      if (publishedDate != null) {
-        request.fields['published_date'] = publishedDate;
-      }
-
-      //create multipart using filepath, string or bytes.
-      var multipartFile =
-          await http.MultipartFile.fromPath("image", blogImagePath);
-
-      //add multipart to request
-      request.files.add(multipartFile);
-      headers.forEach((k, v) => request.headers[k] = v);
-      var response = await request.send();
-
-      if (response.statusCode == 413) {
-        return Future.error(
-            "Please upload smaller image, This image is too large.");
-      }
-      var responseBody = await response.stream.bytesToString();
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
-      print('CREATE BLOG RESPONSE ----> $responseBody');
-
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return Future.error(
-            "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
-      }
-    } else {
-      Map<String, dynamic> body = {
-        'public_read': isPublic,
-        'enable_like': enableLikes,
-        'is_published': isPublished,
-        'enable_commenting': enableCommenting,
-      };
-      if (title != null) {
-        body['title'] = title;
-      }
-      if (tagLine != null) {
-        body['tag_line'] = tagLine;
-      }
-      if (tags != null) {
-        body['tags'] = tags;
-      }
-      if (blogPostBody != null) {
-        body['text'] = blogPostBody;
-      }
-      if (publishedDate != null) {
-        body['published_date'] = publishedDate;
-      }
-      var response =
-          await httpPatch(url, headers: headers, body: jsonEncode(body));
-
-      print('UPDATE BLOG SETTINGS -----> ${response.body}');
-
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
-      }
-    }
+    // else {
+    //   Map<String, dynamic> body = {
+    //     "title": title,
+    //     "tag_line": tagLine,
+    //     "text": blogPostBody,
+    //     'public_read': isPublic,
+    //     'enable_like': enableLikes,
+    //     'is_published': isPublished,
+    //     'authorUserName': authorUserName,
+    //     'enable_commenting': enableCommenting,
+    //   };
+    //   if (tags != null) {
+    //     body['tags'] = tags;
+    //   }
+    //   if (isUpdating) {
+    //     response =
+    //         await httpPatch(url, headers: headers, body: jsonEncode(body));
+    //     print('UPDATE BLOG SETTINGS -----> ${response.body}');
+    //     return response.statusCode == 200;
+    //   } else {
+    //     response =
+    //         await httpPost(url, headers: headers, body: jsonEncode(body));
+    //     print('CREATE BLOG RESPONSE ----> ${response.body}');
+    //     return response.statusCode == 201;
+    //   }
+    // }
   }
+
+  // Future<bool> updateBlogPost({
+  //   File? blogImage,
+  //   File? blogVideo,
+  //   List<String>? tags,
+  //   required String title,
+  //   bool isPublic = false,
+  //   String? publishedDate,
+  //   required String blogId,
+  //   required String tagLine,
+  //   bool isPublished = false,
+  //   bool enableLikes = false,
+  //   required String blogPostBody,
+  //   bool enableCommenting = false,
+  //
+  // }) async {
+  //   var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
+  //   var headers = await getAuthHeaders();
+  //
+  //   if (blogImage != null || blogVideo != null) {
+  //     return _postBlogWithMedia(
+  //       tags: tags,
+  //       title: title,
+  //       tagLine: tagLine,
+  //       isUpdating: true,
+  //       isPublic: isPublic,
+  //       blogImage: blogImage,
+  //       blogVideo: blogVideo,
+  //       isPublished: isPublished,
+  //       enableLikes: enableLikes,
+  //       blogPostBody: blogPostBody,
+  //       publishedDate: publishedDate,
+  //       enableCommenting: enableCommenting,
+  //     );
+  //   } else {
+  //     Map<String, dynamic> body = {
+  //       "title": title,
+  //       "tag_line": tagLine,
+  //       "text": blogPostBody,
+  //       'public_read': isPublic,
+  //       'enable_like': enableLikes,
+  //       'is_published': isPublished,
+  //       'enable_commenting': enableCommenting,
+  //     };
+  //     if (tags != null) {
+  //       body['tags'] = tags;
+  //     }
+  //     var response =
+  //         await httpPatch(url, headers: headers, body: jsonEncode(body));
+  //
+  //     print('UPDATE BLOG SETTINGS -----> ${response.body}');
+  //
+  //     if (response.statusCode == 200) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }
+  // }
 
   Future<bool> deleteBlog({required String blogId}) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";

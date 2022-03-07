@@ -156,7 +156,7 @@ class _UserPostListState extends State<UserPostList> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: PostTile(
-                    post: postList[index],
+                    post: postList.reversed.toList()[index],
                     postOfUser: widget.user,
                   ),
                 );

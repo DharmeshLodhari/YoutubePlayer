@@ -34,34 +34,39 @@ class CustomizedTextFormField extends StatefulWidget {
   int? maxLength;
   int? maxLines;
   FocusNode? focusNode;
+  EdgeInsets contentPadding;
+  bool showLabelOrPassword;
   TextCapitalization textCapitalization;
 
-  CustomizedTextFormField(
-      {this.hasBorder = true,
-      this.hasLabel = true,
-      this.textInputAction,
-      this.validator,
-      this.onChanged,
-      this.textStyle,
-      this.onTap,
-      this.onFieldSubmitted,
-      this.controller,
-      this.buildCounterWidget,
-      this.isNumberOnlyInput = false,
-      this.keyboardType = TextInputType.text,
-      this.obscureText = false,
-      this.isPassword = false,
-      this.isReadOnly = false,
-      this.isAmount = false,
-      this.labelText = "",
-      this.hintText = "",
-      this.labelColor,
-      this.maxLength,
-      this.maxLines = 1,
-      this.focusNode,
-      this.enabled = true,
-      this.textCapitalization = TextCapitalization.none,
-      this.inputFormatters});
+  CustomizedTextFormField({
+    this.hasBorder = true,
+    this.hasLabel = true,
+    this.textInputAction,
+    this.validator,
+    this.onChanged,
+    this.textStyle,
+    this.onTap,
+    this.onFieldSubmitted,
+    this.controller,
+    this.buildCounterWidget,
+    this.showLabelOrPassword = true,
+    this.isNumberOnlyInput = false,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
+    this.isPassword = false,
+    this.isReadOnly = false,
+    this.isAmount = false,
+    this.labelText = "",
+    this.hintText = "",
+    this.labelColor,
+    this.maxLength,
+    this.maxLines = 1,
+    this.focusNode,
+    this.enabled = true,
+    this.textCapitalization = TextCapitalization.none,
+    this.inputFormatters,
+    this.contentPadding = const EdgeInsets.symmetric(vertical: 10),
+  });
 
   @override
   _CustomizedTextFormFieldState createState() =>
@@ -74,40 +79,44 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            widget.hasLabel
-                ? Text(
-                    widget.labelText,
-                    style: TextStyle(
-                        color: widget.labelColor != null
-                            ? widget.labelColor
-                            : darkGrey,
-                        fontSize: 14),
-                  )
-                : SizedBox.shrink(),
-            widget.hasLabel
-                ? SizedBox(
-                    height: 6,
-                  )
-                : SizedBox.shrink(),
-            widget.isPassword
-                ? Text(
-                    "${widget.controller!.text.toString().length}/6",
-                    style: TextStyle(
-                      color: widget.labelColor != null
-                          ? widget.labelColor
-                          : darkGrey,
-                      fontSize: 14,
-                    ),
-                  )
-                : Container(),
-          ],
-        ),
-        SizedBox(
-          height: 6,
-        ),
+        widget.showLabelOrPassword
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  widget.hasLabel
+                      ? Text(
+                          widget.labelText,
+                          style: TextStyle(
+                              color: widget.labelColor != null
+                                  ? widget.labelColor
+                                  : darkGrey,
+                              fontSize: 14),
+                        )
+                      : SizedBox.shrink(),
+                  widget.hasLabel
+                      ? SizedBox(
+                          height: 6,
+                        )
+                      : SizedBox.shrink(),
+                  widget.isPassword
+                      ? Text(
+                          "${widget.controller!.text.toString().length}/6",
+                          style: TextStyle(
+                            color: widget.labelColor != null
+                                ? widget.labelColor
+                                : darkGrey,
+                            fontSize: 14,
+                          ),
+                        )
+                      : Container(),
+                ],
+              )
+            : SizedBox.shrink(),
+        widget.hasLabel
+            ? SizedBox(
+                height: 6,
+              )
+            : SizedBox.shrink(),
         TextFormField(
           onFieldSubmitted: widget.onFieldSubmitted,
           textInputAction: widget.textInputAction,
@@ -171,7 +180,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                   )
                 : null,
             border: widget.hasBorder ? null : InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            contentPadding: widget.contentPadding,
             enabledBorder: widget.hasBorder
                 ? OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),

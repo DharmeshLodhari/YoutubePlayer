@@ -101,9 +101,11 @@ class NewsAuthService extends AuthService {
           "End SARS: See how Nigeria anti-police brutality protests go global",
       "poster":
           "https://cms.qz.com/wp-content/uploads/2018/06/RTR44FE-e1529169440642.jpg?quality=75&strip=all&w=800&h=600",
+      "image":
+          "https://slydo-assets.s3.amazonaws.com/media/post_image/image_cropper_1646052100803.jpg",
       "video":
           "https://rawcdn.githack.com/BlackStriker99/slydo-mock-data/a1f539f00f21c4cb3ac1cb76269f6a36ff6922d7/y2mate.com - Nigerians protesting anti-police brutality bring Lagos to standstill_480p.mp4?raw=true",
-      "read": "5 mins",
+      "read": 5,
       "author": "Blogger",
       "author_avatar": "https://i.imgur.com/cVDadwb.png",
       "upload_time": "June 01",

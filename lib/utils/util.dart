@@ -13,6 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
 
 import '../locale/app_localization.dart';
 import '../widget/LoadingIndicator.dart';
@@ -21,6 +22,63 @@ import 'colors.dart';
 
 export 'colors.dart';
 export 'common.dart';
+
+enum MediaType { picture, video }
+
+Future<String?> getFile(BuildContext context,
+    {MediaType fileType = MediaType.picture}) async {
+  String? videoPath;
+  String? croppedImage;
+
+  final fileSource = await showDialog<ImageSource>(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      title: Text(
+        fileType == MediaType.picture
+            ? AppLocalization.of(context)!.selectTheImageSource
+            : AppLocalization.of(context)!.selectTheVideoSource,
+        style: TextStyle(fontSize: 18, color: blackFont),
+      ),
+      actions: <Widget>[
+        MaterialButton(
+          child: Text(
+            AppLocalization.of(context)!.camera,
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.camera),
+        ),
+        MaterialButton(
+          child: Text(
+            "Gallery",
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.gallery),
+        ),
+      ],
+    ),
+  );
+
+  if (fileSource != null) {
+    if (fileType == MediaType.picture) {
+      final file =
+          await ImagePicker().pickImage(source: fileSource, imageQuality: 70);
+      if (file != null) {
+        /// for cropping the image
+        croppedImage = await ImageCrop().cropImage(file.path);
+        if (croppedImage == null) {
+          return null;
+        }
+      }
+    } else {
+      final file = await ImagePicker().pickVideo(source: fileSource);
+      if (file != null) {
+        return file.path;
+      }
+    }
+  }
+  return fileType == MediaType.picture ? croppedImage : videoPath;
+}
 
 Future<String?> getCroppedImage(BuildContext context) async {
   String? croppedImage;

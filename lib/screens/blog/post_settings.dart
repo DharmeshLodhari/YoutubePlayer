@@ -45,225 +45,229 @@ class _PostSettingsState extends State<PostSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar() as PreferredSizeWidget?,
-      body: _scaffoldBody(),
-    );
+    return Scaffold();
   }
-
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      titleSpacing: 0,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        AppLocalization.of(context)!.settings,
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget _scaffoldBody() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BlogSettingsTitles(
-              title: 'Make Public',
-              description:
-                  'Your post will become public to your friends and everyone',
-              isSwitched: isPublic,
-              icon: Icon(Icons.public_outlined, color: blackFont),
-              onChanged: (makePostPublic) {
-                _updateBlogSettings(
-                  onUpdated: () {
-                    setState(() => isPublic = makePostPublic);
-                  },
-                  isPublic: makePostPublic,
-                );
-              },
-            ),
-            BlogSettingsTitles(
-              title: 'Publish',
-              description: 'Your post will be published',
-              isSwitched: isPublished,
-              icon: Icon(
-                Icons.published_with_changes_outlined,
-                color: blackFont,
-              ),
-              onChanged: (publishPost) {
-                _updateBlogSettings(
-                    onUpdated: () {
-                      setState(() => isPublished = publishPost);
-                    },
-                    isPublished: publishPost);
-              },
-            ),
-            BlogSettingsTitles(
-              title: 'Enable Comments',
-              description: 'Everyone will be able to comment on your post',
-              isSwitched: enableCommenting,
-              icon: Icon(Icons.message_rounded, color: blackFont),
-              onChanged: (commentingEnabled) {
-                _updateBlogSettings(
-                    onUpdated: () {
-                      setState(() => enableCommenting = commentingEnabled);
-                    },
-                    enableCommenting: enableCommenting);
-              },
-            ),
-            BlogSettingsTitles(
-              title: 'Enable Likes',
-              description: 'Everyone will be able to like your post',
-              isSwitched: enableLikes,
-              icon: Icon(Icons.thumb_up, color: blackFont),
-              onChanged: (likeEnabled) {
-                _updateBlogSettings(
-                  enableLikes: likeEnabled,
-                  onUpdated: () {
-                    setState(() => enableLikes = likeEnabled);
-                  },
-                );
-              },
-            ),
-            BlogSettingsTitles(
-              hasSwitch: false,
-              onTap: () async {
-                datePicked = await showDatePicker(
-                    builder: customThemeBuilder,
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2030));
-                print('CURRENT DATE TIME ----> ${DateTime.now()}');
-                print('DATE PICKED: $datePicked}');
-                String formattedDate = dateFormat.format(datePicked!);
-                print('FILTER DATE ----> $formattedDate');
-
-                timePicked = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.now(),
-                );
-                print('TIME PICKED ----> $timePicked');
-                DateTime finalDateTime = DateTime(
-                    datePicked!.year,
-                    datePicked!.month,
-                    datePicked!.day,
-                    timePicked!.hour,
-                    timePicked!.minute);
-
-                print('FINAL DATE TIME -----> ${finalDateTime.toString()}');
-
-                _updateBlogSettings(
-                  publishedDate: finalDateTime.toString(),
-                  onUpdated: () {},
-                );
-                // '2022-02-28T13:35:43.590377+01:00'
-                // setState(() {});
-                // _onRefresh();
-              },
-              title: 'Published Date',
-              description: 'Pick a date to publish your post',
-              icon: Icon(Icons.event_outlined, color: blackFont),
-              trailingWidget: widget.userPost.publishedDate != null
-                  ? Text(dateFormat.format(widget.userPost.publishedDate!))
-                  : Text(''),
-            ),
-            SizedBox(height: 10),
-            TextFieldTags(
-              initialTags: userTags,
-              tagsStyler: TagsStyler(
-                tagDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  color: HexColor("#F7F7F9"),
-                ),
-                tagTextStyle: TextStyle(
-                    color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
-                tagCancelIconPadding: EdgeInsets.only(left: 12),
-                tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
-              ),
-              textFieldStyler: TextFieldStyler(),
-              onTag: (tag) {
-                setState(() {
-                  userTags.add(tag);
-                });
-              },
-              onDelete: (tag) {
-                setState(() {
-                  userTags.remove(tag);
-                });
-              },
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: CurvedButton(
-                width: 120,
-                onPressed: () {
-                  userTags.removeWhere((element) => element.isEmpty);
-                  _updateBlogSettings(
-                    onUpdated: () {},
-                  );
-                },
-                text: 'Save tag(s)',
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _updateBlogSettings({
-    String? publishedDate,
-    bool isPublic = false,
-    bool isPublished = false,
-    bool enableLikes = false,
-    required Function() onUpdated,
-    bool enableCommenting = false,
-  }) {
-    showDialog(
-        context: context,
-        builder: (dialogLoadingContext) => LoadingIndicator());
-
-    UserPostAuth()
-        .updateBlogPost(
-      tags: userTags,
-      isPublic: isPublic,
-      isPublished: isPublished,
-      enableLikes: enableLikes,
-      blogId: widget.userPost.id!,
-      publishedDate: publishedDate,
-      enableCommenting: enableCommenting,
-    )
-        .then(
-      (updated) {
-        if (updated) {
-          Navigator.pop(context);
-          showToast(message: 'Updated');
-          onUpdated();
-        } else {
-          Navigator.pop(context);
-          showToast(message: 'Something went wrong, please try again');
-        }
-      },
-    ).catchError(
-      (e) {
-        print('Update blog settings catch error ---> $e');
-      },
-    );
-  }
+  //
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: appBar() as PreferredSizeWidget?,
+  //     body: _scaffoldBody(),
+  //   );
+  // }
+  //
+  // Widget appBar() {
+  //   return AppBar(
+  //     elevation: 0,
+  //     backgroundColor: Colors.white,
+  //     titleSpacing: 0,
+  //     automaticallyImplyLeading: false,
+  //     leading: IconButton(
+  //       icon: Icon(
+  //         Icons.keyboard_arrow_left,
+  //         color: navyBlue,
+  //         size: 24,
+  //       ),
+  //       onPressed: () {
+  //         Navigator.pop(context);
+  //       },
+  //     ),
+  //     title: Text(
+  //       AppLocalization.of(context)!.settings,
+  //       style: TextStyle(
+  //           color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _scaffoldBody() {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(12.0),
+  //     child: SingleChildScrollView(
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           BlogSettingsTitles(
+  //             title: 'Make Public',
+  //             description:
+  //                 'Your post will become public to your friends and everyone',
+  //             isSwitched: isPublic,
+  //             icon: Icon(Icons.public_outlined, color: blackFont),
+  //             onChanged: (makePostPublic) {
+  //               _updateBlogSettings(
+  //                 onUpdated: () {
+  //                   setState(() => isPublic = makePostPublic);
+  //                 },
+  //                 isPublic: makePostPublic,
+  //               );
+  //             },
+  //           ),
+  //           BlogSettingsTitles(
+  //             title: 'Publish',
+  //             description: 'Your post will be published',
+  //             isSwitched: isPublished,
+  //             icon: Icon(
+  //               Icons.published_with_changes_outlined,
+  //               color: blackFont,
+  //             ),
+  //             onChanged: (publishPost) {
+  //               _updateBlogSettings(
+  //                   onUpdated: () {
+  //                     setState(() => isPublished = publishPost);
+  //                   },
+  //                   isPublished: publishPost);
+  //             },
+  //           ),
+  //           BlogSettingsTitles(
+  //             title: 'Enable Comments',
+  //             description: 'Everyone will be able to comment on your post',
+  //             isSwitched: enableCommenting,
+  //             icon: Icon(Icons.message_rounded, color: blackFont),
+  //             onChanged: (commentingEnabled) {
+  //               _updateBlogSettings(
+  //                   onUpdated: () {
+  //                     setState(() => enableCommenting = commentingEnabled);
+  //                   },
+  //                   enableCommenting: enableCommenting);
+  //             },
+  //           ),
+  //           BlogSettingsTitles(
+  //             title: 'Enable Likes',
+  //             description: 'Everyone will be able to like your post',
+  //             isSwitched: enableLikes,
+  //             icon: Icon(Icons.thumb_up, color: blackFont),
+  //             onChanged: (likeEnabled) {
+  //               _updateBlogSettings(
+  //                 enableLikes: likeEnabled,
+  //                 onUpdated: () {
+  //                   setState(() => enableLikes = likeEnabled);
+  //                 },
+  //               );
+  //             },
+  //           ),
+  //           BlogSettingsTitles(
+  //             hasSwitch: false,
+  //             onTap: () async {
+  //               datePicked = await showDatePicker(
+  //                   builder: customThemeBuilder,
+  //                   context: context,
+  //                   initialDate: DateTime.now(),
+  //                   firstDate: DateTime.now(),
+  //                   lastDate: DateTime(2030));
+  //               print('CURRENT DATE TIME ----> ${DateTime.now()}');
+  //               print('DATE PICKED: $datePicked}');
+  //               String formattedDate = dateFormat.format(datePicked!);
+  //               print('FILTER DATE ----> $formattedDate');
+  //
+  //               timePicked = await showTimePicker(
+  //                 context: context,
+  //                 initialTime: TimeOfDay.now(),
+  //               );
+  //               print('TIME PICKED ----> $timePicked');
+  //               DateTime finalDateTime = DateTime(
+  //                   datePicked!.year,
+  //                   datePicked!.month,
+  //                   datePicked!.day,
+  //                   timePicked!.hour,
+  //                   timePicked!.minute);
+  //
+  //               print('FINAL DATE TIME -----> ${finalDateTime.toString()}');
+  //
+  //               _updateBlogSettings(
+  //                 publishedDate: finalDateTime.toString(),
+  //                 onUpdated: () {},
+  //               );
+  //               // '2022-02-28T13:35:43.590377+01:00'
+  //               // setState(() {});
+  //               // _onRefresh();
+  //             },
+  //             title: 'Published Date',
+  //             description: 'Pick a date to publish your post',
+  //             icon: Icon(Icons.event_outlined, color: blackFont),
+  //             trailingWidget: widget.userPost.publishedDate != null
+  //                 ? Text(dateFormat.format(widget.userPost.publishedDate!))
+  //                 : Text(''),
+  //           ),
+  //           SizedBox(height: 10),
+  //           TextFieldTags(
+  //             initialTags: userTags,
+  //             tagsStyler: TagsStyler(
+  //               tagDecoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(4),
+  //                 color: HexColor("#F7F7F9"),
+  //               ),
+  //               tagTextStyle: TextStyle(
+  //                   color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
+  //               tagCancelIconPadding: EdgeInsets.only(left: 12),
+  //               tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+  //             ),
+  //             textFieldStyler: TextFieldStyler(),
+  //             onTag: (tag) {
+  //               setState(() {
+  //                 userTags.add(tag);
+  //               });
+  //             },
+  //             onDelete: (tag) {
+  //               setState(() {
+  //                 userTags.remove(tag);
+  //               });
+  //             },
+  //           ),
+  //           Align(
+  //             alignment: Alignment.centerRight,
+  //             child: CurvedButton(
+  //               width: 120,
+  //               onPressed: () {
+  //                 userTags.removeWhere((element) => element.isEmpty);
+  //                 _updateBlogSettings(
+  //                   onUpdated: () {},
+  //                 );
+  //               },
+  //               text: 'Save tag(s)',
+  //             ),
+  //           )
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // void _updateBlogSettings({
+  //   String? publishedDate,
+  //   bool isPublic = false,
+  //   bool isPublished = false,
+  //   bool enableLikes = false,
+  //   required Function() onUpdated,
+  //   bool enableCommenting = false,
+  // }) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (dialogLoadingContext) => LoadingIndicator());
+  //
+  //   UserPostAuth()
+  //       .updateBlogPost(
+  //     tags: userTags,
+  //     isPublic: isPublic,
+  //     isPublished: isPublished,
+  //     enableLikes: enableLikes,
+  //     blogId: widget.userPost.id!,
+  //     publishedDate: publishedDate,
+  //     enableCommenting: enableCommenting,
+  //   )
+  //       .then(
+  //     (updated) {
+  //       if (updated) {
+  //         Navigator.pop(context);
+  //         showToast(message: 'Updated');
+  //         onUpdated();
+  //       } else {
+  //         Navigator.pop(context);
+  //         showToast(message: 'Something went wrong, please try again');
+  //       }
+  //     },
+  //   ).catchError(
+  //     (e) {
+  //       print('Update blog settings catch error ---> $e');
+  //     },
+  //   );
 }
