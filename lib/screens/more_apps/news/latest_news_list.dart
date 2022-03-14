@@ -103,6 +103,7 @@ class _LatestNewsListState extends State<LatestNewsList> {
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(builder: (context) {
                                   return PostDetailPage(
+                                    postId: '',
                                     postType: PostType.news,
                                   );
                                 }));

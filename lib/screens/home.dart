@@ -218,32 +218,6 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        StreamBuilder(
-            stream: ChatMessageSynchronizer().getChatMessageCountStream,
-            builder: (context, snapshot) {
-              return FutureBuilder(
-                  future: ChatUserManager().checkForChatMessagesCount(),
-                  initialData: false,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data == true) {
-                        return Positioned(
-                          top: 8,
-                          right: -2,
-                          child: ClipOval(
-                            child: Container(
-                              height: 8,
-                              width: 8,
-                              color: naturalGreen,
-                            ),
-                          ),
-                        );
-                      }
-                      return Container();
-                    }
-                    return Container();
-                  });
-            })
       ],
     );
   }
@@ -302,7 +276,7 @@ class _HomeState extends State<Home> {
                 // );
               }
               return Container();
-            })
+            }),
       ],
     );
   }

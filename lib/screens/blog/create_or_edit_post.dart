@@ -250,6 +250,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 hasBorder: false,
                 hasLabel: false,
                 showLabelOrPassword: false,
+                maxLines: null,
                 textStyle: TextStyle(
                   color: blackFont,
                   fontSize: 18,
@@ -299,6 +300,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               getEditor(),
               SizedBox(height: 3),
               getTextEditorWidget(),
+              SizedBox(height: 30),
             ],
           ),
         ),
@@ -374,8 +376,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     UserPostAuth()
         .createOrUpdateBlogPost(
       tags: userTags,
-      isPublic: isPublic,
       blogId: blogId,
+      isPublic: isPublic,
       isPublished: isPublished,
       enableLikes: enableLikes,
       title: blogTitleCtrl.text,
@@ -399,7 +401,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           } else {
             showToast(message: 'Blog post created');
           }
-          Navigator.pop(context); // To go to the user's profile page.
+          Navigator.pop(context, true); // Go to user details page.
         } else {
           showToast(message: 'Something went wrong');
         }
@@ -519,20 +521,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   Widget getTextEditorWidget() {
+    flutterQuill.QuillEditor quillEditor = flutterQuill.QuillEditor(
+      autoFocus: false,
+      controller: _quillBodyTextController,
+      readOnly: false,
+      scrollable: true,
+      expands: false,
+      padding: EdgeInsets.zero,
+      placeholder: 'Tell your story...',
+      scrollController: ScrollController(),
+      focusNode: FocusNode(),
+    );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
-        return flutterQuill.QuillEditor(
-          autoFocus: false,
-          controller: _quillBodyTextController,
-          readOnly: false,
-          scrollable: true,
-          expands: false,
-          padding: EdgeInsets.zero,
-          placeholder: 'Tell your story...',
-          scrollController: ScrollController(),
-          focusNode: FocusNode(),
-        );
-
+        return quillEditor;
         // return flutterQuill.QuillEditor.basic(
         //
         //   controller: _quillBodyTextController,
@@ -542,17 +544,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         return Text(widget.userPost!.text!);
       }
     } else {
-      return flutterQuill.QuillEditor(
-        autoFocus: false,
-        controller: _quillBodyTextController,
-        readOnly: false,
-        scrollable: true,
-        expands: false,
-        padding: EdgeInsets.zero,
-        placeholder: 'Tell your story...',
-        scrollController: ScrollController(),
-        focusNode: FocusNode(),
-      );
+      return quillEditor;
       // return flutterQuill.QuillEditor.basic(
       //   controller: _quillBodyTextController,
       //   readOnly: false, // true for view only mode

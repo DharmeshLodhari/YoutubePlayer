@@ -36,6 +36,7 @@ import 'package:uuid/uuid.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
+import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
@@ -438,6 +439,7 @@ class _DashboardState extends State<Dashboard> {
             title: AppLocalization.of(context)!.qrCode,
           ),
           bottomNavigationBarItem(
+            isChatIcon: true,
             icon: SlydoAppIcon.text_message,
             title: AppLocalization.of(context)!.chat,
           ),
@@ -468,25 +470,71 @@ class _DashboardState extends State<Dashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData? icon, required String title, double? size, Key? key}) {
+      {IconData? icon,
+      required String title,
+      double? size,
+      bool isChatIcon = false,
+      Key? key}) {
     return BottomNavigationBarItem(
-      icon: Container(
-        key: key,
-        height: 50,
-        width: 60,
-        child: Icon(
-          icon,
-          color: blackFont,
-          size: size ?? 16,
-        ),
-      ),
+      icon: isChatIcon
+          ? Stack(
+              children: [
+                Container(
+                  key: key,
+                  height: 50,
+                  width: 60,
+                  child: Icon(
+                    icon,
+                    color: blackFont,
+                    size: size ?? 16,
+                  ),
+                ),
+                StreamBuilder(
+                    stream: ChatMessageSynchronizer().getChatMessageCountStream,
+                    builder: (context, snapshot) {
+                      return FutureBuilder(
+                          future: ChatUserManager().checkForChatMessagesCount(),
+                          initialData: false,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              if (snapshot.data == true) {
+                                return Positioned(
+                                  top: 14,
+                                  right: 18,
+                                  child: ClipOval(
+                                    child: Container(
+                                      height: 8,
+                                      width: 8,
+                                      color: naturalGreen,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return Container();
+                            }
+                            return Container();
+                          });
+                    }),
+              ],
+            )
+          : Container(
+              key: key,
+              height: 50,
+              width: 60,
+              child: Icon(
+                icon,
+                color: blackFont,
+                size: size ?? 16,
+              ),
+            ),
       label: "",
-      activeIcon: activeIcon(icon: icon, title: title),
+      activeIcon: activeIcon(icon: icon, title: title, isChatIcon: isChatIcon),
     );
   }
 
   // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData? icon, required String title}) {
+  Widget activeIcon(
+      {IconData? icon, required String title, bool isChatIcon = false}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
@@ -499,6 +547,8 @@ class _DashboardState extends State<Dashboard> {
             SizedBox(
               height: 4,
             ),
+
+            // TODO: Add icon here.
             Expanded(
               child: Icon(
                 icon,

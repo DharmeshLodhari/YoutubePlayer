@@ -103,12 +103,14 @@ class UserPost {
     map['viewers'] = viewers;
     map['tag_line'] = tagLine;
     map['dislikes'] = dislikes;
-    map['created_at'] = createdAt;
-    map['modified_at'] = modifiedAt;
+    map['created_at'] = createdAt?.toIso8601String();
+
+    map['modified_at'] = modifiedAt?.toIso8601String();
+
     map['enable_like'] = enableLike;
     map['is_published'] = isPublished;
     map['author_avatar'] = authorAvatar;
-    map['published_date'] = publishedDate;
+    map['published_date'] = publishedDate?.toIso8601String();
     map['author_username'] = authorUsername;
     map['enable_commenting'] = enableCommenting;
     return map;

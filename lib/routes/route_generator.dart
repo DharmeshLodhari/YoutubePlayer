@@ -147,8 +147,6 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 
-import '../screens/blog/post_settings.dart';
-
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
@@ -330,16 +328,6 @@ class RouteGenerator {
             userPost: settings.arguments != null
                 ? settings.arguments as UserPost
                 : null,
-          ),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
-      case '/blog-settings':
-        return PageTransition(
-          child: PostSettings(
-            userPost: settings.arguments as UserPost,
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

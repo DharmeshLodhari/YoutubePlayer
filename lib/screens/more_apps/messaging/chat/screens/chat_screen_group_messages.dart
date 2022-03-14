@@ -79,6 +79,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:uuid/uuid.dart';
 
+import '../tiles/post_title_for_chat.dart';
+
 class ChatScreenGroupMessage extends StatefulWidget {
   final arguments;
 
@@ -1008,6 +1010,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void checkMessageToAdd({required String message}) {
+    print('CHECK MESSAGE TO ADD :: $message');
     Map<String, dynamic>? newMessage = jsonDecode(message);
 
     if (messageList.length > 0) {
@@ -1045,6 +1048,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void addMessageToChat({String? message}) {
     messageList.insert(0, message);
+    print('ADDED MESSAGE :::: $message');
 
     ///PlaySoundAccordingToMessageType
     MessageSoundPlayer(message: message).playSound();
@@ -3021,6 +3025,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         finalUI = renderEnvelopeUI(
             message: messageData, chatConversation: chatConversation);
         break;
+      case "blog_post":
+        finalUI = renderPostUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
 
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
@@ -3414,6 +3422,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget getGroupMessage() {
+
+
     try {
       return StickyGroupedListView<String?, DateTime>(
         itemPositionsListener: messageListPositionListener,
@@ -3630,6 +3640,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
     return EnvelopeTileForChat(
         message: message, chatConversation: chatConversation);
+  }
+
+  Widget renderPostUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return PostTileForChat(
+      message: message,
+      chatConversation: chatConversation,
+    );
   }
 
   Widget addToCartWidget({var item}) {
@@ -4472,6 +4490,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
+      print('MESSAGE PAYLOAD :: $payload');
 
       messageController!.text = "";
       if (mounted) setState(() {});

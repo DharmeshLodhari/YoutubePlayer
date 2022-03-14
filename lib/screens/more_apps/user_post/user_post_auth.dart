@@ -18,7 +18,8 @@ class UserPostAuth extends AuthService {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
 
-      print('USER POST JSON ----> ${jsonData['results'][0]}');
+      print(
+          'USER POST JSON ----> ${jsonData['results'][jsonData['results'].length - 2]['tag_line']}');
       print('SECOND USER POST JSON ----> ${jsonData['results'][1]}');
       return jsonData;
     }
@@ -43,10 +44,102 @@ class UserPostAuth extends AuthService {
 
       return userPostList;
     } else {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return Future.error("${response.body}");
     }
+  }
+
+  Future<UserPost> getPost({required String postID}) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/posts/$postID/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint(
+        "URL GET POST $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      return UserPost.fromJson(jsonDecode(response.body));
+    } else {
+      return Future.error("${response.body}");
+    }
+  }
+
+  Future<bool> createOrUpdateBlogPost({
+    String? blogId,
+    required File blogImage,
+    File? blogVideo,
+    List<String>? tags,
+    required String title,
+    bool isPublic = false,
+    String? publishedDate,
+    required String tagLine,
+    bool isPublished = false,
+    bool enableLikes = false,
+    required bool isUpdating,
+    required String blogPostBody,
+    bool enableCommenting = false,
+    required String authorUserName,
+  }) async {
+    return _postBlogWithMedia(
+      tags: tags,
+      title: title,
+      blogId: blogId,
+      tagLine: tagLine,
+      isPublic: isPublic,
+      blogImage: blogImage,
+      blogVideo: blogVideo,
+      isUpdating: isUpdating,
+      isPublished: isPublished,
+      enableLikes: enableLikes,
+      blogPostBody: blogPostBody,
+      publishedDate: publishedDate,
+      authorUserName: authorUserName,
+      enableCommenting: enableCommenting,
+    );
+
+    // if (blogImage != null || blogVideo != null) {
+    //   return _postBlogWithMedia(
+    //     tags: tags,
+    //     title: title,
+    //     blogId: blogId,
+    //     tagLine: tagLine,
+    //     isPublic: isPublic,
+    //     blogImage: blogImage,
+    //     blogVideo: blogVideo,
+    //     isUpdating: isUpdating,
+    //     isPublished: isPublished,
+    //     enableLikes: enableLikes,
+    //     blogPostBody: blogPostBody,
+    //     publishedDate: publishedDate,
+    //     authorUserName: authorUserName,
+    //     enableCommenting: enableCommenting,
+    //   );
+    // }
+
+    // else {
+    //   Map<String, dynamic> body = {
+    //     "title": title,
+    //     "tag_line": tagLine,
+    //     "text": blogPostBody,
+    //     'public_read': isPublic,
+    //     'enable_like': enableLikes,
+    //     'is_published': isPublished,
+    //     'authorUserName': authorUserName,
+    //     'enable_commenting': enableCommenting,
+    //   };
+    //   if (tags != null) {
+    //     body['tags'] = tags;
+    //   }
+    //   if (isUpdating) {
+    //     response =
+    //         await httpPatch(url, headers: headers, body: jsonEncode(body));
+    //     print('UPDATE BLOG SETTINGS -----> ${response.body}');
+    //     return response.statusCode == 200;
+    //   } else {
+    //     response =
+    //         await httpPost(url, headers: headers, body: jsonEncode(body));
+    //     print('CREATE BLOG RESPONSE ----> ${response.body}');
+    //     return response.statusCode == 201;
+    //   }
+    // }
   }
 
   Future<bool> _postBlogWithMedia({
@@ -119,93 +212,6 @@ class UserPostAuth extends AuthService {
       return Future.error(
           "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
     }
-  }
-
-  Future<bool> createOrUpdateBlogPost({
-    String? blogId,
-    required File blogImage,
-    File? blogVideo,
-    List<String>? tags,
-    required String title,
-    bool isPublic = false,
-    String? publishedDate,
-    required String tagLine,
-    bool isPublished = false,
-    bool enableLikes = false,
-    required bool isUpdating,
-    required String blogPostBody,
-    bool enableCommenting = false,
-    required String authorUserName,
-  }) async {
-    http.Response? response;
-    var urlToPostBlog = AppConfig.baseUrl + "/api/v1/social/posts/";
-    var urlToUpdateBlog = AppConfig.baseUrl + "/api/v1/social/posts/$blogId";
-    String url = isUpdating ? urlToUpdateBlog : urlToPostBlog;
-
-    var headers = await getAuthHeaders();
-
-    return _postBlogWithMedia(
-      tags: tags,
-      title: title,
-      blogId: blogId,
-      tagLine: tagLine,
-      isPublic: isPublic,
-      blogImage: blogImage,
-      blogVideo: blogVideo,
-      isUpdating: isUpdating,
-      isPublished: isPublished,
-      enableLikes: enableLikes,
-      blogPostBody: blogPostBody,
-      publishedDate: publishedDate,
-      authorUserName: authorUserName,
-      enableCommenting: enableCommenting,
-    );
-
-    // if (blogImage != null || blogVideo != null) {
-    //   return _postBlogWithMedia(
-    //     tags: tags,
-    //     title: title,
-    //     blogId: blogId,
-    //     tagLine: tagLine,
-    //     isPublic: isPublic,
-    //     blogImage: blogImage,
-    //     blogVideo: blogVideo,
-    //     isUpdating: isUpdating,
-    //     isPublished: isPublished,
-    //     enableLikes: enableLikes,
-    //     blogPostBody: blogPostBody,
-    //     publishedDate: publishedDate,
-    //     authorUserName: authorUserName,
-    //     enableCommenting: enableCommenting,
-    //   );
-    // }
-
-    // else {
-    //   Map<String, dynamic> body = {
-    //     "title": title,
-    //     "tag_line": tagLine,
-    //     "text": blogPostBody,
-    //     'public_read': isPublic,
-    //     'enable_like': enableLikes,
-    //     'is_published': isPublished,
-    //     'authorUserName': authorUserName,
-    //     'enable_commenting': enableCommenting,
-    //   };
-    //   if (tags != null) {
-    //     body['tags'] = tags;
-    //   }
-    //   if (isUpdating) {
-    //     response =
-    //         await httpPatch(url, headers: headers, body: jsonEncode(body));
-    //     print('UPDATE BLOG SETTINGS -----> ${response.body}');
-    //     return response.statusCode == 200;
-    //   } else {
-    //     response =
-    //         await httpPost(url, headers: headers, body: jsonEncode(body));
-    //     print('CREATE BLOG RESPONSE ----> ${response.body}');
-    //     return response.statusCode == 201;
-    //   }
-    // }
   }
 
   // Future<bool> updateBlogPost({

@@ -158,7 +158,7 @@ class _UserDashboardState extends State<UserDashboard> {
           flexibleSpace(flex: 1),
           secondRowOfUserDashboardItem(),
           flexibleSpace(flex: 1),
-          thirdRowOfUserDashboardItem(),
+          // thirdRowOfUserDashboardItem(),
           flexibleSpace(flex: 4),
           appVersionDataUI(),
           flexibleSpace(flex: 3),

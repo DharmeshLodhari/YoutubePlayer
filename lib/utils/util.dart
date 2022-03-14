@@ -63,7 +63,10 @@ Future<String?> getFile(BuildContext context,
     if (fileType == MediaType.picture) {
       final file =
           await ImagePicker().pickImage(source: fileSource, imageQuality: 70);
+
       if (file != null) {
+        print('IOS PICKED IMAGE :::: $file');
+
         /// for cropping the image
         croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {

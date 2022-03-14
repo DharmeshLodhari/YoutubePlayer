@@ -6,9 +6,13 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:share/share.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 
+import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../utils/enums.dart';
 import '../utils/slydo_app_icon_icons.dart';
@@ -20,6 +24,8 @@ import '../widget/bottom_sheet_item.dart';
 import '../widget/dialog.dart';
 import '../widget/noItemInList.dart';
 import '../widget/rounded_background_icon.dart';
+import 'more_apps/messaging/chat/models/ChatConversation.dart';
+import 'more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'more_apps/news/CustomChip.dart';
 import 'more_apps/news/models/NewsDetailItem.dart';
 import 'more_apps/news/models/NewsListItem.dart';
@@ -31,19 +37,22 @@ import 'more_apps/user_profile/models/user.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 class PostDetailPage extends StatefulWidget {
+  final String? postId;
   final PostType postType;
-  final Map<String, dynamic>? blogPostArguments;
-  const PostDetailPage(
-      {Key? key, required this.postType, this.blogPostArguments})
-      : super(key: key);
+
+  const PostDetailPage({
+    Key? key,
+    required this.postId,
+    required this.postType,
+  }) : super(key: key);
 
   @override
   State<PostDetailPage> createState() => _PostDetailPageState();
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
-  UserPost? userPost;
-  CustomerProfile? postOfUser;
+  // UserPost? userPost;
+  late UserBloc userBloc;
   bool isLoading = false;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -57,23 +66,22 @@ class _PostDetailPageState extends State<PostDetailPage> {
   dynamic blogBodyTextJson;
   late flutterQuill.QuillController _quillController;
 
+  UserPost? userPost;
+  late Future<UserPost> getPostFuture;
+
   @override
   void initState() {
     super.initState();
-
-    if (widget.postType == PostType.blog) {
-      getBlogDetailsAndInitializeVideoController();
-    } else {
-      getNewsResultAndInitializeVideoController();
-    }
+    getPostFuture = UserPostAuth().getPost(postID: widget.postId!);
+    // if (widget.postType == PostType.blog) {
+    // } else {
+    //   getNewsResultAndInitializeVideoController();
+    // }
   }
 
-  getBlogDetailsAndInitializeVideoController() {
-    userPost = widget.blogPostArguments!["post"];
-    postOfUser = widget.blogPostArguments!["postOfUser"];
-
-    if (userPost!.video != null) {
-      _mainVideoController = VideoPlayerController.network(userPost!.video!);
+  getBlogDetailsAndInitializeVideoController({required UserPost userPost}) {
+    if (userPost.video != null) {
+      _mainVideoController = VideoPlayerController.network(userPost.video!);
 
       _chewieMainController = ChewieController(
         videoPlayerController: _mainVideoController!,
@@ -97,7 +105,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
     // Try if blog text is decodable, if it isn't the try blog won't run.
     try {
-      blogBodyTextJson = jsonDecode(userPost!.text!);
+      blogBodyTextJson = jsonDecode(userPost.text!);
       _quillController = flutterQuill.QuillController(
           document: flutterQuill.Document.fromJson(blogBodyTextJson),
           selection: TextSelection.collapsed(offset: -1));
@@ -181,8 +189,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.dispose();
   }
 
+  reloadPage() {
+    setState(() {
+      getPostFuture = UserPostAuth().getPost(postID: widget.postId!);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
@@ -192,44 +208,80 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   Widget scaffoldBody() {
-    return PostDetailPageScaffoldBody(
-      postID: widget.postType == PostType.blog ? userPost!.id! : '',
-      postType: widget.postType,
-      tags: widget.postType == PostType.blog
-          ? List<String>.from(userPost!.tags!)
-          : newsDetailItem.tags!,
-      subTitle: widget.postType == PostType.blog
-          ? userPost!.tagLine!
-          : newsDetailItem.subHeader!,
-      readTime: widget.postType == PostType.blog
-          ? userPost!.readTime!
-          : newsDetailItem.readTime == null
-              ? 1
-              : newsDetailItem.readTime!,
-      isLoading: isLoading,
-      postTitle: widget.postType == PostType.blog
-          ? userPost!.title!
-          : newsDetailItem.title!,
-      createdAt: widget.postType == PostType.blog
-          ? formatDate(userPost!.createdAt!)
-          : newsDetailItem.uploadTime!,
-      onRefresh: onRefresh,
-      authorName: widget.postType == PostType.blog
-          ? userPost!.authorName!
-          : newsDetailItem.author!,
-      postImageUrl: widget.postType == PostType.blog
-          ? userPost!.image!
-          : newsDetailItem.image,
-      posterImageUrl: widget.postType == PostType.blog
-          ? userPost!.image!
-          : newsDetailItem.poster!,
-      shortDescription: widget.postType == PostType.blog
-          ? userPost!.tagLine!
-          : newsDetailItem.shortDescription!,
-      refreshController: _refreshController,
-      postFullDescription: getPostFullText(),
-      chewieMainController: _chewieMainController,
-      newsListRelatedPostItems: newsDetailItem.newsListItems,
+    return FutureBuilder(
+      future: getPostFuture,
+      builder: (context, AsyncSnapshot<UserPost> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            userPost = snapshot.data!;
+            if (widget.postType == PostType.blog) {
+              getBlogDetailsAndInitializeVideoController(userPost: userPost!);
+            }
+            return PostDetailPageScaffoldBody(
+              postID: widget.postType == PostType.blog ? userPost!.id! : '',
+              postType: widget.postType,
+              authorUserName: userPost!.authorUsername,
+              tags: widget.postType == PostType.blog
+                  ? userPost!.tags == null
+                      ? []
+                      : List<String>.from(userPost!.tags!)
+                  : newsDetailItem.tags!,
+              subTitle: widget.postType == PostType.blog
+                  ? userPost!.tagLine == null
+                      ? ''
+                      : messageDecoderWithEmoji(userPost!.tagLine)!
+                  : newsDetailItem.subHeader!,
+              readTime: widget.postType == PostType.blog
+                  ? userPost!.readTime == null
+                      ? 0
+                      : userPost!.readTime!
+                  : newsDetailItem.readTime == null
+                      ? 1
+                      : newsDetailItem.readTime!,
+              isLoading: isLoading,
+              postTitle: widget.postType == PostType.blog
+                  ? userPost!.title == null
+                      ? ''
+                      : userPost!.title!
+                  : newsDetailItem.title!,
+              createdAt: widget.postType == PostType.blog
+                  ? userPost!.createdAt == null
+                      ? ''
+                      : formatDate(userPost!.createdAt!)
+                  : newsDetailItem.uploadTime!,
+              onRefresh: onRefresh,
+              authorName: widget.postType == PostType.blog
+                  ? userPost!.authorName == null
+                      ? ''
+                      : userPost!.authorName!
+                  : newsDetailItem.author!,
+              postImageUrl: widget.postType == PostType.blog
+                  ? userPost!.image == null
+                      ? ''
+                      : userPost!.image!
+                  : newsDetailItem.image,
+              posterImageUrl: widget.postType == PostType.blog
+                  ? userPost!.image == null
+                      ? ''
+                      : userPost!.image!
+                  : newsDetailItem.poster!,
+              shortDescription: widget.postType == PostType.blog
+                  ? userPost!.tagLine == null
+                      ? ''
+                      : messageDecoderWithEmoji(userPost!.tagLine)!
+                  : newsDetailItem.shortDescription!,
+              refreshController: _refreshController,
+              postFullDescription: getPostFullText(),
+              chewieMainController: _chewieMainController,
+              newsListRelatedPostItems: newsDetailItem.newsListItems,
+            );
+          } else {
+            return Center(child: Text('There is no data at the moment.'));
+          }
+        } else {
+          return Center(child: CircularLoadingIndicator());
+        }
+      },
     );
   }
 
@@ -339,69 +391,121 @@ class _PostDetailPageState extends State<PostDetailPage> {
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
+    if (userPost != null) {
+      list.add(
+        bottomSheetItem(
+          title: AppLocalization.of(context)!.share,
+          icon: SlydoAppIcon.share,
+          onTap: () {
+            Navigator.pop(context);
+            var shareBody =
+                "https://merchant.slydo.co/${userPost!.authorUsername}/blog/${userPost!.id}";
+            Share.share(shareBody, subject: "${userPost!.authorName}");
+          },
+        ),
+      );
+    }
+
     list.add(
       bottomSheetItem(
-        title: AppLocalization.of(context)!.share,
-        icon: SlydoAppIcon.share,
-        onTap: () {
+        title: "Share in Chat",
+        icon: SlydoAppIcon.text_message,
+        onTap: () async {
           Navigator.pop(context);
+          sendPostToUserInChat();
         },
       ),
     );
 
-    list.add(
-      bottomSheetItem(
-        title: AppLocalization.of(context)!.editPost,
-        icon: SlydoAppIcon.edit,
-        onTap: () {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, '/create-blog', arguments: userPost);
-        },
-      ),
-    );
+    if (userPost != null) {
+      list.add(
+        bottomSheetItem(
+          title: AppLocalization.of(context)!.editPost,
+          icon: SlydoAppIcon.edit,
+          onTap: () async {
+            Navigator.pop(context);
+            final isBlogUpdated = await Navigator.pushNamed(
+                context, '/create-blog',
+                arguments: userPost);
+            if (isBlogUpdated == true) {
+              reloadPage();
+            }
+          },
+        ),
+      );
+    }
 
-    list.add(
-      bottomSheetItem(
-        title: AppLocalization.of(context)!.deletePost,
-        icon: SlydoAppIcon.delete,
-        onTap: () {
-          Navigator.pop(context);
-          showDialogBox(
-            context: context,
-            actionOneTextColor: white,
-            actionOneBgColor: mateRed,
-            actionTwoTextColor: blackFont,
-            actionTwoBgColor: greyBorderColor,
-            title: AppLocalization.of(context)!.delete,
-            actionTwoText: AppLocalization.of(context)!.cancel,
-            actionOneText: AppLocalization.of(context)!.delete,
-            description: 'Are you sure you want to delete this blog post?',
-            roundedBackgroundIcon: RoundedBackgroundIcon(
-              enableMargin: false,
-              width: 90,
-              height: 90,
-              image: Image.asset('assets/images/delete_dialog_icon.png'),
-            ),
-            leftButtonOnPressed: () {
-              _deleteBlogPost(blogId: userPost!.id!);
-            },
-          );
-        },
-      ),
-    );
-
-    // list.add(
-    //   bottomSheetItem(
-    //     title: AppLocalization.of(context)!.postSettings,
-    //     icon: SlydoAppIcon.settings,
-    //     onTap: () {
-    //       Navigator.pop(context);
-    //       Navigator.pushNamed(context, '/blog-settings', arguments: userPost);
-    //     },
-    //   ),
-    // );
+    if (userPost != null) {
+      list.add(
+        bottomSheetItem(
+          title: AppLocalization.of(context)!.deletePost,
+          icon: SlydoAppIcon.delete,
+          onTap: () {
+            Navigator.pop(context);
+            showDialogBox(
+              context: context,
+              actionOneTextColor: white,
+              actionOneBgColor: mateRed,
+              actionTwoTextColor: blackFont,
+              actionTwoBgColor: greyBorderColor,
+              title: AppLocalization.of(context)!.delete,
+              actionTwoText: AppLocalization.of(context)!.cancel,
+              actionOneText: AppLocalization.of(context)!.delete,
+              description: 'Are you sure you want to delete this blog post?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                enableMargin: false,
+                width: 90,
+                height: 90,
+                image: Image.asset('assets/images/delete_dialog_icon.png'),
+              ),
+              leftButtonOnPressed: () {
+                _deleteBlogPost(blogId: userPost!.id!);
+              },
+            );
+          },
+        ),
+      );
+    }
 
     return list;
+  }
+
+  sendPostToUserInChat() async {
+    List<ChatConversation?> listOfRecipient =
+        await ShareInChat().selectShareCustomer(context);
+    debugPrint("Selected users = ${listOfRecipient.length}");
+
+    UserPost itemData = userPost!;
+
+    listOfRecipient.forEach((recipient) {
+      addUserPostToChat(itemData: itemData, recipientUser: recipient!);
+    });
+  }
+
+  addUserPostToChat({
+    required UserPost itemData,
+    required ChatConversation recipientUser,
+    String? url,
+  }) async {
+    Map<String, dynamic> data = {
+      "meta_data": jsonEncode({
+        "id": userPost!.id,
+        "title": userPost!.title,
+        "image": userPost!.image,
+        "video": userPost!.video,
+        "author_avatar": userPost!.authorAvatar,
+        "author_username": userPost!.authorUsername,
+      }),
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": 'blog_post',
+      "kind": "blog_post",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+    await sendDataToSocket(data);
+    showToast(message: 'Post Shared');
   }
 
   Widget shareBtn() {
@@ -454,6 +558,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
   final String? postImageUrl;
   final String posterImageUrl;
   final Function()? onRefresh;
+  final String? authorUserName;
   final String shortDescription;
   final Widget postFullDescription;
   final RefreshController refreshController;
@@ -472,6 +577,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
     required this.onRefresh,
     required this.authorName,
     required this.postImageUrl,
+    required this.authorUserName,
     required this.posterImageUrl,
     this.newsListRelatedPostItems,
     required this.shortDescription,
@@ -529,10 +635,10 @@ class _PostDetailPageScaffoldBodyState
                         SizedBox(
                           height: 20,
                         ),
-                        newsSubTitle(),
-                        SizedBox(
-                          height: 20,
-                        ),
+                        // newsSubTitle(),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
                         newsFullDescription(),
                         SizedBox(
                           height: 20,
@@ -567,7 +673,7 @@ class _PostDetailPageScaffoldBodyState
         imageUrl: widget.postImageUrl ?? "",
         fit: BoxFit.fill,
         width: double.infinity,
-        height: 250,
+        height: 220,
       ),
     );
   }
@@ -586,7 +692,7 @@ class _PostDetailPageScaffoldBodyState
 
   Widget newsTitle() {
     return Text(
-      widget.postTitle,
+      messageDecoderWithEmoji(widget.postTitle) ?? "",
       style: TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: 18,
@@ -598,13 +704,21 @@ class _PostDetailPageScaffoldBodyState
   Widget bloggerDetail() {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Container(
-        height: 32,
-        width: 32,
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.posterImageUrl,
-            errorWidget: imageErrorWidget,
+      leading: InkWell(
+        onTap: () {
+          Navigator.pushNamed(context, '/profile',
+              arguments: {"searchedUserName": widget.authorUserName});
+        },
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: CachedNetworkImage(
+              fit: BoxFit.cover,
+              imageUrl: widget.posterImageUrl,
+              errorWidget: imageErrorWidget,
+            ),
           ),
         ),
       ),
@@ -613,12 +727,20 @@ class _PostDetailPageScaffoldBodyState
         children: [
           Row(
             children: [
-              Text(
-                "${widget.authorName} • ",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: blackFont,
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, '/profile',
+                      arguments: {"searchedUserName": widget.authorUserName});
+                },
+                child: Text(
+                  widget.authorName.length <= 7
+                      ? "${widget.authorName} • "
+                      : "${widget.authorName.substring(0, 8).replaceAll(' ', '')} • ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: blackFont,
+                  ),
                 ),
               ),
               Text(
@@ -634,9 +756,11 @@ class _PostDetailPageScaffoldBodyState
           widget.readTime == 0
               ? CustomChip(
                   text: '1 min read',
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                 )
               : CustomChip(
                   text: '${widget.readTime} min read',
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                 )
         ],
       ),
@@ -666,7 +790,6 @@ class _PostDetailPageScaffoldBodyState
     return Text(
       widget.subTitle,
       style: TextStyle(
-        fontWeight: FontWeight.w700,
         fontSize: 16,
         color: blackFont,
       ),
@@ -785,7 +908,6 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
                       padding: const EdgeInsets.only(bottom: 16),
                       child: PostTile(
                         post: snapShot.data!.reversed.toList()[index],
-                        postOfUser: widget.postOfUser,
                       ),
                     );
                   },
