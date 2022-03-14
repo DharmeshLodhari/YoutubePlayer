@@ -320,7 +320,7 @@ class MainSocketProvider extends ChangeNotifier {
     return newStreamSubscription;
   }
 
-  /// from remove listening subscription from socket
+  /// from remove listening subscriptions from socket
   void removeStreamSubscription(StreamSubscription? streamSubscription) {
     _streamSubscriptions.forEach((element) {
       if (element == streamSubscription) {
@@ -472,7 +472,7 @@ class MainSocketProvider extends ChangeNotifier {
     return true;
   }
 
-  /// for closing all the subscription which are alive
+  /// for closing all the subscriptions which are alive
   Future<void> close() async {
     _timerForRetryConnection?.cancel();
     _timerForPingServer?.cancel();

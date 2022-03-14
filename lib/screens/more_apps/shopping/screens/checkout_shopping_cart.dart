@@ -273,14 +273,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
     late var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
+      if (element["item"].subscriptionId ==
+          basketBloc.items[index]["item"].subscriptionId) {
         mapData = element;
         return;
       }
     });
     Map data = {
       "type": type,
-      "id": mapData["item"].id,
+      "id": mapData["item"].subscriptionId,
       "qty": mapData["qty"],
     };
     debugPrint("Data From increasing the  item : $data");
@@ -293,14 +294,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
     late var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].id == basketBloc.items[index]["item"].id) {
+      if (element["item"].subscriptionId ==
+          basketBloc.items[index]["item"].subscriptionId) {
         mapData = element;
         return;
       }
     });
     Map data = {
       "type": type,
-      "id": mapData["item"].id,
+      "id": mapData["item"].subscriptionId,
       "qty": mapData["qty"] - 1,
     };
 

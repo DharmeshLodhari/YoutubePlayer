@@ -655,7 +655,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   void upgradeAccount() async {
-    Navigator.pushNamed(context, "/choose-subscription");
+    Navigator.pushNamed(context, "/choose-subscriptions");
 
     // await getAccountBalance();
     // if (accountBalance! > 0) {

@@ -406,16 +406,18 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
     }
 
-    list.add(
-      bottomSheetItem(
-        title: "Share in Chat",
-        icon: SlydoAppIcon.text_message,
-        onTap: () async {
-          Navigator.pop(context);
-          sendPostToUserInChat();
-        },
-      ),
-    );
+    if (userPost != null) {
+      list.add(
+        bottomSheetItem(
+          title: "Share in Chat",
+          icon: SlydoAppIcon.text_message,
+          onTap: () async {
+            Navigator.pop(context);
+            sendPostToUserInChat();
+          },
+        ),
+      );
+    }
 
     if (userPost != null) {
       list.add(

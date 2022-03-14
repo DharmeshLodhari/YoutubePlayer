@@ -333,7 +333,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           height: 16,
                         ),
                         Text(
-                          searchedUser!.displayName()!,
+                          searchedUser!.displayName()!.length <= 53
+                              ? searchedUser!.displayName()!
+                              : '${searchedUser!.displayName()!.substring(0, 54)}...',
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,

@@ -51,8 +51,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
           videoPlayerController: _mainVideoController!,
           aspectRatio: 2.5,
           allowFullScreen: false,
-          systemOverlaysAfterFullScreen: SystemUiOverlay.values,
-          autoInitialize: true,
+          showControlsOnInitialize: false,
           materialProgressColors: ChewieProgressColors(
             backgroundColor: Colors.transparent,
             handleColor: Colors.transparent,
@@ -185,7 +184,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
                                     ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

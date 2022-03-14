@@ -886,11 +886,17 @@ class AppLocalization {
     );
   }
 
-  //home
   String get exit {
     return Intl.message(
       "Exit",
       name: "exit",
+    );
+  }
+
+  String get choosePlan {
+    return Intl.message(
+      "Choose Plan",
+      name: "choosePlan",
     );
   }
 
@@ -1333,6 +1339,20 @@ class AppLocalization {
     return Intl.message(
       "Category",
       name: "category",
+    );
+  }
+
+  String get accountType {
+    return Intl.message(
+      "Account Type",
+      name: "accountType",
+    );
+  }
+
+  String get chooseAccountType {
+    return Intl.message(
+      "Choose Account Type",
+      name: "chooseAccountType",
     );
   }
 

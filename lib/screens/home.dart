@@ -325,7 +325,9 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   title: Text(
-                    userBloc.user.displayName()!,
+                    userBloc.user.displayName()!.length <= 53
+                        ? userBloc.user.displayName()!
+                        : '${userBloc.user.displayName()!.substring(0, 54)}...',
                     maxLines: 1,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
@@ -345,21 +347,27 @@ class _HomeState extends State<Home> {
                   color: dividerColor,
                   height: 1,
                 ),
-                Container(
-                    key: tutorialQrCodeKey,
-                    padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-                    child: CachedNetworkImage(
-                      height: MediaQuery.of(context).size.width / 1.7,
-                      width: MediaQuery.of(context).size.width / 1.7,
-                      imageUrl: userBloc.user.qrCode!,
-                      colorBlendMode: BlendMode.darken,
-                      fit: BoxFit.fill,
-                      errorWidget: imageErrorWidget,
-                      filterQuality: FilterQuality.high,
-                      placeholder: (context, url) => Center(
-                        child: CircularLoadingIndicator(),
-                      ),
-                    )),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/choose-subscriptions');
+                  },
+                  child: Container(
+                      key: tutorialQrCodeKey,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+                      child: CachedNetworkImage(
+                        height: MediaQuery.of(context).size.width / 1.7,
+                        width: MediaQuery.of(context).size.width / 1.7,
+                        imageUrl: userBloc.user.qrCode!,
+                        colorBlendMode: BlendMode.darken,
+                        fit: BoxFit.fill,
+                        errorWidget: imageErrorWidget,
+                        filterQuality: FilterQuality.high,
+                        placeholder: (context, url) => Center(
+                          child: CircularLoadingIndicator(),
+                        ),
+                      )),
+                ),
               ],
             ),
           ),

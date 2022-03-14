@@ -192,7 +192,7 @@ class _UserPostDetailPageState extends State<UserPostDetailPage> {
               image: Image.asset('assets/images/delete_dialog_icon.png'),
             ),
             leftButtonOnPressed: () {
-              _deleteBlogPost(blogId: widget.arguments['post'].id);
+              _deleteBlogPost(blogId: widget.arguments['post'].subscriptionId);
             },
           );
         },

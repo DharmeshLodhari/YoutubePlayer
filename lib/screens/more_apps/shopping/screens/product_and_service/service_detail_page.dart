@@ -409,14 +409,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           basketBloc.addItemToCart(item: service, type: type);
           late var mapData;
           basketBloc.items.forEach((element) {
-            if (element["item"].id == service!.id) {
+            if (element["item"].subscriptionId == service!.id) {
               mapData = element;
               return;
             }
           });
           Map data = {
             "type": type,
-            "id": mapData["item"].id,
+            "id": mapData["item"].subscriptionId,
             "qty": mapData["qty"],
           };
           debugPrint("Data From Service Page : $data");

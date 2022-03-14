@@ -2573,7 +2573,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void addProductOrServiceToChat(var item) async {
     String url = AppConfig.baseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
-        item.id +
+        item.subscriptionId +
         "/";
 
     Map<String, dynamic>? itemData =
@@ -3422,8 +3422,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget getGroupMessage() {
-
-
     try {
       return StickyGroupedListView<String?, DateTime>(
         itemPositionsListener: messageListPositionListener,

@@ -125,7 +125,7 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/choose_subscription.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
@@ -334,7 +334,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/choose-subscription':
+      case '/choose-subscriptions':
         return PageTransition(
           child: ChooseSubscription(),
           type: PageTransitionType.bottomToTop,
