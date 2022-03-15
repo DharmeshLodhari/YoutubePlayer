@@ -49,7 +49,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       flutterQuill.QuillController.basic();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController blogTitleCtrl = TextEditingController();
-  TextEditingController blogTagLineCtrl = TextEditingController();
 
   DateTime? datePicked;
   TimeOfDay? timePicked;
@@ -111,7 +110,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     userTags = List<String>.from(widget.userPost!.tags!);
     enableCommenting = widget.userPost!.enableCommenting!;
     blogTitleCtrl = TextEditingController(text: widget.userPost!.title);
-    blogTagLineCtrl = TextEditingController(text: widget.userPost!.tagLine);
 
     try {
       blogBodyTextJson = jsonDecode(widget.userPost!.text!);
@@ -245,25 +243,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       : null;
                 },
               ),
-              CustomizedTextFormField(
-                hintText: 'Subtitle',
-                hasBorder: false,
-                hasLabel: false,
-                showLabelOrPassword: false,
-                maxLines: null,
-                textStyle: TextStyle(
-                  color: blackFont,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                controller: blogTagLineCtrl,
-                validator: (value) {
-                  return value.toString().isEmpty
-                      ? '     Field cannot be empty'
-                      : null;
-                },
-                contentPadding: EdgeInsets.zero,
-              ),
               SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.only(left: 4.0),
@@ -299,7 +278,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               SizedBox(height: 10),
               getEditor(),
               SizedBox(height: 3),
-              getTextEditorWidget(),
+              Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: getTextEditorWidget(),
+              ),
               SizedBox(height: 30),
             ],
           ),
@@ -381,7 +363,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       isPublished: isPublished,
       enableLikes: enableLikes,
       title: blogTitleCtrl.text,
-      tagLine: blogTagLineCtrl.text,
       isUpdating: _userUpdatingPost,
       enableCommenting: enableCommenting,
       authorUserName: userBloc.user.userName!,

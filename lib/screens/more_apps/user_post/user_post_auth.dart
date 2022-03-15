@@ -70,7 +70,6 @@ class UserPostAuth extends AuthService {
     required String title,
     bool isPublic = false,
     String? publishedDate,
-    required String tagLine,
     bool isPublished = false,
     bool enableLikes = false,
     required bool isUpdating,
@@ -82,7 +81,6 @@ class UserPostAuth extends AuthService {
       tags: tags,
       title: title,
       blogId: blogId,
-      tagLine: tagLine,
       isPublic: isPublic,
       blogImage: blogImage,
       blogVideo: blogVideo,
@@ -144,7 +142,6 @@ class UserPostAuth extends AuthService {
 
   Future<bool> _postBlogWithMedia({
     required String title,
-    required String tagLine,
     required String authorUserName,
     String? blogId,
     bool isUpdating = false,
@@ -187,7 +184,6 @@ class UserPostAuth extends AuthService {
       request.fields["tags"] = jsonEncode(tags);
     }
     request.fields["title"] = title;
-    request.fields["tag_line"] = tagLine;
     request.fields["text"] = blogPostBody;
     request.fields["author_username"] = authorUserName;
     request.fields['public_read'] = jsonEncode(isPublic);

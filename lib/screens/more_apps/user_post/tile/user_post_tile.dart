@@ -62,14 +62,12 @@ class _PostTileState extends State<PostTile> {
     return _buildUserPostList();
   }
 
-
   @override
   void dispose() {
     if (widget.post?.video != null) {
       _mainVideoController!.dispose();
       _chewieMainController!.dispose();
     }
-
 
     super.dispose();
   }
@@ -202,9 +200,7 @@ class _PostTileState extends State<PostTile> {
           child: Row(
             children: [
               _buildReviewLike(),
-              SizedBox(
-                width: 8,
-              ),
+              SizedBox(width: 8),
               _buildPostUnLike(),
             ],
           ),
