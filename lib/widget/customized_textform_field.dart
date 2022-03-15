@@ -10,6 +10,7 @@ typedef Widget? BuildCounterWidget(
 
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
+  final Widget? suffixIcon;
   TextInputAction? textInputAction;
   Function(String? value)? onFieldSubmitted;
   bool hasLabel;
@@ -39,6 +40,7 @@ class CustomizedTextFormField extends StatefulWidget {
   TextCapitalization textCapitalization;
 
   CustomizedTextFormField({
+    this.suffixIcon,
     this.hasBorder = true,
     this.hasLabel = true,
     this.textInputAction,
@@ -144,18 +146,20 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               fontSize: 16,
               fontWeight: FontWeight.w400,
             ),
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      Icons.remove_red_eye,
-                      color: widget.obscureText ? darkGrey : navyBlue,
-                    ),
-                    onPressed: () {
-                      widget.obscureText = !widget.obscureText;
-                      setState(() {});
-                    },
-                  )
-                : null,
+            suffixIcon: widget.suffixIcon != null
+                ? widget.suffixIcon
+                : widget.isPassword
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.remove_red_eye,
+                          color: widget.obscureText ? darkGrey : navyBlue,
+                        ),
+                        onPressed: () {
+                          widget.obscureText = !widget.obscureText;
+                          setState(() {});
+                        },
+                      )
+                    : null,
             prefix: Padding(
               padding: EdgeInsets.only(left: widget.isAmount ? 8 : 16),
             ),

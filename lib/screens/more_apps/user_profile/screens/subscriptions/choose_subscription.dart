@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/subscription_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/subscription_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../data/currency.dart';
 import '../../../../../data/state_notifier.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../services/auth.dart';
@@ -27,16 +30,35 @@ class ChooseSubscription extends StatefulWidget {
 class _ChooseSubscriptionState extends State<ChooseSubscription> {
   int _id =
       0; // To help determine what subscriptions card to show and what card to highlight when clicked.
+  Timer? typingTimer;
   late UserBloc userBloc;
   String? selectedAccountType;
   final _auth = AuthService();
+  bool?
+      businessNameVerified; // Variable to show the submit button and check mark in textfield when business name is verified.
+  bool verifyingBusinessName =
+      false; // Variable to show the loading bar when we are verifying business name.
   late SubscriptionsModel subscriptionsModelCopy;
   Future<List<SubscriptionsModel>>? getSubscriptionsFuture;
   TextEditingController _businessNameCtrl = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
+  _onChanged(String value) {
+    const duration = Duration(
+        milliseconds:
+            1000); // set the duration that you want call search() after that.
+    if (typingTimer != null) {
+      setState(() => typingTimer!.cancel()); // clear timer
+    }
+    typingTimer = new Timer(
+      duration,
+      () {
+        if (value.isNotEmpty && value.length > 1) {
+          _verifyBusinessName();
+        } else {
+          setState(() => businessNameVerified = null);
+        }
+      },
+    );
   }
 
   @override
@@ -100,6 +122,8 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                                     } else {
                                       setState(() {
                                         _id = 0;
+                                        _businessNameCtrl.clear();
+                                        businessNameVerified = null;
                                       });
                                     }
                                   },
@@ -122,28 +146,38 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                 child: Column(
                   children: [
                     CustomizedTextFormField(
+                      onChanged: _onChanged,
                       controller: _businessNameCtrl,
                       hintText: 'Full business name',
-                      validator: (value) {
-                        return value.isEmpty
-                            ? 'Enter your business name'
-                            : null;
-                      },
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: _getSuffixIcon(),
+                      ),
                     ),
-                    SizedBox(height: 12),
-                    CurvedButton(
+                  ],
+                ),
+              ),
+            ),
+            Visibility(
+              visible: businessNameVerified ?? false,
+              child: Column(
+                children: [
+                  SizedBox(height: 12),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: CurvedButton(
                       text: 'Submit',
                       onPressed: () {
                         if (_businessNameCtrl.text.isNotEmpty) {
-                          _showChoosePlanDialog(subscriptionsModelCopy);
+                          _showConfirmationSubscriptionDialog(
+                              subscriptionsModelCopy);
                         } else {
                           showToast(message: 'Enter your business name');
                         }
                       },
                     ),
-                    SizedBox(height: 12),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -221,6 +255,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
       getSubscriptionsFuture = SubscriptionsAuth()
           .getSubscriptionList(accountType: selectedAccountType!);
       _id = 0;
+      businessNameVerified = false;
       setState(() {});
     }
   }
@@ -232,7 +267,8 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     });
   }
 
-  void _showChoosePlanDialog(SubscriptionsModel subscriptionsModel) {
+  void _showConfirmationSubscriptionDialog(
+      SubscriptionsModel subscriptionsModel) {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,
@@ -242,7 +278,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
       title: _getDialogTitle(subscriptionsModel),
       actionTwoText: 'Yes',
       actionOneText: 'No',
-      description: 'Are you sure you want to pick this plan?',
+      description: 'Are you sure you want to choose this plan?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,
         width: 90,
@@ -253,7 +289,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
         showDialog(
             context: context,
             builder: (dialogLoadingContext) => LoadingIndicator());
-        _choosePlan(subscriptionsModel);
+        _upgradeAccount(subscriptionsModel);
       },
     );
   }
@@ -261,41 +297,93 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
   _getDialogTitle(SubscriptionsModel subscriptionsModel) {
     switch (subscriptionsModel.subscriptionType) {
       case 'Annually':
-        return 'Annual plan';
+        return 'Annual ${subscriptionsModel.accountType} Plan';
       case 'Monthly':
-        return 'Monthly plan';
+        return 'Monthly ${subscriptionsModel.accountType} Plan';
       case 'Weekly':
-        return 'Weekly plan';
+        return 'Weekly ${subscriptionsModel.accountType} Plan';
     }
   }
 
-  _choosePlan(SubscriptionsModel subscriptionsModel) async {
+  Widget _getSuffixIcon() {
+    if (verifyingBusinessName) {
+      return SizedBox(width: 20, height: 20, child: CircularLoadingIndicator());
+    } else {
+      if (businessNameVerified != null) {
+        if (businessNameVerified!) {
+          return CircleAvatar(
+            radius: 14,
+            backgroundColor: navyBlue,
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Icon(Icons.check, size: 20, color: Colors.white),
+            ),
+          );
+        } else {
+          return Icon(
+            Icons.cancel,
+            color: Colors.red,
+          );
+        }
+      } else {
+        return SizedBox.shrink();
+      }
+    }
+  }
+
+  _verifyBusinessName() async {
+    setState(() => verifyingBusinessName = true);
+
     SubscriptionsAuth()
-        .upgradeUserAccount(
-      accountType: selectedAccountType!,
-      subscriptionsId: subscriptionsModel.id,
-      businessName: _businessNameCtrl.text,
-    )
-        .then((value) async {
-      await _auth
-          .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
-          .then((newUser) async {
-        userBloc.user = newUser;
-        if (mounted) setState(() {});
-
-        await UserAuth()
-            .fetchCustomerProfile(userBloc.user.userName)
-            .then((user) {
-          showToast(message: "Your profile upgrade was successful.");
-
-          Navigator.pop(context);
-          Navigator.pushNamed(context, '/profile',
-              arguments: {"searchedUserName": user.userName, "index": 0});
+        .verifyBusinessName(businessName: _businessNameCtrl.text.trim())
+        .then((businessNameAvailable) {
+      if (businessNameAvailable) {
+        setState(() {
+          businessNameVerified = true;
+          verifyingBusinessName = false;
         });
-      });
+      } else {
+        setState(() {
+          businessNameVerified = false;
+          verifyingBusinessName = false;
+        });
+        showToast(message: 'Business name not available');
+      }
     }).catchError((e) {
       Navigator.pop(context);
       showToast(message: '${e.toString()}');
+    });
+  }
+
+  _upgradeAccount(SubscriptionsModel subscriptionsModel) {
+    SubscriptionsAuth()
+        .upgradeUserAccount(
+            accountType: selectedAccountType!,
+            businessName: _businessNameCtrl.text,
+            subscriptionsId: subscriptionsModel.id)
+        .then((value) => _refreshUser())
+        .catchError((e) {
+      Navigator.pop(context);
+      showToast(message: '${e.toString()}');
+    });
+  }
+
+  _refreshUser() async {
+    await _auth
+        .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
+        .then((newUser) async {
+      userBloc.user = newUser;
+      if (mounted) setState(() {});
+
+      await UserAuth()
+          .fetchCustomerProfile(userBloc.user.userName)
+          .then((user) {
+        showToast(message: "Your profile upgrade was successful.");
+
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/profile',
+            arguments: {"searchedUserName": user.userName, "index": 0});
+      });
     });
   }
 }
@@ -305,7 +393,6 @@ class SubscriptionTile extends StatelessWidget {
   final bool isVisible;
   final int subscriptionId;
   final String amount;
-  final String? tagName;
   final Function() onTap;
   final String currency;
   final String subscriptionType;
@@ -315,7 +402,6 @@ class SubscriptionTile extends StatelessWidget {
       required this.currency,
       required this.id,
       required this.subscriptionId,
-      this.tagName,
       required this.onTap,
       required this.amount,
       required this.subscriptionType})
@@ -368,9 +454,15 @@ class SubscriptionTile extends StatelessWidget {
                 SizedBox(height: 12),
                 Row(
                   children: [
-                    getCurrencySymbol(currency),
                     Text(
-                      '$amount ($subscriptionType) plan',
+                      worldCurrencies[currency]!,
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                    Text(
+                      '${moneyDisplayNormalizer(int.parse(amount))} ($subscriptionType) plan',
                       style: TextStyle(
                           fontSize: 20,
                           color: Color(0xff030F36),
@@ -379,25 +471,27 @@ class SubscriptionTile extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 10),
-                tagName != null
-                    ? Container(
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                            color: navyBlue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Text(
-                          tagName!,
-                          style: TextStyle(
-                              color: navyBlue, fontWeight: FontWeight.w400),
-                        ),
-                      )
-                    : SizedBox.shrink(),
-                SizedBox(height: 10),
-                Text(
-                  'then ${getPlan(subscriptionType)}. Cancel anytime',
-                  style: TextStyle(
-                    color: Color(0xff030F36),
-                    fontWeight: FontWeight.w600,
+                RichText(
+                  text: TextSpan(
+                    text: 'then ',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    children: [
+                      WidgetSpan(
+                          child: Text(
+                            worldCurrencies[currency]!,
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16),
+                          ),
+                          baseline: TextBaseline.alphabetic,
+                          alignment: PlaceholderAlignment.baseline),
+                      TextSpan(
+                          text:
+                              '${moneyDisplayNormalizer(int.parse(amount))}  ${getPlan(subscriptionType)}. Cancel anytime')
+                    ],
                   ),
                 ),
               ],
@@ -422,10 +516,10 @@ String getPlan(String subscriptionType) {
   }
 }
 
-Widget getCurrencySymbol(String currency) {
+Widget getCurrencySymbol(String currency, {double symbolSize = 16}) {
   switch (currency) {
     case 'NGN':
-      return Icon(SlydoAppIcon.naira, size: 16);
+      return Icon(SlydoAppIcon.naira, size: symbolSize);
     default:
       return Container();
   }

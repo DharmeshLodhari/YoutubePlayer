@@ -263,6 +263,7 @@ class TransactionTile extends StatelessWidget {
   }
 
   Widget getAmount() {
+    print('CURRENCY ::: ${transaction!.currency}');
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[

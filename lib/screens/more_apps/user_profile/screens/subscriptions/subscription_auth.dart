@@ -31,6 +31,25 @@ class SubscriptionsAuth extends AuthService {
     }
   }
 
+  Future<bool> verifyBusinessName({required String businessName}) async {
+    String url = AppConfig.baseUrl +
+        "/api/v1/user/verify-business-name/?business_name=${Uri.encodeComponent(businessName)}";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['available'] == true) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return Future.error('${response.body}');
+    }
+  }
+
   Future upgradeUserAccount(
       {required int subscriptionsId,
       required String accountType,
