@@ -261,9 +261,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       : userPost!.image!
                   : newsDetailItem.image,
               posterImageUrl: widget.postType == PostType.blog
-                  ? userPost!.image == null
+                  ? userPost!.authorAvatar == null
                       ? ''
-                      : userPost!.image!
+                      : userPost!.authorAvatar!
                   : newsDetailItem.poster!,
               shortDescription: widget.postType == PostType.blog
                   ? userPost!.tagLine == null
@@ -601,70 +601,61 @@ class _PostDetailPageScaffoldBodyState
         ? Center(
             child: CircularLoadingIndicator(),
           )
-        : SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: widget.refreshController,
-            onRefresh: widget.onRefresh,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 6,
+        : SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 6,
+                ),
+                widget.chewieMainController != null
+                    ? videoPlayer()
+                    : postImage(),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      newsTitle(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      bloggerDetail(),
+                      widget.postType == PostType.blog
+                          ? SizedBox.shrink()
+                          : newsShortDescription(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      // newsSubTitle(),
+                      // SizedBox(
+                      //   height: 20,
+                      // ),
+                      newsFullDescription(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Divider(
+                        thickness: 1,
+                        color: dividerColor,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      newsChips(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      relatedPost(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                    ],
                   ),
-                  widget.chewieMainController != null
-                      ? videoPlayer()
-                      : postImage(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        newsTitle(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        bloggerDetail(),
-                        widget.postType == PostType.blog
-                            ? SizedBox.shrink()
-                            : newsShortDescription(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        // newsSubTitle(),
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
-                        newsFullDescription(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Divider(
-                          thickness: 1,
-                          color: dividerColor,
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        newsChips(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        relatedPost(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
           );
   }
@@ -684,7 +675,7 @@ class _PostDetailPageScaffoldBodyState
     if (widget.chewieMainController != null) {
       return Chewie(
         titleName: widget.postTitle,
-        posterUrl: widget.posterImageUrl,
+        posterUrl: widget.postImageUrl,
         controller: widget.chewieMainController!,
       );
     } else {

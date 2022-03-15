@@ -202,9 +202,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        SizedBox(
-          width: 16,
-        ),
+        SizedBox(width: 16),
         IconButton(
           onPressed: () => submitBlogPost(),
           icon: Icon(Icons.send, color: navyBlue),

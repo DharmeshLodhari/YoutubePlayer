@@ -64,12 +64,12 @@ class UserPostAuth extends AuthService {
 
   Future<bool> createOrUpdateBlogPost({
     String? blogId,
-    required File blogImage,
     File? blogVideo,
     List<String>? tags,
     required String title,
     bool isPublic = false,
     String? publishedDate,
+    required File blogImage,
     bool isPublished = false,
     bool enableLikes = false,
     required bool isUpdating,
@@ -92,68 +92,22 @@ class UserPostAuth extends AuthService {
       authorUserName: authorUserName,
       enableCommenting: enableCommenting,
     );
-
-    // if (blogImage != null || blogVideo != null) {
-    //   return _postBlogWithMedia(
-    //     tags: tags,
-    //     title: title,
-    //     blogId: blogId,
-    //     tagLine: tagLine,
-    //     isPublic: isPublic,
-    //     blogImage: blogImage,
-    //     blogVideo: blogVideo,
-    //     isUpdating: isUpdating,
-    //     isPublished: isPublished,
-    //     enableLikes: enableLikes,
-    //     blogPostBody: blogPostBody,
-    //     publishedDate: publishedDate,
-    //     authorUserName: authorUserName,
-    //     enableCommenting: enableCommenting,
-    //   );
-    // }
-
-    // else {
-    //   Map<String, dynamic> body = {
-    //     "title": title,
-    //     "tag_line": tagLine,
-    //     "text": blogPostBody,
-    //     'public_read': isPublic,
-    //     'enable_like': enableLikes,
-    //     'is_published': isPublished,
-    //     'authorUserName': authorUserName,
-    //     'enable_commenting': enableCommenting,
-    //   };
-    //   if (tags != null) {
-    //     body['tags'] = tags;
-    //   }
-    //   if (isUpdating) {
-    //     response =
-    //         await httpPatch(url, headers: headers, body: jsonEncode(body));
-    //     print('UPDATE BLOG SETTINGS -----> ${response.body}');
-    //     return response.statusCode == 200;
-    //   } else {
-    //     response =
-    //         await httpPost(url, headers: headers, body: jsonEncode(body));
-    //     print('CREATE BLOG RESPONSE ----> ${response.body}');
-    //     return response.statusCode == 201;
-    //   }
-    // }
   }
 
   Future<bool> _postBlogWithMedia({
-    required String title,
-    required String authorUserName,
     String? blogId,
-    bool isUpdating = false,
-    required File blogImage,
     File? blogVideo,
     List<String>? tags,
-    required String blogPostBody,
+    required String title,
     bool isPublic = false,
     String? publishedDate,
+    required File blogImage,
+    bool isUpdating = false,
     bool isPublished = false,
     bool enableLikes = false,
+    required String blogPostBody,
     bool enableCommenting = false,
+    required String authorUserName,
   }) async {
     var urlToPostBlog = AppConfig.baseUrl + "/api/v1/social/posts/";
     var urlToUpdateBlog = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
