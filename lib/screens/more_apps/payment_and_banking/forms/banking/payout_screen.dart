@@ -240,7 +240,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context)!.submitButton,
+      text: AppLocalization.of(context)!.submit,
     );
   }
 

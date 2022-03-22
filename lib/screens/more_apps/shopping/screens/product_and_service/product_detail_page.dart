@@ -824,27 +824,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ],
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    SlydoAppIcon.star,
-                    color: starYellow,
-                    size: 11,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    product?.rating.toString() ?? "0.0",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
+              SizedBox(height: 5),
+              getRating(numberOfRating: product?.rating!.toInt())
             ],
           ),
         ),

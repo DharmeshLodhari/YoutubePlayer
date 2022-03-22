@@ -77,10 +77,10 @@ class AppLocalization {
     );
   }
 
-  String get submitButton {
+  String get submit {
     return Intl.message(
       "Submit",
-      name: "submitButton",
+      name: "submit",
     );
   }
 
@@ -645,10 +645,10 @@ class AppLocalization {
     );
   }
 
-  String get addCreditCard {
+  String get addPaymentCard {
     return Intl.message(
-      "Add Credit Card",
-      name: "addCreditCard",
+      "Add Payment Card",
+      name: "addPaymentCard",
     );
   }
 
@@ -1964,6 +1964,13 @@ class AppLocalization {
     return Intl.message(
       "Securely save this card",
       name: "securelySaveCard",
+    );
+  }
+
+  String get doesNotSaveUsersCard {
+    return Intl.message(
+      "Slydo does not store user's credit cards info on it's servers. It is stored and processed by our gateway partners.",
+      name: "doesNotSaveUsersCard",
     );
   }
 

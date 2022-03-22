@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -524,7 +525,7 @@ String moneyNormalizer(int? amount) {
   // Format the money into double as server returns money in integer
   // amount = 1050500;
 
-  return (amount! / 100).toString();
+  return (amount! / 100).toStringAsFixed(2);
 }
 
 int moneyDisplayNormalizerForGraph(int? amount) {
@@ -604,22 +605,57 @@ void showToast({String? message}) {
   );
 }
 
+String? validateSlydoName(String userInput) {
+  String lowerCaseInput = userInput.toLowerCase();
+  String cleanName = lowerCaseInput
+      .replaceAll(".", "")
+      .replaceAll(" ", "")
+      .replaceAll("_", "")
+      .replaceAll("-", "");
+
+  if (cleanName.contains('slydo')) {
+    return null;
+  } else {
+    return 'Passed';
+  }
+}
+
 String? checkSlydoName(String name) {
   String? result;
 
   if (name.isNotEmpty && name != "") {
-    List<String> listOfWords = name.split(" ").toList();
-    for (int i = 0; i < listOfWords.length; i++) {
-      if (listOfWords[i].toLowerCase() == "slydo") {
-        result = "You can not use slydo in name.";
-        break;
-      }
-    }
-  }
-  debugPrint("ERROR:- $result");
+    String lowerCaseInput = name.toLowerCase();
+    String cleanName = lowerCaseInput
+        .replaceAll(".", "")
+        .replaceAll(" ", "")
+        .replaceAll("_", "")
+        .replaceAll("-", "");
 
+    if (cleanName.contains('slydo')) {
+      result = "You can not use slydo in name.";
+    }
+
+    debugPrint("ERROR:- $result");
+  }
   return result;
 }
+
+// String? checkSlydoName(String name) {
+//   String? result;
+//
+//   if (name.isNotEmpty && name != "") {
+//     List<String> listOfWords = name.split(" ").toList();
+//     for (int i = 0; i < listOfWords.length; i++) {
+//       if (listOfWords[i].toLowerCase() == "slydo") {
+//         result = "You can not use slydo in name.";
+//         break;
+//       }
+//     }
+//   }
+//   debugPrint("ERROR:- $result");
+//
+//   return result;
+// }
 
 String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
   if (accountNumber.length != 10) {
@@ -667,10 +703,10 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
     return Card(
       elevation: widget.addElevation ? 2 : 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: 2),
       child: ListTile(
         onTap: widget.onTap,
-        contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         leading: CircleAvatar(
           backgroundColor: lightGrey,
           child: widget.icon,
@@ -710,4 +746,30 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
       ),
     );
   }
+}
+
+Widget getRating({required int? numberOfRating}) {
+  List<Widget> widgets = [];
+
+  for (int i = 1; i < 6; i++) {
+    widgets.add(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1.0),
+        child: Icon(
+          SlydoAppIcon.star,
+          color: getRatingColor(numberOfRating, i),
+          size: 11,
+        ),
+      ),
+    );
+  }
+  return Row(children: widgets);
+}
+
+Color getRatingColor(int? numberOfRating, int i) {
+  return numberOfRating != null
+      ? numberOfRating >= i
+          ? starYellow
+          : Colors.grey
+      : Colors.grey;
 }

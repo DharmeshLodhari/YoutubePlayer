@@ -251,7 +251,7 @@ class _UserAddressState extends State<UserAddress> {
   Widget getSubmitButton() {
     return CurvedButton(
       onPressed: onSubmit,
-      text: AppLocalization.of(context)!.submitButton,
+      text: AppLocalization.of(context)!.submit,
       textColor: Colors.white,
       backgroundColor: navyBlue,
     );

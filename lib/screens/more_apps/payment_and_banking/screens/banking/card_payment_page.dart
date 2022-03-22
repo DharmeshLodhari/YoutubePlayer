@@ -24,15 +24,19 @@ class CardPaymentPage extends StatefulWidget {
 }
 
 class _CardPaymentPageState extends State<CardPaymentPage> {
+  int amount = 0;
+  String cvvCode = '';
+  int cappedFee = 2000;
+  int calculatedFee = 0;
+  String expiryDate = '';
+  bool isCvvFocused = false;
+  String cardHolderName = '';
+  int creditCardProcessingFee = 100;
+  int waivedTransactionFeeLimit = 2500;
+  double creditCardProcessingFeePercentage = 1.5;
+
   PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
   GlobalKey<ScaffoldState> cardPaymentPageKey = GlobalKey<ScaffoldState>();
-
-  String expiryDate = '';
-  String cardHolderName = '';
-  String cvvCode = '';
-  int amount = 0;
-  bool isCvvFocused = false;
-  bool securelySaveCardChecked = false;
 
   final MaskedTextController _cardNumberController =
       MaskedTextController(mask: '0000 0000 0000 0000');
@@ -59,11 +63,32 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
           context: context,
           title: widget.isWalletFunding
               ? AppLocalization.of(context)!.walletFunding
-              : AppLocalization.of(context)!.addCreditCard,
+              : AppLocalization.of(context)!.addPaymentCard,
         ) as PreferredSizeWidget?,
         body: SingleChildScrollView(child: creditCardForm()),
       ),
     );
+  }
+
+  int calculateCreditCardFee(
+      {required int amount, required double percentage}) {
+    var finalFee;
+
+    var percentageAmount = amount * (percentage / 100);
+
+    // ₦100 fee waived for transactions under ₦2500.
+    if (percentageAmount > waivedTransactionFeeLimit) {
+      finalFee = percentageAmount.toInt();
+    } else {
+      finalFee = percentageAmount.toInt() + creditCardProcessingFee;
+    }
+    // Local transactions fees are capped at ₦2000, meaning that's the absolute maximum you'll ever pay in fees per transaction.
+
+    if (finalFee > cappedFee) {
+      finalFee = cappedFee;
+    }
+
+    return finalFee;
   }
 
   Widget creditCardForm() {
@@ -124,6 +149,9 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                       onChanged: (val) {
                         setState(() {
                           amount = int.parse(val);
+                          calculatedFee = calculateCreditCardFee(
+                              amount: amount,
+                              percentage: creditCardProcessingFeePercentage);
                         });
                       },
                       validator: (val) {
@@ -427,23 +455,9 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   //   ),
                   // ),
                   SizedBox(height: 10),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: Checkbox(
-                          value: securelySaveCardChecked,
-                          onChanged: (isChecked) {
-                            setState(() {
-                              securelySaveCardChecked = isChecked!;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Text(AppLocalization.of(context)!.securelySaveCard),
-                    ],
+                  Text(
+                    AppLocalization.of(context)!.doesNotSaveUsersCard,
+                    style: TextStyle(color: Colors.black.withOpacity(0.5)),
                   ),
                 ],
               ),
@@ -465,7 +479,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                         Icon(SlydoAppIcon.naira, color: navyBlue),
                         SizedBox(width: 5),
                         Text(
-                          '97',
+                          getUserFinalAmount(),
                           style: TextStyle(
                               fontSize: 32,
                               color: navyBlue,
@@ -489,7 +503,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           AppLocalization.of(context)!.invalidDetails + " !!");
                 }
               },
-              text: AppLocalization.of(context)!.top_Up,
+              text: AppLocalization.of(context)!.submit,
               textColor: Colors.white,
             ),
           ),
@@ -497,6 +511,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
         ],
       ),
     );
+  }
+
+  String getUserFinalAmount() {
+    return moneyDisplayNormalizer((amount - calculatedFee) * 100);
   }
 
   void _addCreditCard() {
@@ -515,7 +533,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
         (creditCardAdded) {
           Navigator.pop(context);
           if (creditCardAdded == 'SUCCESSFUL') {
-            print('CREDIT CARD ADDED -----> $creditCardAdded');
             showToast(
                 message: AppLocalization.of(context)!
                     .thisAccountIsAlreadyDefaultAccount);
@@ -535,9 +552,11 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
 
   void _fundWallet() {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+    int amount =
+        int.parse(_amountController.text) * 100; // Convert naira to kobo.
     Map<String, dynamic> data = {
+      "amount": amount,
       "ccv": _cvvCodeController.text,
-      "amount": _amountController.text,
       "currency": userBloc.user.currency,
       "card_number": _cardNumberController.text,
       "expiry_date": _expiryDateController.text,

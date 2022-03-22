@@ -376,6 +376,9 @@ class WebAnalyzer {
     Element? metaIcon;
 
     for (int i = 0; i < meta.length; i++) {
+      print('META ----> ${meta[i]}');
+      print('META ----> ${meta[i].attributes}');
+
       final rel = (meta[i].attributes["rel"] ?? "").toLowerCase();
       if (rel == "icon") {
         icon = meta[i].attributes["href"];
@@ -394,7 +397,7 @@ class WebAnalyzer {
         }
       }
     }
-
+    print('META ICON ----> $metaIcon');
     if (metaIcon != null) {
       icon = metaIcon.attributes["href"];
     } else {

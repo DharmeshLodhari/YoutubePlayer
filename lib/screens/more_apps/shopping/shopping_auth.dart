@@ -97,6 +97,37 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  Future<ShoppingCartModelFromQrCode?> getShoppingCartDataFromQrCode(
+      {required url}) async {
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      ShoppingCartModelFromQrCode shoppingCartModel =
+          ShoppingCartModelFromQrCode.fromJson(jsonDecode(response.body));
+      return shoppingCartModel;
+    } else {
+      return null;
+      // return Future.error(response.body);
+    }
+  }
+
+  Future<bool> payForShoppingCart({required String cartId}) async {
+    String url = AppConfig.baseUrl +
+        "/api/v1/anonymous-shopping-cart/check-out-payment/$cartId/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers);
+
+    print('PAY FOR ::: ${response.body}');
+    print('PAY FOR STATUS::: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   //Products
   Product createProduct(Map<String, dynamic> item) {
     Product product = Product();
@@ -899,5 +930,43 @@ class ShoppingAuthService extends AuthService {
           "URL: $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
       return Future.value(<ProductCategory>[]);
     }
+  }
+}
+
+class ShoppingCartModelFromQrCode {
+  String id;
+  int subTotal;
+  String status;
+  String qrCode;
+  int totalPrice;
+  String merchantCurrency;
+  int shippingPrice;
+  String merchantName;
+  String merchantAvatar;
+
+  ShoppingCartModelFromQrCode({
+    required this.id,
+    required this.status,
+    required this.qrCode,
+    required this.merchantCurrency,
+    required this.subTotal,
+    required this.totalPrice,
+    required this.merchantName,
+    required this.shippingPrice,
+    required this.merchantAvatar,
+  });
+
+  factory ShoppingCartModelFromQrCode.fromJson(Map<String, dynamic> json) {
+    return ShoppingCartModelFromQrCode(
+      id: json['id'],
+      status: json['status'],
+      qrCode: json['qr_code'],
+      subTotal: json['subtotal'],
+      totalPrice: json['total_price'],
+      shippingPrice: json['shipping_price'],
+      merchantName: json['merchant']['name'],
+      merchantAvatar: json['merchant']['avatar'],
+      merchantCurrency: json['merchant']['currency'],
+    );
   }
 }

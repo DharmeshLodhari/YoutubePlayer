@@ -3,7 +3,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -310,29 +309,8 @@ class _UserProductListState extends State<UserProductList> {
                           overflow: TextOverflow.fade,
                         ),
                       ),
-                      (productList[index].rating ?? 0.0) != 0.0
-                          ? Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Icon(
-                                  SlydoAppIcon.star,
-                                  color: starYellow,
-                                  size: 11,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  productList[index].rating?.toString() ?? "",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Container(),
+                      getRating(
+                          numberOfRating: productList[index].rating?.toInt()),
                     ],
                   ),
                 ),

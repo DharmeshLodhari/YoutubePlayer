@@ -26,10 +26,9 @@ class _UserInfoState extends State<UserInfo> {
   UserBloc? userBloc;
 
   bool isBioShowingLess = true;
-
+  bool isServiceFetched = false;
   bool isProductFetched = false;
   bool isProductItemIsEmpty = true;
-  bool isServiceFetched = false;
   bool isServiceItemIsEmpty = true;
 
   _UserInfoState();

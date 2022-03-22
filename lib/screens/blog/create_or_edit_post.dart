@@ -7,7 +7,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -18,14 +17,13 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+// import 'package:textfield_tags/textfield_tags.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../locale/app_localization.dart';
-import '../../utils/colors.dart';
 import '../../utils/video_player_controller/chewie_player.dart';
 import '../../utils/video_player_controller/chewie_progress_colors.dart';
 import '../../widget/LoadingIndicator.dart';
-import '../../widget/curved_btn.dart';
 import '../more_apps/user_post/models/user_post.dart';
 
 class CreatePostScreen extends StatefulWidget {
@@ -41,10 +39,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? blogId;
   String? _imageFile;
   String? _videoFile;
+  double imageHeight = 200;
+  bool editorIsVisible = true;
   bool showMoreOptions = false;
+  late FocusNode titleFocusNode;
   bool _userUpdatingPost = false;
+  double moreOptionsHeight = 200;
   ChewieController? _chewieMainController;
   VideoPlayerController? _mainVideoController;
+  late FocusNode textEditorTextFieldFocusNode;
   flutterQuill.QuillController _quillBodyTextController =
       flutterQuill.QuillController.basic();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -65,11 +68,39 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   void initState() {
     super.initState();
+    titleFocusNode = FocusNode();
+    textEditorTextFieldFocusNode = FocusNode();
+    titleFocusNode.addListener(() {
+      if (titleFocusNode.hasFocus) {
+        setState(() {
+          editorIsVisible = false;
+          showMoreOptions = false;
+        });
+      }
+    });
+    textEditorTextFieldFocusNode.addListener(() {
+      if (textEditorTextFieldFocusNode.hasFocus) {
+        setState(() {
+          editorIsVisible = true;
+          showMoreOptions = false;
+        });
+      }
+    });
 
     _userUpdatingPost = widget.userPost != null;
     if (_userUpdatingPost) {
       initializeUserPostVariables();
     }
+  }
+
+  @override
+  void dispose() {
+    titleFocusNode.dispose();
+    textEditorTextFieldFocusNode.dispose();
+    _mainVideoController?.dispose();
+
+    _chewieMainController?.dispose();
+    super.dispose();
   }
 
   initializeUserPostVariables() {
@@ -150,7 +181,85 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: _scaffoldBody(),
+        body: _sscaffoldBody(),
+      ),
+    );
+  }
+
+  _sscaffoldBody() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 5),
+            _videoFile != null ? getVideo() : getImage(),
+            CustomizedTextFormField(
+              hintText: 'Title',
+              hasBorder: false,
+              hasLabel: false,
+              focusNode: titleFocusNode,
+              maxLength: 150,
+              showLabelOrPassword: false,
+              textStyle: TextStyle(
+                color: blackFont,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+              ),
+              contentPadding: EdgeInsets.zero,
+              controller: blogTitleCtrl,
+              validator: (value) {
+                return value.toString().isEmpty
+                    ? '     Field cannot be empty'
+                    : null;
+              },
+            ),
+            SizedBox(height: 3),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 12.0),
+                child: getTextEditorWidget(),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0, bottom: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  getMoreOptionTrigger(),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () => _pickBlogImage(),
+                        child: Container(
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.only(right: 24),
+                            color: Colors.grey.withOpacity(0.1),
+                            child: Icon(
+                              Icons.image,
+                              size: 20,
+                            )),
+                      ),
+                      SizedBox(width: 5),
+                      isImagePicked
+                          ? InkWell(
+                              onTap: () => _pickBlogVideo(),
+                              child: Icon(Icons.video_call))
+                          : SizedBox.shrink(),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Visibility(
+              visible: showMoreOptions,
+              child: SizedBox(height: moreOptionsHeight, child: moreOptions()),
+            ),
+            Visibility(visible: editorIsVisible, child: getEditor()),
+          ],
+        ),
       ),
     );
   }
@@ -211,107 +320,117 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  Widget _scaffoldBody() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-      child: Form(
-        key: formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 5),
-              _videoFile != null ? getVideo() : getImage(),
-              CustomizedTextFormField(
-                hintText: 'Title',
-                hasBorder: false,
-                hasLabel: false,
-                maxLength: 150,
-                showLabelOrPassword: false,
-                textStyle: TextStyle(
-                  color: blackFont,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-                contentPadding: EdgeInsets.zero,
-                controller: blogTitleCtrl,
-                validator: (value) {
-                  return value.toString().isEmpty
-                      ? '     Field cannot be empty'
-                      : null;
-                },
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.only(left: 4.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    getMoreOptionTrigger(),
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () => _pickBlogImage(),
-                          child: Container(
-                              padding: EdgeInsets.all(5),
-                              margin: EdgeInsets.only(right: 24),
-                              color: Colors.grey.withOpacity(0.1),
-                              child: Icon(
-                                Icons.image,
-                                size: 20,
-                              )),
-                        ),
-                        SizedBox(width: 5),
-                        isImagePicked
-                            ? InkWell(
-                                onTap: () => _pickBlogVideo(),
-                                child: Icon(Icons.video_call))
-                            : SizedBox.shrink(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Visibility(visible: showMoreOptions, child: moreOptions()),
-              SizedBox(height: 10),
-              getEditor(),
-              SizedBox(height: 3),
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: getTextEditorWidget(),
-              ),
-              SizedBox(height: 30),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _scaffoldBody() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+  //     child: Form(
+  //       key: formKey,
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.stretch,
+  //         children: [
+  //           SizedBox(height: 5),
+  //           _videoFile != null ? getVideo() : getImage(),
+  //           CustomizedTextFormField(
+  //             hintText: 'Title',
+  //             hasBorder: false,
+  //             hasLabel: false,
+  //             maxLength: 150,
+  //             showLabelOrPassword: false,
+  //             textStyle: TextStyle(
+  //               color: blackFont,
+  //               fontSize: 22,
+  //               fontWeight: FontWeight.w600,
+  //             ),
+  //             contentPadding: EdgeInsets.zero,
+  //             controller: blogTitleCtrl,
+  //             validator: (value) {
+  //               return value.toString().isEmpty
+  //                   ? '     Field cannot be empty'
+  //                   : null;
+  //             },
+  //           ),
+  //           SizedBox(height: 3),
+  //           Expanded(
+  //             flex: getTextEditorWidgetFlexValue,
+  //             child: Padding(
+  //               padding: const EdgeInsets.only(left: 12.0),
+  //               child: getTextEditorWidget(),
+  //             ),
+  //           ),
+  //
+  //           //Widget below
+  //           Expanded(
+  //             flex: widgetBelowFlexValue,
+  //             child: Container(
+  //               color: Colors.red,
+  //               child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.end,
+  //                 children: [
+  //                   Padding(
+  //                     padding: const EdgeInsets.only(left: 4.0),
+  //                     child: Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: [
+  //                         getMoreOptionTrigger(),
+  //                         Row(
+  //                           children: [
+  //                             InkWell(
+  //                               onTap: () => _pickBlogImage(),
+  //                               child: Container(
+  //                                   padding: EdgeInsets.all(5),
+  //                                   margin: EdgeInsets.only(right: 24),
+  //                                   color: Colors.grey.withOpacity(0.1),
+  //                                   child: Icon(
+  //                                     Icons.image,
+  //                                     size: 20,
+  //                                   )),
+  //                             ),
+  //                             SizedBox(width: 5),
+  //                             isImagePicked
+  //                                 ? InkWell(
+  //                                     onTap: () => _pickBlogVideo(),
+  //                                     child: Icon(Icons.video_call))
+  //                                 : SizedBox.shrink(),
+  //                           ],
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                   Visibility(
+  //                     visible: showMoreOptions,
+  //                     child: Expanded(
+  //                       child: moreOptions(),
+  //                     ),
+  //                   ),
+  //                   SizedBox(height: 10),
+  //                   Flexible(child: getEditor()),
+  //                   SizedBox(height: 20),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget getEditor() {
-    return widget.userPost != null
-        ? blogBodyTextJson != null
-            ? flutterQuill.QuillToolbar.basic(
-                showLink: false,
-                showDividers: false,
-                showColorButton: false,
-                showSmallButton: false,
-                showImageButton: false,
-                showCameraButton: false,
-                showAlignmentButtons: false,
-                controller: _quillBodyTextController,
-              )
-            : SizedBox.shrink()
-        : flutterQuill.QuillToolbar.basic(
-            showLink: false,
-            showDividers: false,
-            showColorButton: false,
-            showSmallButton: false,
-            showImageButton: false,
-            showCameraButton: false,
-            showAlignmentButtons: false,
-            controller: _quillBodyTextController,
-          );
+    Widget editorWidget = flutterQuill.QuillToolbar.basic(
+      showDirection: true,
+      showSmallButton: true,
+      showAlignmentButtons: true,
+      controller: _quillBodyTextController,
+    );
+    if (widget.userPost != null) {
+      if (blogBodyTextJson != null) {
+        return editorWidget;
+      } else {
+        return SizedBox.shrink();
+      }
+    } else {
+      return editorWidget;
+    }
   }
 
   void submitBlogPost() async {
@@ -441,14 +560,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             imageUrl: widget.userPost?.image ?? "",
             fit: BoxFit.fill,
             width: 200,
-            height: 200,
+            height: imageHeight,
           ),
         );
       } else {
         return ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.file(File(_imageFile!),
-              width: 200, height: 200, fit: BoxFit.cover),
+          child: Image.file(
+            File(_imageFile!),
+            width: 200,
+            height: imageHeight,
+            fit: BoxFit.cover,
+          ),
         );
       }
     } else {
@@ -509,25 +632,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       padding: EdgeInsets.zero,
       placeholder: 'Tell your story...',
       scrollController: ScrollController(),
-      focusNode: FocusNode(),
+      focusNode: textEditorTextFieldFocusNode,
     );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
         return quillEditor;
-        // return flutterQuill.QuillEditor.basic(
-        //
-        //   controller: _quillBodyTextController,
-        //   readOnly: false,
-        // );
       } else {
         return Text(widget.userPost!.text!);
       }
     } else {
       return quillEditor;
-      // return flutterQuill.QuillEditor.basic(
-      //   controller: _quillBodyTextController,
-      //   readOnly: false, // true for view only mode
-      // );
     }
   }
 
@@ -535,6 +649,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return GestureDetector(
       onTap: () {
         showMoreOptions = !showMoreOptions;
+        if (showMoreOptions == true) {
+          titleFocusNode.unfocus();
+          textEditorTextFieldFocusNode.unfocus();
+        }
         if (mounted) setState(() {});
       },
       child: Container(
@@ -562,8 +680,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   Widget moreOptions() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return ListView(
       children: [
         BlogSettingsTitles(
           addElevation: false,
@@ -631,8 +748,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               context: context,
               initialTime: TimeOfDay.now(),
             );
-            publishedDateTime = DateTime(datePicked!.year, datePicked!.month,
-                datePicked!.day, timePicked!.hour, timePicked!.minute);
+            if (publishedDateTime != null) {
+              publishedDateTime = DateTime(datePicked!.year, datePicked!.month,
+                  datePicked!.day, timePicked!.hour, timePicked!.minute);
+            }
 
             print('FINAL DATE TIME -----> ${publishedDateTime.toString()}');
             setState(() => publishedDateTime = publishedDateTime);
@@ -643,33 +762,36 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           icon: Icon(Icons.event_outlined, color: blackFont),
         ),
         SizedBox(height: 10),
-        TextFieldTags(
-          initialTags: userTags,
-          tagsStyler: TagsStyler(
-            tagDecoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: HexColor("#F7F7F9"),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: TextFieldTags(
+            initialTags: userTags,
+            tagsStyler: TagsStyler(
+              tagDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: HexColor("#F7F7F9"),
+              ),
+              tagTextStyle: TextStyle(
+                  color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
+              tagCancelIconPadding: EdgeInsets.only(left: 12),
+              tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
             ),
-            tagTextStyle: TextStyle(
-                color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
-            tagCancelIconPadding: EdgeInsets.only(left: 12),
-            tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
-          ),
-          textFieldStyler: TextFieldStyler(),
-          onTag: (tag) {
-            userTags.add(tag);
-            setState(() {
+            textFieldStyler: TextFieldStyler(helperText: ''),
+            onTag: (tag) {
               userTags.add(tag);
-            });
-            userTags.removeWhere((tag) => tag.isEmpty);
-          },
-          onDelete: (tag) {
-            userTags.remove(tag);
-            setState(() {
+              setState(() {
+                userTags.add(tag);
+              });
+              userTags.removeWhere((tag) => tag.isEmpty);
+            },
+            onDelete: (tag) {
               userTags.remove(tag);
-            });
-            userTags.removeWhere((tag) => tag.isEmpty);
-          },
+              setState(() {
+                userTags.remove(tag);
+              });
+              userTags.removeWhere((tag) => tag.isEmpty);
+            },
+          ),
         ),
       ],
     );

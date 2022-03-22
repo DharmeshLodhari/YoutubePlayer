@@ -3743,9 +3743,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                       Container(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(
-                        height: 8,
-                      ),
+                      SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),

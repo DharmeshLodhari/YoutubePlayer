@@ -51,14 +51,22 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     }
     typingTimer = new Timer(
       duration,
-      () {
-        if (value.isNotEmpty && value.length > 1) {
-          _verifyBusinessName();
-        } else {
-          setState(() => businessNameVerified = null);
-        }
-      },
+      () => _checkBusinessName(value),
     );
+  }
+
+  _checkBusinessName(String value) {
+    if (value.isNotEmpty && value.length > 1) {
+      if (checkSlydoName(value) != null &&
+          checkSlydoName(value)!.contains('You can not use slydo in name')) {
+        setState(() => businessNameVerified = false);
+        showToast(message: 'Name cannot contain slydo');
+      } else {
+        _verifyBusinessName();
+      }
+    } else {
+      setState(() => businessNameVerified = null);
+    }
   }
 
   @override

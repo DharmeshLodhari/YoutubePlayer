@@ -4,7 +4,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -106,6 +105,7 @@ class _EditProductState extends State<EditProduct> {
         setState(() {
           currentProduct = value;
           // assigning to our edit controllers
+          print('CURRENT PRODUCT :::: ${currentProduct.price}');
 
           productTitleController.text = currentProduct.name!;
           productDescriptionController.text = currentProduct.description!;

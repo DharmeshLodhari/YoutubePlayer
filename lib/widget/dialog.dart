@@ -177,6 +177,7 @@ Future<bool?> showDialogBoxWithImageForNudge({
 }
 
 Future<bool?> showDialogBox({
+  Widget? content,
   required BuildContext context,
   String? title,
   String? description,
@@ -193,6 +194,7 @@ Future<bool?> showDialogBox({
   RoundedBackgroundIcon? roundedBackgroundIcon,
 }) {
   return CustomizedAlert(
+    content: content,
     context: context,
     title: title,
     desc: description,

@@ -382,6 +382,7 @@ class _UserDashboardState extends State<UserDashboard> {
         SizedBox(
           width: 12,
         ),
+
         Expanded(
           child: UserDashboardItemTile(
             icon: SlydoAppIcon.naira,
@@ -719,6 +720,21 @@ class _UserDashboardState extends State<UserDashboard> {
               onTap: () {
                 hideBalance();
                 Navigator.pushNamed(context, "/accounts");
+              },
+            ),
+            bottomSheetItem(
+              title: 'Cashout transactions',
+              icon: SlydoAppIcon.transactions,
+              onTap: () {
+                hideBalance();
+                BottomSheetPassCode(
+                    context: context,
+                    isValidCallback: () {
+                      Navigator.pushNamed(context, "/payout-list");
+                    },
+                    cancelCallBack: () {
+                      Navigator.pop(context);
+                    });
               },
             ),
           ],

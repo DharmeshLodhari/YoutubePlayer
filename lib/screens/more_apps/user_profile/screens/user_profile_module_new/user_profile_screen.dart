@@ -446,27 +446,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               ),
                               padding: EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 5),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    SlydoAppIcon.star,
-                                    color: starYellow,
-                                    size: 14,
-                                  ),
-                                  SizedBox(
-                                    width: 4,
-                                  ),
-                                  Text(
-                                    searchedUser?.rating.toString() ?? "0.0",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: blackFont,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: getRating(
+                                  numberOfRating: searchedUser?.rating.toInt()),
                             ),
                           ),
                         )

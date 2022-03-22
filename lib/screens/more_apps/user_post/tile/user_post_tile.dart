@@ -215,23 +215,14 @@ class _PostTileState extends State<PostTile> {
 
   Widget _buildReviewLike() {
     return GestureDetector(
-      onTap: isAuthor ? null : likeUnlikePost,
+      onTap: isAuthor
+          ? () => showToast(message: 'You cannot like your post')
+          : likeUnlikePost,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: 6,
-        ),
-        // decoration: BoxDecoration(
-        //   borderRadius: BorderRadius.circular(20),
-        //   border: Border.all(
-        //     color: Colors.black12,
-        //   ),
-        // ),
+        padding: EdgeInsets.all(12),
         child: Row(
           children: [
-            Icon(
-              Icons.thumb_up_alt_outlined,
-              size: 16,
-            ),
+            Icon(Icons.thumb_up_alt_outlined, size: 16),
             SizedBox(
               width: 4,
             ),
@@ -285,12 +276,11 @@ class _PostTileState extends State<PostTile> {
 
   Widget _buildPostUnLike() {
     return GestureDetector(
-      onTap: isAuthor ? null : dislikeUnlikePost,
+      onTap: isAuthor
+          ? () => showToast(message: 'You cannot unlike your post')
+          : dislikeUnlikePost,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 6,
-        ),
+        padding: EdgeInsets.all(12),
         child: Row(
           children: [
             Icon(

@@ -911,26 +911,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ],
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    SlydoAppIcon.star,
-                    color: starYellow,
-                    size: 11,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    service?.rating.toString() ?? "0.0",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
+              SizedBox(height: 5),
+              getRating(
+                numberOfRating: service?.rating!.toInt(),
               ),
             ],
           ),

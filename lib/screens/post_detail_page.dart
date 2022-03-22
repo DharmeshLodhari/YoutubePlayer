@@ -2,12 +2,10 @@ import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
@@ -22,7 +20,6 @@ import '../utils/video_player_controller/chewie_progress_colors.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/bottom_sheet_item.dart';
 import '../widget/dialog.dart';
-import '../widget/noItemInList.dart';
 import '../widget/rounded_background_icon.dart';
 import 'more_apps/messaging/chat/models/ChatConversation.dart';
 import 'more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
@@ -54,8 +51,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   // UserPost? userPost;
   late UserBloc userBloc;
   bool isLoading = false;
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+
   bool isVideoPlaying = false;
 
   NewsDetailItem newsDetailItem = NewsDetailItem();
@@ -153,24 +149,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
-  void onRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        if (widget.postType == PostType.news) {
-          getNewsResultAndInitializeVideoController();
-        }
-        _refreshController.refreshCompleted();
-      } else {
-        showToast(
-            message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
-        _refreshController.refreshCompleted();
-      }
-    });
-  }
-
   @override
   void dispose() {
     _mainVideoController?.dispose();
@@ -249,7 +227,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ? ''
                       : formatDate(userPost!.createdAt!)
                   : newsDetailItem.uploadTime!,
-              onRefresh: onRefresh,
               authorName: widget.postType == PostType.blog
                   ? userPost!.authorName == null
                       ? ''
@@ -270,7 +247,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ? ''
                       : messageDecoderWithEmoji(userPost!.tagLine)!
                   : newsDetailItem.shortDescription!,
-              refreshController: _refreshController,
               postFullDescription: getPostFullText(),
               chewieMainController: _chewieMainController,
               newsListRelatedPostItems: newsDetailItem.newsListItems,
@@ -559,11 +535,9 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
   final PostType postType;
   final String? postImageUrl;
   final String posterImageUrl;
-  final Function()? onRefresh;
   final String? authorUserName;
   final String shortDescription;
   final Widget postFullDescription;
-  final RefreshController refreshController;
   final ChewieController? chewieMainController;
   final List<NewsListItem>? newsListRelatedPostItems;
   const PostDetailPageScaffoldBody({
@@ -576,14 +550,12 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
     required this.isLoading,
     required this.postTitle,
     required this.createdAt,
-    required this.onRefresh,
     required this.authorName,
     required this.postImageUrl,
     required this.authorUserName,
     required this.posterImageUrl,
     this.newsListRelatedPostItems,
     required this.shortDescription,
-    required this.refreshController,
     required this.postFullDescription,
     required this.chewieMainController,
   }) : super(key: key);

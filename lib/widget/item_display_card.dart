@@ -88,29 +88,7 @@ Widget displayProduct(
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  product.rating != 0.0
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              SlydoAppIcon.star,
-                              color: starYellow,
-                              size: 11,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              product.rating?.toString() ?? "0.0",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
+                  getRating(numberOfRating: product.rating?.toInt()),
                 ],
               ),
             ),
@@ -224,29 +202,7 @@ Widget displayService(
                       ),
                     ),
                   ),
-                  service.rating != 0.0
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              SlydoAppIcon.star,
-                              color: starYellow,
-                              size: 11,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              service.rating?.toString() ?? "0.0",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
+                  getRating(numberOfRating: service.rating?.toInt()),
                 ],
               ),
             ),

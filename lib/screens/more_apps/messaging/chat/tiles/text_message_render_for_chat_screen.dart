@@ -165,7 +165,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                         width: 20,
                       ),
                 Text(
-                  formatTime(message['created_at']),
+                  formatTime(message["created_at"]),
                   style: TextStyle(
                       color: darkGrey,
                       fontSize: 10,
@@ -312,27 +312,45 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     return getSimpleMessage(message: message, isSend: isSend!);
   }
 
+  getPreviewIcon(String? url) {
+    if (url != null) {
+      if (url.endsWith('.png') ||
+          url.endsWith('.jpg') ||
+          url.endsWith('.jpeg')) {
+        return url;
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+
   List<Widget> getPreview(WebInfo webInfo) {
     List<Widget> children = [
       Center(
         child: Row(
           children: <Widget>[
-            CachedNetworkImage(
-              imageUrl: webInfo.icon ?? "",
-              errorWidget: imageErrorWidget,
-              imageBuilder: (context, imageProvider) {
-                return Image(
-                  image: imageProvider,
-                  fit: BoxFit.contain,
-                  width: 30,
-                  height: 30,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.link);
-                  },
-                );
-              },
-            ),
-            const SizedBox(width: 8),
+            getPreviewIcon(webInfo.icon).isEmpty
+                ? SizedBox.shrink()
+                : CachedNetworkImage(
+                    imageUrl: getPreviewIcon(webInfo.icon),
+                    errorWidget: imageErrorWidget,
+                    imageBuilder: (context, imageProvider) {
+                      return Image(
+                        image: imageProvider,
+                        fit: BoxFit.contain,
+                        width: 30,
+                        height: 30,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.link);
+                        },
+                      );
+                    },
+                  ),
+            getPreviewIcon(webInfo.icon).isEmpty
+                ? SizedBox.shrink()
+                : const SizedBox(width: 8),
             Expanded(
               child: Text(
                 webInfo.title!,
