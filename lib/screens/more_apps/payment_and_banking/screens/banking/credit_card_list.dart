@@ -3,17 +3,22 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
+import 'package:Slydo/widget/vertical_list_item.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:Slydo/widget/vertical_list_item.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CreditCardList extends StatefulWidget {
+  var arguments;
+
+  CreditCardList({
+    this.arguments,
+  });
+
   @override
   _CreditCardListState createState() => _CreditCardListState();
 }
@@ -25,7 +30,6 @@ class _CreditCardListState extends State<CreditCardList> {
   bool isLoading = false;
   List<CreditCard> creditCardList = [];
   bool noItemInList = false;
-  ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -44,13 +48,7 @@ class _CreditCardListState extends State<CreditCardList> {
     );
 
     super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          _scrollController.position.pixels != 0) {
-        getList();
-      }
-    });
+
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -82,13 +80,25 @@ class _CreditCardListState extends State<CreditCardList> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        if (widget.arguments != null) {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }
         return true;
       },
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: _buildCreditCardList(),
+        body: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildCreditCardList()),
       ),
     );
   }
@@ -105,7 +115,12 @@ class _CreditCardListState extends State<CreditCardList> {
           size: 24,
         ),
         onPressed: () {
-          Navigator.pop(context);
+          if (widget.arguments != null) {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          } else {
+            Navigator.pop(context);
+          }
         },
       ),
       centerTitle: false,
@@ -115,7 +130,7 @@ class _CreditCardListState extends State<CreditCardList> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        openGraphBtn(),
+        creditCardList.length == 2 ? SizedBox.shrink() : openGraphBtn(),
         SizedBox(
           width: 16,
         ),
@@ -173,7 +188,7 @@ class _CreditCardListState extends State<CreditCardList> {
           });
         }
       } else if (next == null && creditCardList.length > 6) {
-        _scaffoldKey.currentState!.showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -185,7 +200,8 @@ class _CreditCardListState extends State<CreditCardList> {
   Widget _buildCreditCardList() {
     return noItemInList
         ? NoItemInList(
-            msg: AppLocalization.of(context)!.youDontHaveAnyAccountPleaseAddOne,
+            msg: AppLocalization.of(context)!
+                .youDontHaveAnyCreditCardPleaseAddOne,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(vertical: 16),
@@ -250,9 +266,7 @@ class _CreditCardListState extends State<CreditCardList> {
                 accountNumber: creditCard.cardNumber!.toString()),
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
-          SizedBox(
-            height: 2,
-          ),
+          SizedBox(height: 2),
           Text(
             AppLocalization.of(context)!.defaultMsg,
             style: TextStyle(color: darkGrey, fontSize: 12),

@@ -17,7 +17,7 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: customAppBar(
-        title: 'Top Up',
+        title: AppLocalization.of(context)!.wallet,
         context: context,
       ) as PreferredSizeWidget?,
       body: scaffoldBody(),
@@ -39,16 +39,7 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                   height: 8,
                 ),
                 getSettingTile(
-                  title: AppLocalization.of(context)!.creditDebitCard,
-                  icon: Icons.credit_card,
-                  iconColor: naturalGreen,
-                  onTap: () {
-                    Navigator.of(context)
-                        .pushNamed('/credit-card-option-selection');
-                  },
-                ),
-                getSettingTile(
-                    title: AppLocalization.of(context)!.virtualAccount,
+                    title: AppLocalization.of(context)!.myWallet,
                     icon: Icons.account_balance_wallet,
                     iconColor: HexColor("#3F61DB"),
                     onTap: () async {
@@ -56,11 +47,12 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                           .pushNamed('/add-money-to-slydo-one');
                     }),
                 getSettingTile(
-                  title: AppLocalization.of(context)!.bankAccount,
-                  icon: Icons.account_balance,
-                  iconColor: HexColor("#F35B46"),
+                  title: AppLocalization.of(context)!.creditDebitCard,
+                  icon: Icons.credit_card,
+                  iconColor: naturalGreen,
                   onTap: () {
-                    Navigator.of(context).pushNamed('/bank-account-list');
+                    Navigator.of(context)
+                        .pushNamed('/credit-card-option-selection');
                   },
                 ),
               ],

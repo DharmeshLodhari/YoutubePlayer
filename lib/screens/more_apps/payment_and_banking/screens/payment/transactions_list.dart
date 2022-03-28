@@ -348,7 +348,7 @@ class _TransactionListState extends State<TransactionList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldTransactionKey.currentState!.showSnackBar(SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

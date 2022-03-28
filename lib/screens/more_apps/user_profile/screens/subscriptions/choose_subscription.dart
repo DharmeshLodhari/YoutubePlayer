@@ -43,9 +43,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
   TextEditingController _businessNameCtrl = TextEditingController();
 
   _onChanged(String value) {
-    const duration = Duration(
-        milliseconds:
-            1000); // set the duration that you want call search() after that.
+    const duration = Duration(milliseconds: 1000);
     if (typingTimer != null) {
       setState(() => typingTimer!.cancel()); // clear timer
     }
@@ -58,7 +56,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
   _checkBusinessName(String value) {
     if (value.isNotEmpty && value.length > 1) {
       if (checkSlydoName(value) != null &&
-          checkSlydoName(value)!.contains('You can not use slydo in name')) {
+          checkSlydoName(value)!.contains(slydoNameMsg)) {
         setState(() => businessNameVerified = false);
         showToast(message: 'Name cannot contain slydo');
       } else {
@@ -159,7 +157,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                       hintText: 'Full business name',
                       suffixIcon: Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: _getSuffixIcon(),
+                        child: _getBusinessNameSuffixIcon(),
                       ),
                     ),
                   ],
@@ -313,7 +311,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
     }
   }
 
-  Widget _getSuffixIcon() {
+  Widget _getBusinessNameSuffixIcon() {
     if (verifyingBusinessName) {
       return SizedBox(width: 20, height: 20, child: CircularLoadingIndicator());
     } else {

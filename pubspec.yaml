@@ -17,7 +17,7 @@ dependencies:
   flutter_svg: ^1.0.3
   flutter_quill: ^4.0.5
   path_provider: ^2.0.5
-  textfield_tags: ^1.4.0
+  textfield_tags: 1.4.3
   qr_code_scanner: ^0.5.2
 
   page_view_indicators: ^2.0.0

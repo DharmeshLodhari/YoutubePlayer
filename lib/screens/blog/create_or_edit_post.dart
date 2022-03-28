@@ -17,7 +17,6 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
-// import 'package:textfield_tags/textfield_tags.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../locale/app_localization.dart';
@@ -39,12 +38,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? blogId;
   String? _imageFile;
   String? _videoFile;
-  double imageHeight = 200;
+  // double imageHeight = 200;
+  bool imageIsVisible = true;
   bool editorIsVisible = true;
   bool showMoreOptions = false;
   late FocusNode titleFocusNode;
   bool _userUpdatingPost = false;
   double moreOptionsHeight = 200;
+  late FocusNode textFieldTagFocusNode;
   ChewieController? _chewieMainController;
   VideoPlayerController? _mainVideoController;
   late FocusNode textEditorTextFieldFocusNode;
@@ -68,25 +69,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   void initState() {
     super.initState();
-    titleFocusNode = FocusNode();
-    textEditorTextFieldFocusNode = FocusNode();
-    titleFocusNode.addListener(() {
-      if (titleFocusNode.hasFocus) {
-        setState(() {
-          editorIsVisible = false;
-          showMoreOptions = false;
-        });
-      }
-    });
-    textEditorTextFieldFocusNode.addListener(() {
-      if (textEditorTextFieldFocusNode.hasFocus) {
-        setState(() {
-          editorIsVisible = true;
-          showMoreOptions = false;
-        });
-      }
-    });
-
+    _initializeFocusNodes();
     _userUpdatingPost = widget.userPost != null;
     if (_userUpdatingPost) {
       initializeUserPostVariables();
@@ -175,18 +158,39 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               Navigator.pop(context);
             },
           );
+        } else if (_quillBodyTextController.document.toPlainText().length > 1) {
+          showDialogBox(
+            context: context,
+            actionOneTextColor: white,
+            actionOneBgColor: mateRed,
+            actionTwoTextColor: blackFont,
+            actionTwoBgColor: greyBorderColor,
+            title: 'Exit creating post',
+            actionTwoText: AppLocalization.of(context)!.cancel,
+            actionOneText: AppLocalization.of(context)!.exit,
+            description: 'Are you sure you want to exit creating this post?',
+            roundedBackgroundIcon: RoundedBackgroundIcon(
+              enableMargin: false,
+              width: 90,
+              height: 90,
+              image: Icon(SlydoAppIcon.remove),
+            ),
+            leftButtonOnPressed: () {
+              Navigator.pop(context);
+            },
+          );
         }
         return true;
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: _sscaffoldBody(),
+        body: _scaffoldBody(),
       ),
     );
   }
 
-  _sscaffoldBody() {
+  _scaffoldBody() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Form(
@@ -195,7 +199,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(height: 5),
-            _videoFile != null ? getVideo() : getImage(),
+            Visibility(
+              visible: imageIsVisible,
+              child: _videoFile != null ? getVideo() : getImage(),
+            ),
             CustomizedTextFormField(
               hintText: 'Title',
               hasBorder: false,
@@ -215,13 +222,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     ? '     Field cannot be empty'
                     : null;
               },
-            ),
-            SizedBox(height: 3),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: getTextEditorWidget(),
-              ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 4.0, bottom: 8),
@@ -255,9 +255,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             ),
             Visibility(
               visible: showMoreOptions,
-              child: SizedBox(height: moreOptionsHeight, child: moreOptions()),
+              child: moreOptions(),
             ),
-            Visibility(visible: editorIsVisible, child: getEditor()),
+            SizedBox(height: 3),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: getTextEditorWidget(),
+              ),
+            ),
+            Visibility(
+              visible: editorIsVisible,
+              child: getEditor(),
+            ),
           ],
         ),
       ),
@@ -288,6 +298,28 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               actionTwoText: AppLocalization.of(context)!.cancel,
               actionOneText: AppLocalization.of(context)!.exit,
               description: 'Are you sure you want to exit editing this post?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                enableMargin: false,
+                width: 90,
+                height: 90,
+                image: Icon(SlydoAppIcon.remove),
+              ),
+              leftButtonOnPressed: () {
+                Navigator.pop(context);
+              },
+            );
+          } else if (_quillBodyTextController.document.toPlainText().length >
+              1) {
+            showDialogBox(
+              context: context,
+              actionOneTextColor: white,
+              actionOneBgColor: mateRed,
+              actionTwoTextColor: blackFont,
+              actionTwoBgColor: greyBorderColor,
+              title: 'Exit creating post',
+              actionTwoText: AppLocalization.of(context)!.cancel,
+              actionOneText: AppLocalization.of(context)!.exit,
+              description: 'Are you sure you want to exit creating this post?',
               roundedBackgroundIcon: RoundedBackgroundIcon(
                 enableMargin: false,
                 width: 90,
@@ -553,14 +585,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Widget getImage() {
     if (_imageFile != null) {
-      if (_imageFile!.startsWith('https')) {
+      if (_imageFile!.startsWith('http')) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: CachedNetworkImage(
             imageUrl: widget.userPost?.image ?? "",
             fit: BoxFit.fill,
             width: 200,
-            height: imageHeight,
+            height: 200,
           ),
         );
       } else {
@@ -569,7 +601,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           child: Image.file(
             File(_imageFile!),
             width: 200,
-            height: imageHeight,
+            height: 200,
             fit: BoxFit.cover,
           ),
         );
@@ -652,6 +684,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         if (showMoreOptions == true) {
           titleFocusNode.unfocus();
           textEditorTextFieldFocusNode.unfocus();
+        } else {
+          imageIsVisible = true;
         }
         if (mounted) setState(() {});
       },
@@ -680,121 +714,164 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   Widget moreOptions() {
-    return ListView(
-      children: [
-        BlogSettingsTitles(
-          addElevation: false,
-          title: 'Make Public',
-          description:
-              'Your post will become public to your friends and everyone',
-          isSwitched: isPublic,
-          icon: Icon(Icons.public_outlined, color: blackFont),
-          onChanged: (makePostPublic) {
-            isPublic = makePostPublic;
-            setState(() => isPublic = makePostPublic);
-          },
-        ),
-        BlogSettingsTitles(
-          title: 'Publish',
-          addElevation: false,
-          description: 'Your post will be published',
-          isSwitched: isPublished,
-          icon: Icon(
-            Icons.published_with_changes_outlined,
-            color: blackFont,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.40,
+      child: ListView(
+        children: [
+          BlogSettingsTitles(
+            addElevation: false,
+            title: 'Make Public',
+            description:
+                'Your post will become public to your friends and everyone',
+            isSwitched: isPublic,
+            icon: Icon(Icons.public_outlined, color: blackFont),
+            onChanged: (makePostPublic) {
+              isPublic = makePostPublic;
+              setState(() => isPublic = makePostPublic);
+            },
           ),
-          onChanged: (publishPost) {
-            isPublished = publishPost;
-            setState(() => isPublished = publishPost);
-          },
-        ),
-        BlogSettingsTitles(
-          title: 'Enable Comments',
-          addElevation: false,
-          description: 'Everyone will be able to comment on your post',
-          isSwitched: enableCommenting,
-          icon: Icon(Icons.message_rounded, color: blackFont),
-          onChanged: (commentingEnabled) {
-            enableCommenting = commentingEnabled;
-            setState(() => enableCommenting = commentingEnabled);
-          },
-        ),
-        BlogSettingsTitles(
-          title: 'Enable Likes',
-          addElevation: false,
-          description: 'Everyone will be able to like your post',
-          isSwitched: enableLikes,
-          icon: Icon(Icons.thumb_up, color: blackFont),
-          onChanged: (likeEnabled) {
-            enableLikes = likeEnabled;
-            setState(() => enableLikes = likeEnabled);
-          },
-        ),
-        BlogSettingsTitles(
-          hasSwitch: false,
-          addElevation: false,
-          trailingWidget: publishedDateTime != null
-              ? Text(DateFormat('yyyy-MM-dd H:m').format(publishedDateTime!))
-              : Text(''),
-          onTap: () async {
-            datePicked = await showDatePicker(
-                builder: customThemeBuilder,
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime.now(),
-                lastDate: DateTime(2030));
-
-            timePicked = await showTimePicker(
-              context: context,
-              initialTime: TimeOfDay.now(),
-            );
-            if (publishedDateTime != null) {
-              publishedDateTime = DateTime(datePicked!.year, datePicked!.month,
-                  datePicked!.day, timePicked!.hour, timePicked!.minute);
-            }
-
-            print('FINAL DATE TIME -----> ${publishedDateTime.toString()}');
-            setState(() => publishedDateTime = publishedDateTime);
-            // '2022-02-28T13:35:43.590377+01:00'
-          },
-          title: 'Published Date',
-          description: 'Pick a date to publish your post',
-          icon: Icon(Icons.event_outlined, color: blackFont),
-        ),
-        SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: TextFieldTags(
-            initialTags: userTags,
-            tagsStyler: TagsStyler(
-              tagDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: HexColor("#F7F7F9"),
-              ),
-              tagTextStyle: TextStyle(
-                  color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
-              tagCancelIconPadding: EdgeInsets.only(left: 12),
-              tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+          BlogSettingsTitles(
+            title: 'Publish',
+            addElevation: false,
+            description: 'Your post will be published',
+            isSwitched: isPublished,
+            icon: Icon(
+              Icons.published_with_changes_outlined,
+              color: blackFont,
             ),
-            textFieldStyler: TextFieldStyler(helperText: ''),
-            onTag: (tag) {
-              userTags.add(tag);
-              setState(() {
-                userTags.add(tag);
-              });
-              userTags.removeWhere((tag) => tag.isEmpty);
-            },
-            onDelete: (tag) {
-              userTags.remove(tag);
-              setState(() {
-                userTags.remove(tag);
-              });
-              userTags.removeWhere((tag) => tag.isEmpty);
+            onChanged: (publishPost) {
+              isPublished = publishPost;
+              setState(() => isPublished = publishPost);
             },
           ),
-        ),
-      ],
+          BlogSettingsTitles(
+            title: 'Enable Comments',
+            addElevation: false,
+            description: 'Everyone will be able to comment on your post',
+            isSwitched: enableCommenting,
+            icon: Icon(Icons.message_rounded, color: blackFont),
+            onChanged: (commentingEnabled) {
+              enableCommenting = commentingEnabled;
+              setState(() => enableCommenting = commentingEnabled);
+            },
+          ),
+          BlogSettingsTitles(
+            title: 'Enable Likes',
+            addElevation: false,
+            description: 'Everyone will be able to like your post',
+            isSwitched: enableLikes,
+            icon: Icon(Icons.thumb_up, color: blackFont),
+            onChanged: (likeEnabled) {
+              enableLikes = likeEnabled;
+              setState(() => enableLikes = likeEnabled);
+            },
+          ),
+          BlogSettingsTitles(
+            hasSwitch: false,
+            addElevation: false,
+            trailingWidget: publishedDateTime != null
+                ? Text(DateFormat('yyyy-MM-dd H:m').format(publishedDateTime!))
+                : Text(''),
+            onTap: () async {
+              datePicked = await showDatePicker(
+                  builder: customThemeBuilder,
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2030));
+
+              timePicked = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+              );
+              if (datePicked != null && timePicked != null) {
+                publishedDateTime = DateTime(
+                    datePicked!.year,
+                    datePicked!.month,
+                    datePicked!.day,
+                    timePicked!.hour,
+                    timePicked!.minute);
+              }
+
+              print('FINAL DATE TIME -----> ${publishedDateTime.toString()}');
+              setState(() => publishedDateTime = publishedDateTime);
+              // '2022-02-28T13:35:43.590377+01:00'
+            },
+            title: 'Published Date',
+            description: 'Pick a date to publish your post',
+            icon: Icon(Icons.event_outlined, color: blackFont),
+          ),
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Focus(
+              focusNode: textFieldTagFocusNode,
+              child: TextFieldTags(
+                initialTags: userTags,
+                tagsStyler: TagsStyler(
+                  tagDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: HexColor("#F7F7F9"),
+                  ),
+                  tagTextStyle: TextStyle(
+                      color: darkGrey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                  tagCancelIconPadding: EdgeInsets.only(left: 12),
+                  tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+                ),
+                validator: (value) {
+                  return null;
+                },
+                textFieldStyler: TextFieldStyler(helperText: ''),
+                onTag: (tag) {
+                  setState(() {
+                    userTags.add(tag);
+                    userTags = userTags.toSet().toList();
+                  });
+                  userTags.removeWhere((tag) => tag.isEmpty);
+                },
+                onDelete: (tag) {
+                  setState(() {
+                    userTags.remove(tag);
+                  });
+                  userTags.removeWhere((tag) => tag.isEmpty);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  void _initializeFocusNodes() {
+    titleFocusNode = FocusNode();
+    textFieldTagFocusNode = FocusNode();
+    textEditorTextFieldFocusNode = FocusNode();
+    textFieldTagFocusNode.addListener(() {
+      if (textFieldTagFocusNode.hasFocus) {
+        setState(() {
+          imageIsVisible = false;
+        });
+      }
+    });
+    titleFocusNode.addListener(() {
+      if (titleFocusNode.hasFocus) {
+        setState(() {
+          editorIsVisible = false;
+          showMoreOptions = false;
+        });
+      }
+    });
+    textEditorTextFieldFocusNode.addListener(() {
+      if (textEditorTextFieldFocusNode.hasFocus) {
+        setState(() {
+          editorIsVisible = true;
+          showMoreOptions = false;
+        });
+      }
+    });
   }
 }
 

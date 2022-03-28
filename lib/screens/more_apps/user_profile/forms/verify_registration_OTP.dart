@@ -1,14 +1,22 @@
+import 'dart:async';
+
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pinput/pin_put/pin_put.dart';
+
+import '../../../../widget/LoadingIndicator.dart';
+import '../../payment_and_banking/payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
 class VerifyRegistrationOTPScreen extends StatefulWidget {
   var arguments;
 
-  VerifyRegistrationOTPScreen({this.arguments});
+  VerifyRegistrationOTPScreen({
+    this.arguments,
+  });
 
   @override
   _VerifyRegistrationOTPScreenState createState() =>
@@ -17,16 +25,19 @@ class VerifyRegistrationOTPScreen extends StatefulWidget {
 
 class _VerifyRegistrationOTPScreenState
     extends State<VerifyRegistrationOTPScreen> {
-  TextEditingController? otpController;
+  int _timerCount = 30;
+
   String? phoneNumber = '';
   FocusNode? _pinPutFocusNode;
-
+  TextEditingController? otpController;
   final _verifyOtpFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     otpController = TextEditingController();
-    phoneNumber = widget.arguments['phoneNumber'];
+    if (widget.arguments['phoneNumber'] != null) {
+      phoneNumber = widget.arguments['phoneNumber'];
+    }
     _pinPutFocusNode = FocusNode();
     super.initState();
   }
@@ -105,6 +116,13 @@ class _VerifyRegistrationOTPScreenState
   }
 
   Widget expirationNote() {
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_timerCount != 0) {
+        setState(() {
+          _timerCount -= 1;
+        });
+      }
+    });
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,9 +178,10 @@ class _VerifyRegistrationOTPScreenState
         child: PinPut(
           eachFieldWidth: 40,
           eachFieldHeight: 45,
-          fieldsCount: 6,
+          fieldsCount: widget.arguments['isWalletFunding'] != null ? 5 : 6,
           focusNode: _pinPutFocusNode,
           controller: otpController,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           submittedFieldDecoration: navyBlueBorder,
           selectedFieldDecoration: grayBorder,
           followingFieldDecoration: grayBorder,
@@ -170,8 +189,14 @@ class _VerifyRegistrationOTPScreenState
           textStyle: TextStyle(
               color: blackFont, fontSize: 32, fontWeight: FontWeight.w600),
           validator: (val) {
-            if (val!.length != 6) {
-              return "Please enter code that sent to you";
+            if (widget.arguments['isWalletFunding'] != null) {
+              if (val!.length != 5) {
+                return "Please enter code that sent to you";
+              }
+            } else {
+              if (val!.length != 6) {
+                return "Please enter code that sent to you";
+              }
             }
             return null;
           },
@@ -182,7 +207,9 @@ class _VerifyRegistrationOTPScreenState
 
   Widget verifyBtn() {
     return CurvedButton(
-      onPressed: verifyOTP,
+      onPressed: widget.arguments['phoneNumber'] != null
+          ? verifyOTP
+          : verifyCreditCardOtp,
       text: "Verify",
       textColor: Colors.white,
       backgroundColor: navyBlue,
@@ -193,6 +220,7 @@ class _VerifyRegistrationOTPScreenState
     if (_verifyOtpFormKey.currentState!.validate()) {
       String enteredOTP = otpController!.text.trim();
       String passwordToken = "false";
+
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
           .then((value) {
@@ -202,4 +230,111 @@ class _VerifyRegistrationOTPScreenState
       });
     }
   }
+
+  void verifyCreditCardOtp() {
+    if (_verifyOtpFormKey.currentState!.validate()) {
+      showDialog(context: context, builder: (context) => LoadingIndicator());
+
+      PaymentAndBankingAuth().verifyCreditCardOtp(otpController!.text).then(
+        (cardVerifiedResponse) {
+          _processVerifyCreditCardOtp(context, cardVerifiedResponse);
+        },
+      ).catchError(
+        (e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        },
+      );
+    } else {
+      showToast(message: 'Enter a valid otp');
+    }
+  }
+
+  _processVerifyCreditCardOtp(BuildContext context, String response) {
+    Navigator.pop(context); // pop loading indicator;
+
+    switch (response) {
+      case 'successful':
+        Navigator.pop(context); // pop this page;
+        Navigator.pop(context); // pop card_payment_page;
+        Navigator.pop(context); // pop credit_card_list;
+        if (widget.arguments['isWalletFunding'] == true) {
+          showToast(message: 'Wallet Funded successfully');
+        } else {
+          Navigator.pushNamed(
+              context, '/credit-card-list'); //To reload credit-card-list page.
+
+        }
+        break;
+      case 'invalid otp':
+        showToast(message: 'Please enter a valid otp');
+        break;
+      case 'session expired':
+        Navigator.pop(context); // pop this page;
+        showToast(message: 'Session expired, please try again.');
+
+        break;
+      case 'insufficient funds':
+        Navigator.pop(context); // pop this page;
+        showToast(message: 'You do not have sufficient funds');
+
+        break;
+      default:
+        Navigator.pop(context); // pop this page;
+        showToast(message: response);
+        break;
+    }
+  }
 }
+
+// class ExpirationNoteWidget extends StatefulWidget {
+//   const ExpirationNoteWidget({Key? key}) : super(key: key);
+//
+//   @override
+//   State<ExpirationNoteWidget> createState() => _ExpirationNoteWidgetState();
+// }
+//
+// class _ExpirationNoteWidgetState extends State<ExpirationNoteWidget> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     Timer.periodic(Duration(seconds: 1), (timer) {
+//       if (_timerCount != 0) {
+//         setState(() {
+//           _timerCount -= 1;
+//         });
+//       }
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: <Widget>[
+//           Text(
+//             "Please enter the code sent to your phone number.",
+//             style: TextStyle(fontSize: 14, color: darkGrey),
+//           ),
+//           Row(
+//             children: <Widget>[
+//               Text(
+//                 "This code will expire in",
+//                 style: TextStyle(fontSize: 14, color: darkGrey),
+//               ),
+//               Text(
+//                 " $_timerCount ",
+//                 style: TextStyle(fontSize: 14, color: Colors.red),
+//               ),
+//               Text(
+//                 "seconds.",
+//                 style: TextStyle(fontSize: 14, color: darkGrey),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

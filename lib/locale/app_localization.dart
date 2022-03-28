@@ -624,6 +624,13 @@ class AppLocalization {
     );
   }
 
+  String get cards {
+    return Intl.message(
+      "Cards",
+      name: "cards",
+    );
+  }
+
   String get creditCards {
     return Intl.message(
       "Credit Cards",
@@ -638,10 +645,10 @@ class AppLocalization {
     );
   }
 
-  String get myCreditCards {
+  String get myCreditAndDebitCards {
     return Intl.message(
-      "My Credit Cards",
-      name: "myCreditCards",
+      "My Credit/Debit Cards",
+      name: "myCreditAndDebitCards",
     );
   }
 
@@ -649,6 +656,13 @@ class AppLocalization {
     return Intl.message(
       "Add Payment Card",
       name: "addPaymentCard",
+    );
+  }
+
+  String get wallet {
+    return Intl.message(
+      "Wallet",
+      name: "wallet",
     );
   }
 
@@ -684,6 +698,13 @@ class AppLocalization {
     return Intl.message(
       "You Don't have any Bank Account Please Add one",
       name: "youDontHaveAnyAccountPleaseAddOne",
+    );
+  }
+
+  String get youDontHaveAnyCreditCardPleaseAddOne {
+    return Intl.message(
+      "You don't have any credit card. Please Add one.",
+      name: "youDontHaveAnyCreditCardPleaseAddOne",
     );
   }
 
@@ -1320,11 +1341,18 @@ class AppLocalization {
     );
   }
 
-  //transaction detail page
   String get transaction {
     return Intl.message(
       "Transaction",
       name: "transaction",
+    );
+  }
+
+  //transaction detail page
+  String get myTransaction {
+    return Intl.message(
+      "My Transaction",
+      name: "myTransaction",
     );
   }
 
@@ -2016,6 +2044,13 @@ class AppLocalization {
     );
   }
 
+  String get topUpWithCreditAndDebitCard {
+    return Intl.message(
+      "Top up with Credit/Debit card",
+      name: "topUpWithCreditAndCard",
+    );
+  }
+
   String get creditDebitCard {
     return Intl.message(
       "Credit/Debit Card",
@@ -2027,6 +2062,13 @@ class AppLocalization {
     return Intl.message(
       "Virtual Account",
       name: "virtualAccount",
+    );
+  }
+
+  String get myWallet {
+    return Intl.message(
+      "My Wallet",
+      name: "myWallet",
     );
   }
 

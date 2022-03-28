@@ -620,6 +620,7 @@ String? validateSlydoName(String userInput) {
   }
 }
 
+String slydoNameMsg = 'You can not use slydo in name';
 String? checkSlydoName(String name) {
   String? result;
 
@@ -632,7 +633,7 @@ String? checkSlydoName(String name) {
         .replaceAll("-", "");
 
     if (cleanName.contains('slydo')) {
-      result = "You can not use slydo in name.";
+      result = slydoNameMsg;
     }
 
     debugPrint("ERROR:- $result");
@@ -640,30 +641,12 @@ String? checkSlydoName(String name) {
   return result;
 }
 
-// String? checkSlydoName(String name) {
-//   String? result;
-//
-//   if (name.isNotEmpty && name != "") {
-//     List<String> listOfWords = name.split(" ").toList();
-//     for (int i = 0; i < listOfWords.length; i++) {
-//       if (listOfWords[i].toLowerCase() == "slydo") {
-//         result = "You can not use slydo in name.";
-//         break;
-//       }
-//     }
-//   }
-//   debugPrint("ERROR:- $result");
-//
-//   return result;
-// }
-
 String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
   if (accountNumber.length != 10) {
     accountNumber = '0000' + accountNumber;
   }
   return '******' +
-      accountNumber.substring(
-          accountNumber.length - 5, accountNumber.length - 1);
+      accountNumber.substring(accountNumber.length - 5, accountNumber.length);
 }
 
 double formatRating(double rating) {

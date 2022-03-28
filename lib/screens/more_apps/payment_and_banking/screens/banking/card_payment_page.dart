@@ -1,6 +1,8 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -9,12 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../../utils/colors.dart';
 import '../../../../../widget/LoadingIndicator.dart';
 
+// ignore: must_be_immutable
 class CardPaymentPage extends StatefulWidget {
   dynamic isWalletFunding;
   CardPaymentPage({this.isWalletFunding = false});
@@ -25,17 +25,18 @@ class CardPaymentPage extends StatefulWidget {
 
 class _CardPaymentPageState extends State<CardPaymentPage> {
   int amount = 0;
-  String cvvCode = '';
   int cappedFee = 2000;
   int calculatedFee = 0;
-  String expiryDate = '';
+  late UserBloc userBloc;
+  bool showButton = false;
+  int amountLimit = 50000;
   bool isCvvFocused = false;
-  String cardHolderName = '';
-  int creditCardProcessingFee = 100;
+  bool showFinalAmount = false;
+  int creditCardProcessingFee = 0;
   int waivedTransactionFeeLimit = 2500;
-  double creditCardProcessingFeePercentage = 1.5;
-
-  PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
+  int amountToDeductWhenAddingCard =
+      500; // This is the amount that will be deducted when we are adding a user's credit card (this is N5 in kobo).
+  double creditCardProcessingFeePercentage = 1.4;
   GlobalKey<ScaffoldState> cardPaymentPageKey = GlobalKey<ScaffoldState>();
 
   final MaskedTextController _cardNumberController =
@@ -48,10 +49,93 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
   final TextEditingController _cvvCodeController =
       MaskedTextController(mask: '000');
 
+  bool? cardNumberVerified;
+  bool verifyingCardNumber = false;
   FocusNode cvvFocusNode = FocusNode();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  @override
+  void initState() {
+    if (widget.isWalletFunding == null) {
+      widget.isWalletFunding = false;
+    }
+    cvvFocusNode.addListener(textFieldFocusDidChange);
+    super.initState();
+  }
+
+  void textFieldFocusDidChange() {
+    setState(() {
+      isCvvFocused = cvvFocusNode.hasFocus;
+    });
+  }
+
+  @override
+  void dispose() {
+    _cardNumberController.dispose();
+    _expiryDateController.dispose();
+    _cardHolderNameController.dispose();
+    _amountController.dispose();
+    _cvvCodeController.dispose();
+    cvvFocusNode.dispose();
+    super.dispose();
+  }
+
+  _verifyCardNumber() async {
+    setState(() => verifyingCardNumber = true);
+
+    PaymentAndBankingAuth()
+        .verifyCardNumber(cardNumber: _cardNumberController.text.trim())
+        .then((verifiedCardNumber) {
+      if (verifiedCardNumber) {
+        setState(() {
+          cardNumberVerified = true;
+          verifyingCardNumber = false;
+          if (amount <= amountLimit) {
+            showButton = true;
+          }
+        });
+      } else {
+        setState(() {
+          showButton = false;
+          cardNumberVerified = false;
+          verifyingCardNumber = false;
+        });
+        showToast(message: 'Card not valid');
+      }
+    }).catchError((e) {
+      Navigator.pop(context);
+      showToast(message: '${e.toString()}');
+    });
+  }
+
+  Widget _getCardNumberSuffixIcon() {
+    if (verifyingCardNumber) {
+      return SizedBox(width: 20, height: 20, child: CircularLoadingIndicator());
+    } else {
+      if (cardNumberVerified != null) {
+        if (cardNumberVerified!) {
+          return CircleAvatar(
+            radius: 14,
+            backgroundColor: navyBlue,
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Icon(Icons.check, size: 20, color: Colors.white),
+            ),
+          );
+        } else {
+          return Icon(
+            Icons.cancel,
+            color: Colors.red,
+          );
+        }
+      } else {
+        return SizedBox.shrink();
+      }
+    }
+  }
+
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -140,37 +224,46 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 16.0, horizontal: 16),
-                    child: CustomizedTextFormField(
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      keyboardType: TextInputType.phone,
-                      controller: _amountController,
-                      isAmount: true,
-                      labelText: AppLocalization.of(context)!.amount,
-                      onChanged: (val) {
-                        setState(() {
-                          amount = int.parse(val);
-                          calculatedFee = calculateCreditCardFee(
-                              amount: amount,
-                              percentage: creditCardProcessingFeePercentage);
-                        });
-                      },
-                      validator: (val) {
-                        try {
-                          int.parse(val);
-                        } catch (e) {
-                          return AppLocalization.of(context)!.invalidAmount;
-                        }
-                        return null;
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomizedTextFormField(
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          keyboardType: TextInputType.phone,
+                          controller: _amountController,
+                          isAmount: true,
+                          labelText: AppLocalization.of(context)!.amount,
+                          onChanged: (value) {
+                            _amountFieldOnChanged(value);
+                          },
+                          validator: (val) {
+                            try {
+                              int userAmount = int.parse(val);
+                              if (userAmount > amountLimit) {
+                                return 'You cannot fund more than $amountLimit';
+                              }
+                            } catch (e) {
+                              return AppLocalization.of(context)!.invalidAmount;
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          'You cannot fund more than NGN50000',
+                          style:
+                              TextStyle(color: Colors.black.withOpacity(0.4)),
+                        ),
+                      ],
                     ),
                   ),
                 )
               : SizedBox.shrink(),
           Card(
             color: Colors.white,
-            margin: EdgeInsets.symmetric(
-              horizontal: 16,
-            ),
+            margin: EdgeInsets.symmetric(horizontal: 16),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 5,
@@ -185,17 +278,22 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     keyboardType: TextInputType.phone,
                     labelText: AppLocalization.of(context)!.cardNumber,
-                    validator: (value) {
-                      try {
-                        int.parse(value.replaceAll(' ', ''));
-                      } catch (e) {
-                        return AppLocalization.of(context)!.invalidFormat;
+                    onChanged: (value) {
+                      if (value.replaceAll(' ', '').length == 16) {
+                        _verifyCardNumber();
+                      } else if (value.isEmpty) {
+                        setState(() {
+                          cardNumberVerified = false;
+                          showButton = false;
+                        });
                       }
                     },
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: _getCardNumberSuffixIcon(),
+                    ),
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
+                  SizedBox(height: 16),
                   CustomizedTextFormField(
                     controller: _cardHolderNameController,
                     hintText: 'John Doe',
@@ -207,64 +305,24 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           : null;
                     },
                   ),
-                  SizedBox(
-                    height: 16,
-                  ),
+                  SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
                         child: CustomizedTextFormField(
-                            controller: _expiryDateController,
-                            hintText: 'MM/YY',
-                            labelText: "Expiry date",
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              if (value.isNotEmpty) {
-                                String yearInputted = value.split('/').last;
-                                String monthInputted = value.split('/').first;
-                                String currentYear =
-                                    DateTime.now().year.toString();
-                                String monthInDigit =
-                                    DateTime.now().month.toString();
-                                //To get the last two digit of the year
-                                String formattedYear = currentYear.substring(
-                                    currentYear.toString().length - 2);
-
-                                if (int.parse(yearInputted) <
-                                    int.parse(formattedYear)) {
-                                  return AppLocalization.of(context)!
-                                      .invalidDate;
-                                }
-                                if (int.parse(monthInputted) < 1 ||
-                                    int.parse(monthInputted) > 12) {
-                                  return AppLocalization.of(context)!
-                                      .invalidDate;
-                                }
-                                if (int.parse(yearInputted) <=
-                                        int.parse(formattedYear) &&
-                                    int.parse(monthInputted) <
-                                        int.parse(monthInDigit)) {
-                                  return AppLocalization.of(context)!
-                                      .invalidDate;
-                                }
-                              } else {
-                                return AppLocalization.of(context)!.invalidDate;
-                              }
-
-                              return null;
-                            },
-                            onChanged: (val) {
-                              setState(() {
-                                expiryDate = val;
-                              });
-                            }),
+                          controller: _expiryDateController,
+                          hintText: 'MM/YY',
+                          labelText: "Expiry date",
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            return _validateExpiryDate(value);
+                          },
+                        ),
                       ),
-                      SizedBox(
-                        width: 16,
-                      ),
+                      SizedBox(width: 16),
                       Expanded(
                         child: CustomizedTextFormField(
                             controller: _cvvCodeController,
@@ -282,178 +340,10 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                                 return AppLocalization.of(context)!
                                     .invalidFormat;
                               }
-                            },
-                            onChanged: (val) {
-                              setState(() {
-                                cvvCode = val;
-                              });
                             }),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  //   margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
-                  //   child: TextFormField(
-                  //     controller: _cardNumberController,
-                  //     cursorColor: navyBlue,
-                  //     style: TextStyle(
-                  //       color: navyBlue,
-                  //     ),
-                  //     decoration: InputDecoration(
-                  //       border: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: Colors.white)),
-                  //       focusedBorder: OutlineInputBorder(
-                  //         borderSide: BorderSide(color: navyBlue, width: 1.3),
-                  //       ),
-                  //       enabledBorder: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: navyBlue)),
-                  //       hintStyle: TextStyle(color: navyBlue),
-                  //       labelStyle: TextStyle(color: navyBlue),
-                  //       labelText: AppLocalization.of(context)!.cardNumber,
-                  //       hintText: 'xxxx xxxx xxxx xxxx',
-                  //     ),
-                  //     keyboardType: TextInputType.number,
-                  //     textInputAction: TextInputAction.next,
-                  //     onChanged: (val) {
-                  //       setState(() {
-                  //         cardNumber = val;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  //   child: TextFormField(
-                  //     controller: _expiryDateController,
-                  //     cursorColor: navyBlue,
-                  //     style: TextStyle(
-                  //       color: navyBlue,
-                  //     ),
-                  //     decoration: InputDecoration(
-                  //         border: OutlineInputBorder(
-                  //             borderSide: BorderSide(color: Colors.white)),
-                  //         focusedBorder: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: navyBlue, width: 1.3),
-                  //         ),
-                  //         enabledBorder: OutlineInputBorder(
-                  //             borderSide: BorderSide(color: navyBlue)),
-                  //         hintStyle: TextStyle(color: navyBlue),
-                  //         labelStyle: TextStyle(color: navyBlue),
-                  //         labelText: AppLocalization.of(context)!.expiredDate,
-                  //         hintText: 'MM/YY'),
-                  //     keyboardType: TextInputType.number,
-                  //     textInputAction: TextInputAction.next,
-                  //     onChanged: (val) {
-                  //       setState(() {
-                  //         expiryDate = val;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  //   child: TextField(
-                  //     focusNode: cvvFocusNode,
-                  //     controller: _cvvCodeController,
-                  //     cursorColor: navyBlue,
-                  //     style: TextStyle(
-                  //       color: navyBlue,
-                  //     ),
-                  //     decoration: InputDecoration(
-                  //       border: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: Colors.white)),
-                  //       focusedBorder: OutlineInputBorder(
-                  //         borderSide: BorderSide(color: navyBlue, width: 1.3),
-                  //       ),
-                  //       enabledBorder: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: navyBlue)),
-                  //       hintStyle: TextStyle(color: navyBlue),
-                  //       labelStyle: TextStyle(color: navyBlue),
-                  //       labelText: AppLocalization.of(context)!.cvv,
-                  //       hintText: 'XXXX',
-                  //     ),
-                  //     keyboardType: TextInputType.number,
-                  //     textInputAction: TextInputAction.done,
-                  //     onChanged: (val) {
-                  //       setState(() {
-                  //         cvvCode = val;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  //   child: TextFormField(
-                  //     controller: _cardHolderNameController,
-                  //     cursorColor: navyBlue,
-                  //     style: TextStyle(
-                  //       color: navyBlue,
-                  //     ),
-                  //     decoration: InputDecoration(
-                  //       border: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: Colors.white)),
-                  //       focusedBorder: OutlineInputBorder(
-                  //         borderSide: BorderSide(color: navyBlue, width: 1.3),
-                  //       ),
-                  //       enabledBorder: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: navyBlue)),
-                  //       hintStyle: TextStyle(color: navyBlue),
-                  //       labelStyle: TextStyle(color: navyBlue),
-                  //       labelText: AppLocalization.of(context)!.cardHolder,
-                  //     ),
-                  //     keyboardType: TextInputType.text,
-                  //     textInputAction: TextInputAction.next,
-                  //     onChanged: (val) {
-                  //       setState(() {
-                  //         cardHolderName = val;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                  //   child: TextFormField(
-                  //     controller: _amountController,
-                  //     cursorColor: navyBlue,
-                  //     style: TextStyle(
-                  //       color: navyBlue,
-                  //     ),
-                  //     decoration: InputDecoration(
-                  //         border: OutlineInputBorder(
-                  //             borderSide: BorderSide(color: Colors.white)),
-                  //         focusedBorder: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: navyBlue, width: 1.3),
-                  //         ),
-                  //         enabledBorder: OutlineInputBorder(
-                  //             borderSide: BorderSide(color: navyBlue)),
-                  //         hintStyle: TextStyle(color: navyBlue),
-                  //         labelStyle: TextStyle(color: navyBlue),
-                  //         labelText: AppLocalization.of(context)!.amount,
-                  //         hintText: AppLocalization.of(context)!.enterAmount),
-                  //     keyboardType: TextInputType.number,
-                  //     textInputAction: TextInputAction.next,
-                  //     onChanged: (val) {
-                  //       setState(() {
-                  //         amount = int.parse(val);
-                  //       });
-                  //     },
-                  //     validator: (val) {
-                  //       try {
-                  //         int.parse(val!);
-                  //       } catch (e) {
-                  //         return AppLocalization.of(context)!.invalidAmount;
-                  //       }
-                  //       return null;
-                  //     },
-                  //   ),
-                  // ),
                   SizedBox(height: 10),
                   Text(
                     AppLocalization.of(context)!.doesNotSaveUsersCard,
@@ -473,40 +363,47 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(SlydoAppIcon.naira, color: navyBlue),
-                        SizedBox(width: 5),
-                        Text(
-                          getUserFinalAmount(),
-                          style: TextStyle(
-                              fontSize: 32,
-                              color: navyBlue,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
+                    showFinalAmount
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(SlydoAppIcon.naira, color: navyBlue),
+                              SizedBox(width: 5),
+                              Text(
+                                getUserFinalAmount(),
+                                style: TextStyle(
+                                    fontSize: 32,
+                                    color: navyBlue,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          )
+                        : SizedBox.shrink(),
                   ],
                 )
               : SizedBox.shrink(),
           SizedBox(height: 30),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: CurvedButton(
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  widget.isWalletFunding ? _fundWallet() : _addCreditCard();
-                } else {
-                  showToast(
-                      message:
-                          AppLocalization.of(context)!.invalidDetails + " !!");
-                }
-              },
-              text: AppLocalization.of(context)!.submit,
-              textColor: Colors.white,
-            ),
-          ),
+          showButton
+              ? Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: CurvedButton(
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        widget.isWalletFunding
+                            ? _fundWallet()
+                            : _addCreditCard();
+                      } else {
+                        showToast(
+                            message:
+                                AppLocalization.of(context)!.invalidDetails +
+                                    " !!");
+                      }
+                    },
+                    text: AppLocalization.of(context)!.submit,
+                    textColor: Colors.white,
+                  ),
+                )
+              : SizedBox.shrink(),
           SizedBox(height: 20),
         ],
       ),
@@ -517,98 +414,110 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
     return moneyDisplayNormalizer((amount - calculatedFee) * 100);
   }
 
+  String formattedExpiryDate() {
+    String expiryYear = _expiryDateController.text.split('/').last;
+    String expiryMonth = _expiryDateController.text.split('/').first;
+
+    String formattedExpiryDate = '20$expiryYear-$expiryMonth-01';
+    return formattedExpiryDate;
+  }
+
+  String getUsersEmail() {
+    return '${userBloc.user.userName}@slydo.co';
+  }
+
   void _addCreditCard() {
-    Map<String, dynamic> data = {
-      "expiry_date": '2022-02-22',
-      "ccv": _cvvCodeController.text,
-      "card_holder": _cardHolderNameController.text,
-      "card_number": int.parse(_cardNumberController.text.replaceAll(' ', '')),
-    };
+    CreditCardData creditCardData = CreditCardData(
+      email: getUsersEmail(),
+      cvv: _cvvCodeController.text,
+      expiryDate: formattedExpiryDate(),
+      amount: amountToDeductWhenAddingCard,
+      cardHolder: _cardHolderNameController.text,
+      cardNumber: int.parse(_cardNumberController.text.replaceAll(' ', '')),
+    );
 
-    print('DATE ---> ${_expiryDateController.text}');
-    if (formKey.currentState!.validate()) {
-      showDialog(context: context, builder: (context) => LoadingIndicator());
-
-      _auth.addCreditCard(data).then(
-        (creditCardAdded) {
-          Navigator.pop(context);
-          if (creditCardAdded == 'SUCCESSFUL') {
-            showToast(
-                message: AppLocalization.of(context)!
-                    .thisAccountIsAlreadyDefaultAccount);
-            Navigator.of(context).popAndPushNamed('/credit-card-list');
-          } else {
-            showToast(message: creditCardAdded);
-          }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return EnterAddressOrPinPinPage(creditCardData: creditCardData);
         },
-      ).catchError(
-        (e) {
-          Navigator.pop(context);
-          showToast(message: e.toString());
-        },
-      );
-    }
+      ),
+    );
   }
 
   void _fundWallet() {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     int amount =
         int.parse(_amountController.text) * 100; // Convert naira to kobo.
-    Map<String, dynamic> data = {
-      "amount": amount,
-      "ccv": _cvvCodeController.text,
-      "currency": userBloc.user.currency,
-      "card_number": _cardNumberController.text,
-      "expiry_date": _expiryDateController.text,
-      "card_holder": _cardHolderNameController.text,
-    };
 
-    if (formKey.currentState!.validate()) {
-      showDialog(context: context, builder: (context) => LoadingIndicator());
+    CreditCardData creditCardData = CreditCardData(
+      amount: amount,
+      email: getUsersEmail(),
+      cvv: _cvvCodeController.text,
+      currency: userBloc.user.currency,
+      expiryDate: formattedExpiryDate(),
+      cardHolder: _cardHolderNameController.text,
+      cardNumber: int.parse(_cardNumberController.text.replaceAll(' ', '')),
+    );
 
-      _auth.fundWallet(data).then(
-        (walletFunded) {
-          Navigator.pop(context);
-          if (walletFunded) {
-            print('CREDIT CARD ADDED -----> $walletFunded');
-            showToast(
-                message: AppLocalization.of(context)!
-                    .thisAccountIsAlreadyDefaultAccount);
-            Navigator.of(context).pushNamed('/credit-card-option-selection');
-          }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return EnterAddressOrPinPinPage(
+              creditCardData: creditCardData, isWalletFunding: true);
         },
-      ).catchError(
-        (e) {
-          Navigator.pop(context);
-          showToast(message: e.toString());
-        },
-      );
+      ),
+    );
+  }
+
+  String? _validateExpiryDate(value) {
+    if (value.isNotEmpty) {
+      String yearInputted = value.split('/').last;
+      String monthInputted = value.split('/').first;
+      String currentYear = DateTime.now().year.toString();
+      String monthInDigit = DateTime.now().month.toString();
+      //To get the last two digit of the year
+      String formattedYear =
+          currentYear.substring(currentYear.toString().length - 2);
+
+      if (int.parse(yearInputted) < int.parse(formattedYear)) {
+        return AppLocalization.of(context)!.invalidDate;
+      }
+      if (int.parse(monthInputted) < 1 || int.parse(monthInputted) > 12) {
+        return AppLocalization.of(context)!.invalidDate;
+      }
+      if (int.parse(yearInputted) <= int.parse(formattedYear) &&
+          int.parse(monthInputted) < int.parse(monthInDigit)) {
+        return AppLocalization.of(context)!.invalidDate;
+      }
+    } else {
+      return AppLocalization.of(context)!.invalidDate;
     }
+
+    return null;
   }
 
-  @override
-  void initState() {
-    if (widget.isWalletFunding == null) {
-      widget.isWalletFunding = false;
+  void _amountFieldOnChanged(String value) {
+    try {
+      setState(() {
+        amount = int.parse(value);
+        calculatedFee = calculateCreditCardFee(
+            amount: amount, percentage: creditCardProcessingFeePercentage);
+        if (value.isNotEmpty && !(amount > amountLimit)) {
+          showFinalAmount = true;
+        } else {
+          showFinalAmount = false;
+        }
+
+        if (!(amount > amountLimit) && cardNumberVerified == true) {
+          showButton = true;
+        } else {
+          showButton = false;
+        }
+      });
+    } catch (e) {
+      setState(() {
+        showFinalAmount = false;
+      });
     }
-    cvvFocusNode.addListener(textFieldFocusDidChange);
-    super.initState();
-  }
-
-  void textFieldFocusDidChange() {
-    setState(() {
-      isCvvFocused = cvvFocusNode.hasFocus;
-    });
-  }
-
-  @override
-  void dispose() {
-    _cardNumberController.dispose();
-    _expiryDateController.dispose();
-    _cardHolderNameController.dispose();
-    _amountController.dispose();
-    _cvvCodeController.dispose();
-    cvvFocusNode.dispose();
-    super.dispose();
   }
 }

@@ -394,13 +394,11 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#46CE7C"),
           ),
         ),
-        SizedBox(
-          width: 12,
-        ),
+        SizedBox(width: 12),
         Expanded(
             child: UserDashboardItemTile(
           icon: Icons.account_balance_wallet_rounded,
-          title: AppLocalization.of(context)!.topUp,
+          title: AppLocalization.of(context)!.wallet,
           onTap: () {
             Navigator.of(context).pushNamed("/top-up-options");
           },
@@ -700,7 +698,7 @@ class _UserDashboardState extends State<UserDashboard> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             bottomSheetItem(
-              title: AppLocalization.of(context)!.transaction,
+              title: AppLocalization.of(context)!.myTransaction,
               icon: SlydoAppIcon.transactions,
               onTap: () {
                 hideBalance();
@@ -715,26 +713,11 @@ class _UserDashboardState extends State<UserDashboard> {
               },
             ),
             bottomSheetItem(
-              title: "Payment Request",
+              title: "My Payment Request",
               icon: SlydoAppIcon.receive,
               onTap: () {
                 hideBalance();
                 Navigator.pushNamed(context, "/accounts");
-              },
-            ),
-            bottomSheetItem(
-              title: 'Cashout transactions',
-              icon: SlydoAppIcon.transactions,
-              onTap: () {
-                hideBalance();
-                BottomSheetPassCode(
-                    context: context,
-                    isValidCallback: () {
-                      Navigator.pushNamed(context, "/payout-list");
-                    },
-                    cancelCallBack: () {
-                      Navigator.pop(context);
-                    });
               },
             ),
           ],
@@ -747,12 +730,14 @@ class _UserDashboardState extends State<UserDashboard> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
             color: Colors.white,
             margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
               child: Column(

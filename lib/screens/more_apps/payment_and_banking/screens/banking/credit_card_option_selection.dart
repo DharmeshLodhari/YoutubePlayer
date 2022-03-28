@@ -11,7 +11,7 @@ class CreditCardOptionSelection extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: customAppBar(
-        title: AppLocalization.of(context)!.top_Up,
+        title: AppLocalization.of(context)!.cards,
         context: context,
       ) as PreferredSizeWidget?,
       body: scaffoldBody(context),
@@ -33,14 +33,15 @@ class CreditCardOptionSelection extends StatelessWidget {
                   height: 8,
                 ),
                 getSettingTile(
-                    title: AppLocalization.of(context)!.myCreditCards,
+                    title: AppLocalization.of(context)!.myCreditAndDebitCards,
                     icon: Icons.credit_card,
                     iconColor: naturalGreen,
                     onTap: () async {
                       Navigator.of(context).pushNamed('/credit-card-list');
                     }),
                 getSettingTile(
-                    title: AppLocalization.of(context)!.topUpByCreditCard,
+                    title: AppLocalization.of(context)!
+                        .topUpWithCreditAndDebitCard,
                     icon: Icons.account_balance_wallet,
                     image: SvgPicture.asset('assets/images/top_up_icon.svg'),
                     iconColor: HexColor("#3F61DB"),

@@ -18,9 +18,6 @@ class UserPostAuth extends AuthService {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
 
-      print(
-          'USER POST JSON ----> ${jsonData['results'][jsonData['results'].length - 2]['tag_line']}');
-      print('SECOND USER POST JSON ----> ${jsonData['results'][1]}');
       return jsonData;
     }
     debugPrint(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'models/payout.dart';
 import 'models/transactions.dart';
 
 class PaymentAndBankingAuth extends AuthService {
-  // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/bank-accounts-list/";
     var headers = await getAuthHeaders();
@@ -45,7 +45,6 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  // Get Account Balance
   Future<Map<String, dynamic>?> getAccountBalance() async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
@@ -56,6 +55,94 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       return {"balance": 0, "spendable_balance": 0, "over_draft": 0};
     }
+  }
+
+  Future<bool> verifyCardNumber({required String cardNumber}) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/transactions/credit-card/verify-card/";
+
+    var data = {'card_number': cardNumber};
+    var headers = await getAuthHeaders();
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+
+    print('VERIFY CARD RESPONSE ::: $response');
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['msg'] == 'valid') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<String?> verifyOtp(
+    String otp,
+  ) async {
+    var url = AppConfig.baseUrl + "/api/v1/sms/verify";
+    var headers = getNonAuthHeader();
+    var data = {
+      "code": otp,
+    };
+    var _data = jsonEncode(data);
+    var response = await httpPost(url,
+        body: _data, headers: headers as Map<String, dynamic>?);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      var resetToken = jsonData['reset-token'];
+      return resetToken;
+    } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      throw jsonData;
+    }
+  }
+
+  Future<String> verifyCreditCardOtp(String otp) async {
+    String responseString = 'Something went wrong';
+    var url =
+        AppConfig.baseUrl + "/api/v1/transactions/credit-card/verify-card-otp/";
+    var headers = await getAuthHeaders();
+    var data = {"otp": otp};
+    var _data = jsonEncode(data);
+
+    var response = await httpPost(url, body: _data, headers: headers);
+    print('OTP RESPONSE ----> ${response.body}');
+
+    print('OTP RESPONSE ----> ${response.statusCode}');
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      responseString = 'successful';
+    } else if (response.statusCode == 400) {
+      if (jsonDecode(response.body)['errMsg']
+          .toLowerCase()
+          .contains('please enter the otp')) {
+        responseString = 'invalid otp';
+      } else if (jsonDecode(response.body)['errMsg']
+          .toLowerCase()
+          .contains('session expired')) {
+        responseString = 'session expired';
+      } else if (jsonDecode(response.body)['errMsg']
+          .toLowerCase()
+          .contains('insufficient funds')) {
+        responseString = 'insufficient funds';
+      } else {
+        responseString = jsonDecode(response.body)['errMsg'];
+      }
+    } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return Future.error(response.body);
+    }
+    print('RESPONSE STRING ::: $responseString');
+    return responseString;
   }
 
   // delete single bankaccount
@@ -150,27 +237,74 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<String> addCreditCard(Map data) async {
+  Future<String> addCreditCard(CreditCardData creditCardData) async {
+    late String responseString;
     var url = AppConfig.baseUrl + "/api/v1/transactions/credit-card/";
     var headers = await getAuthHeaders();
+
+    Map<String, dynamic> data = creditCardData.toJson();
+    data.removeWhere((key, value) => value == null);
+
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
+
     print('ADD CREDIT CARD RESPONSE ----> ${response.body}');
-    if (response.statusCode == 201) {
-      return 'SUCCESSFUL';
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['validationRequired'] == true) {
+        responseString = 'otp';
+      }
+    } else if (response.statusCode == 400) {
+      if (response.body.toLowerCase().contains('too many connections')) {
+        responseString = 'too many connections';
+      } else if (response.body.toLowerCase().contains('pin')) {
+        responseString = 'invalid pin';
+      } else if (response.body.toLowerCase().contains('insufficient funds')) {
+        responseString = 'insufficient funds';
+      } else {
+        responseString = response.body;
+      }
     } else {
-      return 'Something went wrong';
+      responseString = response.body;
+      return Future.error(response.body);
     }
+
+    return responseString;
   }
 
-  Future<bool> fundWallet(Map data) async {
+  Future<String> fundWallet(CreditCardData creditCardData) async {
+    late String responseString;
+
     var url = AppConfig.baseUrl +
-        "/api/v1/transactions/credit-card/credit-wallet-account";
+        "/api/v1/transactions/credit-card/credit-wallet-account/";
     var headers = await getAuthHeaders();
+
+    Map<String, dynamic> data = creditCardData.toJson();
+    data.removeWhere((key, value) => value == null);
+    print('CREDIT CARD DATA :::: $data');
+
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
     print('FUND WALLET ----> ${response.body}');
-    return response.statusCode == 201;
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['validationRequired'] == true) {
+        responseString = 'otp';
+      }
+    } else if (response.statusCode == 400) {
+      if (response.body.toLowerCase().contains('too many connections')) {
+        responseString = 'too many connections';
+      } else if (response.body.toLowerCase().contains('pin')) {
+        responseString = 'invalid pin';
+      } else if (response.body.toLowerCase().contains('insufficient funds')) {
+        responseString = 'insufficient funds';
+      } else {
+        responseString = response.body;
+      }
+    } else {
+      responseString = response.body;
+      return Future.error(response.body);
+    }
+
+    return responseString;
   }
 
   Future<Map<String, dynamic>?> getCreditCardPagination(
@@ -201,6 +335,7 @@ class PaymentAndBankingAuth extends AuthService {
         "results": creditCardList
       };
 
+      print('CREDIT CARD LIST RESULT ----> ${result['results']}');
       return result;
     } else {
       throw "Can't get https.";

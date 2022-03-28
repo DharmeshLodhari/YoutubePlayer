@@ -147,6 +147,8 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 
+import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
+
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
@@ -663,7 +665,7 @@ class RouteGenerator {
 
       case '/credit-card-list':
         return PageTransition(
-          child: CreditCardList(),
+          child: CreditCardList(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
@@ -671,6 +673,14 @@ class RouteGenerator {
       case '/credit-card-option-selection':
         return PageTransition(
           child: CreditCardOptionSelection(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case '/enter-pin':
+        return PageTransition(
+          child: EnterAddressOrPinPinPage(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

@@ -44,7 +44,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -62,10 +61,7 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_picker/giphy_picker.dart';
@@ -1174,6 +1170,55 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (mounted) setState(() {});
   }
 
+  Widget mainStack() {
+    return Stack(
+      children: [
+        Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Padding(
+            padding:
+                EdgeInsets.only(top: AppBar().preferredSize.height, bottom: 40),
+            child: Image.asset(
+              "assets/images/chat_background_2.png",
+              fit: BoxFit.fill,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+        ),
+        Scaffold(
+          key: chatScreenKey,
+          backgroundColor: Colors.transparent,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 48),
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 100),
+              child: fabIsVisible
+                  ? FloatingActionButton(
+                      mini: true,
+                      backgroundColor: dividerColor,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 28,
+                        color: blackFont,
+                      ),
+                      tooltip: "Increment",
+                      onPressed: scrollToBottom,
+                    )
+                  : Container(
+                      height: 0,
+                      width: 0,
+                    ),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (itemSearchTypeSelectionMenu == null) {
@@ -1211,7 +1256,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     return ColorfulSafeArea(
       bottom: Platform.isAndroid ? false : true,
-      top: false,
+      top: true,
       color: Colors.white,
       left: false,
       right: false,
@@ -1224,53 +1269,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
           return Future.value(true);
         },
-        child: Stack(
-          children: [
-            Scaffold(
-              resizeToAvoidBottomInset: false,
-              body: Padding(
-                padding: EdgeInsets.only(
-                    top: AppBar().preferredSize.height, bottom: 40),
-                child: Image.asset(
-                  "assets/images/chat_background_2.png",
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
+        child: Platform.isAndroid
+            ? mainStack()
+            : Banner(
+                message: 'BETA',
+                location: BannerLocation.topEnd,
+                child: mainStack(),
               ),
-            ),
-            Scaffold(
-              key: chatScreenKey,
-              backgroundColor: Colors.transparent,
-              appBar: appBar() as PreferredSizeWidget?,
-              body: scaffoldBody(),
-              floatingActionButton: Padding(
-                padding: EdgeInsets.only(bottom: 48),
-                child: AnimatedSwitcher(
-                  duration: Duration(milliseconds: 100),
-                  child: fabIsVisible
-                      ? FloatingActionButton(
-                          mini: true,
-                          backgroundColor: dividerColor,
-                          child: Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 28,
-                            color: blackFont,
-                          ),
-                          tooltip: "Increment",
-                          onPressed: scrollToBottom,
-                        )
-                      : Container(
-                          height: 0,
-                          width: 0,
-                        ),
-                ),
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.endFloat,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1319,9 +1324,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   }
                   return getUserIcon();
                 }),
-            SizedBox(
-              width: 12,
-            ),
+            SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

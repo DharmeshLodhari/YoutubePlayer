@@ -14,7 +14,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../../utils/colors.dart';
 import '../../payment_and_banking_auth.dart';
 import 'package:Slydo/widget/vertical_list_item.dart';
 

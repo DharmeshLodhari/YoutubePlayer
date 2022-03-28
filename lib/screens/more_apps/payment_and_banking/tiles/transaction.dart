@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/colors.dart';
-
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest? paymentRequest;
@@ -102,6 +100,25 @@ class PaymentRequestTile extends StatelessWidget {
     );
   }
 
+  Widget getSubtitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        paymentRequest!.description != ""
+            ? Text(
+                "${paymentRequest!.description}",
+                style: TextStyle(color: darkGrey, fontSize: 12),
+                maxLines: 1,
+              )
+            : Container(),
+        moneyDisplayNormalizer(paymentRequest!.amount).length > 6
+            ? getTrailing()
+            : Container(),
+        getDateTime(context)
+      ],
+    );
+  }
+
   Widget getTrailing() {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -121,25 +138,6 @@ class PaymentRequestTile extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
-      ],
-    );
-  }
-
-  Widget getSubtitle(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        paymentRequest!.description != ""
-            ? Text(
-                "${paymentRequest!.description}",
-                style: TextStyle(color: darkGrey, fontSize: 12),
-                maxLines: 1,
-              )
-            : Container(),
-        moneyDisplayNormalizer(paymentRequest!.amount).length > 6
-            ? getTrailing()
-            : Container(),
-        getDateTime(context)
       ],
     );
   }
