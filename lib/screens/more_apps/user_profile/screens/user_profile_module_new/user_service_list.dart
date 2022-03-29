@@ -146,6 +146,17 @@ class _UserServiceListState extends State<UserServiceList> {
           isServiceLoading = false;
           return;
         }
+
+        String? error = result['error'];
+        if (error != null && error.toLowerCase().contains('review not found')) {
+          noServiceInList = true;
+          isServiceLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
         serviceCount = result['count'];
         serviceNext = result['next'];
         servicePrevious = result['previous'];

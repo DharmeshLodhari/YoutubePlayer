@@ -43,11 +43,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   int? accountBalance = 0;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void checkCurrentUserIsInContact() async {
     if (userBloc.user.userName != widget.user!.userName) {
       UserAuth()
@@ -137,7 +132,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     );
   }
 
-  Widget displayUserNameAndContect() {
+  Widget displayUserNameAndConnect() {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
       child: ListTile(

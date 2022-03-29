@@ -1273,8 +1273,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             ? mainStack()
             : Banner(
                 message: 'BETA',
-                location: BannerLocation.topEnd,
                 child: mainStack(),
+                location: BannerLocation.topEnd,
               ),
       ),
     );

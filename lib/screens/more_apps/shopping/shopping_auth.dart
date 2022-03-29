@@ -402,6 +402,8 @@ class ShoppingAuthService extends AuthService {
         "results": serviceList
       };
       return result;
+    } else if (response.statusCode == 404) {
+      return jsonDecode(response.body);
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {

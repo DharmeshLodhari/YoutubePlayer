@@ -59,6 +59,13 @@ class UserPostAuth extends AuthService {
     }
   }
 
+  Future<bool> uploadPostBodyPickedImage() async {
+    await Future.delayed(Duration(seconds: 3), () {});
+    return true;
+    var url = AppConfig.baseUrl + "/api/v1/social/posts/";
+    var headers = await getAuthHeaders();
+  }
+
   Future<bool> createOrUpdateBlogPost({
     String? blogId,
     File? blogVideo,

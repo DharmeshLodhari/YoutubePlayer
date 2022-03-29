@@ -64,6 +64,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/cred
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_option_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/topup_option_selection.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
@@ -686,6 +687,14 @@ class RouteGenerator {
           settings: settings,
         );
 
+      case '/upgrade-account':
+        return PageTransition(
+          child: UpgradeAccount(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
       case '/add-money-to-slydo-one':
         return PageTransition(
           child: VirtualAccountDetail(),
@@ -693,6 +702,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
       case '/add-money-to-slydo-two':
         return PageTransition(
           child: AddMoneyToSlydoTwo(

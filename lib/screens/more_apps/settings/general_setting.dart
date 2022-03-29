@@ -128,6 +128,12 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                         debugPrint("Error:- $error");
                       }
                     }),
+                getSettingTile(
+                  title: "Upgrade Account Tier",
+                  onTap: () async {
+                    Navigator.pushNamed(context, '/upgrade-account');
+                  },
+                ),
                 getLogoutTile(),
               ],
             ),

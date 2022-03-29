@@ -454,6 +454,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       showAlignmentButtons: true,
       controller: _quillBodyTextController,
     );
+
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
         return editorWidget;
@@ -562,9 +563,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return file;
   }
 
-  _pickBlogImage() async {
+  _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
     String? croppedImage = await getFile(context);
 
+    if (imagePickedCallBack != null && croppedImage != null) {
+      imagePickedCallBack(croppedImage);
+    }
     if (croppedImage != null) {
       setState(() {
         _imageFile = croppedImage;
@@ -573,13 +577,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  _pickBlogVideo() async {
+  _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
     String? videoPath = await getFile(context, fileType: MediaType.video);
 
-    if (videoPath != null) {
-      setState(() {
-        _videoFile = videoPath;
-      });
+    if (videoPickedCallBack != null && videoPath != null) {
+      videoPickedCallBack(videoPath);
+    } else {
+      if (videoPath != null) {
+        setState(() {
+          _videoFile = videoPath;
+        });
+      }
     }
   }
 
@@ -661,6 +669,44 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       readOnly: false,
       scrollable: true,
       expands: false,
+      onSingleLongTapStart: (LongPressStartDetails details,
+          TextPosition Function(Offset offset) textPosition) {
+        showDialogBox(
+          context: context,
+          actionOneText: 'VIDEO',
+          actionTwoText: 'IMAGE',
+          title: 'Choose your file',
+          actionOneBgColor: navyBlue,
+          actionTwoBgColor: navyBlue,
+          actionOneTextColor: Colors.white,
+          actionTwoTextColor: Colors.white,
+          leftButtonOnPressed: () {
+            _pickBlogVideo(
+              videoPickedCallBack: (videoPicked) {},
+            );
+          },
+          rightButtonOnPressed: () {
+            _pickBlogImage(
+              imagePickedCallBack: (imagePicked) {
+                showDialog(
+                    context: context,
+                    builder: (dialogLoadingContext) => LoadingIndicator());
+                UserPostAuth()
+                    .uploadPostBodyPickedImage()
+                    .then((imageUploaded) {
+                  if (imageUploaded) {
+                    Navigator.pop(context);
+
+                    showToast(message: 'Image uploaded');
+                  }
+                });
+              },
+            );
+          },
+        );
+
+        return true;
+      },
       padding: EdgeInsets.zero,
       placeholder: 'Tell your story...',
       scrollController: ScrollController(),

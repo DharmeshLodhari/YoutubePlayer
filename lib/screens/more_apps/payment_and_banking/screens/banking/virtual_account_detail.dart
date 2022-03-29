@@ -140,9 +140,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                 child: Column(
                   children: <Widget>[
                     getUserBankAccountSlydo(),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -257,88 +255,20 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                         child: Column(
                           children: [
                             getSlydoBankAccountDetail(),
-                            SizedBox(
-                              height: 24,
-                            ),
+                            SizedBox(height: 24),
                             getAccountName(),
-                            SizedBox(
-                              height: 8,
-                            ),
+                            SizedBox(height: 8),
                             getAccountNumber(),
-                            SizedBox(
-                              height: 8,
-                            ),
+                            SizedBox(height: 8),
                             getTierInstruction(),
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 32,
-                      ),
-
-                      /// TODO:- To be enabled in future version
-                      // Divider(
-                      //   thickness: 1,
-                      //   color: dividerColor,
-                      // ),
-                      // SizedBox(
-                      //   height: 16,
-                      // ),
-                      // Container(
-                      //   padding:
-                      //       EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                      //   child: Column(
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: [
-                      //       getUpgradeAccountTitle(),
-                      //       SizedBox(
-                      //         height: 16,
-                      //       ),
-                      //       // getTierSelection(),
-                      //       getTierDropDown(),
-                      //       SizedBox(
-                      //         height: 16,
-                      //       ),
-                      //       getUpdateTierButton(),
-                      //       SizedBox(
-                      //         height: 16,
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
+                      SizedBox(height: 32),
                     ],
                   ),
                 ],
               ),
-      ),
-    );
-  }
-
-  Widget getSlydoBankAccountDetail() {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            "Please transfer funds into your virtual account to fund your slydo wallet",
-            style: TextStyle(
-                color: naturalGreen, fontWeight: FontWeight.w600, fontSize: 14),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget getUpgradeAccountTitle() {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            "Upgrade Account",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: blackFont, fontWeight: FontWeight.w600, fontSize: 16),
-          )
-        ],
       ),
     );
   }
@@ -412,21 +342,17 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     );
   }
 
-  Widget getUpdateTierButton() {
-    if (_currentTier == "3") {
-      return Container();
-    }
-
-    return CurvedButton(
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "Update",
-      onPressed: () {
-        Navigator.of(context).pushNamed("/add-bvn-number", arguments: {
-          "account": virtualAccount,
-          "selected_tier": _selectedTier
-        });
-      },
+  Widget getSlydoBankAccountDetail() {
+    return Container(
+      child: Column(
+        children: [
+          Text(
+            "Please transfer funds into your virtual account to fund your slydo wallet",
+            style: TextStyle(
+                color: naturalGreen, fontWeight: FontWeight.w600, fontSize: 14),
+          )
+        ],
+      ),
     );
   }
 
@@ -515,115 +441,6 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         size: size,
       ),
     );
-  }
-
-  Widget getTierDropDown() {
-    debugPrint("Current ==> $_currentTier");
-
-    if (_currentTier == "3") {
-      return Container();
-    }
-
-    return CustomizedDropDownField(
-      title: "Select Tier",
-      child: ListTile(
-        dense: true,
-        title: Text(
-          _selectedTier ?? "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          selectTier();
-        },
-      ),
-    );
-  }
-
-  void selectTier() async {
-    if (_currentTier == "1") {
-      tiers = ["Tier 2", "Tier 3"];
-    } else if (_currentTier == "2") {
-      tiers = ["Tier 3"];
-    } else {
-      tiers = [];
-    }
-
-    final pressedCondition = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: tiers.map<Widget>((item) {
-                          if (_selectedTier == item) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Row(
-                                  children: [
-                                    Text(
-                                      item,
-                                      style: TextStyle(
-                                          color: navyBlue,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, item);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              item,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, item);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-    if (pressedCondition != null) {
-      _selectedTier = pressedCondition;
-      setState(() {});
-    }
   }
 
   Widget amountUserGetMsg() {
