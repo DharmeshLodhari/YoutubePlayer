@@ -1,4 +1,3 @@
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
@@ -27,6 +26,7 @@ class _UserPostListState extends State<UserPostList> {
   List<UserPost> postList = [];
   ScrollController _postScrollController = new ScrollController();
 
+  bool isFirstTime = true;
   bool noPostInList = false;
   GlobalKey<ScaffoldState> _postScaffoldKey = GlobalKey<ScaffoldState>();
   RefreshController _postRefreshController =
@@ -55,6 +55,9 @@ class _UserPostListState extends State<UserPostList> {
         postNext = "";
         postPrevious = "";
         postList = [];
+        isFirstTime = true;
+        if (mounted) setState(() {});
+
         debugPrint("Refresh called on posts!!  ");
         getPostList();
         _postRefreshController.refreshCompleted();
@@ -89,13 +92,23 @@ class _UserPostListState extends State<UserPostList> {
   }
 
   Future<void> getPostList() async {
+    Map<String, dynamic>? result;
     if (!isPostLoading) {
       if (postNext != null && !isPostLoading) {
         isPostLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result =
-            await UserPostAuth().listUserPosts(userName: widget.user!.userName);
+        try {
+          result = await UserPostAuth()
+              .listUserPosts(next: postNext, userName: widget.user!.userName);
+        } catch (e) {
+          isPostLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          showToast(message: 'Server error. Please refresh');
+          return;
+        }
 
         if (result == null) {
           isPostLoading = false;
@@ -110,15 +123,16 @@ class _UserPostListState extends State<UserPostList> {
         postPrevious = result['previous'];
         List tempList = result['results'] as List;
 
-        List<UserPost> reviews = [];
+        List<UserPost> posts = [];
         tempList.forEach((element) {
-          reviews.add(UserPost.fromJson(element));
+          posts.add(UserPost.fromJson(element));
         });
+
         if (mounted) {
           setState(() {
             noPostInList = false;
             isPostLoading = false;
-            postList.addAll(reviews);
+            postList.addAll(posts);
           });
         }
       }
@@ -130,7 +144,7 @@ class _UserPostListState extends State<UserPostList> {
         });
       }
     } else if (postNext == null && postList.length > 15) {
-      _postScaffoldKey.currentState!.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         duration: Duration(milliseconds: 500),
@@ -155,7 +169,7 @@ class _UserPostListState extends State<UserPostList> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: PostTile(
-                    post: postList.reversed.toList()[index],
+                    post: postList[index],
                   ),
                 );
               }

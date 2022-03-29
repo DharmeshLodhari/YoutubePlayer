@@ -38,7 +38,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? blogId;
   String? _imageFile;
   String? _videoFile;
-  // double imageHeight = 200;
   bool imageIsVisible = true;
   bool editorIsVisible = true;
   bool showMoreOptions = false;
@@ -57,13 +56,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   DateTime? datePicked;
   TimeOfDay? timePicked;
   bool isPublic = false;
-  dynamic blogBodyTextJson;
-  bool isPublished = false;
+  bool isPublished = true;
   bool enableLikes = false;
+  dynamic blogBodyTextJson;
   bool isImagePicked = false;
   List<String> userTags = [];
   DateTime? publishedDateTime;
   bool enableCommenting = false;
+  List<String> blogPostInlineMediaIds = [];
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
   @override
@@ -201,7 +201,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             SizedBox(height: 5),
             Visibility(
               visible: imageIsVisible,
-              child: _videoFile != null ? getVideo() : getImage(),
+              child: _videoFile != null ? getHeaderVideo() : getHeaderImage(),
             ),
             CustomizedTextFormField(
               hintText: 'Title',
@@ -513,11 +513,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       isPublished: isPublished,
       enableLikes: enableLikes,
       title: blogTitleCtrl.text,
+      blogImage: File(_imageFile!),
       isUpdating: _userUpdatingPost,
       enableCommenting: enableCommenting,
+      inLineMediaIds: blogPostInlineMediaIds,
       authorUserName: userBloc.user.userName!,
       publishedDate: publishedDateTime.toString(),
-      blogImage: File(_imageFile!),
       blogVideo: _videoFile != null ? File(_videoFile!) : null,
       blogPostBody: _quillBodyTextController.document.toPlainText().length < 1
           ? widget.userPost!.text!
@@ -568,12 +569,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
     if (imagePickedCallBack != null && croppedImage != null) {
       imagePickedCallBack(croppedImage);
-    }
-    if (croppedImage != null) {
-      setState(() {
-        _imageFile = croppedImage;
-        isImagePicked = true;
-      });
+    } else {
+      if (croppedImage != null) {
+        setState(() {
+          _imageFile = croppedImage;
+          isImagePicked = true;
+        });
+      }
     }
   }
 
@@ -591,7 +593,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  Widget getImage() {
+  Widget getHeaderImage() {
     if (_imageFile != null) {
       if (_imageFile!.startsWith('http')) {
         return ClipRRect(
@@ -619,7 +621,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  Widget getVideo() {
+  Widget getHeaderVideo() {
     if (_videoFile != null) {
       if (_videoFile!.startsWith('http')) {
         return Chewie(
@@ -682,26 +684,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           actionTwoTextColor: Colors.white,
           leftButtonOnPressed: () {
             _pickBlogVideo(
-              videoPickedCallBack: (videoPicked) {},
+              videoPickedCallBack: (videoPicked) =>
+                  sendMediaToServerAndAddToBlogPost(
+                mediaFile: videoPicked,
+                mediaType: MediaType.video,
+              ),
             );
           },
           rightButtonOnPressed: () {
             _pickBlogImage(
-              imagePickedCallBack: (imagePicked) {
-                showDialog(
-                    context: context,
-                    builder: (dialogLoadingContext) => LoadingIndicator());
-                UserPostAuth()
-                    .uploadPostBodyPickedImage()
-                    .then((imageUploaded) {
-                  if (imageUploaded) {
-                    Navigator.pop(context);
-
-                    showToast(message: 'Image uploaded');
-                  }
-                });
-              },
-            );
+                imagePickedCallBack: (imagePicked) =>
+                    sendMediaToServerAndAddToBlogPost(
+                      mediaFile: imagePicked,
+                      mediaType: MediaType.picture,
+                    ));
           },
         );
 
@@ -731,6 +727,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           titleFocusNode.unfocus();
           textEditorTextFieldFocusNode.unfocus();
         } else {
+          editorIsVisible = true;
           imageIsVisible = true;
         }
         if (mounted) setState(() {});
@@ -761,132 +758,136 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Widget moreOptions() {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.40,
-      child: ListView(
-        children: [
-          BlogSettingsTitles(
-            addElevation: false,
-            title: 'Make Public',
-            description:
-                'Your post will become public to your friends and everyone',
-            isSwitched: isPublic,
-            icon: Icon(Icons.public_outlined, color: blackFont),
-            onChanged: (makePostPublic) {
-              isPublic = makePostPublic;
-              setState(() => isPublic = makePostPublic);
-            },
-          ),
-          BlogSettingsTitles(
-            title: 'Publish',
-            addElevation: false,
-            description: 'Your post will be published',
-            isSwitched: isPublished,
-            icon: Icon(
-              Icons.published_with_changes_outlined,
-              color: blackFont,
+      height: MediaQuery.of(context).size.height * 0.30,
+      child: ScrollConfiguration(
+        behavior: MyScrollBehaviour(),
+        child: ListView(
+          children: [
+            BlogSettingsTitles(
+              addElevation: false,
+              title: 'Make Public',
+              description:
+                  'Your post will become public to your friends and everyone',
+              isSwitched: isPublic,
+              icon: Icon(Icons.public_outlined, color: blackFont),
+              onChanged: (makePostPublic) {
+                isPublic = makePostPublic;
+                setState(() => isPublic = makePostPublic);
+              },
             ),
-            onChanged: (publishPost) {
-              isPublished = publishPost;
-              setState(() => isPublished = publishPost);
-            },
-          ),
-          BlogSettingsTitles(
-            title: 'Enable Comments',
-            addElevation: false,
-            description: 'Everyone will be able to comment on your post',
-            isSwitched: enableCommenting,
-            icon: Icon(Icons.message_rounded, color: blackFont),
-            onChanged: (commentingEnabled) {
-              enableCommenting = commentingEnabled;
-              setState(() => enableCommenting = commentingEnabled);
-            },
-          ),
-          BlogSettingsTitles(
-            title: 'Enable Likes',
-            addElevation: false,
-            description: 'Everyone will be able to like your post',
-            isSwitched: enableLikes,
-            icon: Icon(Icons.thumb_up, color: blackFont),
-            onChanged: (likeEnabled) {
-              enableLikes = likeEnabled;
-              setState(() => enableLikes = likeEnabled);
-            },
-          ),
-          BlogSettingsTitles(
-            hasSwitch: false,
-            addElevation: false,
-            trailingWidget: publishedDateTime != null
-                ? Text(DateFormat('yyyy-MM-dd H:m').format(publishedDateTime!))
-                : Text(''),
-            onTap: () async {
-              datePicked = await showDatePicker(
-                  builder: customThemeBuilder,
+            BlogSettingsTitles(
+              title: 'Publish',
+              addElevation: false,
+              description: 'Your post will be published',
+              isSwitched: isPublished,
+              icon: Icon(
+                Icons.published_with_changes_outlined,
+                color: blackFont,
+              ),
+              onChanged: (publishPost) {
+                isPublished = publishPost;
+                setState(() => isPublished = publishPost);
+              },
+            ),
+            BlogSettingsTitles(
+              title: 'Enable Comments',
+              addElevation: false,
+              description: 'Everyone will be able to comment on your post',
+              isSwitched: enableCommenting,
+              icon: Icon(Icons.message_rounded, color: blackFont),
+              onChanged: (commentingEnabled) {
+                enableCommenting = commentingEnabled;
+                setState(() => enableCommenting = commentingEnabled);
+              },
+            ),
+            BlogSettingsTitles(
+              title: 'Enable Likes',
+              addElevation: false,
+              description: 'Everyone will be able to like your post',
+              isSwitched: enableLikes,
+              icon: Icon(Icons.thumb_up, color: blackFont),
+              onChanged: (likeEnabled) {
+                enableLikes = likeEnabled;
+                setState(() => enableLikes = likeEnabled);
+              },
+            ),
+            BlogSettingsTitles(
+              hasSwitch: false,
+              addElevation: false,
+              trailingWidget: publishedDateTime != null
+                  ? Text(
+                      DateFormat('yyyy-MM-dd H:m').format(publishedDateTime!))
+                  : Text(''),
+              onTap: () async {
+                datePicked = await showDatePicker(
+                    builder: customThemeBuilder,
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2030));
+
+                timePicked = await showTimePicker(
                   context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2030));
+                  initialTime: TimeOfDay.now(),
+                );
+                if (datePicked != null && timePicked != null) {
+                  publishedDateTime = DateTime(
+                      datePicked!.year,
+                      datePicked!.month,
+                      datePicked!.day,
+                      timePicked!.hour,
+                      timePicked!.minute);
+                }
 
-              timePicked = await showTimePicker(
-                context: context,
-                initialTime: TimeOfDay.now(),
-              );
-              if (datePicked != null && timePicked != null) {
-                publishedDateTime = DateTime(
-                    datePicked!.year,
-                    datePicked!.month,
-                    datePicked!.day,
-                    timePicked!.hour,
-                    timePicked!.minute);
-              }
-
-              print('FINAL DATE TIME -----> ${publishedDateTime.toString()}');
-              setState(() => publishedDateTime = publishedDateTime);
-              // '2022-02-28T13:35:43.590377+01:00'
-            },
-            title: 'Published Date',
-            description: 'Pick a date to publish your post',
-            icon: Icon(Icons.event_outlined, color: blackFont),
-          ),
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Focus(
-              focusNode: textFieldTagFocusNode,
-              child: TextFieldTags(
-                initialTags: userTags,
-                tagsStyler: TagsStyler(
-                  tagDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: HexColor("#F7F7F9"),
+                print('FINAL DATE TIME -----> ${publishedDateTime.toString()}');
+                setState(() => publishedDateTime = publishedDateTime);
+                // '2022-02-28T13:35:43.590377+01:00'
+              },
+              title: 'Published Date',
+              description: 'Pick a date to publish your post',
+              icon: Icon(Icons.event_outlined, color: blackFont),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Focus(
+                focusNode: textFieldTagFocusNode,
+                child: TextFieldTags(
+                  initialTags: userTags,
+                  tagsStyler: TagsStyler(
+                    tagDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: HexColor("#F7F7F9"),
+                    ),
+                    tagTextStyle: TextStyle(
+                        color: darkGrey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400),
+                    tagCancelIconPadding: EdgeInsets.only(left: 12),
+                    tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
                   ),
-                  tagTextStyle: TextStyle(
-                      color: darkGrey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400),
-                  tagCancelIconPadding: EdgeInsets.only(left: 12),
-                  tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+                  validator: (value) {
+                    return null;
+                  },
+                  textFieldStyler: TextFieldStyler(helperText: ''),
+                  onTag: (tag) {
+                    setState(() {
+                      userTags.add(tag);
+                      userTags = userTags.toSet().toList();
+                    });
+                    userTags.removeWhere((tag) => tag.isEmpty);
+                  },
+                  onDelete: (tag) {
+                    setState(() {
+                      userTags.remove(tag);
+                    });
+                    userTags.removeWhere((tag) => tag.isEmpty);
+                  },
                 ),
-                validator: (value) {
-                  return null;
-                },
-                textFieldStyler: TextFieldStyler(helperText: ''),
-                onTag: (tag) {
-                  setState(() {
-                    userTags.add(tag);
-                    userTags = userTags.toSet().toList();
-                  });
-                  userTags.removeWhere((tag) => tag.isEmpty);
-                },
-                onDelete: (tag) {
-                  setState(() {
-                    userTags.remove(tag);
-                  });
-                  userTags.removeWhere((tag) => tag.isEmpty);
-                },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -899,6 +900,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       if (textFieldTagFocusNode.hasFocus) {
         setState(() {
           imageIsVisible = false;
+          editorIsVisible = false;
         });
       }
     });
@@ -918,6 +920,43 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         });
       }
     });
+  }
+
+  sendMediaToServerAndAddToBlogPost(
+      {required MediaType mediaType, required String mediaFile}) {
+    final index = _quillBodyTextController.selection.baseOffset;
+    final length = _quillBodyTextController.selection.extentOffset - index;
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+
+    UserPostAuth()
+        .uploadPickedMediaForPostBody(mediaFile: mediaFile)
+        .then((response) {
+      if (response != null) {
+        Navigator.pop(context);
+
+        showToast(message: 'Media uploaded');
+        _quillBodyTextController.replaceText(
+          index,
+          length,
+          mediaType == MediaType.picture
+              ? flutterQuill.BlockEmbed.image(response['media'])
+              : flutterQuill.BlockEmbed.video(response['media']),
+          null,
+        );
+        blogPostInlineMediaIds.add(response['id']);
+      } else {
+        Navigator.pop(context);
+
+        showToast(message: 'Something went wrong');
+      }
+    }).catchError(
+      (error) {
+        Navigator.pop(context);
+        showToast(message: error.toString());
+      },
+    );
   }
 }
 
@@ -943,5 +982,13 @@ class ChooseOptionsCard extends StatelessWidget {
         child: Icon(iconData, size: 30),
       ),
     );
+  }
+}
+
+class MyScrollBehaviour extends ScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
   }
 }

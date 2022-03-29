@@ -16,7 +16,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../utils/colors.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../user_profile/user_auth.dart';
 import '../shopping_auth.dart';
@@ -291,7 +290,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
     String type =
         basketBloc.items[index]["item"] is Product ? "product" : "service";
 
-    print('BASKET BLOC ----> ${basketBloc.items}');
     late var mapData;
     basketBloc.items.forEach((element) {
       if (element["item"].id == basketBloc.items[index]["item"].id) {

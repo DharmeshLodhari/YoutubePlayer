@@ -176,27 +176,26 @@ Future<bool?> showDialogBoxWithImageForNudge({
   ).show();
 }
 
-Future<bool?> showDialogBox({
-  Widget? content,
-  required BuildContext context,
-  String? title,
-  String? description,
-  required String actionOneText,
-  bool firstActionPrimary = true,
-  String? image,
-  Color? actionOneBgColor,
-  Color? actionOneTextColor,
-  Color? actionTwoBgColor,
-  Color? actionTwoTextColor,
-  Function()? leftButtonOnPressed,
-  Function()? rightButtonOnPressed,
-  required String actionTwoText, // DialogButton's text
-  RoundedBackgroundIcon? roundedBackgroundIcon,
-}) {
+Future<bool?> showDialogBox(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    required String actionOneText,
+    bool firstActionPrimary = true,
+    String? image,
+    Color? actionOneBgColor,
+    Color? actionOneTextColor,
+    Color? actionTwoBgColor,
+    Color? actionTwoTextColor,
+    Function()? leftButtonOnPressed,
+    Function()? rightButtonOnPressed,
+    required String actionTwoText, // DialogButton's text
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
   return CustomizedAlert(
+    title: title,
     content: content,
     context: context,
-    title: title,
     desc: description,
     roundedBackgroundIcon: roundedBackgroundIcon,
     style: AlertStyle(

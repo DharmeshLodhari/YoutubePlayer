@@ -7,10 +7,23 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../utils/util.dart';
+
 class UserPostAuth extends AuthService {
   // Fetch User Posts Details
-  Future<Map<String, dynamic>> listUserPosts({String? userName}) async {
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/user/$userName/";
+  Future<Map<String, dynamic>?> listUserPosts(
+      {String? next, String? userName}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/social/posts/user/$userName/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     debugPrint(
@@ -19,6 +32,8 @@ class UserPostAuth extends AuthService {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
 
       return jsonData;
+    } else if (response.statusCode == 500) {
+      return Future.error("${response.body}");
     }
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -59,11 +74,44 @@ class UserPostAuth extends AuthService {
     }
   }
 
-  Future<bool> uploadPostBodyPickedImage() async {
-    await Future.delayed(Duration(seconds: 3), () {});
-    return true;
-    var url = AppConfig.baseUrl + "/api/v1/social/posts/";
+  Future<dynamic> uploadPickedMediaForPostBody(
+      {required String mediaFile}) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/social/posts/blog-post-inline-media-file/";
     var headers = await getAuthHeaders();
+
+    print('MEDIA FILE ::: $mediaFile');
+
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    http.MultipartFile mediaMultipartFile =
+        await http.MultipartFile.fromPath("media", mediaFile);
+
+    request.files.add(mediaMultipartFile);
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller video, This video is too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    var responseBodyDecoded = jsonDecode(responseBody);
+
+    print('MEDIA RESPONSE ::: ${responseBody}');
+
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      print('MEDIA RESPONSE SUCCESS ::: ${responseBody}');
+      return responseBodyDecoded;
+      // return true;
+    } else {
+      return Future.error(
+          "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
+    }
   }
 
   Future<bool> createOrUpdateBlogPost({
@@ -77,6 +125,7 @@ class UserPostAuth extends AuthService {
     bool isPublished = false,
     bool enableLikes = false,
     required bool isUpdating,
+    List<String>? inLineMediaIds,
     required String blogPostBody,
     bool enableCommenting = false,
     required String authorUserName,
@@ -95,6 +144,7 @@ class UserPostAuth extends AuthService {
       publishedDate: publishedDate,
       authorUserName: authorUserName,
       enableCommenting: enableCommenting,
+      inLineMediaIds: inLineMediaIds,
     );
   }
 
@@ -109,6 +159,7 @@ class UserPostAuth extends AuthService {
     bool isUpdating = false,
     bool isPublished = false,
     bool enableLikes = false,
+    List<String>? inLineMediaIds,
     required String blogPostBody,
     bool enableCommenting = false,
     required String authorUserName,
@@ -145,6 +196,7 @@ class UserPostAuth extends AuthService {
     request.fields["text"] = blogPostBody;
     request.fields["author_username"] = authorUserName;
     request.fields['public_read'] = jsonEncode(isPublic);
+    request.fields["media"] = jsonEncode(inLineMediaIds);
     request.fields['enable_like'] = jsonEncode(enableLikes);
     request.fields['is_published'] = jsonEncode(isPublished);
     request.fields['enable_commenting'] = jsonEncode(enableCommenting);
@@ -167,65 +219,6 @@ class UserPostAuth extends AuthService {
           "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
     }
   }
-
-  // Future<bool> updateBlogPost({
-  //   File? blogImage,
-  //   File? blogVideo,
-  //   List<String>? tags,
-  //   required String title,
-  //   bool isPublic = false,
-  //   String? publishedDate,
-  //   required String blogId,
-  //   required String tagLine,
-  //   bool isPublished = false,
-  //   bool enableLikes = false,
-  //   required String blogPostBody,
-  //   bool enableCommenting = false,
-  //
-  // }) async {
-  //   var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
-  //   var headers = await getAuthHeaders();
-  //
-  //   if (blogImage != null || blogVideo != null) {
-  //     return _postBlogWithMedia(
-  //       tags: tags,
-  //       title: title,
-  //       tagLine: tagLine,
-  //       isUpdating: true,
-  //       isPublic: isPublic,
-  //       blogImage: blogImage,
-  //       blogVideo: blogVideo,
-  //       isPublished: isPublished,
-  //       enableLikes: enableLikes,
-  //       blogPostBody: blogPostBody,
-  //       publishedDate: publishedDate,
-  //       enableCommenting: enableCommenting,
-  //     );
-  //   } else {
-  //     Map<String, dynamic> body = {
-  //       "title": title,
-  //       "tag_line": tagLine,
-  //       "text": blogPostBody,
-  //       'public_read': isPublic,
-  //       'enable_like': enableLikes,
-  //       'is_published': isPublished,
-  //       'enable_commenting': enableCommenting,
-  //     };
-  //     if (tags != null) {
-  //       body['tags'] = tags;
-  //     }
-  //     var response =
-  //         await httpPatch(url, headers: headers, body: jsonEncode(body));
-  //
-  //     print('UPDATE BLOG SETTINGS -----> ${response.body}');
-  //
-  //     if (response.statusCode == 200) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   }
-  // }
 
   Future<bool> deleteBlog({required String blogId}) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/$blogId/";
