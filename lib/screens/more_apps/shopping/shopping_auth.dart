@@ -664,6 +664,8 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+    print('RESPONSE ::: ${response.body}');
+    print('RESPONSE ::: ${response.statusCode}');
     var jsonData = jsonDecode(response.body);
     debugPrint("sent data: " + _data.toString());
     if (response.statusCode == 200) {
