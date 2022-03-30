@@ -78,11 +78,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       initializeUserPostVariables();
     }
     var keyboardVisibilityController = KeyboardVisibilityController();
-    // Query
-    print(
-        'Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
 
-    // Subscribe
     keyboardSubscription =
         keyboardVisibilityController.onChange.listen((bool visible) {
       print('Keyboard visibility update. Is visible: $visible');
@@ -394,8 +390,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       showDividers: false,
       showIndent: false,
       showListCheck: false,
-      showRedo: true,
-      showUndo: true,
+      showRedo: false,
       showListBullets: false,
       showListNumbers: false,
       showAlignmentButtons: true,

@@ -568,10 +568,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget getTabUI({
-    String title = "",
-    @required int? tabIndex,
-  }) {
+  Widget getTabUI({String title = "", @required int? tabIndex}) {
     return Tab(
       child: Container(
         padding: EdgeInsets.symmetric(
