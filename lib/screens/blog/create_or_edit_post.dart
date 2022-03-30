@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -24,6 +25,7 @@ import '../../utils/video_player_controller/chewie_player.dart';
 import '../../utils/video_player_controller/chewie_progress_colors.dart';
 import '../../widget/LoadingIndicator.dart';
 import '../more_apps/user_post/models/user_post.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class CreatePostScreen extends StatefulWidget {
   final UserPost? userPost;
@@ -65,6 +67,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   bool enableCommenting = false;
   List<String> blogPostInlineMediaIds = [];
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+  late StreamSubscription<bool> keyboardSubscription;
 
   @override
   void initState() {
@@ -74,11 +77,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (_userUpdatingPost) {
       initializeUserPostVariables();
     }
+    var keyboardVisibilityController = KeyboardVisibilityController();
+    // Query
+    print(
+        'Keyboard visibility direct query: ${keyboardVisibilityController.isVisible}');
+
+    // Subscribe
+    keyboardSubscription =
+        keyboardVisibilityController.onChange.listen((bool visible) {
+      print('Keyboard visibility update. Is visible: $visible');
+      if (visible) {
+        setState(() => imageIsVisible = false);
+      } else {
+        setState(() => imageIsVisible = true);
+      }
+    });
   }
 
   @override
   void dispose() {
     titleFocusNode.dispose();
+    keyboardSubscription.cancel();
     textEditorTextFieldFocusNode.dispose();
     _mainVideoController?.dispose();
 
@@ -231,6 +250,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   getMoreOptionTrigger(),
                   Row(
                     children: [
+                      IconButton(
+                        icon: Icon(Icons.add_circle_outlined, size: 20),
+                        onPressed: () {
+                          _showPickMediaDialogBox();
+                        },
+                      ),
+                      SizedBox(width: 5),
                       InkWell(
                         onTap: () => _pickBlogImage(),
                         child: Container(
@@ -260,12 +286,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             SizedBox(height: 3),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
+                padding: const EdgeInsets.only(left: 16.0, bottom: 30),
                 child: getTextEditorWidget(),
               ),
             ),
             Visibility(
-              visible: editorIsVisible,
+              visible: true,
               child: getEditor(),
             ),
           ],
@@ -352,105 +378,26 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
-  // Widget _scaffoldBody() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-  //     child: Form(
-  //       key: formKey,
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.stretch,
-  //         children: [
-  //           SizedBox(height: 5),
-  //           _videoFile != null ? getVideo() : getImage(),
-  //           CustomizedTextFormField(
-  //             hintText: 'Title',
-  //             hasBorder: false,
-  //             hasLabel: false,
-  //             maxLength: 150,
-  //             showLabelOrPassword: false,
-  //             textStyle: TextStyle(
-  //               color: blackFont,
-  //               fontSize: 22,
-  //               fontWeight: FontWeight.w600,
-  //             ),
-  //             contentPadding: EdgeInsets.zero,
-  //             controller: blogTitleCtrl,
-  //             validator: (value) {
-  //               return value.toString().isEmpty
-  //                   ? '     Field cannot be empty'
-  //                   : null;
-  //             },
-  //           ),
-  //           SizedBox(height: 3),
-  //           Expanded(
-  //             flex: getTextEditorWidgetFlexValue,
-  //             child: Padding(
-  //               padding: const EdgeInsets.only(left: 12.0),
-  //               child: getTextEditorWidget(),
-  //             ),
-  //           ),
-  //
-  //           //Widget below
-  //           Expanded(
-  //             flex: widgetBelowFlexValue,
-  //             child: Container(
-  //               color: Colors.red,
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.end,
-  //                 children: [
-  //                   Padding(
-  //                     padding: const EdgeInsets.only(left: 4.0),
-  //                     child: Row(
-  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                       children: [
-  //                         getMoreOptionTrigger(),
-  //                         Row(
-  //                           children: [
-  //                             InkWell(
-  //                               onTap: () => _pickBlogImage(),
-  //                               child: Container(
-  //                                   padding: EdgeInsets.all(5),
-  //                                   margin: EdgeInsets.only(right: 24),
-  //                                   color: Colors.grey.withOpacity(0.1),
-  //                                   child: Icon(
-  //                                     Icons.image,
-  //                                     size: 20,
-  //                                   )),
-  //                             ),
-  //                             SizedBox(width: 5),
-  //                             isImagePicked
-  //                                 ? InkWell(
-  //                                     onTap: () => _pickBlogVideo(),
-  //                                     child: Icon(Icons.video_call))
-  //                                 : SizedBox.shrink(),
-  //                           ],
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                   Visibility(
-  //                     visible: showMoreOptions,
-  //                     child: Expanded(
-  //                       child: moreOptions(),
-  //                     ),
-  //                   ),
-  //                   SizedBox(height: 10),
-  //                   Flexible(child: getEditor()),
-  //                   SizedBox(height: 20),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget getEditor() {
     Widget editorWidget = flutterQuill.QuillToolbar.basic(
-      showDirection: true,
-      showSmallButton: true,
+      showDirection: false,
+      showImageButton: false,
+      showVideoButton: false,
+      showCameraButton: false,
+      showHeaderStyle: false,
+      showInlineCode: false,
+      showCodeBlock: false,
+      showStrikeThrough: false,
+      showJustifyAlignment: false,
+      showBackgroundColorButton: false,
+      showClearFormat: false,
+      showDividers: false,
+      showIndent: false,
+      showListCheck: false,
+      showRedo: true,
+      showUndo: true,
+      showListBullets: false,
+      showListNumbers: false,
       showAlignmentButtons: true,
       controller: _quillBodyTextController,
     );
@@ -671,42 +618,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       readOnly: false,
       scrollable: true,
       expands: false,
-      onSingleLongTapStart: (LongPressStartDetails details,
-          TextPosition Function(Offset offset) textPosition) {
-        showDialogBox(
-          context: context,
-          actionOneText: 'VIDEO',
-          actionTwoText: 'IMAGE',
-          title: 'Choose your file',
-          actionOneBgColor: navyBlue,
-          actionTwoBgColor: navyBlue,
-          actionOneTextColor: Colors.white,
-          actionTwoTextColor: Colors.white,
-          leftButtonOnPressed: () {
-            _pickBlogVideo(
-              videoPickedCallBack: (videoPicked) =>
-                  sendMediaToServerAndAddToBlogPost(
-                mediaFile: videoPicked,
-                mediaType: MediaType.video,
-              ),
-            );
-          },
-          rightButtonOnPressed: () {
-            _pickBlogImage(
-                imagePickedCallBack: (imagePicked) =>
-                    sendMediaToServerAndAddToBlogPost(
-                      mediaFile: imagePicked,
-                      mediaType: MediaType.picture,
-                    ));
-          },
-        );
-
-        return true;
-      },
       padding: EdgeInsets.zero,
       placeholder: 'Tell your story...',
       scrollController: ScrollController(),
       focusNode: textEditorTextFieldFocusNode,
+      scrollBottomInset: 20,
     );
     if (widget.userPost != null) {
       if (blogBodyTextJson != null) {
@@ -922,6 +838,38 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     });
   }
 
+  _showPickMediaDialogBox() {
+    showDialogBox(
+      context: context,
+      actionOneText: 'VIDEO',
+      actionTwoText: 'IMAGE',
+      title: 'Choose your file',
+      actionOneBgColor: navyBlue,
+      actionTwoBgColor: navyBlue,
+      actionOneTextColor: Colors.white,
+      actionTwoTextColor: Colors.white,
+      leftButtonOnPressed: () {
+        _pickBlogVideo(
+          videoPickedCallBack: (videoPicked) =>
+              sendMediaToServerAndAddToBlogPost(
+            mediaFile: videoPicked,
+            mediaType: MediaType.video,
+          ),
+        );
+      },
+      rightButtonOnPressed: () {
+        _pickBlogImage(
+            imagePickedCallBack: (imagePicked) =>
+                sendMediaToServerAndAddToBlogPost(
+                  mediaFile: imagePicked,
+                  mediaType: MediaType.picture,
+                ));
+      },
+    );
+
+    return true;
+  }
+
   sendMediaToServerAndAddToBlogPost(
       {required MediaType mediaType, required String mediaFile}) {
     final index = _quillBodyTextController.selection.baseOffset;
@@ -946,6 +894,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           null,
         );
         blogPostInlineMediaIds.add(response['id']);
+
+        _quillBodyTextController.replaceText(index + 1, length, '\n', null);
       } else {
         Navigator.pop(context);
 
