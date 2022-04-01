@@ -40,22 +40,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? blogId;
   String? _imageFile;
   String? _videoFile;
-  bool editorIsVisible = true;
   bool showMoreOptions = false;
   late FocusNode titleFocusNode;
   bool _userUpdatingPost = false;
   double moreOptionsHeight = 200;
   bool headerMediaIsVisible = true;
+  bool showScrollToTopArrow = false;
   bool showAddInlineMediaIcon = false;
   late FocusNode textFieldTagFocusNode;
   VideoPlayerController? _mainVideoController;
   late FocusNode textEditorTextFieldFocusNode;
+  late ScrollController _textEditorScrollController;
   flutterQuill.QuillController _quillBodyTextController =
       flutterQuill.QuillController.basic();
   ChewieController? pickedVideoChewieMainController;
   ChewieController? videoFromServerChewieMainController;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   TextEditingController blogTitleCtrl = TextEditingController();
 
   DateTime? datePicked;
@@ -75,6 +75,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   void initState() {
     super.initState();
+    _textEditorScrollController = ScrollController();
+
     _initializeFocusNodes();
     _userUpdatingPost = widget.userPost != null;
     if (_userUpdatingPost) {
@@ -87,6 +89,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     titleFocusNode.dispose();
     keyboardSubscription.cancel();
     _mainVideoController?.dispose();
+    _textEditorScrollController.dispose();
     textEditorTextFieldFocusNode.dispose();
     pickedVideoChewieMainController?.dispose();
     videoFromServerChewieMainController?.dispose();
@@ -291,10 +294,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 child: getTextEditorWidget(),
               ),
             ),
-            Visibility(
-              visible: editorIsVisible,
-              child: getEditor(),
-            ),
+            getEditor(),
           ],
         ),
       ),
@@ -370,9 +370,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        IconButton(
+          onPressed: showScrollToTopArrow ? () => _scrollToTop() : null,
+          icon: Icon(Icons.arrow_upward_rounded,
+              color: showScrollToTopArrow ? navyBlue : greyBorderColor),
+        ),
         SizedBox(width: 16),
         IconButton(
-          onPressed: () => submitBlogPost(),
+          onPressed: showSubmitButton() ? () => submitBlogPost() : null,
           icon: Icon(Icons.send,
               color: showSubmitButton() ? navyBlue : greyBorderColor),
         ),
@@ -692,6 +697,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
+  void _scrollToTop() {
+    _textEditorScrollController.animateTo(0,
+        duration: const Duration(milliseconds: 200), curve: Curves.linear);
+    textEditorTextFieldFocusNode.unfocus();
+    setState(() {
+      headerMediaIsVisible = true;
+    });
+  }
+
   Widget getTextEditorWidget() {
     flutterQuill.QuillEditor quillEditor = flutterQuill.QuillEditor(
       autoFocus: false,
@@ -701,7 +715,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       expands: false,
       padding: EdgeInsets.zero,
       placeholder: 'Tell your story...',
-      scrollController: ScrollController(),
+      scrollController: _textEditorScrollController,
       focusNode: textEditorTextFieldFocusNode,
       scrollBottomInset: 20,
     );
@@ -720,14 +734,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return GestureDetector(
       onTap: () {
         showMoreOptions = !showMoreOptions;
+        print('SHOW MORE OPTIONS ::: $showMoreOptions');
         if (showMoreOptions == true) {
           titleFocusNode.unfocus();
           headerMediaIsVisible = false;
           textEditorTextFieldFocusNode.unfocus();
         } else {
-          editorIsVisible = true;
           headerMediaIsVisible = true;
         }
+        print('HEADER IS VISIBLE :::: $headerMediaIsVisible');
         if (mounted) setState(() {});
       },
       child: Container(
@@ -891,36 +906,56 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   void _initializeFocusNodes() {
-    bool shouldSetStateForBlogTitle = false;
-    bool shouldSetStateForBlogMainText = false;
     titleFocusNode = FocusNode();
     textFieldTagFocusNode = FocusNode();
+    bool shouldSetStateForBlogTitle = false;
+
+    bool shouldSetStateForBlogMainText = false;
+
     textEditorTextFieldFocusNode = FocusNode();
 
     textFieldTagFocusNode.addListener(() {
       if (textFieldTagFocusNode.hasFocus) {
         setState(() {
-          editorIsVisible = false;
+          headerMediaIsVisible = false;
+        });
+      } else {
+        setState(() {
+          headerMediaIsVisible = true;
         });
       }
     });
     titleFocusNode.addListener(() {
       if (titleFocusNode.hasFocus) {
         setState(() {
-          editorIsVisible = false;
           showMoreOptions = false;
+          headerMediaIsVisible = true;
         });
       }
     });
+
+    // _textEditorScrollController.addListener(() {
+    //   if (_textEditorScrollController.position.atEdge) {
+    //     bool isTop = _textEditorScrollController.position.pixels == 0;
+    //     if (isTop) {
+    //       setState(() {
+    //         headerMediaIsVisible = true;
+    //       });
+    //     }
+    //   }
+    // });
+
     textEditorTextFieldFocusNode.addListener(() {
       if (textEditorTextFieldFocusNode.hasFocus) {
         setState(() {
-          editorIsVisible = true;
           showMoreOptions = false;
+          showScrollToTopArrow = true;
+          headerMediaIsVisible = false;
           showAddInlineMediaIcon = true;
         });
       } else {
         setState(() {
+          showScrollToTopArrow = false;
           showAddInlineMediaIcon = false;
         });
       }
