@@ -177,8 +177,10 @@ class UserPostAuth extends AuthService {
         http.MultipartRequest(isUpdating ? "PATCH" : "POST", Uri.parse(url));
 
     blogImagePath = blogImage.path;
+
     imageMultipartFile =
         await http.MultipartFile.fromPath("image", blogImagePath);
+
     request.files.add(imageMultipartFile);
 
     if (blogVideo != null) {
@@ -186,6 +188,7 @@ class UserPostAuth extends AuthService {
       videoMultipartFile =
           await http.MultipartFile.fromPath("video", blogVideoPath);
       request.files.add(videoMultipartFile);
+
     }
 
     //add fields

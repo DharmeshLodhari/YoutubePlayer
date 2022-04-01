@@ -191,6 +191,7 @@ Future<bool?> showDialogBox(
     Function()? leftButtonOnPressed,
     Function()? rightButtonOnPressed,
     required String actionTwoText, // DialogButton's text
+    bool isOverlayTapDismiss = false,
     RoundedBackgroundIcon? roundedBackgroundIcon}) {
   return CustomizedAlert(
     title: title,
@@ -199,7 +200,7 @@ Future<bool?> showDialogBox(
     desc: description,
     roundedBackgroundIcon: roundedBackgroundIcon,
     style: AlertStyle(
-      isOverlayTapDismiss: false,
+      isOverlayTapDismiss: isOverlayTapDismiss,
       isCloseButton: false,
     ),
     buttons: [

@@ -40,19 +40,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String? blogId;
   String? _imageFile;
   String? _videoFile;
-  bool imageIsVisible = true;
   bool editorIsVisible = true;
   bool showMoreOptions = false;
   late FocusNode titleFocusNode;
   bool _userUpdatingPost = false;
   double moreOptionsHeight = 200;
+  bool headerMediaIsVisible = true;
+  bool showAddInlineMediaIcon = false;
   late FocusNode textFieldTagFocusNode;
-  ChewieController? _chewieMainController;
   VideoPlayerController? _mainVideoController;
   late FocusNode textEditorTextFieldFocusNode;
   flutterQuill.QuillController _quillBodyTextController =
       flutterQuill.QuillController.basic();
+  ChewieController? pickedVideoChewieMainController;
+  ChewieController? videoFromServerChewieMainController;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   TextEditingController blogTitleCtrl = TextEditingController();
 
   DateTime? datePicked;
@@ -77,34 +80,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (_userUpdatingPost) {
       initializeUserPostVariables();
     }
-    var keyboardVisibilityController = KeyboardVisibilityController();
-
-    keyboardSubscription =
-        keyboardVisibilityController.onChange.listen((bool visible) {
-      print('Keyboard visibility update. Is visible: $visible');
-      if (visible) {
-        setState(() => imageIsVisible = false);
-      } else {
-        setState(() => imageIsVisible = true);
-      }
-    });
   }
 
   @override
   void dispose() {
     titleFocusNode.dispose();
     keyboardSubscription.cancel();
-    textEditorTextFieldFocusNode.dispose();
     _mainVideoController?.dispose();
+    textEditorTextFieldFocusNode.dispose();
+    pickedVideoChewieMainController?.dispose();
+    videoFromServerChewieMainController?.dispose();
 
-    _chewieMainController?.dispose();
     super.dispose();
   }
 
   initializeUserPostVariables() {
+    isImagePicked = _imageFile != null;
     _imageFile = widget.userPost!.image;
     _videoFile = widget.userPost!.video;
-    isImagePicked = _imageFile != null;
 
     if (_imageFile != null && _imageFile!.startsWith('https')) {
       urlToFile(_imageFile!);
@@ -112,7 +105,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (_videoFile != null) {
       _mainVideoController = VideoPlayerController.network(_videoFile!);
 
-      _chewieMainController = ChewieController(
+      videoFromServerChewieMainController = ChewieController(
         videoPlayerController: _mainVideoController!,
         aspectRatio: 16 / 9,
         allowedScreenSleep: false,
@@ -215,9 +208,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           children: [
             SizedBox(height: 5),
             Visibility(
-              visible: imageIsVisible,
-              child: _videoFile != null ? getHeaderVideo() : getHeaderImage(),
-            ),
+                visible: headerMediaIsVisible,
+                child:
+                    _videoFile != null ? getHeaderVideo() : getHeaderImage()),
             CustomizedTextFormField(
               hintText: 'Title',
               hasBorder: false,
@@ -232,11 +225,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
               contentPadding: EdgeInsets.zero,
               controller: blogTitleCtrl,
-              validator: (value) {
-                return value.toString().isEmpty
-                    ? '     Field cannot be empty'
-                    : null;
-              },
             ),
             Padding(
               padding: const EdgeInsets.only(left: 4.0, bottom: 8),
@@ -246,29 +234,46 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   getMoreOptionTrigger(),
                   Row(
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.add_circle_outlined, size: 20),
-                        onPressed: () {
-                          _showPickMediaDialogBox();
-                        },
+                      Visibility(
+                        visible: showAddInlineMediaIcon,
+                        child: InkWell(
+                          onTap: () {
+                            _showPickMediaDialogBox();
+                          },
+                          child: Icon(
+                            Icons.add_circle_outlined,
+                            size: 20,
+                            color: navyBlue,
+                          ),
+                        ),
                       ),
-                      SizedBox(width: 5),
-                      InkWell(
-                        onTap: () => _pickBlogImage(),
-                        child: Container(
-                            padding: EdgeInsets.all(5),
-                            margin: EdgeInsets.only(right: 24),
-                            color: Colors.grey.withOpacity(0.1),
-                            child: Icon(
-                              Icons.image,
-                              size: 20,
-                            )),
-                      ),
-                      SizedBox(width: 5),
-                      isImagePicked
+                      _imageFile != null
                           ? InkWell(
-                              onTap: () => _pickBlogVideo(),
-                              child: Icon(Icons.video_call))
+                              onTap: () {
+                                _pickBlogImage();
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Icon(
+                                  Icons.image,
+                                  size: 20,
+                                  color: navyBlue,
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      _videoFile != null
+                          ? InkWell(
+                              onTap: () {
+                                _pickBlogVideo();
+                              },
+                              child: Icon(
+                                Icons.video_call,
+                                size: 24,
+                                color: navyBlue,
+                              ),
+                            )
                           : SizedBox.shrink(),
                     ],
                   ),
@@ -287,7 +292,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               ),
             ),
             Visibility(
-              visible: true,
+              visible: editorIsVisible,
               child: getEditor(),
             ),
           ],
@@ -368,7 +373,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         SizedBox(width: 16),
         IconButton(
           onPressed: () => submitBlogPost(),
-          icon: Icon(Icons.send, color: navyBlue),
+          icon: Icon(Icons.send,
+              color: showSubmitButton() ? navyBlue : greyBorderColor),
         ),
       ],
     );
@@ -409,6 +415,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   void submitBlogPost() async {
+    print('TITLE :::: ${blogTitleCtrl.text.length}');
     if (formKey.currentState!.validate()) {
       if (_quillBodyTextController.document.toPlainText().length > 1 ||
           widget.userPost != null) {
@@ -537,73 +544,152 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Widget getHeaderImage() {
     if (_imageFile != null) {
-      if (_imageFile!.startsWith('http')) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: CachedNetworkImage(
-            imageUrl: widget.userPost?.image ?? "",
-            fit: BoxFit.fill,
-            width: 200,
-            height: 200,
+      return Stack(
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: _imageFile!.startsWith('http')
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: CachedNetworkImage(
+                        imageUrl: widget.userPost?.image ?? "",
+                        fit: BoxFit.fill,
+                        width: 200,
+                        height: 200,
+                      ),
+                    )
+                  : Image.file(
+                      File(_imageFile!),
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+            ),
           ),
-        );
-      } else {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.file(
-            File(_imageFile!),
-            width: 200,
-            height: 200,
-            fit: BoxFit.cover,
+          Positioned(
+            top: 15,
+            right: 10,
+            child: CircleAvatar(
+              backgroundColor: navyBlue,
+              child: InkWell(
+                  onTap: () => _pickBlogVideo(), child: Icon(Icons.video_call)),
+            ),
           ),
-        );
-      }
+        ],
+      );
     } else {
-      return SizedBox.shrink();
+      return InkWell(
+        onTap: () => _pickBlogImage(),
+        child: Container(
+          height: 200,
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+              color: greyBorderColor,
+              border: Border.all(color: greyBorderColor),
+              borderRadius: BorderRadius.circular(20)),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Icon(
+                //   Icons.add_circle,
+                //   size: 40,
+                // ),
+                Text('Tap here to add blog post header image')
+              ],
+            ),
+          ),
+        ),
+      );
     }
   }
 
+  bool showSubmitButton() {
+    return _imageFile != null &&
+        blogTitleCtrl.text.isNotEmpty &&
+        _quillBodyTextController.document.toPlainText().length > 10;
+  }
+
   Widget getHeaderVideo() {
+    bool videoFromServer = _videoFile!.startsWith('http');
+
     if (_videoFile != null) {
-      if (_videoFile!.startsWith('http')) {
-        return Chewie(
-          titleName: widget.userPost!.title,
-          posterUrl: widget.userPost!.image,
-          controller: _chewieMainController!,
+      if (!videoFromServer) {
+        var mainVideoController = VideoPlayerController.file(File(_videoFile!));
+
+        pickedVideoChewieMainController = ChewieController(
+          videoPlayerController: mainVideoController,
+          aspectRatio: 16 / 9,
+          allowedScreenSleep: false,
+          allowFullScreen: false,
+          deviceOrientationsAfterFullScreen: [
+            DeviceOrientation.portraitUp,
+            DeviceOrientation.portraitDown,
+          ],
+          systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+          materialProgressColors: ChewieProgressColors(
+            playedColor: navyBlue,
+            handleColor: Colors.white,
+            backgroundColor: dividerColor,
+            bufferedColor: Colors.white30,
+          ),
+          autoInitialize: true,
         );
       }
-
-      var mainVideoController = VideoPlayerController.file(File(_videoFile!));
-
-      var chewieMainController = ChewieController(
-        videoPlayerController: mainVideoController,
-        aspectRatio: 16 / 9,
-        allowedScreenSleep: false,
-        allowFullScreen: false,
-        deviceOrientationsAfterFullScreen: [
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ],
-        systemOverlaysAfterFullScreen: SystemUiOverlay.values,
-        materialProgressColors: ChewieProgressColors(
-          playedColor: navyBlue,
-          handleColor: Colors.white,
-          backgroundColor: dividerColor,
-          bufferedColor: Colors.white30,
-        ),
-        autoInitialize: true,
-      );
-
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Chewie(
-          posterUrl: _imageFile,
-          controller: chewieMainController,
-        ),
-      );
-    } else {
-      return SizedBox.shrink();
     }
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Chewie(
+            titleName: videoFromServer ? widget.userPost!.title : '',
+            posterUrl: videoFromServer ? widget.userPost!.image : _imageFile,
+            controller: videoFromServer
+                ? videoFromServerChewieMainController!
+                : pickedVideoChewieMainController!,
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            showDialogBox(
+              context: context,
+              title: 'Delete your video',
+              actionTwoTextColor: white,
+              actionTwoBgColor: mateRed,
+              actionOneTextColor: blackFont,
+              actionOneBgColor: greyBorderColor,
+              actionOneText: AppLocalization.of(context)!.cancel,
+              actionTwoText: AppLocalization.of(context)!.delete,
+              description: 'Are you sure you want to delete your video?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                width: 90,
+                height: 90,
+                enableMargin: false,
+                image: Icon(SlydoAppIcon.remove),
+              ),
+              rightButtonOnPressed: () {
+                if (videoFromServer) {
+                  videoFromServerChewieMainController?.pause();
+                } else {
+                  pickedVideoChewieMainController?.pause();
+                }
+                setState(() => _videoFile = null);
+              },
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              child: Icon(Icons.close, color: Colors.red, size: 25),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget getTextEditorWidget() {
@@ -636,10 +722,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         showMoreOptions = !showMoreOptions;
         if (showMoreOptions == true) {
           titleFocusNode.unfocus();
+          headerMediaIsVisible = false;
           textEditorTextFieldFocusNode.unfocus();
         } else {
           editorIsVisible = true;
-          imageIsVisible = true;
+          headerMediaIsVisible = true;
         }
         if (mounted) setState(() {});
       },
@@ -804,13 +891,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   void _initializeFocusNodes() {
+    bool shouldSetStateForBlogTitle = false;
+    bool shouldSetStateForBlogMainText = false;
     titleFocusNode = FocusNode();
     textFieldTagFocusNode = FocusNode();
     textEditorTextFieldFocusNode = FocusNode();
+
     textFieldTagFocusNode.addListener(() {
       if (textFieldTagFocusNode.hasFocus) {
         setState(() {
-          imageIsVisible = false;
           editorIsVisible = false;
         });
       }
@@ -828,6 +917,37 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         setState(() {
           editorIsVisible = true;
           showMoreOptions = false;
+          showAddInlineMediaIcon = true;
+        });
+      } else {
+        setState(() {
+          showAddInlineMediaIcon = false;
+        });
+      }
+    });
+    blogTitleCtrl.addListener(() {
+      if (blogTitleCtrl.text.isNotEmpty) {
+        if (shouldSetStateForBlogTitle == true) {
+          setState(() {
+            shouldSetStateForBlogTitle = false;
+          });
+        }
+      } else {
+        setState(() {
+          shouldSetStateForBlogTitle = true;
+        });
+      }
+    });
+    _quillBodyTextController.addListener(() {
+      if (_quillBodyTextController.document.toPlainText().length > 10) {
+        if (shouldSetStateForBlogMainText == true) {
+          setState(() {
+            shouldSetStateForBlogMainText = false;
+          });
+        }
+      } else {
+        setState(() {
+          shouldSetStateForBlogMainText = true;
         });
       }
     });
@@ -838,11 +958,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       context: context,
       actionOneText: 'VIDEO',
       actionTwoText: 'IMAGE',
-      title: 'Choose your file',
+      title: 'Add media',
+      description: 'Insert an inline image/video to add to the blog content',
       actionOneBgColor: navyBlue,
       actionTwoBgColor: navyBlue,
+      isOverlayTapDismiss: true,
       actionOneTextColor: Colors.white,
       actionTwoTextColor: Colors.white,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Icon(SlydoAppIcon.add, color: navyBlue),
+      ),
       leftButtonOnPressed: () {
         _pickBlogVideo(
           videoPickedCallBack: (videoPicked) =>

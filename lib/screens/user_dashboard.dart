@@ -10,7 +10,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
