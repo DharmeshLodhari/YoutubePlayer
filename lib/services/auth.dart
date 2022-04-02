@@ -21,6 +21,9 @@ import 'package:uuid/uuid.dart';
 import 'device_info.dart';
 
 class AuthService {
+  static int authCallCount = 0;
+  static int authCallLimit = 5;
+
   final Duration timeOutDuration = Duration(seconds: 4);
   final String timeOutErrorMessage = "Server Time-out !!";
 
@@ -106,7 +109,6 @@ class AuthService {
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     try {
-      // Save user to database
       var jsonData = jsonDecode(response.body);
 
       if (jsonData["detail"] != null) {
@@ -176,6 +178,13 @@ class AuthService {
   // we are logging out that user to get a fresh token
   Future<Jwt> fetchNewToken() async {
     debugPrint("Token Expired getting new one");
+
+    authCallCount++;
+    if (authCallCount > authCallLimit) {
+      debugPrint("Logging out the user due to not able to fetch token");
+      await LogoutHelper().logoutUser();
+    }
+
     User? _user = await _db.getUser();
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -196,15 +205,22 @@ class AuthService {
       password = _user?.password ?? "";
     }
 
-    await authenticate(phoneNumber, password).catchError((error) async {
+    try {
+      await authenticate(phoneNumber, password);
+    } catch (error) {
       debugPrint("ERROR:- while fetching new Token $error");
-      await LogoutHelper().logoutUser();
-    });
+      await Future.delayed(Duration(milliseconds: 800));
+      fetchNewToken();
+    }
+
     Jwt? jwt = await _db.getJwt(); // get new token now
 
     if (jwt == null) {
-      await LogoutHelper().logoutUser();
+      debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
+      await Future.delayed(Duration(milliseconds: 800));
+      fetchNewToken();
     }
+    authCallCount = 0;
     return jwt!;
   }
 

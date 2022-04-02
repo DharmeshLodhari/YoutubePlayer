@@ -104,7 +104,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       blogBodyTextJson = jsonDecode(userPost.text!);
       _quillController = flutterQuill.QuillController(
           document: flutterQuill.Document.fromJson(blogBodyTextJson),
-          selection: TextSelection.collapsed(offset: -1));
+          selection: TextSelection.collapsed(offset: 0));
     } catch (e) {
       print('CANNOT DECODE BLOG TEXT: ${e.toString()}');
     }

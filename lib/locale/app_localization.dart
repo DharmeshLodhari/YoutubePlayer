@@ -2375,7 +2375,7 @@ class AppLocalization {
 
   String get createPost {
     return Intl.message(
-      "Create post",
+      "Create Post",
       name: "createPost",
     );
   }
