@@ -5,7 +5,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -173,13 +172,9 @@ class _SearchModuleState extends State<SearchModule> {
       appBar: appBar() as PreferredSizeWidget?,
       body: Column(
         children: [
-          SizedBox(
-            height: 6,
-          ),
+          SizedBox(height: 6),
           searchBox(),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
             child: _buildResultList(),
           ),

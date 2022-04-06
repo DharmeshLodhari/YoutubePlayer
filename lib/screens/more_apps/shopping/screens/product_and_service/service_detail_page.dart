@@ -618,9 +618,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             ),
           ],
         ),
-        SizedBox(
-          height: 12,
-        ),
+        SizedBox(height: 12),
         reviewList.length == 0
             ? Container(
                 height: 200,
@@ -703,9 +701,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             ),
           ),
         ),
-        SizedBox(
-          height: 16,
-        ),
+        SizedBox(height: 16),
       ],
     );
   }

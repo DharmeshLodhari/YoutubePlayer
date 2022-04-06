@@ -179,9 +179,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               isLoading
                   ? Expanded(
                       child: Center(

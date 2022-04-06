@@ -17,12 +17,12 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../user_auth.dart';
 
-class BlockList extends StatefulWidget {
+class BlockedList extends StatefulWidget {
   @override
-  _BlockListState createState() => _BlockListState();
+  _BlockedListState createState() => _BlockedListState();
 }
 
-class _BlockListState extends State<BlockList> {
+class _BlockedListState extends State<BlockedList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
       new GlobalKey<ScaffoldState>();
   SlidableController? _slideController;

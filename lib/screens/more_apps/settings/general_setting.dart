@@ -4,6 +4,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/logout_helper.dart';
@@ -18,6 +19,8 @@ import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../payment_and_banking/screens/banking/user_kyc.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
   @override
@@ -129,9 +132,35 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                       }
                     }),
                 getSettingTile(
-                  title: "Upgrade Account Tier",
+                  title: "Upgrade Account Tier/KYC",
                   onTap: () async {
-                    Navigator.pushNamed(context, '/upgrade-account');
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            Center(child: LoadingIndicator()));
+                    PaymentAndBankingAuth()
+                        .checkIfKycIsVerified(userName: userBloc.user.userName!)
+                        .then(
+                      (kycModel) {
+                        Navigator.pop(context);
+
+                        if (kycModel != null) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UserKyc(kycModel: kycModel),
+                            ),
+                          );
+                        } else {
+                          Navigator.pushNamed(context, '/upgrade-account');
+                        }
+                      },
+                    ).catchError(
+                      (e) {
+                        Navigator.pop(context);
+                        showToast(message: e.toString());
+                      },
+                    );
                   },
                 ),
                 getLogoutTile(),

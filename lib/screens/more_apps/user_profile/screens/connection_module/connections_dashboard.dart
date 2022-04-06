@@ -232,7 +232,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       children: [
         ConnectionList(),
         ConnectionRequestList(),
-        BlockList(),
+        BlockedList(),
       ],
     );
   }

@@ -149,6 +149,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
+import '../screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -694,6 +695,14 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
+      // case '/user-kyc':
+      //   return PageTransition(
+      //     child: UserKyc(),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
 
       case '/add-money-to-slydo-one':
         return PageTransition(

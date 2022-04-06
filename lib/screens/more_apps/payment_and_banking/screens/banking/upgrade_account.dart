@@ -67,6 +67,10 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 16),
+                Text(
+                    'You are seeing this page because your KYC is not done yet'),
+                SizedBox(height: 12),
+
                 // getTierSelection(),
                 getTierDropDown(),
                 SizedBox(height: 16),
@@ -197,7 +201,7 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
     return CurvedButton(
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Update",
+      text: "Next",
       onPressed: () {
         Navigator.of(context).pushNamed("/add-bvn-number", arguments: {
           "account": virtualAccount,

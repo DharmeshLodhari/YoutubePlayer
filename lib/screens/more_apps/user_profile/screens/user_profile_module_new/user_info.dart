@@ -157,7 +157,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget _buildProductList() {
     return Container(
-      height: 220,
+      height: 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -189,9 +189,7 @@ class _UserInfoState extends State<UserInfo> {
               ],
             ),
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -210,7 +208,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget _buildServiceList() {
     return Container(
-      height: 220,
+      height: 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -294,7 +292,7 @@ class _UserInfoState extends State<UserInfo> {
     if (widget.user!.userAbout!.address.isNotEmpty) {
       list.addAll([
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             RoundedBackgroundIcon(
               height: 32,
@@ -306,9 +304,7 @@ class _UserInfoState extends State<UserInfo> {
                 size: 14,
               ),
             ),
-            SizedBox(
-              width: 12,
-            ),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 widget.user!.userAbout!.address,

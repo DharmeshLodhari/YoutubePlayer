@@ -193,9 +193,7 @@ class _ConnectionListState extends State<ConnectionList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            height: 8,
-          ),
+          SizedBox(height: 8),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
@@ -316,10 +314,7 @@ class _ConnectionListState extends State<ConnectionList> {
   Widget _buildConnectionsList() {
     try {
       return _connectionListBloc.connectionUsers.length == 0
-          ? NoItemInList(
-              msg: "No contact found !!",
-              isResult: true,
-            )
+          ? NoItemInList(msg: "No contact found !!", isResult: true)
           : ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar

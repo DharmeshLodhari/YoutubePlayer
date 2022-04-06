@@ -119,9 +119,7 @@ class _AddReviewState extends State<AddReview> {
                       height: 20,
                     ),
                     _buildWriteUserReview(),
-                    SizedBox(
-                      height: 5,
-                    ),
+                    SizedBox(height: 5),
                   ],
                 ),
               ),
@@ -183,25 +181,17 @@ class _AddReviewState extends State<AddReview> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: 10,
-                    ),
+                    SizedBox(height: 10),
                     _buildRatingBar(),
-                    SizedBox(
-                      height: 32,
-                    ),
+                    SizedBox(height: 32),
                     _buildWriteReviewTextField(),
-                    SizedBox(
-                      height: 16,
-                    ),
+                    SizedBox(height: 16),
                   ],
                 ),
               ),
             ),
           ),
-          SizedBox(
-            height: 30,
-          ),
+          SizedBox(height: 30),
           CurvedButton(
             onPressed: onButtonTap,
             text: "Submit",
@@ -213,25 +203,12 @@ class _AddReviewState extends State<AddReview> {
   }
 
   Widget _buildRatingBar() {
-    return Center(
-      child: RatingBar.builder(
-        initialRating: 0,
-        minRating: 1,
-        direction: Axis.horizontal,
-        allowHalfRating: false,
-        itemCount: 5,
-        itemPadding: EdgeInsets.symmetric(horizontal: 8),
-        itemBuilder: (context, _) => Icon(
-          SlydoAppIcon.star,
-          color: starYellow,
-        ),
-        onRatingUpdate: (rate) {
-          rating = rate.floor();
-        },
-        unratedColor: starYellow.withOpacity(0.2),
-        glowColor: starYellow.withOpacity(0.2),
-      ),
-    );
+    return Center(child: getClickableRatingBar(
+      initialRating: 0,
+      onRatingUpdate: (rate) {
+        rating = rate.floor();
+      },
+    ));
   }
 
   Widget _buildWriteReviewTextField() {

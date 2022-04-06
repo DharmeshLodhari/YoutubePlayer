@@ -102,9 +102,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
     // Try if blog text is decodable, if it isn't the try blog won't run.
     try {
       blogBodyTextJson = jsonDecode(userPost.text!);
+
       _quillController = flutterQuill.QuillController(
-          document: flutterQuill.Document.fromJson(blogBodyTextJson),
-          selection: TextSelection.collapsed(offset: 0));
+        document: flutterQuill.Document.fromJson(blogBodyTextJson),
+        selection: TextSelection.collapsed(offset: -1),
+      );
     } catch (e) {
       print('CANNOT DECODE BLOG TEXT: ${e.toString()}');
     }

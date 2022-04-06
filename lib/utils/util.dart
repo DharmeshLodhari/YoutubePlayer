@@ -10,6 +10,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +18,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../locale/app_localization.dart';
+import '../screens/more_apps/messaging/chat/utils.dart';
+import '../screens/more_apps/payment_and_banking/models/transactions.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
@@ -254,6 +257,34 @@ void androidBottomSheet(
         ),
       );
     },
+  );
+}
+
+Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
+    {Transaction? transaction, Widget? trailingWidget}) {
+  debugPrint("==>$subtitle");
+  return Container(
+    child: ListTile(
+      dense: true,
+      leading: RoundedBackgroundIcon(
+        icon: Icon(icon, color: blackFont, size: 18),
+        backgroundColor: iconBtnGrey,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+            fontWeight: FontWeight.w600, color: blackFont, fontSize: 14),
+      ),
+      subtitle: Text(
+        getCurrency(subtitle, transaction?.currency),
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 14,
+          fontFamily: "roberto",
+        ),
+      ),
+      trailing: trailingWidget,
+    ),
   );
 }
 
@@ -731,6 +762,24 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
   }
 }
 
+Widget getClickableRatingBar({required double initialRating, required Function(double) onRatingUpdate}) {
+  return RatingBar.builder(
+    initialRating: initialRating,
+    minRating: 1,
+    direction: Axis.horizontal,
+    allowHalfRating: false,
+    itemCount: 5,
+    itemPadding: EdgeInsets.symmetric(horizontal: 8),
+    itemBuilder: (context, _) => Icon(
+      SlydoAppIcon.star,
+      color: starYellow,
+    ),
+    onRatingUpdate: onRatingUpdate,
+    unratedColor: greyBorderColor,
+    glowColor: greyBorderColor,
+  );
+}
+
 Widget getRating({required int? numberOfRating}) {
   List<Widget> widgets = [];
 
@@ -753,6 +802,6 @@ Color getRatingColor(int? numberOfRating, int i) {
   return numberOfRating != null
       ? numberOfRating >= i
           ? starYellow
-          : Colors.grey
+          : greyBorderColor
       : Colors.grey;
 }

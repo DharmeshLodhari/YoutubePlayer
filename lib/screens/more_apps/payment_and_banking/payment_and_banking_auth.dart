@@ -4,6 +4,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/kyc_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
@@ -80,9 +81,7 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<String?> verifyOtp(
-    String otp,
-  ) async {
+  Future<String?> verifyOtp(String otp) async {
     var url = AppConfig.baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
@@ -730,6 +729,22 @@ class PaymentAndBankingAuth extends AuthService {
       return true;
     } else if (response.statusCode == 400) {
       return Future.error(jsonDecode(response.body)["error"]);
+    } else {
+      return Future.error(jsonDecode(response.body));
+    }
+  }
+
+  Future<KycModel?> checkIfKycIsVerified({required String userName}) async {
+    var url = AppConfig.baseUrl + "/api/v1/user/kyc/$userName";
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+    print('URL RESPONSE ----> ${response.statusCode}');
+    print('URL RESPONSE ----> ${response.body}');
+    if (response.statusCode == 200) {
+      return KycModel.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      return null;
     } else {
       return Future.error(jsonDecode(response.body));
     }

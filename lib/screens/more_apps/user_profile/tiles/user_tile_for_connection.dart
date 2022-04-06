@@ -80,10 +80,13 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
 
     avatarImage = GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/profile",
-            arguments: {"searchedUserName": widget.user!.userName});
-        // Navigator.of(context)
-        //     .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
+        if (widget.user!.isGroupConversation!) {
+          Navigator.of(context)
+              .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
+        } else {
+          Navigator.of(context).pushNamed("/profile",
+              arguments: {"searchedUserName": widget.user!.userName});
+        }
       },
       child: Container(
           height: 48,

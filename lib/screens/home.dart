@@ -206,10 +206,7 @@ class _HomeState extends State<Home> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      SlydoAppIcon.search,
-                      size: 16,
-                    ),
+                    child: Icon(SlydoAppIcon.search, size: 16),
                   ),
                   onTap: () async {
                     await Navigator.of(context).pushNamed('/search-module');
