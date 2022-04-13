@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
+import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,9 +37,11 @@ import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 class PostDetailPage extends StatefulWidget {
   final String? postId;
   final PostType postType;
+  final Function? onDeleteBlog;
 
   const PostDetailPage({
     Key? key,
+    this.onDeleteBlog,
     required this.postId,
     required this.postType,
   }) : super(key: key);
@@ -63,7 +66,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   late flutterQuill.QuillController _quillController;
 
   UserPost? userPost;
-  late Future<UserPost> getPostFuture;
+  late Future<UserPost?> getPostFuture;
 
   @override
   void initState() {
@@ -182,7 +185,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      appBar: appBar() as PreferredSizeWidget?,
+      appBar: appBar(),
       body: scaffoldBody(),
     );
   }
@@ -190,7 +193,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Widget scaffoldBody() {
     return FutureBuilder(
       future: getPostFuture,
-      builder: (context, AsyncSnapshot<UserPost> snapshot) {
+      builder: (context, AsyncSnapshot<UserPost?> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
             userPost = snapshot.data!;
@@ -254,7 +257,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
               newsListRelatedPostItems: newsDetailItem.newsListItems,
             );
           } else {
-            return Center(child: Text('There is no data at the moment.'));
+            Navigator.pop(context);
+            showToast(message: 'Blog post no longer exist');
+            return Container(color: Colors.white);
           }
         } else {
           return Center(child: CircularLoadingIndicator());
@@ -294,7 +299,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     }
   }
 
-  Widget appBar() {
+  AppBar appBar() {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
@@ -439,7 +444,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 image: Image.asset('assets/images/delete_dialog_icon.png'),
               ),
               leftButtonOnPressed: () {
-                _deleteBlogPost(blogId: userPost!.id!);
+                UserPostUtils.deleteBlogPost(
+                    onDeleteBlog: () {
+                      Navigator.pop(context);
+                      widget.onDeleteBlog!();
+                    },
+                    blogId: userPost!.id!,
+                    context: context);
               },
             );
           },
@@ -455,15 +466,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    UserPost itemData = userPost!;
-
     listOfRecipient.forEach((recipient) {
-      addUserPostToChat(itemData: itemData, recipientUser: recipient!);
+      addUserPostToChat(recipientUser: recipient!);
     });
   }
 
   addUserPostToChat({
-    required UserPost itemData,
     required ChatConversation recipientUser,
     String? url,
   }) async {
@@ -501,27 +509,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
-  }
-
-  void _deleteBlogPost({required String blogId}) {
-    showDialog(
-        context: context,
-        builder: (dialogLoadingContext) => LoadingIndicator());
-
-    UserPostAuth().deleteBlog(blogId: blogId).then(
-      (deleted) {
-        Navigator.pop(context); // Dismiss loading indicator
-
-        if (deleted) {
-          Navigator.pop(context); // Dismiss user post detail page
-          showToast(message: 'Post Deleted');
-        } else {
-          showToast(message: 'Something went wrong, please try again');
-        }
-      },
-    ).catchError((e) {
-      print('DELETE BLOG POST CATCH ERROR: $e');
-    });
   }
 }
 
@@ -874,6 +861,7 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: PostTile(
+                        onDeleteBlog: () {},
                         post: snapShot.data!.reversed.toList()[index],
                       ),
                     );

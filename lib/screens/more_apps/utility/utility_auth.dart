@@ -1,0 +1,195 @@
+import 'dart:convert';
+import 'package:Slydo/screens/more_apps/utility/models/BillPaymentModel.dart';
+import 'package:Slydo/screens/more_apps/utility/models/provider_details_model.dart';
+
+import 'models/provider_model.dart';
+
+import 'package:Slydo/services/auth.dart';
+import 'package:Slydo/utils/util.dart';
+
+import '../../../data/environment.dart';
+import '../../../utils/enums.dart';
+
+class UtilityAuth extends AuthService {
+  Future<Map<String, dynamic>?> getUtilityProviderList(
+      String? next, String? previous,
+      {required UtilitiesProvidersEnum providerEnum}) async {
+    String utilitiesProvider = enumToString(providerEnum);
+
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/utilities/providers/?category=$utilitiesProvider";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<ProviderModel> providerModelList = [];
+
+      var jsonData = json.decode(response.body);
+
+      List providerListResults = jsonData['results'];
+
+      providerListResults.forEach((json) {
+        ProviderModel providerModel = ProviderModel.fromJson(json);
+        providerModelList.add(providerModel);
+      });
+
+      Map<String, dynamic> result = {
+        "next": jsonData["next"],
+        "count": jsonData["count"],
+        "results": providerModelList,
+        "previous": jsonData["previous"],
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
+    }
+  }
+
+  Future<List<ProviderDetailsModel>> getUtilityProviderDetails(
+      {required String providerId}) async {
+    String url = AppConfig.baseUrl + "/api/v1/utilities/providers/$providerId/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    print('provider detials response ::: ${response.body}');
+
+    if (response.statusCode == 200) {
+      List providerProduct = jsonDecode(response.body)['products'];
+      List<ProviderDetailsModel> providerDetailsModelList = providerProduct
+          .map((json) => ProviderDetailsModel.fromJson(json))
+          .toList();
+      return providerDetailsModelList;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUtilityTransactions(
+      String? next, String? previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/utilities/transactions/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    print('HISTORY ;::: ${response.body}');
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      Map<String, dynamic> result = {
+        "next": jsonData["next"],
+        "count": jsonData["count"],
+        "results": [
+          {
+            "id": "1",
+            "status": "success",
+            "customer_username": "JoeSmith",
+            "created_at": "2022-04-07T19:37:40.995316Z",
+            "product_id": "5"
+          },
+          {
+            "id": "1",
+            "status": "success",
+            "customer_username": "JoeSmith",
+            "created_at": "2022-04-07T19:37:40.995316Z",
+            "product_id": "5"
+          }
+        ],
+        // "results": jsonData['results'],
+        "previous": jsonData["previous"],
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      throw json.decode(response.body);
+    }
+  }
+
+  Future<Map<String, dynamic>> getUtilityTransactionsDetails(
+      {required String transactionsId}) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/utilities/transactions/$transactionsId/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    print('RESPONSE ::: ${response.statusCode}');
+    return {};
+  }
+
+  Future<String?> verifyCustomerReferenceNumber({
+    required String productId,
+    required String providerId,
+    required String customerRefNum,
+  }) async {
+    String url = AppConfig.baseUrl + "/api/v1/utilities/ref-number-lookup/";
+
+    // var data = {
+    //   "product_id": productId,
+    //   "provider_id": providerId,
+    //   "customer_ref_num": customerRefNum,
+    // };
+
+    // print('data ----> $data');
+
+    var data = {
+      "customer_ref_num": '0105498919',
+      "product_id": "e5743eed-769b-484f-8545-6e9fdb61a016",
+      "provider_id": "b8783924-dbb9-413e-99d3-c504cb4dead5"
+    };
+    var _body = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _body);
+
+    print('VERIFY REFERENCE RESPONSE ::: ${response.body}');
+    return 'a';
+    if (response.statusCode == 200) {
+      // return jsonDecode(response.body)['customer_id'];
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool> payUtilityBill(
+      {required BillPaymentModel billPaymentModel}) async {
+    String url = AppConfig.baseUrl + "/api/v1/utilities/payment/";
+
+    Map<String, dynamic> data = billPaymentModel.toJson();
+
+    // var data = {
+    //   "amount": 1000,
+    //   "customer_ref_num": '0105498919',
+    //   "product_id": "e5743eed-769b-484f-8545-6e9fdb61a016",
+    //   "customer_id": "ed448481-9d61-41ce-a480-a5fa4bf1b613",
+    //   "provider_id": "b8783924-dbb9-413e-99d3-c504cb4dead5",
+    // };
+    var _body = jsonEncode(data);
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers, body: _body);
+
+    print('PAYMENT RESPONSE ::: ${response.body}');
+
+    return true;
+  }
+}

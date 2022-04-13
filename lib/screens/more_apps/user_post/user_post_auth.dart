@@ -60,7 +60,7 @@ class UserPostAuth extends AuthService {
     }
   }
 
-  Future<UserPost> getPost({required String postID}) async {
+  Future<UserPost?> getPost({required String postID}) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/$postID/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -69,6 +69,8 @@ class UserPostAuth extends AuthService {
 
     if (response.statusCode == 200) {
       return UserPost.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      return null;
     } else {
       return Future.error("${response.body}");
     }
@@ -121,44 +123,10 @@ class UserPostAuth extends AuthService {
     required String title,
     bool isPublic = false,
     String? publishedDate,
-    required File blogImage,
+    File? blogImage,
     bool isPublished = false,
     bool enableLikes = false,
     required bool isUpdating,
-    List<String>? inLineMediaIds,
-    required String blogPostBody,
-    bool enableCommenting = false,
-    required String authorUserName,
-  }) async {
-    return _postBlogWithMedia(
-      tags: tags,
-      title: title,
-      blogId: blogId,
-      isPublic: isPublic,
-      blogImage: blogImage,
-      blogVideo: blogVideo,
-      isUpdating: isUpdating,
-      isPublished: isPublished,
-      enableLikes: enableLikes,
-      blogPostBody: blogPostBody,
-      publishedDate: publishedDate,
-      authorUserName: authorUserName,
-      enableCommenting: enableCommenting,
-      inLineMediaIds: inLineMediaIds,
-    );
-  }
-
-  Future<bool> _postBlogWithMedia({
-    String? blogId,
-    File? blogVideo,
-    List<String>? tags,
-    required String title,
-    bool isPublic = false,
-    String? publishedDate,
-    required File blogImage,
-    bool isUpdating = false,
-    bool isPublished = false,
-    bool enableLikes = false,
     List<String>? inLineMediaIds,
     required String blogPostBody,
     bool enableCommenting = false,
@@ -176,19 +144,19 @@ class UserPostAuth extends AuthService {
     var request =
         http.MultipartRequest(isUpdating ? "PATCH" : "POST", Uri.parse(url));
 
-    blogImagePath = blogImage.path;
+    if (blogImage != null) {
+      blogImagePath = blogImage.path;
+      imageMultipartFile =
+          await http.MultipartFile.fromPath("image", blogImagePath);
 
-    imageMultipartFile =
-        await http.MultipartFile.fromPath("image", blogImagePath);
-
-    request.files.add(imageMultipartFile);
+      request.files.add(imageMultipartFile);
+    }
 
     if (blogVideo != null) {
       blogVideoPath = blogVideo.path;
       videoMultipartFile =
           await http.MultipartFile.fromPath("video", blogVideoPath);
       request.files.add(videoMultipartFile);
-
     }
 
     //add fields

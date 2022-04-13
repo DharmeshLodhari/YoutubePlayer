@@ -104,6 +104,7 @@ class _LatestNewsListState extends State<LatestNewsList> {
                                     .push(MaterialPageRoute(builder: (context) {
                                   return PostDetailPage(
                                     postId: '',
+                                    onDeleteBlog: () {},
                                     postType: PostType.news,
                                   );
                                 }));

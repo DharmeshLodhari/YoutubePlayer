@@ -1,9 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../utils/util.dart';
+import 'LoadingIndicator.dart';
 
 typedef Widget? BuildCounterWidget(
     int? currentLength, int? maxLength, bool? isFocused);
@@ -39,7 +44,16 @@ class CustomizedTextFormField extends StatefulWidget {
   bool showLabelOrPassword;
   TextCapitalization textCapitalization;
 
+  Future<bool>? Function()? verifyInputFromServerFunc;
+  bool? Function(String val)? verifyInputFromServerValidation;
+  Function? extraFunctionWhenInputWasVerifiedFromServerSuccessfully;
+  Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
+
   CustomizedTextFormField({
+    this.verifyInputFromServerFunc,
+    this.verifyInputFromServerValidation,
+    this.extraFunctionWhenInputWasVerifiedFromServerSuccessfully,
+    this.extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully,
     this.suffixIcon,
     this.hasBorder = true,
     this.hasLabel = true,
@@ -76,6 +90,9 @@ class CustomizedTextFormField extends StatefulWidget {
 }
 
 class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
+  bool verifyingInput = false;
+  bool? inputVerified;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -146,20 +163,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               fontSize: 16,
               fontWeight: FontWeight.w400,
             ),
-            suffixIcon: widget.suffixIcon != null
-                ? widget.suffixIcon
-                : widget.isPassword
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.remove_red_eye,
-                          color: widget.obscureText ? darkGrey : navyBlue,
-                        ),
-                        onPressed: () {
-                          widget.obscureText = !widget.obscureText;
-                          setState(() {});
-                        },
-                      )
-                    : null,
+            suffixIcon: _getSuffixIcon(),
             prefix: Padding(
               padding: EdgeInsets.only(left: widget.isAmount ? 8 : 16),
             ),
@@ -246,6 +250,12 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           maxLines: widget.maxLines,
           focusNode: widget.focusNode != null ? widget.focusNode : null,
           onChanged: (val) {
+            if (widget.verifyInputFromServerValidation != null) {
+              if (widget.verifyInputFromServerValidation!(val) == true) {
+                _verifyInputFromServer();
+              }
+            }
+
             if (widget.onChanged != null) widget.onChanged!(val);
             setState(() {});
           },
@@ -265,5 +275,76 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           : TextInputType.number;
     }
     return textInputType;
+  }
+
+  Future _verifyInputFromServer() async {
+    setState(() => verifyingInput = true);
+
+    bool? verifyInputFromServerFunc = await widget.verifyInputFromServerFunc!();
+    if (verifyInputFromServerFunc == true) {
+      setState(() {
+        inputVerified = true;
+        verifyingInput = false;
+      });
+      widget.extraFunctionWhenInputWasVerifiedFromServerSuccessfully!();
+    } else {
+      setState(() {
+        inputVerified = false;
+        verifyingInput = false;
+      });
+      widget.extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully!();
+    }
+  }
+
+  // widget.suffixIcon != null
+  // ? widget.suffixIcon
+  //     : widget.isPassword
+  // ? IconButton(
+  // icon: Icon(
+  // Icons.remove_red_eye,
+  // color: widget.obscureText ? darkGrey : navyBlue,
+  // ),
+  // onPressed: () {
+  // widget.obscureText = !widget.obscureText;
+  // setState(() {});
+  // },
+  // )
+  //     : null,
+
+  Widget? _getSuffixIcon() {
+    if (widget.suffixIcon != null) {
+      return widget.suffixIcon;
+    } else if (widget.isPassword) {
+      return IconButton(
+        icon: Icon(
+          Icons.remove_red_eye,
+          color: widget.obscureText ? darkGrey : navyBlue,
+        ),
+        onPressed: () {
+          widget.obscureText = !widget.obscureText;
+          setState(() {});
+        },
+      );
+    } else if (verifyingInput) {
+      return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: CircularLoadingIndicator(),
+      );
+    } else if (inputVerified != null) {
+      if (inputVerified!) {
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CircleAvatar(
+            radius: 14,
+            backgroundColor: navyBlue,
+            child: Icon(Icons.check, size: 20, color: Colors.white),
+          ),
+        );
+      } else {
+        return Icon(Icons.cancel, color: Colors.red);
+      }
+    } else {
+      return SizedBox.shrink();
+    }
   }
 }

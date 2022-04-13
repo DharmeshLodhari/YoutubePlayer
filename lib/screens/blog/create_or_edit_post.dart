@@ -102,9 +102,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     _imageFile = widget.userPost!.image;
     _videoFile = widget.userPost!.video;
 
-    if (_imageFile != null && _imageFile!.startsWith('https')) {
-      urlToFile(_imageFile!);
-    }
     if (_videoFile != null) {
       _mainVideoController = VideoPlayerController.network(_videoFile!);
 
@@ -420,40 +417,54 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   void submitBlogPost() async {
-    print('TITLE :::: ${blogTitleCtrl.text.length}');
     if (formKey.currentState!.validate()) {
-      if (_quillBodyTextController.document.toPlainText().length > 1 ||
-          widget.userPost != null) {
-        if (_imageFile != null) {
-          showDialogBox(
-            context: context,
-            actionOneTextColor: blackFont,
-            actionTwoBgColor: naturalGreen,
-            actionTwoTextColor: Colors.white,
-            actionOneBgColor: greyBorderColor,
-            title: AppLocalization.of(context)!.post,
-            actionTwoText: AppLocalization.of(context)!.post,
-            actionOneText: AppLocalization.of(context)!.notNow,
-            description: 'Are you sure you want to post\nyour content now?',
-            roundedBackgroundIcon: RoundedBackgroundIcon(
-              enableMargin: false,
-              width: 90,
-              height: 90,
-              image: Image.asset('assets/images/accept_dialog_icon.png'),
-            ),
-            rightButtonOnPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (dialogLoadingContext) => LoadingIndicator());
-              createOrUpdateBlogPost();
-            },
-          );
-        } else {
-          showToast(message: 'Pick an image');
-        }
+      showDialogBox(
+        context: context,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: naturalGreen,
+        actionTwoTextColor: Colors.white,
+        actionOneBgColor: greyBorderColor,
+        title: AppLocalization.of(context)!.post,
+        actionTwoText: AppLocalization.of(context)!.post,
+        actionOneText: AppLocalization.of(context)!.notNow,
+        description: 'Are you sure you want to post\nyour content now?',
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          enableMargin: false,
+          width: 90,
+          height: 90,
+          image: Image.asset('assets/images/accept_dialog_icon.png'),
+        ),
+        rightButtonOnPressed: () {
+          showDialog(
+              context: context,
+              builder: (dialogLoadingContext) => LoadingIndicator());
+          createOrUpdateBlogPost();
+        },
+      );
+    }
+  }
+
+  File? getVideoFileToUpload() {
+    if (_videoFile != null) {
+      if (_videoFile!.startsWith('http')) {
+        return null;
       } else {
-        showToast(message: 'Blog must have a body');
+        return File(_videoFile!);
       }
+    } else {
+      return null;
+    }
+  }
+
+  File? getImageFileToUpload() {
+    if (_imageFile != null) {
+      if (_imageFile!.startsWith('http')) {
+        return null;
+      } else {
+        return File(_imageFile!);
+      }
+    } else {
+      return null;
     }
   }
 
@@ -467,16 +478,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       isPublished: isPublished,
       enableLikes: enableLikes,
       title: blogTitleCtrl.text,
-      blogImage: File(_imageFile!),
       isUpdating: _userUpdatingPost,
+      blogImage: getImageFileToUpload(),
+      blogVideo: getVideoFileToUpload(),
       enableCommenting: enableCommenting,
       inLineMediaIds: blogPostInlineMediaIds,
       authorUserName: userBloc.user.userName!,
       publishedDate: publishedDateTime.toString(),
-      blogVideo: _videoFile != null ? File(_videoFile!) : null,
-      blogPostBody: _quillBodyTextController.document.toPlainText().length < 1
-          ? widget.userPost!.text!
-          : jsonEncode(_quillBodyTextController.document.toDelta().toJson()),
+      blogPostBody:
+          jsonEncode(_quillBodyTextController.document.toDelta().toJson()),
     )
         .then(
       (posted) {
@@ -500,23 +510,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               message:
                   'You already have a similar post with the same title or tagline.');
         } else {
+          print('VIDEO FILE :::: $_videoFile');
           showToast(message: error.toString());
         }
       },
     );
   }
 
-  Future<File> urlToFile(String imageUrl) async {
-    var rng = new Random();
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path;
-    File file = new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
-    http.Response response = await http.get(Uri.parse(imageUrl));
-    await file.writeAsBytes(response.bodyBytes);
-
-    _imageFile = file.path;
-    return file;
-  }
+  // Future<File> urlToFile(String imageUrl) async {
+  //   var rng = new Random();
+  //   Directory tempDir = await getTemporaryDirectory();
+  //   String tempPath = tempDir.path;
+  //   File file = new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
+  //   http.Response response = await http.get(Uri.parse(imageUrl));
+  //   await file.writeAsBytes(response.bodyBytes);
+  //
+  //   _imageFile = file.path;
+  //   return file;
+  // }
 
   _pickBlogImage({Function(String image)? imagePickedCallBack}) async {
     String? croppedImage = await getFile(context);

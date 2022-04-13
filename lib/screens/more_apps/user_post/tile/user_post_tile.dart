@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
+import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
 import 'package:Slydo/utils/enums.dart';
@@ -11,15 +12,27 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../../locale/app_localization.dart';
+import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/video_player_controller/chewie_player.dart';
+import '../../../../widget/bottom_sheet_item.dart';
+import '../../../../widget/dialog.dart';
+import '../../../../widget/rounded_background_icon.dart';
 
 class PostTile extends StatefulWidget {
   UserPost? post;
   bool? isNavigable;
+  Function onDeleteBlog;
 
-  PostTile({Key? key, this.post, this.isNavigable = true}) : super(key: key);
+  PostTile(
+      {Key? key,
+      this.post,
+      required this.onDeleteBlog,
+      this.isNavigable = true})
+      : super(key: key);
 
   @override
   _PostTileState createState() => _PostTileState();
@@ -59,6 +72,7 @@ class _PostTileState extends State<PostTile> {
     if (userBloc!.user.userName == widget.post!.authorUsername) {
       isAuthor = true;
     }
+
     return _buildUserPostList();
   }
 
@@ -74,6 +88,7 @@ class _PostTileState extends State<PostTile> {
 
   Widget _buildUserPostList() {
     return GestureDetector(
+      onLongPress: () => showUserProfileActionsSheet(),
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -81,6 +96,9 @@ class _PostTileState extends State<PostTile> {
               return PostDetailPage(
                 postId: widget.post!.id,
                 postType: PostType.blog,
+                onDeleteBlog: () {
+                  widget.onDeleteBlog();
+                },
               );
             },
           ),
@@ -149,23 +167,35 @@ class _PostTileState extends State<PostTile> {
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding: EdgeInsets.only(left: 15, top: 16, bottom: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        messageDecoderWithEmoji(widget.post?.title) ?? "",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: blackFont),
-                        maxLines: 2,
-                        softWrap: true,
-                        overflow: TextOverflow.clip,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              messageDecoderWithEmoji(widget.post?.title) ?? "",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: blackFont),
+                              maxLines: 2,
+                              softWrap: true,
+                              overflow: TextOverflow.clip,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () => showUserProfileActionsSheet(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Icon(SlydoAppIcon.menu, size: 16),
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 4,
-                      ),
+                      SizedBox(height: 4),
                       Text(
                         messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
@@ -191,6 +221,108 @@ class _PostTileState extends State<PostTile> {
         ),
       ),
     );
+  }
+
+  void showUserProfileActionsSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  List<Widget> generateBottomSheetItem() {
+    List<Widget> list = [];
+
+    list.add(
+      bottomSheetItem(
+        title: AppLocalization.of(context)!.share,
+        icon: SlydoAppIcon.share,
+        onTap: () {
+          Navigator.pop(context);
+          var shareBody =
+              "https://merchant.slydo.co/${widget.post!.authorUsername}/blog/${widget.post!.id}";
+          Share.share(shareBody, subject: "${widget.post!.authorName}");
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: "Share in Chat",
+        icon: SlydoAppIcon.text_message,
+        onTap: () async {
+          Navigator.pop(context);
+          UserPostUtils.sendPostToUserInChat(
+            context: context,
+            userPost: widget.post!,
+          );
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: AppLocalization.of(context)!.editPost,
+        icon: SlydoAppIcon.edit,
+        onTap: () async {
+          Navigator.pop(context);
+          await Navigator.pushNamed(context, '/create-blog',
+              arguments: widget.post);
+        },
+      ),
+    );
+
+    list.add(
+      bottomSheetItem(
+        title: AppLocalization.of(context)!.deletePost,
+        icon: SlydoAppIcon.delete,
+        onTap: () {
+          Navigator.pop(context);
+          showDialogBox(
+            context: context,
+            actionOneTextColor: white,
+            actionOneBgColor: mateRed,
+            actionTwoTextColor: blackFont,
+            actionTwoBgColor: greyBorderColor,
+            title: AppLocalization.of(context)!.delete,
+            actionTwoText: AppLocalization.of(context)!.cancel,
+            actionOneText: AppLocalization.of(context)!.delete,
+            description: 'Are you sure you want to delete this blog post?',
+            roundedBackgroundIcon: RoundedBackgroundIcon(
+              width: 90,
+              height: 90,
+              enableMargin: false,
+              image: Image.asset('assets/images/delete_dialog_icon.png'),
+            ),
+            leftButtonOnPressed: () {
+              UserPostUtils.deleteBlogPost(
+                context: context,
+                blogId: widget.post!.id!,
+                onDeleteBlog: widget.onDeleteBlog,
+              );
+            },
+          );
+        },
+      ),
+    );
+
+    return list;
   }
 
   Widget _buildLikeUnLikeReportTile() {
@@ -287,9 +419,7 @@ class _PostTileState extends State<PostTile> {
               Icons.thumb_down_alt_outlined,
               size: 16,
             ),
-            SizedBox(
-              width: 4,
-            ),
+            SizedBox(width: 4),
             Text(
               widget.post?.dislikes.toString() ?? "",
               style: TextStyle(

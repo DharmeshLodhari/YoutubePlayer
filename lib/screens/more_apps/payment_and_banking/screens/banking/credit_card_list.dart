@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -13,11 +14,9 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class CreditCardList extends StatefulWidget {
-  var arguments;
+  final arguments;
 
-  CreditCardList({
-    this.arguments,
-  });
+  CreditCardList({this.arguments});
 
   @override
   _CreditCardListState createState() => _CreditCardListState();
@@ -48,11 +47,6 @@ class _CreditCardListState extends State<CreditCardList> {
     );
 
     super.initState();
-
-    _slideController = SlidableController(
-      onSlideAnimationChanged: handleSlideAnimationChanged,
-      onSlideIsOpenChanged: handleSlideIsOpenChanged,
-    );
   }
 
   void _onRefresh() async {
@@ -149,7 +143,7 @@ class _CreditCardListState extends State<CreditCardList> {
       ),
       onTap: () {
         //for adding new account
-        Navigator.of(context).pushNamed('/card-payment-page');
+        Navigator.of(context).pushNamed(Routes.CARD_PAYMENT_PAGE);
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

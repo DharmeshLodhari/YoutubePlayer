@@ -81,6 +81,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
           MaterialPageRoute(
             builder: (context) {
               return PostDetailPage(
+                onDeleteBlog: () {},
                 postType: PostType.blog,
                 postId: postForChatModel.id!,
               );

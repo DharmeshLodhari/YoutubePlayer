@@ -851,9 +851,7 @@ class _EditProductState extends State<EditProduct> {
                   deleteProduct();
                 }),
           ),
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           Expanded(
             child: CurvedButton(
               textColor: Colors.white,

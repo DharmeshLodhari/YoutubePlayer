@@ -1,3 +1,6 @@
+import 'package:Slydo/screens/more_apps/utility/select_provider_screen.dart';
+import 'package:Slydo/utils/enums.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -27,9 +30,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             child: ListView(
               padding: EdgeInsets.only(left: 16, right: 16),
               children: [
-                SizedBox(
-                  height: 12,
-                ),
+                SizedBox(height: 10),
                 firstRowItems(),
                 secondRowItems(),
               ],
@@ -94,9 +95,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             child: UtilityDashboardItemTile(
           icon: SlydoAppIcon.utility_airtime,
           title: "Airtime",
-          onTap: () {
-            // Navigator.of(context).pushNamed("/movies");
-          },
+          providersEnum: UtilitiesProvidersEnum.airtime,
           iconColor: HexColor("#3F61DB"),
           height: 126,
         )),
@@ -104,28 +103,24 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           width: 12,
         ),
         Expanded(
-            child: UtilityDashboardItemTile(
-          icon: SlydoAppIcon.utility_svg,
-          title: "Cable",
-          onTap: () {
-            Navigator.of(context).pushNamed("/cable-provider");
-          },
-          iconColor: HexColor("#F07097"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utility_svg,
+            title: "Cable",
+            providersEnum: UtilitiesProvidersEnum.cable,
+            iconColor: HexColor("#F07097"),
+            height: 126,
+          ),
         ),
+        SizedBox(width: 12),
         Expanded(
-            child: UtilityDashboardItemTile(
-          icon: SlydoAppIcon.utility_electricity,
-          title: "Electricity",
-          onTap: () {
-            // Navigator.of(context).pushNamed("/movies");
-          },
-          iconColor: HexColor("#FFAB00"),
-          height: 126,
-        )),
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utility_electricity,
+            title: "Electricity",
+            providersEnum: UtilitiesProvidersEnum.electricity,
+            iconColor: HexColor("#FFAB00"),
+            height: 126,
+          ),
+        ),
         SizedBox(
           width: 12,
         ),
@@ -133,9 +128,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             child: UtilityDashboardItemTile(
           icon: SlydoAppIcon.utility_airtime,
           title: "Mobile Data",
-          onTap: () {
-            // Navigator.of(context).pushNamed("/movies");
-          },
+          providersEnum: UtilitiesProvidersEnum.mobile_data,
           iconColor: navyBlue,
           height: 126,
         )),
@@ -150,9 +143,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             child: UtilityDashboardItemTile(
           icon: SlydoAppIcon.utility_tax,
           title: "Tax",
-          onTap: () {
-            // Navigator.of(context).pushNamed("/movies");
-          },
+          providersEnum: UtilitiesProvidersEnum.tax,
           iconColor: HexColor("#46CECE"),
           height: 126,
         )),
@@ -163,9 +154,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             child: UtilityDashboardItemTile(
           icon: SlydoAppIcon.utility_betting,
           title: "Betting",
-          onTap: () {
-            // Navigator.of(context).pushNamed("/movies");
-          },
+          providersEnum: UtilitiesProvidersEnum.betting,
           iconColor: HexColor("#46CE7C"),
           height: 126,
         )),
@@ -176,9 +165,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             child: UtilityDashboardItemTile(
           icon: SlydoAppIcon.utility_toll,
           title: "Toll",
-          onTap: () {
-            // Navigator.of(context).pushNamed("/movies");
-          },
+          providersEnum: UtilitiesProvidersEnum.toll,
           iconColor: HexColor("#F35B46"),
           height: 126,
         )),

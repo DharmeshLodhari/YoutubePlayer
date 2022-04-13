@@ -12,6 +12,7 @@ import 'package:Slydo/services/logout_helper.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -21,8 +22,8 @@ import 'package:uuid/uuid.dart';
 import 'device_info.dart';
 
 class AuthService {
-  static int authCallCount = 0;
-  static int authCallLimit = 5;
+  // static int authCallCount = 0;
+  // static int authCallLimit = 5;
 
   final Duration timeOutDuration = Duration(seconds: 4);
   final String timeOutErrorMessage = "Server Time-out !!";
@@ -174,17 +175,7 @@ class AuthService {
     return await _db.getJwt();
   }
 
-  // For fetching new token for user if somehow user is not found then
-  // we are logging out that user to get a fresh token
-  Future<Jwt> fetchNewToken() async {
-    debugPrint("Token Expired getting new one");
-
-    authCallCount++;
-    if (authCallCount > authCallLimit) {
-      debugPrint("Logging out the user due to not able to fetch token");
-      await LogoutHelper().logoutUser();
-    }
-
+  Future<Map<String, String>> getUserAuthDetails() async {
     User? _user = await _db.getUser();
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -204,23 +195,48 @@ class AuthService {
       phoneNumber = _user?.phoneNumber ?? "";
       password = _user?.password ?? "";
     }
+    return {'phoneNumber': phoneNumber, 'password': password};
+  }
 
-    try {
-      await authenticate(phoneNumber, password);
-    } catch (error) {
-      debugPrint("ERROR:- while fetching new Token $error");
-      await Future.delayed(Duration(milliseconds: 800));
-      fetchNewToken();
-    }
+  // For fetching new token for user if somehow user is not found then
+  // we are logging out that user to get a fresh token
+  Future<Jwt> fetchNewToken() async {
+    debugPrint("Token Expired getting new one");
 
-    Jwt? jwt = await _db.getJwt(); // get new token now
+    Jwt? jwt;
 
-    if (jwt == null) {
-      debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
-      await Future.delayed(Duration(milliseconds: 800));
-      fetchNewToken();
-    }
-    authCallCount = 0;
+    Connectivity().checkConnectivity().then((value) async {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        try {
+          Map<String, String> userAuthDetailsMap = await getUserAuthDetails();
+
+          await authenticate(userAuthDetailsMap['phoneNumber'],
+              userAuthDetailsMap['password']);
+        } catch (error) {
+          debugPrint("ERROR:- while fetching new Token $error");
+          await Future.delayed(Duration(milliseconds: 500));
+          fetchNewToken();
+        }
+
+        jwt = await _db.getJwt(); // get new token now
+
+        if (jwt == null) {
+          debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
+          await Future.delayed(Duration(milliseconds: 500));
+          fetchNewToken();
+        }
+      } else {
+        await Future.delayed(Duration(milliseconds: 500));
+        fetchNewToken();
+      }
+    });
+
+    // if (jwt == null) {
+    //   fetchNewToken();
+    // }
+
     return jwt!;
   }
 
@@ -376,6 +392,7 @@ class AuthService {
     var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
+    print('SEARCH USER ::: ${response.body}');
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 

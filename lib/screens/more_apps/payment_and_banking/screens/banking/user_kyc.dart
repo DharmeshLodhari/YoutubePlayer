@@ -1,3 +1,4 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,6 @@ import '../../../../../utils/util.dart';
 import '../../../../../widget/curved_btn.dart';
 import '../../models/VirtualAccount.dart';
 import '../../payment_and_banking_auth.dart';
-import '../../tiles/transaction.dart';
 import 'models/kyc_model.dart';
 
 class UserKyc extends StatefulWidget {
@@ -29,14 +29,20 @@ class _UserKycState extends State<UserKyc> {
   }
 
   getUserTier() async {
+    bool isFromServer = false;
+
     virtualAccount = await DatabaseHelper().getVirtualAccount();
 
     if (virtualAccount == null) {
       virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+      isFromServer = true;
+    }
+
+    if (isFromServer) {
+      await DatabaseHelper().saveVirtualAccount(virtualAccount!);
     }
 
     userTier = virtualAccount?.accountTier?.tierType;
-    print('USER TIER::: $userTier');
     isLoading = false;
     if (mounted) setState(() {});
   }
@@ -58,7 +64,7 @@ class _UserKycState extends State<UserKyc> {
       ),
       centerTitle: false,
       title: Text(
-        'KYC Details',
+        AppLocalization.of(context)!.kycDetails,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -88,17 +94,17 @@ class _UserKycState extends State<UserKyc> {
                         children: [
                           transactionOrKycDetailTile(
                             Icons.description_outlined,
-                            'BVN Status',
+                            AppLocalization.of(context)!.bvnStatus,
                             widget.kycModel.bvnResult ?? '----',
                           ),
                           transactionOrKycDetailTile(
                             Icons.event_note,
-                            'Document result',
+                            AppLocalization.of(context)!.documentResult,
                             widget.kycModel.documentResult ?? '----',
                           ),
                           transactionOrKycDetailTile(
                             Icons.receipt_long_outlined,
-                            'Verification note',
+                            AppLocalization.of(context)!.remark,
                             widget.kycModel.verificationNote ?? '----',
                           ),
                         ],

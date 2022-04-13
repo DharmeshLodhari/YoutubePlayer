@@ -71,6 +71,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   bool isLoading = true;
 
   List<String?> paymentCategoriesTest = [];
+
   String? selectedCategory;
 
   PaymentCategory? selectedPaymentCategory;
@@ -572,9 +573,7 @@ class _RequestPaymentState extends State<RequestPayment> {
           AppLocalization.of(context)!.category,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
-          height: 6,
-        ),
+        SizedBox(height: 6),
         Card(
           elevation: 0,
           color: Colors.white,

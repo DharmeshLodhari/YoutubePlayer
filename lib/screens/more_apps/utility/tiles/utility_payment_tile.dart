@@ -1,7 +1,7 @@
 import 'package:Slydo/utils/util.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../utils/colors.dart';
+import 'package:intl/intl.dart';
 
 class UtilityPaymentTile extends StatelessWidget {
   final Map<String, dynamic>? payment;
@@ -44,7 +44,8 @@ class UtilityPaymentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  payment!['amount'],
+                  '50',
+                  // payment!['amount'],
                   style: TextStyle(
                       fontFamily: "Roboto",
                       color: blackFont,
@@ -67,12 +68,16 @@ class UtilityPaymentTile extends StatelessWidget {
   }
 
   Widget getLeading() {
-    return Image.asset(
-      payment!['image'],
-      height: 80,
-      width: 80,
-      fit: BoxFit.fill,
-      filterQuality: FilterQuality.high,
+    return Padding(
+      padding: const EdgeInsets.all(18.0),
+      child: CachedNetworkImage(
+        height: 50,
+        width: 50,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.high,
+        imageUrl:
+            "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg",
+      ),
     );
   }
 
@@ -110,7 +115,8 @@ class UtilityPaymentTile extends StatelessWidget {
 
   Widget getTitle() {
     return Text(
-      payment!['name'],
+      payment!['customer_username'],
+      // payment!['name'],
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.w600,
@@ -121,10 +127,14 @@ class UtilityPaymentTile extends StatelessWidget {
 
   Widget getDateTime() {
     return Text(
-      payment!['time'],
+      _getFormattedDateTime(),
       softWrap: false,
       overflow: TextOverflow.visible,
       style: TextStyle(color: darkGrey, fontSize: 10),
     );
+  }
+
+  String _getFormattedDateTime() {
+    return '${DateFormat.yMMMM().format(DateTime.parse(payment!['created_at']))} ${DateFormat.Hm().format(DateTime.parse(payment!['created_at']))}';
   }
 }

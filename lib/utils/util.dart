@@ -762,7 +762,8 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
   }
 }
 
-Widget getClickableRatingBar({required double initialRating, required Function(double) onRatingUpdate}) {
+Widget getClickableRatingBar(
+    {required double initialRating, required Function(double) onRatingUpdate}) {
   return RatingBar.builder(
     initialRating: initialRating,
     minRating: 1,
@@ -804,4 +805,8 @@ Color getRatingColor(int? numberOfRating, int i) {
           ? starYellow
           : greyBorderColor
       : Colors.grey;
+}
+
+String enumToString(mEnum) {
+  return mEnum.toString().split('.')[1];
 }

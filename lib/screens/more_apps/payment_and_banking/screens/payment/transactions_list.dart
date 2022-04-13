@@ -296,7 +296,7 @@ class _TransactionListState extends State<TransactionList> {
       padding: const EdgeInsets.all(8.0),
       child: new Center(
         child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
+          opacity: isLoading ? 1.0 : 0.0,
           child: CircularLoadingIndicator(),
         ),
       ),

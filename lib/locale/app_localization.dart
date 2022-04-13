@@ -441,6 +441,34 @@ class AppLocalization {
     );
   }
 
+  String get kycDetails {
+    return Intl.message(
+      "KYC Details",
+      name: "kycDetails",
+    );
+  }
+
+  String get bvnStatus {
+    return Intl.message(
+      "BVN Status",
+      name: "bvnStatus",
+    );
+  }
+
+  String get documentResult {
+    return Intl.message(
+      "Document result",
+      name: "documentResult",
+    );
+  }
+
+  String get remark {
+    return Intl.message(
+      "Remark",
+      name: "remark",
+    );
+  }
+
   String get selectYourPhoneCode {
     return Intl.message(
       "Select your phone code",
@@ -1403,6 +1431,20 @@ class AppLocalization {
     return Intl.message(
       "Transaction history empty",
       name: "transactionHistoryEmpty",
+    );
+  }
+
+  String get utilityHistoryEmpty {
+    return Intl.message(
+      "Utility history empty",
+      name: "utilityHistoryEmpty",
+    );
+  }
+
+  String get providerListEmpty {
+    return Intl.message(
+      "Provider list empty",
+      name: "providerListEmpty",
     );
   }
 

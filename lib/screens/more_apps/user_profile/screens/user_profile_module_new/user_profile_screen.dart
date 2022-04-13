@@ -273,8 +273,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   child: Text(
                     searchedUser!.displayName()!,
                     style: TextStyle(
-                      color: Colors.white,
                       fontSize: 22,
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,

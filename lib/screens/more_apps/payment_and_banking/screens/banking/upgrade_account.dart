@@ -100,10 +100,7 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
+        trailing: Icon(Icons.keyboard_arrow_down, color: darkGrey),
         onTap: () {
           selectTier();
         },

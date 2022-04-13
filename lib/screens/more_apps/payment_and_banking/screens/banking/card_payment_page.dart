@@ -80,58 +80,22 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
     super.dispose();
   }
 
-  _verifyCardNumber() async {
-    setState(() => verifyingCardNumber = true);
-
-    PaymentAndBankingAuth()
+  Future<bool> _verifyCardNumber() async {
+    bool verified = false;
+    await PaymentAndBankingAuth()
         .verifyCardNumber(cardNumber: _cardNumberController.text.trim())
         .then((verifiedCardNumber) {
       if (verifiedCardNumber) {
-        setState(() {
-          cardNumberVerified = true;
-          verifyingCardNumber = false;
-          if (amount <= amountLimit) {
-            showButton = true;
-          }
-        });
+        verified = true;
       } else {
-        setState(() {
-          showButton = false;
-          cardNumberVerified = false;
-          verifyingCardNumber = false;
-        });
-        showToast(message: 'Card not valid');
+        verified = false;
       }
     }).catchError((e) {
       Navigator.pop(context);
-      showToast(message: '${e.toString()}');
+      showToast(message: 'EROOR - ${e.toString()}');
     });
-  }
 
-  Widget _getCardNumberSuffixIcon() {
-    if (verifyingCardNumber) {
-      return SizedBox(width: 20, height: 20, child: CircularLoadingIndicator());
-    } else {
-      if (cardNumberVerified != null) {
-        if (cardNumberVerified!) {
-          return CircleAvatar(
-            radius: 14,
-            backgroundColor: navyBlue,
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Icon(Icons.check, size: 20, color: Colors.white),
-            ),
-          );
-        } else {
-          return Icon(
-            Icons.cancel,
-            color: Colors.red,
-          );
-        }
-      } else {
-        return SizedBox.shrink();
-      }
-    }
+    return verified;
   }
 
   Widget build(BuildContext context) {
@@ -279,19 +243,30 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                     keyboardType: TextInputType.phone,
                     labelText: AppLocalization.of(context)!.cardNumber,
                     onChanged: (value) {
-                      if (value.replaceAll(' ', '').length == 16) {
-                        _verifyCardNumber();
-                      } else if (value.isEmpty) {
+                      if (value.isEmpty) {
                         setState(() {
-                          cardNumberVerified = false;
                           showButton = false;
                         });
                       }
                     },
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: _getCardNumberSuffixIcon(),
-                    ),
+                    verifyInputFromServerValidation: (value) =>
+                        value.replaceAll(' ', '').length == 16,
+                    verifyInputFromServerFunc: () => _verifyCardNumber(),
+                    extraFunctionWhenInputWasVerifiedFromServerSuccessfully:
+                        () {
+                      setState(() {
+                        if (amount <= amountLimit) {
+                          showButton = true;
+                        }
+                      });
+                    },
+                    extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully:
+                        () {
+                      setState(() {
+                        showButton = false;
+                        showToast(message: 'Card not valid');
+                      });
+                    },
                   ),
                   SizedBox(height: 16),
                   CustomizedTextFormField(

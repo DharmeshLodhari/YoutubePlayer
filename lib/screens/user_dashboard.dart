@@ -150,14 +150,14 @@ class _UserDashboardState extends State<UserDashboard> {
         children: [
           Platform.isIOS ? Container() : flexibleSpace(),
           appBar(),
-          flexibleSpace(flex: 4),
+          flexibleSpace(flex: 5),
           accountBalanceCard(),
           flexibleSpace(flex: 2),
           firstRowOfUserDashboardItem(),
           flexibleSpace(flex: 1),
           secondRowOfUserDashboardItem(),
           flexibleSpace(flex: 1),
-          // thirdRowOfUserDashboardItem(),
+          thirdRowOfUserDashboardItem(),
           flexibleSpace(flex: 4),
           appVersionDataUI(),
           flexibleSpace(flex: 3),
@@ -433,21 +433,28 @@ class _UserDashboardState extends State<UserDashboard> {
           },
           iconColor: HexColor("#5218E9"),
         )),
-        SizedBox(
-          width: 12,
-        ),
+        SizedBox(width: 12),
         Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.more,
-          title: AppLocalization.of(context)!.more,
-          onTap: () {
-            Navigator.pushNamed(context, "/more-apps");
-          },
-          iconColor: HexColor("#374677"),
-        )),
-        SizedBox(
-          width: 12,
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.utility,
+            title: "Utility",
+            onTap: () {
+              Navigator.pushNamed(context, "/utility-dashboard");
+            },
+            iconColor: HexColor("#FFAB00"),
+          ),
         ),
+        // Expanded(
+        //   child: UserDashboardItemTile(
+        //     icon: SlydoAppIcon.more,
+        //     title: AppLocalization.of(context)!.more,
+        //     onTap: () {
+        //       Navigator.pushNamed(context, "/more-apps");
+        //     },
+        //     iconColor: HexColor("#374677"),
+        //   ),
+        // ),
+        SizedBox(width: 12),
         Expanded(child: Container()),
       ],
     );

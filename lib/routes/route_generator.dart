@@ -111,7 +111,6 @@ import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
 import 'package:Slydo/screens/more_apps/train/search_train.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
-import 'package:Slydo/screens/more_apps/user_post/user_post_detail.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/change_password.dart';
@@ -150,6 +149,8 @@ import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
+import '../screens/more_apps/utility/select_provider_screen.dart';
+import '../screens/more_apps/utility/utility_payment_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -1386,14 +1387,6 @@ class RouteGenerator {
       case "/edit-review":
         return PageTransition(
           child: EditUserReview(
-              arguments: settings.arguments as Map<String, dynamic>),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-      case "/user-post-detail":
-        return PageTransition(
-          child: UserPostDetailPage(
               arguments: settings.arguments as Map<String, dynamic>),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,

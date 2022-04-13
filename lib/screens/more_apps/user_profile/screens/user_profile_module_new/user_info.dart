@@ -125,17 +125,13 @@ class _UserInfoState extends State<UserInfo> {
                       (widget.user!.type!.toLowerCase() != "user")
                           ? Column(
                               children: [
-                                SizedBox(
-                                  height: 16,
-                                ),
+                                SizedBox(height: 16),
                                 Divider(
                                   height: 0,
                                   color: dividerColor,
                                   thickness: 1,
                                 ),
-                                SizedBox(
-                                  height: 16,
-                                ),
+                                SizedBox(height: 16),
                               ],
                             )
                           : Container(),

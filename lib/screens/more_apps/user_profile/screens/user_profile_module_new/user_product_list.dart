@@ -83,7 +83,7 @@ class _UserProductListState extends State<UserProductList> {
       key: _productScaffoldKey,
       body: Container(
         color: lightGrey,
-        padding: EdgeInsets.fromLTRB(4, 34, 4, 4),
+        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
         child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -152,7 +152,7 @@ class _UserProductListState extends State<UserProductList> {
             itemCount: productList.length + 1,
             shrinkWrap: true,
             physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             controller: _productScrollController,
             itemBuilder: (context, index) {
               if (index == productList.length) {
@@ -190,7 +190,7 @@ class _UserProductListState extends State<UserProductList> {
           elevation: 3,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.all(8.0),
+          margin: EdgeInsets.symmetric(vertical: 10.0),
           shadowColor: boxShadowTwo,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),

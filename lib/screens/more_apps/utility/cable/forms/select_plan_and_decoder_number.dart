@@ -190,9 +190,10 @@ class _SelectPlanAndDecoderNumberState
                       fontWeight: FontWeight.w600),
                 ),
                 Expanded(
-                    child: SizedBox(
-                  width: 2,
-                )),
+                  child: SizedBox(
+                    width: 2,
+                  ),
+                ),
                 Text(
                   selectedPlan != null ? selectedPlan!.price! : "",
                   overflow: TextOverflow.fade,

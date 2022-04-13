@@ -128,6 +128,8 @@ class BusinessAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+    debugPrint('UPDATE CONTRACT ::: ${response.body}');
+
     if (response.statusCode == 200) {
       return true;
     }

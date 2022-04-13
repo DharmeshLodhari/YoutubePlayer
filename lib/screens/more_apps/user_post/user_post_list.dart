@@ -170,6 +170,10 @@ class _UserPostListState extends State<UserPostList> {
                   padding: const EdgeInsets.only(bottom: 16),
                   child: PostTile(
                     post: postList[index],
+                    onDeleteBlog: () {
+                      print('DELETED FROM DETAILS PAGE');
+                      _onPostRefresh();
+                    },
                   ),
                 );
               }
