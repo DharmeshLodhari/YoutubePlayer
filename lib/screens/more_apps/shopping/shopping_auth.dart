@@ -119,8 +119,6 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers);
 
-    print('PAY FOR ::: ${response.body}');
-    print('PAY FOR STATUS::: ${response.statusCode}');
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -736,7 +734,6 @@ class ShoppingAuthService extends AuthService {
     if (exclude != null) {
       url += "?exclude=$exclude";
     }
-    print('SELLERS ----> $url');
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     List items = [];

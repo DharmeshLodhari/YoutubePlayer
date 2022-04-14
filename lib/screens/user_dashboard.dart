@@ -31,6 +31,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
+import 'more_apps/business/business_auth.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable

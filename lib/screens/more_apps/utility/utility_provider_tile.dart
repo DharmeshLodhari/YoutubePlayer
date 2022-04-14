@@ -43,7 +43,7 @@ class UtilityProviderTile extends StatelessWidget {
           SizedBox(width: 8),
           Expanded(
             child: Text(
-              providerModel.name,
+              getProviderName(),
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
             ),
@@ -51,5 +51,15 @@ class UtilityProviderTile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getProviderName() {
+    List<String> splitString = providerModel.name.split(' ');
+    String providerTwoWords = "${splitString[0]} ${splitString[1]}";
+    if (!(providerTwoWords.toLowerCase().contains('electricity'))) {
+      return "$providerTwoWords Electricity";
+    } else {
+      return providerTwoWords;
+    }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/more_apps/utility/models/BillPaymentModel.dart';
 import 'package:Slydo/screens/more_apps/utility/models/provider_details_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/services.dart';

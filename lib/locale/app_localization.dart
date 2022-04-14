@@ -1441,6 +1441,13 @@ class AppLocalization {
     );
   }
 
+  String get utilityTransactionHistory {
+    return Intl.message(
+      "Utility transaction history",
+      name: "utilityTransactionHistory",
+    );
+  }
+
   String get providerListEmpty {
     return Intl.message(
       "Provider list empty",

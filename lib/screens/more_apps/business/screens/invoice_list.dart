@@ -7,10 +7,14 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../utils/enums.dart';
 import '../business_auth.dart';
 import '../models/Invoice.dart';
 
 class InvoiceList extends StatefulWidget {
+  bool isLoading;
+
+  InvoiceList({this.isLoading = false});
   @override
   _InvoiceListState createState() => _InvoiceListState();
 }
@@ -18,7 +22,7 @@ class InvoiceList extends StatefulWidget {
 class _InvoiceListState extends State<InvoiceList> {
   List<Invoice> invoiceList = [];
 
-  bool isLoading = false;
+  // bool isLoading = false;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -30,7 +34,7 @@ class _InvoiceListState extends State<InvoiceList> {
   }
 
   void getResult(String item) async {
-    isLoading = true;
+    // widget.isLoading = true;
     invoiceList.clear();
     if (mounted) {
       setState(() {});
@@ -38,7 +42,8 @@ class _InvoiceListState extends State<InvoiceList> {
 
     invoiceList = await BusinessAuth().getInvoiceList();
 
-    isLoading = false;
+    widget.isLoading = false;
+    print('IS LOADING :::: ${widget.isLoading}');
     if (mounted) {
       setState(() {});
     }
@@ -69,7 +74,7 @@ class _InvoiceListState extends State<InvoiceList> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: isLoading
+        body: widget.isLoading
             ? Center(
                 child: CircularLoadingIndicator(),
               )

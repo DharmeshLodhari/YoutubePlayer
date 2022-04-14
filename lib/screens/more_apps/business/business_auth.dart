@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../utils/enums.dart';
 import 'models/Contract.dart';
 import 'models/Invoice.dart';
 
@@ -18,6 +19,7 @@ class BusinessAuth extends AuthService {
     var jsonData = json.decode(response.body);
     List data = jsonData["results"];
 
+    debugPrint('CONTRACT LIST RESPONSE ::: $jsonData');
     List<Contract> contracts = [];
 
     data.forEach((element) {
@@ -31,6 +33,8 @@ class BusinessAuth extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    debugPrint('GET CONTRACT ::: ${json.decode(response.body)}');
     if (response.statusCode == 200) {
       Contract contract = Contract.fromJson(json.decode(response.body));
 
@@ -138,11 +142,19 @@ class BusinessAuth extends AuthService {
   }
 
   //get all invoice list
-  Future<List<Invoice>> getInvoiceList() async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
+  Future<List<Invoice>> getInvoiceList({InvoiceStatus? invoiceStatus}) async {
+    debugPrint(invoiceStatus?.name);
+    var url = "";
+    if (invoiceStatus != null) {
+      url = AppConfig.baseUrl +
+          "/api/v1/transactions/invoice/?status=${invoiceStatus.name}";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
+    }
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    debugPrint('GET INVOICE LIST ::: ${response.body}');
     var jsonData = json.decode(response.body);
     List data = jsonData["results"];
 
@@ -173,6 +185,8 @@ class BusinessAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, body: _data, headers: headers);
+
+    debugPrint('ADD INVOICE RESPONSE ::: ${response.body}');
     if (response.statusCode == 201) {
       return true;
     }

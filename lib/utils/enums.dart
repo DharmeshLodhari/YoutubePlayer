@@ -9,3 +9,4 @@ enum UtilitiesProvidersEnum {
   betting,
   toll
 }
+enum InvoiceStatus { Draft, Paid, Unpaid, Pending }

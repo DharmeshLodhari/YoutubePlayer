@@ -23,7 +23,13 @@ class _MyContractScreenState extends State<MyContractScreen> {
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
     setState(() {});
+
+    if (currentIndex == 1) {}
+  }
+
+  switchStatementForInvoicePage(String value) {
     switch (value) {
+      case "Draft":
     }
   }
 
@@ -37,12 +43,20 @@ class _MyContractScreenState extends State<MyContractScreen> {
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
-        CustomizedPopUpMenuItem(title: "All", value: "all"),
-        CustomizedPopUpMenuItem(title: "Drafts", value: "drafts"),
-        CustomizedPopUpMenuItem(title: "Paid", value: "paid"),
-        CustomizedPopUpMenuItem(title: "Unpaid", value: "unpaid"),
-      ],
+      children: currentIndex == 0
+          ? [
+              CustomizedPopUpMenuItem(title: "Ended", value: "Ended"),
+              CustomizedPopUpMenuItem(title: "Active", value: "Active"),
+              CustomizedPopUpMenuItem(title: "Paused", value: "Paused"),
+              CustomizedPopUpMenuItem(title: "Stopped", value: "Stopped"),
+            ]
+          : [
+              CustomizedPopUpMenuItem(title: "All", value: "All"),
+              CustomizedPopUpMenuItem(title: "Paid", value: "Paid"),
+              CustomizedPopUpMenuItem(title: "Drafts", value: "Draft"),
+              CustomizedPopUpMenuItem(title: "Unpaid", value: "Unpaid"),
+              CustomizedPopUpMenuItem(title: "Pending", value: "Pending"),
+            ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
     );
@@ -90,15 +104,9 @@ class _MyContractScreenState extends State<MyContractScreen> {
       bottom: tabBar() as PreferredSizeWidget?,
       actions: [
         addContractAndInvoiceButton(),
-        currentIndex == 1
-            ? SizedBox(
-                width: 10.0,
-              )
-            : Container(),
-        currentIndex == 1 ? popUpMenuButton() : Container(),
-        SizedBox(
-          width: 16,
-        )
+        currentIndex == 1 ? SizedBox(width: 10.0) : Container(),
+        popUpMenuButton(),
+        SizedBox(width: 16)
       ],
     );
   }
