@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/utility/tiles/utility_payment_tile.dart';
+import 'package:Slydo/screens/more_apps/utility/tiles/utility_history_tile.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -152,7 +152,7 @@ class _UtilityHistoryState extends State<UtilityHistory> {
         var tempList = result['results'];
 
         isLoading = false;
-        print('TEMPLIST :::: $tempList');
+
         utilityHistoryList.addAll(tempList);
 
         if (mounted) setState(() {});
@@ -249,21 +249,12 @@ class _UtilityHistoryState extends State<UtilityHistory> {
               if (index == utilityHistoryList.length) {
                 return _buildIndicator();
               } else {
-                return _getUtilityPaymentTile(item: utilityHistoryList[index]);
+                return UtilityHistoryTile(
+                    utilityHistoryModel: utilityHistoryList[index]);
               }
             },
             controller: _scrollController,
           );
-
-    return ListView.builder(
-      itemBuilder: (context, index) =>
-          _getUtilityPaymentTile(item: utilityPayment[index]),
-      itemCount: utilityPayment.length,
-    );
-  }
-
-  Widget _getUtilityPaymentTile({Map<String, dynamic>? item}) {
-    return UtilityPaymentTile(payment: item);
   }
 
   Widget _buildIndicator() {
@@ -296,9 +287,6 @@ class _UtilityHistoryState extends State<UtilityHistory> {
           color: navyBlue,
         ),
         onPressed: () {
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
           Navigator.pop(context);
         },
       ),

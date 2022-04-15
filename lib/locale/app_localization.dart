@@ -1434,6 +1434,20 @@ class AppLocalization {
     );
   }
 
+  String get invoiceEmpty {
+    return Intl.message(
+      "Invoice empty",
+      name: "invoiceEmpty",
+    );
+  }
+
+  String get contractEmpty {
+    return Intl.message(
+      "Contract empty",
+      name: "contractEmpty",
+    );
+  }
+
   String get utilityHistoryEmpty {
     return Intl.message(
       "Utility history empty",

@@ -8,8 +8,11 @@ import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../widget/noItemInList.dart';
+import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
 
 class MyContractList extends StatefulWidget {
@@ -18,33 +21,39 @@ class MyContractList extends StatefulWidget {
 }
 
 class _MyContractListState extends State<MyContractList> {
-  List<Contract> contracts = [];
-  bool isLoading = false;
-
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+
+  ScrollController _scrollController = ScrollController();
+  late ContractBloc contractAndInvoiceBlocProvider;
 
   //slidable tile
   SlidableController? _slideController;
   @override
   void initState() {
-    getResult();
+    super.initState();
+
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    super.initState();
+
+    Provider.of<ContractBloc>(context, listen: false).getContractList();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        Provider.of<ContractBloc>(context, listen: false).getContractList();
+      }
+    });
   }
 
-  void getResult() async {
-    isLoading = true;
-    contracts.clear();
-    if (mounted) setState(() {});
-
-    contracts = await BusinessAuth().getContractList();
-
-    isLoading = false;
-    if (mounted) setState(() {});
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _onRefresh() async {
@@ -52,7 +61,8 @@ class _MyContractListState extends State<MyContractList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        getResult();
+        contractAndInvoiceBlocProvider.isRefreshing = true;
+        contractAndInvoiceBlocProvider.getContractList();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -66,65 +76,88 @@ class _MyContractListState extends State<MyContractList> {
 
   @override
   Widget build(BuildContext context) {
+    contractAndInvoiceBlocProvider = Provider.of<ContractBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         return Future.value(true);
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: isLoading
-              ? Center(
+          backgroundColor: Colors.white,
+          body: Consumer<ContractBloc>(
+            builder: (context, contractAndInvoiceBloc, _) {
+              if (contractAndInvoiceBloc.isLoading) {
+                return Center(
                   child: CircularLoadingIndicator(),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: contracts
-                        .asMap()
-                        .map(
-                          (index, element) => MapEntry(
-                            index,
-                            _getSlidableWithLists(
-                                context,
-                                ContractTile(
-                                  contract: element,
-                                ),
-                                index),
-                          ),
-                        )
-                        .values
-                        .toList(),
+                );
+              } else if (contractAndInvoiceBloc.contractList.isEmpty) {
+                return NoItemInList(
+                  msg: AppLocalization.of(context)!.contractEmpty,
+                );
+              } else {
+                if (contractAndInvoiceBlocProvider.endOfList) {
+                  if (_scrollController.position.pixels ==
+                          _scrollController.position.maxScrollExtent &&
+                      _scrollController.position.pixels != 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(AppLocalization.of(context)!
+                          .youHaveReachedBottomOfTheList),
+                      duration: Duration(milliseconds: 500),
+                    ));
+                    contractAndInvoiceBlocProvider.endOfList = false;
+                  }
+                }
+                return SmartRefresher(
+                  enablePullDown: true,
+                  header: WaterDropHeader(
+                    complete: Container(),
+                    waterDropColor: navyBlue,
                   ),
-                ),
-        ),
-      ),
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 4),
+                    itemCount: contractAndInvoiceBloc.contractList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == contractAndInvoiceBloc.contractList.length) {
+                        return buildIndicator(
+                            isLoading: contractAndInvoiceBloc.isLoading);
+                      } else {
+                        Contract contract =
+                            contractAndInvoiceBloc.contractList[index];
+                        return _getSlidableWithLists(
+                            context,
+                            ContractTile(
+                              contract: contract,
+                            ),
+                            index,
+                            contract: contract);
+                      }
+                    },
+                    controller: _scrollController,
+                  ),
+                );
+              }
+            },
+          )),
     );
   }
 
   Widget _getSlidableWithLists(
-    BuildContext context,
-    Widget contractTile,
-    int index,
-  ) {
+      BuildContext context, Widget contractTile, int index,
+      {required Contract contract}) {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(contractTile, contracts[index]),
-      actions: listActionSlideActions(index),
-      secondaryActions: listSecondaryActions(index),
+      child: VerticalListItem(contractTile, contract),
+      actions: listActionSlideActions(contract),
+      secondaryActions: listSecondaryActions(index, contract),
     );
   }
 
-  List<Widget> listSecondaryActions(int index) {
+  List<Widget> listSecondaryActions(int index, Contract contract) {
     // STOPPED = ("Stopped", _("Stopped"))
     // ENDED = ("Ended", _("Ended"))
     // ACTIVE = ("Active", _("Active"))
@@ -132,19 +165,18 @@ class _MyContractListState extends State<MyContractList> {
 
     return [
       SlideActionButton(
-          backgroundColor: getSecondaryActionIconColor(index),
-          icon: getSecondaryActionIcon(index),
+          backgroundColor: getSecondaryActionIconColor(contract),
+          icon: getSecondaryActionIcon(contract),
           onTap: () {
             // _slideController.activeState.close();
-            updateContractStatus(index, getUpdateAction(index));
+            updateContractStatus(contract, getUpdateAction(contract));
           },
-          title: getSecondaryActionTitle(index),
+          title: getSecondaryActionTitle(contract),
           slideController: _slideController),
     ];
   }
 
-  Color getSecondaryActionIconColor(int index) {
-    Contract contract = contracts[index];
+  Color getSecondaryActionIconColor(Contract contract) {
     switch (contract.status) {
       case "Paused":
         return naturalGreen;
@@ -159,8 +191,7 @@ class _MyContractListState extends State<MyContractList> {
     }
   }
 
-  IconData getSecondaryActionIcon(int index) {
-    Contract contract = contracts[index];
+  IconData getSecondaryActionIcon(Contract contract) {
     switch (contract.status) {
       case "Paused":
         return Icons.play_arrow_rounded;
@@ -175,8 +206,7 @@ class _MyContractListState extends State<MyContractList> {
     }
   }
 
-  String getSecondaryActionTitle(int index) {
-    Contract contract = contracts[index];
+  String getSecondaryActionTitle(Contract contract) {
     switch (contract.status) {
       case "Paused":
         return "Resume";
@@ -191,8 +221,8 @@ class _MyContractListState extends State<MyContractList> {
     }
   }
 
-  String getUpdateAction(int index) {
-    Contract contract = contracts[index];
+  String getUpdateAction(Contract contract) {
+    // Contract contract = contracts[index];
     switch (contract.status) {
       case "Paused":
         return "Active";
@@ -211,14 +241,15 @@ class _MyContractListState extends State<MyContractList> {
     }
   }
 
-  void updateContractStatus(int index, String action) {
-    Contract contract = contracts[index];
+  void updateContractStatus(Contract contract, String action) {
+    // Contract contract = contracts[index];
     Map<String, String> data = {"status": action};
 
     BusinessAuth()
         .updateContract(id: contract.id.toString(), data: data)
         .then((value) {
-      contracts[index].status = action;
+      contract.status = action;
+      // contracts[index].status = action;
       setState(() {});
       showToast(message: "Status updated successfully");
     }).catchError((error) {
@@ -226,13 +257,13 @@ class _MyContractListState extends State<MyContractList> {
     });
   }
 
-  List<Widget> listActionSlideActions(int index) {
+  List<Widget> listActionSlideActions(Contract contract) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: Icons.stop_circle_outlined,
           onTap: () {
-            updateContractStatus(index, getUpdateAction(index));
+            updateContractStatus(contract, getUpdateAction(contract));
           },
           title: "Stop",
           slideController: _slideController),

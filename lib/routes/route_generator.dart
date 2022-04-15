@@ -329,7 +329,7 @@ class RouteGenerator {
 
       case '/create-blog':
         return PageTransition(
-          child: CreatePostScreen(
+          child: CreateorEditPostScreen(
             userPost: settings.arguments != null
                 ? settings.arguments as UserPost
                 : null,

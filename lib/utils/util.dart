@@ -355,7 +355,7 @@ Widget getChatSettingTitle() {
   );
 }
 
-Widget buildIndicator(bool isLoading) {
+Widget buildIndicator({required bool isLoading}) {
   return new Padding(
     padding: const EdgeInsets.all(8.0),
     child: new Center(

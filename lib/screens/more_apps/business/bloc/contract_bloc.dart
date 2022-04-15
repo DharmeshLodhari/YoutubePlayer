@@ -1,0 +1,63 @@
+import 'package:Slydo/screens/more_apps/business/business_auth.dart';
+import 'package:flutter/material.dart';
+
+import '../../../../utils/enums.dart';
+import '../models/Contract.dart';
+import '../models/Invoice.dart';
+
+class ContractBloc extends ChangeNotifier {
+  bool endOfList = false;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  BusinessAuth businessAuth = BusinessAuth();
+
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
+  bool isFirstTime = true;
+  List<Contract> contractList = [];
+  bool isRefreshing = false;
+
+  Future<List<Contract>?> getContractList(
+      {ContractStatus? contractStatus}) async {
+    if (isRefreshing) {
+      count = 0;
+      next = "";
+      previous = "";
+      contractList = [];
+      isFirstTime = true;
+      _isLoading = false;
+    }
+
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        _isLoading = true;
+        notifyListeners();
+
+        Map<String, dynamic>? result = await businessAuth
+            .getContractList(next, previous, contractStatus: contractStatus);
+
+        next = result!['next'];
+        count = result['count'];
+        previous = result['previous'];
+        var tempList = result['results'];
+
+        _isLoading = false;
+        contractList.addAll(tempList);
+        notifyListeners();
+
+        if (isFirstTime && next != null && next != "") {
+          isFirstTime = false;
+          getContractList(contractStatus: contractStatus);
+        }
+      }
+      if (contractList.isEmpty) {
+        notifyListeners();
+      } else if (next == null && contractList.length > 6) {
+        endOfList = true;
+        notifyListeners();
+      }
+    }
+    return contractList;
+  }
+}

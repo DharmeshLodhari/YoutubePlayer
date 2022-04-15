@@ -27,16 +27,16 @@ import '../../widget/LoadingIndicator.dart';
 import '../more_apps/user_post/models/user_post.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
-class CreatePostScreen extends StatefulWidget {
+class CreateorEditPostScreen extends StatefulWidget {
   final UserPost? userPost;
 
-  const CreatePostScreen({Key? key, this.userPost}) : super(key: key);
+  const CreateorEditPostScreen({Key? key, this.userPost}) : super(key: key);
 
   @override
-  State<CreatePostScreen> createState() => _CreatePostScreenState();
+  State<CreateorEditPostScreen> createState() => _CreateorEditPostScreenState();
 }
 
-class _CreatePostScreenState extends State<CreatePostScreen> {
+class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   String? blogId;
   String? _imageFile;
   String? _videoFile;

@@ -1,6 +1,8 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/utility/models/utility_transaction_model.dart';
+import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -12,30 +14,37 @@ import 'package:maps_launcher/maps_launcher.dart';
 
 // ignore: must_be_immutable
 class UtilityHistoryDetailScreen extends StatefulWidget {
-  var arguments;
+  final String transactionId;
 
-  UtilityHistoryDetailScreen({required this.arguments});
+  UtilityHistoryDetailScreen({required this.transactionId});
 
   @override
   _UtilityHistoryDetailScreenState createState() =>
-      _UtilityHistoryDetailScreenState(arguments: arguments);
+      _UtilityHistoryDetailScreenState();
 }
 
 class _UtilityHistoryDetailScreenState
     extends State<UtilityHistoryDetailScreen> {
-  var arguments;
-  Transaction? transaction;
-
-  _UtilityHistoryDetailScreenState({this.arguments});
+  bool isLoading = true;
+  late UtilityHistoryModel _utilityHistoryModel;
 
   @override
   void initState() {
-    // fetchTransaction();
     super.initState();
-  }
 
-  void fetchTransaction() async {
-    transaction = arguments['transaction'];
+    UtilityAuth()
+        .getUtilityTransactionsDetails(transactionsId: widget.transactionId)
+        .then(
+      (utilityHistoryModel) {
+        if (utilityHistoryModel != null) {
+          isLoading = false;
+          _utilityHistoryModel = utilityHistoryModel;
+          if (mounted) {
+            setState(() {});
+          }
+        }
+      },
+    );
   }
 
   Widget showBackArrow() {
@@ -90,20 +99,20 @@ class _UtilityHistoryDetailScreenState
     );
   }
 
-  Widget showMap() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.location,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: transaction!.latitude != "" ? goToMap : () {},
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    );
-  }
+  // Widget showMap() {
+  //   return RoundedBackgroundIcon(
+  //     height: 34,
+  //     width: 34,
+  //     icon: Icon(
+  //       SlydoAppIcon.location,
+  //       size: 16,
+  //       color: blackFont,
+  //     ),
+  //     onTap: 'utilityHistoryModel.latitude' != "" ? goToMap : () {},
+  //     backgroundColor: iconBtnGrey,
+  //     enableMargin: true,
+  //   );
+  // }
 
   Widget scaffoldBody() {
     return SingleChildScrollView(
@@ -113,12 +122,14 @@ class _UtilityHistoryDetailScreenState
                 MediaQuery.of(context).padding.top),
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          children: [
-            displayTransactionInfo(),
-            flexibleSpace(),
-          ],
-        ),
+        child: isLoading
+            ? Center(child: CircularLoadingIndicator())
+            : Column(
+                children: [
+                  displayTransactionInfo(),
+                  flexibleSpace(),
+                ],
+              ),
       ),
     );
   }
@@ -146,19 +157,19 @@ class _UtilityHistoryDetailScreenState
 
   Widget getDescriptionWidget() {
     return Text(
-      "${transaction!.description}",
+      "___description",
       maxLines: 1,
     );
   }
 
   Widget getSubtitle() {
-    // DateTime transactionTime = DateTime.parse(transaction!.createdAt!);
-    // String date = DateFormat("dd/MM/yyyy").format(transactionTime);
-    // String time = DateFormat("hh:mm a").format(transactionTime);
+    DateTime utilityTransactionTime =
+        DateTime.parse(_utilityHistoryModel.createdAt);
+    String date = DateFormat("dd/MM/yyyy").format(utilityTransactionTime);
+    String time = DateFormat("hh:mm a").format(utilityTransactionTime);
 
     return Text(
-      "April 2022 19:37",
-      // "$date • $time",
+      "$date • $time",
       softWrap: false,
       overflow: TextOverflow.visible,
       style: TextStyle(color: darkGrey, fontSize: 12),
@@ -168,24 +179,23 @@ class _UtilityHistoryDetailScreenState
   Widget getLeading() {
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl:
-            "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg",
+        imageUrl: _utilityHistoryModel.providerAvatar,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
         errorWidget: imageErrorWidget,
         fit: BoxFit.cover,
         filterQuality: FilterQuality.high,
-        // placeholder: (context, url) => transaction!.avatar == ""
-        //     ? Icon(Icons.person)
-        //     : CircularLoadingIndicator(),
+        placeholder: (context, url) => _utilityHistoryModel.providerAvatar == ""
+            ? Icon(Icons.person)
+            : CircularLoadingIndicator(),
       ),
     );
   }
 
   Widget getSender() {
     return Text(
-      'MTN Nigeria',
+      _utilityHistoryModel.customerUsername,
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
@@ -199,8 +209,7 @@ class _UtilityHistoryDetailScreenState
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Text(
-          'NGN',
-          // worldCurrencies[transaction!.currency!]!,
+          worldCurrencies[_utilityHistoryModel.currency]!,
           style: TextStyle(
             color: blackFont,
             // color: transaction!.isCredit! ? navyBlue : blackFont,
@@ -210,8 +219,7 @@ class _UtilityHistoryDetailScreenState
           ),
         ),
         Text(
-          '50.00',
-          // moneyDisplayNormalizer(int.parse(transaction!.amount.toString())),
+          moneyDisplayNormalizer(_utilityHistoryModel.amount),
           style: TextStyle(
               color: blackFont,
               // color: transaction!.isCredit! ? navyBlue : blackFont,
@@ -257,8 +265,7 @@ class _UtilityHistoryDetailScreenState
           transactionOrKycDetailTile(
             SlydoAppIcon.user,
             AppLocalization.of(context)!.status,
-            'Successful',
-            // transaction!.status!,
+            _utilityHistoryModel.status,
           ),
           transactionOrKycDetailTile(
             SlydoAppIcon.category,
@@ -267,13 +274,13 @@ class _UtilityHistoryDetailScreenState
             // transaction!.category!,
           ),
           transactionOrKycDetailTile(SlydoAppIcon.note_filled,
-              AppLocalization.of(context)!.note, 'A note'
+              AppLocalization.of(context)!.note, '___a note'
               // transaction!.note!,
               ),
           transactionOrKycDetailTile(
             SlydoAppIcon.note,
             AppLocalization.of(context)!.description,
-            'Electricity payment',
+            '___electricity payment',
             // transaction!.description!,
           ),
         ],
@@ -283,7 +290,7 @@ class _UtilityHistoryDetailScreenState
 
   void goToMap() {
     debugPrint("go to Map Called !");
-    MapsLauncher.launchCoordinates(double.parse(transaction!.latitude!),
-        double.parse(transaction!.longitude!));
+    // MapsLauncher.launchCoordinates(double.parse(utilityHistoryModel.latitude),
+    //     double.parse(utilityHistoryModel.longitude));
   }
 }

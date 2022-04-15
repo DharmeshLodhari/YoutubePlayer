@@ -173,7 +173,7 @@ class _BankAccountListState extends State<BankAccountList> {
             itemCount: bankAccountList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == bankAccountList.length) {
-                return buildIndicator(isLoading);
+                return buildIndicator(isLoading: isLoading);
               } else {
                 return _getSlidableWithLists(
                     context,

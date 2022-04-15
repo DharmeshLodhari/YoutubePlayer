@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:Slydo/screens/more_apps/utility/models/bill_payment_model.dart';
 import 'package:Slydo/screens/more_apps/utility/models/provider_details_model.dart';
+import 'package:Slydo/screens/more_apps/utility/models/utility_transaction_model.dart';
 
 import 'models/provider_model.dart';
 
@@ -95,29 +96,36 @@ class UtilityAuth extends AuthService {
     print('HISTORY :::: ${response.body}');
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      List resultList = jsonData['results'];
+
+      List<UtilityHistoryModel> utilityHistoryModelList =
+          resultList.map((json) => UtilityHistoryModel.fromJson(json)).toList();
+
       Map<String, dynamic> result = {
         "next": jsonData["next"],
         "count": jsonData["count"],
-        "results": [
-          {
-            "id": "3182c6bf-cc4c-428c-8cc7-a7869653e3be",
-            "status": "Successful",
-            "customer_username": "tosinmomodu",
-            "created_at": "2022-04-14T17:38:20.951735Z",
-            "product": {
-              "name": "Prepaid",
-              "amount": 100000,
-              "currency": "NGN",
-              "id": "feded17b-db7e-425d-b2bd-2798fb9d7467",
-              "provider": {
-                "name": "Eko Electricity Distribution Company Plc",
-                "avatar":
-                    "https://slydo-assets.s3.amazonaws.com/media/provider_avatars/ea494008-6209-4f87-98b1-4397c90cf8b6.jpg",
-                "id": "afc2f974-2a60-4706-8106-46bdf5cb59ee"
-              }
-            },
-          },
-        ],
+        "results": utilityHistoryModelList,
+
+        // [
+        //   {
+        //     "id": "3182c6bf-cc4c-428c-8cc7-a7869653e3be",
+        //     "status": "Successful",
+        //     "customer_username": "tosinmomodu",
+        //     "created_at": "2022-04-14T17:38:20.951735Z",
+        //     "product": {
+        //       "name": "Prepaid",
+        //       "amount": 100000,
+        //       "currency": "NGN",
+        //       "id": "feded17b-db7e-425d-b2bd-2798fb9d7467",
+        //       "provider": {
+        //         "name": "Eko Electricity Distribution Company Plc",
+        //         "avatar":
+        //             "https://slydo-assets.s3.amazonaws.com/media/provider_avatars/ea494008-6209-4f87-98b1-4397c90cf8b6.jpg",
+        //         "id": "afc2f974-2a60-4706-8106-46bdf5cb59ee"
+        //       }
+        //     },
+        //   },
+        // ],
         // "results": jsonData['results'],
         "previous": jsonData["previous"],
       };
@@ -130,16 +138,21 @@ class UtilityAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>> getUtilityTransactionsDetails(
+  Future<UtilityHistoryModel?> getUtilityTransactionsDetails(
       {required String transactionsId}) async {
-    String url = AppConfig.baseUrl +
-        "/api/v1/utilities/transactions/3182c6bf-cc4c-428c-8cc7-a7869653e3be/";
+    String url =
+        AppConfig.baseUrl + "/api/v1/utilities/transactions/$transactionsId/";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
     print('TRANSACTION DETAILS RESPONSE ::: ${response.body}');
-    return {};
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      return UtilityHistoryModel.fromJson(jsonData);
+    } else {
+      return null;
+    }
   }
 
   Future<String?> verifyCustomerReferenceNumber({

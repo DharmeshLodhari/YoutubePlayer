@@ -6,27 +6,53 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/enums.dart';
+import '../../../utils/util.dart';
 import 'models/Contract.dart';
 import 'models/Invoice.dart';
 
 class BusinessAuth extends AuthService {
   /// Contract and Invoice
   //get all contract list
-  Future<List<Contract>> getContractList() async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
+  Future<Map<String, dynamic>?> getContractList(String? next, String? previous,
+      {ContractStatus? contractStatus}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+
+    if (next == "") {
+      if (contractStatus != null) {
+        url = AppConfig.baseUrl +
+            "/api/v1/transactions/payment-contract/status=${contractStatus.name}&payment_duration=weekly";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
+      }
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
-    List data = jsonData["results"];
 
-    debugPrint('CONTRACT LIST RESPONSE ::: $jsonData');
-    List<Contract> contracts = [];
+    if (response.statusCode == 200) {
+      List<Contract> contractList = [];
+      List jsonResult = jsonData['results'];
 
-    data.forEach((element) {
-      contracts.add(Contract.fromJson(element));
-    });
+      jsonResult.forEach((json) {
+        contractList.add(Contract.fromJson(json));
+      });
 
-    return contracts;
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": contractList
+      };
+      return result;
+    } else {
+      return Future.error(jsonData);
+    }
   }
 
   Future<Contract> getContract(String id) async {
@@ -142,29 +168,46 @@ class BusinessAuth extends AuthService {
   }
 
   //get all invoice list
-  Future<List<Invoice>> getInvoiceList({InvoiceStatus? invoiceStatus}) async {
-    debugPrint(invoiceStatus?.name);
+  Future<Map<String, dynamic>?> getInvoiceList(String? next, String? previous,
+      {InvoiceStatus? invoiceStatus}) async {
     var url = "";
-    if (invoiceStatus != null) {
-      url = AppConfig.baseUrl +
-          "/api/v1/transactions/invoice/?status=${invoiceStatus.name}";
+    if (next == null) {
+      return null;
+    }
+
+    if (next == "") {
+      if (invoiceStatus != null) {
+        url = AppConfig.baseUrl +
+            "/api/v1/transactions/invoice/?status=${invoiceStatus.name}&payment_duration=weekly";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
+      }
     } else {
-      url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
+      url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
     debugPrint('GET INVOICE LIST ::: ${response.body}');
     var jsonData = json.decode(response.body);
-    List data = jsonData["results"];
+    if (response.statusCode == 200) {
+      List<Invoice> invoiceList = [];
+      List jsonResult = jsonData['results'];
 
-    List<Invoice> invoices = [];
+      jsonResult.forEach((json) {
+        invoiceList.add(Invoice.fromJson(json));
+      });
 
-    data.forEach((element) {
-      invoices.add(Invoice.fromJson(element));
-    });
-
-    return invoices;
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": invoiceList
+      };
+      return result;
+    } else {
+      return Future.error(jsonData);
+    }
   }
 
   Future<Invoice> getInvoice(String id) async {

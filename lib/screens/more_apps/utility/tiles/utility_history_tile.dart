@@ -1,3 +1,5 @@
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/screens/more_apps/utility/models/utility_transaction_model.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_history_details.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -6,23 +8,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-// {"id":"3182c6bf-cc4c-428c-8cc7-a7869653e3be","status":"Successful","customer_username":"tosinmomodu","created_at":"2022-04-14T17:38:20.951735Z","product":"feded17b-db7e-425d-b2bd-2798fb9d7467"}
+class UtilityHistoryTile extends StatelessWidget {
+  final UtilityHistoryModel utilityHistoryModel;
 
-class UtilityPaymentTile extends StatelessWidget {
-  final Map<String, dynamic>? payment;
-
-  UtilityPaymentTile({this.payment});
+  UtilityHistoryTile({required this.utilityHistoryModel});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        UtilityAuth()
-            .getUtilityTransactionsDetails(transactionsId: payment!['id']);
         NavigationUtil.push(
           context,
           screen: UtilityHistoryDetailScreen(
-            arguments: {},
+            transactionId: utilityHistoryModel.transactionId,
           ),
         );
       },
@@ -53,24 +51,33 @@ class UtilityPaymentTile extends StatelessWidget {
                 ],
               ),
               Expanded(
-                  child: SizedBox(
-                width: 1,
-              )),
+                child: SizedBox(
+                  width: 1,
+                ),
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    'NGN 50',
-                    // payment!['amount'],
-                    style: TextStyle(
-                        fontFamily: "Roboto",
-                        color: blackFont,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14),
+                  Row(
+                    children: [
+                      Text(
+                        worldCurrencies[utilityHistoryModel.currency]!,
+                        style: TextStyle(
+                            fontFamily: "Roboto",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14),
+                      ),
+                      Text(
+                        moneyDisplayNormalizer(utilityHistoryModel.amount),
+                        style: TextStyle(
+                            fontFamily: "Roboto",
+                            color: blackFont,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   getPaymentStatus(),
                 ],
               ),
@@ -92,14 +99,13 @@ class UtilityPaymentTile extends StatelessWidget {
         width: 50,
         fit: BoxFit.fill,
         filterQuality: FilterQuality.high,
-        imageUrl:
-            "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg",
+        imageUrl: utilityHistoryModel.providerAvatar,
       ),
     );
   }
 
   Widget getPaymentStatus() {
-    Color color = getStatusColor(payment!['status']);
+    Color color = getStatusColor(utilityHistoryModel.status);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -107,7 +113,7 @@ class UtilityPaymentTile extends StatelessWidget {
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8)),
       child: Text(
-        payment!['status'],
+        utilityHistoryModel.status,
         style:
             TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12),
       ),
@@ -132,7 +138,7 @@ class UtilityPaymentTile extends StatelessWidget {
 
   Widget getTitle() {
     return Text(
-      payment!['customer_username'],
+      utilityHistoryModel.customerUsername,
       // payment!['name'],
       style: TextStyle(
         color: blackFont,
@@ -152,6 +158,10 @@ class UtilityPaymentTile extends StatelessWidget {
   }
 
   String _getFormattedDateTime() {
-    return '${DateFormat.yMMMM().format(DateTime.parse(payment!['created_at']))} ${DateFormat.Hm().format(DateTime.parse(payment!['created_at']))}';
+    String time =
+        DateFormat.Hm().format(DateTime.parse(utilityHistoryModel.createdAt));
+    String date = DateFormat.yMMMM()
+        .format(DateTime.parse(utilityHistoryModel.createdAt));
+    return '$date • $time';
   }
 }

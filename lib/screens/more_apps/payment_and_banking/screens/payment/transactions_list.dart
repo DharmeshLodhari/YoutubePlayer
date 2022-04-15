@@ -281,7 +281,7 @@ class _TransactionListState extends State<TransactionList> {
             itemCount: transactionList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == transactionList.length) {
-                return _buildIndicator();
+                return buildIndicator(isLoading: isLoading);
               } else {
                 return _getSlidableWithLists(
                     context, transactionList[index], index);
@@ -289,18 +289,6 @@ class _TransactionListState extends State<TransactionList> {
             },
             controller: _scrollController,
           );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 0.0,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
   }
 
   void getList() async {
