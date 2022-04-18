@@ -23,7 +23,7 @@ class BusinessAuth extends AuthService {
     if (next == "") {
       if (contractStatus != null) {
         url = AppConfig.baseUrl +
-            "/api/v1/transactions/payment-contract/status=${contractStatus.name}&payment_duration=weekly";
+            "/api/v1/transactions/payment-contract/?status=${contractStatus.name}";
       } else {
         url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
       }
@@ -33,6 +33,7 @@ class BusinessAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+    print('GET CONTRACT LIST :::: ${response.body}');
     var jsonData = json.decode(response.body);
 
     if (response.statusCode == 200) {
@@ -50,6 +51,8 @@ class BusinessAuth extends AuthService {
         "results": contractList
       };
       return result;
+    } else if (response.statusCode == 404) {
+      return jsonData;
     } else {
       return Future.error(jsonData);
     }
@@ -205,6 +208,8 @@ class BusinessAuth extends AuthService {
         "results": invoiceList
       };
       return result;
+    } else if (response.statusCode == 404) {
+      return jsonData;
     } else {
       return Future.error(jsonData);
     }

@@ -985,7 +985,7 @@ class _SendPaymentState extends State<SendPayment> {
                   }
 
                   debugPrint("Data:- $data");
-                  _auth.makePayment(data).then((value) {
+                  await _auth.makePayment(data).then((value) {
                     debugPrint(
                         "status code:- ${value.statusCode}  body:- ${value.body}");
                     response = value;

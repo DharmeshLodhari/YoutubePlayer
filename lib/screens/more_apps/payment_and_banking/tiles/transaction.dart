@@ -288,7 +288,7 @@ class TransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        transaction!.description != ""
+        transaction!.description != "" && transaction!.description != null
             ? Text(
                 "${transaction!.description}",
                 style: TextStyle(color: darkGrey, fontSize: 12),

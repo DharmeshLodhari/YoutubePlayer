@@ -121,17 +121,17 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             height: 126,
           ),
         ),
-        SizedBox(
-          width: 12,
-        ),
+        SizedBox(width: 12),
         Expanded(
-            child: UtilityDashboardItemTile(
-          icon: SlydoAppIcon.utility_airtime,
-          title: "Mobile Data",
-          providersEnum: UtilitiesProvidersEnum.mobile_data,
-          iconColor: navyBlue,
-          height: 126,
-        )),
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utility_airtime,
+            title: "Data Bundle",
+            providersEnum: UtilitiesProvidersEnum.mobile_data,
+            iconColor: navyBlue,
+            height: 126,
+            titleFontSize: 12,
+          ),
+        ),
       ],
     );
   }
@@ -147,31 +147,27 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           iconColor: HexColor("#46CECE"),
           height: 126,
         )),
-        SizedBox(
-          width: 12,
-        ),
+        SizedBox(width: 12),
         Expanded(
-            child: UtilityDashboardItemTile(
-          icon: SlydoAppIcon.utility_betting,
-          title: "Betting",
-          providersEnum: UtilitiesProvidersEnum.betting,
-          iconColor: HexColor("#46CE7C"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utility_betting,
+            title: "Betting",
+            providersEnum: UtilitiesProvidersEnum.betting,
+            iconColor: HexColor("#46CE7C"),
+            height: 126,
+          ),
         ),
+        SizedBox(width: 12),
         Expanded(
-            child: UtilityDashboardItemTile(
-          icon: SlydoAppIcon.utility_toll,
-          title: "Toll",
-          providersEnum: UtilitiesProvidersEnum.toll,
-          iconColor: HexColor("#F35B46"),
-          height: 126,
-        )),
-        SizedBox(
-          width: 12,
+          child: UtilityDashboardItemTile(
+            icon: SlydoAppIcon.utility_toll,
+            title: "Toll",
+            providersEnum: UtilitiesProvidersEnum.toll,
+            iconColor: HexColor("#F35B46"),
+            height: 126,
+          ),
         ),
+        SizedBox(width: 12),
         Expanded(child: Container()),
       ],
     );

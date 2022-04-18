@@ -77,62 +77,72 @@ class _InvoiceListState extends State<InvoiceList> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Consumer<InvoiceBloc>(
-          builder: (context, contractAndInvoiceBloc, _) {
-            if (contractAndInvoiceBloc.isLoading) {
-              return Center(
-                child: CircularLoadingIndicator(),
-              );
-            } else if (contractAndInvoiceBloc.invoiceList.isEmpty) {
-              return NoItemInList(
-                msg: AppLocalization.of(context)!.invoiceEmpty,
-              );
-            } else {
-              if (contractAndInvoiceBlocProvider.endOfList) {
-                if (_scrollController.position.pixels ==
-                        _scrollController.position.maxScrollExtent &&
-                    _scrollController.position.pixels != 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(AppLocalization.of(context)!
-                        .youHaveReachedBottomOfTheList),
-                    duration: Duration(milliseconds: 500),
-                  ));
-                  contractAndInvoiceBlocProvider.endOfList = false;
-                }
-              }
-              return SmartRefresher(
-                enablePullDown: true,
-                header: WaterDropHeader(
-                  complete: Container(),
-                  waterDropColor: navyBlue,
-                ),
-                controller: _refreshController,
-                onRefresh: _onRefresh,
-                child: ListView.builder(
-                  padding: EdgeInsets.symmetric(vertical: 4),
-                  itemCount: contractAndInvoiceBloc.invoiceList.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == contractAndInvoiceBloc.invoiceList.length) {
-                      return buildIndicator(
-                          isLoading: contractAndInvoiceBloc.isLoading);
-                    } else {
-                      Invoice invoice =
-                          contractAndInvoiceBloc.invoiceList[index];
-                      return InvoiceTile(
-                        invoice: invoice,
-                        onTap: () {
-                          Navigator.of(context).pushNamed("/invoice-detail",
-                              arguments: {"id": invoice.id});
-                        },
-                      );
-                    }
-                  },
-                  controller: _scrollController,
-                ),
-              );
+        body: _scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget _scaffoldBody() {
+    return Consumer<InvoiceBloc>(
+      builder: (context, invoiceBloc, _) {
+        if (invoiceBloc.isLoading) {
+          return Center(
+            child: CircularLoadingIndicator(),
+          );
+        } else if (invoiceBloc.errorMessage.isNotEmpty) {
+          return NoItemInList(
+            msg: invoiceBloc.errorMessage,
+          );
+        } else if (invoiceBloc.invoiceList.isEmpty) {
+          return NoItemInList(
+            msg: AppLocalization.of(context)!.invoiceEmpty,
+          );
+        } else {
+          if (contractAndInvoiceBlocProvider.endOfList) {
+            if (_scrollController.position.pixels ==
+                    _scrollController.position.maxScrollExtent &&
+                _scrollController.position.pixels != 0) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+                duration: Duration(milliseconds: 500),
+              ));
+              contractAndInvoiceBlocProvider.endOfList = false;
             }
-          },
-        ),
+          }
+          return invoiceListWidget(invoiceBloc);
+        }
+      },
+    );
+  }
+
+  Widget invoiceListWidget(InvoiceBloc invoiceBloc) {
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 4),
+        itemCount: invoiceBloc.invoiceList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == invoiceBloc.invoiceList.length) {
+            return buildIndicator(isLoading: invoiceBloc.isLoading);
+          } else {
+            Invoice invoice = invoiceBloc.invoiceList[index];
+            return InvoiceTile(
+              invoice: invoice,
+              onTap: () {
+                Navigator.of(context).pushNamed("/invoice-detail",
+                    arguments: {"id": invoice.id});
+              },
+            );
+          }
+        },
+        controller: _scrollController,
       ),
     );
   }

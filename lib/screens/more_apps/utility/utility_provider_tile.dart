@@ -55,11 +55,21 @@ class UtilityProviderTile extends StatelessWidget {
 
   String getProviderName() {
     List<String> splitString = providerModel.name.split(' ');
-    String providerTwoWords = "${splitString[0]} ${splitString[1]}";
-    if (!(providerTwoWords.toLowerCase().contains('electricity'))) {
-      return "$providerTwoWords Electricity";
-    } else {
-      return providerTwoWords;
+
+    String providerName = "";
+
+    try {
+      providerName = "${splitString[0]} ${splitString[1]}";
+    } catch (e) {
+      providerName = "${splitString[0]}";
     }
+
+    if (providerModel.name.toLowerCase().contains('electricity')) {
+      if (!(providerName.toLowerCase().contains('electricity'))) {
+        return "$providerName Electricity";
+      }
+    }
+
+    return providerName;
   }
 }

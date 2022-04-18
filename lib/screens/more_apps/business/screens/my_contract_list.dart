@@ -83,63 +83,9 @@ class _MyContractListState extends State<MyContractList> {
         return Future.value(true);
       },
       child: Scaffold(
-          backgroundColor: Colors.white,
-          body: Consumer<ContractBloc>(
-            builder: (context, contractAndInvoiceBloc, _) {
-              if (contractAndInvoiceBloc.isLoading) {
-                return Center(
-                  child: CircularLoadingIndicator(),
-                );
-              } else if (contractAndInvoiceBloc.contractList.isEmpty) {
-                return NoItemInList(
-                  msg: AppLocalization.of(context)!.contractEmpty,
-                );
-              } else {
-                if (contractAndInvoiceBlocProvider.endOfList) {
-                  if (_scrollController.position.pixels ==
-                          _scrollController.position.maxScrollExtent &&
-                      _scrollController.position.pixels != 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(AppLocalization.of(context)!
-                          .youHaveReachedBottomOfTheList),
-                      duration: Duration(milliseconds: 500),
-                    ));
-                    contractAndInvoiceBlocProvider.endOfList = false;
-                  }
-                }
-                return SmartRefresher(
-                  enablePullDown: true,
-                  header: WaterDropHeader(
-                    complete: Container(),
-                    waterDropColor: navyBlue,
-                  ),
-                  controller: _refreshController,
-                  onRefresh: _onRefresh,
-                  child: ListView.builder(
-                    padding: EdgeInsets.symmetric(vertical: 4),
-                    itemCount: contractAndInvoiceBloc.contractList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == contractAndInvoiceBloc.contractList.length) {
-                        return buildIndicator(
-                            isLoading: contractAndInvoiceBloc.isLoading);
-                      } else {
-                        Contract contract =
-                            contractAndInvoiceBloc.contractList[index];
-                        return _getSlidableWithLists(
-                            context,
-                            ContractTile(
-                              contract: contract,
-                            ),
-                            index,
-                            contract: contract);
-                      }
-                    },
-                    controller: _scrollController,
-                  ),
-                );
-              }
-            },
-          )),
+        backgroundColor: Colors.white,
+        body: _scaffoldBody(),
+      ),
     );
   }
 
@@ -273,6 +219,71 @@ class _MyContractListState extends State<MyContractList> {
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
+
+  Widget contractListWidget(ContractBloc contractBloc) {
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 4),
+        itemCount: contractBloc.contractList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == contractBloc.contractList.length) {
+            return buildIndicator(isLoading: contractBloc.isLoading);
+          } else {
+            Contract contract = contractBloc.contractList[index];
+            return _getSlidableWithLists(
+                context,
+                ContractTile(
+                  contract: contract,
+                ),
+                index,
+                contract: contract);
+          }
+        },
+        controller: _scrollController,
+      ),
+    );
+  }
+
+  Widget _scaffoldBody() {
+    return Consumer<ContractBloc>(
+      builder: (context, contractBloc, _) {
+        if (contractBloc.isLoading) {
+          return Center(
+            child: CircularLoadingIndicator(),
+          );
+        } else if (contractBloc.errorMessage.isNotEmpty) {
+          return NoItemInList(
+            msg: contractBloc.errorMessage,
+          );
+        } else if (contractBloc.contractList.isEmpty) {
+          return NoItemInList(
+            msg: AppLocalization.of(context)!.contractEmpty,
+          );
+        } else {
+          if (contractAndInvoiceBlocProvider.endOfList) {
+            if (_scrollController.position.pixels ==
+                    _scrollController.position.maxScrollExtent &&
+                _scrollController.position.pixels != 0) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+                duration: Duration(milliseconds: 500),
+              ));
+              contractAndInvoiceBlocProvider.endOfList = false;
+            }
+          }
+          return contractListWidget(contractBloc);
+        }
+      },
+    );
+  }
 }
 
 class VerticalListItem extends StatelessWidget {

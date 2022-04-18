@@ -7,6 +7,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../bloc/contract_bloc.dart';
 import 'invoice_list.dart';
 import 'my_contract_list.dart';
 
@@ -23,7 +24,8 @@ class _MyContractScreenState extends State<MyContractScreen> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
-  late InvoiceBloc contractAndInvoiceBloc;
+  late InvoiceBloc invoiceBloc;
+  late ContractBloc contractBloc;
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
@@ -39,52 +41,44 @@ class _MyContractScreenState extends State<MyContractScreen> {
   switchStatementForInvoicePage(String value) {
     switch (value) {
       case "Draft":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Draft);
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Draft);
         break;
 
       case "Paid":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Paid);
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Paid);
         break;
 
       case "Unpaid":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Unpaid);
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Unpaid);
         break;
       case "Pending":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Pending);
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Pending);
         break;
 
       default:
-        contractAndInvoiceBloc.getInvoiceList();
+        invoiceBloc.getInvoiceList();
     }
   }
 
   switchStatementForContractPage(String value) {
     switch (value) {
       case "Ended":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Draft);
+        contractBloc.getContractList(contractStatus: ContractStatus.Ended);
         break;
 
       case "Active":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Paid);
+        contractBloc.getContractList(contractStatus: ContractStatus.Active);
         break;
 
       case "Paused":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Unpaid);
+        contractBloc.getContractList(contractStatus: ContractStatus.Paused);
         break;
       case "Stopped":
-        contractAndInvoiceBloc.getInvoiceList(
-            invoiceStatus: InvoiceStatus.Pending);
+        contractBloc.getContractList(contractStatus: ContractStatus.Stopped);
         break;
 
       default:
-        contractAndInvoiceBloc.getInvoiceList();
+        contractBloc.getContractList();
     }
   }
 
@@ -95,7 +89,8 @@ class _MyContractScreenState extends State<MyContractScreen> {
 
   @override
   Widget build(BuildContext context) {
-    contractAndInvoiceBloc = Provider.of<InvoiceBloc>(context, listen: false);
+    invoiceBloc = Provider.of<InvoiceBloc>(context, listen: false);
+    contractBloc = Provider.of<ContractBloc>(context, listen: false);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,

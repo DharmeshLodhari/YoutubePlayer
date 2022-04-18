@@ -12,10 +12,12 @@ class UtilityDashboardItemTile extends StatelessWidget {
   IconData icon;
   Color iconColor;
   double height;
+  double titleFontSize;
   UtilitiesProvidersEnum providersEnum;
 
   UtilityDashboardItemTile(
       {required this.title,
+      this.titleFontSize = 14,
       required this.providersEnum,
       required this.icon,
       required this.iconColor,
@@ -57,10 +59,11 @@ class UtilityDashboardItemTile extends StatelessWidget {
               flexibleSpace(),
               Text(
                 title,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14),
+                    fontSize: titleFontSize),
               ),
               flexibleSpace(flex: 3),
             ],

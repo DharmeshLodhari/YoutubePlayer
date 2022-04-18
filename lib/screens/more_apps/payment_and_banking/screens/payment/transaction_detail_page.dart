@@ -272,12 +272,12 @@ class _TransactionDetailState extends State<TransactionDetail> {
           transactionOrKycDetailTile(
             SlydoAppIcon.note_filled,
             AppLocalization.of(context)!.note,
-            transaction!.note!,
+            transaction!.note ?? '---',
           ),
           transactionOrKycDetailTile(
             SlydoAppIcon.note,
             AppLocalization.of(context)!.description,
-            transaction!.description!,
+            transaction!.description ?? '---',
           ),
         ],
       ),

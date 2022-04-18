@@ -42,7 +42,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
     /// "author":"brijesh.sakariya",
     /// "recipient":"black",
     /// "check_id":"2b312f4e-86aa-42e3-9972-b33f2d3d2fbd",
-    /// "created_at":"2021-05-19 11:01:02.661721+00:00",
+    /// "created_at":"2021-05-19 11:01:02.661721+00:00local",
     /// "type":"nudge_user",
     /// "author_avatar":null},
     /// title: Slydo Notification}}
@@ -292,10 +292,12 @@ class PushNotificationService {
     try {
       debugPrint("payload : $payload");
       if (payload == "/request-payment") {
-        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
-        DashboardBloc _dashboardBloc =
-            Provider.of<DashboardBloc>(context, listen: false);
-        _dashboardBloc.index = 1;
+        Navigator.of(context!).popUntil(ModalRoute.withName('/accounts'));
+
+        // Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        // DashboardBloc _dashboardBloc =
+        //     Provider.of<DashboardBloc>(context, listen: false);
+        // _dashboardBloc.index = 1;
       } else if (payload == "/transaction") {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/transactions');

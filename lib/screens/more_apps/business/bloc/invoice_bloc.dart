@@ -16,9 +16,9 @@ class InvoiceBloc extends ChangeNotifier {
   bool isFirstTime = true;
   List<Invoice> invoiceList = [];
   bool isRefreshing = false;
+  String errorMessage = "";
 
   Future<List<Invoice>?> getInvoiceList({InvoiceStatus? invoiceStatus}) async {
-    print('get invoicelist --->');
     if (isRefreshing) {
       count = 0;
       next = "";
@@ -36,7 +36,12 @@ class InvoiceBloc extends ChangeNotifier {
         Map<String, dynamic>? result = await businessAuth
             .getInvoiceList(next, previous, invoiceStatus: invoiceStatus);
 
-        next = result!['next'];
+        if (result!.containsKey('detail')) {
+          errorMessage = result['detail'];
+          notifyListeners();
+          return null;
+        }
+        next = result['next'];
         count = result['count'];
         previous = result['previous'];
         var tempList = result['results'];

@@ -768,7 +768,8 @@ class _RequestPaymentState extends State<RequestPayment> {
                     response = value;
                     if (response.statusCode == 201) {
                       if (!isFromChat!) {
-                        _dashboardBloc.index = 1;
+                        _dashboardBloc.index = 0;
+                        showToast(message: 'Payment request sent');
                         RefreshBlocForRequestPayment
                             refreshBlocForRequestPayment =
                             Provider.of<RefreshBlocForRequestPayment>(context,

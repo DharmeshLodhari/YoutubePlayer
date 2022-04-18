@@ -5,6 +5,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/business/bloc/contract_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/flight/flight_dashboard_bloc.dart';
@@ -120,6 +121,9 @@ void main() async {
           ),
           ChangeNotifierProvider<InvoiceBloc>.value(
             value: InvoiceBloc(),
+          ),
+          ChangeNotifierProvider<ContractBloc>.value(
+            value: ContractBloc(),
           ),
 
           ///Uncomment this when we implement this functionality

@@ -17,6 +17,7 @@ class ContractBloc extends ChangeNotifier {
   bool isFirstTime = true;
   List<Contract> contractList = [];
   bool isRefreshing = false;
+  String errorMessage = "";
 
   Future<List<Contract>?> getContractList(
       {ContractStatus? contractStatus}) async {
@@ -37,7 +38,13 @@ class ContractBloc extends ChangeNotifier {
         Map<String, dynamic>? result = await businessAuth
             .getContractList(next, previous, contractStatus: contractStatus);
 
-        next = result!['next'];
+        if (result!.containsKey('detail')) {
+          errorMessage = result['detail'];
+          notifyListeners();
+          return null;
+        }
+
+        next = result['next'];
         count = result['count'];
         previous = result['previous'];
         var tempList = result['results'];

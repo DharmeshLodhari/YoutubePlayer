@@ -140,8 +140,10 @@ class _QRCodeViewState extends State<QRCodeView> {
       if (scanData != null) {
         if (scanData.code.startsWith(AppConfig.baseUrl) ||
             scanData.code.startsWith(AppConfig.baseUrl) ||
+            scanData.code.startsWith(AppConfig.merchantUrl) ||
             scanData.code.startsWith(AppConfig.localHost)) {
           var scanDataList = scanData.code.split('/');
+
           scanDataList.removeWhere((value) => value == "");
           if (canShowDialogBox) {
             getNavigationRoot(scanDataList, scanDataCode: scanData.code);
@@ -155,23 +157,25 @@ class _QRCodeViewState extends State<QRCodeView> {
   // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
   void getNavigationRoot(List<String> scanDataList,
       {String? scanDataCode}) async {
-    debugPrint("test: " + scanDataList[scanDataList.length - 2]);
-    if (scanDataList[scanDataList.length - 2] == "products") {
+    int qrCodeIndex = scanDataList.length - 2;
+
+    if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
-      Navigator.pop(context);
+      _dashboardBloc.index = 0;
+
       Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
-    } else if (scanDataList[scanDataList.length - 2] == "services") {
+    } else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
-      Navigator.pop(context);
+      _dashboardBloc.index = 0;
+
       Navigator.of(context)
           .pushNamed("/service-detail", arguments: {"service": service});
-    } else if (scanDataList[scanDataList.length - 3] ==
-        'anonymous-shopping-cart') {
-      // _dashboardBloc.index = 0;
+    } else if (scanDataList[qrCodeIndex] == 'anonymous-shopping-cart') {
+      _dashboardBloc.index = 0;
 
       ShoppingCartModelFromQrCode? shoppingCartModel =
           await ShoppingAuthService()
@@ -387,7 +391,8 @@ class _QRCodeViewState extends State<QRCodeView> {
       var recipient = scanDataList.last;
       getRecipient(recipient);
 
-      Navigator.pop(context);
+      _dashboardBloc.index = 0;
+
       if (isRequest!) {
         Navigator.of(context).pushNamed(
           '/request-payment',

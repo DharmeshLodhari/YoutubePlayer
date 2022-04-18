@@ -11,6 +11,7 @@ class AppConfig {
   static AppType? appType;
 
   static late String baseUrl;
+  static late String merchantUrl;
   static late String localHost;
   static late String gifApiKey;
   static String? socketUrl;
@@ -34,6 +35,7 @@ class AppConfig {
     if (appType == AppType.DEVELOPMENT) {
       // baseUrl = "https://devapi.slydo.co";
       baseUrl = "https://api.slydo.co";
+      merchantUrl = "https://merchant.slydo.co";
       localHost = "https://127.0.0.1:8080";
       gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
       socketUrl = "wss://devchat.slydo.co/ws/main";
@@ -44,6 +46,7 @@ class AppConfig {
     } else if (appType == AppType.PRODUCTION) {
       baseUrl = "https://api.slydo.co";
       localHost = "https://127.0.0.1:8080";
+      merchantUrl = "https://merchant.slydo.co";
       gifApiKey = "Jmh8SVxEvtKVCegoJDNYnxSSSbfPISPs";
       socketUrl = "wss://chat.slydo.co/ws/main";
       chatUrl = "https://chat.slydo.co";

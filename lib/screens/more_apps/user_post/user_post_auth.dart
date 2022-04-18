@@ -26,8 +26,13 @@ class UserPostAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+    Map<String, dynamic> userPost = jsonDecode(response.body);
+
+    userPost['results'].forEach((key, value) {
+      print(key);
+    });
     debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        "URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
 
@@ -36,7 +41,7 @@ class UserPostAuth extends AuthService {
       return Future.error("${response.body}");
     }
     debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        "URL $url STATUS CODE:- ${response.statusCode}  BODY:- ${response.body}");
     return Future.error("${response.body}");
   }
 

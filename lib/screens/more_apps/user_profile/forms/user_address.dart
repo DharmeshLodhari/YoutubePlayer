@@ -260,12 +260,12 @@ class _UserAddressState extends State<UserAddress> {
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
       Map data = {
-        "address_line_1": addressLineOneController.text,
-        "address_line_2": addressLineTwoController.text,
         "city": cityController.text,
         "state": stateController.text,
         "country": selectedCountry.name,
-        "coutry_iso_name": selectedCountry.isoCode,
+        "iso_code": selectedCountry.isoCode,
+        "address_line_1": addressLineOneController.text,
+        "address_line_2": addressLineTwoController.text,
       };
       UserAuth().addUserAddress(data).then((value) {
         showToast(

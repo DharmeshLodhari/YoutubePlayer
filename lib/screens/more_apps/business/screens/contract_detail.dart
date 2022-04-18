@@ -94,10 +94,8 @@ class _ContractDetailState extends State<ContractDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        transactionHistoryBtn(),
-        SizedBox(
-          width: 16,
-        ),
+        // transactionHistoryBtn(),
+        SizedBox(width: 16),
       ],
     );
   }

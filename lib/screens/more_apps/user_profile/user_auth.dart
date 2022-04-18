@@ -36,6 +36,7 @@ class UserAuth extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      debugPrint("FETCH USER PROFILE RESPONSE BODY:- ${response.body}");
 
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
@@ -318,6 +319,7 @@ class UserAuth extends AuthService {
     var jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
+      debugPrint('USER ADDRESS ::: $jsonData');
       return Address.fromJson(jsonData);
     }
     return Address(
@@ -432,7 +434,10 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint("ADDRESS ADDED: ${response.body}");
+
       return true;
     }
     debugPrint("address add failed : ${response.body}");
@@ -451,9 +456,11 @@ class UserAuth extends AuthService {
     }
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+    debugPrint('USER RES CONTACTS :::: $response');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body) ?? {};
+      debugPrint('USER CONTACTS :::: $jsonData');
 
       Map<String, dynamic> result = {
         "count": jsonData["count"],

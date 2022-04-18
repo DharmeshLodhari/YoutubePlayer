@@ -205,7 +205,7 @@ class AuthService {
 
     Jwt? jwt;
 
-    Connectivity().checkConnectivity().then((value) async {
+    await Connectivity().checkConnectivity().then((value) async {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
