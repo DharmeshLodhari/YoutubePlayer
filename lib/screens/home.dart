@@ -4,7 +4,6 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -502,13 +501,13 @@ class _HomeState extends State<Home> {
               width: 12,
             ),
             Text(
-              "Send",
+              "Pay",
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ],
         ),
         onTap: () {
-          Navigator.of(context).pushNamed('/send-payment',
+          Navigator.of(context).pushNamed('/pay-someone',
               arguments: <String, bool>{'isFromProfile': true});
         },
       ),

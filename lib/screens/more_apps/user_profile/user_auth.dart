@@ -26,6 +26,7 @@ class UserAuth extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/user/customer/" + userName.trim();
     var uuid = Uuid();
     var transactionId = uuid.v4();
+
     var headers = {
       "Content-type": "application/json",
       "TransactionId": transactionId,

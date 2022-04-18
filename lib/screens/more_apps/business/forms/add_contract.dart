@@ -393,6 +393,7 @@ class _AddContractState extends State<AddContract> {
               isValidPayee = _payee!.userName != userBloc.user.userName;
             });
           }
+          _recipientController.text = customerProfile.userName!;
         }
       },
     );

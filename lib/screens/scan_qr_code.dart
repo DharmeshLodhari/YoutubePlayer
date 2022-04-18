@@ -159,6 +159,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       {String? scanDataCode}) async {
     int qrCodeIndex = scanDataList.length - 2;
 
+    print('SCAN ::: $scanDataList');
     if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);

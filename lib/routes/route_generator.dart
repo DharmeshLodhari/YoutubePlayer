@@ -57,7 +57,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/alread
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/payout_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/pay_someone.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_list.dart';
@@ -293,9 +293,9 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/send-payment':
+      case '/pay-someone':
         return PageTransition(
-          child: SendPayment(
+          child: PaySomeone(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,

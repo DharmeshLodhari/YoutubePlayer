@@ -577,6 +577,7 @@ class _AddInvoiceState extends State<AddInvoice> {
               isValidPayee = _payee!.userName != userBloc.user.userName;
             });
           }
+          _recipientController.text = customerProfile.userName!;
         }
       },
     );

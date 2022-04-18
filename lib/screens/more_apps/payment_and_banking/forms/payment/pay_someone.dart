@@ -12,7 +12,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -22,24 +21,23 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
-class SendPayment extends StatefulWidget {
+class PaySomeone extends StatefulWidget {
   var arguments;
 
-  SendPayment({this.arguments});
+  PaySomeone({this.arguments});
 
   // Declare a field that holds the userData.
   @override
-  _SendPaymentState createState() => _SendPaymentState();
+  _PaySomeoneState createState() => _PaySomeoneState();
 }
 
-class _SendPaymentState extends State<SendPayment> {
+class _PaySomeoneState extends State<PaySomeone> {
   TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   TextEditingController _referenceController = TextEditingController();
@@ -237,7 +235,7 @@ class _SendPaymentState extends State<SendPayment> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.sendPayment,
+        AppLocalization.of(context)!.paySomeone,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -599,10 +597,12 @@ class _SendPaymentState extends State<SendPayment> {
           if (mounted) setState(() {});
 
           var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
+              await UserAuth().fetchCustomerProfileWithAuth(recipient);
 
           _payee = customerProfile;
           isValidPayee = _payee!.userName != userBloc.user.userName;
+
+          _recipientController.text = customerProfile.userName!;
 
           if (mounted) setState(() {});
         }

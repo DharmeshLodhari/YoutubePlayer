@@ -305,8 +305,8 @@ class _TransactionListState extends State<TransactionList> {
           isLoading = false;
           return;
         }
-        count = result['count'];
         next = result['next'];
+        count = result['count'];
         previous = result['previous'];
         var tempList = result['results'];
 

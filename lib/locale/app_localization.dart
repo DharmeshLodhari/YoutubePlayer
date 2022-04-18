@@ -548,6 +548,20 @@ class AppLocalization {
     );
   }
 
+  String get makePayment {
+    return Intl.message(
+      "Make Payment",
+      name: "makePayment",
+    );
+  }
+
+  String get paySomeone {
+    return Intl.message(
+      "Pay someone",
+      name: "paySomeone",
+    );
+  }
+
   String get useFourDigitNumber {
     return Intl.message(
       "Use 4 Digit Number",

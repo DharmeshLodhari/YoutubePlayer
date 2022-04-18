@@ -503,10 +503,12 @@ class _RequestPaymentState extends State<RequestPayment> {
           _recipientController.text = recipient!;
           if (mounted) setState(() {});
           var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
+              await UserAuth().fetchCustomerProfileWithAuth(recipient);
 
           _payee = customerProfile;
           isValidPayee = _payee!.userName != userBloc.user.userName;
+
+          _recipientController.text = customerProfile.userName!;
 
           if (mounted) setState(() {});
         }
