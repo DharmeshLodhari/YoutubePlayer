@@ -22,22 +22,21 @@ class InvoiceList extends StatefulWidget {
 
 class _InvoiceListState extends State<InvoiceList> {
   ScrollController _scrollController = ScrollController();
-  late InvoiceBloc contractAndInvoiceBlocProvider;
+  late InvoiceBloc invoiceBlocProvider;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
   void initState() {
-    super.initState();
-
     Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
 
+    super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+        // invoiceBlocProvider.getInvoiceList();
       }
     });
   }
@@ -54,8 +53,8 @@ class _InvoiceListState extends State<InvoiceList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        contractAndInvoiceBlocProvider.isRefreshing = true;
-        contractAndInvoiceBlocProvider.getInvoiceList();
+        invoiceBlocProvider.isRefreshing = true;
+        invoiceBlocProvider.getInvoiceList();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -69,7 +68,7 @@ class _InvoiceListState extends State<InvoiceList> {
 
   @override
   Widget build(BuildContext context) {
-    contractAndInvoiceBlocProvider = Provider.of<InvoiceBloc>(context);
+    invoiceBlocProvider = Provider.of<InvoiceBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -85,29 +84,29 @@ class _InvoiceListState extends State<InvoiceList> {
   Widget _scaffoldBody() {
     return Consumer<InvoiceBloc>(
       builder: (context, invoiceBloc, _) {
-        if (invoiceBloc.isLoading) {
-          return Center(
-            child: CircularLoadingIndicator(),
-          );
-        } else if (invoiceBloc.errorMessage.isNotEmpty) {
+        if (invoiceBloc.errorMessage.isNotEmpty) {
           return NoItemInList(
             msg: invoiceBloc.errorMessage,
           );
-        } else if (invoiceBloc.invoiceList.isEmpty) {
+        } else if (invoiceBloc.noItemInList) {
           return NoItemInList(
             msg: AppLocalization.of(context)!.invoiceEmpty,
           );
         } else {
-          if (contractAndInvoiceBlocProvider.endOfList) {
-            if (_scrollController.position.pixels ==
+          if (invoiceBloc.endOfList) {
+            if (_scrollController.positions.isNotEmpty &&
+                _scrollController.position.pixels ==
                     _scrollController.position.maxScrollExtent &&
                 _scrollController.position.pixels != 0) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-                duration: Duration(milliseconds: 500),
-              ));
-              contractAndInvoiceBlocProvider.endOfList = false;
+              // Future.delayed(Duration.zero, () async {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     SnackBar(
+              //       content: Text(AppLocalization.of(context)!
+              //           .youHaveReachedBottomOfTheList),
+              //       duration: Duration(milliseconds: 500),
+              //     ),
+              //   );
+              // });
             }
           }
           return invoiceListWidget(invoiceBloc);

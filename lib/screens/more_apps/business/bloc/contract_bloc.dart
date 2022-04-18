@@ -8,6 +8,7 @@ import '../models/Invoice.dart';
 class ContractBloc extends ChangeNotifier {
   bool endOfList = false;
   bool _isLoading = false;
+  bool noItemInList = false;
   bool get isLoading => _isLoading;
   BusinessAuth businessAuth = BusinessAuth();
 
@@ -15,9 +16,9 @@ class ContractBloc extends ChangeNotifier {
   String? next = "";
   String? previous = "";
   bool isFirstTime = true;
-  List<Contract> contractList = [];
-  bool isRefreshing = false;
   String errorMessage = "";
+  bool isRefreshing = false;
+  List<Contract> contractList = [];
 
   Future<List<Contract>?> getContractList(
       {ContractStatus? contractStatus}) async {
@@ -59,6 +60,8 @@ class ContractBloc extends ChangeNotifier {
         }
       }
       if (contractList.isEmpty) {
+        noItemInList = true;
+
         notifyListeners();
       } else if (next == null && contractList.length > 6) {
         endOfList = true;

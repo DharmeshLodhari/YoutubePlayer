@@ -171,11 +171,21 @@ class _MyContractScreenState extends State<MyContractScreen> {
         size: 16,
         color: blackFont,
       ),
-      onTap: () {
+      onTap: () async {
         if (currentIndex == 0) {
-          Navigator.of(context).pushNamed("/add-contract");
+          var contractAdded =
+              await Navigator.of(context).pushNamed("/add-contract");
+          if (contractAdded == true) {
+            Provider.of<ContractBloc>(context, listen: false).getContractList();
+          }
         } else if (currentIndex == 1) {
-          Navigator.of(context).pushNamed("/add-invoice");
+          var invoiceAdded =
+              await Navigator.of(context).pushNamed("/add-invoice");
+          if (invoiceAdded == true) {
+            print('INVOICE ADDED');
+
+            Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+          }
         }
       },
       backgroundColor: iconBtnGrey,

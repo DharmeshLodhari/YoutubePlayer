@@ -32,7 +32,7 @@ class QRCodeView extends StatefulWidget {
 class _QRCodeViewState extends State<QRCodeView> {
   var arguments;
   late bool
-      canShowDialogBox; // We need this variable to show the dialogbox just one cause qrscanner controller uses a stream.
+      canShowDialogBox; // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
   _QRCodeViewState({this.arguments});
 
   bool? isRequest = false;
@@ -159,7 +159,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       {String? scanDataCode}) async {
     int qrCodeIndex = scanDataList.length - 2;
 
-    print('SCAN ::: $scanDataList');
+    debugPrint('SCANNED DATA ::: $scanDataList');
     if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
@@ -175,218 +175,232 @@ class _QRCodeViewState extends State<QRCodeView> {
 
       Navigator.of(context)
           .pushNamed("/service-detail", arguments: {"service": service});
-    } else if (scanDataList[qrCodeIndex] == 'anonymous-shopping-cart') {
-      _dashboardBloc.index = 0;
+    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+      try {
+        ShoppingCartModelFromQrCode? shoppingCartModel =
+            await ShoppingAuthService()
+                .getShoppingCartDataFromQrCode(url: scanDataCode);
 
-      ShoppingCartModelFromQrCode? shoppingCartModel =
-          await ShoppingAuthService()
-              .getShoppingCartDataFromQrCode(url: scanDataCode);
+        if (shoppingCartModel != null) {
+          showDialogBox(
+            context: context,
+            actionTwoText: 'Pay',
+            actionOneText: 'Cancel',
+            actionTwoTextColor: white,
+            actionOneBgColor: greyBorderColor,
+            actionTwoBgColor: navyBlue,
+            leftButtonOnPressed: () {
+              canShowDialogBox = true;
+              _dashboardBloc.index = 0;
+            },
+            rightButtonOnPressed: () {
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () async {
+                    showDialog(
+                        context: context,
+                        builder: (dialogLoadingContext) => LoadingIndicator());
 
-      if (shoppingCartModel != null) {
-        showDialogBox(
-          context: context,
-          actionTwoText: 'Pay',
-          actionOneText: 'Cancel',
-          actionTwoTextColor: white,
-          actionOneBgColor: greyBorderColor,
-          actionTwoBgColor: navyBlue,
-          leftButtonOnPressed: () => canShowDialogBox = true,
-          rightButtonOnPressed: () {
-            BottomSheetPassCode(
-                context: context,
-                isValidCallback: () async {
-                  showDialog(
-                      context: context,
-                      builder: (dialogLoadingContext) => LoadingIndicator());
-
-                  bool isPaid = await ShoppingAuthService()
-                      .payForShoppingCart(cartId: shoppingCartModel.id);
-                  if (isPaid) {
+                    bool isPaid = await ShoppingAuthService()
+                        .payForShoppingCart(cartId: shoppingCartModel.id);
+                    if (isPaid) {
+                      Navigator.pop(context);
+                      _dashboardBloc.index = 0;
+                      Navigator.pushNamed(context, '/orders-list');
+                      showToast(message: 'Paid successfully');
+                    } else {
+                      Navigator.pop(context);
+                      showToast(message: 'Something went wrong');
+                    }
+                  },
+                  cancelCallBack: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/orders-list');
-                    showToast(message: 'Paid successfully');
-                  } else {
-                    Navigator.pop(context);
-                    showToast(message: 'Something went wrong');
-                  }
-                },
-                cancelCallBack: () {
-                  Navigator.pop(context);
-                });
-          },
-          content: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          imageUrl: shoppingCartModel.merchantAvatar,
-                          errorWidget: imageErrorWidget,
+                  });
+            },
+            content: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl: shoppingCartModel.merchantAvatar,
+                            errorWidget: imageErrorWidget,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          shoppingCartModel.merchantName,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                      SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            shoppingCartModel.merchantName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: blackFont,
+                            ),
+                          ),
+                          Text(
+                            'Merchant',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: greyBorderColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Your Order',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Status',
+                        style: TextStyle(
                             color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Text(
+                        shoppingCartModel.status,
+                        style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Shipping price',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[
+                                    shoppingCartModel.merchantCurrency] ??
+                                'NGN',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
                           ),
-                        ),
-                        Text(
-                          'Merchant',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            color: greyBorderColor,
+                          Text(
+                            moneyDisplayNormalizer(
+                                shoppingCartModel.shippingPrice),
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Your Order',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      color: blackFont,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Status',
-                      style: TextStyle(
-                          color: blackFont,
-                          fontSize: 16.0,
-                          fontFamily: "roberto"),
-                    ),
-                    Text(
-                      shoppingCartModel.status,
-                      style: TextStyle(
-                          color: blackFont,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Shipping price',
-                      style: TextStyle(
-                          color: blackFont,
-                          fontSize: 16.0,
-                          fontFamily: "roberto"),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          worldCurrencies[shoppingCartModel.merchantCurrency]!,
-                          style: TextStyle(
-                              fontFamily: "Roboto",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        ),
-                        Text(
-                          moneyDisplayNormalizer(
-                              shoppingCartModel.shippingPrice),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Sub total',
-                      style: TextStyle(
-                          color: blackFont,
-                          fontSize: 16.0,
-                          fontFamily: "roberto"),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          worldCurrencies[shoppingCartModel.merchantCurrency]!,
-                          style: TextStyle(
-                              fontFamily: "Roboto",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        ),
-                        Text(
-                          moneyDisplayNormalizer(shoppingCartModel.subTotal),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Divider(thickness: 2),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total Price',
-                      style: TextStyle(
-                          color: blackFont,
-                          fontSize: 16.0,
-                          fontFamily: "roberto"),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          worldCurrencies[shoppingCartModel.merchantCurrency]!,
-                          style: TextStyle(
-                              fontFamily: "Roboto",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        ),
-                        Text(
-                          moneyDisplayNormalizer(shoppingCartModel.totalPrice),
-                          style: TextStyle(
-                              color: blackFont,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Sub total',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[
+                                    shoppingCartModel.merchantCurrency] ??
+                                'NGN',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(shoppingCartModel.subTotal),
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Divider(thickness: 2),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total Price',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[
+                                    shoppingCartModel.merchantCurrency] ??
+                                'NGN',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(
+                                shoppingCartModel.totalPrice),
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        }
+      } catch (e) {
+        print('ERROR :: ${e.toString()}');
+        showToast(message: 'Something went wrong, please try again.');
       }
     } else {
       var recipient = scanDataList.last;

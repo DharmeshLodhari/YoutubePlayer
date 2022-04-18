@@ -712,6 +712,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 BottomSheetPassCode(
                     context: context,
                     isValidCallback: () {
+                      Navigator.pop(context);
                       Navigator.pushNamed(context, "/transactions");
                     },
                     cancelCallBack: () {

@@ -19,6 +19,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../widget/LoadingIndicator.dart';
+
 // ignore: must_be_immutable
 class AddContract extends StatefulWidget {
   var arguments;
@@ -653,14 +655,23 @@ class _AddContractState extends State<AddContract> {
               "note": " hello test contract",
             };
 
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+
             BusinessAuth().addContract(data).then((result) {
+              Navigator.pop(context); // Dismiss the loading indicator
+
               if (result) {
-                Navigator.pop(context);
+                Navigator.pop(context,
+                    true); // Pop this screen to go back to my_contract_list
               }
             }).catchError((error) {
+              Navigator.pop(context);
               showToast(message: error.toString());
             });
           } catch (e) {
+            Navigator.pop(context);
             debugPrint(e.toString());
             showToast(message: e.toString());
           }

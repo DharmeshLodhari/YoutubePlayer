@@ -25,7 +25,7 @@ class _MyContractListState extends State<MyContractList> {
       RefreshController(initialRefresh: false);
 
   ScrollController _scrollController = ScrollController();
-  late ContractBloc contractAndInvoiceBlocProvider;
+  late ContractBloc contractBlocProvider;
 
   //slidable tile
   SlidableController? _slideController;
@@ -44,7 +44,7 @@ class _MyContractListState extends State<MyContractList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        Provider.of<ContractBloc>(context, listen: false).getContractList();
+        // contractBlocProvider.getContractList();
       }
     });
   }
@@ -61,8 +61,8 @@ class _MyContractListState extends State<MyContractList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        contractAndInvoiceBlocProvider.isRefreshing = true;
-        contractAndInvoiceBlocProvider.getContractList();
+        contractBlocProvider.isRefreshing = true;
+        contractBlocProvider.getContractList();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -76,7 +76,7 @@ class _MyContractListState extends State<MyContractList> {
 
   @override
   Widget build(BuildContext context) {
-    contractAndInvoiceBlocProvider = Provider.of<ContractBloc>(context);
+    contractBlocProvider = Provider.of<ContractBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -85,6 +85,64 @@ class _MyContractListState extends State<MyContractList> {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: _scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget _scaffoldBody() {
+    return Consumer<ContractBloc>(
+      builder: (context, contractBloc, _) {
+        if (contractBloc.errorMessage.isNotEmpty) {
+          return NoItemInList(
+            msg: contractBloc.errorMessage,
+          );
+        } else if (contractBloc.noItemInList) {
+          return NoItemInList(
+            msg: AppLocalization.of(context)!.contractEmpty,
+          );
+        } else {
+          if (contractBlocProvider.endOfList) {
+            if (_scrollController.positions.isNotEmpty &&
+                _scrollController.position.pixels ==
+                    _scrollController.position.maxScrollExtent &&
+                _scrollController.position.pixels != 0) {
+              // Future.delayed(Duration.zero, () async {
+              //   ScaffoldMessenger.of(context).showSnackBar(
+              //     SnackBar(
+              //       content: Text(AppLocalization.of(context)!
+              //           .youHaveReachedBottomOfTheList),
+              //       duration: Duration(milliseconds: 500),
+              //     ),
+              //   );
+              // });
+            }
+          }
+          return contractListWidget(contractBloc);
+        }
+      },
+    );
+  }
+
+  Widget contractListWidget(ContractBloc contractBloc) {
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(complete: Container(), waterDropColor: navyBlue),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 4),
+        itemCount: contractBloc.contractList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == contractBloc.contractList.length) {
+            return buildIndicator(isLoading: contractBloc.isLoading);
+          } else {
+            Contract contract = contractBloc.contractList[index];
+            return _getSlidableWithLists(
+                context, ContractTile(contract: contract), index,
+                contract: contract);
+          }
+        },
+        controller: _scrollController,
       ),
     );
   }
@@ -196,7 +254,7 @@ class _MyContractListState extends State<MyContractList> {
         .then((value) {
       contract.status = action;
       // contracts[index].status = action;
-      setState(() {});
+      contractBlocProvider.getContractList();
       showToast(message: "Status updated successfully");
     }).catchError((error) {
       showToast(message: "Status updated unsuccessfully");
@@ -219,71 +277,6 @@ class _MyContractListState extends State<MyContractList> {
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
-
-  Widget contractListWidget(ContractBloc contractBloc) {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-      ),
-      controller: _refreshController,
-      onRefresh: _onRefresh,
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 4),
-        itemCount: contractBloc.contractList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == contractBloc.contractList.length) {
-            return buildIndicator(isLoading: contractBloc.isLoading);
-          } else {
-            Contract contract = contractBloc.contractList[index];
-            return _getSlidableWithLists(
-                context,
-                ContractTile(
-                  contract: contract,
-                ),
-                index,
-                contract: contract);
-          }
-        },
-        controller: _scrollController,
-      ),
-    );
-  }
-
-  Widget _scaffoldBody() {
-    return Consumer<ContractBloc>(
-      builder: (context, contractBloc, _) {
-        if (contractBloc.isLoading) {
-          return Center(
-            child: CircularLoadingIndicator(),
-          );
-        } else if (contractBloc.errorMessage.isNotEmpty) {
-          return NoItemInList(
-            msg: contractBloc.errorMessage,
-          );
-        } else if (contractBloc.contractList.isEmpty) {
-          return NoItemInList(
-            msg: AppLocalization.of(context)!.contractEmpty,
-          );
-        } else {
-          if (contractAndInvoiceBlocProvider.endOfList) {
-            if (_scrollController.position.pixels ==
-                    _scrollController.position.maxScrollExtent &&
-                _scrollController.position.pixels != 0) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-                duration: Duration(milliseconds: 500),
-              ));
-              contractAndInvoiceBlocProvider.endOfList = false;
-            }
-          }
-          return contractListWidget(contractBloc);
-        }
-      },
-    );
-  }
 }
 
 class VerticalListItem extends StatelessWidget {

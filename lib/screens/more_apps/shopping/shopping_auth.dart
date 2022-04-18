@@ -102,6 +102,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    debugPrint('SHOPPING CART MODEL ::: ${response.body}');
     if (response.statusCode == 200) {
       ShoppingCartModelFromQrCode shoppingCartModel =
           ShoppingCartModelFromQrCode.fromJson(jsonDecode(response.body));
@@ -939,21 +940,21 @@ class ShoppingCartModelFromQrCode {
   String status;
   String qrCode;
   int totalPrice;
-  String merchantCurrency;
   int shippingPrice;
   String merchantName;
   String merchantAvatar;
+  String merchantCurrency;
 
   ShoppingCartModelFromQrCode({
     required this.id,
     required this.status,
     required this.qrCode,
-    required this.merchantCurrency,
     required this.subTotal,
     required this.totalPrice,
     required this.merchantName,
     required this.shippingPrice,
     required this.merchantAvatar,
+    required this.merchantCurrency,
   });
 
   factory ShoppingCartModelFromQrCode.fromJson(Map<String, dynamic> json) {
@@ -964,9 +965,9 @@ class ShoppingCartModelFromQrCode {
       subTotal: json['subtotal'],
       totalPrice: json['total_price'],
       shippingPrice: json['shipping_price'],
-      merchantName: json['merchant']['name'],
-      merchantAvatar: json['merchant']['avatar'],
-      merchantCurrency: json['merchant']['currency'],
+      merchantName: json['merchant']['name'] ?? "",
+      merchantAvatar: json['merchant']['avatar'] ?? "",
+      merchantCurrency: json['merchant']['currency'] ?? "",
     );
   }
 }

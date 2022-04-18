@@ -19,6 +19,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
 
+import '../../../../../widget/LoadingIndicator.dart';
 import '../../business_auth.dart';
 
 // ignore: must_be_immutable
@@ -838,17 +839,25 @@ class _AddInvoiceState extends State<AddInvoice> {
               "items": invoiceItem
             };
 
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+
             BusinessAuth().addInvoice(data).then((result) {
+              Navigator.pop(context); // Dismiss the loading indicator
+
               if (result) {
                 _addInvoiceBloc.clearItems();
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               }
             }).catchError((error) {
+              Navigator.pop(context); // Dismiss the loading indicator
               showToast(
                 message: error.toString(),
               );
             });
           } catch (e) {
+            Navigator.pop(context);
             debugPrint(e.toString());
             showToast(message: e.toString());
           }
