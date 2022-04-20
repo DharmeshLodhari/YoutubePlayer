@@ -26,11 +26,7 @@ class UserPostAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    Map<String, dynamic> userPost = jsonDecode(response.body);
 
-    userPost['results'].forEach((key, value) {
-      print(key);
-    });
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
     if (response.statusCode == 200) {

@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
-import 'package:Slydo/screens/more_apps/business/tiles/contract_tile.dart';
+import 'package:Slydo/screens/more_apps/business/tiles/contract_and_invoice_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';

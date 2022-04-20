@@ -186,6 +186,11 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  /*
+  * Navigation for Local Notification (e.g nudge notification), we can create our
+  * custom UI with this notification. On the notification bar this shows 'accept' or
+  * 'cancel'
+  * */
   void navigateToNotification(Map<String, dynamic> data) async {
     /// {id: 31386,
     /// channelKey: basic_channel,
@@ -246,10 +251,12 @@ class _DashboardState extends State<Dashboard> {
     } else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
-      DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
-          MyGlobals().navigationKey.currentContext!,
-          listen: false);
-      _dashboardBloc.index = 1;
+      Navigator.of(context).popUntil(ModalRoute.withName('/accounts'));
+
+      // DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
+      //     MyGlobals().navigationKey.currentContext!,
+      //     listen: false);
+      // _dashboardBloc.index = 1;
     } else if (notification['type'] == "transaction") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));

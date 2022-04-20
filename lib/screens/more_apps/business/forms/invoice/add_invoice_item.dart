@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../../utils/date_time_and_money_converter.dart';
 
 // ignore: must_be_immutable
 class AddInvoiceItem extends StatefulWidget {
@@ -23,6 +23,7 @@ class AddInvoiceItem extends StatefulWidget {
 }
 
 class _AddInvoiceItemState extends State<AddInvoiceItem> {
+  int totalCost = 0;
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
@@ -42,6 +43,15 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
   @override
   void initState() {
     _invoiceItem = InvoiceItem();
+    _amountController.addListener(() {
+      if (_amountController.text.isEmpty) {
+        totalCost = 0;
+        _invoiceItem!.quantity = 1;
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    });
     super.initState();
   }
 
@@ -121,14 +131,13 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                                 height: 20,
                               ),
                               getRecipientField(),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: 20),
                               displayAmountField(),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: 20),
                               getQtyOfItem(),
+                              SizedBox(height: 20),
+                              getTotalText(),
+                              SizedBox(height: 20),
                               errorMessage == ""
                                   ? Container()
                                   : Text(
@@ -169,6 +178,21 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     );
   }
 
+  getTotalText() {
+    return _amountController.text.isNotEmpty
+        ? Row(
+            children: [
+              Text(
+                'Total: ',
+                style: TextStyle(
+                    color: darkGrey, fontWeight: FontWeight.w500, fontSize: 14),
+              ),
+              Text("$totalCost"),
+            ],
+          )
+        : SizedBox.shrink();
+  }
+
   Widget showBackArrow() {
     return IconButton(
       icon: Icon(Icons.arrow_back_ios),
@@ -187,7 +211,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
 
   Widget displayAmountField() {
     return CustomizedTextFormField(
-      labelText: "Amount",
+      labelText: "Unit cost",
       isAmount: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
@@ -198,6 +222,9 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
         if (mounted) {
           setState(() {
             amount = int.parse(val);
+
+            totalCost =
+                int.parse(_amountController.text) * _invoiceItem!.quantity!;
           });
         }
       },
@@ -218,7 +245,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Qty",
+          "Quantity",
           style: TextStyle(
               color: darkGrey, fontWeight: FontWeight.w500, fontSize: 14),
         ),
@@ -237,9 +264,15 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     size: 2,
                   ),
                   onTap: () {
-                    if (_invoiceItem!.quantity! > 1) {
-                      _invoiceItem!.quantity = _invoiceItem!.quantity! - 1;
-                      setState(() {});
+                    if (_amountController.text.isNotEmpty) {
+                      if (_invoiceItem!.quantity! > 1) {
+                        _invoiceItem!.quantity = _invoiceItem!.quantity! - 1;
+                        totalCost = int.parse(_amountController.text) *
+                            _invoiceItem!.quantity!;
+                        setState(() {});
+                      }
+                    } else {
+                      showToast(message: 'Add an amount');
                     }
                   }),
               Expanded(
@@ -267,7 +300,13 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     size: 16,
                   ),
                   onTap: () {
-                    _invoiceItem!.quantity = _invoiceItem!.quantity! + 1;
+                    if (_amountController.text.isNotEmpty) {
+                      _invoiceItem!.quantity = _invoiceItem!.quantity! + 1;
+                      totalCost = int.parse(_amountController.text) *
+                          _invoiceItem!.quantity!;
+                    } else {
+                      showToast(message: 'Add an amount');
+                    }
                     setState(() {});
                   }),
             ],

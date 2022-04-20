@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../data/currency.dart';
+import '../routes/route_constants.dart';
 import '../utils/util.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -160,6 +161,8 @@ class _QRCodeViewState extends State<QRCodeView> {
     int qrCodeIndex = scanDataList.length - 2;
 
     debugPrint('SCANNED DATA ::: $scanDataList');
+    debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
+
     if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
@@ -174,7 +177,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       _dashboardBloc.index = 0;
 
       Navigator.of(context)
-          .pushNamed("/service-detail", arguments: {"service": service});
+          .pushNamed(Routes.SERVICE_DETAIL, arguments: {"service": service});
     } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
       try {
         ShoppingCartModelFromQrCode? shoppingCartModel =
@@ -406,18 +409,20 @@ class _QRCodeViewState extends State<QRCodeView> {
       var recipient = scanDataList.last;
       getRecipient(recipient);
 
+      print('RECIPIENT ::: $recipient');
+
       _dashboardBloc.index = 0;
 
       if (isRequest!) {
         Navigator.of(context).pushNamed(
-          '/request-payment',
+          Routes.REQUEST_PAYMENT,
           arguments: {
             'isRequest': true,
           },
         );
       } else {
         Navigator.of(context).pushNamed(
-          '/send-payment',
+          Routes.SEND_PAYMENT,
           arguments: {
             'isFromProfile': false,
           },
@@ -429,7 +434,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   // Pull the user from the server
   void getRecipient(String recipient) async {
     customerProfileBloc.customer =
-        await UserAuth().fetchCustomerProfile(recipient);
+        await UserAuth().fetchCustomerProfileWithAuth(recipient);
   }
 
   Product getProduct(String productId) {

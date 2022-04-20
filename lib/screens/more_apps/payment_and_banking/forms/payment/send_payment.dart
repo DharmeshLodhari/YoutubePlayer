@@ -27,17 +27,17 @@ import 'package:provider/provider.dart';
 import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
-class PaySomeone extends StatefulWidget {
+class SendPayment extends StatefulWidget {
   var arguments;
 
-  PaySomeone({this.arguments});
+  SendPayment({this.arguments});
 
   // Declare a field that holds the userData.
   @override
-  _PaySomeoneState createState() => _PaySomeoneState();
+  _SendPaymentState createState() => _SendPaymentState();
 }
 
-class _PaySomeoneState extends State<PaySomeone> {
+class _SendPaymentState extends State<SendPayment> {
   TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   TextEditingController _referenceController = TextEditingController();
@@ -160,7 +160,11 @@ class _PaySomeoneState extends State<PaySomeone> {
           setState(() {
             _payee = customerProfileBloc.customer;
             recipient = _payee!.userName;
-            _recipientController.text = recipient!;
+            if (recipient != null) {
+              _recipientController.text = recipient!;
+            } else {
+              _recipientController.text = '';
+            }
             UserAuth().fetchCustomerProfile(recipient).then((customerProfile) {
               if (customerProfile != null) {
                 if (mounted) {
@@ -235,7 +239,7 @@ class _PaySomeoneState extends State<PaySomeone> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.paySomeone,
+        AppLocalization.of(context)!.sendPayment,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -458,13 +462,15 @@ class _PaySomeoneState extends State<PaySomeone> {
                 .pushNamed("/photo-viewer", arguments: _payee!.avatar);
           },
           child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: _payee!.avatar!,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
-              filterQuality: FilterQuality.high,
-              errorWidget: imageErrorWidget,
-            ),
+            child: _payee!.avatar != null
+                ? CachedNetworkImage(
+                    imageUrl: _payee!.avatar!,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    errorWidget: imageErrorWidget,
+                  )
+                : SizedBox.shrink(),
           ),
         ),
       );
@@ -498,7 +504,7 @@ class _PaySomeoneState extends State<PaySomeone> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    _payee!.displayName()!,
+                    _payee!.displayName() != null ? _payee!.displayName()! : '',
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -507,7 +513,7 @@ class _PaySomeoneState extends State<PaySomeone> {
                     maxLines: 1,
                   ),
                   subtitle: Text(
-                    _payee!.userName!,
+                    _payee!.userName != null ? _payee!.userName! : '',
                     style: TextStyle(fontSize: 14, color: darkGrey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,

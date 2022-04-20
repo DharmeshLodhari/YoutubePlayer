@@ -63,7 +63,7 @@ class UtilityAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    print('provider detials response ::: ${response.body}');
+    print('provider details response ::: ${response.body}');
 
     if (response.statusCode == 200) {
       List providerProduct = jsonDecode(response.body)['products'];

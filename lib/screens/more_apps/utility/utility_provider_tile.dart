@@ -1,3 +1,4 @@
+import '../../../utils/colors.dart';
 import 'models/provider_model.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_payment_screen.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -25,6 +26,8 @@ class UtilityProviderTile extends StatelessWidget {
       child: Row(
         children: [
           Card(
+            elevation: 7,
+            margin: EdgeInsets.symmetric(vertical: 6),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
@@ -40,12 +43,13 @@ class UtilityProviderTile extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 16),
           Expanded(
             child: Text(
               getProviderName(),
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
             ),
           ),
         ],

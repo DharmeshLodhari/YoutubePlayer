@@ -12,6 +12,7 @@ class Contract {
   String? paymentDuration;
   String? startDate;
   String? status;
+  bool? isAccepted;
 
   Contract(
       {this.amount,
@@ -21,6 +22,7 @@ class Contract {
       this.contractorAvatar,
       this.createdAt,
       this.currency,
+      this.isAccepted,
       this.endDate,
       this.id,
       this.note,
@@ -43,6 +45,7 @@ class Contract {
       paymentDuration: json['payment_duration'],
       startDate: json['start_date'],
       status: json['status'],
+      isAccepted: json['is_accepted'],
     );
   }
 

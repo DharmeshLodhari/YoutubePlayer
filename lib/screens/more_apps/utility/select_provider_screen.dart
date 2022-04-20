@@ -107,7 +107,10 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
       title: Text(
         widget.nameOfProvider,
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

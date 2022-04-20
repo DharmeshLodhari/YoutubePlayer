@@ -51,6 +51,7 @@ class InvoiceBloc extends ChangeNotifier {
         invoiceList.addAll(tempList);
         notifyListeners();
 
+        print('INVOICE LIST ----> ${invoiceList}');
         if (isFirstTime && next != null && next != "") {
           isFirstTime = false;
           getInvoiceList(invoiceStatus: invoiceStatus);

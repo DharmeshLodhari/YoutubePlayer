@@ -27,8 +27,8 @@ class _CreditCardListState extends State<CreditCardList> {
   String? next = "";
   String? previous = "";
   bool isLoading = false;
-  List<CreditCard> creditCardList = [];
   bool noItemInList = false;
+  List<CreditCard> creditCardList = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -124,10 +124,8 @@ class _CreditCardListState extends State<CreditCardList> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        creditCardList.length == 2 ? SizedBox.shrink() : openGraphBtn(),
-        SizedBox(
-          width: 16,
-        ),
+        creditCardList.isEmpty ? SizedBox.shrink() : openGraphBtn(),
+        SizedBox(width: 16),
       ],
     );
   }
@@ -139,11 +137,14 @@ class _CreditCardListState extends State<CreditCardList> {
       icon: Icon(
         SlydoAppIcon.add,
         size: 16,
-        color: blackFont,
+        color:
+            creditCardList.length == 2 ? blackFont.withOpacity(0.3) : blackFont,
       ),
       onTap: () {
         //for adding new account
-        Navigator.of(context).pushNamed(Routes.CARD_PAYMENT_PAGE);
+        creditCardList.length == 2
+            ? showToast(message: "You cannot add more than two credit cards")
+            : Navigator.of(context).pushNamed(Routes.CARD_PAYMENT_PAGE);
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

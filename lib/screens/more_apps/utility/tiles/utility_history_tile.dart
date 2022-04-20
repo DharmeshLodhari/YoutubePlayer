@@ -41,13 +41,9 @@ class UtilityHistoryTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   getTitle(),
-                  SizedBox(
-                    height: 4,
-                  ),
+                  SizedBox(height: 10),
                   getDateTime(),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                 ],
               ),
               Expanded(
@@ -73,7 +69,7 @@ class UtilityHistoryTile extends StatelessWidget {
                             fontFamily: "Roboto",
                             color: blackFont,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14),
+                            fontSize: 16),
                       ),
                     ],
                   ),
@@ -92,14 +88,21 @@ class UtilityHistoryTile extends StatelessWidget {
   }
 
   Widget getLeading() {
-    return Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: CachedNetworkImage(
-        height: 50,
-        width: 50,
-        fit: BoxFit.fill,
-        filterQuality: FilterQuality.high,
-        imageUrl: utilityHistoryModel.providerAvatar,
+    return Card(
+      elevation: 7,
+      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CachedNetworkImage(
+          height: 35,
+          width: 35,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+          imageUrl: utilityHistoryModel.providerAvatar,
+        ),
       ),
     );
   }
@@ -142,8 +145,8 @@ class UtilityHistoryTile extends StatelessWidget {
       // payment!['name'],
       style: TextStyle(
         color: blackFont,
-        fontWeight: FontWeight.w600,
-        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
       ),
     );
   }
@@ -159,9 +162,9 @@ class UtilityHistoryTile extends StatelessWidget {
 
   String _getFormattedDateTime() {
     String time =
-        DateFormat.Hm().format(DateTime.parse(utilityHistoryModel.createdAt));
-    String date = DateFormat.yMMMM()
-        .format(DateTime.parse(utilityHistoryModel.createdAt));
+        DateFormat.jm().format(DateTime.parse(utilityHistoryModel.createdAt));
+    String date =
+        DateFormat.yMd().format(DateTime.parse(utilityHistoryModel.createdAt));
     return '$date • $time';
   }
 }

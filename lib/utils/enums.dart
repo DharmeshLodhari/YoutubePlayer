@@ -10,4 +10,4 @@ enum UtilitiesProvidersEnum {
   toll
 }
 enum InvoiceStatus { Draft, Paid, Unpaid, Pending }
-enum ContractStatus { Stopped, Ended, Paused, Active }
+enum ContractStatus {Ended, Paused, Active }

@@ -33,6 +33,7 @@ class AddContract extends StatefulWidget {
 }
 
 class _AddContractState extends State<AddContract> {
+  TextEditingController noteCtrl = TextEditingController();
   TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   TextEditingController _referenceController = TextEditingController();
@@ -115,7 +116,7 @@ class _AddContractState extends State<AddContract> {
         },
       ),
       title: Text(
-        "Add contract",
+        AppLocalization.of(context)!.addContract,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -191,9 +192,11 @@ class _AddContractState extends State<AddContract> {
                                   flexibleSpace(),
                                   displayAmountField(),
                                   flexibleSpace(),
+                                  getPaymentPeriodDropDown(),
+                                  flexibleSpace(),
                                   getDateField(),
                                   flexibleSpace(),
-                                  getPaymentPeriodDropDown(),
+                                  getNoteField(),
                                   flexibleSpace(),
                                   errorMessage == ""
                                       ? Container()
@@ -352,6 +355,17 @@ class _AddContractState extends State<AddContract> {
     );
   }
 
+  Widget getNoteField() {
+    return SizedBox(
+      height: 20,
+      child: CustomizedTextFormField(
+        maxLines: 3,
+        controller: noteCtrl,
+        labelText: AppLocalization.of(context)!.note,
+      ),
+    );
+  }
+
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
@@ -364,7 +378,7 @@ class _AddContractState extends State<AddContract> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = int.parse(val) * 100;
           });
         }
       },
@@ -388,7 +402,7 @@ class _AddContractState extends State<AddContract> {
             });
           }
           var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
+              await UserAuth().fetchCustomerProfileWithAuth(recipient);
           if (mounted) {
             setState(() {
               _payee = customerProfile;
@@ -617,7 +631,7 @@ class _AddContractState extends State<AddContract> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Add contract",
+      text: AppLocalization.of(context)!.submit,
     );
   }
 
@@ -633,7 +647,9 @@ class _AddContractState extends State<AddContract> {
       });
     }
 
-    if (recipient == _payee!.userName) {
+    print('RECIPIENT :: $recipient');
+    print('RECIPIENT PAYEE :: ${_payee!.userName}');
+    if (recipient != userBloc.user.userName) {
       if (!isValidPayee) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -645,15 +661,20 @@ class _AddContractState extends State<AddContract> {
         if (userBloc.user.userName != recipient) {
           try {
             var data = {
-              "contractor": recipient!.trim().toString(),
+              "contractor": _recipientController.text,
               "contractee": userBloc.user.userName.toString(),
               "currency": userBloc.user.currency.toString(),
               "amount": amount.toString().trim(),
               "start_date": dateToString(startingDate),
               "end_date": dateToString(endingDate),
               "payment_duration": selectedDuration!.value.toString(),
-              "note": " hello test contract",
             };
+
+            if (noteCtrl.text.isNotEmpty) {
+              data['note'] = noteCtrl.text;
+            }
+
+            debugPrint('DATA ---> $data');
 
             showDialog(
                 context: context,
@@ -680,6 +701,8 @@ class _AddContractState extends State<AddContract> {
         }
       }
     } else {
+      print('IS VALID CONTRACT PAYEE ::: $isValidPayee');
+
       var msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
     }
@@ -687,6 +710,7 @@ class _AddContractState extends State<AddContract> {
 
   @override
   void dispose() {
+    noteCtrl.dispose();
     _recipientController.dispose();
     _amountController.dispose();
     _referenceController.dispose();

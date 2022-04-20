@@ -33,8 +33,8 @@ class BusinessAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    print('GET CONTRACT LIST :::: ${response.body}');
     var jsonData = json.decode(response.body);
+    debugPrint('GET CONTRACT LIST :::: ${jsonData}');
 
     if (response.statusCode == 200) {
       List<Contract> contractList = [];
@@ -162,6 +162,7 @@ class BusinessAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
     debugPrint('UPDATE CONTRACT ::: ${response.body}');
+    debugPrint('STATUS :: ${json.decode(response.body)['status']}');
 
     if (response.statusCode == 200) {
       return true;

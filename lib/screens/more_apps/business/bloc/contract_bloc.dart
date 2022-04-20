@@ -22,6 +22,8 @@ class ContractBloc extends ChangeNotifier {
 
   Future<List<Contract>?> getContractList(
       {ContractStatus? contractStatus}) async {
+    next = next == null ? "" : next;
+    print('GET CONTRACT LIST');
     if (isRefreshing) {
       count = 0;
       next = "";
@@ -54,11 +56,14 @@ class ContractBloc extends ChangeNotifier {
         contractList.addAll(tempList);
         notifyListeners();
 
+        print('CONTRACT LENGTH :: ${contractList.length}');
+
         if (isFirstTime && next != null && next != "") {
           isFirstTime = false;
           getContractList(contractStatus: contractStatus);
         }
       }
+
       if (contractList.isEmpty) {
         noItemInList = true;
 

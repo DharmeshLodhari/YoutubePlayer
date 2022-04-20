@@ -11,12 +11,14 @@ import '../bloc/contract_bloc.dart';
 import 'invoice_list.dart';
 import 'my_contract_list.dart';
 
-class MyContractScreen extends StatefulWidget {
+class MyContractAndInvoiceScreen extends StatefulWidget {
   @override
-  _MyContractScreenState createState() => _MyContractScreenState();
+  _MyContractAndInvoiceScreenState createState() =>
+      _MyContractAndInvoiceScreenState();
 }
 
-class _MyContractScreenState extends State<MyContractScreen> {
+class _MyContractAndInvoiceScreenState
+    extends State<MyContractAndInvoiceScreen> {
   int currentIndex = 0;
 
   GlobalKey _key = LabeledGlobalKey("myInvoiceList");
@@ -39,6 +41,9 @@ class _MyContractScreenState extends State<MyContractScreen> {
   }
 
   switchStatementForInvoicePage(String value) {
+    invoiceBloc.noItemInList = false;
+    invoiceBloc.isRefreshing = true;
+
     switch (value) {
       case "Draft":
         invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Draft);
@@ -61,6 +66,9 @@ class _MyContractScreenState extends State<MyContractScreen> {
   }
 
   switchStatementForContractPage(String value) {
+    contractBloc.noItemInList = false;
+    contractBloc.isRefreshing = true;
+
     switch (value) {
       case "Ended":
         contractBloc.getContractList(contractStatus: ContractStatus.Ended);
@@ -73,8 +81,9 @@ class _MyContractScreenState extends State<MyContractScreen> {
       case "Paused":
         contractBloc.getContractList(contractStatus: ContractStatus.Paused);
         break;
-      case "Stopped":
-        contractBloc.getContractList(contractStatus: ContractStatus.Stopped);
+
+      case "All":
+        contractBloc.getContractList();
         break;
 
       default:
@@ -96,10 +105,10 @@ class _MyContractScreenState extends State<MyContractScreen> {
       context: context,
       children: currentIndex == 0
           ? [
+              CustomizedPopUpMenuItem(title: "All", value: "All"),
               CustomizedPopUpMenuItem(title: "Ended", value: "Ended"),
               CustomizedPopUpMenuItem(title: "Active", value: "Active"),
               CustomizedPopUpMenuItem(title: "Paused", value: "Paused"),
-              CustomizedPopUpMenuItem(title: "Stopped", value: "Stopped"),
             ]
           : [
               CustomizedPopUpMenuItem(title: "All", value: "All"),
@@ -175,15 +184,16 @@ class _MyContractScreenState extends State<MyContractScreen> {
         if (currentIndex == 0) {
           var contractAdded =
               await Navigator.of(context).pushNamed("/add-contract");
+          print('CONTRACT ADDED ::: $contractAdded');
+
           if (contractAdded == true) {
             Provider.of<ContractBloc>(context, listen: false).getContractList();
           }
         } else if (currentIndex == 1) {
           var invoiceAdded =
               await Navigator.of(context).pushNamed("/add-invoice");
+          print('INVOICE ADDED ::: $invoiceAdded');
           if (invoiceAdded == true) {
-            print('INVOICE ADDED');
-
             Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
           }
         }

@@ -1455,6 +1455,13 @@ class AppLocalization {
     );
   }
 
+  String get addContract {
+    return Intl.message(
+      "Add Contract",
+      name: "addContract",
+    );
+  }
+
   String get contractEmpty {
     return Intl.message(
       "Contract empty",

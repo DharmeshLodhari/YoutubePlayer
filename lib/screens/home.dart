@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 import '../data/currency.dart';
+import '../routes/route_constants.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/shopping/shopping_auth.dart';
 
@@ -463,7 +464,7 @@ class _HomeState extends State<Home> {
         ),
         onTap: () {
           Navigator.of(context)
-              .pushNamed('/request-payment', arguments: <String, bool>{
+              .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
             'isFromProfile': true,
           });
         },
@@ -501,13 +502,13 @@ class _HomeState extends State<Home> {
               width: 12,
             ),
             Text(
-              "Pay",
+              "Send",
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ],
         ),
         onTap: () {
-          Navigator.of(context).pushNamed('/pay-someone',
+          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
               arguments: <String, bool>{'isFromProfile': true});
         },
       ),

@@ -220,7 +220,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           ),
         ),
         Text(
-          invoice.amount.toString(),
+          moneyDisplayNormalizer(invoice.amount),
           style: TextStyle(
               color: navyBlue, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -326,9 +326,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    width: 8,
-                  ),
+                  SizedBox(width: 8),
                   Expanded(
                     flex: 5,
                     child: Row(
@@ -361,9 +359,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 4,
-              ),
+              SizedBox(height: 4),
               Divider(
                 height: 0,
                 color: dividerColor,
@@ -397,9 +393,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontSize: 14,
                         fontWeight: FontWeight.w700),
                   ),
-                  SizedBox(
-                    width: 8,
-                  ),
+                  SizedBox(width: 8),
                   Text(
                     worldCurrencies[invoice.currency!]!,
                     style: TextStyle(
@@ -409,7 +403,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    invoice.amount.toString(),
+                    moneyDisplayNormalizer(invoice.amount),
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -463,7 +457,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text(item.amount.toString()),
+                    Text(
+                      moneyDisplayNormalizer(item.amount),
+                    ),
                   ],
                 ),
                 flexibleSpace(),
@@ -477,7 +473,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text("${item.quantity! * item.amount!}"),
+                    Text(
+                      moneyDisplayNormalizer(item.quantity! * item.amount!),
+                    ),
                   ],
                 ),
               ],

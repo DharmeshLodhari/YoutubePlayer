@@ -1,3 +1,4 @@
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
@@ -13,7 +14,6 @@ import 'package:Slydo/screens/more_apps/business/forms/invoice/edit_invoice_item
 import 'package:Slydo/screens/more_apps/business/screens/contract_detail.dart';
 import 'package:Slydo/screens/more_apps/business/screens/contract_transaction_history.dart';
 import 'package:Slydo/screens/more_apps/business/screens/invoice_detail.dart';
-import 'package:Slydo/screens/more_apps/business/screens/my_contract_screen.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard.dart';
 import 'package:Slydo/screens/more_apps/events/event_detail_page.dart';
 import 'package:Slydo/screens/more_apps/events/event_ticket_detail.dart';
@@ -57,7 +57,158 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/alread
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/payout_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/pay_someone.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_list.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_option_selection.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/topup_option_selection.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transactions_list.dart';
+import 'package:Slydo/screens/more_apps/property/forms/add_property.dart';
+import 'package:Slydo/screens/more_apps/property/forms/edit_property.dart';
+import 'package:Slydo/screens/more_apps/property/property_dashboard.dart';
+import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
+import 'package:Slydo/screens/more_apps/property/search_property.dart';
+import 'package:Slydo/screens/more_apps/property/specific_category_property_list.dart';
+import 'package:Slydo/screens/more_apps/review/forms/add_user_review.dart';
+import 'package:Slydo/screens/more_apps/review/forms/edit_user_review.dart';
+import 'package:Slydo/screens/more_apps/review/main_review.dart';
+import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
+import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
+import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
+import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
+import 'package:Slydo/screens/more_apps/taxi/cancle_booking.dart';
+import 'package:Slydo/screens/more_apps/taxi/contact_driver.dart';
+import 'package:Slydo/screens/more_apps/taxi/no_vehicale_found.dart';
+import 'package:Slydo/screens/more_apps/taxi/payment_options.dart';
+import 'package:Slydo/screens/more_apps/taxi/rate_and_tip_driver.dart';
+import 'package:Slydo/screens/more_apps/taxi/ride_option.dart';
+import 'package:Slydo/screens/more_apps/taxi/searching_for_driver.dart';
+import 'package:Slydo/screens/more_apps/taxi/select_address_screen.dart';
+import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
+import 'package:Slydo/screens/more_apps/taxi/terms_and_condition.dart';
+import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
+import 'package:Slydo/screens/more_apps/train/search_train.dart';
+import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
+import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/change_password.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/forgot_password.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/login.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/registration.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/reset_device.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/reset_password.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/signup.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/upgrade_user_profile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/forms/select_plan_and_decoder_number.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/cable_plan_detail_page.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/cable_plan_payment_detail.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_plan.dart';
+import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_provider.dart';
+import 'package:Slydo/screens/more_apps/utility/utility_dashboard.dart';
+import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
+import 'package:Slydo/screens/scan_qr_code.dart';
+import 'package:Slydo/screens/search_module.dart';
+import 'package:Slydo/screens/user_dashboard.dart';
+import 'package:Slydo/splash.dart';
+import 'package:Slydo/widget/photo_viewer.dart';
+import 'package:Slydo/widget/video_recorder.dart';
+import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
+import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:Slydo/screens/blog/create_or_edit_post.dart';
+import '../screens/more_apps/business/screens/my_contract_and_invoice_screen.dart';
+import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
+
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/dashboard.dart';
+import 'package:Slydo/screens/explore.dart';
+import 'package:Slydo/screens/home.dart';
+import 'package:Slydo/screens/index.dart';
+import 'package:Slydo/screens/more_apps.dart';
+import 'package:Slydo/screens/more_apps/bus/bus_dashboard.dart';
+import 'package:Slydo/screens/more_apps/bus/search_bus.dart';
+import 'package:Slydo/screens/more_apps/bus/ticket_detail.dart';
+import 'package:Slydo/screens/more_apps/business/forms/add_contract.dart';
+import 'package:Slydo/screens/more_apps/business/forms/invoice/add_invoice.dart';
+import 'package:Slydo/screens/more_apps/business/forms/invoice/add_invoice_item.dart';
+import 'package:Slydo/screens/more_apps/business/forms/invoice/edit_invoice_item.dart';
+import 'package:Slydo/screens/more_apps/business/screens/contract_detail.dart';
+import 'package:Slydo/screens/more_apps/business/screens/contract_transaction_history.dart';
+import 'package:Slydo/screens/more_apps/business/screens/invoice_detail.dart';
+import 'package:Slydo/screens/more_apps/events/event_dashboard.dart';
+import 'package:Slydo/screens/more_apps/events/event_detail_page.dart';
+import 'package:Slydo/screens/more_apps/events/event_ticket_detail.dart';
+import 'package:Slydo/screens/more_apps/events/search_event.dart';
+import 'package:Slydo/screens/more_apps/events/specific_category_event_list.dart';
+import 'package:Slydo/screens/more_apps/flight/flight_dashboard.dart';
+import 'package:Slydo/screens/more_apps/flight/search_flight.dart';
+import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard.dart';
+import 'package:Slydo/screens/more_apps/hotels/hotel_detail_page.dart';
+import 'package:Slydo/screens/more_apps/hotels/partner_detail_page.dart';
+import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
+import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/set_name_and_profile_for_group.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/update_group_name_and_profile.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/put_money_in_envelope.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/select_user_for_group.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen_group_messages.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/group_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/search_group_member.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/screens/view_chat_media.dart';
+import 'package:Slydo/screens/more_apps/messaging/detailed_message.dart';
+import 'package:Slydo/screens/more_apps/messaging/forms/compose_message.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_list.dart';
+import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
+import 'package:Slydo/screens/more_apps/movies/movie_detail_page.dart';
+import 'package:Slydo/screens/more_apps/movies/search_movie.dart';
+import 'package:Slydo/screens/more_apps/movies/specific_category_movie_list.dart';
+import 'package:Slydo/screens/more_apps/music/album_detail_page.dart';
+import 'package:Slydo/screens/more_apps/music/music_dashboard.dart';
+import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
+import 'package:Slydo/screens/more_apps/music/search_music.dart';
+import 'package:Slydo/screens/more_apps/music/specific_category_music_list.dart';
+import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
+import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bvn_number.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/payout_screen.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_list.dart';
@@ -147,6 +298,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 
+import '../screens/more_apps/business/screens/my_contract_and_invoice_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
 import '../screens/more_apps/utility/select_provider_screen.dart';
@@ -156,28 +308,28 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
     switch (settings.name) {
-      case '/login':
+      case Routes.LOGIN:
         return PageTransition(
           child: UserLogin(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/reset-device':
+      case Routes.RESET_DEVICE:
         return PageTransition(
           child: ResetDevice(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/splash':
+      case Routes.SPLASH:
         return PageTransition(
           child: SplashScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/index':
+      case Routes.INDEX:
         return PageTransition(
           child: Index(
             arguments: settings.arguments,
@@ -186,7 +338,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/dashboard':
+      case Routes.DASHBOARD:
         return PageTransition(
           child: Dashboard(
             arguments: settings.arguments,
@@ -195,7 +347,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/search-module':
+      case Routes.SEARCH_MODULE:
         return PageTransition(
           child: SearchModule(
             arguments: settings.arguments,
@@ -205,35 +357,35 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/new-registration':
+      case Routes.NEW_REGISTRATION:
         return PageTransition(
           child: Registration(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/verify-registration-otp':
+      case Routes.VERIFY_REGISTRATION_OTP:
         return PageTransition(
           child: VerifyRegistrationOTPScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/verify-reset-device-otp':
+      case Routes.VERIFY_RESET_DEVICE_OTP:
         return PageTransition(
           child: VerifyResetDeviceOTPScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/verify-reset-password-otp':
+      case Routes.VERIFY_RESET_PASSWORD_OTP:
         return PageTransition(
           child: VerifyResetPasswordOTPScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/register':
+      case Routes.REGISTER:
         return PageTransition(
           child: SignUp(
             arguments: settings.arguments,
@@ -242,42 +394,42 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/add-document':
+      case Routes.ADD_DOCUMENT:
         return PageTransition(
           child: AddDocument(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/home':
+      case Routes.HOME:
         return PageTransition(
           child: Home(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/accounts':
+      case Routes.ACCOUNTS:
         return PageTransition(
           child: PaymentRequestList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/transactions':
+      case Routes.TRANSACTIONS:
         return PageTransition(
           child: TransactionList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/transaction-graph':
+      case Routes.TRANSACTION_GRAPH:
         return PageTransition(
           child: TransactionGraph(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/transaction-detail':
+      case Routes.TRANSACTION_DETAIL:
         return PageTransition(
           child: TransactionDetail(
             arguments: settings.arguments,
@@ -286,23 +438,23 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/add-account':
+      case Routes.ADD_ACCOUNT:
         return PageTransition(
           child: AddAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/pay-someone':
+      case Routes.SEND_PAYMENT:
         return PageTransition(
-          child: PaySomeone(
+          child: SendPayment(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/request-payment':
+      case Routes.REQUEST_PAYMENT:
         return PageTransition(
           child: RequestPayment(
             arguments: settings.arguments,
@@ -311,7 +463,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/explore':
+      case Routes.EXPLORE:
         return PageTransition(
           child: ExploreList(),
           type: PageTransitionType.bottomToTop,
@@ -319,7 +471,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/profile':
+      case Routes.PROFILE:
         return PageTransition(
           child: UserProfileScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -327,7 +479,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/create-blog':
+      case Routes.CREATE_BLOG:
         return PageTransition(
           child: CreateorEditPostScreen(
             userPost: settings.arguments != null
@@ -339,7 +491,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/choose-subscriptions':
+      case Routes.CHOOSE_SUBSCRIPTIONS:
         return PageTransition(
           child: ChooseSubscription(),
           type: PageTransitionType.bottomToTop,
@@ -347,28 +499,28 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/user-product-and-service-search':
+      case Routes.USER_PRODUCT_AND_SERVICE_SEARCH:
         return PageTransition(
           child: SearchUsersProductAndService(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/product':
+      case Routes.PRODUCT:
         return PageTransition(
           child: ProductDetailPage(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/add-product':
+      case Routes.ADD_PRODUCT:
         return PageTransition(
           child: AddProduct(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/edit-product':
+      case Routes.EDIT_PRODUCT:
         return PageTransition(
           child: EditProduct(
             arguments: settings.arguments,
@@ -377,7 +529,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/service-detail':
+      case Routes.SERVICE_DETAIL:
         return PageTransition(
           child: ServiceDetailPage(
             arguments: settings.arguments,
@@ -386,14 +538,14 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/add-service':
+      case Routes.ADD_SERVICE:
         return PageTransition(
           child: AddService(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/edit-service':
+      case Routes.EDIT_SERVICE:
         return PageTransition(
           child: EditService(
             arguments: settings.arguments,
@@ -402,14 +554,14 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/message-list':
+      case Routes.MESSAGE_LIST:
         return PageTransition(
           child: MessageList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/compose_message':
+      case Routes.COMPOSE_MESSAGE:
         return PageTransition(
           child: ComposeMessage(
             arguments: settings.arguments,
@@ -418,7 +570,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/detail_message':
+      case Routes.DETAIL_MESSAGE:
         return PageTransition(
           child: DetailedMessage(
             arguments: settings.arguments,
@@ -428,7 +580,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/add-bvn-number':
+      case Routes.ADD_BVN_NUMBER:
         return PageTransition(
           child: AddBvnNumber(
             arguments: settings.arguments,
@@ -438,21 +590,21 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/add-bank-account':
+      case Routes.ADD_BANK_ACCOUNT:
         return PageTransition(
           child: AddAccount(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/bank-account-list':
+      case Routes.BANK_ACCOUNT_LIST:
         return PageTransition(
           child: BankAccountList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/scan-qr':
+      case Routes.SCAN_QR:
         return PageTransition(
           child: QRCodeView(
             arguments: settings.arguments,
@@ -461,28 +613,28 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/payout':
+      case Routes.PAYOUT:
         return PageTransition(
           child: PayoutScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/payout-list':
+      case Routes.PAYOUT_LIST:
         return PageTransition(
           child: PayoutTransactions(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/forgot-password':
+      case Routes.FORGOT_PASSWORD:
         return PageTransition(
           child: ForgotPassword(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/reset-password':
+      case Routes.RESET_PASSWORD:
         return PageTransition(
           child: ResetPassword(
             arguments: settings.arguments,
@@ -491,70 +643,70 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/change-password':
+      case Routes.CHANGE_PASSWORD:
         return PageTransition(
           child: ChangePassword(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/shopping-cart':
+      case Routes.SHOPPING_CART:
         return PageTransition(
           child: ShoppingCart(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/user-dashboard':
+      case Routes.USER_DASHBOARD:
         return PageTransition(
           child: UserDashboard(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/orders-list':
+      case Routes.ORDERS_LIST:
         return PageTransition(
           child: OrdersList(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/order-detail-page':
+      case Routes.ORDER_DETAIL_PAGE:
         return PageTransition(
           child: OrderDetailPage(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/card-payment-page':
+      case Routes.CARD_PAYMENT_PAGE:
         return PageTransition(
           child: CardPaymentPage(isWalletFunding: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/user-address':
+      case Routes.USER_ADDRESS:
         return PageTransition(
           child: UserAddress(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/friends-dashboard':
+      case Routes.FRIENDS_DASHBOARD:
         return PageTransition(
           child: ConnectionDashboard(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/upgrade-user-profile':
+      case Routes.UPGRADE_USER_PROFILE:
         return PageTransition(
           child: UpgradeUserProfile(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/print-qr':
+      case Routes.PRINT_QR:
         return PageTransition(
           child: PrintQRCode(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -564,7 +716,7 @@ class RouteGenerator {
 
       /// Chat
 
-      case '/chat-screen':
+      case Routes.CHAT_SCREEN:
         return PageTransition(
           child: ChatScreenGroupMessage(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -572,7 +724,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/send-media-to-chat-message':
+      case Routes.SEND_MEDIA_TO_CHAT_MESSAGE:
         return PageTransition(
           child: AddMediaToChatMessage(
               arguments: settings.arguments as Map<String, dynamic>?),
@@ -581,7 +733,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/view-chat-media':
+      case Routes.VIEW_CHAT_MEDIA:
         return PageTransition(
           child: ViewChatMedia(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -589,7 +741,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/select-user-for-group':
+      case Routes.SELECT_USER_FOR_GROUP:
         return PageTransition(
           child: SelectUserForGroup(
             arguments: settings.arguments,
@@ -598,7 +750,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/set-name-and-profile-for-group':
+      case Routes.SET_NAME_AND_PROFILE_FOR_GROUP:
         return PageTransition(
           child: SetNameAndProfileOfGroup(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -606,7 +758,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/update-name-and-profile-for-group':
+      case Routes.UPDATE_NAME_AND_PROFILE_FOR_GROUP:
         return PageTransition(
           child: UpdateGroupNameAndProfile(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -614,7 +766,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/search-member-in-group':
+      case Routes.SEARCH_MEMBER_IN_GROUP:
         return PageTransition(
           child: SearchGroupMember(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -622,7 +774,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/send-envelope':
+      case Routes.SEND_ENVELOPE:
         return PageTransition(
           child: SendEnvelope(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -630,7 +782,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/envelope-detail':
+      case Routes.ENVELOPE_DETAIL:
         return PageTransition(
           child: EnvelopeDetailScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -638,7 +790,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/put-money-in-envelope':
+      case Routes.PUT_MONEY_IN_ENVELOPE:
         return PageTransition(
           child: PutMoneyInEnvelope(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -646,7 +798,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/group-detail':
+      case Routes.GROUP_DETAIL:
         return PageTransition(
           child: GroupDetailScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -656,7 +808,7 @@ class RouteGenerator {
 
       /// Video Recorder
 
-      case '/video-recorder':
+      case Routes.VIDEO_RECORDER:
         return PageTransition(
           child: VideoRecorder(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -666,14 +818,14 @@ class RouteGenerator {
 
       /// TopUp
 
-      case '/credit-card-list':
+      case Routes.CREDIT_CARD_LIST:
         return PageTransition(
           child: CreditCardList(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case '/credit-card-option-selection':
+      case Routes.CREDIT_CARD_OPTION_SELECTION:
         return PageTransition(
           child: CreditCardOptionSelection(),
           type: PageTransitionType.bottomToTop,
@@ -681,7 +833,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/enter-pin':
+      case Routes.ENTER_PIN:
         return PageTransition(
           child: EnterAddressOrPinPinPage(),
           type: PageTransitionType.bottomToTop,
@@ -689,7 +841,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/upgrade-account':
+      case Routes.UPGRADE_ACCOUNT:
         return PageTransition(
           child: UpgradeAccount(),
           type: PageTransitionType.bottomToTop,
@@ -705,7 +857,7 @@ class RouteGenerator {
       //     settings: settings,
       //   );
 
-      case '/add-money-to-slydo-one':
+      case Routes.ADD_MONEY_TO_SLYDO_ONE:
         return PageTransition(
           child: VirtualAccountDetail(),
           type: PageTransitionType.bottomToTop,
@@ -713,7 +865,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/add-money-to-slydo-two':
+      case Routes.ADD_MONEY_TO_SLYDO_TWO:
         return PageTransition(
           child: AddMoneyToSlydoTwo(
             arguments: settings.arguments,
@@ -722,7 +874,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/already-have-reference':
+      case Routes.ALREADY_HAVE_REFERENCE:
         return PageTransition(
           child: AlreadyHaveReferenceScreen(),
           type: PageTransitionType.bottomToTop,
@@ -731,15 +883,15 @@ class RouteGenerator {
         );
 
       /// Contracts & Invoice
-      case '/contracts':
+      case Routes.CONTRACTS:
         return PageTransition(
-          child: MyContractScreen(),
+          child: MyContractAndInvoiceScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
 
-      case '/add-contract':
+      case Routes.ADD_CONTRACT:
         return PageTransition(
           child: AddContract(),
           type: PageTransitionType.bottomToTop,
@@ -747,7 +899,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/contract-detail':
+      case Routes.CONTRACT_DETAIL:
         return PageTransition(
           child: ContractDetail(
             arguments: settings.arguments,
@@ -757,7 +909,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/contract-transactions':
+      case Routes.CONTRACT_TRANSACTIONS:
         return PageTransition(
           child: ContractTransactionHistory(),
           type: PageTransitionType.bottomToTop,
@@ -765,7 +917,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/add-invoice':
+      case Routes.ADD_INVOICE:
         return PageTransition(
           child: AddInvoice(),
           type: PageTransitionType.bottomToTop,
@@ -773,7 +925,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/add-invoice-item':
+      case Routes.ADD_INVOICE_ITEM:
         return PageTransition(
           child: AddInvoiceItem(),
           type: PageTransitionType.bottomToTop,
@@ -781,7 +933,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/edit-invoice-item':
+      case Routes.EDIT_INVOICE_ITEM:
         return PageTransition(
           child: EditInvoiceItem(
             arguments: settings.arguments,
@@ -791,7 +943,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/invoice-detail':
+      case Routes.INVOICE_DETAIL:
         return PageTransition(
           child: InvoiceDetail(
             arguments: settings.arguments,
@@ -803,7 +955,7 @@ class RouteGenerator {
 
       ///    Utility Route     ///
 
-      case '/utility-dashboard':
+      case Routes.UTILITY_DASHBOARD:
         return PageTransition(
           child: UtilityDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -811,7 +963,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/utility-history':
+      case Routes.UTILITY_HISTORY:
         return PageTransition(
           child: UtilityHistory(),
           type: PageTransitionType.bottomToTop,
@@ -819,7 +971,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/cable-provider':
+      case Routes.CABLE_PROVIDER:
         return PageTransition(
           child: SelectCableProvider(),
           type: PageTransitionType.bottomToTop,
@@ -827,7 +979,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/select-cable-plan-and-decoder-number':
+      case Routes.SELECT_CABLE_PLAN_AND_DECODER_NUMBER:
         return PageTransition(
           child: SelectPlanAndDecoderNumber(
               arguments: settings.arguments as Map<String, dynamic>?),
@@ -835,7 +987,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case '/select-cable-plan':
+      case Routes.SELECT_CABLE_PLAN:
         return PageTransition(
           child: SelectCablePlan(
               arguments: settings.arguments as Map<String, dynamic>?),
@@ -844,7 +996,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/cable-plan-detail':
+      case Routes.CABLE_PLAN_DETAIL:
         return PageTransition(
           child: CablePlanDetail(
               arguments: settings.arguments as Map<String, dynamic>?),
@@ -853,7 +1005,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case '/cable-plan-payment-detail':
+      case Routes.CABLE_PLAN_PAYMENT_DETAIL:
         return PageTransition(
           child: CablePlanPaymentDetail(
               arguments: settings.arguments as Map<String, dynamic>?),
@@ -864,7 +1016,7 @@ class RouteGenerator {
 
       ///    More Apps Route     ///
 
-      case '/more-apps':
+      case Routes.MORE_APPS:
         return PageTransition(
           child: MoreApps(),
           type: PageTransitionType.bottomToTop,
@@ -874,7 +1026,7 @@ class RouteGenerator {
 
       /// Movie Route
 
-      case "/taxi":
+      case Routes.TAXI:
         return PageTransition(
           child: TaxiDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -882,7 +1034,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/select-destination-for-taxi-ride":
+      case Routes.SELECT_DESTINATION_FOR_TAXI_RIDE:
         return PageTransition(
           child: SelectAddressScreen(),
           type: PageTransitionType.bottomToTop,
@@ -890,7 +1042,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/select-ride-type":
+      case Routes.SELECT_RIDE_TYPE:
         var arguments = settings.arguments as Map<String, dynamic>;
         return PageTransition(
           child: RideOption(),
@@ -900,7 +1052,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-driver":
+      case Routes.SEARCH_DRIVER:
         var arguments = settings.arguments as Map<String, dynamic>;
         return PageTransition(
           child: SearchingForRide(),
@@ -910,7 +1062,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/driver-arriving":
+      case Routes.DRIVER_ARRIVING:
         return PageTransition(
           child: ArrivingDriver(),
           type: PageTransitionType.bottomToTop,
@@ -918,7 +1070,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/trip-ended":
+      case Routes.TRIP_ENDED:
         return PageTransition(
           child: TripEnded(),
           type: PageTransitionType.bottomToTop,
@@ -926,7 +1078,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/payment-options":
+      case Routes.PAYMENT_OPTIONS:
         return PageTransition(
           child: PaymentOptions(),
           type: PageTransitionType.bottomToTop,
@@ -934,35 +1086,35 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/no-vehicle-found":
+      case Routes.NO_VEHICLE_FOUND:
         return PageTransition(
           child: NoVehicleFound(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case "/terms-and-condition":
+      case Routes.TERMS_AND_CONDITION:
         return PageTransition(
           child: TermsAndCondition(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case "/rate-and-tip-driver":
+      case Routes.RATE_AND_TIP_DRIVER:
         return PageTransition(
           child: RateAndTipDriver(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case "/cancle-booking":
+      case Routes.CANCLE_BOOKING:
         return PageTransition(
           child: CancelBooking(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case "/contact-driver":
+      case Routes.CONTACT_DRIVER:
         return PageTransition(
           child: ContactDriver(),
           type: PageTransitionType.bottomToTop,
@@ -972,7 +1124,7 @@ class RouteGenerator {
 
       /// Movie Route
 
-      case "/movies":
+      case Routes.MOVIES:
         return PageTransition(
           child: MovieDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -980,7 +1132,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/movie-category":
+      case Routes.MOVIE_CATEGORY:
         return PageTransition(
           child: SpecificCategoryMovieList(),
           type: PageTransitionType.bottomToTop,
@@ -988,7 +1140,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-movie":
+      case Routes.SEARCH_MOVIE:
         return PageTransition(
           child: SearchMovie(),
           type: PageTransitionType.bottomToTop,
@@ -996,7 +1148,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/movie-detail":
+      case Routes.MOVIE_DETAIL:
         return PageTransition(
           child: MovieDetailPage(),
           type: PageTransitionType.bottomToTop,
@@ -1006,7 +1158,7 @@ class RouteGenerator {
 
       /// Music
 
-      case "/musics":
+      case Routes.MUSICS:
         return PageTransition(
           child: MusicDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1014,7 +1166,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/music-category":
+      case Routes.MUSIC_CATEGORY:
         return PageTransition(
           child: SpecificCategoryMusicList(),
           type: PageTransitionType.bottomToTop,
@@ -1022,7 +1174,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-music":
+      case Routes.SEARCH_MUSIC:
         return PageTransition(
           child: SearchMusic(),
           type: PageTransitionType.bottomToTop,
@@ -1030,7 +1182,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/album-detail":
+      case Routes.ALBUM_DETAIL:
         return PageTransition(
           child: AlbumDetailPage(
             arguments: settings.arguments,
@@ -1040,7 +1192,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/music-detail":
+      case Routes.MUSIC_DETAIL:
         return PageTransition(
           child: MusicDetailPage(
             arguments: settings.arguments,
@@ -1052,7 +1204,7 @@ class RouteGenerator {
 
       /// Event Route
 
-      case "/events":
+      case Routes.EVENTS:
         return PageTransition(
           child: EventDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1060,7 +1212,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/event-category":
+      case Routes.EVENT_CATEGORY:
         return PageTransition(
           child: SpecificCategoryEventList(),
           type: PageTransitionType.bottomToTop,
@@ -1068,7 +1220,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-event":
+      case Routes.SEARCH_EVENT:
         return PageTransition(
           child: SearchEvent(),
           type: PageTransitionType.bottomToTop,
@@ -1076,7 +1228,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/event-detail":
+      case Routes.EVENT_DETAIL:
         return PageTransition(
           child: EventDetailPage(),
           type: PageTransitionType.bottomToTop,
@@ -1084,7 +1236,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/event-ticket-detail":
+      case Routes.EVENT_TICKET_DETAIL:
         return PageTransition(
           child: EventTicketDetail(),
           type: PageTransitionType.bottomToTop,
@@ -1094,7 +1246,7 @@ class RouteGenerator {
 
       /// Hotel Route
 
-      case "/hotels":
+      case Routes.HOTELS:
         return PageTransition(
           child: HotelDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1102,7 +1254,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/hotel-category":
+      case Routes.HOTEL_CATEGORY:
         return PageTransition(
           child: SpecificCategoryHotelList(),
           type: PageTransitionType.bottomToTop,
@@ -1110,7 +1262,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-hotel":
+      case Routes.SEARCH_HOTEL:
         return PageTransition(
           child: SearchHotel(),
           type: PageTransitionType.bottomToTop,
@@ -1118,7 +1270,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/hotel-detail":
+      case Routes.HOTEL_DETAIL:
         return PageTransition(
           child: HotelDetailPage(),
           type: PageTransitionType.bottomToTop,
@@ -1126,7 +1278,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/hotel-ticket-detail":
+      case Routes.HOTEL_TICKET_DETAIL:
         return PageTransition(
           child: EventTicketDetail(),
           type: PageTransitionType.bottomToTop,
@@ -1134,7 +1286,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/partner-detail":
+      case Routes.PARTNER_DETAIL:
         return PageTransition(
           child: PartnerDetailPage(),
           type: PageTransitionType.bottomToTop,
@@ -1144,7 +1296,7 @@ class RouteGenerator {
 
       /// Property Route
 
-      case "/property":
+      case Routes.PROPERTY:
         return PageTransition(
           child: PropertyDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1152,7 +1304,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/property-category":
+      case Routes.PROPERTY_CATEGORY:
         return PageTransition(
           child: SpecificCategoryPropertyList(),
           type: PageTransitionType.bottomToTop,
@@ -1160,7 +1312,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-property":
+      case Routes.SEARCH_PROPERTY:
         return PageTransition(
           child: SearchProperty(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -1168,7 +1320,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/property-detail":
+      case Routes.PROPERTY_DETAIL:
         return PageTransition(
           child: PropertyDetailPage(),
           type: PageTransitionType.bottomToTop,
@@ -1176,14 +1328,14 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/add-property":
+      case Routes.ADD_PROPERTY:
         return PageTransition(
           child: AddProperty(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
         );
-      case "/edit-property":
+      case Routes.EDIT_PROPERTY:
         return PageTransition(
           child: EditProperty(),
           type: PageTransitionType.bottomToTop,
@@ -1193,7 +1345,7 @@ class RouteGenerator {
 
       /// News
 
-      case "/news":
+      case Routes.NEWS:
         return PageTransition(
           child: NewsDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1201,7 +1353,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/news-detail":
+      case Routes.NEWS_DETAIL:
         return PageTransition(
           child: NewsDetailPage(),
           type: PageTransitionType.bottomToTop,
@@ -1211,7 +1363,7 @@ class RouteGenerator {
 
       /// Bus
 
-      case "/bus":
+      case Routes.BUS:
         return PageTransition(
           child: BusDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1219,7 +1371,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-bus":
+      case Routes.SEARCH_BUS:
         return PageTransition(
           child: SearchBus(),
           type: PageTransitionType.bottomToTop,
@@ -1227,7 +1379,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/ticket-detail":
+      case Routes.TICKET_DETAIL:
         return PageTransition(
           child: TicketDetail(),
           type: PageTransitionType.bottomToTop,
@@ -1237,7 +1389,7 @@ class RouteGenerator {
 
       /// Train
 
-      case "/train":
+      case Routes.TRAIN:
         return PageTransition(
           child: TrainDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1245,7 +1397,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-train":
+      case Routes.SEARCH_TRAIN:
         return PageTransition(
           child: SearchTrain(),
           type: PageTransitionType.bottomToTop,
@@ -1255,7 +1407,7 @@ class RouteGenerator {
 
       /// Flight
 
-      case "/flight":
+      case Routes.FLIGHT:
         return PageTransition(
           child: FlightDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1263,7 +1415,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-flight":
+      case Routes.SEARCH_FLIGHT:
         return PageTransition(
           child: SearchFlight(),
           type: PageTransitionType.bottomToTop,
@@ -1273,7 +1425,7 @@ class RouteGenerator {
 
       /// Shopping
 
-      case "/shopping":
+      case Routes.SHOPPING:
         return PageTransition(
           child: ShoppingDashboard(),
           type: PageTransitionType.bottomToTop,
@@ -1281,7 +1433,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/shopping-category":
+      case Routes.SHOPPING_CATEGORY:
         return PageTransition(
           child: SpecificCategoryProductList(),
           type: PageTransitionType.bottomToTop,
@@ -1289,7 +1441,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/search-product":
+      case Routes.SEARCH_PRODUCT:
         return PageTransition(
           child: SearchProduct(),
           type: PageTransitionType.bottomToTop,
@@ -1299,7 +1451,7 @@ class RouteGenerator {
 
       /// Review
 
-      case "/reviews":
+      case Routes.REVIEWS:
         return PageTransition(
           child: MainReview(),
           type: PageTransitionType.bottomToTop,
@@ -1307,7 +1459,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/mix-cart-item":
+      case Routes.MIX_CART_ITEM:
         return PageTransition(
           child: MixCartItem(),
           type: PageTransitionType.bottomToTop,
@@ -1315,7 +1467,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/add-edit-user-bio":
+      case Routes.ADD_EDIT_USER_BIO:
         return PageTransition(
           child: AddOrEditUserBioScreen(),
           type: PageTransitionType.bottomToTop,
@@ -1331,7 +1483,7 @@ class RouteGenerator {
       //     settings: settings,
       //   );
 
-      case "/general-setting":
+      case Routes.GENERAL_SETTING:
         return PageTransition(
           child: GeneralSettingScreen(),
           type: PageTransitionType.bottomToTop,
@@ -1339,7 +1491,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/photo-viewer":
+      case Routes.PHOTO_VIEWER:
         return PageTransition(
           child: PhotoViewer(imageUrl: settings.arguments as String?),
           type: PageTransitionType.bottomToTop,
@@ -1347,7 +1499,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/review-detail-screen":
+      case Routes.REVIEW_DETAIL_SCREEN:
         return PageTransition(
           child: ReviewDetailScreen(
               arguments: settings.arguments as Map<String, dynamic>),
@@ -1364,7 +1516,7 @@ class RouteGenerator {
       //     settings: settings,
       //   );
 
-      case "/review-list-screen":
+      case Routes.REVIEW_LIST_SCREEN:
         return PageTransition(
           child: ReviewListScreen(
             arguments: settings.arguments as Map<String, dynamic>,
@@ -1374,7 +1526,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/add-review":
+      case Routes.ADD_REVIEW:
         return PageTransition(
           child: AddReview(
             arguments: settings.arguments as Map<String, dynamic>,
@@ -1384,7 +1536,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/edit-review":
+      case Routes.EDIT_REVIEW:
         return PageTransition(
           child: EditUserReview(
               arguments: settings.arguments as Map<String, dynamic>),
@@ -1393,7 +1545,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case "/top-up-options":
+      case Routes.TOP_UP_OPTIONS:
         return PageTransition(
           child: TopUpOptionSelection(),
           type: PageTransitionType.bottomToTop,
@@ -1402,7 +1554,7 @@ class RouteGenerator {
         );
 
       /// Custom Services
-      case "/web-view":
+      case Routes.WEB_VIEW:
         return PageTransition(
           child: CustomWebView(webUrl: settings.arguments as String),
           type: PageTransitionType.bottomToTop,

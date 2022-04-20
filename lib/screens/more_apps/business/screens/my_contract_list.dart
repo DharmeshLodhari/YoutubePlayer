@@ -1,6 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
-import 'package:Slydo/screens/more_apps/business/tiles/contract_tile.dart';
+import 'package:Slydo/screens/more_apps/business/tiles/contract_and_invoice_tile.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -137,6 +137,9 @@ class _MyContractListState extends State<MyContractList> {
             return buildIndicator(isLoading: contractBloc.isLoading);
           } else {
             Contract contract = contractBloc.contractList[index];
+            if (contract.status == "Ended" || contract.status == "Stopped") {
+              return ContractTile(contract: contract);
+            }
             return _getSlidableWithLists(
                 context, ContractTile(contract: contract), index,
                 contract: contract);
@@ -162,11 +165,6 @@ class _MyContractListState extends State<MyContractList> {
   }
 
   List<Widget> listSecondaryActions(int index, Contract contract) {
-    // STOPPED = ("Stopped", _("Stopped"))
-    // ENDED = ("Ended", _("Ended"))
-    // ACTIVE = ("Active", _("Active"))
-    // PAUSED = ("Paused", _("Paused"))
-
     return [
       SlideActionButton(
           backgroundColor: getSecondaryActionIconColor(contract),
@@ -186,8 +184,7 @@ class _MyContractListState extends State<MyContractList> {
         return naturalGreen;
       case "Active":
         return starYellow;
-      case "Stopped":
-        return naturalGreen;
+
       case "Ended":
         return starYellow;
       default:
@@ -201,8 +198,7 @@ class _MyContractListState extends State<MyContractList> {
         return Icons.play_arrow_rounded;
       case "Active":
         return Icons.pause;
-      case "Stopped":
-        return Icons.play_arrow_rounded;
+
       case "Ended":
         return Icons.pause;
       default:
@@ -216,17 +212,12 @@ class _MyContractListState extends State<MyContractList> {
         return "Resume";
       case "Active":
         return "Pause";
-      case "Stopped":
-        return "Resume";
-      case "Ended":
-        return "Pause";
       default:
-        return "";
+        return "Active";
     }
   }
 
   String getUpdateAction(Contract contract) {
-    // Contract contract = contracts[index];
     switch (contract.status) {
       case "Paused":
         return "Active";
@@ -234,26 +225,18 @@ class _MyContractListState extends State<MyContractList> {
       case "Active":
         return "Paused";
 
-      case "Stopped":
-        return "Ended";
-
-      case "Ended":
-        return "Stopped";
-
       default:
-        return "";
+        return "Active";
     }
   }
 
   void updateContractStatus(Contract contract, String action) {
-    // Contract contract = contracts[index];
     Map<String, String> data = {"status": action};
 
     BusinessAuth()
         .updateContract(id: contract.id.toString(), data: data)
         .then((value) {
       contract.status = action;
-      // contracts[index].status = action;
       contractBlocProvider.getContractList();
       showToast(message: "Status updated successfully");
     }).catchError((error) {
@@ -267,9 +250,9 @@ class _MyContractListState extends State<MyContractList> {
           backgroundColor: mateRed,
           icon: Icons.stop_circle_outlined,
           onTap: () {
-            updateContractStatus(contract, getUpdateAction(contract));
+            updateContractStatus(contract, 'Ended');
           },
-          title: "Stop",
+          title: "End",
           slideController: _slideController),
     ];
   }

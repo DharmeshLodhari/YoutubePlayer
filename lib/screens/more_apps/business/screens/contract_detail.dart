@@ -42,6 +42,7 @@ class _ContractDetailState extends State<ContractDetail> {
     BusinessAuth().getContract(arguments["id"].toString()).then((value) {
       contract = value;
       isLoading = false;
+
       setState(() {});
     }).catchError((error) {
       debugPrint(error);
@@ -221,7 +222,7 @@ class _ContractDetailState extends State<ContractDetail> {
           ),
         ),
         Text(
-          contract.amount.toString(),
+          moneyDisplayNormalizer(contract.amount),
           style: TextStyle(
               color: navyBlue, fontWeight: FontWeight.bold, fontSize: 14),
         ),

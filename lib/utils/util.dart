@@ -261,7 +261,9 @@ void androidBottomSheet(
 }
 
 Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
-    {Transaction? transaction, Widget? trailingWidget}) {
+    {Transaction? transaction,
+    Widget? trailingWidget,
+    TextStyle? subtitleTextStyle}) {
   debugPrint("==>$subtitle");
   return Container(
     child: ListTile(
@@ -273,15 +275,19 @@ Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
       title: Text(
         title,
         style: TextStyle(
-            fontWeight: FontWeight.w600, color: blackFont, fontSize: 14),
+          fontWeight: FontWeight.w600,
+          color: blackFont,
+          fontSize: 14,
+        ),
       ),
       subtitle: Text(
         getCurrency(subtitle, transaction?.currency),
-        style: TextStyle(
-          color: blackFont,
-          fontSize: 14,
-          fontFamily: "roberto",
-        ),
+        style: subtitleTextStyle ??
+            TextStyle(
+              color: blackFont,
+              fontSize: 14,
+              fontFamily: "roberto",
+            ),
       ),
       trailing: trailingWidget,
     ),

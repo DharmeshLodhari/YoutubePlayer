@@ -68,6 +68,8 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
         : decodeNotification(remoteMessage.data);
 
     debugPrint("DATA:----- $dataOfNotification");
+    //If {dataOfNotification['data'] != null} this is true, the app will send local notification else the app sends a push notification.
+
     if (dataOfNotification['data'] != null &&
         dataOfNotification["data"]["type"] != null &&
         (dataOfNotification["data"]['type'] == "chatroom_message" ||
@@ -123,7 +125,9 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
         MainSocketMessageHandler()
             .handleAcknowledgementMessage(messageData: messageData);
       }
-    } else {
+    }
+    // Here is the push notification.
+    else {
       data['notification'] = notification;
 
       String action = data['notification']['actions'] ??
@@ -282,6 +286,7 @@ class PushNotificationService {
   }
 
   // ignore: missing_return
+  // This is for the Firebase Push Notification
   void onSelectNotification(String? payload, BuildContext? context,
       Map<String, dynamic> notification) async {
     // example of notification response

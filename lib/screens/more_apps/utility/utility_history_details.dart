@@ -124,10 +124,40 @@ class _UtilityHistoryDetailScreenState
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: isLoading
             ? Center(child: CircularLoadingIndicator())
-            : Column(
+            : Stack(
                 children: [
-                  displayTransactionInfo(),
-                  flexibleSpace(),
+                  Image.asset(
+                      'assets/images/utility_history_details_background_card.png'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12.0, horizontal: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            getLeading(),
+                            SizedBox(width: 10),
+                            getSender(),
+                          ],
+                        ),
+                        SizedBox(height: 26),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: Row(
+                            children: getDashes(numberOfDashes: 18),
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        displayBodyOfTransaction(),
+                      ],
+                    ),
+                  ),
+                  // Column(
+                  //   children: [
+                  //     displayTransactionInfo(),
+                  //     flexibleSpace(),
+                  //   ],
+                  // ),
                 ],
               ),
       ),
@@ -138,7 +168,7 @@ class _UtilityHistoryDetailScreenState
     return ListTile(
       leading: getLeading(),
       title: getSender(),
-      subtitle: getSubtitle(),
+      // subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
         // if (transaction?.payee == "slydo_envelope" ||
@@ -162,33 +192,46 @@ class _UtilityHistoryDetailScreenState
     );
   }
 
-  Widget getSubtitle() {
+  String getFormattedDateTime() {
     DateTime utilityTransactionTime =
         DateTime.parse(_utilityHistoryModel.createdAt);
-    String date = DateFormat("dd/MM/yyyy").format(utilityTransactionTime);
-    String time = DateFormat("hh:mm a").format(utilityTransactionTime);
+    String date = DateFormat.jm().format(utilityTransactionTime);
+    String time = DateFormat.yMMMMd().format(utilityTransactionTime);
 
-    return Text(
-      "$date • $time",
-      softWrap: false,
-      overflow: TextOverflow.visible,
-      style: TextStyle(color: darkGrey, fontSize: 12),
-    );
+    return "$date, $time";
+  }
+
+  List<Widget> getDashes({required int numberOfDashes}) {
+    List<Widget> widgets = [];
+    for (int i = 0; i < numberOfDashes; i++) {
+      widgets.add(
+        Container(
+          width: 10,
+          height: 1,
+          color: Color(0XFFD7DAEC),
+          margin: EdgeInsets.symmetric(horizontal: 4),
+        ),
+      );
+    }
+    return widgets;
   }
 
   Widget getLeading() {
-    return ClipOval(
-      child: CachedNetworkImage(
-        imageUrl: _utilityHistoryModel.providerAvatar,
-        height: 48,
-        width: 48,
-        colorBlendMode: BlendMode.darken,
-        errorWidget: imageErrorWidget,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => _utilityHistoryModel.providerAvatar == ""
-            ? Icon(Icons.person)
-            : CircularLoadingIndicator(),
+    return Card(
+      elevation: 7,
+      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CachedNetworkImage(
+          height: 35,
+          width: 35,
+          fit: BoxFit.fill,
+          filterQuality: FilterQuality.high,
+          imageUrl: _utilityHistoryModel.providerAvatar,
+        ),
       ),
     );
   }
@@ -199,7 +242,7 @@ class _UtilityHistoryDetailScreenState
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.bold,
-        fontSize: 15,
+        fontSize: 17,
       ),
     );
   }
@@ -252,35 +295,56 @@ class _UtilityHistoryDetailScreenState
   }
 
   Widget displayBodyOfTransaction() {
+    TextStyle subtitleTextStyle = TextStyle(
+      color: blackFont,
+      fontSize: 16,
+      fontFamily: "roberto",
+      fontWeight: FontWeight.w500,
+    );
     return Container(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Divider(
-            color: dividerColor,
-            thickness: 1,
-            height: 0,
+          transactionOrKycDetailTile(
+            SlydoAppIcon.user,
+            AppLocalization.of(context)!.amount,
+            '${worldCurrencies[_utilityHistoryModel.currency]!}${moneyDisplayNormalizer(
+              int.parse(_utilityHistoryModel.amount.toString()),
+            )}',
+            subtitleTextStyle: subtitleTextStyle,
+          ),
+
+          transactionOrKycDetailTile(
+            SlydoAppIcon.date,
+            'Date & Time',
+            getFormattedDateTime(),
+            subtitleTextStyle: subtitleTextStyle,
           ),
           transactionOrKycDetailTile(
             SlydoAppIcon.user,
             AppLocalization.of(context)!.status,
             _utilityHistoryModel.status,
+            subtitleTextStyle: subtitleTextStyle,
           ),
+          // transactionOrKycDetailTile(
+          //   SlydoAppIcon.category,
+          //   AppLocalization.of(context)!.category,
+          //   'Bill payment',
+          //   // transaction!.category!,
+          // ),
           transactionOrKycDetailTile(
-            SlydoAppIcon.category,
-            AppLocalization.of(context)!.category,
-            'Bill payment',
-            // transaction!.category!,
+            SlydoAppIcon.note_filled,
+            AppLocalization.of(context)!.note,
+            '_ _ _a note',
+            // transaction!.note!,
+            subtitleTextStyle: subtitleTextStyle,
           ),
-          transactionOrKycDetailTile(SlydoAppIcon.note_filled,
-              AppLocalization.of(context)!.note, '___a note'
-              // transaction!.note!,
-              ),
           transactionOrKycDetailTile(
             SlydoAppIcon.note,
             AppLocalization.of(context)!.description,
-            '___electricity payment',
+            '_ _ _electricity payment',
+            subtitleTextStyle: subtitleTextStyle,
             // transaction!.description!,
           ),
         ],

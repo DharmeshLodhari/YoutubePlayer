@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,7 +38,7 @@ class CreditCardOptionSelection extends StatelessWidget {
                     icon: Icons.credit_card,
                     iconColor: naturalGreen,
                     onTap: () async {
-                      Navigator.of(context).pushNamed('/credit-card-list');
+                      Navigator.of(context).pushNamed(Routes.CREDIT_CARD_LIST);
                     }),
                 getSettingTile(
                     title: AppLocalization.of(context)!
@@ -47,7 +48,7 @@ class CreditCardOptionSelection extends StatelessWidget {
                     iconColor: HexColor("#3F61DB"),
                     onTap: () async {
                       Navigator.of(context)
-                          .pushNamed('/card-payment-page', arguments: true);
+                          .pushNamed(Routes.CARD_PAYMENT_PAGE, arguments: true);
                     }),
               ],
             ),
