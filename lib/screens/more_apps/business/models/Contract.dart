@@ -12,7 +12,7 @@ class Contract {
   String? paymentDuration;
   String? startDate;
   String? status;
-  bool? isAccepted;
+  bool isAccepted;
 
   Contract(
       {this.amount,
@@ -22,7 +22,7 @@ class Contract {
       this.contractorAvatar,
       this.createdAt,
       this.currency,
-      this.isAccepted,
+      required this.isAccepted,
       this.endDate,
       this.id,
       this.note,

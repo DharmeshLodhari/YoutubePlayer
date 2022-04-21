@@ -1478,7 +1478,7 @@ class AppLocalization {
 
   String get utilityTransactionHistory {
     return Intl.message(
-      "Utility transaction history",
+      "Utility Transaction History",
       name: "utilityTransactionHistory",
     );
   }

@@ -74,6 +74,16 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
               .fetchUserReviews(userName: reviewedUser?.userName);
         }
 
+        debugPrint('REVIEW LIST :: $result');
+
+        // if(result['error'] == 'review not found'){
+        //   if (mounted) {
+        //     setState(() {
+        //       noReviewInList = true;
+        //     });
+        //   }
+        // }
+
         if (result == null) {
           isLoading = false;
           if (mounted) {
@@ -85,21 +95,28 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
         reviewCount = result['count'];
         reviewNext = result['next'];
         reviewPrevious = result['previous'];
-        List tempList = result['results'];
+        List? tempList = result['results'];
 
-        List<Review> list = tempList.map((e) => Review.fromJson(e)).toList();
+        if (tempList != null) {
+          List<Review> list = tempList.map((e) => Review.fromJson(e)).toList();
 
-        if (mounted) {
-          setState(() {
-            noReviewInList = false;
-            isLoading = false;
-            reviewList.addAll(list);
-          });
+          if (mounted) {
+            setState(() {
+              noReviewInList = false;
+              isLoading = false;
+              reviewList.addAll(list);
+            });
+          }
         }
       }
+      debugPrint('REVIEW LIST  34 ::: $reviewList');
+
       if (reviewList.isEmpty) {
         if (mounted) {
+          debugPrint('REVIEW LIST   empty::: $reviewList');
+
           setState(() {
+            isLoading = false;
             noReviewInList = true;
           });
         }

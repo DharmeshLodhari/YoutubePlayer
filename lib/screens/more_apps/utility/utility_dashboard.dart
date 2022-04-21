@@ -124,12 +124,12 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
         SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
-            icon: SlydoAppIcon.utility_airtime,
-            title: "Data Bundle",
+            icon: Icons.tap_and_play_outlined,
+            title: "Data",
             providersEnum: UtilitiesProvidersEnum.mobile_data,
             iconColor: navyBlue,
             height: 126,
-            titleFontSize: 12,
+            titleFontSize: 14,
           ),
         ),
       ],

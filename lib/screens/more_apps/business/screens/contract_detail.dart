@@ -278,7 +278,7 @@ class _ContractDetailState extends State<ContractDetail> {
           detailTile(
             SlydoAppIcon.note_filled,
             AppLocalization.of(context)!.note,
-            contract.note!,
+            contract.note ?? '---',
           ),
           detailTile(
             SlydoAppIcon.date,

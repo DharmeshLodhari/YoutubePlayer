@@ -75,6 +75,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../routes/route_constants.dart';
+import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
 
 class ChatScreenGroupMessage extends StatefulWidget {
@@ -1419,8 +1421,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void navigateToGroupDetailScreen() async {
-    var result = await Navigator.of(context)
-        .pushNamed('/group-detail', arguments: {"groupDetail": groupDetail});
+    var result = await Navigator.of(context).pushNamed(Routes.GROUP_DETAIL,
+        arguments: {"groupDetail": groupDetail});
 
     if (result != null) {
       if (result is GroupDetailModel) {
@@ -3033,9 +3035,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message: messageData, chatConversation: chatConversation);
         break;
 
+      case "payment-contract":
+        finalUI = renderPaymentContractUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
-        Widget getErrorRenderTypeUI = unKnownMessageType();
+        Widget getErrorRenderTypeUI = unKnownMessageType(messageType);
         return getErrorRenderTypeUI;
     }
     return getReplyOnSwipe(ui: finalUI, message: message);
@@ -3651,6 +3658,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
+  Widget renderPaymentContractUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return PostTileForPaymentContract(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
   Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
@@ -3686,8 +3701,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
-  Widget unKnownMessageType() {
-    return Container();
+  Widget unKnownMessageType(String? messageKind) {
+    return Container(
+      child: Text(messageKind ?? "Unknown message kind"),
+    );
   }
 
   void checkMessageForRead() {

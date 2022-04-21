@@ -669,7 +669,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildWriteReview() {
-    if (service?.provider == userBloc.user.userName && canRate) {
+    if (service?.provider == userBloc.user.userName) {
+      return Container();
+    }
+
+    if (!canRate) {
       return Container();
     }
 

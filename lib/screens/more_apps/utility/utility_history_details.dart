@@ -135,39 +135,33 @@ class _UtilityHistoryDetailScreenState
                       children: [
                         Row(
                           children: [
-                            getLeading(),
+                            displayUtilityImage(),
                             SizedBox(width: 10),
-                            getSender(),
+                            displayUtilityName(),
                           ],
                         ),
-                        SizedBox(height: 26),
+                        SizedBox(height: 18),
                         Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                           child: Row(
-                            children: getDashes(numberOfDashes: 18),
+                            children: getDashes(numberOfDashes: 14),
                           ),
                         ),
                         SizedBox(height: 12),
-                        displayBodyOfTransaction(),
+                        displayUtilityHistoryBody(),
                       ],
                     ),
                   ),
-                  // Column(
-                  //   children: [
-                  //     displayTransactionInfo(),
-                  //     flexibleSpace(),
-                  //   ],
-                  // ),
                 ],
               ),
       ),
     );
   }
 
-  Widget displaySenderInfo() {
+  Widget displayUtilityHeader() {
     return ListTile(
-      leading: getLeading(),
-      title: getSender(),
+      leading: displayUtilityImage(),
+      title: displayUtilityName(),
       // subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
@@ -192,7 +186,7 @@ class _UtilityHistoryDetailScreenState
     );
   }
 
-  String getFormattedDateTime() {
+  String _getFormattedDateTime() {
     DateTime utilityTransactionTime =
         DateTime.parse(_utilityHistoryModel.createdAt);
     String date = DateFormat.jm().format(utilityTransactionTime);
@@ -205,18 +199,20 @@ class _UtilityHistoryDetailScreenState
     List<Widget> widgets = [];
     for (int i = 0; i < numberOfDashes; i++) {
       widgets.add(
-        Container(
-          width: 10,
-          height: 1,
-          color: Color(0XFFD7DAEC),
-          margin: EdgeInsets.symmetric(horizontal: 4),
+        Expanded(
+          child: Container(
+            width: 10,
+            height: 1,
+            color: Color(0XFFD7DAEC),
+            margin: EdgeInsets.symmetric(horizontal: 4),
+          ),
         ),
       );
     }
     return widgets;
   }
 
-  Widget getLeading() {
+  Widget displayUtilityImage() {
     return Card(
       elevation: 7,
       margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -236,7 +232,7 @@ class _UtilityHistoryDetailScreenState
     );
   }
 
-  Widget getSender() {
+  Widget displayUtilityName() {
     return Text(
       _utilityHistoryModel.customerUsername,
       style: TextStyle(
@@ -286,66 +282,109 @@ class _UtilityHistoryDetailScreenState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            displaySenderInfo(),
-            displayBodyOfTransaction(),
+            displayUtilityHeader(),
+            displayUtilityHistoryBody(),
           ],
         ),
       ),
     );
   }
 
-  Widget displayBodyOfTransaction() {
-    TextStyle subtitleTextStyle = TextStyle(
-      color: blackFont,
-      fontSize: 16,
-      fontFamily: "roberto",
-      fontWeight: FontWeight.w500,
-    );
+  Widget displayUtilityHistoryBody() {
     return Container(
+      padding: EdgeInsets.only(left: 14),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          transactionOrKycDetailTile(
-            SlydoAppIcon.user,
-            AppLocalization.of(context)!.amount,
-            '${worldCurrencies[_utilityHistoryModel.currency]!}${moneyDisplayNormalizer(
+          _historyDetailsTile(
+            title: AppLocalization.of(context)!.amount,
+            subTitleText:
+                '${worldCurrencies[_utilityHistoryModel.currency]!}${moneyDisplayNormalizer(
               int.parse(_utilityHistoryModel.amount.toString()),
             )}',
-            subtitleTextStyle: subtitleTextStyle,
+            imagePathName: 'naira_icon.png',
           ),
+          _historyDetailsTile(
+            title: 'Date & Time',
+            subTitleText: _getFormattedDateTime(),
+            imagePathName: 'time_icon.png',
+          ),
+          _historyDetailsTile(
+            title: AppLocalization.of(context)!.status,
+            subTitleWidget: getStatusWidget(),
+            imagePathName: 'status_icon.png',
+          ),
+          _historyDetailsTile(
+            title: AppLocalization.of(context)!.description,
+            subTitleText: _utilityHistoryModel.description ?? "---",
+            imagePathName: 'desc_icon.png',
+          ),
+        ],
+      ),
+    );
+  }
 
-          transactionOrKycDetailTile(
-            SlydoAppIcon.date,
-            'Date & Time',
-            getFormattedDateTime(),
-            subtitleTextStyle: subtitleTextStyle,
+  getStatusWidget() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        color: _utilityHistoryModel.status == 'Successful'
+            ? navyBlue.withOpacity(0.1)
+            : mateRed.withOpacity(0.1),
+      ),
+      child: Text(
+        _utilityHistoryModel.status,
+        style: TextStyle(
+          color:
+              _utilityHistoryModel.status == 'Successful' ? navyBlue : mateRed,
+        ),
+      ),
+    );
+  }
+
+  Widget _historyDetailsTile(
+      {required String title,
+      String subTitleText = "", // use this if you need a text for the subtitle.
+      Widget? subTitleWidget, // use this if you need a widget for the subtitle.
+      required String imagePathName}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Image.asset(
+            'assets/images/$imagePathName',
+            width: 34,
+            height: 34,
           ),
-          transactionOrKycDetailTile(
-            SlydoAppIcon.user,
-            AppLocalization.of(context)!.status,
-            _utilityHistoryModel.status,
-            subtitleTextStyle: subtitleTextStyle,
-          ),
-          // transactionOrKycDetailTile(
-          //   SlydoAppIcon.category,
-          //   AppLocalization.of(context)!.category,
-          //   'Bill payment',
-          //   // transaction!.category!,
-          // ),
-          transactionOrKycDetailTile(
-            SlydoAppIcon.note_filled,
-            AppLocalization.of(context)!.note,
-            '_ _ _a note',
-            // transaction!.note!,
-            subtitleTextStyle: subtitleTextStyle,
-          ),
-          transactionOrKycDetailTile(
-            SlydoAppIcon.note,
-            AppLocalization.of(context)!.description,
-            '_ _ _electricity payment',
-            subtitleTextStyle: subtitleTextStyle,
-            // transaction!.description!,
+          SizedBox(width: 14),
+          Padding(
+            padding: const EdgeInsets.only(top: 18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                    fontSize: 14,
+                  ),
+                ),
+                SizedBox(height: 8),
+                subTitleWidget ??
+                    Text(
+                      subTitleText,
+                      style: TextStyle(
+                        color: blackFont,
+                        fontSize: 16,
+                        fontFamily: "roberto",
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )
+              ],
+            ),
           ),
         ],
       ),

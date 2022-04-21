@@ -187,7 +187,8 @@ class _MyContractAndInvoiceScreenState
           print('CONTRACT ADDED ::: $contractAdded');
 
           if (contractAdded == true) {
-            Provider.of<ContractBloc>(context, listen: false).getContractList();
+            contractBloc.isRefreshing = true;
+            contractBloc.getContractList();
           }
         } else if (currentIndex == 1) {
           var invoiceAdded =

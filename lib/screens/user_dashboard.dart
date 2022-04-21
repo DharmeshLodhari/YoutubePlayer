@@ -31,6 +31,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
+import '../routes/route_constants.dart';
 import 'more_apps/business/business_auth.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
@@ -429,7 +430,7 @@ class _UserDashboardState extends State<UserDashboard> {
           onTap: () {
             hideBalance();
             if (!storeLocked) {
-              Navigator.of(context).pushNamed("/contracts");
+              Navigator.of(context).pushNamed(Routes.CONTRACTS);
             }
           },
           iconColor: HexColor("#5218E9"),
@@ -445,16 +446,16 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#FFAB00"),
           ),
         ),
-        // Expanded(
-        //   child: UserDashboardItemTile(
-        //     icon: SlydoAppIcon.more,
-        //     title: AppLocalization.of(context)!.more,
-        //     onTap: () {
-        //       Navigator.pushNamed(context, "/more-apps");
-        //     },
-        //     iconColor: HexColor("#374677"),
-        //   ),
-        // ),
+        Expanded(
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.more,
+            title: AppLocalization.of(context)!.more,
+            onTap: () {
+              Navigator.pushNamed(context, "/more-apps");
+            },
+            iconColor: HexColor("#374677"),
+          ),
+        ),
         SizedBox(width: 12),
         Expanded(child: Container()),
       ],

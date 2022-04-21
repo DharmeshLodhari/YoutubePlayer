@@ -28,8 +28,10 @@ class UtilityHistoryModel {
   String providerId;
   String providerAvatar;
   String productName;
+  String? description;
 
   UtilityHistoryModel({
+    this.description,
     required this.productName,
     required this.currency,
     required this.transactionId,
@@ -44,6 +46,7 @@ class UtilityHistoryModel {
 
   factory UtilityHistoryModel.fromJson(Map<String, dynamic> json) {
     return UtilityHistoryModel(
+      description: json['description'],
       currency: json['product']['currency'],
       status: json['status'],
       customerUsername: json['customer_username'],

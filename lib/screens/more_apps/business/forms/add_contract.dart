@@ -19,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../widget/LoadingIndicator.dart';
 
 // ignore: must_be_immutable
@@ -33,6 +34,7 @@ class AddContract extends StatefulWidget {
 }
 
 class _AddContractState extends State<AddContract> {
+  String? conversationId;
   TextEditingController noteCtrl = TextEditingController();
   TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
@@ -164,7 +166,7 @@ class _AddContractState extends State<AddContract> {
         child: Column(
           children: [
             Expanded(
-              flex: 8,
+              flex: 9,
               child: Card(
                 elevation: 2,
                 margin: EdgeInsets.zero,
@@ -220,16 +222,17 @@ class _AddContractState extends State<AddContract> {
               ),
             ),
             Expanded(
-                flex: 3,
-                child: Container(
-                  child: Column(
-                    children: [
-                      flexibleSpace(),
-                      getSubmitButton(),
-                      flexibleSpace(flex: 2),
-                    ],
-                  ),
-                )),
+              flex: 2,
+              child: Container(
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    getSubmitButton(),
+                    flexibleSpace(flex: 2),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -241,7 +244,7 @@ class _AddContractState extends State<AddContract> {
       return IconButton(
         icon: Icon(Icons.person),
         onPressed: () {
-          Navigator.pushNamed(context, '/profile',
+          Navigator.pushNamed(context, Routes.PROFILE,
               arguments: {"searchedUserName": _payee!.userName});
         },
       );
@@ -356,13 +359,10 @@ class _AddContractState extends State<AddContract> {
   }
 
   Widget getNoteField() {
-    return SizedBox(
-      height: 20,
-      child: CustomizedTextFormField(
-        maxLines: 3,
-        controller: noteCtrl,
-        labelText: AppLocalization.of(context)!.note,
-      ),
+    return CustomizedTextFormField(
+      maxLines: 3,
+      controller: noteCtrl,
+      labelText: AppLocalization.of(context)!.note,
     );
   }
 
@@ -660,9 +660,22 @@ class _AddContractState extends State<AddContract> {
       if (isValidPayee && _formKey.currentState!.validate()) {
         if (userBloc.user.userName != recipient) {
           try {
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+
+            await BusinessAuth()
+                .getConversationId(name: _recipientController.text)
+                .then(
+              (value) {
+                if (value != null) {
+                  conversationId = value;
+                }
+              },
+            );
+
             var data = {
               "contractor": _recipientController.text,
-              "contractee": userBloc.user.userName.toString(),
               "currency": userBloc.user.currency.toString(),
               "amount": amount.toString().trim(),
               "start_date": dateToString(startingDate),
@@ -673,12 +686,11 @@ class _AddContractState extends State<AddContract> {
             if (noteCtrl.text.isNotEmpty) {
               data['note'] = noteCtrl.text;
             }
+            if (conversationId != null) {
+              data['conversation_id'] = conversationId!;
+            }
 
-            debugPrint('DATA ---> $data');
-
-            showDialog(
-                context: context,
-                builder: (dialogLoadingContext) => LoadingIndicator());
+            debugPrint('DATA ::: $data');
 
             BusinessAuth().addContract(data).then((result) {
               Navigator.pop(context); // Dismiss the loading indicator
@@ -701,8 +713,6 @@ class _AddContractState extends State<AddContract> {
         }
       }
     } else {
-      print('IS VALID CONTRACT PAYEE ::: $isValidPayee');
-
       var msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
     }

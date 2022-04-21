@@ -1,7 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/business/tiles/contract_and_invoice_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../data/state_notifier.dart';
 import '../../../../widget/noItemInList.dart';
 import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
@@ -21,14 +21,16 @@ class MyContractList extends StatefulWidget {
 }
 
 class _MyContractListState extends State<MyContractList> {
+  late UserBloc userBloc;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   ScrollController _scrollController = ScrollController();
-  late ContractBloc contractBlocProvider;
 
   //slidable tile
   SlidableController? _slideController;
+
+  late ContractBloc contractBloc;
   @override
   void initState() {
     super.initState();
@@ -61,8 +63,8 @@ class _MyContractListState extends State<MyContractList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        contractBlocProvider.isRefreshing = true;
-        contractBlocProvider.getContractList();
+        contractBloc.isRefreshing = true;
+        contractBloc.getContractList();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -76,7 +78,8 @@ class _MyContractListState extends State<MyContractList> {
 
   @override
   Widget build(BuildContext context) {
-    contractBlocProvider = Provider.of<ContractBloc>(context);
+    userBloc = Provider.of<UserBloc>(context);
+    contractBloc = Provider.of<ContractBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -101,7 +104,7 @@ class _MyContractListState extends State<MyContractList> {
             msg: AppLocalization.of(context)!.contractEmpty,
           );
         } else {
-          if (contractBlocProvider.endOfList) {
+          if (contractBloc.endOfList) {
             if (_scrollController.positions.isNotEmpty &&
                 _scrollController.position.pixels ==
                     _scrollController.position.maxScrollExtent &&
@@ -137,7 +140,44 @@ class _MyContractListState extends State<MyContractList> {
             return buildIndicator(isLoading: contractBloc.isLoading);
           } else {
             Contract contract = contractBloc.contractList[index];
-            if (contract.status == "Ended" || contract.status == "Stopped") {
+            bool userIsContractor =
+                userBloc.user.userName == contract.contractor;
+
+            bool isNotSlidable = contract.status == "Ended" ||
+                contract.status == "Stopped" ||
+                (!contract.isAccepted && !userIsContractor);
+
+            if (!contract.isAccepted) {
+              return Slidable(
+                controller: _slideController,
+                direction: Axis.horizontal,
+                actionPane: SlidableBehindActionPane(),
+                actionExtentRatio: 0.25,
+                child: ContractTile(contract: contract),
+                actions: [
+                  SlideActionButton(
+                      backgroundColor: mateRed,
+                      icon: Icons.stop_circle_outlined,
+                      onTap: () {
+                        cancelContract(id: contract.id!);
+                      },
+                      title: userIsContractor ? 'Reject' : "Cancel",
+                      slideController: _slideController),
+                ],
+                secondaryActions: userIsContractor
+                    ? [
+                        SlideActionButton(
+                            backgroundColor: naturalGreen,
+                            icon: Icons.stop_circle_outlined,
+                            onTap: () {
+                              acceptContract(id: contract.id!);
+                            },
+                            title: "Accept",
+                            slideController: _slideController),
+                      ]
+                    : null,
+              );
+            } else if (isNotSlidable) {
               return ContractTile(contract: contract);
             }
             return _getSlidableWithLists(
@@ -237,7 +277,7 @@ class _MyContractListState extends State<MyContractList> {
         .updateContract(id: contract.id.toString(), data: data)
         .then((value) {
       contract.status = action;
-      contractBlocProvider.getContractList();
+      contractBloc.getContractList();
       showToast(message: "Status updated successfully");
     }).catchError((error) {
       showToast(message: "Status updated unsuccessfully");
@@ -260,6 +300,34 @@ class _MyContractListState extends State<MyContractList> {
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
+
+  void acceptContract({required int id}) async {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    bool accepted = await BusinessAuth().acceptContract(contractId: id);
+    Navigator.pop(context);
+    if (accepted) {
+      contractBloc.getContractList();
+    } else {
+      showToast(message: 'Something went wrong, please try again.');
+    }
+  }
+
+  void cancelContract({required int id}) async {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    bool accepted = await BusinessAuth().cancelContract(contractId: id);
+    Navigator.pop(context);
+    if (accepted) {
+      contractBloc.isRefreshing = true;
+
+      contractBloc.getContractList();
+    } else {
+      showToast(message: 'Something went wrong, please try again.');
+    }
+  }
 }
 
 class VerticalListItem extends StatelessWidget {

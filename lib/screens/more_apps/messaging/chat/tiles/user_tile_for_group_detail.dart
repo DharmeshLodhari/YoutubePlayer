@@ -6,6 +6,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../routes/route_constants.dart';
+
 // ignore: must_be_immutable
 class UserTileForGroupDetail extends StatefulWidget {
   CustomerProfile? user;
@@ -28,12 +30,12 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
     avatarImage = GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
       },
       child: GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.user!.avatar);
         },
         child: Container(
             height: 48,

@@ -195,23 +195,23 @@ class _ContractTileState extends State<ContractTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "${widget.contract.note}",
+          widget.contract.note == null ? '---' : widget.contract.note!,
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
         Row(
           children: [
-            getDateTime(context),
+            getDateTime(),
             SizedBox(width: 10),
-            getLabel(),
+            getAcceptOrPendingLabel(),
           ],
         ),
       ],
     );
   }
 
-  Widget getLabel() {
-    if (widget.contract.isAccepted!) {
+  Widget getAcceptOrPendingLabel() {
+    if (!widget.contract.isAccepted) {
       bool isContractor = userBloc!.user.userName == widget.contract.contractor;
       String labelName = isContractor ? 'New' : 'Pending';
       Color labelColor = isContractor ? naturalGreen : starYellow;
@@ -235,7 +235,7 @@ class _ContractTileState extends State<ContractTile> {
     return SizedBox.shrink();
   }
 
-  Widget getDateTime(BuildContext context) {
+  Widget getDateTime() {
     DateTime transactionTime = DateTime.parse(widget.contract.createdAt!);
     String date = DateFormat("dd/MM/yyyy").format(transactionTime);
     // String time = DateFormat("hh:mm a").format(transactionTime);

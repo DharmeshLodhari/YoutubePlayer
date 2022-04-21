@@ -24,6 +24,7 @@ class ContractBloc extends ChangeNotifier {
       {ContractStatus? contractStatus}) async {
     next = next == null ? "" : next;
     print('GET CONTRACT LIST');
+    print('CONTRACT IS REFRESHING :::: $isRefreshing');
     if (isRefreshing) {
       count = 0;
       next = "";

@@ -29,6 +29,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../shopping_auth.dart';
 
@@ -644,7 +645,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildWriteReview() {
-    if (product?.seller == userBloc.user.userName && canRate) {
+    if (product?.seller == userBloc.user.userName) {
+      return Container();
+    }
+
+    if (!canRate) {
       return Container();
     }
 
@@ -653,7 +658,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         GestureDetector(
           onTap: () async {
             var result = await Navigator.of(context).pushNamed(
-              "/add-review",
+              Routes.ADD_REVIEW,
               arguments: {
                 "product": product,
               },

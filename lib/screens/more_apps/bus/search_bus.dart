@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/bus/bus_auth.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_ticket_tile.dart';
 import 'package:Slydo/screens/more_apps/bus/models/Transport.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';

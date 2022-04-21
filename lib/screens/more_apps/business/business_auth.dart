@@ -74,6 +74,55 @@ class BusinessAuth extends AuthService {
     }
   }
 
+  Future<bool> acceptContract({required int contractId}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/transactions/payment-contract/accepted/$contractId";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('ACCEPT CONTRACT ::: ${json.decode(response.body)}');
+    debugPrint('ACCEPT CONTRACT STATUS CODE::: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> cancelContract({required int contractId}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/transactions/payment-contract/reject-or-cancel/$contractId/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CANCEL CONTRACT ::: ${response.body}');
+    debugPrint('CANCEL CONTRACT STATUSCODE ::: ${response.statusCode}');
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<String?> getConversationId({required String name}) async {
+    var url = AppConfig.baseUrl + "/api/v1/user/contacts/get-conversation-id/";
+
+    var data = {"contact": name};
+
+    var headers = await getAuthHeaders();
+    var response =
+        await httpPost(url, body: jsonEncode(data), headers: headers);
+
+    debugPrint('GET CONVERSATION ID :: ${response.body}');
+    debugPrint('GET CONVERSATION RESPONSE:: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+      return jsonData['conversation_id'];
+    } else {
+      return null;
+    }
+  }
+
   Future<Map<String, dynamic>?> getContractTransactions(
       String? next, String? previous, bool moneyIn, bool moneyOut) async {
     var url = "";
@@ -147,7 +196,7 @@ class BusinessAuth extends AuthService {
     var _data = jsonEncode(data);
     debugPrint("$_data");
     var response = await httpPost(url, body: _data, headers: headers);
-
+    debugPrint('ADD CONTRACT RESPONSE ::: ${response.body}');
     if (response.statusCode == 201) {
       return true;
     } else {
