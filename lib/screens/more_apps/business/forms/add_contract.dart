@@ -35,7 +35,7 @@ class AddContract extends StatefulWidget {
 
 class _AddContractState extends State<AddContract> {
   String? conversationId;
-  TextEditingController noteCtrl = TextEditingController();
+  TextEditingController _noteCtrl = TextEditingController();
   TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   TextEditingController _referenceController = TextEditingController();
@@ -361,7 +361,7 @@ class _AddContractState extends State<AddContract> {
   Widget getNoteField() {
     return CustomizedTextFormField(
       maxLines: 3,
-      controller: noteCtrl,
+      controller: _noteCtrl,
       labelText: AppLocalization.of(context)!.note,
     );
   }
@@ -369,7 +369,7 @@ class _AddContractState extends State<AddContract> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -647,8 +647,6 @@ class _AddContractState extends State<AddContract> {
       });
     }
 
-    print('RECIPIENT :: $recipient');
-    print('RECIPIENT PAYEE :: ${_payee!.userName}');
     if (recipient != userBloc.user.userName) {
       if (!isValidPayee) {
         setState(() {
@@ -683,14 +681,12 @@ class _AddContractState extends State<AddContract> {
               "payment_duration": selectedDuration!.value.toString(),
             };
 
-            if (noteCtrl.text.isNotEmpty) {
-              data['note'] = noteCtrl.text;
+            if (_noteCtrl.text.isNotEmpty) {
+              data['note'] = _noteCtrl.text;
             }
             if (conversationId != null) {
               data['conversation_id'] = conversationId!;
             }
-
-            debugPrint('DATA ::: $data');
 
             BusinessAuth().addContract(data).then((result) {
               Navigator.pop(context); // Dismiss the loading indicator
@@ -720,7 +716,7 @@ class _AddContractState extends State<AddContract> {
 
   @override
   void dispose() {
-    noteCtrl.dispose();
+    _noteCtrl.dispose();
     _recipientController.dispose();
     _amountController.dispose();
     _referenceController.dispose();

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -14,9 +15,7 @@ import '../../payment_and_banking/payment_and_banking_auth.dart';
 class VerifyRegistrationOTPScreen extends StatefulWidget {
   var arguments;
 
-  VerifyRegistrationOTPScreen({
-    this.arguments,
-  });
+  VerifyRegistrationOTPScreen({this.arguments});
 
   @override
   _VerifyRegistrationOTPScreenState createState() =>
@@ -224,7 +223,7 @@ class _VerifyRegistrationOTPScreenState
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
           .then((value) {
-        Navigator.of(context).popAndPushNamed('/register', arguments: {
+        Navigator.of(context).popAndPushNamed(Routes.REGISTER, arguments: {
           'phoneNumber': phoneNumber,
         });
       });

@@ -181,7 +181,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
               enableMargin: false,
               width: 90,
               height: 90,
-              image: Icon(SlydoAppIcon.remove),
+              image: Icon(SlydoAppIcon.remove, color: mateRed),
             ),
             leftButtonOnPressed: () {
               Navigator.pop(context);
@@ -469,25 +469,35 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   createOrUpdateBlogPost() {
+    List<String>? newUserTags =
+        []; // For replacing the # in a tag with an empty string.
+
+    userTags.forEach((tag) {
+      if (tag.startsWith('#')) {
+        newUserTags.add(tag.replaceAll("#", ''));
+      } else {
+        newUserTags.add(tag);
+      }
+    });
+
     var userBloc = Provider.of<UserBloc>(context, listen: false);
     UserPostAuth()
         .createOrUpdateBlogPost(
-      tags: userTags,
-      blogId: blogId,
-      isPublic: isPublic,
-      isPublished: isPublished,
-      enableLikes: enableLikes,
-      title: blogTitleCtrl.text,
-      isUpdating: _userUpdatingPost,
-      blogImage: getImageFileToUpload(),
-      blogVideo: getVideoFileToUpload(),
-      enableCommenting: enableCommenting,
-      inLineMediaIds: blogPostInlineMediaIds,
-      authorUserName: userBloc.user.userName!,
-      publishedDate: publishedDateTime.toString(),
-      blogPostBody:
-          jsonEncode(_quillBodyTextController.document.toDelta().toJson()),
-    )
+            blogId: blogId,
+            tags: newUserTags,
+            isPublic: isPublic,
+            isPublished: isPublished,
+            enableLikes: enableLikes,
+            title: blogTitleCtrl.text,
+            isUpdating: _userUpdatingPost,
+            blogImage: getImageFileToUpload(),
+            blogVideo: getVideoFileToUpload(),
+            enableCommenting: enableCommenting,
+            inLineMediaIds: blogPostInlineMediaIds,
+            authorUserName: userBloc.user.userName!,
+            publishedDate: publishedDateTime.toString(),
+            blogPostBody: jsonEncode(
+                _quillBodyTextController.document.toDelta().toJson()))
         .then(
       (posted) {
         Navigator.pop(context); // To dismiss loading indicator.
@@ -510,7 +520,6 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
               message:
                   'You already have a similar post with the same title or tagline.');
         } else {
-          print('VIDEO FILE :::: $_videoFile');
           showToast(message: error.toString());
         }
       },

@@ -206,7 +206,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,

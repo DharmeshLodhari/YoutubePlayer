@@ -7,7 +7,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -17,7 +16,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -76,6 +74,8 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   PaymentCategory? selectedPaymentCategory;
   String? paymentCategory;
+
+  TextEditingController amountCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -467,11 +467,8 @@ class _RequestPaymentState extends State<RequestPayment> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
-      keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      isAmountField: true,
+      controller: amountCtrl,
       onChanged: (val) {
         if (mounted) {
           setState(() {

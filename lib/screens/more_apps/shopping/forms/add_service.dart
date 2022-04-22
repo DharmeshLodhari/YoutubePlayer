@@ -460,7 +460,7 @@ class _AddServiceState extends State<AddService> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       labelText: "Price of service",
       onChanged: (val) {
         if (val.isNotEmpty) {

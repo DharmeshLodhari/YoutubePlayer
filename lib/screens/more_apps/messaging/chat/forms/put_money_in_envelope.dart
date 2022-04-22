@@ -339,7 +339,7 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,

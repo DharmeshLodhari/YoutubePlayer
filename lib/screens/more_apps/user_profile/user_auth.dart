@@ -193,8 +193,11 @@ class UserAuth extends AuthService {
 
     var _data = jsonEncode(data);
 
+    debugPrint('USER REGISTRATION DATA ::: $_data');
+
     var response = await httpPost(url,
         headers: headers as Map<String, dynamic>?, body: _data);
+    debugPrint('USER REGISTRATION RESPONSE ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -211,6 +214,8 @@ class UserAuth extends AuthService {
     var data = {
       "phone": phoneNumber,
     };
+
+    debugPrint('PHONE NUMBER DATA ::: $data');
 
     var _data = jsonEncode(data);
     var response = await httpPost(url,
@@ -233,6 +238,7 @@ class UserAuth extends AuthService {
       String? phoneNumber,
       String otp,
       String passwordToken) async {
+    late String result;
     var url = AppConfig.baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
@@ -240,19 +246,26 @@ class UserAuth extends AuthService {
       "code": otp,
       "password-token": passwordToken,
     };
+
+    debugPrint('VERIFY PHONE NUMBER DATA ::: $data');
+
     var _data = jsonEncode(data);
     var response = await httpPost(url,
         body: _data, headers: headers as Map<String, dynamic>?);
+
+    debugPrint('VERIFY PHONE NUMBER RESPONSE DATA ::: ${response.body}');
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       var resetToken = jsonData['reset-token'];
-      return resetToken;
+      result = resetToken;
     } else {
       debugPrint("DATA SENT:- $data");
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       throw jsonData;
     }
+
+    return result;
   }
 
   // it will verify the phone number to  OTP
@@ -268,10 +281,10 @@ class UserAuth extends AuthService {
       "phone-number": phoneNumber,
     };
     var _data = jsonEncode(data);
-    debugPrint(_data);
+    debugPrint('_data :: $data');
     var response = await httpPatch(url,
         headers: headers as Map<String, dynamic>?, body: _data);
-    var jsonData = json.decode(response.body);
+    var jsonData = jsonDecode(response.body);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
@@ -337,6 +350,8 @@ class UserAuth extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/user/about/$userName/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    debugPrint('FETCH USER ABOUT INFO RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
@@ -423,6 +438,7 @@ class UserAuth extends AuthService {
 
     var response = await httpDelete(url, headers: headers);
 
+    debugPrint('DELETE COVER ::::  ${response.body}');
     if (response.statusCode == 204) {
       return true;
     } else {

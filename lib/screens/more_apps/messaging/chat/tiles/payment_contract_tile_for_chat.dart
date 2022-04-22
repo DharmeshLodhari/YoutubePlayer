@@ -30,6 +30,8 @@ class _PostTileForPaymentContractState
     extends State<PostTileForPaymentContract> {
   late Contract contract;
   late UserBloc userBloc;
+  int amountLength =
+      10000000000; // If the contract amount is greater than this, the amount shown will be truncated.
 
   @override
   void initState() {
@@ -122,19 +124,6 @@ class _PostTileForPaymentContractState
         child: Container(
           decoration: decorateBox(),
           child: paymentContractInfo(),
-
-          // ListTile(
-          //   dense: true,
-          //   title: getTitle(),
-          //   subtitle: getSubtitle(),
-          //   leading: getAvatar(),
-          //   trailing: getAmount(),
-          //   onTap: () {
-          //     Navigator.of(context).pushNamed(Routes.CONTRACT_DETAIL,
-          //         arguments: {"id": contract.id});
-          //   },
-          //   // trailing: getTrailing(),
-          // ),
         ),
       ),
     );
@@ -189,7 +178,7 @@ class _PostTileForPaymentContractState
           ),
         ),
         Text(
-          contract.amount! > 10000000000
+          contract.amount! > amountLength
               ? '${moneyDisplayNormalizer(contract.amount)}...'
               : moneyDisplayNormalizer(contract.amount),
           style: TextStyle(
@@ -215,19 +204,6 @@ class _PostTileForPaymentContractState
       softWrap: false,
     );
   }
-
-  // Widget getSubtitle() {
-  //   return Text(
-  //     getContractDuration(),
-  //     maxLines: 1,
-  //     style: TextStyle(
-  //       color: darkGrey,
-  //       fontSize: 12,
-  //     ),
-  //     overflow: TextOverflow.fade,
-  //     softWrap: false,
-  //   );
-  // }
 
   Widget getContractDuration() {
     String startDate =

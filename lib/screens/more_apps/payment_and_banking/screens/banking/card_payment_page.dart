@@ -197,7 +197,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           ],
                           keyboardType: TextInputType.phone,
                           controller: _amountController,
-                          isAmount: true,
+                          isAmountField: true,
                           labelText: AppLocalization.of(context)!.amount,
                           onChanged: (value) {
                             _amountFieldOnChanged(value);

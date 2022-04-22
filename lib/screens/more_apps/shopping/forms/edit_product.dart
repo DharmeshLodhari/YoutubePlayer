@@ -813,7 +813,7 @@ class _EditProductState extends State<EditProduct> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {

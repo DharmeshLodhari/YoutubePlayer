@@ -446,16 +446,16 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#FFAB00"),
           ),
         ),
-        Expanded(
-          child: UserDashboardItemTile(
-            icon: SlydoAppIcon.more,
-            title: AppLocalization.of(context)!.more,
-            onTap: () {
-              Navigator.pushNamed(context, "/more-apps");
-            },
-            iconColor: HexColor("#374677"),
-          ),
-        ),
+        // Expanded(
+        //   child: UserDashboardItemTile(
+        //     icon: SlydoAppIcon.more,
+        //     title: AppLocalization.of(context)!.more,
+        //     onTap: () {
+        //       Navigator.pushNamed(context, "/more-apps");
+        //     },
+        //     iconColor: HexColor("#374677"),
+        //   ),
+        // ),
         SizedBox(width: 12),
         Expanded(child: Container()),
       ],

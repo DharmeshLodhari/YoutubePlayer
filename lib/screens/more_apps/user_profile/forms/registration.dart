@@ -9,6 +9,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 
 class Registration extends StatefulWidget {
@@ -211,7 +212,7 @@ class _RegistrationState extends State<Registration> {
     if (_registrationFormKey.currentState!.validate()) {
       UserAuth().registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
         Navigator.of(context).popAndPushNamed(
-          "/verify-registration-otp",
+          Routes.VERIFY_REGISTRATION_OTP,
           arguments: {
             "phoneNumber": phoneNumberWithCountryCode,
           },

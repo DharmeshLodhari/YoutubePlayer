@@ -100,6 +100,7 @@ dependencies:
   tutorial_coach_mark: ^1.1.1
   syncfusion_flutter_pdf: ^19.3.47-beta
   flutter_rating_bar: ^4.0.0
+  currency_text_input_formatter: ^2.1.5
 
 
 #dependency_overrides:

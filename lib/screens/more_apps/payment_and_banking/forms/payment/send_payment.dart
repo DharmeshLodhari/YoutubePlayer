@@ -564,7 +564,7 @@ class _SendPaymentState extends State<SendPayment> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       enabled: product == null && service == null,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)

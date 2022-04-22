@@ -72,6 +72,13 @@ class _ContractTileState extends State<ContractTile> {
     );
   }
 
+  Widget getIconForContract() {
+    if (userBloc!.user.userName == widget.contract.contractor) {
+      return Icon(Icons.check, color: navyBlue);
+    }
+    return Icon(Icons.check, color: mateRed);
+  }
+
   Widget getPaymentDuration() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
@@ -184,10 +191,10 @@ class _ContractTileState extends State<ContractTile> {
   }
 
   Color getAmountColor() {
-    if (userBloc!.user.userName == widget.contract.contractee) {
-      return blackFont;
+    if (userBloc!.user.userName == widget.contract.contractor) {
+      return navyBlue;
     }
-    return navyBlue;
+    return blackFont;
   }
 
   Widget getSubTitle(BuildContext context) {

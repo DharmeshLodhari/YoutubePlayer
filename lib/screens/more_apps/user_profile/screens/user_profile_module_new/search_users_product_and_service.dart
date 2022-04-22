@@ -363,7 +363,7 @@ class _SearchUsersProductAndServiceState
   Widget displayMinAmount() {
     return CustomizedTextFormField(
       labelText: "Min amount",
-      isAmount: true,
+      isAmountField: true,
       controller: minAmountTextController,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
@@ -401,7 +401,7 @@ class _SearchUsersProductAndServiceState
     return CustomizedTextFormField(
       labelText: "Max amount",
       controller: maxAmountTextController,
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,

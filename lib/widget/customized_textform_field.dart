@@ -33,7 +33,7 @@ class CustomizedTextFormField extends StatefulWidget {
   bool isPassword;
   bool isReadOnly;
   bool? enabled;
-  bool isAmount;
+  bool isAmountField;
   String labelText;
   String? hintText;
   Color? labelColor;
@@ -71,7 +71,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.obscureText = false,
     this.isPassword = false,
     this.isReadOnly = false,
-    this.isAmount = false,
+    this.isAmountField = false,
     this.labelText = "",
     this.hintText = "",
     this.labelColor,
@@ -92,6 +92,19 @@ class CustomizedTextFormField extends StatefulWidget {
 class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   bool verifyingInput = false;
   bool? inputVerified;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // if (widget.isAmountField) {
+    //   widget.controller!.addListener(() {
+    //
+    //     widget.controller!.text =
+    //         moneyDisplayNormalizer(int.parse(widget.controller!.text));
+    //   });
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,9 +178,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             ),
             suffixIcon: _getSuffixIcon(),
             prefix: Padding(
-              padding: EdgeInsets.only(left: widget.isAmount ? 8 : 16),
+              padding: EdgeInsets.only(left: widget.isAmountField ? 8 : 16),
             ),
-            prefixIcon: widget.isAmount
+            prefixIcon: widget.isAmountField
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -269,10 +282,15 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   }
 
   TextInputType getKeyBoardType(TextInputType textInputType) {
+    TextInputType numberInputType = Platform.isIOS
+        ? TextInputType.numberWithOptions(decimal: true)
+        : TextInputType.number;
+    if (widget.isAmountField == true) {
+      return numberInputType;
+    }
+
     if (textInputType == TextInputType.number) {
-      return Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number;
+      return numberInputType;
     }
     return textInputType;
   }

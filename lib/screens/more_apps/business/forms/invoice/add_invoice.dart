@@ -536,7 +536,7 @@ class _AddInvoiceState extends State<AddInvoice> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,

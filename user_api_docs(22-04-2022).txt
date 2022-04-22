@@ -51,6 +51,7 @@ Response Body:
 
 {"An image is sent through this endpoint"}
 Method: PATCH
+Description: To update user avatar.
 PATH: /api/v1/user/update-avatar/$userName/
 
 Request body:{
@@ -64,3 +65,61 @@ Response code (ok): 200
 if (response.statusCode == 413) {
   "Please upload smaller image, This image is too large.");
 }
+
+Method: POST
+Description: To register a user
+PATH: /api/v1/user/account/
+
+Request body: {
+        "phone_number": _phoneNumberController!.text.trim(),
+        "firstname": firstName,
+        "lastname": lastName,
+        "full_name": "$firstName $lastName",
+        "dob": dateFormat.format(dob), // Format --> ('yyyy-MM-dd')
+        "gender": selectedGender,// "M" or "F"
+        "username": _userNameController!.text.trim(),
+        "nickname": _nickNameController!.text.trim(),
+        "password1": _passwordController!.text.trim(),
+        "password2": _confirmPasswordController!.text.trim(),
+        "type": String ("Android" or "IOS")
+        "mode": String (device model)
+        "device_id": String
+        "device_name": String
+
+ }
+
+
+Method: POST
+Description: Register phone number
+PATH: /api/v1/sms/register-phone-number
+
+Request Body: {
+
+      "phone": String,
+
+}
+
+Response: {
+ "msg": "Number registered and verification code sent to user.",
+ "status": "pending"
+}
+
+Method: POST
+Description: Verify phone number through otp
+PATH: /api/v1/sms/verify
+
+Request Body: {
+      "phone": String,
+      "code": String,
+      "password-token": bool,
+}
+
+Response: {
+      "msg": "Number Approved!",
+      "status": "approved"
+   }
+
+
+Method: DELETE
+Description: Get user's about info.
+PATH: /api/v1/user/about/

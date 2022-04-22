@@ -624,7 +624,7 @@ class _EditServiceState extends State<EditService> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       labelText: "Price of service",
       onChanged: (val) {
         if (val.isNotEmpty) {

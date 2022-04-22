@@ -2074,7 +2074,7 @@ class _EditPropertyState extends State<EditProperty> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
