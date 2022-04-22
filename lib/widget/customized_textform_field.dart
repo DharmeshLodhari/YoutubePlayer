@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -92,19 +93,6 @@ class CustomizedTextFormField extends StatefulWidget {
 class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   bool verifyingInput = false;
   bool? inputVerified;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // if (widget.isAmountField) {
-    //   widget.controller!.addListener(() {
-    //
-    //     widget.controller!.text =
-    //         moneyDisplayNormalizer(int.parse(widget.controller!.text));
-    //   });
-    // }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -248,11 +236,14 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                   )
                 : null,
           ),
-          inputFormatters:
-              widget.inputFormatters != null ? widget.inputFormatters : [],
+          inputFormatters: getInputFormatters(),
           validator: (value) {
             if (widget.validator != null) {
-              return widget.validator!(value!);
+              if (widget.isAmountField == true) {
+                return widget.validator!(value!.replaceAll(',', ''));
+              } else {
+                return widget.validator!(value!);
+              }
             }
             return null;
           },
@@ -269,7 +260,11 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               }
             }
 
-            if (widget.onChanged != null) widget.onChanged!(val);
+            if (widget.isAmountField == true) {
+              widget.onChanged!(val.replaceAll(',', ''));
+            } else {
+              widget.onChanged!(val);
+            }
             setState(() {});
           },
           onTap: () {
@@ -363,6 +358,18 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
       }
     } else {
       return SizedBox.shrink();
+    }
+  }
+
+  List<TextInputFormatter>? getInputFormatters() {
+    if (widget.isAmountField) {
+      return [CurrencyTextInputFormatter(symbol: '')];
+    }
+
+    if (widget.inputFormatters != null) {
+      return widget.inputFormatters;
+    } else {
+      return [];
     }
   }
 }

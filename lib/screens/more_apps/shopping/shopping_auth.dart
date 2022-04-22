@@ -569,13 +569,17 @@ class ShoppingAuthService extends AuthService {
 
   // List of Orders
   Future<dynamic> listOrders(
-      String? next, String? previous, String filterValue, String? date) async {
+      String? next, String? previous, String filterValue, String? date,
+      {required bool isMerchant}) async {
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/order/";
+
+      url = url + "?merchant=$isMerchant";
+
       if (filterValue != "") {
         url = url + "?status__iexact=$filterValue";
       }
@@ -589,6 +593,7 @@ class ShoppingAuthService extends AuthService {
       url = getSecureUrl(url: next);
     }
 
+    print('URL ::: $url');
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);

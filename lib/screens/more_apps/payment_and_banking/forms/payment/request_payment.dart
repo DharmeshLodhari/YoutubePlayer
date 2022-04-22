@@ -15,6 +15,7 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -74,8 +75,6 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   PaymentCategory? selectedPaymentCategory;
   String? paymentCategory;
-
-  TextEditingController amountCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -468,7 +467,6 @@ class _RequestPaymentState extends State<RequestPayment> {
     return CustomizedTextFormField(
       labelText: "Amount",
       isAmountField: true,
-      controller: amountCtrl,
       onChanged: (val) {
         if (mounted) {
           setState(() {
@@ -483,12 +481,17 @@ class _RequestPaymentState extends State<RequestPayment> {
             if (amount > 0.0) {
               return null;
             } else {
+              print('throw invalid');
+
               throw Exception("Invalid amount");
             }
           } catch (e) {
+            print('catch invalid :: ${e.toString()}');
             return AppLocalization.of(context)!.invalidAmount;
           }
         }
+        print('empty invalid');
+
         return AppLocalization.of(context)!.invalidAmount;
       },
       onTap: () async {
@@ -719,7 +722,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       }
     }
 
-    if (recipient == _payee!.userName) {
+    if (_recipientController.text == _payee!.userName) {
       if (!isValidPayee) {
         if (mounted) {
           setState(() {

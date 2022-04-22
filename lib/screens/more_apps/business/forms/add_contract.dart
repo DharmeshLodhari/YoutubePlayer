@@ -675,7 +675,7 @@ class _AddContractState extends State<AddContract> {
             var data = {
               "contractor": _recipientController.text,
               "currency": userBloc.user.currency.toString(),
-              "amount": amount.toString().trim(),
+              "amount": moneyInputNormalizer(amount.toString().trim()),
               "start_date": dateToString(startingDate),
               "end_date": dateToString(endingDate),
               "payment_duration": selectedDuration!.value.toString(),

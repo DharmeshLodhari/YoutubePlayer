@@ -37,7 +37,7 @@ class PaymentRequestTile extends StatelessWidget {
                   leading: getLeading(),
                   title: getTitle(),
                   trailing:
-                      moneyDisplayNormalizer(paymentRequest!.amount).length > 6
+                      moneyDisplayNormalizer(paymentRequest!.amount).length > 12
                           ? null
                           : getTrailing(),
                   subtitle: getSubtitle(context)),
@@ -87,7 +87,7 @@ class PaymentRequestTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${paymentRequest!.displayCustomer}",
+        getCustomerName(),
         maxLines: 1,
         style: TextStyle(
           color: blackFont,
@@ -98,6 +98,14 @@ class PaymentRequestTile extends StatelessWidget {
         softWrap: false,
       ),
     );
+  }
+
+  String getCustomerName() {
+    if (paymentRequest!.displayCustomer.length > 19) {
+      return "${paymentRequest!.displayCustomer.substring(0, 10)}...";
+    } else {
+      return paymentRequest!.displayCustomer;
+    }
   }
 
   Widget getSubtitle(BuildContext context) {
@@ -111,7 +119,7 @@ class PaymentRequestTile extends StatelessWidget {
                 maxLines: 1,
               )
             : Container(),
-        moneyDisplayNormalizer(paymentRequest!.amount).length > 6
+        moneyDisplayNormalizer(paymentRequest!.amount).length > 12
             ? getTrailing()
             : Container(),
         getDateTime(context)

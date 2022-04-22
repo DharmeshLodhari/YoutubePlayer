@@ -31,6 +31,7 @@ class _OrdersListState extends State<OrdersList> {
   String? next = "";
   String? previous = "";
   List orderList = [];
+  bool isSwitched = true;
 
   late UserBloc userBloc;
 
@@ -179,10 +180,43 @@ class _OrdersListState extends State<OrdersList> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        dateFilterIcon(),
-        SizedBox(
-          width: 8,
+        Row(
+          children: [
+            Text(
+              'Out',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Switch(
+                value: isSwitched,
+                activeColor: navyBlue,
+                onChanged: (value) {
+                  setState(() {
+                    count = 0;
+                    next = "";
+                    previous = "";
+                    orderList = [];
+                    noItemInList = false;
+
+                    isSwitched = value;
+
+                    getList();
+                  });
+                }),
+            Text(
+              'In',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
+        SizedBox(width: 8),
+        dateFilterIcon(),
+        SizedBox(width: 8),
         popUpMenuButton(),
         SizedBox(
           width: 16,
@@ -299,12 +333,19 @@ class _OrdersListState extends State<OrdersList> {
           formattedDate = dateFormat.format(filterDate!);
         }
 
-        var result =
-            await _auth.listOrders(next, previous, filterValue, formattedDate);
+        var result = await _auth.listOrders(
+          next,
+          previous,
+          filterValue,
+          formattedDate,
+          isMerchant: isSwitched,
+        );
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
+
+        print('RESULTS ::: $tempList');
 
         isLoading = false;
         orderList.addAll(tempList);
