@@ -46,7 +46,7 @@ class _MyContractListState extends State<MyContractList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        // contractBlocProvider.getContractList();
+        contractBloc.getContractList();
       }
     });
   }
@@ -104,20 +104,21 @@ class _MyContractListState extends State<MyContractList> {
             msg: AppLocalization.of(context)!.contractEmpty,
           );
         } else {
-          if (contractBloc.endOfList) {
-            if (_scrollController.positions.isNotEmpty &&
-                _scrollController.position.pixels ==
+          if (contractBloc.endOfList &&
+              _scrollController.positions.isNotEmpty) {
+            if (_scrollController.position.pixels ==
                     _scrollController.position.maxScrollExtent &&
                 _scrollController.position.pixels != 0) {
-              // Future.delayed(Duration.zero, () async {
-              //   ScaffoldMessenger.of(context).showSnackBar(
-              //     SnackBar(
-              //       content: Text(AppLocalization.of(context)!
-              //           .youHaveReachedBottomOfTheList),
-              //       duration: Duration(milliseconds: 500),
-              //     ),
-              //   );
-              // });
+              Future.delayed(
+                Duration.zero,
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(AppLocalization.of(context)!
+                        .youHaveReachedBottomOfTheList),
+                    duration: Duration(milliseconds: 500),
+                  ));
+                },
+              );
             }
           }
           return contractListWidget(contractBloc);

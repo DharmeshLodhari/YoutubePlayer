@@ -171,7 +171,7 @@ class _UserPostListState extends State<UserPostList> {
                   child: PostTile(
                     post: postList[index],
                     onDeleteBlog: () {
-                      print('DELETED FROM DETAILS PAGE');
+                      debugPrint('DELETED FROM DETAILS PAGE');
                       _onPostRefresh();
                     },
                   ),

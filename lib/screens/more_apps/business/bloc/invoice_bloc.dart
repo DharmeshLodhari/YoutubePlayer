@@ -23,11 +23,11 @@ class InvoiceBloc extends ChangeNotifier {
     if (isRefreshing) {
       count = 0;
       next = "";
-      previous = "";
       invoiceList = [];
+      endOfList = false;
       isFirstTime = true;
-      _isLoading = false;
     }
+    isRefreshing = false;
 
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -51,7 +51,6 @@ class InvoiceBloc extends ChangeNotifier {
         invoiceList.addAll(tempList);
         notifyListeners();
 
-        print('INVOICE LIST ----> ${invoiceList}');
         if (isFirstTime && next != null && next != "") {
           isFirstTime = false;
           getInvoiceList(invoiceStatus: invoiceStatus);
@@ -61,7 +60,7 @@ class InvoiceBloc extends ChangeNotifier {
       if (invoiceList.isEmpty) {
         noItemInList = true;
         notifyListeners();
-      } else if (next == null && invoiceList.length > 6) {
+      } else if (next == null) {
         endOfList = true;
         notifyListeners();
       }

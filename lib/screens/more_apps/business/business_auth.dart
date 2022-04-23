@@ -13,7 +13,7 @@ import 'models/Invoice.dart';
 class BusinessAuth extends AuthService {
   /// Contract and Invoice
   //get all contract list
-  Future<Map<String, dynamic>?> getContractList(String? next, String? previous,
+  Future<Map<String, dynamic>?> getContractList(String? next,
       {ContractStatus? contractStatus}) async {
     var url = "";
     if (next == null) {

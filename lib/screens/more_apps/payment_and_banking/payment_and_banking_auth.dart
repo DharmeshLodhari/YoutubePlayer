@@ -524,6 +524,11 @@ class PaymentAndBankingAuth extends AuthService {
         "previous": jsonData["previous"],
         "results": paymentRequests
       };
+      List lsts = jsonData['results'];
+      lsts.forEach((element) {
+        print(element['created_at']);
+      });
+
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";

@@ -14,7 +14,6 @@ class ContractBloc extends ChangeNotifier {
 
   int? count = 0;
   String? next = "";
-  String? previous = "";
   bool isFirstTime = true;
   String errorMessage = "";
   bool isRefreshing = false;
@@ -22,25 +21,26 @@ class ContractBloc extends ChangeNotifier {
 
   Future<List<Contract>?> getContractList(
       {ContractStatus? contractStatus}) async {
-    next = next == null ? "" : next;
     print('GET CONTRACT LIST');
-    print('CONTRACT IS REFRESHING :::: $isRefreshing');
+
     if (isRefreshing) {
       count = 0;
       next = "";
-      previous = "";
+      endOfList = false;
       contractList = [];
       isFirstTime = true;
-      _isLoading = false;
+
+      print('CONTRACT IS REFRESHING :::: $isRefreshing');
     }
+    isRefreshing = false;
 
     if (!isLoading) {
       if (next != null && !isLoading) {
         _isLoading = true;
         notifyListeners();
 
-        Map<String, dynamic>? result = await businessAuth
-            .getContractList(next, previous, contractStatus: contractStatus);
+        Map<String, dynamic>? result = await businessAuth.getContractList(next,
+            contractStatus: contractStatus);
 
         if (result!.containsKey('detail')) {
           errorMessage = result['detail'];
@@ -50,7 +50,6 @@ class ContractBloc extends ChangeNotifier {
 
         next = result['next'];
         count = result['count'];
-        previous = result['previous'];
         var tempList = result['results'];
 
         _isLoading = false;
@@ -60,6 +59,7 @@ class ContractBloc extends ChangeNotifier {
         print('CONTRACT LENGTH :: ${contractList.length}');
 
         if (isFirstTime && next != null && next != "") {
+          print('NEXT :::: $next');
           isFirstTime = false;
           getContractList(contractStatus: contractStatus);
         }
@@ -69,7 +69,7 @@ class ContractBloc extends ChangeNotifier {
         noItemInList = true;
 
         notifyListeners();
-      } else if (next == null && contractList.length > 6) {
+      } else if (next == null) {
         endOfList = true;
         notifyListeners();
       }

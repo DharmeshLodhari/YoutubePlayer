@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/enums.dart';
 import '../business_auth.dart';
 import '../models/Invoice.dart';
@@ -22,7 +23,7 @@ class InvoiceList extends StatefulWidget {
 
 class _InvoiceListState extends State<InvoiceList> {
   ScrollController _scrollController = ScrollController();
-  late InvoiceBloc invoiceBlocProvider;
+  late InvoiceBloc invoiceBloc;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -36,7 +37,7 @@ class _InvoiceListState extends State<InvoiceList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        // invoiceBlocProvider.getInvoiceList();
+        invoiceBloc.getInvoiceList();
       }
     });
   }
@@ -53,8 +54,8 @@ class _InvoiceListState extends State<InvoiceList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        invoiceBlocProvider.isRefreshing = true;
-        invoiceBlocProvider.getInvoiceList();
+        invoiceBloc.isRefreshing = true;
+        invoiceBloc.getInvoiceList();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -68,7 +69,7 @@ class _InvoiceListState extends State<InvoiceList> {
 
   @override
   Widget build(BuildContext context) {
-    invoiceBlocProvider = Provider.of<InvoiceBloc>(context);
+    invoiceBloc = Provider.of<InvoiceBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -82,67 +83,69 @@ class _InvoiceListState extends State<InvoiceList> {
   }
 
   Widget _scaffoldBody() {
-    return Consumer<InvoiceBloc>(
-      builder: (context, invoiceBloc, _) {
-        if (invoiceBloc.errorMessage.isNotEmpty) {
-          return NoItemInList(
-            msg: invoiceBloc.errorMessage,
+    return Consumer<InvoiceBloc>(builder: (context, invoiceBloc, _) {
+      return SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: getConsumerChildWidget(invoiceBloc),
+      );
+    });
+  }
+
+  Widget getConsumerChildWidget(InvoiceBloc invoiceBloc) {
+    if (invoiceBloc.errorMessage.isNotEmpty) {
+      return NoItemInList(
+        msg: invoiceBloc.errorMessage,
+      );
+    } else if (invoiceBloc.noItemInList) {
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.invoiceEmpty,
+      );
+    } else {
+      if (invoiceBloc.endOfList && _scrollController.positions.isNotEmpty) {
+        if (_scrollController.position.pixels ==
+                _scrollController.position.maxScrollExtent &&
+            _scrollController.position.pixels != 0) {
+          Future.delayed(
+            Duration.zero,
+            () {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(
+                    AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+                duration: Duration(milliseconds: 500),
+              ));
+            },
           );
-        } else if (invoiceBloc.noItemInList) {
-          return NoItemInList(
-            msg: AppLocalization.of(context)!.invoiceEmpty,
-          );
-        } else {
-          if (invoiceBloc.endOfList) {
-            if (_scrollController.positions.isNotEmpty &&
-                _scrollController.position.pixels ==
-                    _scrollController.position.maxScrollExtent &&
-                _scrollController.position.pixels != 0) {
-              // Future.delayed(Duration.zero, () async {
-              //   ScaffoldMessenger.of(context).showSnackBar(
-              //     SnackBar(
-              //       content: Text(AppLocalization.of(context)!
-              //           .youHaveReachedBottomOfTheList),
-              //       duration: Duration(milliseconds: 500),
-              //     ),
-              //   );
-              // });
-            }
-          }
-          return invoiceListWidget(invoiceBloc);
         }
-      },
-    );
+      }
+      return invoiceListWidget(invoiceBloc);
+    }
   }
 
   Widget invoiceListWidget(InvoiceBloc invoiceBloc) {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-      ),
-      controller: _refreshController,
-      onRefresh: _onRefresh,
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 4),
-        itemCount: invoiceBloc.invoiceList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == invoiceBloc.invoiceList.length) {
-            return buildIndicator(isLoading: invoiceBloc.isLoading);
-          } else {
-            Invoice invoice = invoiceBloc.invoiceList[index];
-            return InvoiceTile(
-              invoice: invoice,
-              onTap: () {
-                Navigator.of(context).pushNamed("/invoice-detail",
-                    arguments: {"id": invoice.id});
-              },
-            );
-          }
-        },
-        controller: _scrollController,
-      ),
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      itemCount: invoiceBloc.invoiceList.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index == invoiceBloc.invoiceList.length) {
+          return buildIndicator(isLoading: invoiceBloc.isLoading);
+        } else {
+          Invoice invoice = invoiceBloc.invoiceList[index];
+          return InvoiceTile(
+            invoice: invoice,
+            onTap: () {
+              Navigator.of(context).pushNamed(Routes.INVOICE_DETAIL,
+                  arguments: {"id": invoice.id});
+            },
+          );
+        }
+      },
+      controller: _scrollController,
     );
   }
 }
