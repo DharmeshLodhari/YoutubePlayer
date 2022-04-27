@@ -16,6 +16,7 @@ typedef Widget? BuildCounterWidget(
 
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
+  final String? helperText;
   final Widget? suffixIcon;
   TextInputAction? textInputAction;
   Function(String? value)? onFieldSubmitted;
@@ -51,6 +52,7 @@ class CustomizedTextFormField extends StatefulWidget {
   Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
 
   CustomizedTextFormField({
+    this.helperText,
     this.verifyInputFromServerFunc,
     this.verifyInputFromServerValidation,
     this.extraFunctionWhenInputWasVerifiedFromServerSuccessfully,
@@ -158,6 +160,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           textCapitalization: widget.textCapitalization,
           cursorColor: navyBlue,
           decoration: InputDecoration(
+            helperText: widget.helperText,
             hintText: widget.hintText != null ? widget.hintText : null,
             hintStyle: TextStyle(
               color: darkGrey.withOpacity(0.5),
@@ -263,7 +266,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             if (widget.isAmountField == true) {
               widget.onChanged!(val.replaceAll(',', ''));
             } else {
-              widget.onChanged!(val);
+              if (widget.onChanged != null) {
+                widget.onChanged!(val);
+              }
             }
             setState(() {});
           },

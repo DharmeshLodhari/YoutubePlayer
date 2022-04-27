@@ -213,6 +213,13 @@ class AppLocalization {
     );
   }
 
+  String get selectPaymentDuration {
+    return Intl.message(
+      "Please select a payment duration",
+      name: "selectPaymentDuration",
+    );
+  }
+
   String get recipient {
     return Intl.message(
       "Recipient",
@@ -303,6 +310,13 @@ class AppLocalization {
     return Intl.message(
       "Phone Number",
       name: "phoneNumber",
+    );
+  }
+
+  String get searchPageTextFieldHint {
+    return Intl.message(
+      "Username, phone number, nickname",
+      name: "searchPageTextFieldHint",
     );
   }
 
@@ -1972,6 +1986,20 @@ class AppLocalization {
     );
   }
 
+  String get address {
+    return Intl.message(
+      "Address",
+      name: "Address",
+    );
+  }
+
+  String get billingAddress {
+    return Intl.message(
+      "Billing Address",
+      name: "billingAddress",
+    );
+  }
+
   String get addressLine1 {
     return Intl.message(
       "Address Line 1",
@@ -2461,13 +2489,6 @@ class AppLocalization {
     return Intl.message(
       "Create Post",
       name: "createPost",
-    );
-  }
-
-  String get address {
-    return Intl.message(
-      "Address",
-      name: "address",
     );
   }
 

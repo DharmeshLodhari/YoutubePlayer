@@ -1,0 +1,421 @@
+import 'package:Slydo/services/auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
+import '../data/environment.dart';
+import '../locale/app_localization.dart';
+import '../routes/route_constants.dart';
+import '../utils/slydo_app_icon_icons.dart';
+import '../utils/util.dart';
+import '../widget/LoadingIndicator.dart';
+import '../widget/noItemInList.dart';
+import '../widget/slide_action_button.dart';
+import 'more_apps/user_profile/models/user.dart';
+import 'more_apps/user_profile/user_auth.dart';
+
+class SearchUser extends StatefulWidget {
+  const SearchUser({Key? key}) : super(key: key);
+
+  @override
+  State<SearchUser> createState() => _SearchUserState();
+}
+
+class _SearchUserState extends State<SearchUser> {
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
+  bool isLoading = false;
+  List<Widget> results = [];
+  bool noItemInList = false;
+  bool isSearchIsEmpty = true;
+  AuthService _auth = AuthService();
+  String autoCompleteSearchText = "";
+
+  ScrollController _scrollController = ScrollController();
+  TextEditingController searchItemTextController = TextEditingController();
+
+  void getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          isLoading = true;
+          setState(() {});
+        }
+        Map<String, dynamic>? result = await _auth
+            .searchEndpointPagination(
+                getSearchUrl(searchItemTextController.text), next, previous)
+            .catchError((error) {
+          debugPrint("ERROR:- $error");
+        });
+        if (result == null) {
+          isLoading = false;
+          if (mounted) setState(() {});
+          return;
+        }
+
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        List? tempList = result['results'];
+        if (mounted) {
+          isLoading = false;
+          try {
+            tempList!.forEach((result) {
+              results.add(getUserTile(result));
+            });
+          } catch (e) {}
+          setState(() {});
+        }
+      }
+      if (results.isEmpty) {
+        if (mounted) {
+          noItemInList = true;
+          setState(() {});
+        }
+      } else if (next == null && results.length > 6) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
+  Widget getUserTile(var object) {
+    CustomerProfile user = CustomerProfile(
+        avatar: object["avatar"],
+        fullName: object["full_name"],
+        qrCode: object["qr_code"],
+        userName: object["username"],
+        type: object['type'] ?? 'user');
+
+    if (user.userName.toString().toLowerCase() == "slydo" ||
+        user.userName.toString().toLowerCase() == "slydo_envelope") {
+      return Container();
+    }
+
+    return userCard(user);
+  }
+
+  Widget userCard(CustomerProfile user) {
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context, user);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.zero,
+          shadowColor: boxShadowTwo,
+          elevation: 0,
+          child: Container(
+            decoration: decorateBox(),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: ListTile(
+                    dense: true,
+                    title: Text(
+                      user.displayName()!,
+                      maxLines: 1,
+                      style: TextStyle(
+                          color: blackFont,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14),
+                    ),
+                    subtitle: Text(
+                      user.userName!,
+                      maxLines: 1,
+                      style: TextStyle(color: darkGrey, fontSize: 12),
+                    ),
+                    leading: getUserLeading(user),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getUserLeading(CustomerProfile user) {
+    Color borderColor = getUserTypeColor(user: user);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
+      },
+      child: Container(
+          height: 48,
+          width: 48,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                25,
+              ),
+              border: Border.all(color: borderColor, width: 2)),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: user.avatar == "" ? defaultImage : user.avatar!,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.cover,
+              errorWidget: imageErrorWidget,
+              height: double.infinity,
+              filterQuality: FilterQuality.high,
+              placeholder: (context, _) => CachedNetworkImage(
+                imageUrl: defaultImage,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          )),
+    );
+  }
+
+  String getSearchUrl(String searchedText) {
+    return AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchedText;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        if (next != null) {
+          getList();
+        }
+      }
+    });
+
+    searchItemTextController.addListener(() {
+      autoCompleteSearchText = searchItemTextController.text;
+
+      setState(() => _isRefreshing());
+
+      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = true;
+          });
+        }
+      }
+    });
+  }
+
+  _isRefreshing() {
+    count = 0;
+    next = "";
+    previous = "";
+    results.clear();
+    noItemInList = false;
+    getList();
+  }
+
+  @override
+  void dispose() {
+    searchItemTextController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      appBar: appBar() as PreferredSizeWidget?,
+      body: Column(
+        children: [
+          SizedBox(height: 6),
+          searchBox(),
+          SizedBox(height: 16),
+          Expanded(
+            child: _buildResultList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultList() {
+    return isSearchIsEmpty
+        ? NoItemInList(
+            msg: '',
+            isResult: false,
+          )
+        : noItemInList
+            ? NoItemInList(
+                msg: AppLocalization.of(context)!.noResultFound,
+              )
+            : Container(
+                child: ListView.builder(
+                  //+1 for progressbar
+                  itemCount: results.length + 1,
+                  // ignore: missing_return
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == results.length) {
+                      return _buildIndicator();
+                    } else {
+                      try {
+                        return results[index];
+                      } catch (error) {
+                        debugPrint(error.toString());
+                      }
+                    }
+                    return _buildIndicator();
+                  },
+                  controller: _scrollController,
+                ),
+              );
+  }
+
+  Widget _buildIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity: isLoading ? 1.0 : 00,
+          child: CircularLoadingIndicator(),
+        ),
+      ),
+    );
+  }
+
+  Widget searchBox() {
+    try {
+      return Container(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Theme(
+          data: Theme.of(context).copyWith(
+            textSelectionTheme: TextSelectionThemeData(
+              selectionHandleColor: navyBlue,
+            ),
+          ),
+          child: TextFormField(
+            controller: searchItemTextController,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+            cursorWidth: 1.5,
+            cursorColor: navyBlue,
+            decoration: InputDecoration(
+              hintText: AppLocalization.of(context)!.searchPageTextFieldHint,
+              fillColor: Colors.white,
+              filled: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 10),
+              prefix: Padding(
+                padding: EdgeInsets.only(left: 12),
+              ),
+              suffixIcon: searchIcon(),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: navyBlue,
+                  width: 1.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: dividerColor,
+                  width: 1.0,
+                ),
+              ),
+            ),
+            onFieldSubmitted: (val) {
+              if (mounted) {
+                count = 0;
+                next = "";
+                previous = "";
+                results.clear();
+                noItemInList = false;
+                setState(() {});
+                getList();
+                FocusScope.of(context).unfocus();
+              }
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      return Container();
+    }
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {
+        if (mounted) {
+          count = 0;
+          next = "";
+          previous = "";
+          results.clear();
+          noItemInList = false;
+          setState(() {});
+          getList();
+          FocusScope.of(context).unfocus();
+        }
+      },
+    );
+  }
+
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Search User",
+        style: TextStyle(
+            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}

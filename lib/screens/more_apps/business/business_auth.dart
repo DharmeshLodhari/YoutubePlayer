@@ -9,27 +9,31 @@ import '../../../utils/enums.dart';
 import '../../../utils/util.dart';
 import 'models/Contract.dart';
 import 'models/Invoice.dart';
+import 'models/Item.dart';
 
 class BusinessAuth extends AuthService {
   /// Contract and Invoice
   //get all contract list
   Future<Map<String, dynamic>?> getContractList(String? next,
-      {ContractStatus? contractStatus}) async {
+      {ContractStatus? contractStatus, required bool isSender}) async {
     var url = "";
     if (next == null) {
       return null;
     }
 
     if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
+
+      url = url + "?sender=$isSender";
+
       if (contractStatus != null) {
-        url = AppConfig.baseUrl +
-            "/api/v1/transactions/payment-contract/?status=${contractStatus.name}";
-      } else {
-        url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
+        url = url + "?status=${contractStatus.name}";
       }
     } else {
       url = getSecureUrl(url: next);
     }
+
+    print('URL :: $url');
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -222,22 +226,26 @@ class BusinessAuth extends AuthService {
 
   //get all invoice list
   Future<Map<String, dynamic>?> getInvoiceList(String? next, String? previous,
-      {InvoiceStatus? invoiceStatus}) async {
+      {InvoiceStatus? invoiceStatus, required bool isSender}) async {
     var url = "";
     if (next == null) {
       return null;
     }
 
     if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
+
+      url = url + "?sender=$isSender";
+
       if (invoiceStatus != null) {
-        url = AppConfig.baseUrl +
-            "/api/v1/transactions/invoice/?status=${invoiceStatus.name}&payment_duration=weekly";
-      } else {
-        url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
+        url = url + "&status=${invoiceStatus.name}";
       }
     } else {
       url = getSecureUrl(url: next);
     }
+
+    debugPrint('INVOICE URL ::: $url');
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
@@ -292,16 +300,105 @@ class BusinessAuth extends AuthService {
     return Future.error(jsonData.toStiring());
   }
 
-  Future<bool> updateInvoice(Invoice invoice) async {
-    var url = AppConfig.baseUrl + "/api/v1/messaging/send/";
+  Future<bool> updateInvoice({String? id, Map? data}) async {
+    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$id/";
     var headers = await getAuthHeaders();
-    var data = invoice.toJson();
+
     var _data = jsonEncode(data);
-    var response = await httpPost(url, body: _data, headers: headers);
-    if (response.statusCode == 201) {
+    var response = await httpPatch(url, headers: headers, body: _data);
+
+    if (response.statusCode == 200) {
       return true;
     }
     var jsonData = json.decode(response.body);
-    return Future.error(jsonData.toStiring());
+    return Future.error(jsonData.toString());
   }
+
+  Future<bool> markInvoiceAsPaid({required int invoiceId}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/transactions/invoice/mark-as-pay/$invoiceId/";
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toString());
+  }
+
+  Future<bool> payInvoice({required int invoiceId}) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/transactions/invoice/pay/$invoiceId/";
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+    debugPrint('PAY INVOICE ::: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toString());
+  }
+
+  Future<bool> deleteInvoice({required int invoiceId}) async {
+    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+    debugPrint('DELETE INVOICE ::: ${response.body}');
+
+    if (response.statusCode == 204) {
+      return true;
+    }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toString());
+  }
+
+  Future<bool> deleteInvoiceItem({required int itemId}) async {
+    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+    debugPrint('DELETE INVOICE ITEM ::: ${response.body}');
+    debugPrint('DELETE INVOICE ITEM ::: ${response.statusCode}');
+
+    if (response.statusCode == 204) {
+      return true;
+    }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toString());
+  }
+
+  Future<bool> updateInvoiceItem(
+      {required int itemId, required InvoiceItem invoiceItem}) async {
+    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
+    var headers = await getAuthHeaders();
+    var data = invoiceItem.toJson();
+    data.removeWhere((key, value) => value == null);
+
+    var response =
+        await httpPatch(url, headers: headers, body: jsonEncode(data));
+    debugPrint('UPDATE INVOICE ITEM ::: ${response.body}');
+    debugPrint('UPDATE INVOICE ITEM ::: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toString());
+  }
+
+// Future<bool> updateInvoice(Invoice invoice) async {
+  //   var url = AppConfig.baseUrl + "/api/v1/messaging/send/";
+  //   var headers = await getAuthHeaders();
+  //   var data = invoice.toJson();
+  //   var _data = jsonEncode(data);
+  //   var response = await httpPost(url, body: _data, headers: headers);
+  //   if (response.statusCode == 201) {
+  //     return true;
+  //   }
+  //   var jsonData = json.decode(response.body);
+  //   return Future.error(jsonData.toStiring());
+  // }
 }

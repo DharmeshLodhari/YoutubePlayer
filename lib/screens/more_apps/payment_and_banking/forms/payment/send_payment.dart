@@ -24,6 +24,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../../utils/navigation_util.dart';
+import '../../../../search_user.dart';
 import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -537,6 +539,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -556,6 +559,16 @@ class _SendPaymentState extends State<SendPayment> {
               recipient = val.toLowerCase();
             }
           });
+        }
+      },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          _recipientController.text = _payee!.userName!;
+          if (mounted) setState(() {});
         }
       },
     );
@@ -928,7 +941,7 @@ class _SendPaymentState extends State<SendPayment> {
       });
     }
 
-    if (recipient == _payee!.userName) {
+    if (_recipientController.text == _payee!.userName) {
       if (!isValidPayee) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -973,7 +986,7 @@ class _SendPaymentState extends State<SendPayment> {
                   deviceData = await getDeviceInfo();
                   var data = {
                     "from_customer": userBloc.user.userName,
-                    "to_customer": recipient!.trim(),
+                    "to_customer": _recipientController.text.trim(),
                     "currency": userBloc.user.currency,
                     "amount": moneyInputNormalizer(amount.toString()),
                     "category": selectedCategory!.trim(),

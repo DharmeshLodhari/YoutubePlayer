@@ -8,6 +8,7 @@ class InvoiceBloc extends ChangeNotifier {
   bool endOfList = false;
   bool _isLoading = false;
   bool noItemInList = false;
+  bool invoiceIsSwitched = true;
   bool get isLoading => _isLoading;
   BusinessAuth businessAuth = BusinessAuth();
 
@@ -26,16 +27,22 @@ class InvoiceBloc extends ChangeNotifier {
       invoiceList = [];
       endOfList = false;
       isFirstTime = true;
+      noItemInList = false;
     }
     isRefreshing = false;
 
+    print('GET INVOICE LIST');
     if (!isLoading) {
       if (next != null && !isLoading) {
         _isLoading = true;
         notifyListeners();
 
-        Map<String, dynamic>? result = await businessAuth
-            .getInvoiceList(next, previous, invoiceStatus: invoiceStatus);
+        Map<String, dynamic>? result = await businessAuth.getInvoiceList(
+          next,
+          previous,
+          isSender: invoiceIsSwitched,
+          invoiceStatus: invoiceStatus,
+        );
 
         if (result!.containsKey('detail')) {
           errorMessage = result['detail'];
@@ -67,44 +74,4 @@ class InvoiceBloc extends ChangeNotifier {
     }
     return invoiceList;
   }
-
-  // void getList() async {
-  //   if (!isLoading) {
-  //     if (next != null && !isLoading) {
-  //       if (mounted) {
-  //         setState(() {
-  //           isLoading = true;
-  //         });
-  //       }
-  //       Map<String, dynamic>? result =
-  //       await _auth.getTransactions(next, previous, moneyIn, moneyOut);
-  //       if (result == null) {
-  //         isLoading = false;
-  //         return;
-  //       }
-  //       count = result['count'];
-  //       next = result['next'];
-  //       previous = result['previous'];
-  //       var tempList = result['results'];
-  //
-  //       isLoading = false;
-  //       transactionList.addAll(tempList);
-  //
-  //       if (mounted) setState(() {});
-  //
-  //       if (isFirstTime && next != null && next != "") {
-  //         isFirstTime = false;
-  //         getList();
-  //       }
-  //     }
-  //     if (transactionList.isEmpty) {
-  //       noItemInList = true;
-  //
-  //       if (mounted) setState(() {});
-  //     } else if (next == null && transactionList.length > 6) {
-  //       showReachedToBottomSnackBar();
-  //     }
-  //   }
-  // }
-
 }

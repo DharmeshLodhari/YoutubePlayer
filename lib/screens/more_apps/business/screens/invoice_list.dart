@@ -1,17 +1,17 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/tiles/contract_and_invoice_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/enums.dart';
+import '../../../../widget/slide_action_button.dart';
 import '../business_auth.dart';
 import '../models/Invoice.dart';
 
@@ -22,14 +22,21 @@ class InvoiceList extends StatefulWidget {
 }
 
 class _InvoiceListState extends State<InvoiceList> {
+  late UserBloc userBloc;
   ScrollController _scrollController = ScrollController();
   late InvoiceBloc invoiceBloc;
+  SlidableController? _slideController;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
   @override
   void initState() {
+    _slideController = SlidableController(
+      onSlideAnimationChanged: handleSlideAnimationChanged,
+      onSlideIsOpenChanged: handleSlideIsOpenChanged,
+    );
+
     Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
 
     super.initState();
@@ -69,6 +76,7 @@ class _InvoiceListState extends State<InvoiceList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     invoiceBloc = Provider.of<InvoiceBloc>(context);
 
     return WillPopScope(
@@ -136,16 +144,153 @@ class _InvoiceListState extends State<InvoiceList> {
           return buildIndicator(isLoading: invoiceBloc.isLoading);
         } else {
           Invoice invoice = invoiceBloc.invoiceList[index];
-          return InvoiceTile(
-            invoice: invoice,
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.INVOICE_DETAIL,
-                  arguments: {"id": invoice.id});
-            },
+
+          bool canDeleteInvoice =
+              invoice.fromCustomer == userBloc.user.userName &&
+                  invoice.status != "Paid";
+
+          bool canPay = invoice.fromCustomer != userBloc.user.userName &&
+              invoice.status == "Unpaid";
+
+          return Slidable(
+            controller: _slideController,
+            direction: Axis.horizontal,
+            actionPane: SlidableBehindActionPane(),
+            actionExtentRatio: 0.25,
+            child: InvoiceTile(
+              invoice: invoice,
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  Routes.INVOICE_DETAIL,
+                  arguments: {"id": invoice.id},
+                );
+              },
+            ),
+            actions: canDeleteInvoice
+                ? [
+                    SlideActionButton(
+                        backgroundColor: mateRed,
+                        icon: Icons.delete,
+                        onTap: () => deleteInvoice(invoice),
+                        title: 'Delete',
+                        slideController: _slideController),
+                  ]
+                : null,
+            secondaryActions: invoice.status != "Paid"
+                ? [
+                    SlideActionButton(
+                        backgroundColor: getBgColor(invoice),
+                        icon: getIcon(invoice),
+                        onTap: () => canPay
+                            ? _payInvoice(invoice)
+                            : updateInvoiceStatus(
+                                invoice, getUpdateAction(invoice)),
+                        title: canPay ? 'Pay' : getSlidableTitle(invoice),
+                        slideController: _slideController)
+                  ]
+                : null,
           );
         }
       },
       controller: _scrollController,
     );
+  }
+
+  String getSlidableTitle(Invoice invoice) {
+    switch (invoice.status) {
+      case "Draft":
+        return "Send";
+      case "Unpaid":
+        return "Mark as paid";
+      default:
+        return "";
+    }
+  }
+
+  String getUpdateAction(Invoice invoice) {
+    switch (invoice.status) {
+      case "Draft":
+        return "Unpaid";
+
+      case "Unpaid":
+        return "Paid";
+
+      default:
+        return "";
+    }
+  }
+
+  void updateInvoiceStatus(Invoice invoice, String action) {
+    print('INVOICE ::: ${invoice.status}');
+    print('ACTION :: $action');
+    if (invoice.status == "Unpaid") {
+      BusinessAuth().markInvoiceAsPaid(invoiceId: invoice.id!).then((value) {
+        // invoice.status = action;
+        Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
+        Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+        showToast(message: "Status updated successfully");
+      }).catchError((error) {
+        showToast(message: "Status not updated");
+      });
+    }
+    Map<String, String> data = {"status": action};
+
+    BusinessAuth()
+        .updateInvoice(id: invoice.id.toString(), data: data)
+        .then((value) {
+      // invoice.status = action;
+      Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
+      Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+      showToast(message: "Status updated successfully");
+    }).catchError((error) {
+      showToast(message: "Status not updated");
+    });
+  }
+
+  void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
+
+  void handleSlideIsOpenChanged(bool? isOpen) {}
+
+  void _payInvoice(Invoice invoice) {
+    BusinessAuth().payInvoice(invoiceId: invoice.id!).then(
+      (value) {
+        showToast(message: "Invoice Paid");
+        Provider.of<InvoiceBloc>(context).getInvoiceList();
+      },
+    ).catchError(
+      (e) {
+        showToast(message: "Something went wrong, please try again.");
+      },
+    );
+  }
+
+  void deleteInvoice(Invoice invoice) {
+    BusinessAuth().deleteInvoice(invoiceId: invoice.id!).then((value) {
+      // invoice.status = action;
+      Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+      showToast(message: "Invoice deleted");
+    }).catchError((error) {
+      showToast(message: "Something went wrong, please try again.");
+    });
+  }
+
+  Color getBgColor(Invoice invoice) {
+    switch (invoice.status) {
+      case "Unpaid":
+        return Colors.green;
+
+      default:
+        return navyBlue;
+    }
+  }
+
+  IconData getIcon(Invoice invoice) {
+    switch (invoice.status) {
+      case "Unpaid":
+        return Icons.done;
+
+      default:
+        return Icons.send;
+    }
   }
 }

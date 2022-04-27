@@ -40,7 +40,7 @@ class _MessageListState extends State<MessageList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  String filterValue = "all";
+  String? filterValue;
   late UserBloc userBloc;
   RefreshBlocForMessages? _refreshBloc;
 

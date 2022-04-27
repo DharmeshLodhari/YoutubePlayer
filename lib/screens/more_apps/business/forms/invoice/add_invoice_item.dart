@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/business/business_auth.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -12,10 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../utils/date_time_and_money_converter.dart';
+import '../../../../../widget/LoadingIndicator.dart';
 
 // ignore: must_be_immutable
 class AddInvoiceItem extends StatefulWidget {
-  AddInvoiceItem();
+  final InvoiceItem? invoiceItem;
+
+  AddInvoiceItem({this.invoiceItem});
 
   // Declare a field that holds the userData.
   @override
@@ -23,7 +27,7 @@ class AddInvoiceItem extends StatefulWidget {
 }
 
 class _AddInvoiceItemState extends State<AddInvoiceItem> {
-  int totalCost = 0;
+  double totalCost = 0;
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
@@ -34,7 +38,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
 
   late UserBloc userBloc;
 
-  int? amount;
+  double? amount;
 
   String errorMessage = "";
   String? recipient;
@@ -42,7 +46,24 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
 
   @override
   void initState() {
-    _invoiceItem = InvoiceItem();
+    if (widget.invoiceItem != null) {
+      _descriptionController.text = widget.invoiceItem!.name!;
+      _amountController.text = (widget.invoiceItem!.amount! / 100).toString();
+      print(_amountController.text);
+      _invoiceItem = InvoiceItem(
+        id: widget.invoiceItem!.id,
+        name: widget.invoiceItem!.name,
+        currency: widget.invoiceItem!.currency,
+        quantity: widget.invoiceItem!.quantity,
+      );
+
+      totalCost =
+          (double.parse(_amountController.text) * _invoiceItem!.quantity!)
+              .toDouble();
+    } else {
+      _invoiceItem = InvoiceItem();
+    }
+
     _amountController.addListener(() {
       if (_amountController.text.isEmpty) {
         totalCost = 0;
@@ -94,7 +115,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
         },
       ),
       title: Text(
-        "Add item",
+        widget.invoiceItem != null ? 'Update Item' : "Add item",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -216,22 +237,23 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       controller: _amountController,
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = double.parse(val);
 
             totalCost =
-                int.parse(_amountController.text) * _invoiceItem!.quantity!;
+                (double.parse(_amountController.text.replaceAll(',', '')) *
+                        _invoiceItem!.quantity!)
+                    .toDouble();
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int.parse(val);
+            double.parse(val);
             return null;
           } catch (e) {}
         }
@@ -267,8 +289,9 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     if (_amountController.text.isNotEmpty) {
                       if (_invoiceItem!.quantity! > 1) {
                         _invoiceItem!.quantity = _invoiceItem!.quantity! - 1;
-                        totalCost = int.parse(_amountController.text) *
-                            _invoiceItem!.quantity!;
+                        totalCost = (double.parse(_amountController.text) *
+                                _invoiceItem!.quantity!)
+                            .toDouble();
                         setState(() {});
                       }
                     } else {
@@ -302,7 +325,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                   onTap: () {
                     if (_amountController.text.isNotEmpty) {
                       _invoiceItem!.quantity = _invoiceItem!.quantity! + 1;
-                      totalCost = int.parse(_amountController.text) *
+                      totalCost = double.parse(_amountController.text) *
                           _invoiceItem!.quantity!;
                     } else {
                       showToast(message: 'Add an amount');
@@ -321,7 +344,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Add item",
+      text: widget.invoiceItem != null ? 'Update' : "Add item",
     );
   }
 
@@ -331,30 +354,70 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     }
 
     if (_formKey.currentState!.validate()) {
-      if (userBloc.user.userName != recipient) {
-        try {
-          var data = {
-            "amount": amount.toString().trim(),
-          };
-
-          debugPrint(data.toString());
-
-          _invoiceItem!.name = _descriptionController.text.trim();
-          _invoiceItem!.amount = int.parse(_amountController.text.trim());
-          _invoiceItem!.currency = userBloc.user.currency;
-
-          addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
-
-          ///
-          Navigator.pop(context);
-        } catch (e) {
-          debugPrint(e.toString());
-          showToast(message: e.toString());
-        }
+      if (widget.invoiceItem != null) {
+        InvoiceItem invoiceItem = InvoiceItem(
+          amount: int.parse(_amountController.text
+                  .trim()
+                  .replaceAll(',', '')
+                  .split('.')[0]) *
+              100,
+          quantity: _invoiceItem!.quantity,
+          currency: userBloc.user.currency,
+          name: _descriptionController.text.trim(),
+        );
+        _updateInvoiceItem(widget.invoiceItem!.id!, invoiceItem);
       } else {
-        showToast(message: AppLocalization.of(context)!.invalidRecipient);
+        if (userBloc.user.userName != recipient) {
+          try {
+            var data = {
+              "amount": amount.toString().trim(),
+            };
+
+            debugPrint(data.toString());
+
+            _invoiceItem!.name = _descriptionController.text.trim();
+            _invoiceItem!.amount = int.parse(_amountController.text
+                    .replaceAll(".", "")
+                    .replaceAll(",", "")
+                    .trim()) *
+                100;
+            _invoiceItem!.currency = userBloc.user.currency;
+
+            addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
+
+            Navigator.pop(context);
+          } catch (e) {
+            debugPrint(e.toString());
+            showToast(message: e.toString());
+          }
+        } else {
+          showToast(message: AppLocalization.of(context)!.invalidRecipient);
+        }
       }
     }
+  }
+
+  _updateInvoiceItem(int itemId, InvoiceItem invoiceItem) {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    BusinessAuth()
+        .updateInvoiceItem(itemId: itemId, invoiceItem: invoiceItem)
+        .then(
+      (updated) {
+        Navigator.pop(context); // Pop to Invoice detail page;
+
+        if (updated) {
+          Navigator.pop(context, true); // Pop to Invoice detail page;
+
+        }
+      },
+    ).catchError(
+      (e) {
+        Navigator.of(context).pop();
+        showToast(message: 'ERROR ::: ${e.toString()}');
+      },
+    );
   }
 
   @override

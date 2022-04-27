@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../routes/route_constants.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
@@ -162,8 +163,8 @@ class _SearchModuleState extends State<SearchModule> {
     searchTypeSelectionMenu.onChange = menuItemSelectionChange;
     searchTypeSelectionMenu.menuState = menuStateChange;
 
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return Scaffold(
       key: _scaffoldSearchKey,
@@ -533,7 +534,7 @@ class _SearchModuleState extends State<SearchModule> {
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/photo-viewer", arguments: user.avatar);
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
       },
       child: Container(
           height: 48,
@@ -605,7 +606,7 @@ class _SearchModuleState extends State<SearchModule> {
                       : getTrailingProduct(product),
                   subtitle: getSubtitleProduct(product),
                   onTap: () {
-                    Navigator.pushNamed(context, '/product',
+                    Navigator.pushNamed(context, Routes.PRODUCT,
                         arguments: {"product": product});
                   },
                 ),
@@ -625,7 +626,8 @@ class _SearchModuleState extends State<SearchModule> {
     } catch (e) {}
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/photo-viewer", arguments: imageUrl);
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: imageUrl);
       },
       child: ClipOval(
         child: CachedNetworkImage(
@@ -757,7 +759,7 @@ class _SearchModuleState extends State<SearchModule> {
                       ? null
                       : getTrailingService(service),
                   onTap: () {
-                    Navigator.of(context).pushNamed('/service-detail',
+                    Navigator.of(context).pushNamed(Routes.SERVICE_DETAIL,
                         arguments: {"service": service});
                   },
                 ),
@@ -777,7 +779,8 @@ class _SearchModuleState extends State<SearchModule> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/photo-viewer", arguments: imageUrl);
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: imageUrl);
       },
       child: ClipOval(
         child: CachedNetworkImage(
@@ -958,7 +961,7 @@ class _SearchModuleState extends State<SearchModule> {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(user.userName);
           Navigator.of(context)
-              .pushNamed('/send-payment', arguments: <String, bool>{
+              .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
             'isFromProfile': false,
           });
         },
@@ -976,7 +979,7 @@ class _SearchModuleState extends State<SearchModule> {
         onTap: () async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(user.userName);
-          Navigator.of(context).pushNamed('/request-payment',
+          Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
               arguments: <String, bool>{
                 'isFromProfile': false,
                 'isRequest': true
@@ -1009,7 +1012,7 @@ class _SearchModuleState extends State<SearchModule> {
         onTap: () async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(product.seller);
-          Navigator.of(context).pushNamed('/send-payment',
+          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
               arguments: {'isFromProfile': false, 'product': product});
         },
         title: AppLocalization.of(context)!.buy,
@@ -1024,7 +1027,7 @@ class _SearchModuleState extends State<SearchModule> {
       SlideActionButton(
         icon: SlydoAppIcon.text_message,
         onTap: () async {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': product.seller,
             'subject': product.name,
           });
@@ -1059,7 +1062,7 @@ class _SearchModuleState extends State<SearchModule> {
           onTap: () async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
-            Navigator.of(context).pushNamed('/send-payment',
+            Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
                 arguments: {'isFromProfile': false, 'service': service});
           }),
     ];
@@ -1073,7 +1076,7 @@ class _SearchModuleState extends State<SearchModule> {
         slideController: slidableController2,
         icon: SlydoAppIcon.text_message,
         onTap: () async {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': service.provider,
             'subject': service.name,
           });
@@ -1114,7 +1117,7 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(

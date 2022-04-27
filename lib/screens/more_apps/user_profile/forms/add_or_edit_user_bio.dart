@@ -564,8 +564,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   Widget addAddressField() {
     return CustomizedTextFormField(
       controller: addressController,
-      labelText: "Address",
+      labelText: "Office Address",
       maxLines: 3,
+      hintText: "This address will be publicly available.",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;

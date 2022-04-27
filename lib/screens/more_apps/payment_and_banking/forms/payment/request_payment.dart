@@ -3,10 +3,12 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/location_service.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -20,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../search_user.dart';
 import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -366,7 +369,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
+                .pushNamed(Routes.PHOTO_VIEWER, arguments: _payee!.avatar);
           },
           child: ClipOval(
             child: CachedNetworkImage(
@@ -383,7 +386,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       qrCodeImage = GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: _payee!.qrCode);
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: _payee!.qrCode);
         },
         child: CachedNetworkImage(
           height: 48,
@@ -423,7 +426,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
-                    Navigator.pushNamed(context, '/profile',
+                    Navigator.pushNamed(context, Routes.PROFILE,
                         arguments: {"searchedUserName": _payee!.userName});
                   },
                 ),
@@ -439,6 +442,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -449,15 +453,27 @@ class _RequestPaymentState extends State<RequestPayment> {
         }
         return null;
       },
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            if (!isFromProfile! && _payee != null) {
-              recipient = _payee!.userName;
-            } else {
-              recipient = val.toLowerCase();
-            }
-          });
+      // onChanged: (val) {
+      //   if (mounted) {
+      //     setState(() {
+      //       if (!isFromProfile! && _payee != null) {
+      //         recipient = _payee!.userName;
+      //       } else {
+      //         recipient = val.toLowerCase();
+      //       }
+      //     });
+      //   }
+      // },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          _recipientController.text = _payee!.userName!;
+          isValidPayee = _payee!.userName != userBloc.user.userName;
+          print('IS VALID PAYEE :: $isValidPayee');
+          if (mounted) setState(() {});
         }
       },
     );
@@ -486,32 +502,30 @@ class _RequestPaymentState extends State<RequestPayment> {
               throw Exception("Invalid amount");
             }
           } catch (e) {
-            print('catch invalid :: ${e.toString()}');
             return AppLocalization.of(context)!.invalidAmount;
           }
         }
-        print('empty invalid');
 
         return AppLocalization.of(context)!.invalidAmount;
       },
       onTap: () async {
-        isValidPayee = false;
-        if (mounted) setState(() {});
-        if (recipient != null) {
-          recipient = recipient!.trim();
-
-          _recipientController.text = recipient!;
-          if (mounted) setState(() {});
-          var customerProfile =
-              await UserAuth().fetchCustomerProfileWithAuth(recipient);
-
-          _payee = customerProfile;
-          isValidPayee = _payee!.userName != userBloc.user.userName;
-
-          _recipientController.text = customerProfile.userName!;
-
-          if (mounted) setState(() {});
-        }
+        // isValidPayee = false;
+        // if (mounted) setState(() {});
+        // if (recipient != null) {
+        //   recipient = recipient!.trim();
+        //
+        //   _recipientController.text = recipient!;
+        //   if (mounted) setState(() {});
+        //   var customerProfile =
+        //       await UserAuth().fetchCustomerProfileWithAuth(recipient);
+        //
+        //   _payee = customerProfile;
+        //   isValidPayee = _payee!.userName != userBloc.user.userName;
+        //
+        //   _recipientController.text = customerProfile.userName!;
+        //
+        //   if (mounted) setState(() {});
+        // }
       },
     );
   }
@@ -716,6 +730,8 @@ class _RequestPaymentState extends State<RequestPayment> {
     if (!isValidPayee) {
       if (mounted) {
         setState(() {
+          showToast(message: 'show');
+
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
@@ -752,9 +768,9 @@ class _RequestPaymentState extends State<RequestPayment> {
 
                   var data = {
                     "from_customer": userBloc.user.userName!.trim(),
-                    "to_customer": recipient!.trim(),
+                    "to_customer": _recipientController.text.trim(),
                     "currency": userBloc.user.currency,
-                    "amount": moneyInputNormalizer(amount.toString()),
+                    "amount": moneyInputNormalizer(amount!.toString()),
                     "category": selectedCategory!.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),

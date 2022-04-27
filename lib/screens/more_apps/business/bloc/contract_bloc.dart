@@ -9,6 +9,7 @@ class ContractBloc extends ChangeNotifier {
   bool endOfList = false;
   bool _isLoading = false;
   bool noItemInList = false;
+  bool contractIsSwitched = true;
   bool get isLoading => _isLoading;
   BusinessAuth businessAuth = BusinessAuth();
 
@@ -21,14 +22,13 @@ class ContractBloc extends ChangeNotifier {
 
   Future<List<Contract>?> getContractList(
       {ContractStatus? contractStatus}) async {
-    print('GET CONTRACT LIST');
-
     if (isRefreshing) {
       count = 0;
       next = "";
       endOfList = false;
       contractList = [];
       isFirstTime = true;
+      noItemInList = false;
 
       print('CONTRACT IS REFRESHING :::: $isRefreshing');
     }
@@ -39,8 +39,11 @@ class ContractBloc extends ChangeNotifier {
         _isLoading = true;
         notifyListeners();
 
-        Map<String, dynamic>? result = await businessAuth.getContractList(next,
-            contractStatus: contractStatus);
+        Map<String, dynamic>? result = await businessAuth.getContractList(
+          next,
+          isSender: contractIsSwitched,
+          contractStatus: contractStatus,
+        );
 
         if (result!.containsKey('detail')) {
           errorMessage = result['detail'];

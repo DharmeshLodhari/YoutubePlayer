@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -8,8 +9,14 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../data/state_notifier.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../widget/curved_btn.dart';
+import '../bloc/invoice_bloc.dart';
 import '../business_auth.dart';
+import '../forms/invoice/add_invoice_item.dart';
 import '../models/Invoice.dart';
 
 // ignore: must_be_immutable
@@ -27,16 +34,17 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   var arguments;
   late Invoice invoice;
   bool isLoading = false;
+  late UserBloc userBloc;
 
   _InvoiceDetailState({this.arguments});
 
   @override
   void initState() {
-    fetchContract();
+    fetchInvoice();
     super.initState();
   }
 
-  void fetchContract() async {
+  void fetchInvoice() async {
     isLoading = true;
     setState(() {});
     BusinessAuth().getInvoice(arguments["id"].toString()).then((value) {
@@ -59,6 +67,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -94,6 +103,12 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        1 == 1
+            ? IconButton(
+                icon: Icon(Icons.download_rounded, color: navyBlue),
+                onPressed: () {},
+              )
+            : SizedBox.shrink(),
         // openGraphBtn(),
         // SizedBox(
         //   width: 16,
@@ -118,6 +133,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget scaffoldBody() {
+    bool canPayForInvoice = invoice.fromCustomer != userBloc.user.userName &&
+        invoice.status == "Unpaid";
+
     return isLoading
         ? Center(
             child: CircularLoadingIndicator(),
@@ -132,11 +150,30 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               child: Column(
                 children: [
                   displayContractInfo(),
-                  flexibleSpace(),
+                  SizedBox(height: 14),
+                  canPayForInvoice
+                      ? CurvedButton(
+                          text: "Pay",
+                          onPressed: () {
+                            _payInvoice();
+                          })
+                      : SizedBox.shrink(),
                 ],
               ),
             ),
           );
+  }
+
+  void _payInvoice() {
+    BusinessAuth().payInvoice(invoiceId: invoice.id!).then(
+      (value) {
+        showToast(message: "Invoice Paid");
+      },
+    ).catchError(
+      (e) {
+        showToast(message: "Something went wrong, please try again.");
+      },
+    );
   }
 
   Widget displaySenderInfo() {
@@ -146,7 +183,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": invoice.toCustomer});
       },
     );
@@ -295,17 +332,13 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             style: TextStyle(
                 fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
-            height: 12,
-          ),
+          SizedBox(height: 12),
           Divider(
             height: 0,
             color: dividerColor,
             thickness: 1,
           ),
-          SizedBox(
-            height: 4,
-          ),
+          SizedBox(height: 4),
           Column(
             children: [
               Row(
@@ -348,7 +381,16 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         ),
                         flexibleSpace(),
                         Text(
-                          "Sub total  ",
+                          "Sub total",
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        // flexibleSpace(),
+                        SizedBox(width: 12),
+                        Text(
+                          "Actions",
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 12,
@@ -365,24 +407,20 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                 color: dividerColor,
                 thickness: 1,
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Column(
-                children:
-                    invoice.items!.map((e) => getItemTile(item: e)).toList(),
+                children: invoice.items!
+                    .map((e) =>
+                        getItemTile(length: invoice.items!.length, item: e))
+                    .toList(),
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Divider(
                 height: 0,
                 color: dividerColor,
                 thickness: 1,
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
@@ -408,9 +446,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
             ],
           )
         ],
@@ -418,7 +454,14 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  Widget getItemTile({required InvoiceItem item}) {
+  Widget getItemTile({required int length, required InvoiceItem item}) {
+    debugPrint('ITEM ID:: ${item.id}');
+    bool canDeleteInvoiceItem =
+        invoice.fromCustomer == userBloc.user.userName &&
+            invoice.status != "Paid" &&
+            length > 1;
+    bool canEditInvoiceItem = invoice.status != "Paid";
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -436,9 +479,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               ],
             ),
           ),
-          SizedBox(
-            width: 12,
-          ),
+          SizedBox(width: 12),
           Expanded(
             flex: 5,
             child: Row(
@@ -478,6 +519,34 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                     ),
                   ],
                 ),
+                flexibleSpace(),
+                canDeleteInvoiceItem
+                    ? InkWell(
+                        child: Icon(Icons.delete, color: mateRed),
+                        onTap: () {
+                          _deleteInvoiceItem(item);
+                        },
+                      )
+                    : SizedBox.shrink(),
+                canEditInvoiceItem
+                    ? InkWell(
+                        child: Icon(
+                          Icons.edit,
+                        ),
+                        onTap: () async {
+                          bool? updated = await NavigationUtil.push(
+                            context,
+                            screen: AddInvoiceItem(
+                              invoiceItem: item,
+                            ),
+                          );
+
+                          if (updated == true) {
+                            fetchInvoice();
+                          }
+                        },
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
           ),
@@ -519,5 +588,22 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   void goToMap() {
     debugPrint("go to Map Called !");
+  }
+
+  void _deleteInvoiceItem(InvoiceItem item) {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+
+    BusinessAuth().deleteInvoiceItem(itemId: item.id!).then((value) {
+      Navigator.of(context).pop();
+      // invoice.status = action;
+      fetchInvoice();
+      showToast(message: "Item deleted successfully");
+    }).catchError((error) {
+      Navigator.of(context).pop();
+
+      showToast(message: "Something went wrong, please try again.");
+    });
   }
 }

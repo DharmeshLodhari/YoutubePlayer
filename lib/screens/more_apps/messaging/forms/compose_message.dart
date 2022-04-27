@@ -12,6 +12,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../utils/navigation_util.dart';
+import '../../../search_user.dart';
+
 // ignore: must_be_immutable
 class ComposeMessage extends StatefulWidget {
   var arguments;
@@ -227,30 +230,35 @@ class _ComposeMessageState extends State<ComposeMessage> {
   void onSubmit() {
     if (!isValidRecipient) {
       setState(() {
+        showToast(message: '4');
         errorMessage = AppLocalization.of(context)!.invalidRecipient;
         return;
       });
-    } else if (recipient == userBloc.user.userName) {
+    } else if (_recipientController.text == userBloc.user.userName) {
       setState(() {
+        showToast(message: '3');
+
         errorMessage = AppLocalization.of(context)!.invalidRecipient;
         return;
       });
-    } else if (recipient == messageReceiver!.userName) {
+    } else if (_recipientController.text == messageReceiver!.userName) {
       if (!isValidRecipient) {
         setState(() {
+          showToast(message: '2');
+
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
       }
       if (_formKey.currentState!.validate()) {
-        if (userBloc.user.userName != recipient) {
+        if (userBloc.user.userName != _recipientController.text) {
           showDialog(
               context: context,
               builder: (context) => Center(child: CircularLoadingIndicator()));
           try {
             var data = {
               "sender": userBloc.user.userName,
-              "recipient": recipient!.trim(),
+              "recipient": _recipientController.text.trim(),
               "body": message.trim(),
               "subject": subject!.trim(),
             };
@@ -275,6 +283,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
             showToast(message: e.toString());
           }
         } else {
+          showToast(message: '1');
           var msg = AppLocalization.of(context)!.invalidRecipient;
           showToast(message: msg);
         }
@@ -294,12 +303,12 @@ class _ComposeMessageState extends State<ComposeMessage> {
               errorMessage = AppLocalization.of(context)!.invalidRecipient;
               return;
             });
-          } else if (recipient == userBloc.user.userName) {
+          } else if (_recipientController.text == userBloc.user.userName) {
             setState(() {
               errorMessage = AppLocalization.of(context)!.invalidRecipient;
               return;
             });
-          } else if (recipient == messageReceiver!.userName) {
+          } else if (_recipientController.text == messageReceiver!.userName) {
             if (!isValidRecipient) {
               setState(() {
                 errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -307,14 +316,14 @@ class _ComposeMessageState extends State<ComposeMessage> {
               });
             }
             if (_formKey.currentState!.validate()) {
-              if (userBloc.user.userName != recipient) {
+              if (userBloc.user.userName != _recipientController.text) {
                 showDialog(
                     context: context,
                     builder: (context) => CircularLoadingIndicator());
                 try {
                   var data = {
                     "sender": userBloc.user.userName,
-                    "recipient": recipient!.trim(),
+                    "recipient": _recipientController.text.trim(),
                     "body": message.trim(),
                     "subject": subject!.trim(),
                   };
@@ -436,26 +445,40 @@ class _ComposeMessageState extends State<ComposeMessage> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
-        labelText: AppLocalization.of(context)!.recipient,
-        hintText: "Enter user's slydo username",
-        controller: _recipientController,
-        focusNode: _recipientFocus,
-        enabled: !isReplyMessage && !isSubjectIsPresent,
-        validator: (value) {
-          if (value != messageReceiver!.userName) {
-            return AppLocalization.of(context)!.invalidRecipient;
+      isReadOnly: true,
+      labelText: AppLocalization.of(context)!.recipient,
+      hintText: "Enter user's slydo username",
+      controller: _recipientController,
+      focusNode: _recipientFocus,
+      enabled: !isReplyMessage && !isSubjectIsPresent,
+      validator: (value) {
+        if (value != messageReceiver!.userName) {
+          return AppLocalization.of(context)!.invalidRecipient;
+        }
+        return null;
+      },
+      onChanged: (val) {
+        setState(() {
+          if (isReplyMessage && messageReceiver != null) {
+            recipient = messageReceiver!.userName;
+          } else {
+            recipient = val.toLowerCase();
           }
-          return null;
-        },
-        onChanged: (val) {
-          setState(() {
-            if (isReplyMessage && messageReceiver != null) {
-              recipient = messageReceiver!.userName;
-            } else {
-              recipient = val.toLowerCase();
-            }
-          });
         });
+      },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          messageReceiver = userFound;
+          isValidRecipient =
+              messageReceiver!.userName != userBloc.user.userName;
+          _recipientController.text = messageReceiver!.userName!;
+          if (mounted) setState(() {});
+        }
+      },
+    );
   }
 
   Widget getSubjectField() {
@@ -475,21 +498,21 @@ class _ComposeMessageState extends State<ComposeMessage> {
         });
       },
       onTap: () async {
-        if (recipient != null) {
-          recipient = recipient!.trim();
-          if (mounted) {
-            setState(() {
-              _recipientController.text = recipient!;
-            });
-          }
-          var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
-          setState(() {
-            messageReceiver = customerProfile;
-            isValidRecipient =
-                messageReceiver!.userName != userBloc.user.userName;
-          });
-        }
+        // if (recipient != null) {
+        //   recipient = recipient!.trim();
+        //   if (mounted) {
+        //     setState(() {
+        //       _recipientController.text = recipient!;
+        //     });
+        //   }
+        //   var customerProfile =
+        //       await UserAuth().fetchCustomerProfile(recipient);
+        //   setState(() {
+        //     messageReceiver = customerProfile;
+        //     isValidRecipient =
+        //         messageReceiver!.userName != userBloc.user.userName;
+        //   });
+        // }
       },
     );
   }

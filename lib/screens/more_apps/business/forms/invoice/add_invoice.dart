@@ -19,7 +19,9 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
 
+import '../../../../../utils/navigation_util.dart';
 import '../../../../../widget/LoadingIndicator.dart';
+import '../../../../search_user.dart';
 import '../../business_auth.dart';
 
 // ignore: must_be_immutable
@@ -483,6 +485,7 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -501,6 +504,17 @@ class _AddInvoiceState extends State<AddInvoice> {
               recipient = val.toLowerCase();
             }
           });
+        }
+      },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          isValidPayee = _payee!.userName != userBloc.user.userName;
+          _recipientController.text = _payee!.userName!;
+          if (mounted) setState(() {});
         }
       },
     );

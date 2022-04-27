@@ -64,6 +64,8 @@ class AuthService {
       "User-Agent": "Slydo-Mobile",
     };
 
+    debugPrint('TRANSACTION-ID :: $transactionId');
+
     // Because the jwt expires every 5 minutes we will take note of the time they
     // where  created and the use that to compute the expiration time of the
     // token. So that we will only use the token if its still valid.
@@ -277,6 +279,10 @@ class AuthService {
     // log("$bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
+
+    debugPrint('BEARER :: $bearer');
+    debugPrint('TRANSACTION ID  :: $transactionId');
+
     var headers = {
       "Authorization": bearer,
       "Content-type": "application/json; charset=utf-8",

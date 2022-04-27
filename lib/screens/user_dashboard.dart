@@ -684,14 +684,14 @@ class _UserDashboardState extends State<UserDashboard> {
               },
             ),
             bottomSheetItem(
-              title: "My address",
+              title: "Billing address",
               icon: SlydoAppIcon.location,
               isLast: true,
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(
                   context,
-                  '/user-address',
+                  Routes.USER_ADDRESS,
                 );
               },
             ),

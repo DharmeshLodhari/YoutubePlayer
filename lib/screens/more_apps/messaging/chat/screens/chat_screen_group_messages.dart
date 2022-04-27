@@ -2578,7 +2578,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void addProductOrServiceToChat(var item) async {
     String url = AppConfig.baseUrl +
         "/api/v1/${item is Product ? "products" : "services"}/" +
-        item.subscriptionId +
+        item.id +
         "/";
 
     Map<String, dynamic>? itemData =

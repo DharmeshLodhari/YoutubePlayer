@@ -138,23 +138,24 @@ class _OrdersListState extends State<OrdersList> {
     menu.menuState = menuStateChange;
 
     return WillPopScope(
-        onWillPop: () async {
-          return true;
-        },
-        child: Scaffold(
-          key: _scaffoldOrderListKey,
-          backgroundColor: Colors.white,
-          appBar: appBar() as PreferredSizeWidget?,
-          body: SmartRefresher(
-              enablePullDown: true,
-              header: WaterDropHeader(
-                complete: Container(),
-                waterDropColor: navyBlue,
-              ),
-              controller: _refreshController,
-              onRefresh: _onRefresh,
-              child: _buildOrderList()),
-        ));
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        key: _scaffoldOrderListKey,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildOrderList()),
+      ),
+    );
   }
 
   Widget appBar() {

@@ -20,7 +20,9 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../../../utils/navigation_util.dart';
 import '../../../../widget/LoadingIndicator.dart';
+import '../../../search_user.dart';
 
 // ignore: must_be_immutable
 class AddContract extends StatefulWidget {
@@ -44,11 +46,11 @@ class _AddContractState extends State<AddContract> {
 
   final _formKey = GlobalKey<FormState>();
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
-  CustomerProfile? _payee;
+  CustomerProfile? _payee; //The person you are offering the contract to.
   late UserBloc userBloc;
 
   bool isValidPayee = false;
-  int? amount;
+  double? amount;
   String reference = "";
   String category = "";
   String errorMessage = "";
@@ -335,6 +337,7 @@ class _AddContractState extends State<AddContract> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -353,6 +356,16 @@ class _AddContractState extends State<AddContract> {
               recipient = val.toLowerCase();
             }
           });
+        }
+      },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          _recipientController.text = _payee!.userName!;
+          if (mounted) setState(() {});
         }
       },
     );
@@ -378,16 +391,22 @@ class _AddContractState extends State<AddContract> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val) * 100;
+            amount = double.parse(val);
           });
         }
       },
       validator: (val) {
+        debugPrint('AMOUNT VAL ::: $val');
         if (val.isNotEmpty) {
           try {
-            int.parse(val);
-            return null;
-          } catch (e) {}
+            double amount = double.parse(val);
+
+            if (amount > 0.0) {
+              return null;
+            }
+          } catch (e) {
+            debugPrint('ERROR VALIDATING AMOUNT FIELD ::: ${e.toString()}');
+          }
         }
         return AppLocalization.of(context)!.invalidAmount;
       },
@@ -647,7 +666,7 @@ class _AddContractState extends State<AddContract> {
       });
     }
 
-    if (recipient != userBloc.user.userName) {
+    if (_recipientController.text != userBloc.user.userName) {
       if (!isValidPayee) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -656,56 +675,64 @@ class _AddContractState extends State<AddContract> {
       }
 
       if (isValidPayee && _formKey.currentState!.validate()) {
-        if (userBloc.user.userName != recipient) {
-          try {
-            showDialog(
-                context: context,
-                builder: (dialogLoadingContext) => LoadingIndicator());
-
-            await BusinessAuth()
-                .getConversationId(name: _recipientController.text)
-                .then(
-              (value) {
-                if (value != null) {
-                  conversationId = value;
-                }
-              },
-            );
-
-            var data = {
-              "contractor": _recipientController.text,
-              "currency": userBloc.user.currency.toString(),
-              "amount": moneyInputNormalizer(amount.toString().trim()),
-              "start_date": dateToString(startingDate),
-              "end_date": dateToString(endingDate),
-              "payment_duration": selectedDuration!.value.toString(),
-            };
-
-            if (_noteCtrl.text.isNotEmpty) {
-              data['note'] = _noteCtrl.text;
-            }
-            if (conversationId != null) {
-              data['conversation_id'] = conversationId!;
-            }
-
-            BusinessAuth().addContract(data).then((result) {
-              Navigator.pop(context); // Dismiss the loading indicator
-
-              if (result) {
-                Navigator.pop(context,
-                    true); // Pop this screen to go back to my_contract_list
-              }
-            }).catchError((error) {
-              Navigator.pop(context);
-              showToast(message: error.toString());
-            });
-          } catch (e) {
-            Navigator.pop(context);
-            debugPrint(e.toString());
-            showToast(message: e.toString());
-          }
+        if (selectedDuration == null) {
+          setState(() {
+            errorMessage = AppLocalization.of(context)!.selectPaymentDuration;
+            return;
+          });
         } else {
-          showToast(message: AppLocalization.of(context)!.invalidRecipient);
+          if (userBloc.user.userName != recipient) {
+            try {
+              showDialog(
+                  context: context,
+                  builder: (dialogLoadingContext) => LoadingIndicator());
+
+              await BusinessAuth()
+                  .getConversationId(name: _recipientController.text)
+                  .then(
+                (value) {
+                  if (value != null) {
+                    conversationId = value;
+                  }
+                },
+              );
+
+              var data = {
+                "contractor": _recipientController.text,
+                "currency": userBloc.user.currency.toString(),
+                "amount": moneyInputNormalizer(amount.toString().trim()),
+                "start_date": dateToString(startingDate),
+                "end_date": dateToString(endingDate),
+                "payment_duration": selectedDuration!.value.toString(),
+              };
+
+              if (_noteCtrl.text.isNotEmpty) {
+                data['note'] = _noteCtrl.text;
+              }
+              if (conversationId != null) {
+                data['conversation_id'] = conversationId!;
+              }
+
+              BusinessAuth().addContract(data).then((result) {
+                Navigator.pop(context); // Dismiss the loading indicator
+
+                if (result) {
+                  Navigator.pop(context,
+                      true); // Pop this screen to go back to my_contract_list
+                }
+              }).catchError((error) {
+                Navigator.pop(context);
+                showToast(message: error.toString());
+              });
+            } catch (e) {
+              Navigator.pop(context);
+              debugPrint(e.toString());
+
+              showToast(message: e.toString());
+            }
+          } else {
+            showToast(message: AppLocalization.of(context)!.invalidRecipient);
+          }
         }
       }
     } else {

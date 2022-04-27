@@ -11,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../bloc/invoice_bloc.dart';
+import '../business_auth.dart';
+
 // ignore: must_be_immutable
 class ContractTile extends StatefulWidget {
   final Contract contract;
@@ -271,6 +274,9 @@ class _InvoiceTileState extends State<InvoiceTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    bool isReceiver = widget.invoice.fromCustomer !=
+        userBloc!.user.userName; //The person who receives the invoice.
+
     return Stack(
       children: [
         Card(
@@ -290,13 +296,26 @@ class _InvoiceTileState extends State<InvoiceTile> {
                 leading: getLeading(),
                 trailing: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [getAmount(), SizedBox(height: 4), invoiceStatus()],
+                  children: [
+                    getAmount(),
+                    SizedBox(height: 4),
+                    invoiceStatus(),
+                  ],
                 ),
                 onTap: widget.onTap as void Function()?,
               ),
             ),
           ),
         ),
+        // Positioned(
+        //   top: 8,
+        //   right: 120,
+        //   child: IconButton(
+        //       icon: Icon(Icons.payment, color: navyBlue),
+        //       onPressed: () {
+        //         if (isReceiver && widget.invoice.status == "Unpaid") {}
+        //       }),
+        // ),
       ],
     );
   }
@@ -315,7 +334,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
   Color getStatusColor() {
     switch (widget.invoice.status) {
       case "Draft":
-        return eyeGrey;
+        return starYellow.withOpacity(0.4);
 
       case "Pending":
         return starYellow;

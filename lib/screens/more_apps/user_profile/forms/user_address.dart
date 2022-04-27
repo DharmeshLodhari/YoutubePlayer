@@ -86,12 +86,15 @@ class _UserAddressState extends State<UserAddress> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.addAddress,
+        AppLocalization.of(context)!.billingAddress,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
+
+  String billingAddressDesc =
+      "Your billing address will not be publicly available. It will only be used to send you your ordered product and services.";
 
   Widget scaffoldBody() {
     return SingleChildScrollView(
@@ -128,7 +131,12 @@ class _UserAddressState extends State<UserAddress> {
                     ),
                     flexibleSpace(),
                     getSubmitButton(),
-                    flexibleSpace(),
+                    SizedBox(height: 12),
+                    Text(
+                      billingAddressDesc,
+                      style: TextStyle(
+                          color: Colors.black.withOpacity(0.4), fontSize: 14),
+                    ),
                   ],
                 ),
               ),

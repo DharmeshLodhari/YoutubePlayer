@@ -7,6 +7,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../data/state_notifier.dart';
 import '../bloc/contract_bloc.dart';
 import 'invoice_list.dart';
 import 'my_contract_list.dart';
@@ -55,9 +56,6 @@ class _MyContractAndInvoiceScreenState
 
       case "Unpaid":
         invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Unpaid);
-        break;
-      case "Pending":
-        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Pending);
         break;
 
       default:
@@ -115,7 +113,6 @@ class _MyContractAndInvoiceScreenState
               CustomizedPopUpMenuItem(title: "Paid", value: "Paid"),
               CustomizedPopUpMenuItem(title: "Drafts", value: "Draft"),
               CustomizedPopUpMenuItem(title: "Unpaid", value: "Unpaid"),
-              CustomizedPopUpMenuItem(title: "Pending", value: "Pending"),
             ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -163,11 +160,53 @@ class _MyContractAndInvoiceScreenState
       ),
       bottom: tabBar() as PreferredSizeWidget?,
       actions: [
+        Row(
+          children: [
+            Text(
+              'In',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            appBarSwitch(currentIndex: currentIndex),
+            Text(
+              'Out',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(width: 10.0),
         addContractAndInvoiceButton(),
         SizedBox(width: 10.0),
         popUpMenuButton(),
         SizedBox(width: 16)
       ],
+    );
+  }
+
+  bool invoiceIsSwitched = true;
+  bool contractIsSwitched = true;
+  Widget appBarSwitch({required int currentIndex}) {
+    return Switch(
+      activeColor: navyBlue,
+      value: currentIndex == 0 ? contractIsSwitched : invoiceIsSwitched,
+      onChanged: (value) {
+        if (currentIndex == 0) {
+          setState(() => contractIsSwitched = value);
+          contractBloc.isRefreshing = true;
+          contractBloc.contractIsSwitched = value;
+          contractBloc.getContractList();
+        } else {
+          setState(() => invoiceIsSwitched = value);
+          invoiceBloc.isRefreshing = true;
+          invoiceBloc.invoiceIsSwitched = value;
+          invoiceBloc.getInvoiceList();
+        }
+      },
     );
   }
 
@@ -195,6 +234,8 @@ class _MyContractAndInvoiceScreenState
               await Navigator.of(context).pushNamed("/add-invoice");
           print('INVOICE ADDED ::: $invoiceAdded');
           if (invoiceAdded == true) {
+            Provider.of<InvoiceBloc>(context, listen: false).isRefreshing =
+                true;
             Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
           }
         }
