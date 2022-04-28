@@ -252,7 +252,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     list.add(bottomSheetItem(
       title: "Share",
-      icon: SlydoAppIcon.share,
+      iconData: SlydoAppIcon.share,
       onTap: () async {
         Navigator.pop(context);
         var shareBody =
@@ -265,7 +265,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       bottomSheetItem(
         title: "Share in Chat",
         isLast: true,
-        icon: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();

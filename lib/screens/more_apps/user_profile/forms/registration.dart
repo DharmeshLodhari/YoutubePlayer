@@ -6,11 +6,10 @@ import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/colors.dart';
+import '../../../../widget/LoadingIndicator.dart';
 
 class Registration extends StatefulWidget {
   @override
@@ -183,17 +182,15 @@ class _RegistrationState extends State<Registration> {
   Widget continueBtn() {
     return isValid
         ? CurvedButton(
-            onPressed: continuePressed,
+            onPressed: submit,
             text: "Continue",
             textColor: Colors.white,
             backgroundColor: navyBlue,
           )
-        : Container(
-            height: 42,
-          );
+        : Container(height: 42);
   }
 
-  void continuePressed() {
+  void submit() {
     var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
     if (phoneNumberFromTextField.substring(0, 1) == "0") {
@@ -210,7 +207,10 @@ class _RegistrationState extends State<Registration> {
     }
 
     if (_registrationFormKey.currentState!.validate()) {
+      showDialog(context: context, builder: (context) => LoadingIndicator());
+
       UserAuth().registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
+        Navigator.of(context).pop();
         Navigator.of(context).popAndPushNamed(
           Routes.VERIFY_REGISTRATION_OTP,
           arguments: {
@@ -218,6 +218,7 @@ class _RegistrationState extends State<Registration> {
           },
         );
       }).catchError((error) {
+        Navigator.of(context).pop();
         showToast(message: "$error");
       });
     }

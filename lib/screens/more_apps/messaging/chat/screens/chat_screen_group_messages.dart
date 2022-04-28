@@ -76,6 +76,7 @@ import 'package:swipe_to/swipe_to.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../routes/route_constants.dart';
+import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
 
@@ -2672,7 +2673,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   children: <Widget>[
                     bottomSheetItem(
                       title: "Image",
-                      icon: Icons.image_rounded,
+                      iconData: Icons.image_rounded,
                       iconSize: 18,
                       onTap: () {
                         Navigator.pop(context, "image");
@@ -2680,7 +2681,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     ),
                     bottomSheetItem(
                       title: "Video",
-                      icon: Icons.video_call_rounded,
+                      iconData: Icons.video_call_rounded,
                       iconSize: 20,
                       isLast: true,
                       onTap: () {
@@ -3037,6 +3038,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       case "payment-contract":
         finalUI = renderPaymentContractUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+      case "invoice":
+        finalUI = renderInvoiceUI(
             message: messageData, chatConversation: chatConversation);
         break;
 
@@ -3666,6 +3671,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
+  Widget renderInvoiceUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return PostTileForInvoice(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
   Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
@@ -4231,7 +4244,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (chatMessageAction.isCopyable!) {
       elements.add(bottomSheetItem(
         title: "Copy message",
-        icon: SlydoAppIcon.copy,
+        iconData: SlydoAppIcon.copy,
         onTap: () {
           copyChatMessage(message: message);
 
@@ -4243,7 +4256,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       if (chatMessageAction.isEditable!) {
         elements.add(bottomSheetItem(
           title: "Edit message",
-          icon: SlydoAppIcon.edit,
+          iconData: SlydoAppIcon.edit,
           onTap: () {
             editChatMessage(message: message);
 
@@ -4256,7 +4269,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       if (chatMessageAction.isDeletable!) {
         elements.add(bottomSheetItem(
           title: messageData['kind'] == "envelope" ? "Cancel" : "Delete",
-          icon: messageData['kind'] == "envelope"
+          iconData: messageData['kind'] == "envelope"
               ? SlydoAppIcon.remove
               : SlydoAppIcon.delete,
           onTap: () {
@@ -4270,7 +4283,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (chatMessageAction.isReplyable!) {
       elements.add(bottomSheetItem(
         title: "Reply",
-        icon: SlydoAppIcon.reply,
+        iconData: SlydoAppIcon.reply,
         onTap: () {
           replyChatMessage(message: message);
           Navigator.pop(context);

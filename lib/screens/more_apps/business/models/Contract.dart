@@ -1,4 +1,4 @@
-class Contract {
+class ContractModel {
   int? amount;
   String? contractee;
   String? contracteeAvatar;
@@ -14,7 +14,7 @@ class Contract {
   String? status;
   bool isAccepted;
 
-  Contract(
+  ContractModel(
       {this.amount,
       this.contractee,
       this.contracteeAvatar,
@@ -30,8 +30,8 @@ class Contract {
       this.startDate,
       this.status});
 
-  factory Contract.fromJson(Map<String, dynamic> json) {
-    return Contract(
+  factory ContractModel.fromJson(Map<String, dynamic> json) {
+    return ContractModel(
       amount: json['amount'],
       contractee: json['contractee'],
       contracteeAvatar: json['contractee_avatar'],

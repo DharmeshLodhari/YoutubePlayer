@@ -11,19 +11,31 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../data/state_notifier.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../utils/enums.dart';
+import '../../../../utils/slydo_app_icon_icons.dart';
+import '../../../../widget/customized_popup_menu.dart';
 import '../../../../widget/noItemInList.dart';
+import '../../../../widget/rounded_background_icon.dart';
 import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
 
-class MyContractList extends StatefulWidget {
+class ContractScreen extends StatefulWidget {
+  const ContractScreen({Key? key}) : super(key: key);
+
   @override
-  _MyContractListState createState() => _MyContractListState();
+  State<ContractScreen> createState() => _ContractScreenState();
 }
 
-class _MyContractListState extends State<MyContractList> {
+class _ContractScreenState extends State<ContractScreen> {
   late UserBloc userBloc;
+  bool isPopMenuOpen = false;
+  int selectedMenuItemIndex = 0;
+  late CustomizedPopUpMenu menu;
+  bool contractIsSwitched = true;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  GlobalKey _key = LabeledGlobalKey("myContractList");
 
   ScrollController _scrollController = ScrollController();
 
@@ -40,6 +52,7 @@ class _MyContractListState extends State<MyContractList> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
+    Provider.of<ContractBloc>(context, listen: false).isRefreshing = true;
     Provider.of<ContractBloc>(context, listen: false).getContractList();
 
     _scrollController.addListener(() {
@@ -58,6 +71,195 @@ class _MyContractListState extends State<MyContractList> {
     super.dispose();
   }
 
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Contracts",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        maxLines: 1,
+      ),
+      actions: [
+        Row(
+          children: [
+            Text(
+              'In',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            appBarSwitch(),
+            Text(
+              'Out',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(width: 10.0),
+        addContractButton(),
+        SizedBox(width: 10.0),
+        popUpMenuButton(),
+        SizedBox(width: 16)
+      ],
+    );
+  }
+
+  Widget appBarSwitch() {
+    return Switch(
+      activeColor: navyBlue,
+      value: contractIsSwitched,
+      onChanged: (value) {
+        setState(() => contractIsSwitched = value);
+        contractBloc.isRefreshing = true;
+        contractBloc.contractIsSwitched = value;
+        contractBloc.getContractList();
+      },
+    );
+  }
+
+  Widget addContractButton() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.add,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () async {
+        var contractAdded =
+            await Navigator.of(context).pushNamed(Routes.ADD_CONTRACT);
+        print('CONTRACT ADDED ::: $contractAdded');
+
+        if (contractAdded == true) {
+          contractBloc.isRefreshing = true;
+          contractBloc.getContractList();
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.filter_alt_rounded,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    setState(() {});
+    filterSwitchStatementForContractPage(value);
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    contractBloc = Provider.of<ContractBloc>(context);
+
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "All", value: "All"),
+        CustomizedPopUpMenuItem(title: "Ended", value: "Ended"),
+        CustomizedPopUpMenuItem(title: "Active", value: "Active"),
+        CustomizedPopUpMenuItem(title: "Paused", value: "Paused"),
+      ],
+      right: 16,
+      selectedIndex: selectedMenuItemIndex,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: appBar() as PreferredSizeWidget?,
+        backgroundColor: Colors.white,
+        body: _scaffoldBody(),
+      ),
+    );
+  }
+
+  filterSwitchStatementForContractPage(String value) {
+    contractBloc.noItemInList = false;
+    contractBloc.isRefreshing = true;
+
+    switch (value) {
+      case "Ended":
+        contractBloc.getContractList(contractStatus: ContractStatus.Ended);
+        break;
+
+      case "Active":
+        contractBloc.getContractList(contractStatus: ContractStatus.Active);
+        break;
+
+      case "Paused":
+        contractBloc.getContractList(contractStatus: ContractStatus.Paused);
+        break;
+
+      case "All":
+        contractBloc.getContractList();
+        break;
+
+      default:
+        contractBloc.getContractList();
+    }
+  }
+
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
@@ -74,22 +276,6 @@ class _MyContractListState extends State<MyContractList> {
         _refreshController.refreshCompleted();
       }
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
-    contractBloc = Provider.of<ContractBloc>(context);
-
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(true);
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: _scaffoldBody(),
-      ),
-    );
   }
 
   Widget _scaffoldBody() {

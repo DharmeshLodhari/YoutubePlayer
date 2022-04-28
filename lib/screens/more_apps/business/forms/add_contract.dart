@@ -59,7 +59,7 @@ class _AddContractState extends State<AddContract> {
   DateTime startingDate = DateTime.now();
   DateTime endingDate = DateTime.now();
 
-  Contract? contract;
+  ContractModel? contract;
 
   PaymentDuration? selectedDuration;
 

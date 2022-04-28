@@ -24,7 +24,7 @@ class ContractDetail extends StatefulWidget {
 
 class _ContractDetailState extends State<ContractDetail> {
   var arguments;
-  late Contract contract;
+  late ContractModel contract;
   // Contract contract;
   bool isLoading = false;
 

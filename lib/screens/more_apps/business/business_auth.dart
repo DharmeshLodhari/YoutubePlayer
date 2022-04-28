@@ -27,7 +27,7 @@ class BusinessAuth extends AuthService {
       url = url + "?sender=$isSender";
 
       if (contractStatus != null) {
-        url = url + "?status=${contractStatus.name}";
+        url = url + "&status=${contractStatus.name}";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -41,11 +41,11 @@ class BusinessAuth extends AuthService {
     debugPrint('GET CONTRACT LIST :::: ${jsonData}');
 
     if (response.statusCode == 200) {
-      List<Contract> contractList = [];
+      List<ContractModel> contractList = [];
       List jsonResult = jsonData['results'];
 
       jsonResult.forEach((json) {
-        contractList.add(Contract.fromJson(json));
+        contractList.add(ContractModel.fromJson(json));
       });
 
       Map<String, dynamic> result = {
@@ -62,14 +62,15 @@ class BusinessAuth extends AuthService {
     }
   }
 
-  Future<Contract> getContract(String id) async {
+  Future<ContractModel> getContract(String id) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/$id/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
     debugPrint('GET CONTRACT ::: ${json.decode(response.body)}');
     if (response.statusCode == 200) {
-      Contract contract = Contract.fromJson(json.decode(response.body));
+      ContractModel contract =
+          ContractModel.fromJson(json.decode(response.body));
 
       return contract;
     } else {
@@ -118,7 +119,6 @@ class BusinessAuth extends AuthService {
         await httpPost(url, body: jsonEncode(data), headers: headers);
 
     debugPrint('GET CONVERSATION ID :: ${response.body}');
-    debugPrint('GET CONVERSATION RESPONSE:: ${response.statusCode}');
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
       return jsonData['conversation_id'];
@@ -252,11 +252,11 @@ class BusinessAuth extends AuthService {
     debugPrint('GET INVOICE LIST ::: ${response.body}');
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      List<Invoice> invoiceList = [];
+      List<InvoiceModel> invoiceList = [];
       List jsonResult = jsonData['results'];
 
       jsonResult.forEach((json) {
-        invoiceList.add(Invoice.fromJson(json));
+        invoiceList.add(InvoiceModel.fromJson(json));
       });
 
       Map<String, dynamic> result = {
@@ -273,13 +273,13 @@ class BusinessAuth extends AuthService {
     }
   }
 
-  Future<Invoice> getInvoice(String id) async {
+  Future<InvoiceModel> getInvoice(String id) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$id/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      Invoice invoice = Invoice.fromJson(json.decode(response.body));
+      InvoiceModel invoice = InvoiceModel.fromJson(json.decode(response.body));
       return invoice;
     }
     var jsonData = json.decode(response.body);
@@ -385,8 +385,8 @@ class BusinessAuth extends AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    var jsonData = json.decode(response.body);
-    return Future.error(jsonData.toString());
+
+    return Future.error(response.body);
   }
 
 // Future<bool> updateInvoice(Invoice invoice) async {

@@ -78,6 +78,8 @@ class Routes {
   static const String ADD_MONEY_TO_SLYDO_TWO = "/add-money-to-slydo-two";
   static const String ALREADY_HAVE_REFERENCE = "/already-have-reference";
   static const String CONTRACTS = "/contracts";
+  static const String INVOICE = "/invoice";
+  static const String CONTRACT = "/contrat";
   static const String ADD_CONTRACT = "/add-contract";
   static const String CONTRACT_DETAIL = "/contract-detail";
   static const String CONTRACT_TRANSACTIONS = "/contract-transactions";

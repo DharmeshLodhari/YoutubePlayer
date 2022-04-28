@@ -216,16 +216,24 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void verifyOTP() {
+    print('VERIFY CARD OTP');
+
     if (_verifyOtpFormKey.currentState!.validate()) {
       String enteredOTP = otpController!.text.trim();
       String passwordToken = "false";
+      showDialog(context: context, builder: (context) => LoadingIndicator());
 
       UserAuth()
           .verifyPhoneNumber(phoneNumber, enteredOTP, passwordToken)
-          .then((value) {
+          .then((verified) {
+        Navigator.pop(context);
+
         Navigator.of(context).popAndPushNamed(Routes.REGISTER, arguments: {
           'phoneNumber': phoneNumber,
         });
+      }).catchError((e) {
+        Navigator.pop(context);
+        showToast(message: 'ERROR -> ${e.toString()}');
       });
     }
   }

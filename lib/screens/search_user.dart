@@ -306,6 +306,7 @@ class _SearchUserState extends State<SearchUser> {
             ),
           ),
           child: TextFormField(
+            autofocus: true,
             controller: searchItemTextController,
             style: TextStyle(
               fontSize: 16,

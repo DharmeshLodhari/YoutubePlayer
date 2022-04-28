@@ -252,7 +252,7 @@ class _PostTileState extends State<PostTile> {
     list.add(
       bottomSheetItem(
         title: AppLocalization.of(context)!.share,
-        icon: SlydoAppIcon.share,
+        iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
           var shareBody =
@@ -265,7 +265,7 @@ class _PostTileState extends State<PostTile> {
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        icon: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.pop(context);
           UserPostUtils.sendPostToUserInChat(
@@ -279,7 +279,7 @@ class _PostTileState extends State<PostTile> {
     list.add(
       bottomSheetItem(
         title: AppLocalization.of(context)!.editPost,
-        icon: SlydoAppIcon.edit,
+        iconData: SlydoAppIcon.edit,
         onTap: () async {
           Navigator.pop(context);
           await Navigator.pushNamed(context, '/create-blog',
@@ -291,7 +291,7 @@ class _PostTileState extends State<PostTile> {
     list.add(
       bottomSheetItem(
         title: AppLocalization.of(context)!.deletePost,
-        icon: SlydoAppIcon.delete,
+        iconData: SlydoAppIcon.delete,
         onTap: () {
           Navigator.pop(context);
           showDialogBox(

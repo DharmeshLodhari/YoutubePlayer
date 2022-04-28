@@ -9,6 +9,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -378,6 +379,7 @@ class _SignUpState extends State<SignUp> {
       labelText: "Password",
       keyboardType: TextInputType.number,
       obscureText: true,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 6,
       isPassword: true,
       validator: validateEnteredPassword,
@@ -390,6 +392,7 @@ class _SignUpState extends State<SignUp> {
       labelColor: darkGrey,
       labelText: "Confirm password",
       keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       obscureText: true,
       maxLength: 6,
       isPassword: true,

@@ -49,7 +49,6 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     if (widget.invoiceItem != null) {
       _descriptionController.text = widget.invoiceItem!.name!;
       _amountController.text = (widget.invoiceItem!.amount! / 100).toString();
-      print(_amountController.text);
       _invoiceItem = InvoiceItem(
         id: widget.invoiceItem!.id,
         name: widget.invoiceItem!.name,
@@ -57,9 +56,9 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
         quantity: widget.invoiceItem!.quantity,
       );
 
-      totalCost =
-          (double.parse(_amountController.text) * _invoiceItem!.quantity!)
-              .toDouble();
+      totalCost = (double.parse(_amountController.text.replaceAll(',', '')) *
+              _invoiceItem!.quantity!)
+          .toDouble();
     } else {
       _invoiceItem = InvoiceItem();
     }
@@ -244,16 +243,15 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
             amount = double.parse(val);
 
             totalCost =
-                (double.parse(_amountController.text.replaceAll(',', '')) *
-                        _invoiceItem!.quantity!)
-                    .toDouble();
+                double.parse(_amountController.text.replaceAll(',', '')) *
+                    _invoiceItem!.quantity!;
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {}
         }
@@ -289,7 +287,8 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                     if (_amountController.text.isNotEmpty) {
                       if (_invoiceItem!.quantity! > 1) {
                         _invoiceItem!.quantity = _invoiceItem!.quantity! - 1;
-                        totalCost = (double.parse(_amountController.text) *
+                        totalCost = (double.parse(_amountController.text
+                                    .replaceAll(',', '')) *
                                 _invoiceItem!.quantity!)
                             .toDouble();
                         setState(() {});
@@ -325,7 +324,8 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                   onTap: () {
                     if (_amountController.text.isNotEmpty) {
                       _invoiceItem!.quantity = _invoiceItem!.quantity! + 1;
-                      totalCost = double.parse(_amountController.text) *
+                      totalCost = double.parse(
+                              _amountController.text.replaceAll(',', '')) *
                           _invoiceItem!.quantity!;
                     } else {
                       showToast(message: 'Add an amount');
@@ -356,15 +356,13 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     if (_formKey.currentState!.validate()) {
       if (widget.invoiceItem != null) {
         InvoiceItem invoiceItem = InvoiceItem(
-          amount: int.parse(_amountController.text
-                  .trim()
-                  .replaceAll(',', '')
-                  .split('.')[0]) *
-              100,
+          amount: int.parse(
+              _amountController.text.trim().replaceAll(',', '').split('.')[0]),
           quantity: _invoiceItem!.quantity,
           currency: userBloc.user.currency,
           name: _descriptionController.text.trim(),
         );
+
         _updateInvoiceItem(widget.invoiceItem!.id!, invoiceItem);
       } else {
         if (userBloc.user.userName != recipient) {
@@ -377,10 +375,9 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
 
             _invoiceItem!.name = _descriptionController.text.trim();
             _invoiceItem!.amount = int.parse(_amountController.text
-                    .replaceAll(".", "")
-                    .replaceAll(",", "")
-                    .trim()) *
-                100;
+                .replaceAll(",", "")
+                .split('.')[0]
+                .trim());
             _invoiceItem!.currency = userBloc.user.currency;
 
             addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
@@ -405,7 +402,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
         .updateInvoiceItem(itemId: itemId, invoiceItem: invoiceItem)
         .then(
       (updated) {
-        Navigator.pop(context); // Pop to Invoice detail page;
+        Navigator.pop(context); // Dismiss the loader.
 
         if (updated) {
           Navigator.pop(context, true); // Pop to Invoice detail page;

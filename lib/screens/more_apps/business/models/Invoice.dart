@@ -1,6 +1,6 @@
 import 'Item.dart';
 
-class Invoice {
+class InvoiceModel {
   int? amount;
   String? createdAt;
   String? currency;
@@ -14,7 +14,7 @@ class Invoice {
   String? toCustomer;
   String? toCustomerAvatar;
 
-  Invoice(
+  InvoiceModel(
       {this.amount,
       this.createdAt,
       this.currency,
@@ -28,8 +28,8 @@ class Invoice {
       this.toCustomer,
       this.toCustomerAvatar});
 
-  factory Invoice.fromJson(Map<String, dynamic> json) {
-    return Invoice(
+  factory InvoiceModel.fromJson(Map<String, dynamic> json) {
+    return InvoiceModel(
       amount: json['amount'],
       createdAt: json['created_at'],
       currency: json['currency'],

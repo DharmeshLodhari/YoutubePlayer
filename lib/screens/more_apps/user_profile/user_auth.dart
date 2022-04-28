@@ -257,15 +257,17 @@ class UserAuth extends AuthService {
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       var resetToken = jsonData['reset-token'];
-      result = resetToken;
+
+      if (resetToken != null) {
+        return resetToken;
+      } else {
+        return 'Successful';
+      }
     } else {
-      debugPrint("DATA SENT:- $data");
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-      throw jsonData;
+      return Future.error(jsonData);
     }
-
-    return result;
   }
 
   // it will verify the phone number to  OTP

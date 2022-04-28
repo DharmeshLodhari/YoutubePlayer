@@ -21,9 +21,7 @@ import '../../user_auth.dart';
 // ignore: must_be_immutable
 class UserQRCodeScreen extends StatefulWidget {
   CustomerProfile? user;
-  UserQRCodeScreen({
-    required this.user,
-  });
+  UserQRCodeScreen({required this.user});
 
   @override
   _UserQRCodeScreenState createState() => _UserQRCodeScreenState();
@@ -123,7 +121,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                 displayUserInfo(),
                 SizedBox(height: 30),
                 // displayPaymentButtons(),
-                displayUserProfileUpgradeOptions(),
               ],
             ),
           ),
@@ -633,31 +630,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         ),
       ),
     );
-  }
-
-  Widget displayUserProfileUpgradeOptions() {
-    if (userBloc.user.userName == widget.user!.userName) {
-      return userBloc.user.type == "User"
-          ? CurvedButton(
-              backgroundColor: navyBlue,
-              onPressed: upgradeAccount,
-              text: "Upgrade Profile",
-              textColor: Colors.white,
-            )
-          : Container();
-    }
-    return Container();
-  }
-
-  void upgradeAccount() async {
-    Navigator.pushNamed(context, "/choose-subscriptions");
-
-    // await getAccountBalance();
-    // if (accountBalance! > 0) {
-    //   Navigator.pushNamed(context, "/upgrade-user-profile");
-    // } else {
-    //   showToast(message: "Insufficient funds!!");
-    // }
   }
 
   Future<void> getAccountBalance() async {

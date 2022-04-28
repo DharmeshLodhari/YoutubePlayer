@@ -16,7 +16,7 @@ import '../business_auth.dart';
 
 // ignore: must_be_immutable
 class ContractTile extends StatefulWidget {
-  final Contract contract;
+  final ContractModel contract;
 
   ContractTile({required this.contract});
 
@@ -259,7 +259,7 @@ class _ContractTileState extends State<ContractTile> {
 }
 
 class InvoiceTile extends StatefulWidget {
-  final Invoice invoice;
+  final InvoiceModel invoice;
   final Function? onTap;
 
   InvoiceTile({required this.invoice, this.onTap});

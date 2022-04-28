@@ -115,7 +115,6 @@ class _MyContractAndInvoiceScreenState
               CustomizedPopUpMenuItem(title: "Unpaid", value: "Unpaid"),
             ],
       selectedIndex: selectedMenuItemIndex,
-      right: 16,
     );
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;

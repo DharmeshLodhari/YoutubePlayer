@@ -18,9 +18,9 @@ class ContractBloc extends ChangeNotifier {
   bool isFirstTime = true;
   String errorMessage = "";
   bool isRefreshing = false;
-  List<Contract> contractList = [];
+  List<ContractModel> contractList = [];
 
-  Future<List<Contract>?> getContractList(
+  Future<List<ContractModel>?> getContractList(
       {ContractStatus? contractStatus}) async {
     if (isRefreshing) {
       count = 0;
@@ -29,8 +29,6 @@ class ContractBloc extends ChangeNotifier {
       contractList = [];
       isFirstTime = true;
       noItemInList = false;
-
-      print('CONTRACT IS REFRESHING :::: $isRefreshing');
     }
     isRefreshing = false;
 

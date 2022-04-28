@@ -430,7 +430,8 @@ class _UserDashboardState extends State<UserDashboard> {
           onTap: () {
             hideBalance();
             if (!storeLocked) {
-              Navigator.of(context).pushNamed(Routes.CONTRACTS);
+              // Navigator.of(context).pushNamed(Routes.CONTRACTS);
+              businessAndroidSheet();
             }
           },
           iconColor: HexColor("#5218E9"),
@@ -460,6 +461,34 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(child: Container()),
       ],
     );
+  }
+
+  void businessAndroidSheet() {
+    androidBottomSheet(
+        context: context,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            bottomSheetItem(
+              title: 'Contract',
+              iconData: SlydoAppIcon.transactions,
+              onTap: () {
+                hideBalance();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, Routes.CONTRACT);
+              },
+            ),
+            bottomSheetItem(
+              title: "Invoice",
+              iconData: SlydoAppIcon.receive,
+              onTap: () {
+                hideBalance();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, Routes.INVOICE);
+              },
+            ),
+          ],
+        ));
   }
 
   Widget appVersionDataUI() {
@@ -655,48 +684,49 @@ class _UserDashboardState extends State<UserDashboard> {
 
   void profileAndroidSheet() {
     androidBottomSheet(
-        context: context,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            bottomSheetItem(
-              title: AppLocalization.of(context)!.myProfile,
-              icon: SlydoAppIcon.user,
-              onTap: () async {
-                await UserAuth()
-                    .fetchCustomerProfile(userBloc.user.userName)
-                    .then((user) {
-                  if (mounted) {
-                    Navigator.pop(myGlobals.navigationKey.currentContext!);
-                    Navigator.pushNamed(
-                        myGlobals.navigationKey.currentContext!, '/profile',
-                        arguments: {"searchedUserName": user.userName});
-                  }
-                });
-              },
-            ),
-            bottomSheetItem(
-              title: AppLocalization.of(context)!.updateMyAvatar,
-              icon: SlydoAppIcon.image,
-              onTap: () {
-                Navigator.pop(context);
-                pickImage();
-              },
-            ),
-            bottomSheetItem(
-              title: "Billing address",
-              icon: SlydoAppIcon.location,
-              isLast: true,
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(
-                  context,
-                  Routes.USER_ADDRESS,
-                );
-              },
-            ),
-          ],
-        ));
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.myProfile,
+            iconData: SlydoAppIcon.user,
+            onTap: () async {
+              await UserAuth()
+                  .fetchCustomerProfile(userBloc.user.userName)
+                  .then((user) {
+                if (mounted) {
+                  Navigator.pop(myGlobals.navigationKey.currentContext!);
+                  Navigator.pushNamed(
+                      myGlobals.navigationKey.currentContext!, '/profile',
+                      arguments: {"searchedUserName": user.userName});
+                }
+              });
+            },
+          ),
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.updateMyAvatar,
+            iconData: SlydoAppIcon.image,
+            onTap: () {
+              Navigator.pop(context);
+              pickImage();
+            },
+          ),
+          bottomSheetItem(
+            title: "Billing address",
+            iconData: SlydoAppIcon.location,
+            isLast: true,
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                Routes.USER_ADDRESS,
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   void transactionAndroidSheet() {
@@ -707,7 +737,7 @@ class _UserDashboardState extends State<UserDashboard> {
           children: <Widget>[
             bottomSheetItem(
               title: AppLocalization.of(context)!.myTransaction,
-              icon: SlydoAppIcon.transactions,
+              iconData: SlydoAppIcon.transactions,
               onTap: () {
                 hideBalance();
                 BottomSheetPassCode(
@@ -723,7 +753,7 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             bottomSheetItem(
               title: "My Payment Request",
-              icon: SlydoAppIcon.receive,
+              iconData: SlydoAppIcon.receive,
               onTap: () {
                 hideBalance();
                 Navigator.pushNamed(context, "/accounts");
@@ -754,7 +784,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 children: <Widget>[
                   bottomSheetItem(
                     title: AppLocalization.of(context)!.bankAccounts,
-                    icon: SlydoAppIcon.bank,
+                    iconData: SlydoAppIcon.bank,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, "/bank-account-list");
@@ -762,7 +792,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   ),
                   bottomSheetItem(
                     title: AppLocalization.of(context)!.cashOut,
-                    icon: SlydoAppIcon.payout,
+                    iconData: SlydoAppIcon.payout,
                     onTap: () {
                       BottomSheetPassCode(
                           context: context,
@@ -784,7 +814,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   ),
                   bottomSheetItem(
                     title: "Cashout transactions",
-                    icon: SlydoAppIcon.payout_list,
+                    iconData: SlydoAppIcon.payout_list,
                     isLast: true,
                     onTap: () {
                       BottomSheetPassCode(
@@ -947,7 +977,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   children: <Widget>[
                     bottomSheetItem(
                       title: "Add product",
-                      icon: SlydoAppIcon.product,
+                      iconData: SlydoAppIcon.product,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, '/add-product');
@@ -955,7 +985,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     bottomSheetItem(
                       title: "Add service",
-                      icon: SlydoAppIcon.note_2,
+                      iconData: SlydoAppIcon.note_2,
                       isLast: true,
                       onTap: () {
                         Navigator.pop(context);

@@ -32,7 +32,7 @@ class InvoiceDetail extends StatefulWidget {
 
 class _InvoiceDetailState extends State<InvoiceDetail> {
   var arguments;
-  late Invoice invoice;
+  late InvoiceModel invoice;
   bool isLoading = false;
   late UserBloc userBloc;
 
@@ -76,7 +76,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+        body: isLoading ? LoadingIndicator() : scaffoldBody(),
       ),
     );
   }

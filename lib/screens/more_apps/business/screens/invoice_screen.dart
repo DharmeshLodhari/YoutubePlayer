@@ -1,8 +1,3 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
-import 'package:Slydo/screens/more_apps/business/tiles/contract_and_invoice_tile.dart';
-import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -10,25 +5,41 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../data/state_notifier.dart';
+import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../utils/enums.dart';
+import '../../../../utils/slydo_app_icon_icons.dart';
+import '../../../../utils/util.dart';
+import '../../../../widget/customized_popup_menu.dart';
+import '../../../../widget/noItemInList.dart';
+import '../../../../widget/rounded_background_icon.dart';
 import '../../../../widget/slide_action_button.dart';
+import '../bloc/invoice_bloc.dart';
 import '../business_auth.dart';
 import '../models/Invoice.dart';
+import '../tiles/contract_and_invoice_tile.dart';
 
-class InvoiceList extends StatefulWidget {
-  InvoiceList();
+class InvoiceScreen extends StatefulWidget {
+  const InvoiceScreen({Key? key}) : super(key: key);
+
   @override
-  _InvoiceListState createState() => _InvoiceListState();
+  State<InvoiceScreen> createState() => _InvoiceScreenState();
 }
 
-class _InvoiceListState extends State<InvoiceList> {
+class _InvoiceScreenState extends State<InvoiceScreen> {
   late UserBloc userBloc;
-  ScrollController _scrollController = ScrollController();
+  bool isPopMenuOpen = false;
   late InvoiceBloc invoiceBloc;
-  SlidableController? _slideController;
+  late CustomizedPopUpMenu menu;
+  bool contractIsSwitched = true;
+  int selectedMenuItemIndex = 0;
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  GlobalKey _key = LabeledGlobalKey("myInvoiceList");
+
+  SlidableController? _slideController;
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -37,6 +48,7 @@ class _InvoiceListState extends State<InvoiceList> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
+    Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
     Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
 
     super.initState();
@@ -56,6 +68,207 @@ class _InvoiceListState extends State<InvoiceList> {
     super.dispose();
   }
 
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Invoice",
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        maxLines: 1,
+      ),
+      actions: [
+        Row(
+          children: [
+            Text(
+              'In',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            appBarSwitch(),
+            Text(
+              'Out',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(width: 10.0),
+        addContractButton(),
+        SizedBox(width: 10.0),
+        popUpMenuButton(),
+        SizedBox(width: 16)
+      ],
+    );
+  }
+
+  Widget appBarSwitch() {
+    return Switch(
+      activeColor: navyBlue,
+      value: contractIsSwitched,
+      onChanged: (value) {
+        setState(() => contractIsSwitched = value);
+        invoiceBloc.isRefreshing = true;
+        invoiceBloc.invoiceIsSwitched = value;
+        invoiceBloc.getInvoiceList();
+      },
+    );
+  }
+
+  Widget addContractButton() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.add,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () async {
+        var contractAdded =
+            await Navigator.of(context).pushNamed(Routes.ADD_INVOICE);
+        print('CONTRACT ADDED ::: $contractAdded');
+
+        if (contractAdded == true) {
+          invoiceBloc.isRefreshing = true;
+          invoiceBloc.getInvoiceList();
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget popUpMenuButton() {
+    return SizedBox(
+      key: _key,
+      height: 34,
+      width: 34,
+      child: Card(
+        color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.filter_alt_rounded,
+            color: isPopMenuOpen ? Colors.white : Colors.black,
+            size: 20,
+          ),
+          onPressed: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    setState(() {});
+
+    filterStatementForInvoicePage(value);
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    invoiceBloc = Provider.of<InvoiceBloc>(context);
+
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "All", value: "All"),
+        CustomizedPopUpMenuItem(title: "Paid", value: "Paid"),
+        CustomizedPopUpMenuItem(title: "Drafts", value: "Draft"),
+        CustomizedPopUpMenuItem(title: "Unpaid", value: "Unpaid"),
+      ],
+      right: 16,
+      selectedIndex: selectedMenuItemIndex,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
+
+    return WillPopScope(
+      onWillPop: () async {
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: appBar() as PreferredSizeWidget?,
+        backgroundColor: Colors.white,
+        body: _scaffoldBody(),
+      ),
+    );
+  }
+
+  filterStatementForInvoicePage(String value) {
+    invoiceBloc.noItemInList = false;
+    invoiceBloc.isRefreshing = true;
+
+    switch (value) {
+      case "Draft":
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Draft);
+        break;
+
+      case "Paid":
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Paid);
+        break;
+
+      case "Unpaid":
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Unpaid);
+        break;
+
+      default:
+        invoiceBloc.getInvoiceList();
+    }
+  }
+
+  Widget _scaffoldBody() {
+    return Consumer<InvoiceBloc>(builder: (context, invoiceBloc, _) {
+      return SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: getConsumerChildWidget(invoiceBloc),
+      );
+    });
+  }
+
   void _onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
@@ -71,37 +284,6 @@ class _InvoiceListState extends State<InvoiceList> {
 
         _refreshController.refreshCompleted();
       }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    userBloc = Provider.of<UserBloc>(context);
-    invoiceBloc = Provider.of<InvoiceBloc>(context);
-
-    return WillPopScope(
-      onWillPop: () async {
-        return Future.value(true);
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: _scaffoldBody(),
-      ),
-    );
-  }
-
-  Widget _scaffoldBody() {
-    return Consumer<InvoiceBloc>(builder: (context, invoiceBloc, _) {
-      return SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        child: getConsumerChildWidget(invoiceBloc),
-      );
     });
   }
 
@@ -221,8 +403,6 @@ class _InvoiceListState extends State<InvoiceList> {
   }
 
   void updateInvoiceStatus(InvoiceModel invoice, String action) {
-    print('INVOICE ::: ${invoice.status}');
-    print('ACTION :: $action');
     if (invoice.status == "Unpaid") {
       BusinessAuth().markInvoiceAsPaid(invoiceId: invoice.id!).then((value) {
         // invoice.status = action;

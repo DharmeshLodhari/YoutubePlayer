@@ -14,11 +14,11 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../widget/LoadingIndicator.dart';
 import '../../../../search_user.dart';
@@ -50,7 +50,7 @@ class _AddInvoiceState extends State<AddInvoice> {
   bool isValidPayee = false;
   int? amount;
 
-  Invoice? invoice;
+  InvoiceModel? invoice;
 
   String errorMessage = "";
   String? recipient;
@@ -60,6 +60,7 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   PaymentDuration? selectedDuration;
   late AddInvoiceBloc _addInvoiceBloc;
+  String? conversationId;
 
   @override
   void initState() {
@@ -217,7 +218,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                                   InkWell(
                                     onTap: () {
                                       Navigator.of(context)
-                                          .pushNamed("/add-invoice-item");
+                                          .pushNamed(Routes.ADD_INVOICE_ITEM);
                                     },
                                     child: Icon(Icons.add, size: 18),
                                   )
@@ -288,7 +289,7 @@ class _AddInvoiceState extends State<AddInvoice> {
                 .map(
                   (indexedValue) => ListTile(
                     onTap: () {
-                      Navigator.pushNamed(context, "/edit-invoice-item",
+                      Navigator.pushNamed(context, Routes.EDIT_INVOICE_ITEM,
                           arguments: {"index": indexedValue.index});
                     },
                     dense: true,
@@ -846,6 +847,15 @@ class _AddInvoiceState extends State<AddInvoice> {
               showToast(message: 'Please add an item');
               return;
             }
+            await BusinessAuth()
+                .getConversationId(name: _recipientController.text)
+                .then(
+              (value) {
+                if (value != null) {
+                  conversationId = value;
+                }
+              },
+            );
             var data = {
               "from_customer": userBloc.user.userName,
               "to_customer": _recipientController.text.trim(),
@@ -854,6 +864,10 @@ class _AddInvoiceState extends State<AddInvoice> {
               "due_date": dateToString(dueDate),
               "items": invoiceItem
             };
+
+            if (conversationId != null) {
+              data['conversation_id'] = conversationId!;
+            }
 
             showDialog(
                 context: context,

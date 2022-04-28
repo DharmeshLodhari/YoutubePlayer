@@ -378,7 +378,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.share,
-          icon: SlydoAppIcon.share,
+          iconData: SlydoAppIcon.share,
           onTap: () {
             Navigator.pop(context);
             var shareBody =
@@ -393,7 +393,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       list.add(
         bottomSheetItem(
           title: "Share in Chat",
-          icon: SlydoAppIcon.text_message,
+          iconData: SlydoAppIcon.text_message,
           onTap: () async {
             Navigator.pop(context);
             sendPostToUserInChat();
@@ -406,7 +406,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.editPost,
-          icon: SlydoAppIcon.edit,
+          iconData: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context);
             final isBlogUpdated = await Navigator.pushNamed(
@@ -424,7 +424,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.deletePost,
-          icon: SlydoAppIcon.delete,
+          iconData: SlydoAppIcon.delete,
           onTap: () {
             Navigator.pop(context);
             showDialogBox(

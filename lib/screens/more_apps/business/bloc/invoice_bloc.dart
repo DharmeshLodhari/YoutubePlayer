@@ -18,9 +18,10 @@ class InvoiceBloc extends ChangeNotifier {
   bool isFirstTime = true;
   String errorMessage = "";
   bool isRefreshing = false;
-  List<Invoice> invoiceList = [];
+  List<InvoiceModel> invoiceList = [];
 
-  Future<List<Invoice>?> getInvoiceList({InvoiceStatus? invoiceStatus}) async {
+  Future<List<InvoiceModel>?> getInvoiceList(
+      {InvoiceStatus? invoiceStatus}) async {
     if (isRefreshing) {
       count = 0;
       next = "";

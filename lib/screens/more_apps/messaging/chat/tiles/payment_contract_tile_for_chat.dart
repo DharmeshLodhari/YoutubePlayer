@@ -28,7 +28,7 @@ class PostTileForPaymentContract extends StatefulWidget {
 
 class _PostTileForPaymentContractState
     extends State<PostTileForPaymentContract> {
-  late Contract contract;
+  late ContractModel contract;
   late UserBloc userBloc;
   int amountLength =
       10000000000; // If the contract amount is greater than this, the amount shown will be truncated.
@@ -45,24 +45,24 @@ class _PostTileForPaymentContractState
       data = widget.message!['meta_data'];
     }
 
-    contract = Contract.fromJson(data!);
+    contract = ContractModel.fromJson(data!);
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
 
-    bool isSend = widget.message!["author"] == userBloc.user.userName;
+    bool isSender = widget.message!["author"] == userBloc.user.userName;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+              isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend ? Container() : Container(width: 20),
+            isSender ? Container() : Container(width: 20),
             Container(
               constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.30,
@@ -70,10 +70,10 @@ class _PostTileForPaymentContractState
                   minHeight: 50),
               child: getPaymentContractTile(),
             ),
-            isSend
+            isSender
                 ? Container(
                     width: 20,
-                    child: isSend
+                    child: isSender
                         ? Center(
                             child: getMessageTick(message: widget.message!),
                           )
@@ -87,19 +87,15 @@ class _PostTileForPaymentContractState
         ),
         Row(
           mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+              isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
+            isSender ? Container() : SizedBox(width: 20),
             Text(
               formatTime(widget.message!['created_at']),
               style: TextStyle(
                   color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
             ),
-            isSend
+            isSender
                 ? SizedBox(
                     width: 20,
                   )
@@ -144,7 +140,7 @@ class _PostTileForPaymentContractState
                   SizedBox(
                     width: 100,
                     child: Text(
-                      'contract.contractor! lsjfksjfkjsdkjfklsj fkljs dkfljs dk',
+                      contract.contractor!,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 18,

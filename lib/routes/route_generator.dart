@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/business/forms/invoice/edit_invoice_item
 import 'package:Slydo/screens/more_apps/business/screens/contract_detail.dart';
 import 'package:Slydo/screens/more_apps/business/screens/contract_transaction_history.dart';
 import 'package:Slydo/screens/more_apps/business/screens/invoice_detail.dart';
+import 'package:Slydo/screens/more_apps/business/screens/invoice_screen.dart';
 import 'package:Slydo/screens/more_apps/events/event_dashboard.dart';
 import 'package:Slydo/screens/more_apps/events/event_detail_page.dart';
 import 'package:Slydo/screens/more_apps/events/event_ticket_detail.dart';
@@ -146,6 +147,7 @@ import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
+import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/business/screens/my_contract_and_invoice_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 
@@ -886,6 +888,22 @@ class RouteGenerator {
       case Routes.CONTRACTS:
         return PageTransition(
           child: MyContractAndInvoiceScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.INVOICE:
+        return PageTransition(
+          child: InvoiceScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.CONTRACT:
+        return PageTransition(
+          child: ContractScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
