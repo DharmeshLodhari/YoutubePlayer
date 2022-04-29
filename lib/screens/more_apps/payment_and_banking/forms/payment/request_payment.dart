@@ -189,9 +189,12 @@ class _RequestPaymentState extends State<RequestPayment> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.requestPayment,
+        "Request Payment",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       actions: <Widget>[
         scanQRCodeBtn(),

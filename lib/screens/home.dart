@@ -247,7 +247,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed('/message-list');
+                    Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
                   },
                 ),
               ),

@@ -330,6 +330,7 @@ class _SignUpState extends State<SignUp> {
       labelText: "Username",
       keyboardType: TextInputType.text,
       validator: userNameValidator,
+      helperText: 'You have to add a number',
     );
   }
 

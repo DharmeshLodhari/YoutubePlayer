@@ -471,7 +471,7 @@ class _UserDashboardState extends State<UserDashboard> {
           children: <Widget>[
             bottomSheetItem(
               title: 'Contract',
-              iconData: SlydoAppIcon.transactions,
+              iconData: Icons.description_rounded,
               onTap: () {
                 hideBalance();
                 Navigator.pop(context);
@@ -480,7 +480,7 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             bottomSheetItem(
               title: "Invoice",
-              iconData: SlydoAppIcon.receive,
+              iconData: Icons.receipt_outlined,
               onTap: () {
                 hideBalance();
                 Navigator.pop(context);

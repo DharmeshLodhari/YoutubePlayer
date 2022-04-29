@@ -823,7 +823,8 @@ class PaymentAndBankingAuth extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/transactions/fees/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    debugPrint("Response ${response.statusCode}");
+    debugPrint("Fee Structure Response status code ${response.statusCode}");
+    debugPrint("Fee Structure Response body ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return FeeStructure.fromJson(jsonDecode(response.body));
     } else {

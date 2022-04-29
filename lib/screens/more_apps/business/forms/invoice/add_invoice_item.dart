@@ -377,7 +377,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
             _invoiceItem!.amount = int.parse(_amountController.text
                 .replaceAll(",", "")
                 .split('.')[0]
-                .trim());
+                .trim()) * 100;
             _invoiceItem!.currency = userBloc.user.currency;
 
             addInvoiceBloc.addItem(invoiceItem: _invoiceItem);

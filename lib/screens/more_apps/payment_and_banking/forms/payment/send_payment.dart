@@ -241,7 +241,7 @@ class _SendPaymentState extends State<SendPayment> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.sendPayment,
+        'Send Payment',
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -800,122 +800,120 @@ class _SendPaymentState extends State<SendPayment> {
         feeStructure.getFeeWithTax(type: FeesType.ANONYMOUS_TRANSACTION_FEE);
 
     showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) =>
-            StatefulBuilder(builder: (context, rentDurationStateSetter) {
-              return AlertDialog(
-                insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                contentPadding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                content: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width - 40,
-                      child: Card(
-                        elevation: 2,
-                        shadowColor: Colors.transparent,
-                        margin: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: EdgeInsets.only(top: 16, bottom: 8),
+      barrierDismissible: false,
+      context: context,
+      builder: (context) =>
+          StatefulBuilder(builder: (context, rentDurationStateSetter) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          contentPadding: EdgeInsets.zero,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          content: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        color: Colors.white,
-                                        child: Text(
-                                          "Note",
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                              color: blackFont,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 12,
-                                      ),
-                                      Container(
-                                        color: Colors.white,
-                                        child: Text(
-                                          "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you ₦$anonymousFee.",
-                                          style: TextStyle(
-                                              color: blackFont,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              fontFamily: "Roberto"),
-                                          textAlign: TextAlign.justify,
-                                        ),
-                                      ),
-                                    ],
+                                  color: Colors.white,
+                                  child: Text(
+                                    "Note",
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700),
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(
-                                      child: Text("OK",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: blackFont,
-                                              fontWeight: FontWeight.w600)),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    )
-                                  ],
-                                )
+                                SizedBox(
+                                  height: 12,
+                                ),
+                                Container(
+                                  color: Colors.white,
+                                  child: Text(
+                                    "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you ₦$anonymousFee.",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: "Roberto"),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                child: Text("OK",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: blackFont,
+                                        fontWeight: FontWeight.w600)),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              )
+                            ],
+                          )
+                        ],
                       ),
                     ),
-                    Positioned(
-                      left: (MediaQuery.of(context).size.width - 100) / 2,
-                      top: -30,
-                      child: ClipOval(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border:
-                                  Border.all(color: dividerColor, width: 1.5),
-                              borderRadius: BorderRadius.circular(60)),
-                          height: 60,
-                          width: 60,
-                          child: Center(
-                            child: Image.asset(
-                              "assets/images/anonymous.png",
-                              height: 45,
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                  ),
                 ),
-              );
-            }));
+              ),
+              Positioned(
+                left: (MediaQuery.of(context).size.width - 100) / 2,
+                top: -30,
+                child: ClipOval(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: dividerColor, width: 1.5),
+                        borderRadius: BorderRadius.circular(60)),
+                    height: 60,
+                    width: 60,
+                    child: Center(
+                      child: Image.asset(
+                        "assets/images/anonymous.png",
+                        height: 45,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      }),
+    );
   }
 
   Widget getSubmitButton() {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
@@ -9,15 +11,19 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:Slydo/services/auth.dart';
 
+import '../../../../data/environment.dart';
 import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/curved_btn.dart';
-import '../bloc/invoice_bloc.dart';
+
 import '../business_auth.dart';
 import '../forms/invoice/add_invoice_item.dart';
 import '../models/Invoice.dart';
+import 'package:dio/dio.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {
@@ -35,6 +41,11 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   late InvoiceModel invoice;
   bool isLoading = false;
   late UserBloc userBloc;
+  // var imageUrl =
+  //     "https://www.itl.cat/pngfile/big/10-100326_desktop-wallpaper-hd-full-screen-free-download-full.jpg";
+  bool downloading = true;
+  String downloadingStr = "No data";
+  String savePath = "";
 
   _InvoiceDetailState({this.arguments});
 
@@ -76,7 +87,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
-        body: isLoading ? LoadingIndicator() : scaffoldBody(),
+        body: isLoading ? CircularLoadingIndicator() : scaffoldBody(),
       ),
     );
   }
@@ -106,7 +117,11 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         1 == 1
             ? IconButton(
                 icon: Icon(Icons.download_rounded, color: navyBlue),
-                onPressed: () {},
+                onPressed: invoice != null
+                    ? () {
+                        downloadFile(invoice);
+                      }
+                    : null,
               )
             : SizedBox.shrink(),
         // openGraphBtn(),
@@ -149,6 +164,8 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
+                  downloading ? CircularLoadingIndicator() : SizedBox.shrink(),
+                  Text(downloadingStr),
                   displayContractInfo(),
                   SizedBox(height: 14),
                   canPayForInvoice
@@ -433,6 +450,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                   ),
                   SizedBox(width: 8),
                   Text(
+
                     worldCurrencies[invoice.currency!]!,
                     style: TextStyle(
                         color: blackFont,
@@ -605,5 +623,46 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
       showToast(message: "Something went wrong, please try again.");
     });
+  }
+
+  Future downloadFile(InvoiceModel invoice) async {
+    try {
+      Dio dio = Dio();
+
+      String pdfUrl =
+          "${AppConfig.baseUrl}/api/v1/transactions/invoice/download/38/?download=true";
+
+      String fileName = '${invoice.id}.pdf';
+
+      var headers = await getAuthHeaders();
+
+      savePath = await getFilePath(fileName);
+      await dio.download(pdfUrl, savePath,
+          options: Options(
+              // headers: headers,
+              ), onReceiveProgress: (rec, total) {
+        setState(() {
+          downloading = true;
+          // download = (rec / total) * 100;
+          downloadingStr = "Downloading Image : $rec";
+        });
+      });
+      setState(() {
+        downloading = false;
+        downloadingStr = "Completed";
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<String> getFilePath(uniqueFileName) async {
+    String path = '';
+
+    Directory dir = await getApplicationDocumentsDirectory();
+
+    path = '${dir.path}/$uniqueFileName';
+
+    return path;
   }
 }

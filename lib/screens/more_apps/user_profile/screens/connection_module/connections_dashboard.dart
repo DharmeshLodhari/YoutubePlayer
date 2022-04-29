@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'block_list.dart';
@@ -184,9 +184,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       //   width: 8,
       // ),
       createGroupBtn(),
-      SizedBox(
-        width: 16,
-      ),
+      SizedBox(width: 16),
     ];
 
     return list;
@@ -202,7 +200,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         color: blackFont,
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("/select-user-for-group");
+        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
       },
       backgroundColor: lightGrey,
       enableMargin: true,
