@@ -226,6 +226,13 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     return CustomizedTextFormField(
       labelText: "Item description",
       controller: _descriptionController,
+      validator: (value) {
+        if (value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Field cannot be empty';
+        }
+      },
     );
   }
 
@@ -356,8 +363,11 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     if (_formKey.currentState!.validate()) {
       if (widget.invoiceItem != null) {
         InvoiceItem invoiceItem = InvoiceItem(
-          amount: int.parse(
-              _amountController.text.trim().replaceAll(',', '').split('.')[0]),
+          amount: int.parse(_amountController.text
+                  .trim()
+                  .replaceAll(',', '')
+                  .split('.')[0]) *
+              100,
           quantity: _invoiceItem!.quantity,
           currency: userBloc.user.currency,
           name: _descriptionController.text.trim(),
@@ -377,7 +387,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
             _invoiceItem!.amount = int.parse(_amountController.text
                 .replaceAll(",", "")
                 .split('.')[0]
-                .trim()) * 100;
+                .trim());
             _invoiceItem!.currency = userBloc.user.currency;
 
             addInvoiceBloc.addItem(invoiceItem: _invoiceItem);

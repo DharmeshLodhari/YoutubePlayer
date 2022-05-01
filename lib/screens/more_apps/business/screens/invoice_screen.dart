@@ -93,25 +93,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         maxLines: 1,
       ),
       actions: [
-        Row(
-          children: [
-            Text(
-              'In',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            appBarSwitch(),
-            Text(
-              'Out',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+        appBarSwitch(),
         SizedBox(width: 10.0),
         addContractButton(),
         SizedBox(width: 10.0),
@@ -123,6 +105,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget appBarSwitch() {
     return Switch(
+      activeThumbImage: AssetImage(
+        'assets/images/outgoing_arrow.png',
+      ),
+      inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
       activeColor: navyBlue,
       value: contractIsSwitched,
       onChanged: (value) {
@@ -130,6 +116,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         invoiceBloc.isRefreshing = true;
         invoiceBloc.invoiceIsSwitched = value;
         invoiceBloc.getInvoiceList();
+        if (value == true) {
+          showSnackbar(context, message: 'These are your outgoing invoice');
+        } else {
+          showSnackbar(context, message: 'These are your incoming invoice');
+        }
       },
     );
   }
@@ -144,11 +135,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         color: blackFont,
       ),
       onTap: () async {
-        var contractAdded =
+        var invoiceAdded =
             await Navigator.of(context).pushNamed(Routes.ADD_INVOICE);
-        print('CONTRACT ADDED ::: $contractAdded');
+        print('INVOICE ADDED ::: $invoiceAdded');
 
-        if (contractAdded == true) {
+        if (invoiceAdded == true) {
           invoiceBloc.isRefreshing = true;
           invoiceBloc.getInvoiceList();
         }

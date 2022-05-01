@@ -283,96 +283,103 @@ class _AddInvoiceState extends State<AddInvoice> {
   }
 
   Widget getInvoiceItems() {
-    return _addInvoiceBloc.items.length != 0
-        ? Column(
-            children: enumerate(_addInvoiceBloc.items)
-                .map(
-                  (indexedValue) => ListTile(
-                    onTap: () {
-                      Navigator.pushNamed(context, Routes.EDIT_INVOICE_ITEM,
-                          arguments: {"index": indexedValue.index});
-                    },
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      indexedValue.value!.name!,
-                      style: TextStyle(fontSize: 14, color: blackFont),
-                      textAlign: TextAlign.justify,
+    if (_addInvoiceBloc.items.length != 0) {
+      if (mounted) {
+        setState(() {
+          errorMessage = '';
+        });
+      }
+      return Column(
+        children: enumerate(_addInvoiceBloc.items)
+            .map(
+              (indexedValue) => ListTile(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.EDIT_INVOICE_ITEM,
+                      arguments: {"index": indexedValue.index});
+                },
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  indexedValue.value!.name!,
+                  style: TextStyle(fontSize: 14, color: blackFont),
+                  textAlign: TextAlign.justify,
+                ),
+                subtitle: Row(
+                  children: [
+                    Text(
+                      "Qty : ",
+                      style: TextStyle(fontSize: 12, color: darkGrey),
                     ),
-                    subtitle: Row(
+                    Text(
+                      indexedValue.value!.quantity.toString(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      "Unit price : ",
+                      style: TextStyle(fontSize: 12, color: darkGrey),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Qty : ",
-                          style: TextStyle(fontSize: 12, color: darkGrey),
+                          "₦",
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              color: blackFont,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
                         ),
                         Text(
-                          indexedValue.value!.quantity.toString(),
+                          indexedValue.value!.amount.toString(),
                           style: TextStyle(
                             fontSize: 12,
                             color: blackFont,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "Unit price : ",
-                          style: TextStyle(fontSize: 12, color: darkGrey),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "₦",
-                              style: TextStyle(
-                                  fontFamily: "Roboto",
-                                  color: blackFont,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                            Text(
-                              indexedValue.value!.amount.toString(),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: blackFont,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "₦",
-                          style: TextStyle(
-                              fontFamily: "Roboto",
-                              color: navyBlue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        ),
-                        Text(
-                          (indexedValue.value!.amount! *
-                                  indexedValue.value!.quantity!)
-                              .toString(),
-                          style: TextStyle(
-                              color: navyBlue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        ),
-                      ],
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "₦",
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          color: navyBlue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
                     ),
-                  ),
-                )
-                .toList(),
-          )
-        : Container(
-            child: Center(child: Text("No item")),
-            height: 100,
-          );
+                    Text(
+                      (indexedValue.value!.amount! *
+                              indexedValue.value!.quantity!)
+                          .toString(),
+                      style: TextStyle(
+                          color: navyBlue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+      );
+    } else {
+      return Container(
+        child: Center(child: Text("No item")),
+        height: 100,
+      );
+    }
   }
 
   Widget getInvoiceTotal() {
@@ -515,7 +522,10 @@ class _AddInvoiceState extends State<AddInvoice> {
           _payee = userFound;
           isValidPayee = _payee!.userName != userBloc.user.userName;
           _recipientController.text = _payee!.userName!;
-          if (mounted) setState(() {});
+          if (mounted)
+            setState(() {
+              errorMessage = "";
+            });
         }
       },
     );
@@ -832,8 +842,14 @@ class _AddInvoiceState extends State<AddInvoice> {
       if (isValidPayee == false) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
-          return;
         });
+        return;
+      }
+      if (_addInvoiceBloc.items.isEmpty) {
+        setState(() {
+          errorMessage = AppLocalization.of(context)!.addItems;
+        });
+        return;
       }
 
       if (isValidPayee && _formKey.currentState!.validate()) {
@@ -843,10 +859,6 @@ class _AddInvoiceState extends State<AddInvoice> {
 
             invoiceItem = _addInvoiceBloc.items;
 
-            if (invoiceItem.isEmpty) {
-              showToast(message: 'Please add an item');
-              return;
-            }
             await BusinessAuth()
                 .getConversationId(name: _recipientController.text)
                 .then(
@@ -865,6 +877,13 @@ class _AddInvoiceState extends State<AddInvoice> {
               "items": invoiceItem
             };
 
+            invoiceItem.forEach(
+              (item) {
+                print('AMOUNT PR ::: ${item!.amount}');
+                int index = invoiceItem.indexOf(item);
+                invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
+              },
+            );
             if (conversationId != null) {
               data['conversation_id'] = conversationId!;
             }

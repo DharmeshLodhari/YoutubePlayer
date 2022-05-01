@@ -209,6 +209,13 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
     return CustomizedTextFormField(
       labelText: "Item description",
       controller: _descriptionController,
+      validator: (value) {
+        if (value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Field cannot be empty';
+        }
+      },
     );
   }
 
@@ -336,6 +343,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
             _amountController.text.replaceAll(',', '').split('.')[0].trim());
         _invoiceItem!.currency = userBloc.user.currency;
 
+        print('INVOICE AMOUUNT SENT =------> ${_invoiceItem!.amount}');
         addInvoiceBloc.updateItem(index: itemIndex!, invoiceItem: _invoiceItem);
 
         ///

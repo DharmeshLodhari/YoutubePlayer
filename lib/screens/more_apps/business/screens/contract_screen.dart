@@ -96,25 +96,7 @@ class _ContractScreenState extends State<ContractScreen> {
         maxLines: 1,
       ),
       actions: [
-        Row(
-          children: [
-            Text(
-              'In',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            appBarSwitch(),
-            Text(
-              'Out',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+        appBarSwitch(),
         SizedBox(width: 10.0),
         addContractButton(),
         SizedBox(width: 10.0),
@@ -126,6 +108,10 @@ class _ContractScreenState extends State<ContractScreen> {
 
   Widget appBarSwitch() {
     return Switch(
+      activeThumbImage: AssetImage(
+        'assets/images/outgoing_arrow.png',
+      ),
+      inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
       activeColor: navyBlue,
       value: contractIsSwitched,
       onChanged: (value) {
@@ -133,6 +119,11 @@ class _ContractScreenState extends State<ContractScreen> {
         contractBloc.isRefreshing = true;
         contractBloc.contractIsSwitched = value;
         contractBloc.getContractList();
+        if (value == true) {
+          showSnackbar(context, message: 'These are your outgoing contracts');
+        } else {
+          showSnackbar(context, message: 'These are your incoming contracts');
+        }
       },
     );
   }

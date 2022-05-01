@@ -15,6 +15,7 @@ import '../../../../widget/noItemInList.dart';
 import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
 
+/// You can delete this file
 class MyContractList extends StatefulWidget {
   @override
   _MyContractListState createState() => _MyContractListState();

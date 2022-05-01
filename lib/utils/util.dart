@@ -409,6 +409,13 @@ Widget flexibleSpace({int flex = 1}) {
   );
 }
 
+showSnackbar(BuildContext context, {required String message}) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(message),
+    duration: Duration(milliseconds: 500),
+  ));
+}
+
 List monthName = [
   "January",
   "February",

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
@@ -8,7 +10,8 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'package:dio/dio.dart';
+import '../../../../data/environment.dart';
 import '../business_auth.dart';
 
 // ignore: must_be_immutable
@@ -27,6 +30,8 @@ class _ContractDetailState extends State<ContractDetail> {
   late ContractModel contract;
   // Contract contract;
   bool isLoading = false;
+  bool isDownloading = false;
+  String savePath = "";
 
   _ContractDetailState({this.arguments});
 
@@ -95,6 +100,14 @@ class _ContractDetailState extends State<ContractDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        isLoading
+            ? SizedBox.shrink()
+            : IconButton(
+                icon: Icon(Icons.download_rounded, color: navyBlue),
+                onPressed: () {
+                  downloadFile(contract);
+                },
+              ),
         // transactionHistoryBtn(),
         SizedBox(width: 16),
       ],
@@ -130,6 +143,22 @@ class _ContractDetailState extends State<ContractDetail> {
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
+                  isDownloading
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularLoadingIndicator(),
+                              SizedBox(width: 12),
+                              Text(
+                                'Downloading...',
+                                style: TextStyle(color: darkGrey, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        )
+                      : SizedBox.shrink(),
                   displayContractInfo(),
                   flexibleSpace(),
                 ],
@@ -341,6 +370,60 @@ class _ContractDetailState extends State<ContractDetail> {
         ),
       ),
     );
+  }
+
+  Future downloadFile(ContractModel contract) async {
+    print('CONTRACT ID :: ${contract.id}');
+    if (mounted) {
+      setState(() {
+        isDownloading = true;
+      });
+    }
+    try {
+      Dio dio = Dio();
+
+      String pdfUrl =
+          "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
+
+      String fileName = 'Contract_${contract.id}.pdf';
+
+      var authHeaders = await BusinessAuth().getAuthHeaders();
+
+      savePath = await getFilePath(fileName);
+      Response response = await dio.download(
+        pdfUrl,
+        savePath,
+        options: Options(
+          headers: authHeaders,
+        ),
+        onReceiveProgress: (rec, total) {},
+      );
+      setState(() {
+        isDownloading = false;
+      });
+      if (response.statusCode == 200) {
+        showToast(message: 'Download complete');
+      } else {
+        showToast(message: 'Something went wrong, please try again');
+      }
+    } catch (e) {
+      setState(() {
+        isDownloading = false;
+      });
+      print(e.toString());
+      showToast(message: 'ERROR ::: ${e.toString()}');
+    }
+  }
+
+  Future<String> getFilePath(uniqueFileName) async {
+    String path = '';
+
+    Directory dir = Directory('/storage/emulated/0/Download');
+    // Directory dir = await getApplicationDocumentsDirectory();
+
+    path = '${dir.path}/$uniqueFileName';
+
+    return path;
   }
 
   void navigateToPage() {

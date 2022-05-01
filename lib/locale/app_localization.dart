@@ -213,6 +213,13 @@ class AppLocalization {
     );
   }
 
+  String get addItems {
+    return Intl.message(
+      "Add Items",
+      name: "addItems",
+    );
+  }
+
   String get selectPaymentDuration {
     return Intl.message(
       "Please select a payment duration",
