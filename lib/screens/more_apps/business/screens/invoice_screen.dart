@@ -109,8 +109,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         'assets/images/outgoing_arrow.png',
       ),
       inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-      inactiveThumbColor: Colors.white,
-      thumbColor: MaterialStateColor.resolveWith((states) => Colors.black),
+      activeColor: Colors.black.withOpacity(0.8),
+      thumbColor: MaterialStateColor.resolveWith((states) => blackFont),
       value: contractIsSwitched,
       onChanged: (value) {
         setState(() => contractIsSwitched = value);

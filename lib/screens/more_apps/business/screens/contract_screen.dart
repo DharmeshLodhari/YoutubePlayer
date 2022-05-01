@@ -111,7 +111,7 @@ class _ContractScreenState extends State<ContractScreen> {
       activeThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
       inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
       activeColor: Colors.black.withOpacity(0.8),
-      // inactiveThumbColor: Colors.red,
+      inactiveThumbColor: Colors.white,
       thumbColor: MaterialStateColor.resolveWith((states) => blackFont),
       value: contractIsSwitched,
       onChanged: (value) {
