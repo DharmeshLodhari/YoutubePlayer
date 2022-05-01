@@ -109,7 +109,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         'assets/images/outgoing_arrow.png',
       ),
       inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-      activeColor: navyBlue,
+      inactiveThumbColor: Colors.white,
+      thumbColor: MaterialStateColor.resolveWith((states) => Colors.black),
       value: contractIsSwitched,
       onChanged: (value) {
         setState(() => contractIsSwitched = value);
@@ -117,9 +118,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         invoiceBloc.invoiceIsSwitched = value;
         invoiceBloc.getInvoiceList();
         if (value == true) {
-          showSnackbar(context, message: 'These are your outgoing invoice');
+          showSnackbar(context,
+              message: 'These are your outgoing invoice', duration: 1000);
         } else {
-          showSnackbar(context, message: 'These are your incoming invoice');
+          showSnackbar(context,
+              message: 'These are your incoming invoice', duration: 1000);
         }
       },
     );

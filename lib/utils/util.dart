@@ -409,10 +409,11 @@ Widget flexibleSpace({int flex = 1}) {
   );
 }
 
-showSnackbar(BuildContext context, {required String message}) {
+showSnackbar(BuildContext context,
+    {required String message, int duration = 500}) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(message),
-    duration: Duration(milliseconds: 500),
+    duration: Duration(milliseconds: duration),
   ));
 }
 
