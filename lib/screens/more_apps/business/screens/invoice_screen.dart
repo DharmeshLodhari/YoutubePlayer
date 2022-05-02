@@ -105,12 +105,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget appBarSwitch() {
     return Switch(
-      activeThumbImage: AssetImage(
-        'assets/images/outgoing_arrow.png',
-      ),
+      activeThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
       inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
       activeColor: Colors.black.withOpacity(0.8),
-      thumbColor: MaterialStateColor.resolveWith((states) => blackFont),
       value: contractIsSwitched,
       onChanged: (value) {
         setState(() => contractIsSwitched = value);
