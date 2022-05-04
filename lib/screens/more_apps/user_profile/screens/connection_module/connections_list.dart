@@ -254,7 +254,7 @@ class _ConnectionListState extends State<ConnectionList> {
       color: Colors.white,
       padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
       child: SearchTextField(
-        hintText: "Search...",
+        hintText: "Search my contacts",
         hintStyle: TextStyle(
             fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         onSubmit: () {
@@ -424,7 +424,7 @@ class _ConnectionListState extends State<ConnectionList> {
         backgroundColor: mateRed,
         icon: SlydoAppIcon.block,
         onTap: () {
-          blockUserAlert(customerProfile, index);
+          blockUserAlert(customerProfile);
         },
         title: AppLocalization.of(context)!.block,
         slideController: _slideController,
@@ -469,7 +469,7 @@ class _ConnectionListState extends State<ConnectionList> {
     ];
   }
 
-  void blockUserAlert(CustomerProfile user, int index) async {
+  void blockUserAlert(CustomerProfile user) async {
     bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -496,7 +496,7 @@ class _ConnectionListState extends State<ConnectionList> {
     );
     if (result != null && result) {
       bool done = await UserAuth().blockUser(user);
-      done = true;
+      // done = true;
       if (done) {
         _showSnackBar(
             context,

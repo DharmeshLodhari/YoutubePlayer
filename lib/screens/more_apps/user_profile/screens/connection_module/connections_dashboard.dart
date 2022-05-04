@@ -8,6 +8,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../utils/slydo_app_icon_icons.dart';
 import 'block_list.dart';
 import 'connection_request_list.dart';
 import 'connections_list.dart';
@@ -119,7 +120,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     : Colors.white,
               ),
               child: Text(
-                "Contacts",
+                "My Contacts",
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,
@@ -181,9 +182,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       ///TODO:- To be enabled in future version
       // synchronizeContactBtn(),
       // SizedBox(
-      //   width: 8,
+      //   width: 8
       // ),
-      createGroupBtn(),
+      currentIndex == 0 ? createGroupBtn() : SizedBox.shrink(),
+      searchUserBtn(),
       SizedBox(width: 16),
     ];
 
@@ -201,6 +203,23 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       ),
       onTap: () {
         Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
+      },
+      backgroundColor: lightGrey,
+      enableMargin: true,
+    );
+  }
+
+  Widget searchUserBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.search,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
       },
       backgroundColor: lightGrey,
       enableMargin: true,

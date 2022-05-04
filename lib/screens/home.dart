@@ -209,7 +209,7 @@ class _HomeState extends State<Home> {
                     child: Icon(SlydoAppIcon.search, size: 16),
                   ),
                   onTap: () async {
-                    await Navigator.of(context).pushNamed('/search-module');
+                    await Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
 
                     setState(() {});
                   },

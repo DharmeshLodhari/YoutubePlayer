@@ -430,6 +430,26 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
+  /*Returns a list of all your user's connection name.*/
+  Future<List<String>> listUserConnections() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> result =
+        await dbClient.query(USER_CONNECTION_TABLE);
+
+    if (result.length > 0) {
+      List<String> connectionList = [];
+      for (int i = 0; i < result.length; i++) {
+        connectionList.add(result[i]['username']);
+      }
+
+      debugPrint('CONNECTIONS LIST NAME ::: $connectionList');
+
+      return connectionList;
+    }
+    return [];
+  }
+
   Future<List<ChatConversation>> getUserConnections() async {
     Database dbClient = await db;
 
@@ -443,6 +463,20 @@ class DatabaseHelper {
       return connectionList;
     }
     return [];
+  }
+
+  Future<bool> checkUserInConnection({required String searchedText}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> result = await dbClient.query(
+        USER_CONNECTION_TABLE,
+        where: "username = ?",
+        whereArgs: [searchedText]);
+
+    if (result.length == 1) {
+      return true;
+    }
+    return false;
   }
 
   Future<List<ChatConversation>> getSearchedUserConnections(

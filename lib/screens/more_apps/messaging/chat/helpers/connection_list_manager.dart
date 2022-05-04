@@ -67,4 +67,13 @@ class ConnectionListManager {
       {String? searchedText}) async {
     return await _db.getSearchedUserConnections(searchedText: searchedText);
   }
+
+  Future<List<String>> listConnectionsFromDB() async {
+    return await _db.listUserConnections();
+  }
+
+  Future<bool> checkUserInConnectionFromDB(
+      {required String searchedText}) async {
+    return await _db.checkUserInConnection(searchedText: searchedText);
+  }
 }

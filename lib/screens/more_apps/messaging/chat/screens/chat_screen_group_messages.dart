@@ -1332,7 +1332,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  chatConversation != null ? chatConversation!.fullName! : "",
+                  getUserFullName(),
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 18,
@@ -1372,6 +1372,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         // SizedBox(width: 16)
       ],
     );
+  }
+
+  String getUserFullName() {
+    if (chatConversation != null) {
+      if (chatConversation!.fullName!.length > 22) {
+        return "${chatConversation!.fullName!.substring(0, 23)}...";
+      } else {
+        return chatConversation!.fullName!;
+      }
+    } else {
+      return "";
+    }
   }
 
   Widget synchronizeContactBtn() {

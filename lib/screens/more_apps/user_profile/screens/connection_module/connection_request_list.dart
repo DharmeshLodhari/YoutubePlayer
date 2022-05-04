@@ -19,6 +19,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../widget/search_text_field.dart';
 import '../../user_auth.dart';
 
 class ConnectionRequestList extends StatefulWidget {
@@ -96,14 +97,15 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
   Widget _buildScaffoldBody() {
     return SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        child: _buildFriendsList());
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: _buildFriendsList(),
+    );
   }
 
   Widget _buildFriendsList() {

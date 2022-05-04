@@ -16,6 +16,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../widget/dialog.dart';
+import '../../../messaging/chat/helpers/connection_list_manager.dart';
 import '../../user_auth.dart';
 
 // ignore: must_be_immutable
@@ -43,18 +45,21 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   void checkCurrentUserIsInContact() async {
     if (userBloc.user.userName != widget.user!.userName) {
-      UserAuth()
-          .checkInContactList(widget.user!.userName, userBloc.user.userName)
-          .then((value) {
-        if (mounted) {
-          setState(() {
-            if (value) {
-              isInContactList = true;
-              debugPrint("is In Contact : $isInContactList");
-            }
-          });
-        }
-      });
+      isInContactList = await ConnectionListManager()
+          .checkUserInConnectionFromDB(searchedText: widget.user!.userName!);
+
+      // UserAuth()
+      //     .checkInContactList(widget.user!.userName, userBloc.user.userName)
+      //     .then((value) {
+      //   if (mounted) {
+      //     setState(() {
+      //       if (value) {
+      //         isInContactList = true;
+      //         debugPrint("is In Contact : $isInContactList");
+      //       }
+      //     });
+      //   }
+      // });
     }
   }
 
@@ -222,10 +227,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                           child: Container(
                             height: double.infinity,
                             child: InkWell(
-                              onTap: () {
-                                showToast(
-                                    message: "${widget.user!.displayName()} " +
-                                        AppLocalization.of(context)!.isBlocked);
+                              onTap: () async {
+                                blockUserAlert(widget.user!);
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -271,6 +274,53 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         ),
       ),
     );
+  }
+
+  void blockUserAlert(CustomerProfile user) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.block,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context)!.block,
+      description: AppLocalization.of(context)!.areYouSureWantToBlock +
+          " ${user.displayName()}",
+      actionOneText: AppLocalization.of(context)!.block,
+      actionTwoText: AppLocalization.of(context)!.cancel,
+    );
+    if (result != null && result) {
+      bool done = await UserAuth().blockUser(user);
+      if (done) {
+        showSnackbar(context,
+            message: "${user.displayName()} " +
+                AppLocalization.of(context)!.isBlockedSuccessfully);
+
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: user.conversationId);
+
+        // if (connectionsList.length <= 9) {
+        //   getList();
+        // }
+        setState(() {});
+      } else {
+        showSnackbar(context, message: AppLocalization.of(context)!.error);
+      }
+    }
   }
 
   Widget displayUserType() {
@@ -319,19 +369,17 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             width: 28,
             icon: Icon(
               SlydoAppIcon.remove_connection,
-              color: blackFont,
+              color: mateRed,
               size: 14,
             ),
-            backgroundColor: blackFont.withOpacity(0.1),
+            backgroundColor: mateRed.withOpacity(0.1),
           ),
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           Expanded(
             child: Text(
-              "Remove Connection",
+              "Disconnect",
               style: TextStyle(
-                color: blackFont,
+                color: mateRed,
                 fontSize: 14,
               ),
             ),
@@ -383,9 +431,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           ),
           backgroundColor: naturalGreen.withOpacity(0.1),
         ),
-        SizedBox(
-          width: 8,
-        ),
+        SizedBox(width: 8),
         Expanded(
           child: Text(
             "Add Connection",

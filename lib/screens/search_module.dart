@@ -17,6 +17,9 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
 import '../routes/route_constants.dart';
+import '../widget/dialog.dart';
+import '../widget/rounded_background_icon.dart';
+import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
@@ -64,9 +67,12 @@ class _SearchModuleState extends State<SearchModule> {
   bool isPopMenuOpen = false;
 
   bool usingOutsideOfDashboard = false;
+  List<String> userConnectionNames = [];
 
   @override
   void initState() {
+    getUserConnectionNames();
+
     if (widget.arguments != null) {
       usingOutsideOfDashboard = widget.arguments["show_back_button"] ?? false;
     }
@@ -121,6 +127,11 @@ class _SearchModuleState extends State<SearchModule> {
     });
 
     super.initState();
+  }
+
+  void getUserConnectionNames() async {
+    userConnectionNames = await ConnectionListManager().listConnectionsFromDB();
+    if (mounted) setState(() {});
   }
 
   void menuItemSelectionChange(String value, int index) {
@@ -205,7 +216,7 @@ class _SearchModuleState extends State<SearchModule> {
             cursorWidth: 1.5,
             cursorColor: navyBlue,
             decoration: InputDecoration(
-              hintText: "Search here",
+              hintText: "Enter phone number, username, nickname",
               fillColor: Colors.white,
               filled: true,
               contentPadding: EdgeInsets.symmetric(vertical: 10),
@@ -278,11 +289,11 @@ class _SearchModuleState extends State<SearchModule> {
           size: 16,
         ),
         onPressed: () {
-          if (searchTypeSelectionMenu.isMenuOpen) {
-            searchTypeSelectionMenu.closeMenu();
-          } else {
-            searchTypeSelectionMenu.openMenu();
-          }
+          // if (searchTypeSelectionMenu.isMenuOpen) {
+          //   searchTypeSelectionMenu.closeMenu();
+          // } else {
+          //   searchTypeSelectionMenu.openMenu();
+          // }
         },
       ),
     );
@@ -953,10 +964,25 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  List<Widget> listSecondaryActions(CustomerProfile user) {
+  List<Widget> listActionSlideActions(CustomerProfile user) {
     return [
       SlideActionButton(
-        icon: SlydoAppIcon.send,
+        icon: Icons.payments_rounded,
+        onTap: () async {
+          customerProfileBloc.customer =
+              await UserAuth().fetchCustomerProfile(user.userName);
+          Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
+              arguments: <String, bool>{
+                'isFromProfile': false,
+                'isRequest': true
+              });
+        },
+        title: AppLocalization.of(context)!.request,
+        backgroundColor: navyBlue,
+        slideController: slidableController,
+      ),
+      SlideActionButton(
+        icon: Icons.payments_rounded,
         onTap: () async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(user.userName);
@@ -972,23 +998,35 @@ class _SearchModuleState extends State<SearchModule> {
     ];
   }
 
-  List<Widget> listActionSlideActions(CustomerProfile user) {
+  List<Widget> listSecondaryActions(CustomerProfile user) {
     return [
-      SlideActionButton(
-        icon: SlydoAppIcon.receive,
-        onTap: () async {
-          customerProfileBloc.customer =
-              await UserAuth().fetchCustomerProfile(user.userName);
-          Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
-              arguments: <String, bool>{
-                'isFromProfile': false,
-                'isRequest': true
-              });
-        },
-        title: AppLocalization.of(context)!.request,
-        backgroundColor: navyBlue,
-        slideController: slidableController,
-      ),
+      !userConnectionNames.contains(user.userName)
+          ? SlideActionButton(
+              icon: SlydoAppIcon.add,
+              onTap: () async {
+                // customerProfileBloc.customer =
+                //     await UserAuth().fetchCustomerProfile(user.userName);
+                // Navigator.of(context)
+                //     .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+                //   'isFromProfile': false,
+                // });
+              },
+              title: 'Connect',
+              backgroundColor: naturalGreen,
+              slideController: slidableController,
+            )
+          : SizedBox.shrink(),
+      userBloc!.user.userName != user.userName
+          ? SlideActionButton(
+              icon: SlydoAppIcon.block,
+              onTap: () async {
+                blockUserAlert(user);
+              },
+              title: 'Block',
+              backgroundColor: mateRed,
+              slideController: slidableController,
+            )
+          : SizedBox.shrink(),
     ];
   }
 
@@ -1096,6 +1134,53 @@ class _SearchModuleState extends State<SearchModule> {
   void handleSlideAnimationChanged2(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged2(bool? isOpen) {}
+
+  void blockUserAlert(CustomerProfile user) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.block,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context)!.block,
+      description: AppLocalization.of(context)!.areYouSureWantToBlock +
+          " ${user.displayName()}",
+      actionOneText: AppLocalization.of(context)!.block,
+      actionTwoText: AppLocalization.of(context)!.cancel,
+    );
+    if (result != null && result) {
+      bool done = await UserAuth().blockUser(user);
+      if (done) {
+        showSnackbar(context,
+            message: "${user.displayName()} " +
+                AppLocalization.of(context)!.isBlockedSuccessfully);
+
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: user.conversationId);
+
+        // if (connectionsList.length <= 9) {
+        //   getList();
+        // }
+        setState(() {});
+      } else {
+        showSnackbar(context, message: AppLocalization.of(context)!.error);
+      }
+    }
+  }
 
   @override
   void dispose() {
