@@ -81,7 +81,7 @@ dependencies:
   sizer: ^2.0.15
   colorful_safe_area: ^0.3.0
   flutter_secure_storage: ^4.2.1
-  image_cropper: ^2.0.0
+  image_cropper: ^2.0.2
   linkwell: ^2.0.6
   swipe_to: ^0.1.0-nullsafety.1
   giphy_picker: ^2.0.0
