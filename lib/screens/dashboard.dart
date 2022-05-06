@@ -303,7 +303,7 @@ class _DashboardState extends State<Dashboard> {
       await DatabaseHelper().saveFeeStructure(value);
     }).catchError((e) {
       debugPrint(e.toString());
-      showToast(message: e);
+      showToast(message: e.toString());
     });
   }
 

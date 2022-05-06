@@ -730,11 +730,11 @@ class _RequestPaymentState extends State<RequestPayment> {
 
     await Future.delayed(Duration(milliseconds: 500));
 
+    isValidPayee = _payee!.userName != userBloc.user.userName;
+
     if (!isValidPayee) {
       if (mounted) {
         setState(() {
-          showToast(message: 'show');
-
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
           return;
         });
