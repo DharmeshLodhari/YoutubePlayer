@@ -8,7 +8,7 @@ class ImageCrop {
   Future<String?> cropImage(String filePath) async {
     debugPrint("Selected image => $filePath");
 
-    File? croppedImage = await ImageCropper.cropImage(
+    File? croppedImage = await ImageCropper().cropImage(
         sourcePath: filePath,
         aspectRatioPresets: Platform.isAndroid
             ? [
