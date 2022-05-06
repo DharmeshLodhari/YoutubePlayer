@@ -468,7 +468,9 @@ class VerticalListItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 2),
         child: OrderTile(
           order: order,
-          key: Key("Order:${order.id}"),
+          key: Key(
+            "Order:${order.id}",
+          ),
         ),
       ),
     );
