@@ -558,54 +558,54 @@ class _AddInvoiceState extends State<AddInvoice> {
         });
   }
 
-  Widget displayAmountField() {
-    return CustomizedTextFormField(
-      labelText: "Amount",
-      isAmountField: true,
-      keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      controller: _amountController,
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            amount = int.parse(val);
-          });
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            int.parse(val);
-            return null;
-          } catch (e) {}
-        }
-        return AppLocalization.of(context)!.invalidAmount;
-      },
-      onTap: () async {
-        isValidPayee = false;
-        setState(() {});
-        if (recipient != null) {
-          recipient = recipient!.trim();
-          if (mounted) {
-            setState(() {
-              _recipientController.text = recipient!;
-            });
-          }
-          var customerProfile =
-              await UserAuth().fetchCustomerProfileWithAuth(recipient);
-          if (mounted) {
-            setState(() {
-              _payee = customerProfile;
-              isValidPayee = _payee!.userName != userBloc.user.userName;
-            });
-          }
-          _recipientController.text = customerProfile.userName!;
-        }
-      },
-    );
-  }
+  // Widget displayAmountField() {
+  //   return CustomizedTextFormField(
+  //     labelText: "Amount",
+  //     isAmountField: true,
+  //     keyboardType: Platform.isIOS
+  //         ? TextInputType.numberWithOptions(decimal: true)
+  //         : TextInputType.number,
+  //     // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+  //     controller: _amountController,
+  //     onChanged: (val) {
+  //       if (mounted) {
+  //         setState(() {
+  //           amount = int.parse(val);
+  //         });
+  //       }
+  //     },
+  //     validator: (val) {
+  //       if (val.isNotEmpty) {
+  //         try {
+  //           int.parse(val);
+  //           return null;
+  //         } catch (e) {}
+  //       }
+  //       return AppLocalization.of(context)!.invalidAmount;
+  //     },
+  //     onTap: () async {
+  //       isValidPayee = false;
+  //       setState(() {});
+  //       if (recipient != null) {
+  //         recipient = recipient!.trim();
+  //         if (mounted) {
+  //           setState(() {
+  //             _recipientController.text = recipient!;
+  //           });
+  //         }
+  //         var customerProfile =
+  //             await UserAuth().fetchCustomerProfileWithAuth(recipient);
+  //         if (mounted) {
+  //           setState(() {
+  //             _payee = customerProfile;
+  //             isValidPayee = _payee!.userName != userBloc.user.userName;
+  //           });
+  //         }
+  //         _recipientController.text = customerProfile.userName!;
+  //       }
+  //     },
+  //   );
+  // }
 
   Widget getDateField() {
     return Row(

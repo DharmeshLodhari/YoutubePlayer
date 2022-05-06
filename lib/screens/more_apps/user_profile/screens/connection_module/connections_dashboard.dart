@@ -37,11 +37,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (filterValue == 'Connections') filterValue = "Contacts";
 
@@ -185,7 +180,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       //   width: 8
       // ),
       currentIndex == 0 ? createGroupBtn() : SizedBox.shrink(),
-      searchUserBtn(),
       SizedBox(width: 16),
     ];
 
@@ -203,23 +197,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       ),
       onTap: () {
         Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
-      },
-      backgroundColor: lightGrey,
-      enableMargin: true,
-    );
-  }
-
-  Widget searchUserBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.search,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
       },
       backgroundColor: lightGrey,
       enableMargin: true,

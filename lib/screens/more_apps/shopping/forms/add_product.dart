@@ -629,7 +629,7 @@ class _AddProductState extends State<AddProduct> {
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            productPrice = double.parse(val).toString();
+            productPrice = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -638,7 +638,7 @@ class _AddProductState extends State<AddProduct> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;

@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
@@ -283,14 +284,14 @@ class _DashboardState extends State<Dashboard> {
         'id': idOfMessage,
       });
     } else if (notification['type'].toString().contains("orders-list")) {
-      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).pushNamed('/orders-list');
     } else if (notification['type'].toString().contains("order-detail-page")) {
       Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
           : notification["data"]);
 
-      Navigator.of(context).pushNamed('/order-detail-page', arguments: {
+      Navigator.of(context).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
         'order': order,
       });
     }

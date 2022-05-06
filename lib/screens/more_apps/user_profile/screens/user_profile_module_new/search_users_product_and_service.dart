@@ -202,9 +202,7 @@ class _SearchUsersProductAndServiceState
         key: _formFieldKey,
         child: Column(
           children: [
-            SizedBox(
-              height: 6,
-            ),
+            SizedBox(height: 6),
             searchBox(),
             showFilterOptions ? getFilterOptions() : Container(),
             SizedBox(
@@ -375,7 +373,8 @@ class _SearchUsersProductAndServiceState
           return;
         }
         try {
-          int minAmount = int.parse(val);
+          int minAmount =
+              int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.minAmount = minAmount;
         } catch (e) {}
       },
@@ -384,7 +383,7 @@ class _SearchUsersProductAndServiceState
           return null;
         }
         try {
-          int amount = int.parse(val);
+          int amount = int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           if (amount > 0) {
             return null;
           } else {
@@ -412,7 +411,8 @@ class _SearchUsersProductAndServiceState
           return;
         }
         try {
-          int maxAmount = int.parse(val);
+          int maxAmount =
+              int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           filterModel.maxAmount = maxAmount;
         } catch (e) {}
       },
@@ -421,7 +421,7 @@ class _SearchUsersProductAndServiceState
           return null;
         }
         try {
-          int amount = int.parse(val);
+          int amount = int.parse(val.replaceAll(',', '').replaceAll('.', ''));
           if (amount > 0) {
             return null;
           } else {
@@ -458,7 +458,9 @@ class _SearchUsersProductAndServiceState
                 cursorWidth: 1.5,
                 cursorColor: navyBlue,
                 decoration: InputDecoration(
-                  hintText: "Search here",
+                  hintText: selectedMenuItemIndex == 0
+                      ? "Search product"
+                      : "Search service",
                   fillColor: Colors.white,
                   filled: true,
                   contentPadding: EdgeInsets.symmetric(vertical: 10),

@@ -15,7 +15,9 @@ dependencies:
   http: ^0.13.3
   provider: ^6.0.1
   sqflite: ^2.0.0+4
+  open_file: ^3.2.1
   flutter_svg: ^1.0.3
+#  ext_storage: ^1.0.3
   flutter_quill: ^4.0.5
   path_provider: ^2.0.5
   textfield_tags: 1.4.3

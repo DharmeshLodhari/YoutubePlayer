@@ -1,3 +1,4 @@
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/utility/select_provider_screen.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -81,7 +82,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
         color: blackFont,
       ),
       onTap: () {
-        Navigator.of(context).pushNamed('/utility-history');
+        Navigator.of(context).pushNamed(Routes.UTILITY_HISTORY);
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -99,9 +100,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           iconColor: HexColor("#3F61DB"),
           height: 126,
         )),
-        SizedBox(
-          width: 12,
-        ),
+        SizedBox(width: 12),
         Expanded(
           child: UtilityDashboardItemTile(
             icon: SlydoAppIcon.utility_svg,

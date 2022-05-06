@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../shopping_auth.dart';
 import '../../tiles/order_tile.dart';
 
@@ -181,40 +182,31 @@ class _OrdersListState extends State<OrdersList> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        Row(
-          children: [
-            Text(
-              'Out',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Switch(
-                value: isSwitched,
-                activeColor: navyBlue,
-                onChanged: (value) {
-                  setState(() {
-                    count = 0;
-                    next = "";
-                    previous = "";
-                    orderList = [];
-                    noItemInList = false;
+        Switch(
+            value: isSwitched,
+            activeThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
+            inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
+            activeColor: Colors.black.withOpacity(0.8),
+            onChanged: (value) {
+              if (value == true) {
+                showSnackbar(context,
+                    message: 'These are your outgoing orders', duration: 1000);
+              } else {
+                showSnackbar(context,
+                    message: 'These are your incoming orders', duration: 1000);
+              }
+              setState(() {
+                count = 0;
+                next = "";
+                previous = "";
+                orderList = [];
+                noItemInList = false;
 
-                    isSwitched = value;
+                isSwitched = value;
 
-                    getList();
-                  });
-                }),
-            Text(
-              'In',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+                getList();
+              });
+            }),
         SizedBox(width: 8),
         dateFilterIcon(),
         SizedBox(width: 8),
@@ -422,7 +414,7 @@ class _OrdersListState extends State<OrdersList> {
                 ? order.customer
                 : order.merchant;
 
-            Navigator.of(context).pushNamed('/compose_message', arguments: {
+            Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
               'recipient': recipient,
               'subject': AppLocalization.of(context)!.orderDetail +
                   " : " +
@@ -469,7 +461,7 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/order-detail-page",
+        Navigator.pushNamed(context, Routes.ORDER_DETAIL_PAGE,
             arguments: {"order": order});
       },
       child: Container(

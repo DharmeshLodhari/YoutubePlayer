@@ -47,7 +47,8 @@ class CustomizedTextFormField extends StatefulWidget {
   TextCapitalization textCapitalization;
 
   Future<bool>? Function()? verifyInputFromServerFunc;
-  bool? Function(String val)? verifyInputFromServerValidation;
+  bool? Function(String val)?
+      verifyInputFromServerValidation; //If this is true, verifyInputFromServerFunc will be executed
   Function? extraFunctionWhenInputWasVerifiedFromServerSuccessfully;
   Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
 
@@ -264,7 +265,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
             }
 
             if (widget.isAmountField == true) {
-              widget.onChanged!(val.replaceAll(',', ''));
+              if (widget.onChanged != null) {
+                widget.onChanged!(val.replaceAll(',', ''));
+              }
             } else {
               if (widget.onChanged != null) {
                 widget.onChanged!(val);

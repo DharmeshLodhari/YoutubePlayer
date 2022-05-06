@@ -854,6 +854,7 @@ class ShoppingAuthService extends AuthService {
         url = url + "&price__lte=${filterOptions.maxAmount}";
       }
 
+      debugPrint('SEARCH URL ---> $url');
       url = Uri.encodeFull(url);
     } else {
       url = getSecureUrl(url: next);

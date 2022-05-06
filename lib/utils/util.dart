@@ -27,6 +27,9 @@ import 'colors.dart';
 export 'colors.dart';
 export 'common.dart';
 
+int amountLimit =
+    10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
+
 enum MediaType { picture, video }
 
 Future<String?> getFile(BuildContext context,

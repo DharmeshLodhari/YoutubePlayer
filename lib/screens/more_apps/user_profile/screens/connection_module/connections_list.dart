@@ -19,13 +19,13 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../user_auth.dart';
 
 class ConnectionList extends StatefulWidget {
@@ -384,7 +384,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
         // ConnectionListManager().saveConnectionsToDB(connections: users);
 
-        if (mounted) setState(() {});
+        // if (mounted) setState(() {});
 
         /// adding chat Users in database
         ChatUserManager().addUsers(users);
@@ -645,7 +645,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         ChatUserManager().clearChatUserMessageCount(
             conversationId: widget.user.conversationId);
 
-        await Navigator.pushNamed(context, '/chat-screen',
+        await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
             arguments: {"searchedUser": widget.user});
         if (mounted) setState(() {});
       },

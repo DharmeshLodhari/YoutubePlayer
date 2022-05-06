@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -543,7 +544,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         color: Colors.white,
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("/user-product-and-service-search",
+        Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
             arguments: {"searchedUser": searchedUser});
       },
       backgroundColor: lightGrey.withOpacity(0.1),

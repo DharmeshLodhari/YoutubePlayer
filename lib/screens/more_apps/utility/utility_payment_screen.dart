@@ -373,6 +373,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
   Widget getAmount() {
     return CustomizedTextFormField(
       labelText: "Amount",
+      isAmountField: true,
       controller: amountCtrl,
       enabled: amount == null,
       keyboardType: TextInputType.number,

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -11,8 +12,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart' as pathProvider;
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../data/environment.dart';
 import '../business_auth.dart';
+import 'package:open_file/open_file.dart';
 
 // ignore: must_be_immutable
 class ContractDetail extends StatefulWidget {
@@ -105,7 +109,7 @@ class _ContractDetailState extends State<ContractDetail> {
             : IconButton(
                 icon: Icon(Icons.download_rounded, color: navyBlue),
                 onPressed: () {
-                  downloadFile(contract);
+                  downloadContractFile();
                 },
               ),
         // transactionHistoryBtn(),
@@ -123,7 +127,9 @@ class _ContractDetailState extends State<ContractDetail> {
         size: 16,
         color: blackFont,
       ),
-      onTap: navigateToPage,
+      onTap: () {
+        Navigator.pushNamed(context, Routes.CONTRACT_TRANSACTIONS);
+      },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
     );
@@ -372,6 +378,139 @@ class _ContractDetailState extends State<ContractDetail> {
     );
   }
 
+  String localPath = '';
+  void downloadContractFile() async {
+    print('CONTRACT ID :: ${contract.id}');
+
+    if (await checkPermission()) {
+      localPath =
+          Platform.isIOS ? (await getLocalPath()) : await getLocalPath();
+
+      final savedDir = Directory(localPath);
+      bool isExisting = await savedDir.exists();
+      print('HAS EXISTED ::: $isExisting');
+      if (!isExisting) {
+        savedDir.create();
+      }
+
+      print('LOCAL PATH :: $localPath');
+
+      if (mounted) {
+        setState(() {
+          isDownloading = true;
+        });
+      }
+
+      Dio dio = Dio();
+
+      String pdfUrl =
+          "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
+
+      var authHeaders = await BusinessAuth().getAuthHeaders();
+
+      // savePath = await getFilePath(fileName);
+
+      Response response = await dio.download(
+        pdfUrl,
+        localPath,
+        options: Options(headers: authHeaders),
+        onReceiveProgress: (rec, total) {},
+      );
+      setState(() {
+        isDownloading = false;
+      });
+
+      if (response.statusCode == 200) {
+        showToast(message: 'Download complete');
+        if (Platform.isIOS) {
+          OpenFile.open(localPath);
+        }
+      } else {
+        showToast(message: 'Something went wrong, please try again');
+      }
+
+      // try {
+      //   Dio dio = Dio();
+      //
+      //   String pdfUrl =
+      //       "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
+      //
+      //   String fileName = 'Contract_${contract.id}.pdf';
+      //
+      //   var authHeaders = await BusinessAuth().getAuthHeaders();
+      //
+      //   savePath = await getFilePath(fileName);
+      //   Response response = await dio.download(
+      //     pdfUrl,
+      //     savePath,
+      //     options: Options(
+      //       headers: authHeaders,
+      //     ),
+      //     onReceiveProgress: (rec, total) {},
+      //   );
+      //   setState(() {
+      //     isDownloading = false;
+      //   });
+      //
+      //   if (response.statusCode == 200) {
+      //     showToast(message: 'Download complete');
+      //     if (Platform.isIOS) {
+      //       OpenFile.open(localPath);
+      //     }
+      //   } else {
+      //     showToast(message: 'Something went wrong, please try again');
+      //   }
+      // }
+      //
+      // catch (e) {
+      //   setState(() {
+      //     isDownloading = false;
+      //   });
+      // showToast(message: 'Something went wrong, please try again');
+
+      // }
+    } else {
+      showSnackbar(context, message: 'Please grant storage permission');
+    }
+  }
+
+  Future<String> getLocalPath() async {
+    String uniqueFileName = 'Contract_${contract.id}.pdf';
+    if (Platform.isAndroid) {
+      String path = '';
+
+      Directory dir = Directory('/storage/emulated/0/Download');
+      // Directory dir = await getApplicationDocumentsDirectory();
+      //
+      path = '${dir.path}/$uniqueFileName';
+
+      return path;
+    } else {
+      var directory = await pathProvider.getApplicationDocumentsDirectory();
+
+      return '${directory.path}/$uniqueFileName';
+    }
+  }
+
+  Future<bool> checkPermission() async {
+    var status = await Permission.storage.status;
+
+    if (status.isGranted) {
+      return true;
+    } else if (status.isPermanentlyDenied) {
+      openAppSettings();
+    } else {
+      Map<Permission, PermissionStatus> permissions =
+          await [Permission.storage].request();
+
+      if (permissions[Permission.storage] == PermissionStatus.granted) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   Future downloadFile(ContractModel contract) async {
     print('CONTRACT ID :: ${contract.id}');
     if (mounted) {
@@ -424,9 +563,5 @@ class _ContractDetailState extends State<ContractDetail> {
     path = '${dir.path}/$uniqueFileName';
 
     return path;
-  }
-
-  void navigateToPage() {
-    Navigator.pushNamed(context, "/contract-transactions");
   }
 }

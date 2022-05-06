@@ -2098,7 +2098,7 @@ class _AddPropertyState extends State<AddProperty> {
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            propertyPrice = double.parse(val).toString();
+            propertyPrice = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -2107,7 +2107,7 @@ class _AddPropertyState extends State<AddProperty> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;

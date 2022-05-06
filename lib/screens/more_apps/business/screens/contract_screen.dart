@@ -519,7 +519,7 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/contract-detail", arguments: {"id": contract.id});
+            .pushNamed(Routes.CONTRACT_DETAIL, arguments: {"id": contract.id});
       },
       child: Container(
         color: Colors.white,

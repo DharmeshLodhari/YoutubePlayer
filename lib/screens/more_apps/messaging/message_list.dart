@@ -190,12 +190,37 @@ class _MessageListState extends State<MessageList> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        popUpMenuButton(),
-        SizedBox(
-          width: 16,
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: Text(
+            getAppBarFilterTitle(),
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
+        SizedBox(width: 16),
+        popUpMenuButton(),
+        SizedBox(width: 16),
       ],
     );
+  }
+
+  getAppBarFilterTitle() {
+    switch (filterValue) {
+      case 'all':
+        return 'Inbox';
+      case 'sent':
+        return 'Sent';
+      case 'archived':
+        return 'Archived';
+      case 'starred':
+        return 'Starred';
+      default:
+        return 'Inbox';
+    }
   }
 
   Widget popUpMenuButton() {

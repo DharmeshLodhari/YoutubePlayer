@@ -247,7 +247,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = double.parse(val);
+            amount = double.parse(val.replaceAll(',', ''));
 
             totalCost =
                 double.parse(_amountController.text.replaceAll(',', '')) *

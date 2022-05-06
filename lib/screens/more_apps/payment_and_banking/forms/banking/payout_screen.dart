@@ -219,14 +219,14 @@ class _PayoutScreenState extends State<PayoutScreen> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = int.parse(val.replaceAll(',', ''));
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {}
         }

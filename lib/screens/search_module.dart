@@ -100,30 +100,32 @@ class _SearchModuleState extends State<SearchModule> {
     });
 
     searchItemTextController.addListener(() {
-      autoCompleteSearchText = searchItemTextController.text;
-
-      setState(() {
-        count = 0;
-        next = "";
-        previous = "";
-        results.clear();
-        noItemInList = false;
-        getList();
-      });
-
-      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = true;
-          });
-        }
-      }
+      // autoCompleteSearchText = searchItemTextController.text;
+      //
+      // debugPrint('txt ::: ${searchItemTextController.text}');
+      //
+      // setState(() {
+      //   count = 0;
+      //   next = "";
+      //   previous = "";
+      //   results.clear();
+      //   noItemInList = false;
+      //   getList();
+      // });
+      //
+      // if (results.isNotEmpty || searchItemTextController.text.length != 0) {
+      //   if (mounted) {
+      //     setState(() {
+      //       isSearchIsEmpty = false;
+      //     });
+      //   }
+      // } else {
+      //   if (mounted) {
+      //     setState(() {
+      //       isSearchIsEmpty = true;
+      //     });
+      //   }
+      // }
     });
 
     super.initState();
@@ -215,6 +217,34 @@ class _SearchModuleState extends State<SearchModule> {
             ),
             cursorWidth: 1.5,
             cursorColor: navyBlue,
+            onChanged: (value) {
+              autoCompleteSearchText = value;
+
+              setState(() {
+                count = 0;
+                next = "";
+                previous = "";
+                results.clear();
+                noItemInList = false;
+                isLoading = false;
+                getList();
+              });
+
+              if (results.isNotEmpty ||
+                  searchItemTextController.text.length != 0) {
+                if (mounted) {
+                  setState(() {
+                    isSearchIsEmpty = false;
+                  });
+                }
+              } else {
+                if (mounted) {
+                  setState(() {
+                    isSearchIsEmpty = true;
+                  });
+                }
+              }
+            },
             decoration: InputDecoration(
               hintText: "Enter phone number, username, nickname",
               fillColor: Colors.white,
@@ -401,14 +431,18 @@ class _SearchModuleState extends State<SearchModule> {
 
   void getList() async {
     if (!isLoading) {
+      debugPrint('GET LIST ---------->');
+
       if (next != null && !isLoading) {
         if (mounted) {
           isLoading = true;
           setState(() {});
         }
+        debugPrint('text ::: $autoCompleteSearchText');
+        debugPrint('text length ::: ${searchItemTextController.text.length}');
         Map<String, dynamic>? result = await _auth
             .searchEndpointPagination(
-                getSearchUrl(searchItemTextController.text), next, previous)
+                getSearchUrl(autoCompleteSearchText), next, previous)
             .catchError((error) {
           debugPrint("ERROR:- $error");
         });
@@ -417,6 +451,8 @@ class _SearchModuleState extends State<SearchModule> {
           if (mounted) setState(() {});
           return;
         }
+
+        debugPrint('RESULT ::: $result');
 
         count = result['count'];
         next = result['next'];
@@ -429,10 +465,18 @@ class _SearchModuleState extends State<SearchModule> {
               results.add(getResultTile(result));
             });
           } catch (e) {}
+          print('ADDING TO LIST ORIGINAL ----> $results');
+          int halfOfList = results.length ~/ 2;
+          results = results.sublist(0, count);
+          print('ADDING TO LIST ----> $results');
+
           setState(() {});
         }
       }
-      if (results.isEmpty) {
+      if (results.isNotEmpty) {
+        noItemInList = false;
+        setState(() {});
+      } else if (results.isEmpty) {
         if (mounted) {
           noItemInList = true;
           setState(() {});
@@ -906,50 +950,50 @@ class _SearchModuleState extends State<SearchModule> {
     }
   }
 
-  Widget autoComplete() {
-    return Column(
-      children: <Widget>[
-        TextFormField(
-          key: textFormField,
-          controller: searchItemTextController,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(10),
-            hintText: hint,
-            isDense: true,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: blackFont,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            fillColor: Colors.white,
-            filled: true,
-          ),
-          style: TextStyle(color: Colors.black, fontSize: 16),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              setState(() {
-                count = 0;
-                next = "";
-                previous = "";
-                results.clear();
-                noItemInList = false;
-                getList();
-              });
-            }
-          },
-        ),
-      ],
-    );
-  }
+  // Widget autoComplete() {
+  //   return Column(
+  //     children: <Widget>[
+  //       TextFormField(
+  //         key: textFormField,
+  //         controller: searchItemTextController,
+  //         decoration: InputDecoration(
+  //           contentPadding: EdgeInsets.all(10),
+  //           hintText: hint,
+  //           isDense: true,
+  //           enabledBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(
+  //               color: Colors.white,
+  //               width: 1,
+  //             ),
+  //             borderRadius: BorderRadius.circular(6),
+  //           ),
+  //           focusedBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(
+  //               color: blackFont,
+  //               width: 1,
+  //             ),
+  //             borderRadius: BorderRadius.circular(6),
+  //           ),
+  //           fillColor: Colors.white,
+  //           filled: true,
+  //         ),
+  //         style: TextStyle(color: Colors.black, fontSize: 16),
+  //         onFieldSubmitted: (val) {
+  //           if (mounted) {
+  //             setState(() {
+  //               count = 0;
+  //               next = "";
+  //               previous = "";
+  //               results.clear();
+  //               noItemInList = false;
+  //               getList();
+  //             });
+  //           }
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _getSlidableWithLists(
       BuildContext context, Widget searchCard, CustomerProfile user) {

@@ -1328,39 +1328,41 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   return getUserIcon();
                 }),
             SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  getUserFullName(),
-                  style: TextStyle(
-                    color: blackFont,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    getUserFullName(),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
                   ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  maxLines: 1,
-                ),
-                Text(
-                  chatConversation != null
-                      ? isRecipientTyping
-                          ? typingMessage!
-                          : isOtherUserRecordingAudio
-                              ? "recording audio"
-                              : userStatus
-                      : "", //"Online",
-                  style: TextStyle(
-                      color: isRecipientTyping || isOtherUserRecordingAudio
-                          ? naturalGreen
-                          : darkGrey,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  maxLines: 1,
-                ),
-              ],
+                  Text(
+                    chatConversation != null
+                        ? isRecipientTyping
+                            ? typingMessage!
+                            : isOtherUserRecordingAudio
+                                ? "recording audio"
+                                : userStatus
+                        : "", //"Online",
+                    style: TextStyle(
+                        color: isRecipientTyping || isOtherUserRecordingAudio
+                            ? naturalGreen
+                            : darkGrey,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

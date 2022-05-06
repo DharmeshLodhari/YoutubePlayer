@@ -465,7 +465,7 @@ class _AddServiceState extends State<AddService> {
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            servicePrice = double.parse(val).toString();
+            servicePrice = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -474,7 +474,7 @@ class _AddServiceState extends State<AddService> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;

@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
@@ -39,9 +40,8 @@ class OrderTile extends StatelessWidget {
                   dense: true,
                   leading: getLeading(),
                   title: getTitle(context),
-                  trailing: order!.totalPrice.toString().length > 12
-                      ? null
-                      : getTrailing(),
+                  trailing:
+                      order!.totalPrice! >= amountLimit ? null : getTrailing(),
                   subtitle: getSubtitle(context)),
             ),
           ],
@@ -77,13 +77,12 @@ class OrderTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(
           25,
         ),
-        // border: Border.all(color: borderColor, width: 2),
         border: Border.all(color: Colors.transparent, width: 0),
       ),
       child: GestureDetector(
         onTap: () {
           Navigator.pushNamed(
-              myGlobals.navigationKey.currentContext!, '/profile',
+              myGlobals.navigationKey.currentContext!, Routes.PROFILE,
               arguments: {
                 "searchedUserName": order!.customer == userBloc.user.userName
                     ? order!.merchant
@@ -147,20 +146,13 @@ class OrderTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        // Text(
-        //   getCustomerOrMerchant()!,
-        //   style: TextStyle(color: darkGrey, fontSize: 12),
-        //   maxLines: 1,
-        // ),
         Text(
           order?.status ?? "",
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        SizedBox(
-          height: 2,
-        ),
-        order!.totalPrice.toString().length > 12 ? getTrailing() : Container(),
+        SizedBox(height: 2),
+        order!.totalPrice! >= amountLimit ? getTrailing() : Container(),
         getDateTime(context)
       ],
     );

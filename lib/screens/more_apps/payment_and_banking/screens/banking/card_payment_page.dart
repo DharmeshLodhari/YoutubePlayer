@@ -200,11 +200,13 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                           isAmountField: true,
                           labelText: AppLocalization.of(context)!.amount,
                           onChanged: (value) {
-                            _amountFieldOnChanged(value);
+                            _amountFieldOnChanged(
+                                value.replaceAll(',', '').replaceAll('.', ''));
                           },
                           validator: (val) {
                             try {
-                              int userAmount = int.parse(val);
+                              double userAmount =
+                                  double.parse(val.replaceAll(',', ''));
                               if (userAmount > amountLimit) {
                                 return 'You cannot fund more than $amountLimit';
                               }

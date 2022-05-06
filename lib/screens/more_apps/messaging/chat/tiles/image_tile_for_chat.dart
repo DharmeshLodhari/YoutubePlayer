@@ -51,6 +51,7 @@ class ImageTileForChat extends StatelessWidget {
                 );
               },
               child: Container(
+                height: 208,
                 constraints: BoxConstraints(
                   // maxWidth: MediaQuery.of(context).size.width / 1.30,
                   // minWidth: MediaQuery.of(context).size.width / 1.30,
@@ -170,7 +171,8 @@ class ImageTileForChat extends StatelessWidget {
                       child: ClipRRect(
                         child: CachedNetworkImage(
                           imageUrl: message!['media'],
-                          fit: BoxFit.cover,
+                          height: 200,
+                          fit: BoxFit.fitHeight,
                           imageBuilder: buildImage,
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) => Container(

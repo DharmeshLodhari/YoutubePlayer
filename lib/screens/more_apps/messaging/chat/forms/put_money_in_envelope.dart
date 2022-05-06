@@ -347,14 +347,14 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = double.parse(val);
+            amount = double.parse(val.replaceAll(',', ''));
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val);
+            double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {

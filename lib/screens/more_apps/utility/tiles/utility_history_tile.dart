@@ -15,6 +15,7 @@ class UtilityHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    utilityHistoryModel.amount = amountLimit;
     return InkWell(
       onTap: () {
         NavigationUtil.push(
@@ -41,7 +42,11 @@ class UtilityHistoryTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   getTitle(),
-                  SizedBox(height: 10),
+                  SizedBox(height: 4),
+                  utilityHistoryModel.amount >= amountLimit
+                      ? getAmount()
+                      : SizedBox.shrink(),
+                  SizedBox(height: 4),
                   getDateTime(),
                   SizedBox(height: 8),
                 ],
@@ -54,25 +59,9 @@ class UtilityHistoryTile extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        worldCurrencies[utilityHistoryModel.currency]!,
-                        style: TextStyle(
-                            fontFamily: "Roboto",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14),
-                      ),
-                      Text(
-                        moneyDisplayNormalizer(utilityHistoryModel.amount),
-                        style: TextStyle(
-                            fontFamily: "Roboto",
-                            color: blackFont,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      ),
-                    ],
-                  ),
+                  utilityHistoryModel.amount >= amountLimit
+                      ? SizedBox.shrink()
+                      : getAmount(),
                   SizedBox(height: 8),
                   getPaymentStatus(),
                 ],
@@ -84,6 +73,26 @@ class UtilityHistoryTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget getAmount() {
+    return Row(
+      children: [
+        Text(
+          worldCurrencies[utilityHistoryModel.currency]!,
+          style: TextStyle(
+              fontFamily: "Roboto", fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        Text(
+          moneyDisplayNormalizer(utilityHistoryModel.amount),
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: blackFont,
+              fontWeight: FontWeight.bold,
+              fontSize: 16),
+        ),
+      ],
     );
   }
 

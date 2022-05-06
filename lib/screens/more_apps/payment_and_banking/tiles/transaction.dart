@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../routes/route_constants.dart';
+
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatelessWidget {
   final PaymentRequest? paymentRequest;
@@ -36,10 +38,9 @@ class PaymentRequestTile extends StatelessWidget {
                   dense: true,
                   leading: getLeading(),
                   title: getTitle(),
-                  trailing:
-                      moneyDisplayNormalizer(paymentRequest!.amount).length > 12
-                          ? null
-                          : getTrailing(),
+                  trailing: paymentRequest!.amount! >= amountLimit
+                      ? null
+                      : getTrailing(),
                   subtitle: getSubtitle(context)),
             ),
             expandedWidget!
@@ -119,9 +120,7 @@ class PaymentRequestTile extends StatelessWidget {
                 maxLines: 1,
               )
             : Container(),
-        moneyDisplayNormalizer(paymentRequest!.amount).length > 12
-            ? getTrailing()
-            : Container(),
+        paymentRequest!.amount! >= amountLimit ? getTrailing() : Container(),
         getDateTime(context)
       ],
     );
@@ -195,11 +194,11 @@ class TransactionTile extends StatelessWidget {
                 title: getTitle(),
                 subtitle: getSubTitle(context),
                 leading: getLeading(),
-                trailing: transaction!.amount.toString().length > 6
+                trailing: transaction!.amount.toString().length >= amountLimit
                     ? null
                     : getAmount(),
                 onTap: () {
-                  Navigator.of(context).pushNamed('/transaction-detail',
+                  Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
                       arguments: {'transaction': transaction});
                 },
               ),
@@ -269,7 +268,6 @@ class TransactionTile extends StatelessWidget {
   }
 
   Widget getAmount() {
-    print('CURRENCY ::: ${transaction!.currency}');
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -303,7 +301,9 @@ class TransactionTile extends StatelessWidget {
                 maxLines: 1,
               )
             : Container(),
-        transaction!.amount.toString().length > 6 ? getAmount() : Container(),
+        transaction!.amount.toString().length >= amountLimit
+            ? getAmount()
+            : Container(),
         getDateTime(context),
       ],
     );
