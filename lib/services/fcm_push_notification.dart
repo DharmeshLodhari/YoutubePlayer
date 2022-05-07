@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
@@ -19,6 +20,7 @@ import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -292,17 +294,22 @@ class PushNotificationService {
     // example of notification response
     // {body: abiola.rasheed.2 sent you a message,
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
-    // icon: null, badge: null, sound: null, link: null, tag: null, dir: auto,
+    // icon: null, badge: null, sound: null, `link: null, tag: null, dir: auto,
     // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
     try {
       debugPrint("payload : $payload");
       if (payload == "/request-payment") {
-        Navigator.of(context!).popUntil(ModalRoute.withName('/accounts'));
+        print('REQU3ST PAYMENT --->');
+
+        NavigationUtil.pushNamed(context!, routeName: Routes.ACCOUNTS);
+        // Navigator.of(context!).popUntil(ModalRoute.withName('/accounts'));
 
         // Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         // DashboardBloc _dashboardBloc =
         //     Provider.of<DashboardBloc>(context, listen: false);
         // _dashboardBloc.index = 1;
+      } else if (payload == Routes.INVOICE_SCREEN) {
+        Navigator.of(context!).pushNamed(Routes.INVOICE_SCREEN);
       } else if (payload == "/transaction") {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed('/transactions');

@@ -216,7 +216,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       ),
       onTap: () {
         Navigator.of(context)
-            .pushNamed('/scan-qr', arguments: {"isRequest": true});
+            .pushNamed(Routes.SCAN_QR, arguments: {"isRequest": true});
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

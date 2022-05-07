@@ -150,7 +150,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
                               SizedBox(
                                 height: 20,
                               ),
-                              getRecipientField(),
+                              getDescriptionField(),
                               SizedBox(height: 20),
                               displayAmountField(),
                               SizedBox(height: 20),
@@ -222,7 +222,7 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     );
   }
 
-  Widget getRecipientField() {
+  Widget getDescriptionField() {
     return CustomizedTextFormField(
       labelText: "Item description",
       controller: _descriptionController,

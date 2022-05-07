@@ -52,7 +52,7 @@ class _ContractTileState extends State<ContractTile> {
                     ListTile(
                       dense: true,
                       title: getTitle(),
-                      subtitle: getSubTitle(context),
+                      subtitle: getSubTitle(),
                       leading: getLeading(),
                       trailing: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -200,7 +200,7 @@ class _ContractTileState extends State<ContractTile> {
     return blackFont;
   }
 
-  Widget getSubTitle(BuildContext context) {
+  Widget getSubTitle() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -292,7 +292,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
               child: ListTile(
                 dense: true,
                 title: getTitle(),
-                subtitle: getSubTitle(context),
+                subtitle: getSubTitle(),
                 leading: getLeading(),
                 trailing: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -387,14 +387,14 @@ class _InvoiceTileState extends State<InvoiceTile> {
           worldCurrencies[widget.invoice.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
-              color: navyBlue,
+              color: getInvoiceCurrencyColor(),
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
           moneyDisplayNormalizer(widget.invoice.amount),
           style: TextStyle(
-            color: navyBlue,
+            color: getInvoiceAmountColor(),
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
@@ -403,7 +403,16 @@ class _InvoiceTileState extends State<InvoiceTile> {
     );
   }
 
-  Widget getSubTitle(BuildContext context) {
+  Color getInvoiceAmountColor() {
+    if (userBloc!.user.userName == widget.invoice.fromCustomer) {
+      return navyBlue;
+    }
+    return blackFont;
+  }
+
+  Color getInvoiceCurrencyColor() => getInvoiceAmountColor();
+
+  Widget getSubTitle() {
     DateTime dateAndTime = DateTime.parse(widget.invoice.dueDate!);
     String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
     String time = DateFormat("hh:mm a").format(dateAndTime);
@@ -413,12 +422,12 @@ class _InvoiceTileState extends State<InvoiceTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          "Due Date:- $date • $time",
+          "$date • $time",
           style:
-              TextStyle(color: paymentIsDue ? mateRed : darkGrey, fontSize: 10),
+              TextStyle(color: paymentIsDue ? mateRed : darkGrey, fontSize: 12),
           maxLines: 1,
         ),
-        getDateTime(context),
+        // getDateTime(context),
       ],
     );
   }

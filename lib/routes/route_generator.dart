@@ -893,7 +893,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.INVOICE:
+      case Routes.INVOICE_SCREEN:
         return PageTransition(
           child: InvoiceScreen(),
           type: PageTransitionType.bottomToTop,
@@ -901,7 +901,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.CONTRACT:
+      case Routes.CONTRACT_SCREEN:
         return PageTransition(
           child: ContractScreen(),
           type: PageTransitionType.bottomToTop,

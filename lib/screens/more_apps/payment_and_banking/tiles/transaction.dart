@@ -102,8 +102,8 @@ class PaymentRequestTile extends StatelessWidget {
   }
 
   String getCustomerName() {
-    if (paymentRequest!.displayCustomer.length > 19) {
-      return "${paymentRequest!.displayCustomer.substring(0, 10)}...";
+    if (paymentRequest!.displayCustomer.length > 24) {
+      return "${paymentRequest!.displayCustomer.substring(0, 25)}...";
     } else {
       return paymentRequest!.displayCustomer;
     }

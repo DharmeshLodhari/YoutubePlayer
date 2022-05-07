@@ -570,7 +570,7 @@ class _AddContractState extends State<AddContract> {
 
   void selectDuration() async {
     final pressedDuration = await showDialog<PaymentDuration>(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),

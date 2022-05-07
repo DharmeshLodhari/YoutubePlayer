@@ -475,7 +475,7 @@ class _UserDashboardState extends State<UserDashboard> {
               onTap: () {
                 hideBalance();
                 Navigator.pop(context);
-                Navigator.pushNamed(context, Routes.CONTRACT);
+                Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
               },
             ),
             bottomSheetItem(
@@ -484,7 +484,7 @@ class _UserDashboardState extends State<UserDashboard> {
               onTap: () {
                 hideBalance();
                 Navigator.pop(context);
-                Navigator.pushNamed(context, Routes.INVOICE);
+                Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
               },
             ),
           ],

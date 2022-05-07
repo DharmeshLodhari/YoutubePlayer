@@ -23,6 +23,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../payment_and_banking_auth.dart';
 
 class PaymentRequestList extends StatefulWidget {
@@ -199,7 +200,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         },
       ),
       title: Text(
-        "Payment request",
+        "Payment Request",
         style: TextStyle(
             color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
       ),
@@ -226,7 +227,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         color: blackFont,
       ),
       onTap: () async {
-        Navigator.of(context).pushNamed('/request-payment',
+        Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
             arguments: <String, bool>{
               'isRequest': true,
               'isFromProfile': true
@@ -764,7 +765,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
             ? Slidable.of(context)?.open()
             : Slidable.of(context)?.close();
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": widget.paymentRequest.payee});
       },
       onLongPress: () {

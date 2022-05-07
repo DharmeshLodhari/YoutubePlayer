@@ -59,6 +59,8 @@ class _SearchUserState extends State<SearchUser> {
         List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
+          results.clear();
+
           try {
             tempList!.forEach((result) {
               results.add(getUserTile(result));
@@ -120,7 +122,9 @@ class _SearchUserState extends State<SearchUser> {
                   child: ListTile(
                     dense: true,
                     title: Text(
-                      user.displayName()!,
+                      user.displayName()!.length <= 35
+                          ? user.displayName()!
+                          : '${user.displayName()!.substring(0, 36)}...',
                       maxLines: 1,
                       style: TextStyle(
                           color: blackFont,
@@ -221,6 +225,7 @@ class _SearchUserState extends State<SearchUser> {
     next = "";
     previous = "";
     results.clear();
+    isLoading = false;
     noItemInList = false;
     getList();
   }
@@ -355,13 +360,8 @@ class _SearchUserState extends State<SearchUser> {
             ),
             onFieldSubmitted: (val) {
               if (mounted) {
-                count = 0;
-                next = "";
-                previous = "";
-                results.clear();
-                noItemInList = false;
-                setState(() {});
-                getList();
+                setState(() => _isRefreshing());
+
                 FocusScope.of(context).unfocus();
               }
             },
@@ -382,13 +382,8 @@ class _SearchUserState extends State<SearchUser> {
       ),
       onPressed: () {
         if (mounted) {
-          count = 0;
-          next = "";
-          previous = "";
-          results.clear();
-          noItemInList = false;
-          setState(() {});
-          getList();
+          setState(() => _isRefreshing());
+
           FocusScope.of(context).unfocus();
         }
       },

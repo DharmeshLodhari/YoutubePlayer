@@ -325,9 +325,9 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   title: Text(
-                    userBloc.user.displayName()!.length <= 53
+                    userBloc.user.displayName()!.length <= 22
                         ? userBloc.user.displayName()!
-                        : '${userBloc.user.displayName()!.substring(0, 54)}...',
+                        : '${userBloc.user.displayName()!.substring(0, 23)}...',
                     maxLines: 1,
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),

@@ -184,24 +184,33 @@ class _MessageListState extends State<MessageList> {
           Navigator.pop(context);
         },
       ),
-      title: Text(
-        AppLocalization.of(context)!.messages,
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      title: Row(
+        children: [
+          Text(
+            '${getAppBarFilterTitle()} ',
+            style: TextStyle(
+                color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            AppLocalization.of(context)!.messages,
+            style: TextStyle(
+                color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
       actions: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Text(
-            getAppBarFilterTitle(),
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        SizedBox(width: 16),
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 16.0),
+        //   child: Text(
+        //     getAppBarFilterTitle(),
+        //     style: TextStyle(
+        //       color: blackFont,
+        //       fontSize: 16,
+        //       fontWeight: FontWeight.w700,
+        //     ),
+        //   ),
+        // ),
+        // SizedBox(width: 16),
         popUpMenuButton(),
         SizedBox(width: 16),
       ],

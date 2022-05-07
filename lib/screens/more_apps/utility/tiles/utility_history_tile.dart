@@ -15,7 +15,6 @@ class UtilityHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    utilityHistoryModel.amount = amountLimit;
     return InkWell(
       onTap: () {
         NavigationUtil.push(

@@ -218,30 +218,33 @@ class _SearchModuleState extends State<SearchModule> {
             cursorWidth: 1.5,
             cursorColor: navyBlue,
             onChanged: (value) {
-              autoCompleteSearchText = value;
+              if (value.length >= 3) {
+                autoCompleteSearchText = value;
 
-              setState(() {
-                count = 0;
-                next = "";
-                previous = "";
-                results.clear();
-                noItemInList = false;
-                isLoading = false;
-                getList();
-              });
+                setState(() {
+                  count = 0;
+                  next = "";
+                  previous = "";
 
-              if (results.isNotEmpty ||
-                  searchItemTextController.text.length != 0) {
-                if (mounted) {
-                  setState(() {
-                    isSearchIsEmpty = false;
-                  });
-                }
-              } else {
-                if (mounted) {
-                  setState(() {
-                    isSearchIsEmpty = true;
-                  });
+                  results.clear();
+                  isLoading = false;
+                  noItemInList = false;
+                  getList();
+                });
+
+                if (results.isNotEmpty ||
+                    searchItemTextController.text.length != 0) {
+                  if (mounted) {
+                    setState(() {
+                      isSearchIsEmpty = false;
+                    });
+                  }
+                } else {
+                  if (mounted) {
+                    setState(() {
+                      isSearchIsEmpty = true;
+                    });
+                  }
                 }
               }
             },
@@ -291,6 +294,8 @@ class _SearchModuleState extends State<SearchModule> {
                 previous = "";
                 results.clear();
                 noItemInList = false;
+                isLoading = false;
+
                 setState(() {});
                 getList();
                 FocusScope.of(context).unfocus();
@@ -351,6 +356,8 @@ class _SearchModuleState extends State<SearchModule> {
           next = "";
           previous = "";
           results.clear();
+          isLoading = false;
+
           noItemInList = false;
           setState(() {});
           getList();
@@ -460,15 +467,13 @@ class _SearchModuleState extends State<SearchModule> {
         List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
+          results.clear();
+
           try {
             tempList!.forEach((result) {
               results.add(getResultTile(result));
             });
           } catch (e) {}
-          print('ADDING TO LIST ORIGINAL ----> $results');
-          int halfOfList = results.length ~/ 2;
-          results = results.sublist(0, count);
-          print('ADDING TO LIST ----> $results');
 
           setState(() {});
         }
@@ -561,7 +566,9 @@ class _SearchModuleState extends State<SearchModule> {
                 child: ListTile(
                   dense: true,
                   title: Text(
-                    user.displayName()!,
+                    userBloc!.user.displayName()!.length <= 35
+                        ? userBloc!.user.displayName()!
+                        : '${userBloc!.user.displayName()!.substring(0, 36)}...',
                     maxLines: 1,
                     style: TextStyle(
                         color: blackFont,
