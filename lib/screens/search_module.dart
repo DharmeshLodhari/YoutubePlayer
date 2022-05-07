@@ -39,7 +39,7 @@ class _SearchModuleState extends State<SearchModule> {
   List<dynamic>? searchedResult;
   late CustomerProfileBloc customerProfileBloc;
   UserBloc? userBloc;
-  static String hint = "Find Users";
+  static String hint = "username, phone number, nickname";
 
   final _auth = AuthService();
   SlidableController? slidableController;
@@ -249,7 +249,7 @@ class _SearchModuleState extends State<SearchModule> {
               }
             },
             decoration: InputDecoration(
-              hintText: "Enter phone number, username, nickname",
+              hintText: hint,
               fillColor: Colors.white,
               filled: true,
               contentPadding: EdgeInsets.symmetric(vertical: 10),
