@@ -60,4 +60,3 @@ ios/fastlane/metadata/trade_representative_contact_information
 /android/upload_certificate.pem
 /ios/Podfile.lock
 .gradle
-local.properties
