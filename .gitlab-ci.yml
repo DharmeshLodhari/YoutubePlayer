@@ -35,8 +35,6 @@ android:build:
     - flutter clean
     - touch android/key.properties
     - cat $KEYFILE >> android/key.properties
-  after_script:
-    - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
 
   script:
     # Flutter local configuration
@@ -49,6 +47,7 @@ android:build:
     - bundle exec fastlane build_android
     - rm -f local.properties
     - rm -f key.properties
+    - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
 
   artifacts:
     paths:
@@ -57,6 +56,9 @@ android:build:
       - build/app/outputs/flutter-apk/$BUILDNAME
     expire_in: 1 week
   interruptible: true
+
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
 
   tags:
     - flutter
