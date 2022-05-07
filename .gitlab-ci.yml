@@ -5,6 +5,9 @@ stages:
   - Build Android
   - Deploy
 
+variables:
+  BUILDNAME: slydp-$(date +"%m-%d-%Y-%I-%M-%p").apk
+
 before_script:
   - flutter pub get
   - flutter clean
@@ -32,6 +35,8 @@ android:build:
     - flutter clean
     - touch android/key.properties
     - cat $KEYFILE >> android/key.properties
+  after_script:
+    - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
 
   script:
     # Flutter local configuration
@@ -49,6 +54,7 @@ android:build:
     paths:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
+      - build/app/outputs/flutter-apk/$BUILDNAME
     expire_in: 1 week
   interruptible: true
 
