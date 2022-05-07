@@ -566,9 +566,9 @@ class _SearchModuleState extends State<SearchModule> {
                 child: ListTile(
                   dense: true,
                   title: Text(
-                    userBloc!.user.displayName()!.length <= 35
-                        ? userBloc!.user.displayName()!
-                        : '${userBloc!.user.displayName()!.substring(0, 36)}...',
+                    user.displayName()!.length <= 35
+                        ? user.displayName()!
+                        : '${user.displayName()!.substring(0, 36)}...',
                     maxLines: 1,
                     style: TextStyle(
                         color: blackFont,
