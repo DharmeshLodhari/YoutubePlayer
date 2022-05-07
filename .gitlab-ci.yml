@@ -36,6 +36,9 @@ android:build:
     - touch android/key.properties
     - cat $KEYFILE >> android/key.properties
 
+  after_script:
+    - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
+
   script:
     # Flutter local configuration
     - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
@@ -47,7 +50,8 @@ android:build:
     - bundle exec fastlane build_android
     - rm -f local.properties
     - rm -f key.properties
-    - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
+    - mkdir -p /tmp/build/app/outputs/flutter-apk/
+    - touch build/app/outputs/flutter-apk/$BUILDNAME
 
   artifacts:
     paths:
