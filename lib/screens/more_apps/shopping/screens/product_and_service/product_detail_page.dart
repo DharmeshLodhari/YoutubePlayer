@@ -594,40 +594,43 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildReviewList() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            buildReviewTitle(),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed("/review-list-screen",
-                    arguments: {"reviewedProduct": product});
-              },
-              child: Text(
-                "See all",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: navyBlue,
-                ),
+    return reviewList.length == 0
+        ? Center(
+            child: Text(
+              "No Review yet",
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+                fontFamily: "roberto",
               ),
             ),
-          ],
-        ),
-        SizedBox(
-          height: 12,
-        ),
-        reviewList.length == 0
-            ? Container(
-                height: 200,
-                child: Center(
-                    child: NoItemInList(
-                  msg: "No Review yet",
-                )),
-              )
-            : Column(
+          )
+        : Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  buildReviewTitle(),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamed("/review-list-screen",
+                          arguments: {"reviewedProduct": product});
+                    },
+                    child: Text(
+                      "See all",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: navyBlue,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              Column(
                 children: reviewList
                     .map(
                       (review) => Padding(
@@ -640,8 +643,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     )
                     .toList(),
               ),
-      ],
-    );
+            ],
+          );
   }
 
   Widget _buildWriteReview() {

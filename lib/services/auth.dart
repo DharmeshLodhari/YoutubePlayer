@@ -449,8 +449,9 @@ class AuthService {
     Uri uri = Uri.parse(url);
     debugPrint("URL:- $uri");
 
-    var response =
-        await http.get(uri, headers: headers as Map<String, String>?);
+    var response = await http
+        .get(uri, headers: headers as Map<String, String>?)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     // var utf8runs = response.body.runes.toList();
     // Response res = Response(utf8.decode(utf8runs), response.statusCode);
@@ -461,8 +462,10 @@ class AuthService {
   Future<Response> httpPost(String url,
       {Map<String, dynamic>? headers, String? body}) async {
     Uri uri = Uri.parse(url);
-    var response = await http.post(uri,
-        headers: headers as Map<String, String>?, body: body);
+    var response = await http
+        .post(uri, headers: headers as Map<String, String>?, body: body)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
     wasTokenBlackListed(response);
     return response;
   }
@@ -470,8 +473,10 @@ class AuthService {
   Future<Response> httpPatch(String url,
       {Map<String, dynamic>? headers, String? body}) async {
     Uri uri = Uri.parse(url);
-    var response = await http.patch(uri,
-        headers: headers as Map<String, String>?, body: body);
+    var response = await http
+        .patch(uri, headers: headers as Map<String, String>?, body: body)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
     wasTokenBlackListed(response);
     return response;
   }
@@ -489,7 +494,9 @@ class AuthService {
     Uri uri = Uri.parse(url);
     var response =
         await http.delete(uri, headers: headers as Map<String, String>?);
-    wasTokenBlackListed(response);
+    wasTokenBlackListed(response)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
     return response;
   }
 }

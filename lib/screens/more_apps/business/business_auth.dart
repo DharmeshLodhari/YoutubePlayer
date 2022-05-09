@@ -24,7 +24,7 @@ class BusinessAuth extends AuthService {
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
 
-      url = url + "?sender=$isSender";
+      url = url + "?is_contractor=$isSender";
 
       if (contractStatus != null) {
         url = url + "&status=${contractStatus.name}";
@@ -33,14 +33,17 @@ class BusinessAuth extends AuthService {
       url = getSecureUrl(url: next);
     }
 
-    print('URL :: $url');
+    print('GET CONTRACT LIST URL :: $url');
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    var jsonData = json.decode(response.body);
-    debugPrint('GET CONTRACT LIST :::: ${jsonData}');
+
+    print('status code ::: ${response.statusCode}');
 
     if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      debugPrint('GET CONTRACT LIST :::: ${jsonData}');
+
       List<ContractModel> contractList = [];
       List jsonResult = jsonData['results'];
 
@@ -56,9 +59,11 @@ class BusinessAuth extends AuthService {
       };
       return result;
     } else if (response.statusCode == 404) {
+      var jsonData = json.decode(response.body);
+
       return jsonData;
     } else {
-      return Future.error(jsonData);
+      return Future.error(response.body);
     }
   }
 
@@ -108,7 +113,6 @@ class BusinessAuth extends AuthService {
       return false;
     }
   }
-
 
   Future<String?> getConversationId({required String name}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/contacts/get-conversation-id/";

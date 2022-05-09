@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -188,24 +189,29 @@ class _OrdersListState extends State<OrdersList> {
             inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
             activeColor: Colors.black.withOpacity(0.8),
             onChanged: (value) {
-              if (value == true) {
-                showSnackbar(context,
-                    message: 'These are your outgoing orders', duration: 1000);
-              } else {
-                showSnackbar(context,
-                    message: 'These are your incoming orders', duration: 1000);
+              if (!isLoading) {
+                // Only make a switch when the page is not loading(i.e, we should always wait for the page to complete loading before making another request)
+                if (value == true) {
+                  showSnackbar(context,
+                      message: 'These are your outgoing orders',
+                      duration: 1000);
+                } else {
+                  showSnackbar(context,
+                      message: 'These are your incoming orders',
+                      duration: 1000);
+                }
+                setState(() {
+                  count = 0;
+                  next = "";
+                  previous = "";
+                  orderList = [];
+                  noItemInList = false;
+
+                  isSwitched = value;
+
+                  getList();
+                });
               }
-              setState(() {
-                count = 0;
-                next = "";
-                previous = "";
-                orderList = [];
-                noItemInList = false;
-
-                isSwitched = value;
-
-                getList();
-              });
             }),
         SizedBox(width: 8),
         dateFilterIcon(),
@@ -405,6 +411,49 @@ class _OrdersListState extends State<OrdersList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   List<Widget> listSecondaryActions(Order order, int index) {
+    bool canPay = order.status == 'Awaiting Payment' &&
+        userBloc.user.userName != order.merchant;
+
+    return canPay
+        ? [
+            SlideActionButton(
+                backgroundColor: naturalGreen,
+                icon: Icons.done,
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (dialogLoadingContext) => LoadingIndicator());
+                  var data = {
+                    "orders": [order.id]
+                  };
+                  PaymentAndBankingAuth().makePaymentForCartOrder(data).then(
+                    (response) {
+                      Navigator.pop(context);
+
+                      if (response.statusCode == 200) {
+                        showToast(message: 'Payment successful');
+                        count = 0;
+                        next = "";
+                        previous = "";
+                        orderList = [];
+                        noItemInList = false;
+                        getList();
+                      } else if (response.statusCode == 500) {
+                        showToast(
+                            message: AppLocalization.of(context)!.serverError);
+                      } else {
+                        showToast(message: response.body);
+                      }
+                    },
+                  );
+                },
+                title: AppLocalization.of(context)!.pay,
+                slideController: _slideController),
+          ]
+        : [];
+  }
+
+  List<Widget> listActionSlideActions(Order order, int index) {
     return [
       SlideActionButton(
           backgroundColor: naturalGreen,
@@ -427,10 +476,6 @@ class _OrdersListState extends State<OrdersList> {
     ];
   }
 
-  List<Widget> listActionSlideActions(Order order, int index) {
-    return [];
-  }
-
   Widget _getSlidableWithLists(BuildContext context, Order order, int index) {
     return Slidable(
       key: Key(order.customer!),
@@ -438,7 +483,17 @@ class _OrdersListState extends State<OrdersList> {
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(order),
+      child: VerticalListItem(
+        order,
+        onPaymentSuccessfulFromDetailPage: () {
+          count = 0;
+          next = "";
+          previous = "";
+          orderList = [];
+          noItemInList = false;
+          getList();
+        },
+      ),
       actions: listActionSlideActions(order, index),
       secondaryActions: listSecondaryActions(order, index),
     );
@@ -453,16 +508,21 @@ class _OrdersListState extends State<OrdersList> {
 }
 
 class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.order);
+  VerticalListItem(this.order,
+      {required this.onPaymentSuccessfulFromDetailPage});
 
+  final Function onPaymentSuccessfulFromDetailPage;
   final Order order;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, Routes.ORDER_DETAIL_PAGE,
+      onTap: () async {
+        var paid = await Navigator.pushNamed(context, Routes.ORDER_DETAIL_PAGE,
             arguments: {"order": order});
+        if (paid != null && paid == true) {
+          onPaymentSuccessfulFromDetailPage();
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),

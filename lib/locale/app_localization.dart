@@ -414,7 +414,7 @@ class AppLocalization {
 
   String get serverError {
     return Intl.message(
-      "Server Error Please try after some time !",
+      "Server Error Please try again after some time !",
       name: "serverError",
     );
   }
@@ -931,6 +931,13 @@ class AppLocalization {
     return Intl.message(
       "Message",
       name: "message",
+    );
+  }
+
+  String get pay {
+    return Intl.message(
+      "Pay",
+      name: "pay",
     );
   }
 
@@ -2685,6 +2692,13 @@ class AppLocalization {
     return Intl.message(
       "Block",
       name: "block",
+    );
+  }
+
+  String get connect {
+    return Intl.message(
+      "Connect",
+      name: "connect",
     );
   }
 

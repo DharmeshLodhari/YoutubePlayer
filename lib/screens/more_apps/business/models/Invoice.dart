@@ -6,6 +6,8 @@ class InvoiceModel {
   String? currency;
   String? dueDate;
   String? fromCustomer;
+  String? fromCustomerDisplayName;
+  String? toCustomerDisplayName;
   String? fromCustomerAvatar;
   int? id;
   String? invoiceDate;
@@ -20,6 +22,8 @@ class InvoiceModel {
       this.currency,
       this.dueDate,
       this.fromCustomer,
+      this.fromCustomerDisplayName,
+      this.toCustomerDisplayName,
       this.fromCustomerAvatar,
       this.id,
       this.invoiceDate,
@@ -35,6 +39,8 @@ class InvoiceModel {
       currency: json['currency'],
       dueDate: json['due_date'],
       fromCustomer: json['from_customer'],
+      fromCustomerDisplayName: json['from_customer_display_name'],
+      toCustomerDisplayName: json['to_customer_display_name'],
       fromCustomerAvatar: json['from_customer_avatar'],
       id: json['id'],
       invoiceDate: json['invoice_date'],

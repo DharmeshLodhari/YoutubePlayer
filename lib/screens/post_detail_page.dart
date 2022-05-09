@@ -13,6 +13,7 @@ import 'package:video_player/video_player.dart';
 
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
+import '../routes/route_constants.dart';
 import '../utils/enums.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
@@ -402,7 +403,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
     }
 
-    if (userPost != null) {
+    if (userPost != null &&
+        userBloc.user.userName == userPost!.authorUsername!) {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.editPost,
@@ -410,7 +412,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
           onTap: () async {
             Navigator.pop(context);
             final isBlogUpdated = await Navigator.pushNamed(
-                context, '/create-blog',
+                context, Routes.CREATE_BLOG,
                 arguments: userPost);
             if (isBlogUpdated == true) {
               reloadPage();
@@ -420,7 +422,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
     }
 
-    if (userPost != null) {
+    if (userPost != null  &&
+        userBloc.user.userName == userPost!.authorUsername!) {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.deletePost,
@@ -625,7 +628,7 @@ class _PostDetailPageScaffoldBodyState
     return Container(
       child: CachedNetworkImage(
         imageUrl: widget.postImageUrl ?? "",
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
         width: double.infinity,
         height: 220,
       ),

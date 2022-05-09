@@ -301,7 +301,7 @@ class _DashboardState extends State<Dashboard> {
     PaymentAndBankingAuth().getFeeStructure().then((value) async {
       //  deleteFeeStructure();
       await DatabaseHelper().saveFeeStructure(value);
-    }).catchError((e) {
+    }).catchError((dds, e) {
       debugPrint(e.toString());
       showToast(message: e.toString());
     });

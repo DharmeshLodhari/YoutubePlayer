@@ -600,6 +600,7 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200) {
       List items = [];
       var data = jsonData["results"];
+
       for (int i = 0; i < data.length; i++) {
         var order = Order.fromJson(data[i]);
         items.add(order);

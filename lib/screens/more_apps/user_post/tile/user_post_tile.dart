@@ -16,6 +16,7 @@ import 'package:share/share.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../locale/app_localization.dart';
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/video_player_controller/chewie_player.dart';
 import '../../../../widget/bottom_sheet_item.dart';
@@ -129,7 +130,7 @@ class _PostTileState extends State<PostTile> {
                           : CachedNetworkImage(
                               height: 150,
                               width: double.infinity,
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                               errorWidget: imageErrorWidget,
                               imageUrl: widget.post?.image ?? "",
                             ),
@@ -276,51 +277,55 @@ class _PostTileState extends State<PostTile> {
       ),
     );
 
-    list.add(
-      bottomSheetItem(
-        title: AppLocalization.of(context)!.editPost,
-        iconData: SlydoAppIcon.edit,
-        onTap: () async {
-          Navigator.pop(context);
-          await Navigator.pushNamed(context, '/create-blog',
-              arguments: widget.post);
-        },
-      ),
-    );
+    if (userBloc!.user.userName == widget.post!.authorUsername!) {
+      list.add(
+        bottomSheetItem(
+          title: AppLocalization.of(context)!.editPost,
+          iconData: SlydoAppIcon.edit,
+          onTap: () async {
+            Navigator.pop(context);
+            await Navigator.pushNamed(context, Routes.CREATE_BLOG,
+                arguments: widget.post);
+          },
+        ),
+      );
+    }
 
-    list.add(
-      bottomSheetItem(
-        title: AppLocalization.of(context)!.deletePost,
-        iconData: SlydoAppIcon.delete,
-        onTap: () {
-          Navigator.pop(context);
-          showDialogBox(
-            context: context,
-            actionOneTextColor: white,
-            actionOneBgColor: mateRed,
-            actionTwoTextColor: blackFont,
-            actionTwoBgColor: greyBorderColor,
-            title: AppLocalization.of(context)!.delete,
-            actionTwoText: AppLocalization.of(context)!.cancel,
-            actionOneText: AppLocalization.of(context)!.delete,
-            description: 'Are you sure you want to delete this blog post?',
-            roundedBackgroundIcon: RoundedBackgroundIcon(
-              width: 90,
-              height: 90,
-              enableMargin: false,
-              image: Image.asset('assets/images/delete_dialog_icon.png'),
-            ),
-            leftButtonOnPressed: () {
-              UserPostUtils.deleteBlogPost(
-                context: context,
-                blogId: widget.post!.id!,
-                onDeleteBlog: widget.onDeleteBlog,
-              );
-            },
-          );
-        },
-      ),
-    );
+    if (userBloc!.user.userName == widget.post!.authorUsername!) {
+      list.add(
+        bottomSheetItem(
+          title: AppLocalization.of(context)!.deletePost,
+          iconData: SlydoAppIcon.delete,
+          onTap: () {
+            Navigator.pop(context);
+            showDialogBox(
+              context: context,
+              actionOneTextColor: white,
+              actionOneBgColor: mateRed,
+              actionTwoTextColor: blackFont,
+              actionTwoBgColor: greyBorderColor,
+              title: AppLocalization.of(context)!.delete,
+              actionTwoText: AppLocalization.of(context)!.cancel,
+              actionOneText: AppLocalization.of(context)!.delete,
+              description: 'Are you sure you want to delete this blog post?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                width: 90,
+                height: 90,
+                enableMargin: false,
+                image: Image.asset('assets/images/delete_dialog_icon.png'),
+              ),
+              leftButtonOnPressed: () {
+                UserPostUtils.deleteBlogPost(
+                  context: context,
+                  blogId: widget.post!.id!,
+                  onDeleteBlog: widget.onDeleteBlog,
+                );
+              },
+            );
+          },
+        ),
+      );
+    }
 
     return list;
   }

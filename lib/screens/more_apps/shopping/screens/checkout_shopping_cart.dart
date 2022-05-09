@@ -36,11 +36,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {

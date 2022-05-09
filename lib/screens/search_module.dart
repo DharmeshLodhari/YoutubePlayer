@@ -208,6 +208,7 @@ class _SearchModuleState extends State<SearchModule> {
             ),
           ),
           child: TextFormField(
+            autofocus: true,
             key: textFormField,
             controller: searchItemTextController,
             style: TextStyle(
@@ -1016,68 +1017,65 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user) {
+    bool isCurrentUser = user.userName != userBloc!.user.userName;
     return [
-      SlideActionButton(
-        icon: Icons.payments_rounded,
-        onTap: () async {
-          customerProfileBloc.customer =
-              await UserAuth().fetchCustomerProfile(user.userName);
-          Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
-              arguments: <String, bool>{
-                'isFromProfile': false,
-                'isRequest': true
-              });
-        },
-        title: AppLocalization.of(context)!.request,
-        backgroundColor: navyBlue,
-        slideController: slidableController,
-      ),
-      SlideActionButton(
-        icon: Icons.payments_rounded,
-        onTap: () async {
-          customerProfileBloc.customer =
-              await UserAuth().fetchCustomerProfile(user.userName);
-          Navigator.of(context)
-              .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
-            'isFromProfile': false,
-          });
-        },
-        title: AppLocalization.of(context)!.send,
-        backgroundColor: naturalGreen,
-        slideController: slidableController,
-      ),
+      if (isCurrentUser)
+        SlideActionButton(
+          icon: Icons.payments_rounded,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await UserAuth().fetchCustomerProfile(user.userName);
+            Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': true
+                });
+          },
+          title: AppLocalization.of(context)!.request,
+          backgroundColor: navyBlue,
+          slideController: slidableController,
+        ),
+      if (isCurrentUser)
+        SlideActionButton(
+          icon: Icons.payments_rounded,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await UserAuth().fetchCustomerProfile(user.userName);
+            Navigator.of(context)
+                .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+              'isFromProfile': false,
+            });
+          },
+          title: AppLocalization.of(context)!.send,
+          backgroundColor: naturalGreen,
+          slideController: slidableController,
+        ),
     ];
   }
 
   List<Widget> listSecondaryActions(CustomerProfile user) {
     return [
-      !userConnectionNames.contains(user.userName)
-          ? SlideActionButton(
-              icon: SlydoAppIcon.add,
-              onTap: () async {
-                // customerProfileBloc.customer =
-                //     await UserAuth().fetchCustomerProfile(user.userName);
-                // Navigator.of(context)
-                //     .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
-                //   'isFromProfile': false,
-                // });
-              },
-              title: 'Connect',
-              backgroundColor: naturalGreen,
-              slideController: slidableController,
-            )
-          : SizedBox.shrink(),
-      userBloc!.user.userName != user.userName
-          ? SlideActionButton(
-              icon: SlydoAppIcon.block,
-              onTap: () async {
-                blockUserAlert(user);
-              },
-              title: 'Block',
-              backgroundColor: mateRed,
-              slideController: slidableController,
-            )
-          : SizedBox.shrink(),
+      if (!userConnectionNames.contains(user.userName) &&
+          user.userName != userBloc!.user.userName)
+        SlideActionButton(
+          icon: SlydoAppIcon.add,
+          onTap: () async {
+            connectUserAlert(user);
+          },
+          title: 'Connect',
+          backgroundColor: naturalGreen,
+          slideController: slidableController,
+        ),
+      if (userBloc!.user.userName != user.userName)
+        SlideActionButton(
+          icon: SlydoAppIcon.block,
+          onTap: () async {
+            blockUserAlert(user);
+          },
+          title: 'Block',
+          backgroundColor: mateRed,
+          slideController: slidableController,
+        ),
     ];
   }
 
@@ -1231,6 +1229,47 @@ class _SearchModuleState extends State<SearchModule> {
         showSnackbar(context, message: AppLocalization.of(context)!.error);
       }
     }
+  }
+
+  void connectUserAlert(CustomerProfile user) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.add,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      title: AppLocalization.of(context)!.connect,
+      description:
+          "Are you sure you want to add ${user.displayName()} to your list of connections",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.connect,
+      rightButtonOnPressed: () {
+        showDialog(
+            context: context,
+            builder: (dialogLoadingContext) => LoadingIndicator());
+
+        UserAuth().makeContactRequest(user).then((value) {
+          Navigator.pop(context);
+          if (value) {
+            showToast(message: "Connection Request Sent !!");
+          } else {
+            showToast(message: "Request Not Sent.. ");
+          }
+        });
+      },
+    );
   }
 
   @override

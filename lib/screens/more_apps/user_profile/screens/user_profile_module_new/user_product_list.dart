@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
+
 // ignore: must_be_immutable
 class UserProductList extends StatefulWidget {
   CustomerProfile? user;
@@ -208,7 +210,7 @@ class _UserProductListState extends State<UserProductList> {
                           filterQuality: FilterQuality.high,
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, '/product',
+                          Navigator.pushNamed(context, Routes.PRODUCT,
                               arguments: {"product": productList[index]});
                         },
                       ),

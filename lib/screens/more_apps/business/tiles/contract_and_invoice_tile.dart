@@ -51,7 +51,7 @@ class _ContractTileState extends State<ContractTile> {
                   children: [
                     ListTile(
                       dense: true,
-                      title: getTitle(),
+                      title: getContractTitle(),
                       subtitle: getSubTitle(),
                       leading: getLeading(),
                       trailing: Column(
@@ -134,12 +134,13 @@ class _ContractTileState extends State<ContractTile> {
     }
   }
 
-  Widget getTitle() {
+  Widget getContractTitle() {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
         getName(),
         maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
       ),
@@ -148,15 +149,22 @@ class _ContractTileState extends State<ContractTile> {
 
   String getName() {
     if (userBloc!.user.userName == widget.contract.contractor) {
-      return widget.contract.contractee!;
+      return widget.contract.contracteeDisplayName!;
     }
-    return widget.contract.contractor!;
+    return widget.contract.contractorDisplayName!;
   }
 
   Widget getLeading() {
+    late String imageUrl;
+    if (userBloc!.user.userName == widget.contract.contractor) {
+      imageUrl = widget.contract.contracteeAvatar!;
+    } else {
+      imageUrl = widget.contract.contractorAvatar!;
+    }
+
     return ClipOval(
       child: CachedNetworkImage(
-        imageUrl: widget.contract.contractorAvatar!,
+        imageUrl: imageUrl,
         height: 48,
         width: 48,
         colorBlendMode: BlendMode.darken,
@@ -291,7 +299,7 @@ class _InvoiceTileState extends State<InvoiceTile> {
               padding: EdgeInsets.symmetric(vertical: 8),
               child: ListTile(
                 dense: true,
-                title: getTitle(),
+                title: getInvoiceTitle(),
                 subtitle: getSubTitle(),
                 leading: getLeading(),
                 trailing: Column(
@@ -350,12 +358,13 @@ class _InvoiceTileState extends State<InvoiceTile> {
     }
   }
 
-  Widget getTitle() {
+  Widget getInvoiceTitle() {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${widget.invoice.toCustomer}",
+        "${widget.invoice.toCustomerDisplayName}",
         maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
             color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
       ),

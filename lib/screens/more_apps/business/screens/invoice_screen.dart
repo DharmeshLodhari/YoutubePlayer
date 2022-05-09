@@ -110,16 +110,18 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       activeColor: Colors.black.withOpacity(0.8),
       value: contractIsSwitched,
       onChanged: (value) {
-        setState(() => contractIsSwitched = value);
-        invoiceBloc.isRefreshing = true;
-        invoiceBloc.invoiceIsSwitched = value;
-        invoiceBloc.getInvoiceList();
-        if (value == true) {
-          showSnackbar(context,
-              message: 'These are your outgoing invoice', duration: 1000);
-        } else {
-          showSnackbar(context,
-              message: 'These are your incoming invoice', duration: 1000);
+        if (!invoiceBloc.isLoading) {
+          setState(() => contractIsSwitched = value);
+          invoiceBloc.isRefreshing = true;
+          invoiceBloc.invoiceIsSwitched = value;
+          invoiceBloc.getInvoiceList();
+          if (value == true) {
+            showSnackbar(context,
+                message: 'These are your outgoing invoice', duration: 1000);
+          } else {
+            showSnackbar(context,
+                message: 'These are your incoming invoice', duration: 1000);
+          }
         }
       },
     );

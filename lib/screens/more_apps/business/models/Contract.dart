@@ -3,6 +3,8 @@ class ContractModel {
   String? contractee;
   String? contracteeAvatar;
   String? contractor;
+  String? contractorDisplayName;
+  String? contracteeDisplayName;
   String? contractorAvatar;
   String? createdAt;
   String? currency;
@@ -17,6 +19,8 @@ class ContractModel {
   ContractModel(
       {this.amount,
       this.contractee,
+      this.contractorDisplayName,
+      this.contracteeDisplayName,
       this.contracteeAvatar,
       this.contractor,
       this.contractorAvatar,
@@ -34,6 +38,8 @@ class ContractModel {
     return ContractModel(
       amount: json['amount'],
       contractee: json['contractee'],
+      contracteeDisplayName: json['contractee_display_name'],
+      contractorDisplayName: json['contractor_display_name'],
       contracteeAvatar: json['contractee_avatar'],
       contractor: json['contractor'],
       contractorAvatar: json['contractor_avatar'],

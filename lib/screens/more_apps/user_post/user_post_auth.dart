@@ -174,6 +174,7 @@ class UserPostAuth extends AuthService {
     request.fields['enable_commenting'] = jsonEncode(enableCommenting);
 
     headers.forEach((k, v) => request.headers[k] = v);
+
     var response = await request.send();
 
     if (response.statusCode == 413) {

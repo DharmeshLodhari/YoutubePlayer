@@ -113,16 +113,18 @@ class _ContractScreenState extends State<ContractScreen> {
       activeColor: Colors.black.withOpacity(0.8),
       value: contractIsSwitched,
       onChanged: (value) {
-        setState(() => contractIsSwitched = value);
-        contractBloc.isRefreshing = true;
-        contractBloc.contractIsSwitched = value;
-        contractBloc.getContractList();
-        if (value == true) {
-          showSnackbar(context,
-              message: 'These are your outgoing contracts', duration: 3000);
-        } else {
-          showSnackbar(context,
-              message: 'These are your incoming contracts', duration: 3000);
+        if (!contractBloc.isLoading) {
+          setState(() => contractIsSwitched = value);
+          contractBloc.isRefreshing = true;
+          contractBloc.contractIsSwitched = value;
+          contractBloc.getContractList();
+          if (value == true) {
+            showSnackbar(context,
+                message: 'These are your outgoing contracts', duration: 3000);
+          } else {
+            showSnackbar(context,
+                message: 'These are your incoming contracts', duration: 3000);
+          }
         }
       },
     );

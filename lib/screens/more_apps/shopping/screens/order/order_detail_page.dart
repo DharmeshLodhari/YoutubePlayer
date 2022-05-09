@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -225,6 +226,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget scaffoldBody() {
+    bool canPay = order!.status == 'Awaiting Payment' &&
+        userBloc.user.userName != order!.merchant;
+
     return Column(
       children: <Widget>[
         Expanded(
@@ -237,11 +241,55 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     getOrderDetail(),
                     Expanded(
                       child: ListView.builder(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          itemCount: items.length,
-                          itemBuilder: (BuildContext context, int index) =>
-                              getItemTile(index)),
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        itemCount: items.length,
+                        itemBuilder: (BuildContext context, int index) =>
+                            getItemTile(index),
+                      ),
                     ),
+                    canPay
+                        ? Expanded(
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: CurvedButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (dialogLoadingContext) =>
+                                            LoadingIndicator());
+
+                                    var data = {
+                                      "orders": [order!.id]
+                                    };
+                                    PaymentAndBankingAuth()
+                                        .makePaymentForCartOrder(data)
+                                        .then(
+                                      (response) {
+                                        Navigator.pop(context);
+                                        if (response.statusCode != 200) {
+                                          Navigator.pop(context, true);
+
+                                          showToast(
+                                              message: 'Payment successful');
+                                        } else if (response.statusCode == 500) {
+                                          showToast(
+                                              message:
+                                                  AppLocalization.of(context)!
+                                                      .serverError);
+                                        } else {
+                                          showToast(message: response.body);
+                                        }
+                                      },
+                                    );
+                                  },
+                                  text: 'Pay Now',
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
         ),

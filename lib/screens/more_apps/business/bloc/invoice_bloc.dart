@@ -32,11 +32,11 @@ class InvoiceBloc extends ChangeNotifier {
     }
     isRefreshing = false;
 
-    print('GET INVOICE LIST');
     if (!isLoading) {
       if (next != null && !isLoading) {
         _isLoading = true;
         notifyListeners();
+        print('GET INVOICE LIST');
 
         Map<String, dynamic>? result = await businessAuth.getInvoiceList(
           next,
