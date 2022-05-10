@@ -75,26 +75,28 @@ class _UserDashboardState extends State<UserDashboard> {
 
     return Scaffold(
       key: _scaffoldSettingKey,
-      body: Container(
-        height: MediaQuery.of(context).size.height -
-            (AppBar().preferredSize.height),
-        width: MediaQuery.of(context).size.width,
-        color: Colors.white,
-        child: Stack(
-          children: <Widget>[
-            backgroundScreen(),
-            foregroundScreen(),
-            isLoading
-                ? Container(
-                    color: Colors.black45,
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  )
-                : Container()
-          ],
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height -
+              (AppBar().preferredSize.height),
+          width: MediaQuery.of(context).size.width,
+          color: Colors.white,
+          child: Stack(
+            children: <Widget>[
+              backgroundScreen(),
+              foregroundScreen(),
+              isLoading
+                  ? Container(
+                      color: Colors.black45,
+                      height: double.infinity,
+                      width: double.infinity,
+                      child: Center(
+                        child: CircularLoadingIndicator(),
+                      ),
+                    )
+                  : Container()
+            ],
+          ),
         ),
       ),
     );

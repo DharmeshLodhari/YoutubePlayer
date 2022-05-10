@@ -9,6 +9,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 import 'models/store.dart';
 
@@ -568,8 +569,8 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List of Orders
-  Future<dynamic> listOrders(
-      String? next, String? previous, String filterValue, String? date,
+  Future<dynamic> listOrders(String? next, String? previous, String filterValue,
+      DateTimeRange? dateTimeRange,
       {required bool isMerchant}) async {
     var url = "";
     if (next == null) {
@@ -581,30 +582,36 @@ class ShoppingAuthService extends AuthService {
       url = url + "?merchant=$isMerchant";
 
       if (filterValue != "") {
-        url = url + "?status__iexact=$filterValue";
+        url = url + "&status=$filterValue";
       }
-      if (filterValue != "" && date != null) {
-        url = url + "&created_at=$date";
-      }
-      if (filterValue == "" && date != null) {
-        url = url + "?created_at=$date";
+      if (dateTimeRange != null) {
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
+
+        url = url + "&start_date=$fromDate&end_date=$toDate";
       }
     } else {
       url = getSecureUrl(url: next);
     }
 
-    print('URL ::: $url');
+    debugPrint('URL ::: $url');
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
       List items = [];
       var data = jsonData["results"];
 
       for (int i = 0; i < data.length; i++) {
         var order = Order.fromJson(data[i]);
+
         items.add(order);
       }
+
       jsonData["results"] = items;
       return jsonData;
     } else if (response.statusCode == 500) {

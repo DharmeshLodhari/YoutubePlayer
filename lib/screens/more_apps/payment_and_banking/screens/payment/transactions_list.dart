@@ -13,9 +13,14 @@ import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/navigation_util.dart';
+import '../../../../search_user.dart';
+import '../../../user_profile/models/user.dart';
 import '../../payment_and_banking_auth.dart';
 
 class TransactionList extends StatefulWidget {
@@ -40,11 +45,12 @@ class _TransactionListState extends State<TransactionList> {
   bool isLoading = false;
   bool noItemInList = false;
   RefreshBlocForTransaction? _refreshBloc;
+  DateTimeRange? newDateTimeRange;
+  DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
   // variables for to getting filter transactions
-  String filterValue = "all";
-  bool moneyOut = false;
-  bool moneyIn = false;
+  bool? moneyIn;
+  String? userName;
 
   late CustomerProfileBloc customerProfileBloc;
 
@@ -73,7 +79,7 @@ class _TransactionListState extends State<TransactionList> {
     );
 
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      initializePopMenu();
+      // initializePopMenu();
     });
   }
 
@@ -91,20 +97,24 @@ class _TransactionListState extends State<TransactionList> {
       });
   }
 
+  _isRefreshing() {
+    count = 0;
+    next = "";
+    previous = "";
+    transactionList = [];
+    noItemInList = false;
+    isFirstTime = true;
+    if (mounted) setState(() {});
+    isLoading = false;
+  }
+
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        transactionList = [];
-        noItemInList = false;
-        isFirstTime = true;
-        if (mounted) setState(() {});
-        isLoading = false;
+        _isRefreshing();
         getList();
         _refreshController.refreshCompleted();
       } else {
@@ -117,22 +127,31 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   void menuItemSelectionChange(String value, int index) {
-    selectedMenuItemIndex = index;
-    setState(() {});
+    if (index == 3) {
+      newDateTimeRange = null;
+    } else {
+      selectedMenuItemIndex = index;
+    }
+
     switch (value) {
       case "received":
         moneyIn = true;
-        moneyOut = false;
         break;
       case "sent":
         moneyIn = false;
-        moneyOut = true;
         break;
+
+      case "clear":
+        moneyIn =
+            moneyIn; // To maintain the 'filter value' when you clear the date.
+        break;
+
       default:
-        moneyIn = false;
-        moneyOut = false;
+        moneyIn = null;
         break;
     }
+    userName = null;
+    setState(() {});
     _onRefresh();
   }
 
@@ -141,21 +160,22 @@ class _TransactionListState extends State<TransactionList> {
     setState(() {});
   }
 
-  void initializePopMenu() {
-    menu = CustomizedPopUpMenu(
-      buttonKey: _key,
-      context: context,
-      children: [
-        CustomizedPopUpMenuItem(title: "All", value: "all"),
-        CustomizedPopUpMenuItem(title: "Received", value: "received"),
-        CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
-      ],
-      selectedIndex: selectedMenuItemIndex,
-      right: 16,
-    );
-    menu.onChange = menuItemSelectionChange;
-    menu.menuState = menuStateChange;
-  }
+  // void initializePopMenu() {
+  //   menu = CustomizedPopUpMenu(
+  //     buttonKey: _key,
+  //     context: context,
+  //     children: [
+  //       CustomizedPopUpMenuItem(title: "All", value: ""),
+  //       CustomizedPopUpMenuItem(title: "Received", value: "received"),
+  //       CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
+  //       CustomizedPopUpMenuItem(title: "Clear Date", value: filterValue),
+  //     ],
+  //     selectedIndex: selectedMenuItemIndex,
+  //     right: 16,
+  //   );
+  //   menu.onChange = menuItemSelectionChange;
+  //   menu.menuState = menuStateChange;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +183,20 @@ class _TransactionListState extends State<TransactionList> {
     _onRefreshOnResume();
 
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "All", value: "all"),
+        CustomizedPopUpMenuItem(title: "Received", value: "received"),
+        CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
+        CustomizedPopUpMenuItem(title: "Clear Date", value: 'clear'),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
 
     return WillPopScope(
       onWillPop: () async {
@@ -175,16 +209,40 @@ class _TransactionListState extends State<TransactionList> {
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
         body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildTransactionList()),
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              getDateRangeText(),
+              Expanded(child: _buildTransactionList()),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  Widget getDateRangeText() {
+    return newDateTimeRange != null
+        ? Container(
+            color: greyBorderColor.withOpacity(0.2),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+              ),
+            ),
+          )
+        : SizedBox.shrink();
   }
 
   Widget appBar() {
@@ -211,15 +269,86 @@ class _TransactionListState extends State<TransactionList> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        getSearchBtn(),
+        SizedBox(width: 10.0),
         openGraphBtn(),
-        SizedBox(
-          width: 10.0,
-        ),
+        SizedBox(width: 10.0),
+        dateFilterIcon(),
+        SizedBox(width: 10.0),
         popUpMenuButton(),
         SizedBox(
           width: 16,
         ),
       ],
+    );
+  }
+
+  Widget getSearchBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.search,
+            color: Colors.black,
+            size: 20,
+          ),
+          onPressed: () async {
+            CustomerProfile? userFound = await NavigationUtil.push(
+              context,
+              screen: SearchUser(),
+            );
+
+            if (userFound != null) {
+              userName = userFound.userName;
+              _isRefreshing();
+              getList();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget dateFilterIcon() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.date_range_rounded,
+            color: Colors.black,
+            size: 20,
+          ),
+          onPressed: () async {
+            newDateTimeRange = await showDateRangePicker(
+              context: context,
+              firstDate: DateTime.parse("2020-01-01"),
+              lastDate: DateTime.now(),
+              builder: customThemeBuilder,
+            );
+
+            if (newDateTimeRange != null) {
+              setState(() {});
+              _onRefresh();
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -233,7 +362,7 @@ class _TransactionListState extends State<TransactionList> {
         color: blackFont,
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("/transaction-graph");
+        Navigator.of(context).pushNamed(Routes.TRANSACTION_GRAPH);
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -299,8 +428,13 @@ class _TransactionListState extends State<TransactionList> {
             isLoading = true;
           });
         }
-        Map<String, dynamic>? result =
-            await _auth.getTransactions(next, previous, moneyIn, moneyOut);
+        Map<String, dynamic>? result = await _auth.getTransactions(
+          next,
+          previous,
+          moneyIn,
+          newDateTimeRange,
+          userName: userName,
+        );
         if (result == null) {
           isLoading = false;
           return;
@@ -473,7 +607,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         if (widget.transaction.payee != "Slydo" &&
             widget.transaction.payee != "Private") {
           debugPrint(widget.transaction.payee);
-          Navigator.pushNamed(context, '/profile',
+          Navigator.pushNamed(context, Routes.PROFILE,
               arguments: {"searchedUserName": widget.transaction.payee});
         }
       },

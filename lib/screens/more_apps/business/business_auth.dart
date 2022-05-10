@@ -16,6 +16,7 @@ class BusinessAuth extends AuthService {
   //get all contract list
   Future<Map<String, dynamic>?> getContractList(String? next,
       {ContractStatus? contractStatus, required bool isSender}) async {
+    debugPrint('GETING CONTRACT');
     var url = "";
     if (next == null) {
       return null;

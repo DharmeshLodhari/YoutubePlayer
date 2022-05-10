@@ -29,6 +29,7 @@ class _AddServiceState extends State<AddService> {
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;
+  ServiceCategory? pressedCategory;
   ServiceCategory? selectedServiceCategory;
   ProductCondition? selectedProductCondition;
 
@@ -44,6 +45,9 @@ class _AddServiceState extends State<AddService> {
   bool serviceIsAvailable = false;
   DateTime serviceAvailableFrom = DateTime.now();
   List<ServiceCategory>? serviceCategories;
+  List<ServiceCategory>?
+      serviceCategoriesCopy; //To hold the full service category at all times.
+
   bool isLoading = false;
   bool isAPILoading = false;
 
@@ -65,8 +69,10 @@ class _AddServiceState extends State<AddService> {
 
     try {
       serviceCategories = await ShoppingAuthService().getServiceCategories();
+      serviceCategoriesCopy = serviceCategories;
     } catch (e) {
       serviceCategories = [];
+      serviceCategoriesCopy = [];
     }
 
     isLoading = false;
@@ -373,7 +379,105 @@ class _AddServiceState extends State<AddService> {
           color: darkGrey,
         ),
         onTap: () {
-          selectItemCategory();
+          // selectItemCategory();
+          categoryAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  void categoryAndroidSheet() {
+    serviceCategories = serviceCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      serviceCategories = serviceCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      serviceCategories = serviceCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: serviceCategories!.length,
+                    itemBuilder: (context, index) {
+                      ServiceCategory category = serviceCategories![index];
+                      if (selectedServiceCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedCategory = category;
+                              Navigator.pop(context);
+                              if (serviceCategories != null) {
+                                selectedServiceCategory = pressedCategory;
+                                serviceCategory = selectedServiceCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCategory != null) {
+                            selectedServiceCategory = pressedCategory;
+                            serviceCategory = selectedServiceCategory!.name;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );

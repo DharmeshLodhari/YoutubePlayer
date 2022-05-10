@@ -51,7 +51,7 @@ class ImageTileForChat extends StatelessWidget {
                 );
               },
               child: Container(
-                height: 208,
+                height: 200,
                 constraints: BoxConstraints(
                   // maxWidth: MediaQuery.of(context).size.width / 1.30,
                   // minWidth: MediaQuery.of(context).size.width / 1.30,
@@ -127,9 +127,7 @@ class ImageTileForChat extends StatelessWidget {
                                   ),
                                 ],
                               )
-                            : Container(
-                                width: 0,
-                              )
+                            : Container(width: 0)
                         : Container(
                             width: 0,
                           ),
@@ -156,11 +154,7 @@ class ImageTileForChat extends StatelessWidget {
                               ],
                             ),
                           ),
-                    isMessageEmpty
-                        ? Container()
-                        : SizedBox(
-                            height: 8,
-                          ),
+                    isMessageEmpty ? Container() : SizedBox(height: 8),
                     Container(
                       padding: EdgeInsets.symmetric(
                           horizontal: chatConversation!.isGroupConversation!

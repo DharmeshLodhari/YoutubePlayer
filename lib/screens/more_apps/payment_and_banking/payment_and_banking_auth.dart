@@ -10,6 +10,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 import 'models/payout.dart';
 import 'models/transactions.dart';
@@ -541,32 +542,56 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // List users transactions
-  Future<Map<String, dynamic>?> getTransactions(
-      String? next, String? previous, bool moneyIn, bool moneyOut) async {
+  Future<Map<String, dynamic>?> getTransactions(String? next, String? previous,
+      bool? moneyIn, DateTimeRange? dateTimeRange,
+      {String? userName}) async {
     var url = "";
     if (next == null) {
       return null;
     }
+
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/list/";
-      if (moneyIn) {
-        url = url + "?money_in=true";
+
+      if (userName != null) {
+        url = url + "?search=$userName";
       }
-      if (moneyOut) {
-        url = url + "?money_out=true";
+
+      if (moneyIn != null) {
+        url = url + "?money_in=$moneyIn";
+      }
+
+      if (dateTimeRange != null) {
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
+
+        if (url.contains('?')) {
+          url = url + "&start_date=$fromDate&end_date=$toDate";
+        } else {
+          url = url + "?start_date=$fromDate&end_date=$toDate";
+        }
       }
     } else {
       url = getSecureUrl(url: next);
     }
+
     var headers = await getAuthHeaders();
-    debugPrint("URL:- $url");
+    debugPrint("URL :::: $url");
 
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 400) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
-      var jsonData = json.decode(response.body);
+
+      var jsonData;
+      if (response.statusCode == 400) {
+        jsonData = {"results": [], "count": 0, "previous": "", "next": ""};
+        return jsonData;
+      } else {
+        jsonData = json.decode(response.body);
+      }
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
@@ -585,7 +610,7 @@ class PaymentAndBankingAuth extends AuthService {
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      throw json.decode(response.body);
+      throw response.body;
     }
   }
 

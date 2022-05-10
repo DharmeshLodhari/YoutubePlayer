@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
@@ -33,8 +35,7 @@ class _OrdersListState extends State<OrdersList> {
   String? next = "";
   String? previous = "";
   List orderList = [];
-  bool isSwitched = true;
-
+  bool isCustomer = true;
   late UserBloc userBloc;
 
   ScrollController _scrollController = new ScrollController();
@@ -45,12 +46,15 @@ class _OrdersListState extends State<OrdersList> {
 
   // variables for to getting filter orderList
   String filterValue = "";
-  DateTime? filterDate;
+  DateTimeRange? newDateTimeRange;
 
   GlobalKey _key = LabeledGlobalKey("orderListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
+  DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+  // DateTimeRange dateTimeRange = DateTimeRange(start: DateTime.parse("2020-01-01"), end: DateTime.now(),
+  // );
 
   @protected
   void initState() {
@@ -93,13 +97,9 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   void menuItemSelectionChange(String value, int index) {
-    if (index == 7 || index == 8) {
-      if (index == 7) {
-        filterDate = null;
-      }
-      if (index == 8) {
-        filterValue = "";
-      }
+    if (index == 8) {
+      filterValue = value;
+      newDateTimeRange = null;
     } else {
       selectedMenuItemIndex = index;
       filterValue = value;
@@ -122,16 +122,16 @@ class _OrdersListState extends State<OrdersList> {
       buttonKey: _key,
       context: context,
       children: [
-        CustomizedPopUpMenuItem(title: "New order", value: "new order"),
+        CustomizedPopUpMenuItem(title: "All", value: ""),
+        CustomizedPopUpMenuItem(title: "New order", value: "New Order"),
         CustomizedPopUpMenuItem(
-            title: "Awaiting payment", value: "awaiting payment"),
-        CustomizedPopUpMenuItem(title: "Canceled", value: "canceled"),
-        CustomizedPopUpMenuItem(title: "Completed", value: "completed"),
-        CustomizedPopUpMenuItem(title: "On hold", value: "on hold"),
-        CustomizedPopUpMenuItem(title: "Pending", value: "pending"),
-        CustomizedPopUpMenuItem(title: "Processing", value: "processing"),
-        CustomizedPopUpMenuItem(title: "Clear Date", value: "clear"),
-        CustomizedPopUpMenuItem(title: "Clear Filter", value: "clear"),
+            title: "Awaiting payment", value: "Awaiting Payment"),
+        CustomizedPopUpMenuItem(title: "Canceled", value: "Canceled"),
+        CustomizedPopUpMenuItem(title: "Completed", value: "Complete"),
+        CustomizedPopUpMenuItem(title: "On hold", value: "On Hold"),
+        CustomizedPopUpMenuItem(title: "Pending", value: "Pending"),
+        CustomizedPopUpMenuItem(title: "Processing", value: "Processing"),
+        CustomizedPopUpMenuItem(title: "Clear Date", value: filterValue),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -148,14 +148,15 @@ class _OrdersListState extends State<OrdersList> {
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
         body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildOrderList()),
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: _buildOrderList(),
+        ),
       ),
     );
   }
@@ -177,14 +178,26 @@ class _OrdersListState extends State<OrdersList> {
         },
       ),
       centerTitle: false,
-      title: Text(
-        AppLocalization.of(context)!.orders,
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      title: Row(
+        children: [
+          Text(
+            AppLocalization.of(context)!.orders,
+            style: TextStyle(
+                color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(width: 12),
+          Text(
+            getDateRangeText(),
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
       actions: <Widget>[
         Switch(
-            value: isSwitched,
+            value: isCustomer,
             activeThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
             inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
             activeColor: Colors.black.withOpacity(0.8),
@@ -207,7 +220,7 @@ class _OrdersListState extends State<OrdersList> {
                   orderList = [];
                   noItemInList = false;
 
-                  isSwitched = value;
+                  isCustomer = value;
 
                   getList();
                 });
@@ -217,11 +230,17 @@ class _OrdersListState extends State<OrdersList> {
         dateFilterIcon(),
         SizedBox(width: 8),
         popUpMenuButton(),
-        SizedBox(
-          width: 16,
-        ),
+        SizedBox(width: 16),
       ],
     );
+  }
+
+  String getDateRangeText() {
+    if (newDateTimeRange != null) {
+      return '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}';
+    } else {
+      return '';
+    }
   }
 
   Widget dateFilterIcon() {
@@ -242,14 +261,17 @@ class _OrdersListState extends State<OrdersList> {
             size: 20,
           ),
           onPressed: () async {
-            filterDate = await showDatePicker(
-                builder: customThemeBuilder,
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime.parse("2020-01-01"),
-                lastDate: DateTime.now());
-            setState(() {});
-            _onRefresh();
+            newDateTimeRange = await showDateRangePicker(
+              context: context,
+              firstDate: DateTime.parse("2020-01-01"),
+              lastDate: DateTime.now(),
+              builder: customThemeBuilder,
+            );
+
+            if (newDateTimeRange != null) {
+              setState(() {});
+              _onRefresh();
+            }
           },
         ),
       ),
@@ -325,19 +347,13 @@ class _OrdersListState extends State<OrdersList> {
             isLoading = true;
           });
         }
-        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
-        String? formattedDate;
-        if (filterDate != null) {
-          debugPrint("DOB:- ${dateFormat.format(filterDate!)}");
-          formattedDate = dateFormat.format(filterDate!);
-        }
 
         var result = await _auth.listOrders(
           next,
           previous,
           filterValue,
-          formattedDate,
-          isMerchant: isSwitched,
+          newDateTimeRange,
+          isMerchant: isCustomer,
         );
         count = result['count'];
         next = result['next'];
@@ -417,7 +433,7 @@ class _OrdersListState extends State<OrdersList> {
     return canPay
         ? [
             SlideActionButton(
-                backgroundColor: naturalGreen,
+                backgroundColor: navyBlue,
                 icon: Icons.done,
                 onTap: () {
                   showDialog(
@@ -430,6 +446,7 @@ class _OrdersListState extends State<OrdersList> {
                     (response) {
                       Navigator.pop(context);
 
+                      debugPrint('xc : ${response.statusCode}');
                       if (response.statusCode == 200) {
                         showToast(message: 'Payment successful');
                         count = 0;
@@ -442,7 +459,8 @@ class _OrdersListState extends State<OrdersList> {
                         showToast(
                             message: AppLocalization.of(context)!.serverError);
                       } else {
-                        showToast(message: response.body);
+                        showToast(
+                            message: jsonDecode(response.body)[0]['errors']);
                       }
                     },
                   );

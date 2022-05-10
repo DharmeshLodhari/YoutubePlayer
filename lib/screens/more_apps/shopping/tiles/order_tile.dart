@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/colors.dart';
 
 // ignore: must_be_immutable
 class OrderTile extends StatelessWidget {
@@ -126,14 +125,18 @@ class OrderTile extends StatelessWidget {
           worldCurrencies[order!.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
-              color: navyBlue,
+              color: order!.customer == userBloc.user.userName
+                  ? blackFont
+                  : navyBlue,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
           moneyDisplayNormalizer(order!.totalPrice),
           style: TextStyle(
-            color: navyBlue,
+            color: order!.customer == userBloc.user.userName
+                ? blackFont
+                : navyBlue,
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),

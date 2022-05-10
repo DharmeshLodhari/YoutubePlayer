@@ -244,6 +244,7 @@ BoxDecoration decorateBox(
 void androidBottomSheet(
     {required BuildContext context, required Widget child}) {
   showModalBottomSheet<void>(
+    isScrollControlled: true,
     backgroundColor: Colors.transparent,
     context: context,
     builder: (BuildContext context) {

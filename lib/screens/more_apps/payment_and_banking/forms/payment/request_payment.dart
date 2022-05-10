@@ -468,8 +468,10 @@ class _RequestPaymentState extends State<RequestPayment> {
       //   }
       // },
       onTap: () async {
-        CustomerProfile? userFound =
-            await NavigationUtil.push(context, screen: SearchUser());
+        CustomerProfile? userFound = await NavigationUtil.push(
+          context,
+          screen: SearchUser(),
+        );
 
         if (userFound != null) {
           _payee = userFound;

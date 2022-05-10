@@ -32,7 +32,7 @@ class _ContractScreenState extends State<ContractScreen> {
   bool isPopMenuOpen = false;
   int selectedMenuItemIndex = 0;
   late CustomizedPopUpMenu menu;
-  bool contractIsSwitched = true;
+  bool contractIsSwitched = false;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   GlobalKey _key = LabeledGlobalKey("myContractList");

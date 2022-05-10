@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -268,7 +270,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                         .then(
                                       (response) {
                                         Navigator.pop(context);
-                                        if (response.statusCode != 200) {
+                                        if (response.statusCode == 200) {
                                           Navigator.pop(context, true);
 
                                           showToast(
@@ -279,7 +281,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                                   AppLocalization.of(context)!
                                                       .serverError);
                                         } else {
-                                          showToast(message: response.body);
+                                          showToast(
+                                              message:
+                                                  jsonDecode(response.body)[0]
+                                                      ['errors']);
                                         }
                                       },
                                     );
