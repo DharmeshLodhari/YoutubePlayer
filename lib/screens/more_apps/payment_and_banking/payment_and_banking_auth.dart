@@ -580,6 +580,8 @@ class PaymentAndBankingAuth extends AuthService {
     debugPrint("URL :::: $url");
 
     var response = await httpGet(url, headers: headers);
+    debugPrint("URL resonspose :::: ${response.body}");
+
     if (response.statusCode == 200 || response.statusCode == 400) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server

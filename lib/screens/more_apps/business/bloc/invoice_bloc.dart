@@ -8,7 +8,7 @@ class InvoiceBloc extends ChangeNotifier {
   bool endOfList = false;
   bool _isLoading = false;
   bool noItemInList = false;
-  bool invoiceIsSwitched = true;
+  bool isSender = true;
   bool get isLoading => _isLoading;
   BusinessAuth businessAuth = BusinessAuth();
 
@@ -36,12 +36,11 @@ class InvoiceBloc extends ChangeNotifier {
       if (next != null && !isLoading) {
         _isLoading = true;
         notifyListeners();
-        print('GET INVOICE LIST');
 
         Map<String, dynamic>? result = await businessAuth.getInvoiceList(
           next,
           previous,
-          isSender: invoiceIsSwitched,
+          isSender: isSender,
           invoiceStatus: invoiceStatus,
         );
 

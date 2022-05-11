@@ -29,10 +29,10 @@ class ContractScreen extends StatefulWidget {
 
 class _ContractScreenState extends State<ContractScreen> {
   late UserBloc userBloc;
+  bool isContractor = true;
   bool isPopMenuOpen = false;
   int selectedMenuItemIndex = 0;
   late CustomizedPopUpMenu menu;
-  bool contractIsSwitched = false;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   GlobalKey _key = LabeledGlobalKey("myContractList");
@@ -108,22 +108,22 @@ class _ContractScreenState extends State<ContractScreen> {
 
   Widget appBarSwitch() {
     return Switch(
-      activeThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
-      inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-      activeColor: Colors.black.withOpacity(0.8),
-      value: contractIsSwitched,
+      activeThumbImage: AssetImage('assets/images/incoming_arrow.png'),
+      inactiveThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
+      activeColor: Colors.grey.withOpacity(0.9),
+      value: isContractor,
       onChanged: (value) {
         if (!contractBloc.isLoading) {
-          setState(() => contractIsSwitched = value);
+          setState(() => isContractor = value);
           contractBloc.isRefreshing = true;
-          contractBloc.contractIsSwitched = value;
+          contractBloc.isContractor = value;
           contractBloc.getContractList();
           if (value == true) {
             showSnackbar(context,
-                message: 'These are your outgoing contracts', duration: 3000);
+                message: 'These are your incoming contracts', duration: 3000);
           } else {
             showSnackbar(context,
-                message: 'These are your incoming contracts', duration: 3000);
+                message: 'These are your outgoing contracts', duration: 3000);
           }
         }
       },
@@ -142,7 +142,6 @@ class _ContractScreenState extends State<ContractScreen> {
       onTap: () async {
         var contractAdded =
             await Navigator.of(context).pushNamed(Routes.ADD_CONTRACT);
-        print('CONTRACT ADDED ::: $contractAdded');
 
         if (contractAdded == true) {
           contractBloc.isRefreshing = true;

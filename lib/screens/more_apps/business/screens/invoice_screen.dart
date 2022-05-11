@@ -27,11 +27,11 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
+  bool isSender = true;
   late UserBloc userBloc;
   bool isPopMenuOpen = false;
   late InvoiceBloc invoiceBloc;
   late CustomizedPopUpMenu menu;
-  bool contractIsSwitched = true;
   int selectedMenuItemIndex = 0;
 
   RefreshController _refreshController =
@@ -105,22 +105,22 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget appBarSwitch() {
     return Switch(
-      activeThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
-      inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-      activeColor: Colors.black.withOpacity(0.8),
-      value: contractIsSwitched,
+      activeThumbImage: AssetImage('assets/images/incoming_arrow.png'),
+      inactiveThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
+      activeColor: Colors.grey.withOpacity(0.9),
+      value: isSender,
       onChanged: (value) {
         if (!invoiceBloc.isLoading) {
-          setState(() => contractIsSwitched = value);
+          setState(() => isSender = value);
           invoiceBloc.isRefreshing = true;
-          invoiceBloc.invoiceIsSwitched = value;
+          invoiceBloc.isSender = value;
           invoiceBloc.getInvoiceList();
           if (value == true) {
             showSnackbar(context,
-                message: 'These are your outgoing invoice', duration: 1000);
+                message: 'These are your incoming invoice', duration: 1000);
           } else {
             showSnackbar(context,
-                message: 'These are your incoming invoice', duration: 1000);
+                message: 'These are your outgoing invoice', duration: 1000);
           }
         }
       },

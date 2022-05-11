@@ -84,28 +84,29 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   // refresh the list when lifecycle called onResume method
-  void _onRefreshOnResume() {
-    _refreshBloc = Provider.of<RefreshBlocForTransaction>(context);
-    _refreshBloc!
-      ..addListener(() {
-        if (_refreshBloc!.isRefresh) {
-          if (mounted) {
-            _onRefresh();
-            _refreshBloc!.isRefresh = false;
-          }
-        }
-      });
-  }
+  // void _onRefreshOnResume() {
+  //   _refreshBloc = Provider.of<RefreshBlocForTransaction>(context);
+  //   _refreshBloc!
+  //     ..addListener(() {
+  //       if (_refreshBloc!.isRefresh) {
+  //         if (mounted) {
+  //           _onRefresh();
+  //           _refreshBloc!.isRefresh = false;
+  //         }
+  //       }
+  //     });
+  // }
 
-  _isRefreshing() {
+  _refresh() {
     count = 0;
     next = "";
     previous = "";
     transactionList = [];
     noItemInList = false;
     isFirstTime = true;
-    if (mounted) setState(() {});
     isLoading = false;
+    if (mounted) setState(() {});
+    getList();
   }
 
   void _onRefresh() async {
@@ -114,8 +115,7 @@ class _TransactionListState extends State<TransactionList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        _isRefreshing();
-        getList();
+        _refresh();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -180,7 +180,7 @@ class _TransactionListState extends State<TransactionList> {
   @override
   Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
-    _onRefreshOnResume();
+    // _onRefreshOnResume();
 
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     menu = CustomizedPopUpMenu(
@@ -208,14 +208,7 @@ class _TransactionListState extends State<TransactionList> {
         key: _scaffoldTransactionKey,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
+        body: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -308,8 +301,7 @@ class _TransactionListState extends State<TransactionList> {
 
             if (userFound != null) {
               userName = userFound.userName;
-              _isRefreshing();
-              getList();
+              _refresh();
             }
           },
         ),
@@ -404,19 +396,28 @@ class _TransactionListState extends State<TransactionList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.transactionHistoryEmpty,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            //+1 for progressbar
-            itemCount: transactionList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == transactionList.length) {
-                return buildIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(
-                    context, transactionList[index], index);
-              }
-            },
-            controller: _scrollController,
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              //+1 for progressbar
+              itemCount: transactionList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == transactionList.length) {
+                  return buildIndicator(isLoading: isLoading);
+                } else {
+                  return _getSlidableWithLists(
+                      context, transactionList[index], index);
+                }
+              },
+              controller: _scrollController,
+            ),
           );
   }
 

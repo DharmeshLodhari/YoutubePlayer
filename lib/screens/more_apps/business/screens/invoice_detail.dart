@@ -352,6 +352,12 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget getInvoiceItems() {
+    bool canDeleteInvoiceItem =
+        invoice.fromCustomer == userBloc.user.userName &&
+            invoice.status != "Paid" &&
+            invoice.items!.length > 1;
+    bool canEditInvoiceItem = invoice.status != "Paid";
+    bool canShowActionsText = canDeleteInvoiceItem || canEditInvoiceItem;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -391,7 +397,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                   ),
                   SizedBox(width: 8),
                   Expanded(
-                    flex: 5,
+                    flex: 7,
                     child: Row(
                       children: [
                         Text(
@@ -417,15 +423,18 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                               fontSize: 12,
                               fontWeight: FontWeight.w600),
                         ),
-                        // flexibleSpace(),
-                        SizedBox(width: 12),
-                        Text(
-                          "Actions",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600),
-                        ),
+                        canShowActionsText
+                            ? flexibleSpace()
+                            : SizedBox.shrink(),
+                        canShowActionsText
+                            ? Text(
+                                "Actions",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600),
+                              )
+                            : SizedBox.shrink(),
                       ],
                     ),
                   ),
@@ -485,14 +494,16 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget getItemTile({required int length, required InvoiceItem item}) {
-    debugPrint('INVOICE ITEM ID:: ${item.id}');
-    print('INVOICE AMOUUNT INCOMING =------> ${item.amount}');
-
     bool canDeleteInvoiceItem =
         invoice.fromCustomer == userBloc.user.userName &&
             invoice.status != "Paid" &&
             length > 1;
     bool canEditInvoiceItem = invoice.status != "Paid";
+
+    String subtotalAmount =
+        moneyDisplayNormalizer(item.quantity! * item.amount!);
+
+    String itemAmount = moneyDisplayNormalizer(item.amount!);
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2),
@@ -513,11 +524,13 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           ),
           SizedBox(width: 12),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Row(
               children: [
                 Text(item.quantity.toString()),
                 flexibleSpace(),
+
+                //Amount (figure)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -530,12 +543,14 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text(
-                      moneyDisplayNormalizer(item.amount),
-                    ),
+                    Text(itemAmount.length > 8
+                        ? '${itemAmount.substring(0, 8)}...'
+                        : itemAmount),
                   ],
                 ),
                 flexibleSpace(),
+
+                //Subtotal amount
                 Row(
                   children: [
                     Text(
@@ -546,13 +561,15 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text(
-                      moneyDisplayNormalizer(item.quantity! * item.amount!),
-                    ),
+                    Text(subtotalAmount.length > 8
+                        ? '${subtotalAmount.substring(0, 8)}...'
+                        : subtotalAmount),
                   ],
                 ),
-                flexibleSpace(),
-                canDeleteInvoiceItem
+                canDeleteInvoiceItem || canEditInvoiceItem
+                    ? flexibleSpace()
+                    : SizedBox.shrink(),
+                !canDeleteInvoiceItem
                     ? InkWell(
                         child: Icon(Icons.delete, color: mateRed),
                         onTap: () {

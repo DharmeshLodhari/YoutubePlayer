@@ -576,6 +576,7 @@ class ShoppingAuthService extends AuthService {
     if (next == null) {
       return null;
     }
+
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/order/";
 
@@ -589,7 +590,11 @@ class ShoppingAuthService extends AuthService {
         String toDate = dateFormat.format(dateTimeRange.end);
         String fromDate = dateFormat.format(dateTimeRange.start);
 
-        url = url + "&start_date=$fromDate&end_date=$toDate";
+        if (url.contains('?')) {
+          url = url + "&start_date=$fromDate&end_date=$toDate";
+        } else {
+          url = url + "?start_date=$fromDate&end_date=$toDate";
+        }
       }
     } else {
       url = getSecureUrl(url: next);

@@ -219,7 +219,7 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         onTap: () {
           hideBalance();
-          Navigator.of(context).pushNamed("/general-setting");
+          Navigator.of(context).pushNamed(Routes.GENERAL_SETTING);
         },
       ),
     );

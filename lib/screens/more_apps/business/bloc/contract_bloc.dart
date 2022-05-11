@@ -9,7 +9,7 @@ class ContractBloc extends ChangeNotifier {
   bool endOfList = false;
   bool _isLoading = false;
   bool noItemInList = false;
-  bool contractIsSwitched = true;
+  bool isContractor = true;
   bool get isLoading => _isLoading;
   BusinessAuth businessAuth = BusinessAuth();
 
@@ -37,9 +37,10 @@ class ContractBloc extends ChangeNotifier {
         _isLoading = true;
         notifyListeners();
 
+        debugPrint('IS CONTRACTOR ::: $isContractor');
         Map<String, dynamic>? result = await businessAuth.getContractList(
           next,
-          isSender: contractIsSwitched,
+          isContractor: isContractor,
           contractStatus: contractStatus,
         );
 

@@ -838,17 +838,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           },
         ),
       );
-
-      list.add(
-        bottomSheetItem(
-          title: "Change Password",
-          iconData: Icons.lock,
-          onTap: () async {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed('/change-password');
-          },
-        ),
-      );
     }
 
     if (searchedUser?.type?.toLowerCase() != "user") {

@@ -33,10 +33,11 @@ class _OrdersListState extends State<OrdersList> {
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
-  String? previous = "";
   List orderList = [];
-  bool isCustomer = true;
+  String? previous = "";
+  bool isMerchant = true;
   late UserBloc userBloc;
+  bool isFirstTime = true;
 
   ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
@@ -80,12 +81,7 @@ class _OrdersListState extends State<OrdersList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        orderList = [];
-        noItemInList = false;
-        getList();
+        _refresh();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -197,33 +193,24 @@ class _OrdersListState extends State<OrdersList> {
       ),
       actions: <Widget>[
         Switch(
-            value: isCustomer,
-            activeThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
-            inactiveThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-            activeColor: Colors.black.withOpacity(0.8),
+            value: isMerchant,
+            activeThumbImage: AssetImage('assets/images/incoming_arrow.png'),
+            inactiveThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
+            activeColor: Colors.grey.withOpacity(0.9),
             onChanged: (value) {
               if (!isLoading) {
                 // Only make a switch when the page is not loading(i.e, we should always wait for the page to complete loading before making another request)
                 if (value == true) {
                   showSnackbar(context,
-                      message: 'These are your outgoing orders',
+                      message: 'These are your incoming orders',
                       duration: 1000);
                 } else {
                   showSnackbar(context,
-                      message: 'These are your incoming orders',
+                      message: 'These are your outgoing orders',
                       duration: 1000);
                 }
-                setState(() {
-                  count = 0;
-                  next = "";
-                  previous = "";
-                  orderList = [];
-                  noItemInList = false;
-
-                  isCustomer = value;
-
-                  getList();
-                });
+                isMerchant = value;
+                _refresh();
               }
             }),
         SizedBox(width: 8),
@@ -319,7 +306,7 @@ class _OrdersListState extends State<OrdersList> {
             itemCount: orderList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == orderList.length) {
-                return _buildIndicator();
+                return _buildIndicator(isLoading: isLoading);
               } else {
                 return _getSlidableWithLists(context, orderList[index], index);
               }
@@ -328,7 +315,7 @@ class _OrdersListState extends State<OrdersList> {
           );
   }
 
-  Widget _buildIndicator() {
+  Widget _buildIndicator({required bool isLoading}) {
     return new Padding(
       padding: const EdgeInsets.all(8.0),
       child: new Center(
@@ -353,21 +340,24 @@ class _OrdersListState extends State<OrdersList> {
           previous,
           filterValue,
           newDateTimeRange,
-          isMerchant: isCustomer,
+          isMerchant: isMerchant,
         );
-        count = result['count'];
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
         next = result['next'];
+        count = result['count'];
         previous = result['previous'];
         var tempList = result['results'];
-
-        print('RESULTS ::: $tempList');
 
         isLoading = false;
         orderList.addAll(tempList);
 
         if (mounted) setState(() {});
 
-        if (next != null) {
+        if (isFirstTime && next != null && next != "") {
+          isFirstTime = false;
           getList();
         }
       }
@@ -446,15 +436,9 @@ class _OrdersListState extends State<OrdersList> {
                     (response) {
                       Navigator.pop(context);
 
-                      debugPrint('xc : ${response.statusCode}');
                       if (response.statusCode == 200) {
                         showToast(message: 'Payment successful');
-                        count = 0;
-                        next = "";
-                        previous = "";
-                        orderList = [];
-                        noItemInList = false;
-                        getList();
+                        _refresh();
                       } else if (response.statusCode == 500) {
                         showToast(
                             message: AppLocalization.of(context)!.serverError);
@@ -504,12 +488,7 @@ class _OrdersListState extends State<OrdersList> {
       child: VerticalListItem(
         order,
         onPaymentSuccessfulFromDetailPage: () {
-          count = 0;
-          next = "";
-          previous = "";
-          orderList = [];
-          noItemInList = false;
-          getList();
+          _refresh();
         },
       ),
       actions: listActionSlideActions(order, index),
@@ -522,6 +501,16 @@ class _OrdersListState extends State<OrdersList> {
     _refreshController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _refresh() {
+    count = 0;
+    next = "";
+    previous = "";
+    orderList = [];
+    isFirstTime = true;
+    noItemInList = false;
+    getList();
   }
 }
 

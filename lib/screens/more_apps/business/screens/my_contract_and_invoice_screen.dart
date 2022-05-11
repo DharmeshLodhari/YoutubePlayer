@@ -197,12 +197,12 @@ class _MyContractAndInvoiceScreenState
         if (currentIndex == 0) {
           setState(() => contractIsSwitched = value);
           contractBloc.isRefreshing = true;
-          contractBloc.contractIsSwitched = value;
+          contractBloc.isContractor = value;
           contractBloc.getContractList();
         } else {
           setState(() => invoiceIsSwitched = value);
           invoiceBloc.isRefreshing = true;
-          invoiceBloc.invoiceIsSwitched = value;
+          invoiceBloc.isSender = value;
           invoiceBloc.getInvoiceList();
         }
       },

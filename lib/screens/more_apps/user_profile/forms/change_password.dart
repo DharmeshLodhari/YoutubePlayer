@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 import '../user_auth.dart';
 
@@ -244,17 +245,17 @@ class _ChangePasswordState extends State<ChangePassword> {
 
             showToast(message: "Password updated successfully !!");
 
-            Navigator.popUntil(context, ModalRoute.withName('/dashboard'));
+            Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
           } else {
             Navigator.pop(context);
           }
         }).catchError((error) {
-          showToast(message: "Please enter correct password !!");
+          showToast(message: error.toString());
           Navigator.pop(context);
           debugPrint("ERROR:- $error");
         });
       } else {
-        showToast(message: "Please enter correct password !!");
+        showToast(message: "Please enter a correct password !!");
       }
     }
   }

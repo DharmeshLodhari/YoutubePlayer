@@ -15,8 +15,7 @@ class BusinessAuth extends AuthService {
   /// Contract and Invoice
   //get all contract list
   Future<Map<String, dynamic>?> getContractList(String? next,
-      {ContractStatus? contractStatus, required bool isSender}) async {
-    debugPrint('GETING CONTRACT');
+      {ContractStatus? contractStatus, required bool isContractor}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -25,7 +24,7 @@ class BusinessAuth extends AuthService {
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
 
-      url = url + "?is_contractor=$isSender";
+      url = url + "?is_contractor=$isContractor";
 
       if (contractStatus != null) {
         url = url + "&status=${contractStatus.name}";
@@ -38,8 +37,6 @@ class BusinessAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-
-    print('status code ::: ${response.statusCode}');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);

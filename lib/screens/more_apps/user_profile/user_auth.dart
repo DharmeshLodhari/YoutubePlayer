@@ -325,7 +325,7 @@ class UserAuth extends AuthService {
 
       return {"new_password": data["new_password1"]};
     } else {
-      return Future.error("ERROR: -");
+      return Future.error("ERROR: - ${response.body}");
     }
   }
 
