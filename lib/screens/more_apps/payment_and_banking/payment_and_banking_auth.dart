@@ -477,7 +477,9 @@ class PaymentAndBankingAuth extends AuthService {
       String? next, String? previous,
       {required bool? fromMe,
       required String? userName,
+      required bool isRefreshing,
       DateTimeRange? dateTimeRange}) async {
+    if (isRefreshing) next = "";
     var url = "";
     if (next == null) {
       return null;

@@ -108,14 +108,12 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     count = 0;
     next = "";
     previous = "";
-
     isLoading = false;
     isFirstTime = true;
-
+    isRefreshing = true;
     noItemInList = false;
-
     requestPaymentList = [];
-
+    if (mounted) setState(() {});
     getList();
   }
 
@@ -163,6 +161,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         break;
 
       default:
+        fromMe = null;
         break;
     }
     setState(() {});
@@ -252,9 +251,9 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       actions: <Widget>[
         getSearchBtn(),
         SizedBox(width: 10.0),
-        popUpMenuButton(),
-        SizedBox(width: 10.0),
         dateFilterIcon(),
+        SizedBox(width: 10.0),
+        popUpMenuButton(),
         SizedBox(width: 10.0),
         paymentRequestBtn(),
         SizedBox(width: 16),
@@ -522,6 +521,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
+  bool isRefreshing = false;
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -535,6 +535,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
             previous,
             fromMe: fromMe,
             userName: userName,
+            isRefreshing: isRefreshing,
             dateTimeRange: newDateTimeRange,
           );
           if (result == null) {

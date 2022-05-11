@@ -149,6 +149,8 @@ class _TransactionListState extends State<TransactionList> {
       case "clear_all":
         moneyIn = null;
         userName = null;
+        newDateTimeRange = null;
+
         selectedMenuItemIndex = 0;
 
         break;
