@@ -474,22 +474,47 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> listPaymentRequests(
-      String? next, String? previous, bool toMe, bool fromMe) async {
+      String? next, String? previous,
+      {required bool? fromMe,
+      required String? userName,
+      DateTimeRange? dateTimeRange}) async {
     var url = "";
     if (next == null) {
       return null;
     }
+
+    debugPrint('NEXT ---> $next');
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/request-payment/list/";
-      if (toMe) {
-        url = url + "?to_me=true";
+
+      if (userName != null) {
+        url = url + "?search=$userName";
       }
-      if (fromMe) {
-        url = url + "?from_me=true";
+
+      if (fromMe != null) {
+        if (url.contains('?')) {
+          url = url + "&from_me=$fromMe";
+        } else {
+          url = url + "?from_me=$fromMe";
+        }
+      }
+
+      if (dateTimeRange != null) {
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
+
+        if (url.contains('?')) {
+          url = url + "&start_date=$fromDate&end_date=$toDate";
+        } else {
+          url = url + "?start_date=$fromDate&end_date=$toDate";
+        }
       }
     } else {
       url = getSecureUrl(url: next);
     }
+
+    debugPrint('PAYMENT REQUEST URL ::: $url');
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -558,7 +583,11 @@ class PaymentAndBankingAuth extends AuthService {
       }
 
       if (moneyIn != null) {
-        url = url + "?money_in=$moneyIn";
+        if (url.contains('?')) {
+          url = url + "&money_in=$moneyIn";
+        } else {
+          url = url + "?money_in=$moneyIn";
+        }
       }
 
       if (dateTimeRange != null) {

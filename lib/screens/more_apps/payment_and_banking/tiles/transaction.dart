@@ -134,14 +134,14 @@ class PaymentRequestTile extends StatelessWidget {
           worldCurrencies[paymentRequest!.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
-              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
+              color: paymentRequest!.isCredit! ? blackFont : navyBlue,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),
         Text(
           moneyDisplayNormalizer(paymentRequest!.amount),
           style: TextStyle(
-              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
+              color: paymentRequest!.isCredit! ? blackFont : navyBlue,
               fontWeight: FontWeight.bold,
               fontSize: 14),
         ),

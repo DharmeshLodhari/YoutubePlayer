@@ -127,7 +127,7 @@ class _TransactionListState extends State<TransactionList> {
   }
 
   void menuItemSelectionChange(String value, int index) {
-    if (index == 3) {
+    if (index == 4) {
       newDateTimeRange = null;
     } else {
       selectedMenuItemIndex = index;
@@ -141,16 +141,23 @@ class _TransactionListState extends State<TransactionList> {
         moneyIn = false;
         break;
 
-      case "clear":
+      case "clear_date":
         moneyIn =
             moneyIn; // To maintain the 'filter value' when you clear the date.
+        break;
+
+      case "clear_all":
+        moneyIn = null;
+        userName = null;
+        selectedMenuItemIndex = 0;
+
         break;
 
       default:
         moneyIn = null;
         break;
     }
-    userName = null;
+
     setState(() {});
     _onRefresh();
   }
@@ -190,7 +197,8 @@ class _TransactionListState extends State<TransactionList> {
         CustomizedPopUpMenuItem(title: "All", value: "all"),
         CustomizedPopUpMenuItem(title: "Received", value: "received"),
         CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
-        CustomizedPopUpMenuItem(title: "Clear Date", value: 'clear'),
+        CustomizedPopUpMenuItem(title: "Clear All", value: 'clear_all'),
+        CustomizedPopUpMenuItem(title: "Clear Date", value: 'clear_date'),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -208,14 +216,12 @@ class _TransactionListState extends State<TransactionList> {
         key: _scaffoldTransactionKey,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              getDateRangeText(),
-              Expanded(child: _buildTransactionList()),
-            ],
-          ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            getDateRangeText(),
+            Expanded(child: _buildTransactionList()),
+          ],
         ),
       ),
     );

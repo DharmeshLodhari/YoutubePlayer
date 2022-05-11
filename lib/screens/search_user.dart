@@ -1,8 +1,10 @@
 import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../data/environment.dart';
+import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
 import '../utils/slydo_app_icon_icons.dart';
@@ -65,7 +67,10 @@ class _SearchUserState extends State<SearchUser> {
             tempList!.forEach((result) {
               results.add(getUserTile(result));
             });
-          } catch (e) {}
+          } catch (e) {
+            debugPrint(
+                'ERROR ADDING SEARCH RESULT TO LIST ::: ${e.toString()}');
+          }
           setState(() {});
         }
       }
@@ -101,9 +106,14 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   Widget userCard(CustomerProfile user) {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
     return InkWell(
       onTap: () {
-        Navigator.pop(context, user);
+        if (userBloc.user.userName == user.userName) {
+          showToast(message: 'You cannot search for yourself');
+        } else {
+          Navigator.pop(context, user);
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),

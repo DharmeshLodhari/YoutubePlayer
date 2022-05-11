@@ -48,6 +48,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
 
+    Provider.of<InvoiceBloc>(context, listen: false).isSender = true;
     Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
     Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
 
@@ -95,9 +96,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       actions: [
         appBarSwitch(),
         SizedBox(width: 10.0),
-        addContractButton(),
-        SizedBox(width: 10.0),
         popUpMenuButton(),
+        SizedBox(width: 10.0),
+        addContractButton(),
         SizedBox(width: 16)
       ],
     );
@@ -112,6 +113,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       onChanged: (value) {
         if (!invoiceBloc.isLoading) {
           setState(() => isSender = value);
+          selectedMenuItemIndex = 0;
+          if (mounted) setState(() {});
           invoiceBloc.isRefreshing = true;
           invoiceBloc.isSender = value;
           invoiceBloc.getInvoiceList();
@@ -124,30 +127,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           }
         }
       },
-    );
-  }
-
-  Widget addContractButton() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.add,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () async {
-        var invoiceAdded =
-            await Navigator.of(context).pushNamed(Routes.ADD_INVOICE);
-        print('INVOICE ADDED ::: $invoiceAdded');
-
-        if (invoiceAdded == true) {
-          invoiceBloc.isRefreshing = true;
-          invoiceBloc.getInvoiceList();
-        }
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -191,6 +170,30 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   void menuStateChange(bool isOpen) {
     isPopMenuOpen = isOpen;
     setState(() {});
+  }
+
+  Widget addContractButton() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.add,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () async {
+        var invoiceAdded =
+            await Navigator.of(context).pushNamed(Routes.ADD_INVOICE);
+        print('INVOICE ADDED ::: $invoiceAdded');
+
+        if (invoiceAdded == true) {
+          invoiceBloc.isRefreshing = true;
+          invoiceBloc.getInvoiceList();
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
   }
 
   @override

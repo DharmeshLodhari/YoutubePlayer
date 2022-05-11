@@ -21,6 +21,7 @@ class BusinessAuth extends AuthService {
       return null;
     }
 
+    debugPrint('IS CONTRACTOR :: $isContractor');
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/payment-contract/";
 

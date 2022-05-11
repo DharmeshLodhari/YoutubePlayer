@@ -53,6 +53,7 @@ class _ContractScreenState extends State<ContractScreen> {
     );
 
     Provider.of<ContractBloc>(context, listen: false).isRefreshing = true;
+    Provider.of<ContractBloc>(context, listen: false).isContractor = true;
     Provider.of<ContractBloc>(context, listen: false).getContractList();
 
     _scrollController.addListener(() {
@@ -68,6 +69,7 @@ class _ContractScreenState extends State<ContractScreen> {
   void dispose() {
     _refreshController.dispose();
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -98,9 +100,9 @@ class _ContractScreenState extends State<ContractScreen> {
       actions: [
         appBarSwitch(),
         SizedBox(width: 10.0),
-        addContractButton(),
-        SizedBox(width: 10.0),
         popUpMenuButton(),
+        SizedBox(width: 10.0),
+        addContractButton(),
         SizedBox(width: 16)
       ],
     );
@@ -115,6 +117,8 @@ class _ContractScreenState extends State<ContractScreen> {
       onChanged: (value) {
         if (!contractBloc.isLoading) {
           setState(() => isContractor = value);
+          selectedMenuItemIndex = 0;
+          if (mounted) setState(() {});
           contractBloc.isRefreshing = true;
           contractBloc.isContractor = value;
           contractBloc.getContractList();
@@ -127,29 +131,6 @@ class _ContractScreenState extends State<ContractScreen> {
           }
         }
       },
-    );
-  }
-
-  Widget addContractButton() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.add,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () async {
-        var contractAdded =
-            await Navigator.of(context).pushNamed(Routes.ADD_CONTRACT);
-
-        if (contractAdded == true) {
-          contractBloc.isRefreshing = true;
-          contractBloc.getContractList();
-        }
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -192,6 +173,29 @@ class _ContractScreenState extends State<ContractScreen> {
   void menuStateChange(bool isOpen) {
     isPopMenuOpen = isOpen;
     setState(() {});
+  }
+
+  Widget addContractButton() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.add,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () async {
+        var contractAdded =
+            await Navigator.of(context).pushNamed(Routes.ADD_CONTRACT);
+
+        if (contractAdded == true) {
+          contractBloc.isRefreshing = true;
+          contractBloc.getContractList();
+        }
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
+    );
   }
 
   @override

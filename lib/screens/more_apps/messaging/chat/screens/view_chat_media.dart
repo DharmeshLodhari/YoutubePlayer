@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../../../utils/common.dart';
+
 class ViewChatMedia extends StatefulWidget {
   final arguments;
 
@@ -33,6 +35,8 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     url = widget.arguments["file"];
     message = widget.arguments["message"];
     poster = widget.arguments["poster"] ?? null;
+
+    message = messageDecoderWithEmoji(message);
 
     if (type == "video") {
       initializeVideoPlayer();

@@ -746,7 +746,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     context: context,
                     isValidCallback: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, "/transactions");
+                      Navigator.pushNamed(context, Routes.TRANSACTIONS);
                     },
                     cancelCallBack: () {
                       Navigator.pop(context);
@@ -758,7 +758,9 @@ class _UserDashboardState extends State<UserDashboard> {
               iconData: SlydoAppIcon.receive,
               onTap: () {
                 hideBalance();
-                Navigator.pushNamed(context, "/accounts");
+                Navigator.pop(context);
+
+                Navigator.pushNamed(context, Routes.ACCOUNTS);
               },
             ),
           ],
