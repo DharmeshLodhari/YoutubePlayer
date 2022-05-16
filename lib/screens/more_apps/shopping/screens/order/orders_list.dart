@@ -101,6 +101,16 @@ class _OrdersListState extends State<OrdersList> {
       filterValue = value;
     }
 
+    switch (value) {
+      case "clear_all":
+        filterValue = '';
+        newDateTimeRange = null;
+
+        selectedMenuItemIndex = 0;
+
+        break;
+    }
+
     setState(() {});
     _onRefresh();
   }
@@ -128,6 +138,7 @@ class _OrdersListState extends State<OrdersList> {
         CustomizedPopUpMenuItem(title: "Pending", value: "Pending"),
         CustomizedPopUpMenuItem(title: "Processing", value: "Processing"),
         CustomizedPopUpMenuItem(title: "Clear Date", value: filterValue),
+        CustomizedPopUpMenuItem(title: "Clear All", value: 'clear_all'),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -143,18 +154,32 @@ class _OrdersListState extends State<OrdersList> {
         key: _scaffoldOrderListKey,
         backgroundColor: Colors.white,
         appBar: appBar() as PreferredSizeWidget?,
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _buildOrderList(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            getDateRangeText(),
+            Expanded(child: _buildOrderList()),
+          ],
         ),
       ),
     );
+  }
+
+  Widget getDateRangeText() {
+    return newDateTimeRange != null
+        ? Container(
+            color: greyBorderColor.withOpacity(0.2),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+              ),
+            ),
+          )
+        : SizedBox.shrink();
   }
 
   Widget appBar() {
@@ -180,14 +205,6 @@ class _OrdersListState extends State<OrdersList> {
             AppLocalization.of(context)!.orders,
             style: TextStyle(
                 color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(width: 12),
-          Text(
-            getDateRangeText(),
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 12,
-            ),
           ),
         ],
       ),
@@ -220,14 +237,6 @@ class _OrdersListState extends State<OrdersList> {
         SizedBox(width: 16),
       ],
     );
-  }
-
-  String getDateRangeText() {
-    if (newDateTimeRange != null) {
-      return '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}';
-    } else {
-      return '';
-    }
   }
 
   Widget dateFilterIcon() {
@@ -300,18 +309,28 @@ class _OrdersListState extends State<OrdersList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noOrdersPresent,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            //+1 for progressbar
-            itemCount: orderList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == orderList.length) {
-                return _buildIndicator(isLoading: isLoading);
-              } else {
-                return _getSlidableWithLists(context, orderList[index], index);
-              }
-            },
-            controller: _scrollController,
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              //+1 for progressbar
+              itemCount: orderList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == orderList.length) {
+                  return _buildIndicator(isLoading: isLoading);
+                } else {
+                  return _getSlidableWithLists(
+                      context, orderList[index], index);
+                }
+              },
+              controller: _scrollController,
+            ),
           );
   }
 
@@ -462,7 +481,7 @@ class _OrdersListState extends State<OrdersList> {
           icon: SlydoAppIcon.text_message,
           onTap: () {
             var recipient = userBloc.user.userName == order.merchant
-                ? order.customer
+                ? order.customerName
                 : order.merchant;
 
             Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
@@ -480,7 +499,7 @@ class _OrdersListState extends State<OrdersList> {
 
   Widget _getSlidableWithLists(BuildContext context, Order order, int index) {
     return Slidable(
-      key: Key(order.customer!),
+      key: Key(order.customerName!),
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),

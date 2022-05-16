@@ -15,6 +15,7 @@ import 'package:Slydo/screens/more_apps/movies/movie_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/music/music_player.dart';
 import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
@@ -88,109 +89,7 @@ void main() async {
   ).then((value) {
     runZonedGuarded(() {
       runApp(
-        MultiProvider(providers: [
-          ChangeNotifierProvider<UserBloc>.value(
-            value: UserBloc(),
-          ),
-          ChangeNotifierProvider<CustomerProfileBloc>.value(
-            value: CustomerProfileBloc(),
-          ),
-          ChangeNotifierProvider<BankAccountBloc>.value(
-            value: BankAccountBloc(),
-          ),
-          ChangeNotifierProvider<RefreshBlocForTransaction>.value(
-            value: RefreshBlocForTransaction(),
-          ),
-          ChangeNotifierProvider<RefreshBlocForRequestPayment>.value(
-            value: RefreshBlocForRequestPayment(),
-          ),
-          ChangeNotifierProvider<RefreshBlocForMessages>.value(
-            value: RefreshBlocForMessages(),
-          ),
-          ChangeNotifierProvider<RefreshBlocForConnectionDashboard>.value(
-            value: RefreshBlocForConnectionDashboard(),
-          ),
-          ChangeNotifierProvider<BasketBloc>.value(
-            value: BasketBloc(),
-          ),
-          ChangeNotifierProvider<AddressBloc>.value(
-            value: AddressBloc(),
-          ),
-          ChangeNotifierProvider<DashboardBloc>.value(
-            value: DashboardBloc(),
-          ),
-          ChangeNotifierProvider<InvoiceBloc>.value(
-            value: InvoiceBloc(),
-          ),
-          ChangeNotifierProvider<ContractBloc>.value(
-            value: ContractBloc(),
-          ),
-
-          ///Uncomment this when we implement this functionality
-          ChangeNotifierProvider<MovieDashboardBloc>.value(
-            value: MovieDashboardBloc(),
-          ),
-          ChangeNotifierProvider<BusDashboardBloc>.value(
-            value: BusDashboardBloc(),
-          ),
-          ChangeNotifierProvider<TrainDashboardBloc>.value(
-            value: TrainDashboardBloc(),
-          ),
-          ChangeNotifierProvider<FlightDashboardBloc>.value(
-            value: FlightDashboardBloc(),
-          ),
-          ChangeNotifierProvider<EventDashboardBloc>.value(
-            value: EventDashboardBloc(),
-          ),
-          ChangeNotifierProvider<ShoppingDashboardBloc>.value(
-            value: ShoppingDashboardBloc(),
-          ),
-          ChangeNotifierProvider<HotelDashboardBloc>.value(
-            value: HotelDashboardBloc(),
-          ),
-          ChangeNotifierProvider<PropertyDashboardBloc>.value(
-            value: PropertyDashboardBloc(),
-          ),
-          ChangeNotifierProvider<PropertyFilterBloc>.value(
-            value: PropertyFilterBloc(),
-          ),
-          ChangeNotifierProvider<MusicDashboardBloc>.value(
-            value: MusicDashboardBloc(),
-          ),
-          ChangeNotifierProvider<MusicPlayer>.value(
-            value: MusicPlayer(),
-          ),
-
-          ChangeNotifierProvider<AddInvoiceBloc>.value(
-            value: AddInvoiceBloc(),
-          ),
-          ChangeNotifierProvider<TimerService>.value(
-            value: TimerService(),
-          ),
-          ChangeNotifierProvider<MainSocketProvider>.value(
-            value: MainSocketProvider(),
-          ),
-          ChangeNotifierProvider<ChatShakeDetection>.value(
-            value: ChatShakeDetection(),
-          ),
-          ChangeNotifierProvider<RouteProvider>.value(
-            value: RouteProvider(),
-          ),
-          ChangeNotifierProvider<ShareMessageToChatBloc>.value(
-            value: ShareMessageToChatBloc(),
-          ),
-          ChangeNotifierProvider<ConnectionListBloc>.value(
-            value: ConnectionListBloc(),
-          ),
-
-          ChangeNotifierProvider<BackgroundFetchStopBloc>.value(
-            value: BackgroundFetchStopBloc(),
-          ),
-
-          ChangeNotifierProvider<TaxiBloc>.value(
-            value: TaxiBloc(),
-          ),
-        ], child: MyApp()),
+        MultiProvider(providers: providersList, child: MyApp()),
       );
     }, (exception, stack) {
       FirebaseCrashlytics.instance.recordError(exception, stack);
@@ -265,17 +164,125 @@ class _MyAppState extends State<MyApp> {
             onGenerateRoute: RouteGenerator.generateRoute,
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-                primaryColor: navyBlue,
-                fontFamily: "OpenSans",
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                backgroundColor: navyBlue,
-                textSelectionTheme: TextSelectionThemeData(
-                  selectionHandleColor: navyBlue,
-                )),
+              primaryColor: navyBlue,
+              fontFamily: "OpenSans",
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              backgroundColor: navyBlue,
+              textSelectionTheme: TextSelectionThemeData(
+                selectionHandleColor: navyBlue,
+              ),
+            ),
           );
         });
       }),
     );
   }
 }
+
+List<ChangeNotifierProvider> providersList = [
+  ChangeNotifierProvider<UserBloc>.value(
+    value: UserBloc(),
+  ),
+  ChangeNotifierProvider<CustomerProfileBloc>.value(
+    value: CustomerProfileBloc(),
+  ),
+  ChangeNotifierProvider<BankAccountBloc>.value(
+    value: BankAccountBloc(),
+  ),
+  ChangeNotifierProvider<RefreshBlocForTransaction>.value(
+    value: RefreshBlocForTransaction(),
+  ),
+  ChangeNotifierProvider<RefreshBlocForRequestPayment>.value(
+    value: RefreshBlocForRequestPayment(),
+  ),
+  ChangeNotifierProvider<RefreshBlocForMessages>.value(
+    value: RefreshBlocForMessages(),
+  ),
+  ChangeNotifierProvider<RefreshBlocForConnectionDashboard>.value(
+    value: RefreshBlocForConnectionDashboard(),
+  ),
+  ChangeNotifierProvider<BasketBloc>.value(
+    value: BasketBloc(),
+  ),
+  ChangeNotifierProvider<AddressBloc>.value(
+    value: AddressBloc(),
+  ),
+  ChangeNotifierProvider<DashboardBloc>.value(
+    value: DashboardBloc(),
+  ),
+  ChangeNotifierProvider<InvoiceBloc>.value(
+    value: InvoiceBloc(),
+  ),
+  ChangeNotifierProvider<ContractBloc>.value(
+    value: ContractBloc(),
+  ),
+
+  ///Uncomment this when we implement this functionality
+  ChangeNotifierProvider<MovieDashboardBloc>.value(
+    value: MovieDashboardBloc(),
+  ),
+  ChangeNotifierProvider<BusDashboardBloc>.value(
+    value: BusDashboardBloc(),
+  ),
+  ChangeNotifierProvider<TrainDashboardBloc>.value(
+    value: TrainDashboardBloc(),
+  ),
+  ChangeNotifierProvider<FlightDashboardBloc>.value(
+    value: FlightDashboardBloc(),
+  ),
+  ChangeNotifierProvider<EventDashboardBloc>.value(
+    value: EventDashboardBloc(),
+  ),
+  ChangeNotifierProvider<ShoppingDashboardBloc>.value(
+    value: ShoppingDashboardBloc(),
+  ),
+  ChangeNotifierProvider<HotelDashboardBloc>.value(
+    value: HotelDashboardBloc(),
+  ),
+  ChangeNotifierProvider<PropertyDashboardBloc>.value(
+    value: PropertyDashboardBloc(),
+  ),
+  ChangeNotifierProvider<PropertyFilterBloc>.value(
+    value: PropertyFilterBloc(),
+  ),
+  ChangeNotifierProvider<MusicDashboardBloc>.value(
+    value: MusicDashboardBloc(),
+  ),
+  ChangeNotifierProvider<MusicPlayer>.value(
+    value: MusicPlayer(),
+  ),
+
+  ChangeNotifierProvider<AddInvoiceBloc>.value(
+    value: AddInvoiceBloc(),
+  ),
+  ChangeNotifierProvider<TimerService>.value(
+    value: TimerService(),
+  ),
+  ChangeNotifierProvider<MainSocketProvider>.value(
+    value: MainSocketProvider(),
+  ),
+  ChangeNotifierProvider<ChatShakeDetection>.value(
+    value: ChatShakeDetection(),
+  ),
+  ChangeNotifierProvider<RouteProvider>.value(
+    value: RouteProvider(),
+  ),
+  ChangeNotifierProvider<ShareMessageToChatBloc>.value(
+    value: ShareMessageToChatBloc(),
+  ),
+  ChangeNotifierProvider<ConnectionListBloc>.value(
+    value: ConnectionListBloc(),
+  ),
+
+  ChangeNotifierProvider<BackgroundFetchStopBloc>.value(
+    value: BackgroundFetchStopBloc(),
+  ),
+
+  ChangeNotifierProvider<TaxiBloc>.value(
+    value: TaxiBloc(),
+  ),
+  ChangeNotifierProvider<CheckoutScreenBloc>.value(
+    value: CheckoutScreenBloc(),
+  ),
+];

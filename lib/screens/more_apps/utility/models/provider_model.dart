@@ -14,7 +14,7 @@ class ProviderModel {
       name: json['name'],
       providerId: json['id'],
       avatar: json['avatar'] ??
-          "https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg",
+          "https://www.nicepng.com/png/full/413-4139394_other-internet-providers-in-czech-republic-internet-service.png",
     );
   }
 }

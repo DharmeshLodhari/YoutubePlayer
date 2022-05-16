@@ -10,6 +10,7 @@ class Address {
   String? state;
   String? country;
   String? countryIsoCode;
+  String? shippingNote;
 
   Address(
       {this.addressLineOne,
@@ -17,6 +18,7 @@ class Address {
       this.city,
       this.state,
       this.country,
+      this.shippingNote,
       this.countryIsoCode});
 
   Address.fromJson(var object) {
@@ -26,6 +28,18 @@ class Address {
     this.state = object['state'] ?? "";
     this.country = object['country'] ?? "";
     this.countryIsoCode = object['country_iso_code'] ?? "NG";
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'city': city,
+      'state': state,
+      'country': country,
+      'shipping_note': shippingNote,
+      'address_line_1': addressLineOne,
+      'address_line_2': addressLineTwo,
+      'country_iso_code': countryIsoCode,
+    };
   }
 }
 

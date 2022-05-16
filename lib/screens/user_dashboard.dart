@@ -929,7 +929,7 @@ class _UserDashboardState extends State<UserDashboard> {
         } else if (value == "My Address") {
           Navigator.pushNamed(
             context,
-            '/user-address',
+            Routes.USER_ADDRESS,
           );
         } else if (value == "My Connections") {
           Navigator.pushNamed(

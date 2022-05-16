@@ -16,7 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../utils/navigation_util.dart';
 import '../../../payment_and_banking/payment_and_banking_auth.dart';
+import '../../../user_profile/forms/user_address.dart';
 import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -150,16 +152,37 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        locationBtn(),
+        SizedBox(width: 10.0),
         noteSheetBtn(),
-        SizedBox(
-          width: 10.0,
-        ),
+        SizedBox(width: 10.0),
         changeOrderStatusSheetBtn(),
         // popUpMenuButton(),
         SizedBox(
           width: 16,
         ),
       ],
+    );
+  }
+
+  Widget locationBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.location,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        // showNoteAndroidSheet();
+        NavigationUtil.push(
+          context,
+          screen: UserAddress(customerName: order!.customerName),
+        );
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
     );
   }
 
@@ -372,7 +395,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget getBodyOfNoteBottomSheet() {
     bool result =
-        order!.note == "" && order!.customer == userBloc.user.userName;
+        order!.note == "" && order!.customerName == userBloc.user.userName;
     if (!result) {
       return Expanded(
         child: SingleChildScrollView(

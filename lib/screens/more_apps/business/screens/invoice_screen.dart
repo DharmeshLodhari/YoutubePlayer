@@ -453,10 +453,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   Color getBgColor(InvoiceModel invoice) {
     switch (invoice.status) {
       case "Unpaid":
-        return Colors.green;
+        return navyBlue;
 
       default:
-        return navyBlue;
+        return Colors.green;
     }
   }
 

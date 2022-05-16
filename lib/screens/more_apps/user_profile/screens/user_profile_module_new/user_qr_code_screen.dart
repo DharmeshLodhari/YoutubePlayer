@@ -198,8 +198,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                   filterQuality: FilterQuality.high,
                   placeholder: (context, url) => CircularLoadingIndicator(),
                 )),
+            displayUserType(),
             SizedBox(
-              height: 8,
+              height: 12,
             ),
             userBloc.user.userName != widget.user!.userName
                 ? Divider(
@@ -259,17 +260,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                       ],
                     ),
                   )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        child: displayUserType(),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      )
-                    ],
-                  ),
+                : SizedBox.shrink(),
           ],
         ),
       ),
@@ -324,27 +315,24 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
   }
 
   Widget displayUserType() {
-    if (userBloc.user.userName == widget.user!.userName) {
-      return Container(
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: userBloc.user.type != "User"
-                ? userBloc.user.type != "Business"
-                    ? starYellow
-                    : naturalGreen
-                : navyBlue),
-        child: Text(
-          userBloc.user.type!,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: widget.user!.type != "User"
+              ? widget.user!.type != "Business"
+                  ? starYellow
+                  : naturalGreen
+              : navyBlue),
+      child: Text(
+        widget.user!.type!,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
         ),
-      );
-    }
-    return Container();
+      ),
+    );
   }
 
   Widget contactActionButtons() {

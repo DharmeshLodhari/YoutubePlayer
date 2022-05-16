@@ -812,7 +812,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           iconData: Icons.add_circle_outlined,
           onTap: () {
             Navigator.pop(context);
-            Navigator.of(context).pushNamed('/create-blog');
+            Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
           },
         ),
       );
@@ -866,7 +866,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          var shareBody = "https://slydo.co/" + searchedUser!.userName!;
+          String merchantUrl =
+              'https://merchant.slydo.co/${searchedUser!.userName!}/payme';
+          var shareBody = userBloc.user.type != 'User'
+              ? merchantUrl
+              : "https://slydo.co/" + searchedUser!.userName!;
           Share.share(shareBody, subject: "${searchedUser!.displayName()}");
         },
       ),

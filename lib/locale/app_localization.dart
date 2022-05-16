@@ -441,6 +441,13 @@ class AppLocalization {
     );
   }
 
+  String get country {
+    return Intl.message(
+      "Country",
+      name: "country",
+    );
+  }
+
   String get selectYourCountry {
     return Intl.message(
       "Select your Country",
@@ -2011,6 +2018,13 @@ class AppLocalization {
     return Intl.message(
       "Billing Address",
       name: "billingAddress",
+    );
+  }
+
+  String get shippingAddress {
+    return Intl.message(
+      "Shipping Address",
+      name: "shippingAddress",
     );
   }
 

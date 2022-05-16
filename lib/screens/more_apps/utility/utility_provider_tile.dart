@@ -49,7 +49,10 @@ class UtilityProviderTile extends StatelessWidget {
               getProviderName(),
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold, color: blackFont),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: blackFont,
+              ),
             ),
           ),
         ],

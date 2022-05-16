@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -627,6 +628,30 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  // Get the shipping options when making an order.
+  Future<List<ShippingOptionsModel>> getShippingOptions(
+      {required String merchantName}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/shipping-options/public-list/$merchantName/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint('URL :: $url');
+    debugPrint('BODY :: ${response.body}');
+    debugPrint('STATUS CO :: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      List jsonDataResult = jsonData['results'];
+
+      return jsonDataResult
+          .map((json) => ShippingOptionsModel.fromJson(json))
+          .toList();
+    } else {
+      return Future.error(response.body);
+    }
+  }
+
   // Get single Order
   Future<dynamic> getOrder(String id) async {
     var url = AppConfig.baseUrl + "/api/v1/order/" + id + "/";
@@ -708,16 +733,20 @@ class ShoppingAuthService extends AuthService {
   Future<dynamic> placeOrderOfShoppingCart(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/shopping-cart/";
     var _data = jsonEncode(data);
+    debugPrint('PLACE DATA ::: $_data');
+
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
+
     debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        "PLACE ORDER URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 201) {
       return jsonData;
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
     }
   }
 

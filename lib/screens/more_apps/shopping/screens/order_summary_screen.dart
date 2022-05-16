@@ -1,0 +1,271 @@
+import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/curved_btn.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../data/currency.dart';
+import '../../../../data/state_notifier.dart';
+import '../../../../locale/app_localization.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../widget/LoadingIndicator.dart';
+import '../../payment_and_banking/payment_and_banking_auth.dart';
+import '../../user_profile/models/user.dart';
+
+class OrderSummaryScreen extends StatefulWidget {
+  final Address address;
+  const OrderSummaryScreen({Key? key, required this.address}) : super(key: key);
+
+  @override
+  State<OrderSummaryScreen> createState() => _OrderSummaryScreenState();
+}
+
+class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
+  List<int?> orders = [];
+  late BasketBloc basketBloc;
+  PaymentAndBankingAuth _auth = PaymentAndBankingAuth();
+
+  @override
+  Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
+
+    return Scaffold(
+      appBar: appBar(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Price',
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600),
+              ),
+              priceRow(
+                title: 'Order total',
+                amount: moneyDisplayNormalizer(basketBloc.orderTotal),
+              ),
+              priceRow(
+                  title: 'Total shipping cost',
+                  amount: moneyDisplayNormalizer(basketBloc.totalShippingCost)),
+              Divider(color: blackFont, thickness: 0.5),
+              SizedBox(height: 5),
+              Text(
+                'Shipping Address',
+                style: TextStyle(
+                    color: blackFont,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 10),
+              widget.address.addressLineOne != null
+                  ? addressRow(
+                      title: 'Address line 1',
+                      subTitle: widget.address.addressLineOne!)
+                  : SizedBox.shrink(),
+              widget.address.addressLineTwo != null
+                  ? addressRow(
+                      title: 'Address line 2',
+                      subTitle: widget.address.addressLineTwo!)
+                  : SizedBox.shrink(),
+              widget.address.city != null
+                  ? addressRow(title: 'City', subTitle: widget.address.city!)
+                  : SizedBox.shrink(),
+              widget.address.state != null
+                  ? addressRow(title: 'State', subTitle: widget.address.state!)
+                  : SizedBox.shrink(),
+              Divider(color: blackFont, thickness: 0.5),
+              SizedBox(height: 10),
+              widget.address.shippingNote != ''
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Shipping Note',
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          widget.address.shippingNote!,
+                          style: TextStyle(color: blackFont),
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
+              SizedBox(height: 40),
+              Builder(builder: (context) {
+                return CurvedButton(
+                  text: 'Complete Order',
+                  onPressed: onCompleteOrder,
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  onCompleteOrder() async {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+
+    Map data = {'note': 'place'};
+    data['address'] = widget.address.toJson();
+    data['shipping_options'] = basketBloc.userSelectedShippingOption;
+
+    await checkAccountBalance();
+    //
+    // Create the orders
+    var userOrder = await ShoppingAuthService().placeOrderOfShoppingCart(data);
+
+    if (userOrder != null) {
+      basketBloc.items.clear(); // Shopping cart
+      basketBloc.total = 0; // clearing the total amount
+
+      // Send the list of of orders for payment processing
+      for (int i = 0; i < userOrder.length; i++) {
+        orders.add(userOrder[i]["id"]);
+      }
+      var response = await _auth.makePaymentForCartOrder({"orders": orders});
+
+      debugPrint('STATUS COde :: ${response.statusCode}');
+      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+      if (response.statusCode == 200) {
+        Navigator.pushNamed(context, Routes.ORDERS_LIST);
+      } else if (response.statusCode == 500) {
+        showToast(message: AppLocalization.of(context)!.serverError);
+      } else {
+        debugPrint(
+          "MakePaymentForCartOrder Unsuccessful",
+        );
+      }
+    } else {
+      debugPrint(
+        "Could Not Place The Order",
+      );
+    }
+  }
+
+  AppBar appBar() {
+    return AppBar(
+      elevation: 0,
+      titleSpacing: 16,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        'Order Summary',
+        style: TextStyle(
+            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+
+  Widget priceRow(
+      {required String title,
+      required String amount,
+      TextStyle? amountTextStyle}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                worldCurrencies['NGN']!,
+                style: TextStyle(
+                    color: blackFont,
+                    fontFamily: "Roboto",
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14),
+              ),
+              Text(
+                amount,
+                style: amountTextStyle ??
+                    TextStyle(
+                      fontSize: 16,
+                      color: blackFont,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget addressRow({required String title, required String subTitle}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+            ),
+          ),
+          Text(
+            subTitle,
+            style: TextStyle(
+              fontSize: 16,
+              color: blackFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> checkAccountBalance() async {
+    BankAccountBloc bankAccountBloc =
+        Provider.of<BankAccountBloc>(context, listen: false);
+    if (bankAccountBloc.bankAccount == null ||
+        bankAccountBloc.bankAccount!.bankName == null) {
+      Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+      showToast(message: "Please add bank account first !!");
+    } else {
+      double accountBalance = await getAccountBalance();
+      // Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+      debugPrint("accountBalance:- $accountBalance");
+      double spendingAmount = basketBloc.total / 100;
+      debugPrint("spendingAmount:- $spendingAmount");
+      if (spendingAmount > accountBalance) {
+        showToast(message: "You don't have enough money in Slydo account!!");
+        return;
+      }
+    }
+  }
+}

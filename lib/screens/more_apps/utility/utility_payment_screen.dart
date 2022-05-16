@@ -135,6 +135,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
                       color: dividerColor,
                       thickness: 1.5,
                     ),
+                    SizedBox(height: 30),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: utilityProviderDetails.isNotEmpty
@@ -197,7 +198,11 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
             child: Text(
               widget.providerModel.name,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              style: TextStyle(
+                fontSize: 16,
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -226,7 +231,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
           child: ListTile(
             dense: true,
             title: Text(
-              selectedPlan != null ? selectedPlan!.name : 'Select plan',
+              selectedPlan != null ? selectedPlan!.name : '',
               softWrap: false,
               overflow: TextOverflow.fade,
               style: TextStyle(
@@ -255,7 +260,6 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
 
   void selectPlan() async {
     final pressedPlan = await showDialog<ProviderDetailsModel>(
-        barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -337,7 +341,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
       labelText: "Meter no",
       controller: referenceNumCtrl,
       keyboardType: TextInputType.number,
-      verifyInputFromServerValidation: (val) {
+      whenToVerifyInputFromServer: (val) {
         return true;
       },
       verifyInputFromServerFunc: () => verifyReferenceNumber(),

@@ -48,14 +48,14 @@ class CustomizedTextFormField extends StatefulWidget {
 
   Future<bool>? Function()? verifyInputFromServerFunc;
   bool? Function(String val)?
-      verifyInputFromServerValidation; //If this is true, verifyInputFromServerFunc will be executed
+      whenToVerifyInputFromServer; //If this is true, verifyInputFromServerFunc will be executed
   Function? extraFunctionWhenInputWasVerifiedFromServerSuccessfully;
   Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
 
   CustomizedTextFormField({
     this.helperText,
     this.verifyInputFromServerFunc,
-    this.verifyInputFromServerValidation,
+    this.whenToVerifyInputFromServer,
     this.extraFunctionWhenInputWasVerifiedFromServerSuccessfully,
     this.extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully,
     this.suffixIcon,
@@ -94,8 +94,9 @@ class CustomizedTextFormField extends StatefulWidget {
 }
 
 class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
-  bool verifyingInput = false;
   bool? inputVerified;
+  bool verifyingInput = false;
+  bool? showSuffixIconWhenTryingToValidateInputFromServer;
 
   @override
   Widget build(BuildContext context) {
@@ -258,9 +259,12 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           maxLines: widget.maxLines,
           focusNode: widget.focusNode != null ? widget.focusNode : null,
           onChanged: (val) {
-            if (widget.verifyInputFromServerValidation != null) {
-              if (widget.verifyInputFromServerValidation!(val) == true) {
+            if (widget.whenToVerifyInputFromServer != null) {
+              if (widget.whenToVerifyInputFromServer!(val) == true) {
+                showSuffixIconWhenTryingToValidateInputFromServer = true;
                 _verifyInputFromServer();
+              } else {
+                showSuffixIconWhenTryingToValidateInputFromServer = false;
               }
             }
 
@@ -333,6 +337,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   //     : null,
 
   Widget? _getSuffixIcon() {
+    if (showSuffixIconWhenTryingToValidateInputFromServer == false) {
+      return SizedBox.shrink();
+    }
     if (widget.suffixIcon != null) {
       return widget.suffixIcon;
     } else if (widget.isPassword) {

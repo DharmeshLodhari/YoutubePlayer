@@ -50,20 +50,20 @@ class OrderTile extends StatelessWidget {
   }
 
   String? getCustomerOrMerchant() {
-    var customerOrMerchant = order!.customer == userBloc.user.userName
+    var customerOrMerchant = order!.customerName == userBloc.user.userName
         ? order!.merchant
-        : order!.customer;
+        : order!.customerName;
     return customerOrMerchant;
   }
 
   String? getAvatar() {
-    return order!.customer == userBloc.user.userName
+    return order!.customerName == userBloc.user.userName
         ? order!.merchantAvatar
         : order!.customerAvatar;
   }
 
   String? getAvatarType() {
-    return order!.customer == userBloc.user.userName
+    return order!.customerName == userBloc.user.userName
         ? order!.merchantType
         : order!.customerType;
   }
@@ -83,9 +83,10 @@ class OrderTile extends StatelessWidget {
           Navigator.pushNamed(
               myGlobals.navigationKey.currentContext!, Routes.PROFILE,
               arguments: {
-                "searchedUserName": order!.customer == userBloc.user.userName
-                    ? order!.merchant
-                    : order!.customer
+                "searchedUserName":
+                    order!.customerName == userBloc.user.userName
+                        ? order!.merchant
+                        : order!.customerName
               });
         },
         child: ClipOval(
@@ -125,7 +126,7 @@ class OrderTile extends StatelessWidget {
           worldCurrencies[order!.currency!]!,
           style: TextStyle(
               fontFamily: "Roboto",
-              color: order!.customer == userBloc.user.userName
+              color: order!.customerName == userBloc.user.userName
                   ? blackFont
                   : navyBlue,
               fontWeight: FontWeight.bold,
@@ -134,7 +135,7 @@ class OrderTile extends StatelessWidget {
         Text(
           moneyDisplayNormalizer(order!.totalPrice),
           style: TextStyle(
-            color: order!.customer == userBloc.user.userName
+            color: order!.customerName == userBloc.user.userName
                 ? blackFont
                 : navyBlue,
             fontWeight: FontWeight.bold,

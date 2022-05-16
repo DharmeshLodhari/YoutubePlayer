@@ -74,7 +74,11 @@ class _SearchUserState extends State<SearchUser> {
           setState(() {});
         }
       }
-      if (results.isEmpty) {
+
+      if (results.isNotEmpty) {
+        noItemInList = false;
+        setState(() {});
+      } else if (results.isEmpty) {
         if (mounted) {
           noItemInList = true;
           setState(() {});

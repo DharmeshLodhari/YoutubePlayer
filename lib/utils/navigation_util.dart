@@ -9,6 +9,15 @@ class NavigationUtil {
     );
   }
 
+  static Future pushReplacement(BuildContext context,
+      {required Widget screen}) {
+    return Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => screen,
+      ),
+    );
+  }
+
   static Future pushNamed(BuildContext context, {required String routeName}) {
     return Navigator.of(context).pushNamed(routeName);
   }

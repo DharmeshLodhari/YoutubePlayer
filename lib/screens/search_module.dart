@@ -99,35 +99,6 @@ class _SearchModuleState extends State<SearchModule> {
       }
     });
 
-    searchItemTextController.addListener(() {
-      // autoCompleteSearchText = searchItemTextController.text;
-      //
-      // debugPrint('txt ::: ${searchItemTextController.text}');
-      //
-      // setState(() {
-      //   count = 0;
-      //   next = "";
-      //   previous = "";
-      //   results.clear();
-      //   noItemInList = false;
-      //   getList();
-      // });
-      //
-      // if (results.isNotEmpty || searchItemTextController.text.length != 0) {
-      //   if (mounted) {
-      //     setState(() {
-      //       isSearchIsEmpty = false;
-      //     });
-      //   }
-      // } else {
-      //   if (mounted) {
-      //     setState(() {
-      //       isSearchIsEmpty = true;
-      //     });
-      //   }
-      // }
-    });
-
     super.initState();
   }
 

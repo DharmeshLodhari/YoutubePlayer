@@ -232,6 +232,36 @@ class UserAuth extends AuthService {
     }
   }
 
+  Future<bool> verifyPhoneNumberFromServer(
+      {required String phoneNumber}) async {
+    String url = AppConfig.baseUrl + "/api/v1/user/auth/verify-phone";
+
+    var data = {'phone': phoneNumber};
+    var headers = await getAuthHeaders();
+
+    await Future.delayed(
+      Duration(seconds: 3),
+      () {},
+    );
+    return true;
+
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+
+    print('VERIFY PHONE RESPONSE ::: $response');
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['msg'] == 'valid') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   // it will verify the phone number to  OTP
   Future<String?> verifyPhoneNumber(
       // ignore: non_constant_identifier_names
@@ -329,8 +359,13 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<Address> fetchUserAddress() async {
-    var url = AppConfig.baseUrl + "/api/v1/user/address/";
+  Future<Address> fetchUserAddress({String? customerName}) async {
+    String url = "";
+    if (customerName != null) {
+      url = AppConfig.baseUrl + "/api/v1/user/shipping-address/$customerName/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/user/address/";
+    }
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);

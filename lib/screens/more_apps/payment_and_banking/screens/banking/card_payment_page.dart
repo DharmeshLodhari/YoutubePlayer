@@ -251,7 +251,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                         });
                       }
                     },
-                    verifyInputFromServerValidation: (value) =>
+                    whenToVerifyInputFromServer: (value) =>
                         value.replaceAll(' ', '').length == 16,
                     verifyInputFromServerFunc: () => _verifyCardNumber(),
                     extraFunctionWhenInputWasVerifiedFromServerSuccessfully:
