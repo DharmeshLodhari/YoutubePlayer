@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/post_title_for_chat.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -96,6 +97,9 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
       case "envelope":
         Widget getEnvelopeUI = renderEnvelope(message: messageData);
         return getEnvelopeUI;
+      case "blog_post":
+        Widget getPostUI = renderPostUI(message: messageData);
+        return getPostUI;
 
       default:
         debugPrint(
@@ -1009,6 +1013,63 @@ class _EditOrReplyMessageUIState extends State<EditOrReplyMessageUI>
                 ),
                 Text(
                   "GIF",
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderPostUI({required Map<String, dynamic> message}) {
+    PostForChatModel post =
+        PostForChatModel.fromJson(jsonDecode(message['meta_data']));
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          left: BorderSide(width: 2.0, color: blackFont),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: post.image!,
+            ),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  getAuthorName(message: message, currentUser: userBloc.user)!,
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  messageDecoderWithEmoji(post.title) ?? '',
                   style: TextStyle(
                       color: darkGrey,
                       fontSize: 12,

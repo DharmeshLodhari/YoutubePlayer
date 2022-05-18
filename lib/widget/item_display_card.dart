@@ -16,8 +16,7 @@ Widget displayProduct(
     shadowColor: boxShadow,
     child: GestureDetector(
       child: Container(
-        width: MediaQuery.of(context).size.width - 80,
-        height: MediaQuery.of(context).size.height / 2.5,
+        width: MediaQuery.of(context).size.width - 220,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -40,16 +39,20 @@ Widget displayProduct(
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    product.name!,
-                    style: TextStyle(
+                  Expanded(
+                    child: Text(
+                      product.name!,
+                      style: TextStyle(
                         color: blackFont,
                         fontSize: 14,
-                        fontWeight: FontWeight.bold),
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.fade,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.fade,
+                    ),
                   ),
+                  SizedBox(width: 12),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
@@ -82,35 +85,13 @@ Widget displayProduct(
                       product.shortDescription ?? "",
                       style: TextStyle(
                         color: darkGrey,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  product.rating != 0.0
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              SlydoAppIcon.star,
-                              color: starYellow,
-                              size: 11,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              product.rating?.toString() ?? "0.0",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
+                  getRating(numberOfRating: product.rating?.toInt()),
                 ],
               ),
             ),
@@ -150,8 +131,7 @@ Widget displayService(
     shadowColor: boxShadow,
     child: GestureDetector(
       child: Container(
-        width: MediaQuery.of(context).size.width - 80,
-        height: MediaQuery.of(context).size.height / 2.5,
+        width: MediaQuery.of(context).size.width - 220,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -175,7 +155,7 @@ Widget displayService(
                 children: [
                   Expanded(
                     child: Text(
-                      service.name!,
+                      messageDecoderWithEmoji(service.name) ?? "",
                       style: TextStyle(
                           color: blackFont,
                           fontSize: 14,
@@ -185,6 +165,7 @@ Widget displayService(
                       overflow: TextOverflow.fade,
                     ),
                   ),
+                  SizedBox(width: 12),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -215,38 +196,16 @@ Widget displayService(
                 children: [
                   Expanded(
                     child: Text(
-                      service.shortDescription ?? "",
+                      messageDecoderWithEmoji(service.shortDescription) ?? "",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: darkGrey,
-                        fontSize: 14,
+                        fontSize: 12,
                       ),
                     ),
                   ),
-                  service.rating != 0.0
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              SlydoAppIcon.star,
-                              color: starYellow,
-                              size: 11,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              service.rating?.toString() ?? "0.0",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
+                  getRating(numberOfRating: service.rating?.toInt()),
                 ],
               ),
             ),

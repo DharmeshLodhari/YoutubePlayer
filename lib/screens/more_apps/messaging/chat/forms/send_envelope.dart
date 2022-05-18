@@ -286,7 +286,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -294,14 +294,14 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = double.parse(val);
+            amount = double.parse(val.replaceAll(',', ''));
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val);
+            double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {

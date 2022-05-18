@@ -12,7 +12,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -22,10 +21,11 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../../utils/navigation_util.dart';
+import '../../../../search_user.dart';
 import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -162,7 +162,11 @@ class _SendPaymentState extends State<SendPayment> {
           setState(() {
             _payee = customerProfileBloc.customer;
             recipient = _payee!.userName;
-            _recipientController.text = recipient!;
+            if (recipient != null) {
+              _recipientController.text = recipient!;
+            } else {
+              _recipientController.text = '';
+            }
             UserAuth().fetchCustomerProfile(recipient).then((customerProfile) {
               if (customerProfile != null) {
                 if (mounted) {
@@ -237,7 +241,7 @@ class _SendPaymentState extends State<SendPayment> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.sendPayment,
+        'Send Payment',
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -460,13 +464,15 @@ class _SendPaymentState extends State<SendPayment> {
                 .pushNamed("/photo-viewer", arguments: _payee!.avatar);
           },
           child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: _payee!.avatar!,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
-              filterQuality: FilterQuality.high,
-              errorWidget: imageErrorWidget,
-            ),
+            child: _payee!.avatar != null
+                ? CachedNetworkImage(
+                    imageUrl: _payee!.avatar!,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.high,
+                    errorWidget: imageErrorWidget,
+                  )
+                : SizedBox.shrink(),
           ),
         ),
       );
@@ -500,7 +506,7 @@ class _SendPaymentState extends State<SendPayment> {
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
-                    _payee!.displayName()!,
+                    _payee!.displayName() != null ? _payee!.displayName()! : '',
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -509,7 +515,7 @@ class _SendPaymentState extends State<SendPayment> {
                     maxLines: 1,
                   ),
                   subtitle: Text(
-                    _payee!.userName!,
+                    _payee!.userName != null ? _payee!.userName! : '',
                     style: TextStyle(fontSize: 14, color: darkGrey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -533,6 +539,7 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -554,13 +561,23 @@ class _SendPaymentState extends State<SendPayment> {
           });
         }
       },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          _recipientController.text = _payee!.userName!;
+          if (mounted) setState(() {});
+        }
+      },
     );
   }
 
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       enabled: product == null && service == null,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
@@ -570,14 +587,14 @@ class _SendPaymentState extends State<SendPayment> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = double.parse(val);
+            amount = double.parse(val.replaceAll(',', ''));
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val);
+            double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {
@@ -599,10 +616,12 @@ class _SendPaymentState extends State<SendPayment> {
           if (mounted) setState(() {});
 
           var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
+              await UserAuth().fetchCustomerProfileWithAuth(recipient);
 
           _payee = customerProfile;
           isValidPayee = _payee!.userName != userBloc.user.userName;
+
+          _recipientController.text = customerProfile.userName!;
 
           if (mounted) setState(() {});
         }
@@ -781,122 +800,120 @@ class _SendPaymentState extends State<SendPayment> {
         feeStructure.getFeeWithTax(type: FeesType.ANONYMOUS_TRANSACTION_FEE);
 
     showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) =>
-            StatefulBuilder(builder: (context, rentDurationStateSetter) {
-              return AlertDialog(
-                insetPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                contentPadding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                content: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width - 40,
-                      child: Card(
-                        elevation: 2,
-                        shadowColor: Colors.transparent,
-                        margin: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: EdgeInsets.only(top: 16, bottom: 8),
+      barrierDismissible: false,
+      context: context,
+      builder: (context) =>
+          StatefulBuilder(builder: (context, rentDurationStateSetter) {
+        return AlertDialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          contentPadding: EdgeInsets.zero,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          content: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  elevation: 2,
+                  shadowColor: Colors.transparent,
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: EdgeInsets.only(top: 16, bottom: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        color: Colors.white,
-                                        child: Text(
-                                          "Note",
-                                          overflow: TextOverflow.fade,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                              color: blackFont,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 12,
-                                      ),
-                                      Container(
-                                        color: Colors.white,
-                                        child: Text(
-                                          "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you ₦$anonymousFee.",
-                                          style: TextStyle(
-                                              color: blackFont,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              fontFamily: "Roberto"),
-                                          textAlign: TextAlign.justify,
-                                        ),
-                                      ),
-                                    ],
+                                  color: Colors.white,
+                                  child: Text(
+                                    "Note",
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700),
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    TextButton(
-                                      child: Text("OK",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: blackFont,
-                                              fontWeight: FontWeight.w600)),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                    )
-                                  ],
-                                )
+                                SizedBox(
+                                  height: 12,
+                                ),
+                                Container(
+                                  color: Colors.white,
+                                  child: Text(
+                                    "This transaction will be done anonymously. Recipient will not see the sender information. This service will cost you ₦$anonymousFee.",
+                                    style: TextStyle(
+                                        color: blackFont,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: "Roberto"),
+                                    textAlign: TextAlign.justify,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                child: Text("OK",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: blackFont,
+                                        fontWeight: FontWeight.w600)),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              )
+                            ],
+                          )
+                        ],
                       ),
                     ),
-                    Positioned(
-                      left: (MediaQuery.of(context).size.width - 100) / 2,
-                      top: -30,
-                      child: ClipOval(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border:
-                                  Border.all(color: dividerColor, width: 1.5),
-                              borderRadius: BorderRadius.circular(60)),
-                          height: 60,
-                          width: 60,
-                          child: Center(
-                            child: Image.asset(
-                              "assets/images/anonymous.png",
-                              height: 45,
-                              fit: BoxFit.fitHeight,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                  ),
                 ),
-              );
-            }));
+              ),
+              Positioned(
+                left: (MediaQuery.of(context).size.width - 100) / 2,
+                top: -30,
+                child: ClipOval(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: dividerColor, width: 1.5),
+                        borderRadius: BorderRadius.circular(60)),
+                    height: 60,
+                    width: 60,
+                    child: Center(
+                      child: Image.asset(
+                        "assets/images/anonymous.png",
+                        height: 45,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      }),
+    );
   }
 
   Widget getSubmitButton() {
@@ -922,7 +939,7 @@ class _SendPaymentState extends State<SendPayment> {
       });
     }
 
-    if (recipient == _payee!.userName) {
+    if (_recipientController.text == _payee!.userName) {
       if (!isValidPayee) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -967,7 +984,7 @@ class _SendPaymentState extends State<SendPayment> {
                   deviceData = await getDeviceInfo();
                   var data = {
                     "from_customer": userBloc.user.userName,
-                    "to_customer": recipient!.trim(),
+                    "to_customer": _recipientController.text.trim(),
                     "currency": userBloc.user.currency,
                     "amount": moneyInputNormalizer(amount.toString()),
                     "category": selectedCategory!.trim(),
@@ -985,7 +1002,7 @@ class _SendPaymentState extends State<SendPayment> {
                   }
 
                   debugPrint("Data:- $data");
-                  _auth.makePayment(data).then((value) {
+                  await _auth.makePayment(data).then((value) {
                     debugPrint(
                         "status code:- ${value.statusCode}  body:- ${value.body}");
                     response = value;

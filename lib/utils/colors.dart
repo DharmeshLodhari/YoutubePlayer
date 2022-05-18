@@ -12,6 +12,7 @@ class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }
 
+Color white = HexColor("#FFFFFF");
 Color navyBlue = HexColor("#3F61DB");
 Color navyBlueLight = HexColor("#BEC2F4");
 Color naturalGreen = HexColor("#46CE7C");

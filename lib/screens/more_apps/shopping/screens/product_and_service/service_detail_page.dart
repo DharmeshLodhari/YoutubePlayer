@@ -255,7 +255,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
     list.add(bottomSheetItem(
       title: "Share",
-      icon: SlydoAppIcon.share,
+      iconData: SlydoAppIcon.share,
       onTap: () async {
         Navigator.pop(context);
         var shareBody =
@@ -268,7 +268,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       bottomSheetItem(
         title: "Share in Chat",
         isLast: true,
-        icon: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
@@ -409,14 +409,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           basketBloc.addItemToCart(item: service, type: type);
           late var mapData;
           basketBloc.items.forEach((element) {
-            if (element["item"].id == service!.id) {
+            if (element["item"].subscriptionId == service!.id) {
               mapData = element;
               return;
             }
           });
           Map data = {
             "type": type,
-            "id": mapData["item"].id,
+            "id": mapData["item"].subscriptionId,
             "qty": mapData["qty"],
           };
           debugPrint("Data From Service Page : $data");
@@ -596,40 +596,41 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildReviewList() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            buildReviewTitle(),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed("/review-list-screen",
-                    arguments: {"reviewedService": service});
-              },
-              child: Text(
-                "See all",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: navyBlue,
-                ),
+    return reviewList.length == 0
+        ? Center(
+            child: Text(
+              "No Review yet",
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+                fontFamily: "roberto",
               ),
             ),
-          ],
-        ),
-        SizedBox(
-          height: 12,
-        ),
-        reviewList.length == 0
-            ? Container(
-                height: 200,
-                child: Center(
-                    child: NoItemInList(
-                  msg: "No Review yet",
-                )),
-              )
-            : Column(
+          )
+        : Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  buildReviewTitle(),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamed("/review-list-screen",
+                          arguments: {"reviewedService": service});
+                    },
+                    child: Text(
+                      "See all",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: navyBlue,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12),
+              Column(
                 children: reviewList
                     .map(
                       (review) => Padding(
@@ -642,8 +643,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     )
                     .toList(),
               ),
-      ],
-    );
+            ],
+          );
   }
 
   Widget _buildDescriptionWidget() {
@@ -671,7 +672,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget _buildWriteReview() {
-    if (service?.provider == userBloc.user.userName && canRate) {
+    if (service?.provider == userBloc.user.userName) {
+      return Container();
+    }
+
+    if (!canRate) {
       return Container();
     }
 
@@ -703,9 +708,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             ),
           ),
         ),
-        SizedBox(
-          height: 16,
-        ),
+        SizedBox(height: 16),
       ],
     );
   }
@@ -911,26 +914,9 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ],
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    SlydoAppIcon.star,
-                    color: starYellow,
-                    size: 11,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    service?.rating.toString() ?? "0.0",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
+              SizedBox(height: 5),
+              getRating(
+                numberOfRating: service?.rating!.toInt(),
               ),
             ],
           ),

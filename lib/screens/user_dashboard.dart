@@ -10,7 +10,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -32,6 +31,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
+import '../routes/route_constants.dart';
+import 'more_apps/business/business_auth.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
@@ -73,8 +74,9 @@ class _UserDashboardState extends State<UserDashboard> {
     }
 
     return Scaffold(
-        key: _scaffoldSettingKey,
-        body: Container(
+      key: _scaffoldSettingKey,
+      body: SingleChildScrollView(
+        child: Container(
           height: MediaQuery.of(context).size.height -
               (AppBar().preferredSize.height),
           width: MediaQuery.of(context).size.width,
@@ -95,7 +97,9 @@ class _UserDashboardState extends State<UserDashboard> {
                   : Container()
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   @override
@@ -150,7 +154,7 @@ class _UserDashboardState extends State<UserDashboard> {
         children: [
           Platform.isIOS ? Container() : flexibleSpace(),
           appBar(),
-          flexibleSpace(flex: 4),
+          flexibleSpace(flex: 5),
           accountBalanceCard(),
           flexibleSpace(flex: 2),
           firstRowOfUserDashboardItem(),
@@ -215,7 +219,7 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         onTap: () {
           hideBalance();
-          Navigator.of(context).pushNamed("/general-setting");
+          Navigator.of(context).pushNamed(Routes.GENERAL_SETTING);
         },
       ),
     );
@@ -324,7 +328,7 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: SlydoAppIcon.user,
-          title: "Profile",
+          title: AppLocalization.of(context)!.profile,
           onTap: () {
             hideBalance();
             profileAndroidSheet();
@@ -368,42 +372,36 @@ class _UserDashboardState extends State<UserDashboard> {
     return Row(
       children: [
         Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.transactions,
-          title: "Transaction",
-          onTap: () {
-            hideBalance();
-            BottomSheetPassCode(
-                context: context,
-                isValidCallback: () {
-                  Navigator.pushNamed(context, "/transactions");
-                },
-                cancelCallBack: () {
-                  Navigator.pop(context);
-                });
-          },
-          iconColor: HexColor("#3F61DB"),
-        )),
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.transactions,
+            title: AppLocalization.of(context)!.transaction,
+            onTap: () {
+              hideBalance();
+              transactionAndroidSheet();
+            },
+            iconColor: HexColor("#3F61DB"),
+          ),
+        ),
         SizedBox(
           width: 12,
         ),
+
         Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.naira,
-          title: "Cashout",
-          onTap: () {
-            hideBalance();
-            bankAndroidSheet();
-          },
-          iconColor: HexColor("#46CE7C"),
-        )),
-        SizedBox(
-          width: 12,
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.naira,
+            title: "Cashout",
+            onTap: () {
+              hideBalance();
+              bankAndroidSheet();
+            },
+            iconColor: HexColor("#46CE7C"),
+          ),
         ),
+        SizedBox(width: 12),
         Expanded(
             child: UserDashboardItemTile(
           icon: Icons.account_balance_wallet_rounded,
-          title: "TopUp",
+          title: AppLocalization.of(context)!.wallet,
           onTap: () {
             Navigator.of(context).pushNamed("/top-up-options");
           },
@@ -429,35 +427,70 @@ class _UserDashboardState extends State<UserDashboard> {
         Expanded(
             child: UserDashboardItemTile(
           icon: Icons.business_center_rounded,
-          title: "Business",
+          title: AppLocalization.of(context)!.business,
           isLocked: storeLocked,
           onTap: () {
             hideBalance();
             if (!storeLocked) {
-              Navigator.of(context).pushNamed("/contracts");
+              // Navigator.of(context).pushNamed(Routes.CONTRACTS);
+              businessAndroidSheet();
             }
           },
           iconColor: HexColor("#5218E9"),
         )),
-        SizedBox(
-          width: 12,
-        ),
-        // Expanded(child: Container()),
+        SizedBox(width: 12),
         Expanded(
-            child: UserDashboardItemTile(
-          icon: SlydoAppIcon.more,
-          title: "More",
-          onTap: () {
-            Navigator.pushNamed(context, "/more-apps");
-          },
-          iconColor: HexColor("#374677"),
-        )),
-        SizedBox(
-          width: 12,
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.utility,
+            title: "Utility",
+            onTap: () {
+              Navigator.pushNamed(context, "/utility-dashboard");
+            },
+            iconColor: HexColor("#FFAB00"),
+          ),
         ),
+        // Expanded(
+        //   child: UserDashboardItemTile(
+        //     icon: SlydoAppIcon.more,
+        //     title: AppLocalization.of(context)!.more,
+        //     onTap: () {
+        //       Navigator.pushNamed(context, "/more-apps");
+        //     },
+        //     iconColor: HexColor("#374677"),
+        //   ),
+        // ),
+        SizedBox(width: 12),
         Expanded(child: Container()),
       ],
     );
+  }
+
+  void businessAndroidSheet() {
+    androidBottomSheet(
+        context: context,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            bottomSheetItem(
+              title: 'Contract',
+              iconData: Icons.description_rounded,
+              onTap: () {
+                hideBalance();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
+              },
+            ),
+            bottomSheetItem(
+              title: "Invoice",
+              iconData: Icons.receipt_outlined,
+              onTap: () {
+                hideBalance();
+                Navigator.pop(context);
+                Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+              },
+            ),
+          ],
+        ));
   }
 
   Widget appVersionDataUI() {
@@ -470,7 +503,7 @@ class _UserDashboardState extends State<UserDashboard> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text("Made in Nigeria",
+          Text(AppLocalization.of(context)!.madeInNigeria,
               style: TextStyle(
                   color: navyBlue,
                   fontSize: 12,
@@ -526,92 +559,56 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   void pickImage() async {
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              title: Text(
-                AppLocalization.of(context)!.selectTheImageSource,
-                style: TextStyle(fontSize: 18, color: blackFont),
-              ),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text(
-                    AppLocalization.of(context)!.camera,
-                    style: TextStyle(fontSize: 16, color: blackFont),
-                  ),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text(
-                    "Gallery",
-                    style: TextStyle(fontSize: 16, color: blackFont),
-                  ),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
+    String? croppedImage = await getCroppedImage(context);
 
-    if (imageSource != null) {
-      final file =
-          await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
-      if (file != null) {
-        /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
-        if (croppedImage == null) {
+    if (croppedImage != null) {
+      try {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        User? _user = await DatabaseHelper().getUser();
+
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        String countryFromPref = sharedPreferences.getString('country') ?? "NG";
+
+        Country country =
+            CountryPickerUtils.getCountryByIsoCode(countryFromPref);
+
+        SecureUser secureUser = await SecureStorage().getUser();
+        String phoneNumber = secureUser.phoneNumber ?? "";
+        String password = secureUser.password ?? "";
+
+        if (phoneNumber != "") {
+          phoneNumber = "+" + country.phoneCode! + phoneNumber;
+        }
+
+        if (phoneNumber == "" || password == "") {
+          phoneNumber = _user?.phoneNumber ?? "";
+          password = _user?.password ?? "";
+        }
+
+        if (phoneNumber == "" || password == "") {
+          isLoading = false;
+          if (mounted) setState(() {});
           return;
         }
 
-        try {
-          isLoading = true;
-          if (mounted) setState(() {});
+        // Upload Image new image
+        await UserAuth().updateUserAvatar(File(croppedImage));
 
-          User? _user = await DatabaseHelper().getUser();
-
-          SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
-          String countryFromPref =
-              sharedPreferences.getString('country') ?? "NG";
-
-          Country country =
-              CountryPickerUtils.getCountryByIsoCode(countryFromPref);
-
-          SecureUser secureUser = await SecureStorage().getUser();
-          String phoneNumber = secureUser.phoneNumber ?? "";
-          String password = secureUser.password ?? "";
-
-          if (phoneNumber != "") {
-            phoneNumber = "+" + country.phoneCode! + phoneNumber;
-          }
-
-          if (phoneNumber == "" || password == "") {
-            phoneNumber = _user?.phoneNumber ?? "";
-            password = _user?.password ?? "";
-          }
-
-          if (phoneNumber == "" || password == "") {
-            isLoading = false;
-            if (mounted) setState(() {});
-            return;
-          }
-
-          // Upload Image new image
-          await UserAuth().updateUserAvatar(File(croppedImage));
-
-          // Get New updated user data and set new user data to userBloc
-          await _auth.authenticate(phoneNumber, password).then((value) {
-            userBloc.user = value;
-            isLoading = false;
-            if (mounted) setState(() {});
-            dashboardBloc.index = 0;
-          });
-        } catch (err) {
+        // Get new updated user data and set new user data to userBloc.
+        await _auth.authenticate(phoneNumber, password).then((value) {
+          userBloc.user = value;
           isLoading = false;
           if (mounted) setState(() {});
-          // showToast(message: err.toString());
-          debugPrint("Cannot Update Avatar : " + err.toString());
-        }
+          dashboardBloc.index = 0;
+        });
+      } catch (err) {
+        isLoading = false;
+        if (mounted) setState(() {});
+        // showToast(message: err.toString());
+        debugPrint("Cannot Update Avatar : " + err.toString());
       }
     }
   }
@@ -688,65 +685,86 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   void profileAndroidSheet() {
-    showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
+    androidBottomSheet(
+      context: context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.myProfile,
+            iconData: SlydoAppIcon.user,
+            onTap: () async {
+              await UserAuth()
+                  .fetchCustomerProfile(userBloc.user.userName)
+                  .then((user) {
+                if (mounted) {
+                  Navigator.pop(myGlobals.navigationKey.currentContext!);
+                  Navigator.pushNamed(
+                      myGlobals.navigationKey.currentContext!, '/profile',
+                      arguments: {"searchedUserName": user.userName});
+                }
+              });
+            },
+          ),
+          bottomSheetItem(
+            title: AppLocalization.of(context)!.updateMyAvatar,
+            iconData: SlydoAppIcon.image,
+            onTap: () {
+              Navigator.pop(context);
+              pickImage();
+            },
+          ),
+          bottomSheetItem(
+            title: "Billing address",
+            iconData: SlydoAppIcon.location,
+            isLast: true,
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                Routes.USER_ADDRESS,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void transactionAndroidSheet() {
+    androidBottomSheet(
         context: context,
-        builder: (BuildContext context) {
-          return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-              ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    bottomSheetItem(
-                      title: "My profile",
-                      icon: SlydoAppIcon.user,
-                      onTap: () async {
-                        await UserAuth()
-                            .fetchCustomerProfile(userBloc.user.userName)
-                            .then((user) {
-                          if (mounted) {
-                            Navigator.pop(
-                                myGlobals.navigationKey.currentContext!);
-                            Navigator.pushNamed(
-                                myGlobals.navigationKey.currentContext!,
-                                '/profile',
-                                arguments: {"searchedUserName": user.userName});
-                          }
-                        });
-                      },
-                    ),
-                    bottomSheetItem(
-                      title: "Update my avatar",
-                      icon: SlydoAppIcon.image,
-                      onTap: () {
-                        Navigator.pop(context);
-                        pickImage();
-                      },
-                    ),
-                    bottomSheetItem(
-                      title: "My address",
-                      icon: SlydoAppIcon.location,
-                      isLast: true,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(
-                          context,
-                          '/user-address',
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ));
-        });
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            bottomSheetItem(
+              title: AppLocalization.of(context)!.myTransaction,
+              iconData: SlydoAppIcon.transactions,
+              onTap: () {
+                hideBalance();
+                BottomSheetPassCode(
+                    context: context,
+                    isValidCallback: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, Routes.TRANSACTIONS);
+                    },
+                    cancelCallBack: () {
+                      Navigator.pop(context);
+                    });
+              },
+            ),
+            bottomSheetItem(
+              title: "My Payment Request",
+              iconData: SlydoAppIcon.receive,
+              onTap: () {
+                hideBalance();
+                Navigator.pop(context);
+
+                Navigator.pushNamed(context, Routes.ACCOUNTS);
+              },
+            ),
+          ],
+        ));
   }
 
   void bankAndroidSheet() {
@@ -755,28 +773,30 @@ class _UserDashboardState extends State<UserDashboard> {
         context: context,
         builder: (BuildContext context) {
           return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
             color: Colors.white,
             margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   bottomSheetItem(
-                    title: "Bank accounts",
-                    icon: SlydoAppIcon.bank,
+                    title: AppLocalization.of(context)!.bankAccounts,
+                    iconData: SlydoAppIcon.bank,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, "/bank-account-list");
                     },
                   ),
                   bottomSheetItem(
-                    title: "Cashout",
-                    icon: SlydoAppIcon.payout,
+                    title: AppLocalization.of(context)!.cashOut,
+                    iconData: SlydoAppIcon.payout,
                     onTap: () {
                       BottomSheetPassCode(
                           context: context,
@@ -798,7 +818,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   ),
                   bottomSheetItem(
                     title: "Cashout transactions",
-                    icon: SlydoAppIcon.payout_list,
+                    iconData: SlydoAppIcon.payout_list,
                     isLast: true,
                     onTap: () {
                       BottomSheetPassCode(
@@ -909,7 +929,7 @@ class _UserDashboardState extends State<UserDashboard> {
         } else if (value == "My Address") {
           Navigator.pushNamed(
             context,
-            '/user-address',
+            Routes.USER_ADDRESS,
           );
         } else if (value == "My Connections") {
           Navigator.pushNamed(
@@ -961,7 +981,7 @@ class _UserDashboardState extends State<UserDashboard> {
                   children: <Widget>[
                     bottomSheetItem(
                       title: "Add product",
-                      icon: SlydoAppIcon.product,
+                      iconData: SlydoAppIcon.product,
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, '/add-product');
@@ -969,7 +989,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     bottomSheetItem(
                       title: "Add service",
-                      icon: SlydoAppIcon.note_2,
+                      iconData: SlydoAppIcon.note_2,
                       isLast: true,
                       onTap: () {
                         Navigator.pop(context);

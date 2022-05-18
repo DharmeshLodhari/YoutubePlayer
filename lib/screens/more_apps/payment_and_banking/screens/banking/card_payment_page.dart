@@ -1,27 +1,43 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
+import 'package:provider/provider.dart';
+import '../../../../../widget/LoadingIndicator.dart';
 
-import '../../../../../utils/colors.dart';
-
+// ignore: must_be_immutable
 class CardPaymentPage extends StatefulWidget {
+  dynamic isWalletFunding;
+  CardPaymentPage({this.isWalletFunding = false});
+
   @override
   _CardPaymentPageState createState() => _CardPaymentPageState();
 }
 
 class _CardPaymentPageState extends State<CardPaymentPage> {
-  GlobalKey<ScaffoldState> cardPaymentPageKey = GlobalKey<ScaffoldState>();
-  String cardNumber = '';
-  String expiryDate = '';
-  String cardHolderName = '';
-  String cvvCode = '';
   int amount = 0;
+  int cappedFee = 2000;
+  int calculatedFee = 0;
+  late UserBloc userBloc;
+  bool showButton = false;
+  int amountLimit = 50000;
   bool isCvvFocused = false;
+  bool showFinalAmount = false;
+  int creditCardProcessingFee = 0;
+  int waivedTransactionFeeLimit = 2500;
+  int amountToDeductWhenAddingCard =
+      500; // This is the amount that will be deducted when we are adding a user's credit card (this is N5 in kobo).
+  double creditCardProcessingFeePercentage = 1.4;
+  GlobalKey<ScaffoldState> cardPaymentPageKey = GlobalKey<ScaffoldState>();
 
   final MaskedTextController _cardNumberController =
       MaskedTextController(mask: '0000 0000 0000 0000');
@@ -31,348 +47,18 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
       TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _cvvCodeController =
-      MaskedTextController(mask: '0000');
+      MaskedTextController(mask: '000');
 
+  bool? cardNumberVerified;
+  bool verifyingCardNumber = false;
   FocusNode cvvFocusNode = FocusNode();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return true;
-      },
-      child: Scaffold(
-        key: cardPaymentPageKey,
-        backgroundColor: Colors.white,
-        appBar: appBar(),
-        body: SingleChildScrollView(child: creditCardForm()),
-      ),
-    );
-  }
-
-  PreferredSizeWidget appBar() {
-    return AppBar(
-      elevation: 0,
-      titleSpacing: 0,
-      backgroundColor: Colors.white,
-      automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      centerTitle: false,
-      title: Text(
-        "Add Credit Card",
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  Widget creditCardForm() {
-    return Column(
-      children: [
-        CreditCardWidget(
-          cardNumber: cardNumber,
-          expiryDate: expiryDate,
-          cardHolderName: cardHolderName,
-          cvvCode: cvvCode,
-          showBackView: isCvvFocused,
-          onCreditCardWidgetChange: (creditCardBrand) {},
-          cardBgColor: navyBlue,
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        Card(
-          color: Colors.white,
-          margin: EdgeInsets.symmetric(
-            horizontal: 16,
-          ),
-          elevation: 5,
-          shadowColor: boxShadow,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            child: Form(
-                key: formKey,
-                child: Column(
-                  children: <Widget>[
-                    CustomizedTextFormField(
-                      controller: _cardNumberController,
-                      hintText: 'xxxx xxxx xxxx xxxx',
-                      labelText: "Card Number",
-                      onChanged: (val) {
-                        setState(() {
-                          cardNumber = val;
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomizedTextFormField(
-                              controller: _expiryDateController,
-                              hintText: 'MM/YY',
-                              labelText: "Expiry date",
-                              onChanged: (val) {
-                                setState(() {
-                                  expiryDate = val;
-                                });
-                              }),
-                        ),
-                        SizedBox(
-                          width: 16,
-                        ),
-                        Expanded(
-                          child: CustomizedTextFormField(
-                              controller: _cvvCodeController,
-                              focusNode: cvvFocusNode,
-                              hintText: '123',
-                              labelText: "CVV",
-                              onChanged: (val) {
-                                setState(() {
-                                  cvvCode = val;
-                                });
-                              }),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    //   margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
-                    //   child: TextFormField(
-                    //     controller: _cardNumberController,
-                    //     cursorColor: navyBlue,
-                    //     style: TextStyle(
-                    //       color: navyBlue,
-                    //     ),
-                    //     decoration: InputDecoration(
-                    //       border: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: Colors.white)),
-                    //       focusedBorder: OutlineInputBorder(
-                    //         borderSide: BorderSide(color: navyBlue, width: 1.3),
-                    //       ),
-                    //       enabledBorder: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: navyBlue)),
-                    //       hintStyle: TextStyle(color: navyBlue),
-                    //       labelStyle: TextStyle(color: navyBlue),
-                    //       labelText: AppLocalization.of(context)!.cardNumber,
-                    //       hintText: 'xxxx xxxx xxxx xxxx',
-                    //     ),
-                    //     keyboardType: TextInputType.number,
-                    //     textInputAction: TextInputAction.next,
-                    //     onChanged: (val) {
-                    //       setState(() {
-                    //         cardNumber = val;
-                    //       });
-                    //     },
-                    //   ),
-                    // ),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                    //   child: TextFormField(
-                    //     controller: _expiryDateController,
-                    //     cursorColor: navyBlue,
-                    //     style: TextStyle(
-                    //       color: navyBlue,
-                    //     ),
-                    //     decoration: InputDecoration(
-                    //         border: OutlineInputBorder(
-                    //             borderSide: BorderSide(color: Colors.white)),
-                    //         focusedBorder: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: navyBlue, width: 1.3),
-                    //         ),
-                    //         enabledBorder: OutlineInputBorder(
-                    //             borderSide: BorderSide(color: navyBlue)),
-                    //         hintStyle: TextStyle(color: navyBlue),
-                    //         labelStyle: TextStyle(color: navyBlue),
-                    //         labelText: AppLocalization.of(context)!.expiredDate,
-                    //         hintText: 'MM/YY'),
-                    //     keyboardType: TextInputType.number,
-                    //     textInputAction: TextInputAction.next,
-                    //     onChanged: (val) {
-                    //       setState(() {
-                    //         expiryDate = val;
-                    //       });
-                    //     },
-                    //   ),
-                    // ),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                    //   child: TextField(
-                    //     focusNode: cvvFocusNode,
-                    //     controller: _cvvCodeController,
-                    //     cursorColor: navyBlue,
-                    //     style: TextStyle(
-                    //       color: navyBlue,
-                    //     ),
-                    //     decoration: InputDecoration(
-                    //       border: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: Colors.white)),
-                    //       focusedBorder: OutlineInputBorder(
-                    //         borderSide: BorderSide(color: navyBlue, width: 1.3),
-                    //       ),
-                    //       enabledBorder: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: navyBlue)),
-                    //       hintStyle: TextStyle(color: navyBlue),
-                    //       labelStyle: TextStyle(color: navyBlue),
-                    //       labelText: AppLocalization.of(context)!.cvv,
-                    //       hintText: 'XXXX',
-                    //     ),
-                    //     keyboardType: TextInputType.number,
-                    //     textInputAction: TextInputAction.done,
-                    //     onChanged: (val) {
-                    //       setState(() {
-                    //         cvvCode = val;
-                    //       });
-                    //     },
-                    //   ),
-                    // ),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                    //   child: TextFormField(
-                    //     controller: _cardHolderNameController,
-                    //     cursorColor: navyBlue,
-                    //     style: TextStyle(
-                    //       color: navyBlue,
-                    //     ),
-                    //     decoration: InputDecoration(
-                    //       border: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: Colors.white)),
-                    //       focusedBorder: OutlineInputBorder(
-                    //         borderSide: BorderSide(color: navyBlue, width: 1.3),
-                    //       ),
-                    //       enabledBorder: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: navyBlue)),
-                    //       hintStyle: TextStyle(color: navyBlue),
-                    //       labelStyle: TextStyle(color: navyBlue),
-                    //       labelText: AppLocalization.of(context)!.cardHolder,
-                    //     ),
-                    //     keyboardType: TextInputType.text,
-                    //     textInputAction: TextInputAction.next,
-                    //     onChanged: (val) {
-                    //       setState(() {
-                    //         cardHolderName = val;
-                    //       });
-                    //     },
-                    //   ),
-                    // ),
-
-                    CustomizedTextFormField(
-                      controller: _amountController,
-                      isAmount: true,
-                      labelText: "Amount",
-                      onChanged: (val) {
-                        setState(() {
-                          amount = int.parse(val);
-                        });
-                      },
-                      validator: (val) {
-                        try {
-                          int.parse(val!);
-                        } catch (e) {
-                          return AppLocalization.of(context)!.invalidAmount;
-                        }
-                        return null;
-                      },
-                    ),
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    //   margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-                    //   child: TextFormField(
-                    //     controller: _amountController,
-                    //     cursorColor: navyBlue,
-                    //     style: TextStyle(
-                    //       color: navyBlue,
-                    //     ),
-                    //     decoration: InputDecoration(
-                    //         border: OutlineInputBorder(
-                    //             borderSide: BorderSide(color: Colors.white)),
-                    //         focusedBorder: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: navyBlue, width: 1.3),
-                    //         ),
-                    //         enabledBorder: OutlineInputBorder(
-                    //             borderSide: BorderSide(color: navyBlue)),
-                    //         hintStyle: TextStyle(color: navyBlue),
-                    //         labelStyle: TextStyle(color: navyBlue),
-                    //         labelText: AppLocalization.of(context)!.amount,
-                    //         hintText: AppLocalization.of(context)!.enterAmount),
-                    //     keyboardType: TextInputType.number,
-                    //     textInputAction: TextInputAction.next,
-                    //     onChanged: (val) {
-                    //       setState(() {
-                    //         amount = int.parse(val);
-                    //       });
-                    //     },
-                    //     validator: (val) {
-                    //       try {
-                    //         int.parse(val!);
-                    //       } catch (e) {
-                    //         return AppLocalization.of(context)!.invalidAmount;
-                    //       }
-                    //       return null;
-                    //     },
-                    //   ),
-                    // ),
-                  ],
-                )),
-          ),
-        ),
-        SizedBox(
-          height: 32,
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: CurvedButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                sendPaymentData();
-              } else {
-                showToast(
-                    message:
-                        AppLocalization.of(context)!.invalidDetails + " !!");
-              }
-            },
-            text: AppLocalization.of(context)!.topUp,
-            textColor: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-
-  void sendPaymentData() {
-    PaymentAndBankingAuth().topUpAccountByCC({"data": "data"}).then((value) {
-      if (value == true) {
-        showToast(
-          message: AppLocalization.of(context)!.topUp +
-              " " +
-              AppLocalization.of(context)!.done,
-        );
-        Navigator.pop(context);
-      } else {
-        showToast(message: AppLocalization.of(context)!.somethingWentWrong);
-      }
-    });
-  }
-
   @override
   void initState() {
+    if (widget.isWalletFunding == null) {
+      widget.isWalletFunding = false;
+    }
     cvvFocusNode.addListener(textFieldFocusDidChange);
     super.initState();
   }
@@ -392,5 +78,423 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
     _cvvCodeController.dispose();
     cvvFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<bool> _verifyCardNumber() async {
+    bool verified = false;
+    await PaymentAndBankingAuth()
+        .verifyCardNumber(cardNumber: _cardNumberController.text.trim())
+        .then((verifiedCardNumber) {
+      if (verifiedCardNumber) {
+        verified = true;
+      } else {
+        verified = false;
+      }
+    }).catchError((e) {
+      Navigator.pop(context);
+      showToast(message: 'EROOR - ${e.toString()}');
+    });
+
+    return verified;
+  }
+
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    return WillPopScope(
+      onWillPop: () async {
+        return true;
+      },
+      child: Scaffold(
+        key: cardPaymentPageKey,
+        backgroundColor: Colors.white,
+        appBar: customAppBar(
+          context: context,
+          title: widget.isWalletFunding
+              ? AppLocalization.of(context)!.walletFunding
+              : AppLocalization.of(context)!.addPaymentCard,
+        ) as PreferredSizeWidget?,
+        body: SingleChildScrollView(child: creditCardForm()),
+      ),
+    );
+  }
+
+  int calculateCreditCardFee(
+      {required int amount, required double percentage}) {
+    var finalFee;
+
+    var percentageAmount = amount * (percentage / 100);
+
+    // ₦100 fee waived for transactions under ₦2500.
+    if (percentageAmount > waivedTransactionFeeLimit) {
+      finalFee = percentageAmount.toInt();
+    } else {
+      finalFee = percentageAmount.toInt() + creditCardProcessingFee;
+    }
+    // Local transactions fees are capped at ₦2000, meaning that's the absolute maximum you'll ever pay in fees per transaction.
+
+    if (finalFee > cappedFee) {
+      finalFee = cappedFee;
+    }
+
+    return finalFee;
+  }
+
+  Widget creditCardForm() {
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // CreditCardWidget(
+          //   cardNumber: cardNumber,
+          //   expiryDate: expiryDate,
+          //   cardHolderName: cardHolderName,
+          //   cvvCode: cvvCode,
+          //   showBackView: isCvvFocused,
+          //   onCreditCardWidgetChange: (creditCardBrand) {},
+          //   cardBgColor: navyBlue,
+          // ),
+          // SizedBox(
+          //   height: 16,
+          // ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text(
+              AppLocalization.of(context)!.slydoPayAccepts,
+              style: TextStyle(color: Color(0XFF75818f)),
+            ),
+          ),
+          SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Row(
+              children: [
+                Image.asset(
+                  'assets/images/visa_icon.png',
+                ),
+                SizedBox(width: 10),
+                Image.asset('assets/images/mastercard_icon.png'),
+              ],
+            ),
+          ),
+          widget.isWalletFunding
+              ? Card(
+                  color: Colors.white,
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                  elevation: 5,
+                  shadowColor: boxShadow,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16.0, horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomizedTextFormField(
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          keyboardType: TextInputType.phone,
+                          controller: _amountController,
+                          isAmountField: true,
+                          labelText: AppLocalization.of(context)!.amount,
+                          onChanged: (value) {
+                            _amountFieldOnChanged(
+                                value.replaceAll(',', '').replaceAll('.', ''));
+                          },
+                          validator: (val) {
+                            try {
+                              double userAmount =
+                                  double.parse(val.replaceAll(',', ''));
+                              if (userAmount > amountLimit) {
+                                return 'You cannot fund more than $amountLimit';
+                              }
+                            } catch (e) {
+                              return AppLocalization.of(context)!.invalidAmount;
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          'You cannot fund more than NGN50000',
+                          style:
+                              TextStyle(color: Colors.black.withOpacity(0.4)),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : SizedBox.shrink(),
+          Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            elevation: 5,
+            shadowColor: boxShadow,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Column(
+                children: <Widget>[
+                  CustomizedTextFormField(
+                    controller: _cardNumberController,
+                    hintText: 'xxxx xxxx xxxx xxxx',
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    keyboardType: TextInputType.phone,
+                    labelText: AppLocalization.of(context)!.cardNumber,
+                    onChanged: (value) {
+                      if (value.isEmpty) {
+                        setState(() {
+                          showButton = false;
+                        });
+                      }
+                    },
+                    whenToVerifyInputFromServer: (value) =>
+                        value.replaceAll(' ', '').length == 16,
+                    verifyInputFromServerFunc: () => _verifyCardNumber(),
+                    extraFunctionWhenInputWasVerifiedFromServerSuccessfully:
+                        () {
+                      setState(() {
+                        if (amount <= amountLimit) {
+                          showButton = true;
+                        }
+                      });
+                    },
+                    extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully:
+                        () {
+                      setState(() {
+                        showButton = false;
+                        showToast(message: 'Card not valid');
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  CustomizedTextFormField(
+                    controller: _cardHolderNameController,
+                    hintText: 'John Doe',
+                    keyboardType: TextInputType.name,
+                    labelText: AppLocalization.of(context)!.cardHolderName,
+                    validator: (value) {
+                      return value.toString().isEmpty
+                          ? AppLocalization.of(context)!.fieldCannotBeEmpty
+                          : null;
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomizedTextFormField(
+                          controller: _expiryDateController,
+                          hintText: 'MM/YY',
+                          labelText: "Expiry date",
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            return _validateExpiryDate(value);
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: CustomizedTextFormField(
+                            controller: _cvvCodeController,
+                            focusNode: cvvFocusNode,
+                            hintText: '123',
+                            labelText: AppLocalization.of(context)!.cvv,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              try {
+                                int.parse(value);
+                              } catch (e) {
+                                return AppLocalization.of(context)!
+                                    .invalidFormat;
+                              }
+                            }),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    AppLocalization.of(context)!.doesNotSaveUsersCard,
+                    style: TextStyle(color: Colors.black.withOpacity(0.5)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          widget.isWalletFunding
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      AppLocalization.of(context)!.youWillGetAmount,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    showFinalAmount
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(SlydoAppIcon.naira, color: navyBlue),
+                              SizedBox(width: 5),
+                              Text(
+                                getUserFinalAmount(),
+                                style: TextStyle(
+                                    fontSize: 32,
+                                    color: navyBlue,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          )
+                        : SizedBox.shrink(),
+                  ],
+                )
+              : SizedBox.shrink(),
+          SizedBox(height: 30),
+          showButton
+              ? Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: CurvedButton(
+                    onPressed: () {
+                      if (formKey.currentState!.validate()) {
+                        widget.isWalletFunding
+                            ? _fundWallet()
+                            : _addCreditCard();
+                      } else {
+                        showToast(
+                            message:
+                                AppLocalization.of(context)!.invalidDetails +
+                                    " !!");
+                      }
+                    },
+                    text: AppLocalization.of(context)!.submit,
+                    textColor: Colors.white,
+                  ),
+                )
+              : SizedBox.shrink(),
+          SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  String getUserFinalAmount() {
+    return moneyDisplayNormalizer((amount - calculatedFee) * 100);
+  }
+
+  String formattedExpiryDate() {
+    String expiryYear = _expiryDateController.text.split('/').last;
+    String expiryMonth = _expiryDateController.text.split('/').first;
+
+    String formattedExpiryDate = '20$expiryYear-$expiryMonth-01';
+    return formattedExpiryDate;
+  }
+
+  String getUsersEmail() {
+    return '${userBloc.user.userName}@slydo.co';
+  }
+
+  void _addCreditCard() {
+    CreditCardData creditCardData = CreditCardData(
+      email: getUsersEmail(),
+      cvv: _cvvCodeController.text,
+      expiryDate: formattedExpiryDate(),
+      amount: amountToDeductWhenAddingCard,
+      cardHolder: _cardHolderNameController.text,
+      cardNumber: int.parse(_cardNumberController.text.replaceAll(' ', '')),
+    );
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return EnterAddressOrPinPinPage(creditCardData: creditCardData);
+        },
+      ),
+    );
+  }
+
+  void _fundWallet() {
+    int amount =
+        int.parse(_amountController.text) * 100; // Convert naira to kobo.
+
+    CreditCardData creditCardData = CreditCardData(
+      amount: amount,
+      email: getUsersEmail(),
+      cvv: _cvvCodeController.text,
+      currency: userBloc.user.currency,
+      expiryDate: formattedExpiryDate(),
+      cardHolder: _cardHolderNameController.text,
+      cardNumber: int.parse(_cardNumberController.text.replaceAll(' ', '')),
+    );
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return EnterAddressOrPinPinPage(
+              creditCardData: creditCardData, isWalletFunding: true);
+        },
+      ),
+    );
+  }
+
+  String? _validateExpiryDate(value) {
+    if (value.isNotEmpty) {
+      String yearInputted = value.split('/').last;
+      String monthInputted = value.split('/').first;
+      String currentYear = DateTime.now().year.toString();
+      String monthInDigit = DateTime.now().month.toString();
+      //To get the last two digit of the year
+      String formattedYear =
+          currentYear.substring(currentYear.toString().length - 2);
+
+      if (int.parse(yearInputted) < int.parse(formattedYear)) {
+        return AppLocalization.of(context)!.invalidDate;
+      }
+      if (int.parse(monthInputted) < 1 || int.parse(monthInputted) > 12) {
+        return AppLocalization.of(context)!.invalidDate;
+      }
+      if (int.parse(yearInputted) <= int.parse(formattedYear) &&
+          int.parse(monthInputted) < int.parse(monthInDigit)) {
+        return AppLocalization.of(context)!.invalidDate;
+      }
+    } else {
+      return AppLocalization.of(context)!.invalidDate;
+    }
+
+    return null;
+  }
+
+  void _amountFieldOnChanged(String value) {
+    try {
+      setState(() {
+        amount = int.parse(value);
+        calculatedFee = calculateCreditCardFee(
+            amount: amount, percentage: creditCardProcessingFeePercentage);
+        if (value.isNotEmpty && !(amount > amountLimit)) {
+          showFinalAmount = true;
+        } else {
+          showFinalAmount = false;
+        }
+
+        if (!(amount > amountLimit) && cardNumberVerified == true) {
+          showButton = true;
+        } else {
+          showButton = false;
+        }
+      });
+    } catch (e) {
+      setState(() {
+        showFinalAmount = false;
+      });
+    }
   }
 }

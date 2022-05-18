@@ -13,12 +13,9 @@ import 'package:Slydo/widget/customized_checkbox_field.dart';
 import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../utils/colors.dart';
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
@@ -31,6 +28,8 @@ class _AddProductState extends State<AddProduct> {
   final _formKey = GlobalKey<FormState>();
 
   UserBloc? userBloc;
+
+  ProductCategory? pressedCategory;
   ProductCategory? selectedProductCategory;
   ProductCondition? selectedProductCondition;
 
@@ -47,6 +46,8 @@ class _AddProductState extends State<AddProduct> {
   bool productIsAvailable = false;
   DateTime productAvailableFrom = DateTime.now();
   List<ProductCategory>? productCategories;
+  List<ProductCategory>?
+      productCategoriesCopy; //To hold the full product category at all times.
   bool isLoading = false;
   bool isAPILoading = false;
 
@@ -68,8 +69,10 @@ class _AddProductState extends State<AddProduct> {
 
     try {
       productCategories = await ShoppingAuthService().getProductCategories();
+      productCategoriesCopy = productCategories;
     } catch (e) {
       productCategories = [];
+      productCategoriesCopy = [];
     }
 
     isLoading = false;
@@ -146,9 +149,7 @@ class _AddProductState extends State<AddProduct> {
                       getAmountField(),
                       SizedBox(height: 10),
                       getCategoryField(),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                       getProductConditionField(),
                       SizedBox(height: 16),
                       getIsAvailableField(),
@@ -378,7 +379,105 @@ class _AddProductState extends State<AddProduct> {
           color: darkGrey,
         ),
         onTap: () {
-          selectItemCategory();
+          categoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void categoryAndroidSheet() {
+    productCategories = productCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      productCategories = productCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      productCategories = productCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: productCategories!.length,
+                    itemBuilder: (context, index) {
+                      ProductCategory category = productCategories![index];
+                      if (selectedProductCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedCategory = category;
+                              Navigator.pop(context);
+                              if (pressedCategory != null) {
+                                selectedProductCategory = pressedCategory;
+                                productCategory = selectedProductCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCategory != null) {
+                            selectedProductCategory = pressedCategory;
+                            productCategory = selectedProductCategory!.name;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
@@ -625,11 +724,11 @@ class _AddProductState extends State<AddProduct> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            productPrice = double.parse(val).toString();
+            productPrice = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -638,7 +737,7 @@ class _AddProductState extends State<AddProduct> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;

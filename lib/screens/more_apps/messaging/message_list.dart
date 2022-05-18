@@ -40,7 +40,7 @@ class _MessageListState extends State<MessageList> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-  String filterValue = "all";
+  String? filterValue;
   late UserBloc userBloc;
   RefreshBlocForMessages? _refreshBloc;
 
@@ -184,18 +184,52 @@ class _MessageListState extends State<MessageList> {
           Navigator.pop(context);
         },
       ),
-      title: Text(
-        AppLocalization.of(context)!.messages,
-        style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+      title: Row(
+        children: [
+          Text(
+            '${getAppBarFilterTitle()} ',
+            style: TextStyle(
+                color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            AppLocalization.of(context)!.messages,
+            style: TextStyle(
+                color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
       actions: <Widget>[
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 16.0),
+        //   child: Text(
+        //     getAppBarFilterTitle(),
+        //     style: TextStyle(
+        //       color: blackFont,
+        //       fontSize: 16,
+        //       fontWeight: FontWeight.w700,
+        //     ),
+        //   ),
+        // ),
+        // SizedBox(width: 16),
         popUpMenuButton(),
-        SizedBox(
-          width: 16,
-        ),
+        SizedBox(width: 16),
       ],
     );
+  }
+
+  getAppBarFilterTitle() {
+    switch (filterValue) {
+      case 'all':
+        return 'Inbox';
+      case 'sent':
+        return 'Sent';
+      case 'archived':
+        return 'Archived';
+      case 'starred':
+        return 'Starred';
+      default:
+        return 'Inbox';
+    }
   }
 
   Widget popUpMenuButton() {
@@ -410,8 +444,8 @@ class _MessageListState extends State<MessageList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.delete,
       description: AppLocalization.of(context)!.areYouSureWantToDeleteThisMsg,
-      actionOne: AppLocalization.of(context)!.delete,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.delete,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result == null) return;
     if (result) {

@@ -3,7 +3,9 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
+import '../../../../utils/util.dart';
 import '../user_auth.dart';
 
 // ignore: must_be_immutable
@@ -195,9 +197,15 @@ class _ResetPasswordState extends State<ResetPassword> {
           .resetPassword(newPassword, confirmPassword, phoneNumber, resetToken)
           .then((value) {
         if (value) {
-          Navigator.popUntil(context, ModalRoute.withName('/login'));
+          Navigator.popUntil(context, ModalRoute.withName(Routes.LOGIN));
+        } else {
+          showToast(message: "Something went wrong, please try again.");
         }
-      });
+      }).catchError(
+        (e) {
+          showToast(message: e.toString());
+        },
+      );
     }
   }
 }

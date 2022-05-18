@@ -343,7 +343,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
             ],
           ),
           CustomChip(
-            text: "${newsDetailItem.read} read",
+            text: "${newsDetailItem.readTime} read",
           )
         ],
       ),

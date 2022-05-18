@@ -10,6 +10,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../routes/route_constants.dart';
+
 class UserProfileTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
@@ -105,9 +107,7 @@ class _UserProfileTileForChatState extends State<UserProfileTileForChat> {
                       : Container(
                           width: 0,
                         ),
-                  UserProfileTile(
-                    user: customerProfile,
-                  ),
+                  UserProfileTile(user: customerProfile),
                 ],
               ),
             ),
@@ -207,7 +207,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
           subtitle: getSubtitle(),
           leading: getAvatar(),
           onTap: () {
-            Navigator.pushNamed(context, '/profile',
+            Navigator.pushNamed(context, Routes.PROFILE,
                 arguments: {"searchedUserName": widget.user!.userName});
           },
           // trailing: getTrailing(),

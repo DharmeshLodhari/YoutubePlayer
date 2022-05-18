@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../utils/slydo_app_icon_icons.dart';
 import 'block_list.dart';
 import 'connection_request_list.dart';
 import 'connections_list.dart';
@@ -33,11 +34,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
     }
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -70,16 +66,8 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       backgroundColor: Colors.white,
       titleSpacing: 0,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
+      leading: SizedBox.shrink(),
+      leadingWidth: 22,
       title: Text(
         getTitle(),
         style: TextStyle(
@@ -127,7 +115,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     : Colors.white,
               ),
               child: Text(
-                "Contacts",
+                "My Contacts",
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,
@@ -189,12 +177,10 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       ///TODO:- To be enabled in future version
       // synchronizeContactBtn(),
       // SizedBox(
-      //   width: 8,
+      //   width: 8
       // ),
-      createGroupBtn(),
-      SizedBox(
-        width: 16,
-      ),
+      currentIndex == 0 ? createGroupBtn() : SizedBox.shrink(),
+      SizedBox(width: 16),
     ];
 
     return list;
@@ -210,7 +196,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         color: blackFont,
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("/select-user-for-group");
+        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
       },
       backgroundColor: lightGrey,
       enableMargin: true,
@@ -240,7 +226,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       children: [
         ConnectionList(),
         ConnectionRequestList(),
-        BlockList(),
+        BlockedList(),
       ],
     );
   }

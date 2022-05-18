@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
 class CurvedButton extends StatelessWidget {
+  double? width;
   String? text;
   Color? backgroundColor;
   Color? textColor;
@@ -15,6 +16,7 @@ class CurvedButton extends StatelessWidget {
 
   CurvedButton(
       {this.text,
+      this.width,
       this.textColor,
       this.backgroundColor,
       this.onPressed,
@@ -34,7 +36,7 @@ class CurvedButton extends StatelessWidget {
       text = "Button";
     }
     return Container(
-      width: 100.0.w,
+      width: width ?? 100.0.w,
       height: height,
       child: MaterialButton(
         elevation: 0,

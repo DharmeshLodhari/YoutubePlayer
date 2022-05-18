@@ -17,9 +17,9 @@ class ReviewAuth extends AuthService {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
       return jsonData;
+    } else if (response.statusCode == 404) {
+      return jsonDecode(response.body);
     }
-    debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     return Future.error("${response.body}");
   }
 

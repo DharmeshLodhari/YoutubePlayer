@@ -212,21 +212,21 @@ class _PayoutScreenState extends State<PayoutScreen> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = int.parse(val.replaceAll(',', ''));
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {}
         }
@@ -240,7 +240,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context)!.submitButton,
+      text: AppLocalization.of(context)!.submit,
     );
   }
 

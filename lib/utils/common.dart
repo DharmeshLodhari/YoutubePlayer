@@ -12,6 +12,7 @@ import 'global_key.dart';
 String? messageDecoderWithEmoji(String? text) {
   try {
     List<int> bytes = text.toString().codeUnits;
+
     return utf8.decode(bytes);
   } catch (error) {
     return text;
@@ -26,7 +27,6 @@ Future<bool> sendDataToSocket(Map<String, dynamic> data) async {
   MainSocketProvider mainSocketProvider = Provider.of<MainSocketProvider>(
       myGlobals.navigationKey.currentContext!,
       listen: false);
-
   await mainSocketProvider.add(data);
 
   return true;

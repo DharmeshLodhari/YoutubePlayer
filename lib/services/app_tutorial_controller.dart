@@ -223,41 +223,41 @@ class AppTutorialController {
         ]);
   }
 
-  TargetFocus _getPaymentRequestListTutorial() {
-    return TargetFocus(
-        identify: "Target 6",
-        keyTarget: tutorialRequestPaymentListKey,
-        shape: ShapeLightFocus.RRect,
-
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Payment Request List",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to see the list of all your payment request.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              ))
-        ]);
-  }
+  // TargetFocus _getPaymentRequestListTutorial() {
+  //   return TargetFocus(
+  //       identify: "Target 6",
+  //       keyTarget: tutorialRequestPaymentListKey,
+  //       shape: ShapeLightFocus.RRect,
+  //
+  //       // color: navyBlue,
+  //       contents: [
+  //         TargetContent(
+  //             align: ContentAlign.top,
+  //             child: Container(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: <Widget>[
+  //                   Text(
+  //                     "Payment Request List",
+  //                     style: TextStyle(
+  //                         fontWeight: FontWeight.bold,
+  //                         color: Colors.white,
+  //                         fontSize: 20.0),
+  //                   ),
+  //                   Padding(
+  //                     padding: const EdgeInsets.only(top: 10.0),
+  //                     child: Text(
+  //                       "Click here to see the list of all your payment request.",
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                   ),
+  //                   nextButton()
+  //                 ],
+  //               ),
+  //             ))
+  //       ]);
+  // }
 
   TargetFocus _getSearchItemTutorial() {
     return TargetFocus(
@@ -268,7 +268,7 @@ class AppTutorialController {
         // color: navyBlue,
         contents: [
           TargetContent(
-              align: ContentAlign.top,
+              align: ContentAlign.left,
               child: Container(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -480,7 +480,7 @@ class AppTutorialController {
     _targets.add(_getSendPaymentTutorial());
     _targets.add(_getRequestPaymentTutorial());
     _targets.add(_getQrCodeTutorial());
-    _targets.add(_getPaymentRequestListTutorial());
+    // _targets.add(_getPaymentRequestListTutorial());
     _targets.add(_getSearchItemTutorial());
     _targets.add(_getShoppingCartTutorial());
     _targets.add(_getProfileTutorial());

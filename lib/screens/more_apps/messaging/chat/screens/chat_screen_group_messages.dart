@@ -44,7 +44,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -62,10 +61,7 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_picker/giphy_picker.dart';
@@ -78,6 +74,11 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../../../routes/route_constants.dart';
+import '../tiles/invoice_tile_for_chat.dart';
+import '../tiles/payment_contract_tile_for_chat.dart';
+import '../tiles/post_title_for_chat.dart';
 
 class ChatScreenGroupMessage extends StatefulWidget {
   final arguments;
@@ -1008,6 +1009,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void checkMessageToAdd({required String message}) {
+    print('CHECK MESSAGE TO ADD :: $message');
     Map<String, dynamic>? newMessage = jsonDecode(message);
 
     if (messageList.length > 0) {
@@ -1045,6 +1047,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   void addMessageToChat({String? message}) {
     messageList.insert(0, message);
+    print('ADDED MESSAGE :::: $message');
 
     ///PlaySoundAccordingToMessageType
     MessageSoundPlayer(message: message).playSound();
@@ -1170,6 +1173,55 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (mounted) setState(() {});
   }
 
+  Widget mainStack() {
+    return Stack(
+      children: [
+        Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Padding(
+            padding:
+                EdgeInsets.only(top: AppBar().preferredSize.height, bottom: 40),
+            child: Image.asset(
+              "assets/images/chat_background_2.png",
+              fit: BoxFit.fill,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+        ),
+        Scaffold(
+          key: chatScreenKey,
+          backgroundColor: Colors.transparent,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+          floatingActionButton: Padding(
+            padding: EdgeInsets.only(bottom: 48),
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 100),
+              child: fabIsVisible
+                  ? FloatingActionButton(
+                      mini: true,
+                      backgroundColor: dividerColor,
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 28,
+                        color: blackFont,
+                      ),
+                      tooltip: "Increment",
+                      onPressed: scrollToBottom,
+                    )
+                  : Container(
+                      height: 0,
+                      width: 0,
+                    ),
+            ),
+          ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (itemSearchTypeSelectionMenu == null) {
@@ -1207,7 +1259,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     return ColorfulSafeArea(
       bottom: Platform.isAndroid ? false : true,
-      top: false,
+      top: true,
       color: Colors.white,
       left: false,
       right: false,
@@ -1220,53 +1272,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
           return Future.value(true);
         },
-        child: Stack(
-          children: [
-            Scaffold(
-              resizeToAvoidBottomInset: false,
-              body: Padding(
-                padding: EdgeInsets.only(
-                    top: AppBar().preferredSize.height, bottom: 40),
-                child: Image.asset(
-                  "assets/images/chat_background_2.png",
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
+        child: Platform.isAndroid
+            ? mainStack()
+            : Banner(
+                message: 'BETA',
+                child: mainStack(),
+                location: BannerLocation.topEnd,
               ),
-            ),
-            Scaffold(
-              key: chatScreenKey,
-              backgroundColor: Colors.transparent,
-              appBar: appBar() as PreferredSizeWidget?,
-              body: scaffoldBody(),
-              floatingActionButton: Padding(
-                padding: EdgeInsets.only(bottom: 48),
-                child: AnimatedSwitcher(
-                  duration: Duration(milliseconds: 100),
-                  child: fabIsVisible
-                      ? FloatingActionButton(
-                          mini: true,
-                          backgroundColor: dividerColor,
-                          child: Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 28,
-                            color: blackFont,
-                          ),
-                          tooltip: "Increment",
-                          onPressed: scrollToBottom,
-                        )
-                      : Container(
-                          height: 0,
-                          width: 0,
-                        ),
-                ),
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.endFloat,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1315,42 +1327,42 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   }
                   return getUserIcon();
                 }),
-            SizedBox(
-              width: 12,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  chatConversation != null ? chatConversation!.fullName! : "",
-                  style: TextStyle(
-                    color: blackFont,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    getUserFullName(),
+                    style: TextStyle(
+                      color: blackFont,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
                   ),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  maxLines: 1,
-                ),
-                Text(
-                  chatConversation != null
-                      ? isRecipientTyping
-                          ? typingMessage!
-                          : isOtherUserRecordingAudio
-                              ? "recording audio"
-                              : userStatus
-                      : "", //"Online",
-                  style: TextStyle(
-                      color: isRecipientTyping || isOtherUserRecordingAudio
-                          ? naturalGreen
-                          : darkGrey,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400),
-                  overflow: TextOverflow.fade,
-                  softWrap: false,
-                  maxLines: 1,
-                ),
-              ],
+                  Text(
+                    chatConversation != null
+                        ? isRecipientTyping
+                            ? typingMessage!
+                            : isOtherUserRecordingAudio
+                                ? "recording audio"
+                                : userStatus
+                        : "", //"Online",
+                    style: TextStyle(
+                        color: isRecipientTyping || isOtherUserRecordingAudio
+                            ? naturalGreen
+                            : darkGrey,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400),
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    maxLines: 1,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -1362,6 +1374,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         // SizedBox(width: 16)
       ],
     );
+  }
+
+  String getUserFullName() {
+    if (chatConversation != null) {
+      if (chatConversation!.fullName!.length > 22) {
+        return "${chatConversation!.fullName!.substring(0, 23)}...";
+      } else {
+        return chatConversation!.fullName!;
+      }
+    } else {
+      return "";
+    }
   }
 
   Widget synchronizeContactBtn() {
@@ -1412,8 +1436,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void navigateToGroupDetailScreen() async {
-    var result = await Navigator.of(context)
-        .pushNamed('/group-detail', arguments: {"groupDetail": groupDetail});
+    var result = await Navigator.of(context).pushNamed(Routes.GROUP_DETAIL,
+        arguments: {"groupDetail": groupDetail});
 
     if (result != null) {
       if (result is GroupDetailModel) {
@@ -2663,7 +2687,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   children: <Widget>[
                     bottomSheetItem(
                       title: "Image",
-                      icon: Icons.image_rounded,
+                      iconData: Icons.image_rounded,
                       iconSize: 18,
                       onTap: () {
                         Navigator.pop(context, "image");
@@ -2671,7 +2695,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                     ),
                     bottomSheetItem(
                       title: "Video",
-                      icon: Icons.video_call_rounded,
+                      iconData: Icons.video_call_rounded,
                       iconSize: 20,
                       isLast: true,
                       onTap: () {
@@ -3021,10 +3045,23 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         finalUI = renderEnvelopeUI(
             message: messageData, chatConversation: chatConversation);
         break;
+      case "blog_post":
+        finalUI = renderPostUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+
+      case "payment-contract":
+        finalUI = renderPaymentContractUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+      case "invoice":
+        finalUI = renderInvoiceUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
 
       default:
         debugPrint("Unknown Message Kind 1: $messageType Message:- $message");
-        Widget getErrorRenderTypeUI = unKnownMessageType();
+        Widget getErrorRenderTypeUI = unKnownMessageType(messageType);
         return getErrorRenderTypeUI;
     }
     return getReplyOnSwipe(ui: finalUI, message: message);
@@ -3632,6 +3669,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         message: message, chatConversation: chatConversation);
   }
 
+  Widget renderPostUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return PostTileForChat(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderPaymentContractUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return PostTileForPaymentContract(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderInvoiceUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return PostTileForInvoice(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
   Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
@@ -3667,8 +3728,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
-  Widget unKnownMessageType() {
-    return Container();
+  Widget unKnownMessageType(String? messageKind) {
+    return Container(
+      child: Text(messageKind ?? "Unknown message kind"),
+    );
   }
 
   void checkMessageForRead() {
@@ -3727,9 +3790,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                       Container(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: searchBox()),
-                      SizedBox(
-                        height: 8,
-                      ),
+                      SizedBox(height: 8),
                       Expanded(child: bottomSheetTabBar())
                     ],
                   ),
@@ -4197,7 +4258,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (chatMessageAction.isCopyable!) {
       elements.add(bottomSheetItem(
         title: "Copy message",
-        icon: SlydoAppIcon.copy,
+        iconData: SlydoAppIcon.copy,
         onTap: () {
           copyChatMessage(message: message);
 
@@ -4209,7 +4270,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       if (chatMessageAction.isEditable!) {
         elements.add(bottomSheetItem(
           title: "Edit message",
-          icon: SlydoAppIcon.edit,
+          iconData: SlydoAppIcon.edit,
           onTap: () {
             editChatMessage(message: message);
 
@@ -4222,7 +4283,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       if (chatMessageAction.isDeletable!) {
         elements.add(bottomSheetItem(
           title: messageData['kind'] == "envelope" ? "Cancel" : "Delete",
-          icon: messageData['kind'] == "envelope"
+          iconData: messageData['kind'] == "envelope"
               ? SlydoAppIcon.remove
               : SlydoAppIcon.delete,
           onTap: () {
@@ -4236,7 +4297,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (chatMessageAction.isReplyable!) {
       elements.add(bottomSheetItem(
         title: "Reply",
-        icon: SlydoAppIcon.reply,
+        iconData: SlydoAppIcon.reply,
         onTap: () {
           replyChatMessage(message: message);
           Navigator.pop(context);
@@ -4472,6 +4533,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       String payload = convertServerPayload(data);
 
       addMessageToChat(message: payload);
+      print('MESSAGE PAYLOAD :: $payload');
 
       messageController!.text = "";
       if (mounted) setState(() {});

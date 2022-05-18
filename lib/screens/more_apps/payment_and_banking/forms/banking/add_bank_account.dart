@@ -272,7 +272,7 @@ class _AddAccountState extends State<AddAccount> {
       },
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: AppLocalization.of(context)!.submitButton,
+      text: AppLocalization.of(context)!.submit,
     );
   }
 

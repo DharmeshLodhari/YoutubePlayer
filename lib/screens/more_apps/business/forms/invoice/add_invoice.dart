@@ -6,7 +6,6 @@ import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -15,11 +14,14 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:quiver/iterables.dart';
 
+import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/navigation_util.dart';
+import '../../../../../widget/LoadingIndicator.dart';
+import '../../../../search_user.dart';
 import '../../business_auth.dart';
 
 // ignore: must_be_immutable
@@ -48,7 +50,7 @@ class _AddInvoiceState extends State<AddInvoice> {
   bool isValidPayee = false;
   int? amount;
 
-  Invoice? invoice;
+  InvoiceModel? invoice;
 
   String errorMessage = "";
   String? recipient;
@@ -58,6 +60,7 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   PaymentDuration? selectedDuration;
   late AddInvoiceBloc _addInvoiceBloc;
+  String? conversationId;
 
   @override
   void initState() {
@@ -120,7 +123,7 @@ class _AddInvoiceState extends State<AddInvoice> {
         },
       ),
       title: Text(
-        "Add invoice",
+        "Add Invoice",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -215,12 +218,9 @@ class _AddInvoiceState extends State<AddInvoice> {
                                   InkWell(
                                     onTap: () {
                                       Navigator.of(context)
-                                          .pushNamed("/add-invoice-item");
+                                          .pushNamed(Routes.ADD_INVOICE_ITEM);
                                     },
-                                    child: Icon(
-                                      Icons.add,
-                                      size: 18,
-                                    ),
+                                    child: Icon(Icons.add, size: 18),
                                   )
                                 ],
                               ),
@@ -283,96 +283,103 @@ class _AddInvoiceState extends State<AddInvoice> {
   }
 
   Widget getInvoiceItems() {
-    return _addInvoiceBloc.items.length != 0
-        ? Column(
-            children: enumerate(_addInvoiceBloc.items)
-                .map(
-                  (indexedValue) => ListTile(
-                    onTap: () {
-                      Navigator.pushNamed(context, "/edit-invoice-item",
-                          arguments: {"index": indexedValue.index});
-                    },
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      indexedValue.value!.name!,
-                      style: TextStyle(fontSize: 14, color: blackFont),
-                      textAlign: TextAlign.justify,
+    if (_addInvoiceBloc.items.length != 0) {
+      if (mounted) {
+        setState(() {
+          errorMessage = '';
+        });
+      }
+      return Column(
+        children: enumerate(_addInvoiceBloc.items)
+            .map(
+              (indexedValue) => ListTile(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.EDIT_INVOICE_ITEM,
+                      arguments: {"index": indexedValue.index});
+                },
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  indexedValue.value!.name!,
+                  style: TextStyle(fontSize: 14, color: blackFont),
+                  textAlign: TextAlign.justify,
+                ),
+                subtitle: Row(
+                  children: [
+                    Text(
+                      "Qty : ",
+                      style: TextStyle(fontSize: 12, color: darkGrey),
                     ),
-                    subtitle: Row(
+                    Text(
+                      indexedValue.value!.quantity.toString(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      "Unit price : ",
+                      style: TextStyle(fontSize: 12, color: darkGrey),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Qty : ",
-                          style: TextStyle(fontSize: 12, color: darkGrey),
+                          "₦",
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              color: blackFont,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
                         ),
                         Text(
-                          indexedValue.value!.quantity.toString(),
+                          indexedValue.value!.amount.toString(),
                           style: TextStyle(
                             fontSize: 12,
                             color: blackFont,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "Unit price : ",
-                          style: TextStyle(fontSize: 12, color: darkGrey),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "₦",
-                              style: TextStyle(
-                                  fontFamily: "Roboto",
-                                  color: blackFont,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                            Text(
-                              indexedValue.value!.amount.toString(),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: blackFont,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "₦",
-                          style: TextStyle(
-                              fontFamily: "Roboto",
-                              color: navyBlue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        ),
-                        Text(
-                          (indexedValue.value!.amount! *
-                                  indexedValue.value!.quantity!)
-                              .toString(),
-                          style: TextStyle(
-                              color: navyBlue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                        ),
-                      ],
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "₦",
+                      style: TextStyle(
+                          fontFamily: "Roboto",
+                          color: navyBlue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
                     ),
-                  ),
-                )
-                .toList(),
-          )
-        : Container(
-            child: Center(child: Text("No item")),
-            height: 100,
-          );
+                    Text(
+                      (indexedValue.value!.amount! *
+                              indexedValue.value!.quantity!)
+                          .toString(),
+                      style: TextStyle(
+                          color: navyBlue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+      );
+    } else {
+      return Container(
+        child: Center(child: Text("No item")),
+        height: 100,
+      );
+    }
   }
 
   Widget getInvoiceTotal() {
@@ -486,6 +493,7 @@ class _AddInvoiceState extends State<AddInvoice> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -506,6 +514,20 @@ class _AddInvoiceState extends State<AddInvoice> {
           });
         }
       },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          isValidPayee = _payee!.userName != userBloc.user.userName;
+          _recipientController.text = _payee!.userName!;
+          if (mounted)
+            setState(() {
+              errorMessage = "";
+            });
+        }
+      },
     );
   }
 
@@ -524,64 +546,66 @@ class _AddInvoiceState extends State<AddInvoice> {
               });
             }
             var customerProfile =
-                await UserAuth().fetchCustomerProfile(recipient);
+                await UserAuth().fetchCustomerProfileWithAuth(recipient);
             if (mounted) {
               setState(() {
                 _payee = customerProfile;
                 isValidPayee = _payee!.userName != userBloc.user.userName;
               });
             }
+            _recipientController.text = customerProfile.userName!;
           }
         });
   }
 
-  Widget displayAmountField() {
-    return CustomizedTextFormField(
-      labelText: "Amount",
-      isAmount: true,
-      keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      controller: _amountController,
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            amount = int.parse(val);
-          });
-        }
-      },
-      validator: (val) {
-        if (val.isNotEmpty) {
-          try {
-            int.parse(val);
-            return null;
-          } catch (e) {}
-        }
-        return AppLocalization.of(context)!.invalidAmount;
-      },
-      onTap: () async {
-        isValidPayee = false;
-        setState(() {});
-        if (recipient != null) {
-          recipient = recipient!.trim();
-          if (mounted) {
-            setState(() {
-              _recipientController.text = recipient!;
-            });
-          }
-          var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
-          if (mounted) {
-            setState(() {
-              _payee = customerProfile;
-              isValidPayee = _payee!.userName != userBloc.user.userName;
-            });
-          }
-        }
-      },
-    );
-  }
+  // Widget displayAmountField() {
+  //   return CustomizedTextFormField(
+  //     labelText: "Amount",
+  //     isAmountField: true,
+  //     keyboardType: Platform.isIOS
+  //         ? TextInputType.numberWithOptions(decimal: true)
+  //         : TextInputType.number,
+  //     // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+  //     controller: _amountController,
+  //     onChanged: (val) {
+  //       if (mounted) {
+  //         setState(() {
+  //           amount = int.parse(val);
+  //         });
+  //       }
+  //     },
+  //     validator: (val) {
+  //       if (val.isNotEmpty) {
+  //         try {
+  //           int.parse(val);
+  //           return null;
+  //         } catch (e) {}
+  //       }
+  //       return AppLocalization.of(context)!.invalidAmount;
+  //     },
+  //     onTap: () async {
+  //       isValidPayee = false;
+  //       setState(() {});
+  //       if (recipient != null) {
+  //         recipient = recipient!.trim();
+  //         if (mounted) {
+  //           setState(() {
+  //             _recipientController.text = recipient!;
+  //           });
+  //         }
+  //         var customerProfile =
+  //             await UserAuth().fetchCustomerProfileWithAuth(recipient);
+  //         if (mounted) {
+  //           setState(() {
+  //             _payee = customerProfile;
+  //             isValidPayee = _payee!.userName != userBloc.user.userName;
+  //           });
+  //         }
+  //         _recipientController.text = customerProfile.userName!;
+  //       }
+  //     },
+  //   );
+  // }
 
   Widget getDateField() {
     return Row(
@@ -799,7 +823,7 @@ class _AddInvoiceState extends State<AddInvoice> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Add invoice",
+      text: "Submit",
     );
   }
 
@@ -808,18 +832,24 @@ class _AddInvoiceState extends State<AddInvoice> {
       FocusScope.of(context).unfocus();
     }
 
-    if (!isValidPayee) {
+    if (isValidPayee == false) {
       errorMessage = AppLocalization.of(context)!.invalidRecipient;
       setState(() {});
       return;
     }
 
-    if (recipient == _payee!.userName) {
-      if (!isValidPayee) {
+    if (_recipientController.text != userBloc.user.userName) {
+      if (isValidPayee == false) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
-          return;
         });
+        return;
+      }
+      if (_addInvoiceBloc.items.isEmpty) {
+        setState(() {
+          errorMessage = AppLocalization.of(context)!.addItems;
+        });
+        return;
       }
 
       if (isValidPayee && _formKey.currentState!.validate()) {
@@ -829,26 +859,54 @@ class _AddInvoiceState extends State<AddInvoice> {
 
             invoiceItem = _addInvoiceBloc.items;
 
+            await BusinessAuth()
+                .getConversationId(name: _recipientController.text)
+                .then(
+              (value) {
+                if (value != null) {
+                  conversationId = value;
+                }
+              },
+            );
             var data = {
               "from_customer": userBloc.user.userName,
-              "to_customer": recipient!.trim(),
+              "to_customer": _recipientController.text.trim(),
               "invoice_number": _invoiceController.text.trim().toString(),
               "invoice_date": dateToString(invoiceDate),
               "due_date": dateToString(dueDate),
               "items": invoiceItem
             };
 
+            invoiceItem.forEach(
+              (item) {
+                print('AMOUNT PR ::: ${item!.amount}');
+                int index = invoiceItem.indexOf(item);
+                invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
+              },
+            );
+            if (conversationId != null) {
+              data['conversation_id'] = conversationId!;
+            }
+
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+
             BusinessAuth().addInvoice(data).then((result) {
+              Navigator.pop(context); // Dismiss the loading indicator
+
               if (result) {
                 _addInvoiceBloc.clearItems();
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               }
             }).catchError((error) {
+              Navigator.pop(context); // Dismiss the loading indicator
               showToast(
                 message: error.toString(),
               );
             });
           } catch (e) {
+            Navigator.pop(context);
             debugPrint(e.toString());
             showToast(message: e.toString());
           }

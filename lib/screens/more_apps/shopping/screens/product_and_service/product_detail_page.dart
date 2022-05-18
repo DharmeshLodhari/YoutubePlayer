@@ -29,6 +29,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../shopping_auth.dart';
 
@@ -251,7 +252,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     list.add(bottomSheetItem(
       title: "Share",
-      icon: SlydoAppIcon.share,
+      iconData: SlydoAppIcon.share,
       onTap: () async {
         Navigator.pop(context);
         var shareBody =
@@ -264,7 +265,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       bottomSheetItem(
         title: "Share in Chat",
         isLast: true,
-        icon: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
@@ -593,40 +594,43 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildReviewList() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            buildReviewTitle(),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed("/review-list-screen",
-                    arguments: {"reviewedProduct": product});
-              },
-              child: Text(
-                "See all",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: navyBlue,
-                ),
+    return reviewList.length == 0
+        ? Center(
+            child: Text(
+              "No Review yet",
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+                fontFamily: "roberto",
               ),
             ),
-          ],
-        ),
-        SizedBox(
-          height: 12,
-        ),
-        reviewList.length == 0
-            ? Container(
-                height: 200,
-                child: Center(
-                    child: NoItemInList(
-                  msg: "No Review yet",
-                )),
-              )
-            : Column(
+          )
+        : Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  buildReviewTitle(),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushNamed("/review-list-screen",
+                          arguments: {"reviewedProduct": product});
+                    },
+                    child: Text(
+                      "See all",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: navyBlue,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              Column(
                 children: reviewList
                     .map(
                       (review) => Padding(
@@ -639,12 +643,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     )
                     .toList(),
               ),
-      ],
-    );
+            ],
+          );
   }
 
   Widget _buildWriteReview() {
-    if (product?.seller == userBloc.user.userName && canRate) {
+    if (product?.seller == userBloc.user.userName) {
+      return Container();
+    }
+
+    if (!canRate) {
       return Container();
     }
 
@@ -653,7 +661,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         GestureDetector(
           onTap: () async {
             var result = await Navigator.of(context).pushNamed(
-              "/add-review",
+              Routes.ADD_REVIEW,
               arguments: {
                 "product": product,
               },
@@ -824,27 +832,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ],
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    SlydoAppIcon.star,
-                    color: starYellow,
-                    size: 11,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    product?.rating.toString() ?? "0.0",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
+              SizedBox(height: 5),
+              getRating(numberOfRating: product?.rating!.toInt())
             ],
           ),
         ),

@@ -155,9 +155,10 @@ class _ShoppingCartTileForProductState
   }
 
   String getTotalPrice() {
-    var price =
+    var totalPrice =
         basketBloc.items[widget.index!]["qty"] * int.parse(widget.item!.price!);
-    return price.toString();
+
+    return totalPrice.toString();
   }
 
   Widget getSubtitle(BuildContext context) {

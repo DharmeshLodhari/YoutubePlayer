@@ -69,51 +69,51 @@ class CustomizedAlert {
               title: Container(
                 width: MediaQuery.of(context!).size.width - 40,
                 child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+                  child: content ??
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          SizedBox(
-                            height: 24,
-                          ),
-                          _getImage()!,
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            title ?? "",
-                            style: TextStyle(
-                                color: blackFont,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            height: image != null ? 8 : 20,
-                          ),
-                          desc == null
-                              ? Container()
-                              : Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40),
-                                  child: Text(
-                                    desc ?? "",
-                                    style: TextStyle(
-                                        color: blackFont,
-                                        fontSize: 16.0,
-                                        fontFamily: "roberto"),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          content == null ? Container() : content!,
+                          Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 24,
+                              ),
+                              _getImage()!,
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Text(
+                                title ?? "",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.0),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                height: image != null ? 8 : 20,
+                              ),
+                              desc == null
+                                  ? Container()
+                                  : Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40),
+                                      child: Text(
+                                        desc ?? "",
+                                        style: TextStyle(
+                                            color: blackFont,
+                                            fontSize: 16.0,
+                                            fontFamily: "roberto"),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
+                      ),
                 ),
               ),
               contentPadding: style.buttonAreaPadding,

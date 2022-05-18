@@ -1,8 +1,11 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/shopping_cart_tile.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -16,7 +19,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../utils/colors.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../user_profile/user_auth.dart';
 import '../shopping_auth.dart';
@@ -36,11 +38,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _onRefresh() async {
     //check network connectivity and if true then refresh the list
@@ -191,20 +188,24 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 child: Text(
-                  "Pay",
+                  "Checkout",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                       fontSize: 16),
                 ),
                 onPressed: () {
-                  if (basketBloc.items.length != 0) {
-                    addNoteDialog();
-                  } else {
-                    showToast(
-                        message: AppLocalization.of(context)!
-                            .pleaseAddSomeItemsFirst);
-                  }
+                  NavigationUtil.push(
+                    context,
+                    screen: CheckoutScreen(),
+                  );
+                  // if (basketBloc.items.length != 0) {
+                  //   addNoteDialog();
+                  // } else {
+                  //   showToast(
+                  //       message: AppLocalization.of(context)!
+                  //           .pleaseAddSomeItemsFirst);
+                  // }
                 },
               ),
             )
@@ -450,16 +451,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   var response =
                       await _auth.makePaymentForCartOrder({"orders": orders});
                   Navigator.popUntil(
-                      context, ModalRoute.withName("/dashboard"));
+                      context, ModalRoute.withName(Routes.DASHBOARD));
                   if (response.statusCode == 200) {
-                    Navigator.pushNamed(
-                      context,
-                      '/orders-list',
-                    );
+                    Navigator.pushNamed(context, Routes.ORDERS_LIST);
                   } else if (response.statusCode == 500) {
                     showToast(
                         message: AppLocalization.of(context)!.serverError);
                   }
+
                   // else if (response.statusCode == 800) {
                   //   Navigator.pop(context);
                   //   Navigator.pushNamed(

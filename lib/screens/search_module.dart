@@ -5,7 +5,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -17,6 +16,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../routes/route_constants.dart';
+import '../widget/dialog.dart';
+import '../widget/rounded_background_icon.dart';
+import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
@@ -36,7 +39,7 @@ class _SearchModuleState extends State<SearchModule> {
   List<dynamic>? searchedResult;
   late CustomerProfileBloc customerProfileBloc;
   UserBloc? userBloc;
-  static String hint = "Find Users";
+  static String hint = "username, phone number, nickname";
 
   final _auth = AuthService();
   SlidableController? slidableController;
@@ -64,9 +67,12 @@ class _SearchModuleState extends State<SearchModule> {
   bool isPopMenuOpen = false;
 
   bool usingOutsideOfDashboard = false;
+  List<String> userConnectionNames = [];
 
   @override
   void initState() {
+    getUserConnectionNames();
+
     if (widget.arguments != null) {
       usingOutsideOfDashboard = widget.arguments["show_back_button"] ?? false;
     }
@@ -93,34 +99,12 @@ class _SearchModuleState extends State<SearchModule> {
       }
     });
 
-    searchItemTextController.addListener(() {
-      autoCompleteSearchText = searchItemTextController.text;
-
-      setState(() {
-        count = 0;
-        next = "";
-        previous = "";
-        results.clear();
-        noItemInList = false;
-        getList();
-      });
-
-      if (results.isNotEmpty || searchItemTextController.text.length != 0) {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            isSearchIsEmpty = true;
-          });
-        }
-      }
-    });
-
     super.initState();
+  }
+
+  void getUserConnectionNames() async {
+    userConnectionNames = await ConnectionListManager().listConnectionsFromDB();
+    if (mounted) setState(() {});
   }
 
   void menuItemSelectionChange(String value, int index) {
@@ -163,8 +147,8 @@ class _SearchModuleState extends State<SearchModule> {
     searchTypeSelectionMenu.onChange = menuItemSelectionChange;
     searchTypeSelectionMenu.menuState = menuStateChange;
 
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return Scaffold(
       key: _scaffoldSearchKey,
@@ -173,13 +157,9 @@ class _SearchModuleState extends State<SearchModule> {
       appBar: appBar() as PreferredSizeWidget?,
       body: Column(
         children: [
-          SizedBox(
-            height: 6,
-          ),
+          SizedBox(height: 6),
           searchBox(),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
             child: _buildResultList(),
           ),
@@ -199,6 +179,7 @@ class _SearchModuleState extends State<SearchModule> {
             ),
           ),
           child: TextFormField(
+            autofocus: true,
             key: textFormField,
             controller: searchItemTextController,
             style: TextStyle(
@@ -208,8 +189,39 @@ class _SearchModuleState extends State<SearchModule> {
             ),
             cursorWidth: 1.5,
             cursorColor: navyBlue,
+            onChanged: (value) {
+              if (value.length >= 3) {
+                autoCompleteSearchText = value;
+
+                setState(() {
+                  count = 0;
+                  next = "";
+                  previous = "";
+
+                  results.clear();
+                  isLoading = false;
+                  noItemInList = false;
+                  getList();
+                });
+
+                if (results.isNotEmpty ||
+                    searchItemTextController.text.length != 0) {
+                  if (mounted) {
+                    setState(() {
+                      isSearchIsEmpty = false;
+                    });
+                  }
+                } else {
+                  if (mounted) {
+                    setState(() {
+                      isSearchIsEmpty = true;
+                    });
+                  }
+                }
+              }
+            },
             decoration: InputDecoration(
-              hintText: "Search here",
+              hintText: hint,
               fillColor: Colors.white,
               filled: true,
               contentPadding: EdgeInsets.symmetric(vertical: 10),
@@ -254,6 +266,8 @@ class _SearchModuleState extends State<SearchModule> {
                 previous = "";
                 results.clear();
                 noItemInList = false;
+                isLoading = false;
+
                 setState(() {});
                 getList();
                 FocusScope.of(context).unfocus();
@@ -282,11 +296,11 @@ class _SearchModuleState extends State<SearchModule> {
           size: 16,
         ),
         onPressed: () {
-          if (searchTypeSelectionMenu.isMenuOpen) {
-            searchTypeSelectionMenu.closeMenu();
-          } else {
-            searchTypeSelectionMenu.openMenu();
-          }
+          // if (searchTypeSelectionMenu.isMenuOpen) {
+          //   searchTypeSelectionMenu.closeMenu();
+          // } else {
+          //   searchTypeSelectionMenu.openMenu();
+          // }
         },
       ),
     );
@@ -314,6 +328,8 @@ class _SearchModuleState extends State<SearchModule> {
           next = "";
           previous = "";
           results.clear();
+          isLoading = false;
+
           noItemInList = false;
           setState(() {});
           getList();
@@ -330,6 +346,16 @@ class _SearchModuleState extends State<SearchModule> {
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
       title: Text(
         "Search",
         style: TextStyle(
@@ -384,14 +410,18 @@ class _SearchModuleState extends State<SearchModule> {
 
   void getList() async {
     if (!isLoading) {
+      debugPrint('GET LIST ---------->');
+
       if (next != null && !isLoading) {
         if (mounted) {
           isLoading = true;
           setState(() {});
         }
+        debugPrint('text ::: $autoCompleteSearchText');
+        debugPrint('text length ::: ${searchItemTextController.text.length}');
         Map<String, dynamic>? result = await _auth
             .searchEndpointPagination(
-                getSearchUrl(searchItemTextController.text), next, previous)
+                getSearchUrl(autoCompleteSearchText), next, previous)
             .catchError((error) {
           debugPrint("ERROR:- $error");
         });
@@ -401,21 +431,29 @@ class _SearchModuleState extends State<SearchModule> {
           return;
         }
 
+        debugPrint('RESULT ::: $result');
+
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List? tempList = result['results'];
         if (mounted) {
           isLoading = false;
+          results.clear();
+
           try {
             tempList!.forEach((result) {
               results.add(getResultTile(result));
             });
           } catch (e) {}
+
           setState(() {});
         }
       }
-      if (results.isEmpty) {
+      if (results.isNotEmpty) {
+        noItemInList = false;
+        setState(() {});
+      } else if (results.isEmpty) {
         if (mounted) {
           noItemInList = true;
           setState(() {});
@@ -500,7 +538,9 @@ class _SearchModuleState extends State<SearchModule> {
                 child: ListTile(
                   dense: true,
                   title: Text(
-                    user.displayName()!,
+                    user.displayName()!.length <= 35
+                        ? user.displayName()!
+                        : '${user.displayName()!.substring(0, 36)}...',
                     maxLines: 1,
                     style: TextStyle(
                         color: blackFont,
@@ -528,7 +568,7 @@ class _SearchModuleState extends State<SearchModule> {
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/photo-viewer", arguments: user.avatar);
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
       },
       child: Container(
           height: 48,
@@ -600,7 +640,7 @@ class _SearchModuleState extends State<SearchModule> {
                       : getTrailingProduct(product),
                   subtitle: getSubtitleProduct(product),
                   onTap: () {
-                    Navigator.pushNamed(context, '/product',
+                    Navigator.pushNamed(context, Routes.PRODUCT,
                         arguments: {"product": product});
                   },
                 ),
@@ -620,7 +660,8 @@ class _SearchModuleState extends State<SearchModule> {
     } catch (e) {}
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/photo-viewer", arguments: imageUrl);
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: imageUrl);
       },
       child: ClipOval(
         child: CachedNetworkImage(
@@ -752,7 +793,7 @@ class _SearchModuleState extends State<SearchModule> {
                       ? null
                       : getTrailingService(service),
                   onTap: () {
-                    Navigator.of(context).pushNamed('/service-detail',
+                    Navigator.of(context).pushNamed(Routes.SERVICE_DETAIL,
                         arguments: {"service": service});
                   },
                 ),
@@ -772,7 +813,8 @@ class _SearchModuleState extends State<SearchModule> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed("/photo-viewer", arguments: imageUrl);
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: imageUrl);
       },
       child: ClipOval(
         child: CachedNetworkImage(
@@ -887,50 +929,50 @@ class _SearchModuleState extends State<SearchModule> {
     }
   }
 
-  Widget autoComplete() {
-    return Column(
-      children: <Widget>[
-        TextFormField(
-          key: textFormField,
-          controller: searchItemTextController,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(10),
-            hintText: hint,
-            isDense: true,
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: blackFont,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            fillColor: Colors.white,
-            filled: true,
-          ),
-          style: TextStyle(color: Colors.black, fontSize: 16),
-          onFieldSubmitted: (val) {
-            if (mounted) {
-              setState(() {
-                count = 0;
-                next = "";
-                previous = "";
-                results.clear();
-                noItemInList = false;
-                getList();
-              });
-            }
-          },
-        ),
-      ],
-    );
-  }
+  // Widget autoComplete() {
+  //   return Column(
+  //     children: <Widget>[
+  //       TextFormField(
+  //         key: textFormField,
+  //         controller: searchItemTextController,
+  //         decoration: InputDecoration(
+  //           contentPadding: EdgeInsets.all(10),
+  //           hintText: hint,
+  //           isDense: true,
+  //           enabledBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(
+  //               color: Colors.white,
+  //               width: 1,
+  //             ),
+  //             borderRadius: BorderRadius.circular(6),
+  //           ),
+  //           focusedBorder: OutlineInputBorder(
+  //             borderSide: BorderSide(
+  //               color: blackFont,
+  //               width: 1,
+  //             ),
+  //             borderRadius: BorderRadius.circular(6),
+  //           ),
+  //           fillColor: Colors.white,
+  //           filled: true,
+  //         ),
+  //         style: TextStyle(color: Colors.black, fontSize: 16),
+  //         onFieldSubmitted: (val) {
+  //           if (mounted) {
+  //             setState(() {
+  //               count = 0;
+  //               next = "";
+  //               previous = "";
+  //               results.clear();
+  //               noItemInList = false;
+  //               getList();
+  //             });
+  //           }
+  //         },
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _getSlidableWithLists(
       BuildContext context, Widget searchCard, CustomerProfile user) {
@@ -945,42 +987,66 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  List<Widget> listSecondaryActions(CustomerProfile user) {
+  List<Widget> listActionSlideActions(CustomerProfile user) {
+    bool isCurrentUser = user.userName != userBloc!.user.userName;
     return [
-      SlideActionButton(
-        icon: SlydoAppIcon.send,
-        onTap: () async {
-          customerProfileBloc.customer =
-              await UserAuth().fetchCustomerProfile(user.userName);
-          Navigator.of(context)
-              .pushNamed('/send-payment', arguments: <String, bool>{
-            'isFromProfile': false,
-          });
-        },
-        title: AppLocalization.of(context)!.send,
-        backgroundColor: naturalGreen,
-        slideController: slidableController,
-      ),
+      if (isCurrentUser)
+        SlideActionButton(
+          icon: Icons.payments_rounded,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await UserAuth().fetchCustomerProfile(user.userName);
+            Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': true
+                });
+          },
+          title: AppLocalization.of(context)!.request,
+          backgroundColor: navyBlue,
+          slideController: slidableController,
+        ),
+      if (isCurrentUser)
+        SlideActionButton(
+          icon: Icons.payments_rounded,
+          onTap: () async {
+            customerProfileBloc.customer =
+                await UserAuth().fetchCustomerProfile(user.userName);
+            Navigator.of(context)
+                .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+              'isFromProfile': false,
+            });
+          },
+          title: AppLocalization.of(context)!.send,
+          backgroundColor: naturalGreen,
+          slideController: slidableController,
+        ),
     ];
   }
 
-  List<Widget> listActionSlideActions(CustomerProfile user) {
+  List<Widget> listSecondaryActions(CustomerProfile user) {
     return [
-      SlideActionButton(
-        icon: SlydoAppIcon.receive,
-        onTap: () async {
-          customerProfileBloc.customer =
-              await UserAuth().fetchCustomerProfile(user.userName);
-          Navigator.of(context).pushNamed('/request-payment',
-              arguments: <String, bool>{
-                'isFromProfile': false,
-                'isRequest': true
-              });
-        },
-        title: AppLocalization.of(context)!.request,
-        backgroundColor: navyBlue,
-        slideController: slidableController,
-      ),
+      if (!userConnectionNames.contains(user.userName) &&
+          user.userName != userBloc!.user.userName)
+        SlideActionButton(
+          icon: SlydoAppIcon.add,
+          onTap: () async {
+            connectUserAlert(user);
+          },
+          title: 'Connect',
+          backgroundColor: naturalGreen,
+          slideController: slidableController,
+        ),
+      if (userBloc!.user.userName != user.userName)
+        SlideActionButton(
+          icon: SlydoAppIcon.block,
+          onTap: () async {
+            blockUserAlert(user);
+          },
+          title: 'Block',
+          backgroundColor: mateRed,
+          slideController: slidableController,
+        ),
     ];
   }
 
@@ -1004,7 +1070,7 @@ class _SearchModuleState extends State<SearchModule> {
         onTap: () async {
           customerProfileBloc.customer =
               await UserAuth().fetchCustomerProfile(product.seller);
-          Navigator.of(context).pushNamed('/send-payment',
+          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
               arguments: {'isFromProfile': false, 'product': product});
         },
         title: AppLocalization.of(context)!.buy,
@@ -1019,7 +1085,7 @@ class _SearchModuleState extends State<SearchModule> {
       SlideActionButton(
         icon: SlydoAppIcon.text_message,
         onTap: () async {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': product.seller,
             'subject': product.name,
           });
@@ -1054,7 +1120,7 @@ class _SearchModuleState extends State<SearchModule> {
           onTap: () async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
-            Navigator.of(context).pushNamed('/send-payment',
+            Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
                 arguments: {'isFromProfile': false, 'service': service});
           }),
     ];
@@ -1068,7 +1134,7 @@ class _SearchModuleState extends State<SearchModule> {
         slideController: slidableController2,
         icon: SlydoAppIcon.text_message,
         onTap: () async {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': service.provider,
             'subject': service.name,
           });
@@ -1088,6 +1154,94 @@ class _SearchModuleState extends State<SearchModule> {
   void handleSlideAnimationChanged2(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged2(bool? isOpen) {}
+
+  void blockUserAlert(CustomerProfile user) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.block,
+          color: mateRed,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context)!.block,
+      description: AppLocalization.of(context)!.areYouSureWantToBlock +
+          " ${user.displayName()}",
+      actionOneText: AppLocalization.of(context)!.block,
+      actionTwoText: AppLocalization.of(context)!.cancel,
+    );
+    if (result != null && result) {
+      bool done = await UserAuth().blockUser(user);
+      if (done) {
+        showSnackbar(context,
+            message: "${user.displayName()} " +
+                AppLocalization.of(context)!.isBlockedSuccessfully);
+
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: user.conversationId);
+
+        // if (connectionsList.length <= 9) {
+        //   getList();
+        // }
+        setState(() {});
+      } else {
+        showSnackbar(context, message: AppLocalization.of(context)!.error);
+      }
+    }
+  }
+
+  void connectUserAlert(CustomerProfile user) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: navyBlue.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.add,
+          color: navyBlue,
+          size: 16,
+        ),
+        enableMargin: false,
+      ),
+      actionOneBgColor: greyBorderColor,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: naturalGreen,
+      actionTwoTextColor: Colors.white,
+      title: AppLocalization.of(context)!.connect,
+      description:
+          "Are you sure you want to add ${user.displayName()} to your list of connections",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.connect,
+      rightButtonOnPressed: () {
+        showDialog(
+            context: context,
+            builder: (dialogLoadingContext) => LoadingIndicator());
+
+        UserAuth().makeContactRequest(user).then((value) {
+          Navigator.pop(context);
+          if (value) {
+            showToast(message: "Connection Request Sent !!");
+          } else {
+            showToast(message: "Request Not Sent.. ");
+          }
+        });
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -1109,7 +1263,7 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(

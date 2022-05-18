@@ -1,50 +1,62 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
-import 'package:Slydo/screens/more_apps/business/tiles/contract_tile.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/business/tiles/contract_and_invoice_tile.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../data/state_notifier.dart';
+import '../../../../widget/noItemInList.dart';
+import '../bloc/contract_bloc.dart';
 import '../business_auth.dart';
 
+/// You can delete this file
 class MyContractList extends StatefulWidget {
   @override
   _MyContractListState createState() => _MyContractListState();
 }
 
 class _MyContractListState extends State<MyContractList> {
-  List<Contract> contracts = [];
-  bool isLoading = false;
-
+  late UserBloc userBloc;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  ScrollController _scrollController = ScrollController();
+
   //slidable tile
   SlidableController? _slideController;
+
+  late ContractBloc contractBloc;
   @override
   void initState() {
-    getResult();
+    super.initState();
+
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-    super.initState();
+
+    Provider.of<ContractBloc>(context, listen: false).getContractList();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        contractBloc.getContractList();
+      }
+    });
   }
 
-  void getResult() async {
-    isLoading = true;
-    contracts.clear();
-    if (mounted) setState(() {});
-
-    contracts = await BusinessAuth().getContractList();
-
-    isLoading = false;
-    if (mounted) setState(() {});
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _onRefresh() async {
@@ -52,7 +64,8 @@ class _MyContractListState extends State<MyContractList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        getResult();
+        contractBloc.isRefreshing = true;
+        contractBloc.getContractList();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -66,92 +79,154 @@ class _MyContractListState extends State<MyContractList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    contractBloc = Provider.of<ContractBloc>(context);
+
     return WillPopScope(
       onWillPop: () async {
         return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: isLoading
-              ? Center(
-                  child: CircularLoadingIndicator(),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: contracts
-                        .asMap()
-                        .map(
-                          (index, element) => MapEntry(
-                            index,
-                            _getSlidableWithLists(
-                                context,
-                                ContractTile(
-                                  contract: element,
-                                ),
-                                index),
-                          ),
-                        )
-                        .values
-                        .toList(),
-                  ),
-                ),
-        ),
+        body: _scaffoldBody(),
+      ),
+    );
+  }
+
+  Widget _scaffoldBody() {
+    return Consumer<ContractBloc>(
+      builder: (context, contractBloc, _) {
+        if (contractBloc.errorMessage.isNotEmpty) {
+          return NoItemInList(
+            msg: contractBloc.errorMessage,
+          );
+        } else if (contractBloc.noItemInList) {
+          return NoItemInList(
+            msg: AppLocalization.of(context)!.contractEmpty,
+          );
+        } else {
+          if (contractBloc.endOfList &&
+              _scrollController.positions.isNotEmpty) {
+            if (_scrollController.position.pixels ==
+                    _scrollController.position.maxScrollExtent &&
+                _scrollController.position.pixels != 0) {
+              Future.delayed(
+                Duration.zero,
+                () {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(AppLocalization.of(context)!
+                        .youHaveReachedBottomOfTheList),
+                    duration: Duration(milliseconds: 500),
+                  ));
+                },
+              );
+            }
+          }
+          return contractListWidget(contractBloc);
+        }
+      },
+    );
+  }
+
+  Widget contractListWidget(ContractBloc contractBloc) {
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(complete: Container(), waterDropColor: navyBlue),
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 4),
+        itemCount: contractBloc.contractList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == contractBloc.contractList.length) {
+            return buildIndicator(isLoading: contractBloc.isLoading);
+          } else {
+            ContractModel contract = contractBloc.contractList[index];
+            bool userIsContractor =
+                userBloc.user.userName == contract.contractor;
+
+            bool isNotSlidable = contract.status == "Ended" ||
+                contract.status == "Stopped" ||
+                (!contract.isAccepted && !userIsContractor);
+
+            if (!contract.isAccepted) {
+              return Slidable(
+                controller: _slideController,
+                direction: Axis.horizontal,
+                actionPane: SlidableBehindActionPane(),
+                actionExtentRatio: 0.25,
+                child: ContractTile(contract: contract),
+                actions: [
+                  SlideActionButton(
+                      backgroundColor: mateRed,
+                      icon: Icons.stop_circle_outlined,
+                      onTap: () {
+                        cancelContract(id: contract.id!);
+                      },
+                      title: userIsContractor ? 'Reject' : "Cancel",
+                      slideController: _slideController),
+                ],
+                secondaryActions: userIsContractor
+                    ? [
+                        SlideActionButton(
+                            backgroundColor: naturalGreen,
+                            icon: Icons.stop_circle_outlined,
+                            onTap: () {
+                              acceptContract(id: contract.id!);
+                            },
+                            title: "Accept",
+                            slideController: _slideController),
+                      ]
+                    : null,
+              );
+            } else if (isNotSlidable) {
+              return ContractTile(contract: contract);
+            }
+            return _getSlidableWithLists(
+                context, ContractTile(contract: contract), index,
+                contract: contract);
+          }
+        },
+        controller: _scrollController,
       ),
     );
   }
 
   Widget _getSlidableWithLists(
-    BuildContext context,
-    Widget contractTile,
-    int index,
-  ) {
+      BuildContext context, Widget contractTile, int index,
+      {required ContractModel contract}) {
     return Slidable(
       controller: _slideController,
       direction: Axis.horizontal,
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
-      child: VerticalListItem(contractTile, contracts[index]),
-      actions: listActionSlideActions(index),
-      secondaryActions: listSecondaryActions(index),
+      child: VerticalListItem(contractTile, contract),
+      actions: listActionSlideActions(contract),
+      secondaryActions: listSecondaryActions(index, contract),
     );
   }
 
-  List<Widget> listSecondaryActions(int index) {
-    // STOPPED = ("Stopped", _("Stopped"))
-    // ENDED = ("Ended", _("Ended"))
-    // ACTIVE = ("Active", _("Active"))
-    // PAUSED = ("Paused", _("Paused"))
-
+  List<Widget> listSecondaryActions(int index, ContractModel contract) {
     return [
       SlideActionButton(
-          backgroundColor: getSecondaryActionIconColor(index),
-          icon: getSecondaryActionIcon(index),
+          backgroundColor: getSecondaryActionIconColor(contract),
+          icon: getSecondaryActionIcon(contract),
           onTap: () {
             // _slideController.activeState.close();
-            updateContractStatus(index, getUpdateAction(index));
+            updateContractStatus(contract, getUpdateAction(contract));
           },
-          title: getSecondaryActionTitle(index),
+          title: getSecondaryActionTitle(contract),
           slideController: _slideController),
     ];
   }
 
-  Color getSecondaryActionIconColor(int index) {
-    Contract contract = contracts[index];
+  Color getSecondaryActionIconColor(ContractModel contract) {
     switch (contract.status) {
       case "Paused":
         return naturalGreen;
       case "Active":
         return starYellow;
-      case "Stopped":
-        return naturalGreen;
+
       case "Ended":
         return starYellow;
       default:
@@ -159,15 +234,13 @@ class _MyContractListState extends State<MyContractList> {
     }
   }
 
-  IconData getSecondaryActionIcon(int index) {
-    Contract contract = contracts[index];
+  IconData getSecondaryActionIcon(ContractModel contract) {
     switch (contract.status) {
       case "Paused":
         return Icons.play_arrow_rounded;
       case "Active":
         return Icons.pause;
-      case "Stopped":
-        return Icons.play_arrow_rounded;
+
       case "Ended":
         return Icons.pause;
       default:
@@ -175,24 +248,18 @@ class _MyContractListState extends State<MyContractList> {
     }
   }
 
-  String getSecondaryActionTitle(int index) {
-    Contract contract = contracts[index];
+  String getSecondaryActionTitle(ContractModel contract) {
     switch (contract.status) {
       case "Paused":
         return "Resume";
       case "Active":
         return "Pause";
-      case "Stopped":
-        return "Resume";
-      case "Ended":
-        return "Pause";
       default:
-        return "";
+        return "Active";
     }
   }
 
-  String getUpdateAction(int index) {
-    Contract contract = contracts[index];
+  String getUpdateAction(ContractModel contract) {
     switch (contract.status) {
       case "Paused":
         return "Active";
@@ -200,41 +267,34 @@ class _MyContractListState extends State<MyContractList> {
       case "Active":
         return "Paused";
 
-      case "Stopped":
-        return "Ended";
-
-      case "Ended":
-        return "Stopped";
-
       default:
-        return "";
+        return "Active";
     }
   }
 
-  void updateContractStatus(int index, String action) {
-    Contract contract = contracts[index];
+  void updateContractStatus(ContractModel contract, String action) {
     Map<String, String> data = {"status": action};
 
     BusinessAuth()
         .updateContract(id: contract.id.toString(), data: data)
         .then((value) {
-      contracts[index].status = action;
-      setState(() {});
+      contract.status = action;
+      contractBloc.getContractList();
       showToast(message: "Status updated successfully");
     }).catchError((error) {
       showToast(message: "Status updated unsuccessfully");
     });
   }
 
-  List<Widget> listActionSlideActions(int index) {
+  List<Widget> listActionSlideActions(ContractModel contract) {
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: Icons.stop_circle_outlined,
           onTap: () {
-            updateContractStatus(index, getUpdateAction(index));
+            updateContractStatus(contract, 'Ended');
           },
-          title: "Stop",
+          title: "End",
           slideController: _slideController),
     ];
   }
@@ -242,13 +302,41 @@ class _MyContractListState extends State<MyContractList> {
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}
 
   void handleSlideIsOpenChanged(bool? isOpen) {}
+
+  void acceptContract({required int id}) async {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    bool accepted = await BusinessAuth().acceptContract(contractId: id);
+    Navigator.pop(context);
+    if (accepted) {
+      contractBloc.getContractList();
+    } else {
+      showToast(message: 'Something went wrong, please try again.');
+    }
+  }
+
+  void cancelContract({required int id}) async {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    bool accepted = await BusinessAuth().cancelContract(contractId: id);
+    Navigator.pop(context);
+    if (accepted) {
+      contractBloc.isRefreshing = true;
+
+      contractBloc.getContractList();
+    } else {
+      showToast(message: 'Something went wrong, please try again.');
+    }
+  }
 }
 
 class VerticalListItem extends StatelessWidget {
   VerticalListItem(this.child, this.contract);
 
   final Widget child;
-  final Contract contract;
+  final ContractModel contract;
 
   @override
   Widget build(BuildContext context) {

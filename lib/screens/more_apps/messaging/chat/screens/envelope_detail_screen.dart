@@ -4,8 +4,6 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -13,6 +11,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../../locale/app_localization.dart';
+import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/slydo_app_icon_icons.dart';
+import '../../../../../widget/dialog.dart';
+import '../../../../../widget/rounded_background_icon.dart';
 
 // ignore: must_be_immutable
 class EnvelopeDetailScreen extends StatefulWidget {
@@ -225,15 +229,38 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
         ? Container(
             child: CurvedButton(
               backgroundColor: mateRed,
-              onPressed: cancelEnvelope,
-              text: "Cancel",
+              onPressed: showDialogToDeleteEnvelope,
+              text: AppLocalization.of(context)!.delete,
               textColor: Colors.white,
             ),
           )
         : Container();
   }
 
-  void cancelEnvelope() async {
+  showDialogToDeleteEnvelope() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: white,
+      actionOneBgColor: mateRed,
+      actionTwoTextColor: blackFont,
+      actionTwoBgColor: greyBorderColor,
+      title: 'Delete',
+      actionTwoText: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.delete,
+      description: 'Are you sure you want to delete this envelope?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Icon(SlydoAppIcon.delete, color: mateRed),
+      ),
+      leftButtonOnPressed: () {
+        deleteEnvelope();
+      },
+    );
+  }
+
+  void deleteEnvelope() async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -245,11 +272,11 @@ class _EnvelopeDetailScreenState extends State<EnvelopeDetailScreen>
 
     if (result != null) {
       if (result == true) {
-        Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
+        Navigator.popUntil(context, ModalRoute.withName(Routes.CHAT_SCREEN));
         return;
       } else {
         Navigator.pop(context);
-        showToast(message: "Failed to cancel Envelope");
+        showToast(message: "Failed to delete Envelope");
       }
     } else {
       deleteChatMessage();

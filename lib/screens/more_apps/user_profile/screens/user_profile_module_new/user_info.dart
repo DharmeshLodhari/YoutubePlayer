@@ -26,10 +26,9 @@ class _UserInfoState extends State<UserInfo> {
   UserBloc? userBloc;
 
   bool isBioShowingLess = true;
-
+  bool isServiceFetched = false;
   bool isProductFetched = false;
   bool isProductItemIsEmpty = true;
-  bool isServiceFetched = false;
   bool isServiceItemIsEmpty = true;
 
   _UserInfoState();
@@ -126,17 +125,13 @@ class _UserInfoState extends State<UserInfo> {
                       (widget.user!.type!.toLowerCase() != "user")
                           ? Column(
                               children: [
-                                SizedBox(
-                                  height: 16,
-                                ),
+                                SizedBox(height: 16),
                                 Divider(
                                   height: 0,
                                   color: dividerColor,
                                   thickness: 1,
                                 ),
-                                SizedBox(
-                                  height: 16,
-                                ),
+                                SizedBox(height: 16),
                               ],
                             )
                           : Container(),
@@ -158,7 +153,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget _buildProductList() {
     return Container(
-      height: 220,
+      height: 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -190,9 +185,7 @@ class _UserInfoState extends State<UserInfo> {
               ],
             ),
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -211,7 +204,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget _buildServiceList() {
     return Container(
-      height: 220,
+      height: 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -295,7 +288,7 @@ class _UserInfoState extends State<UserInfo> {
     if (widget.user!.userAbout!.address.isNotEmpty) {
       list.addAll([
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             RoundedBackgroundIcon(
               height: 32,
@@ -307,9 +300,7 @@ class _UserInfoState extends State<UserInfo> {
                 size: 14,
               ),
             ),
-            SizedBox(
-              width: 12,
-            ),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 widget.user!.userAbout!.address,

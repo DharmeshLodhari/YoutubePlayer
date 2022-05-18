@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
@@ -13,6 +14,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
@@ -35,8 +37,10 @@ import 'package:uuid/uuid.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
+import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
+import 'more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -183,6 +187,11 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  /*
+  * Navigation for Local Notification (e.g nudge notification), we can create our
+  * custom UI with this notification. On the notification bar this shows 'accept' or
+  * 'cancel'
+  * */
   void navigateToNotification(Map<String, dynamic> data) async {
     /// {id: 31386,
     /// channelKey: basic_channel,
@@ -243,10 +252,12 @@ class _DashboardState extends State<Dashboard> {
     } else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
-      DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
-          MyGlobals().navigationKey.currentContext!,
-          listen: false);
-      _dashboardBloc.index = 1;
+      Navigator.of(context).popUntil(ModalRoute.withName('/accounts'));
+
+      // DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
+      //     MyGlobals().navigationKey.currentContext!,
+      //     listen: false);
+      // _dashboardBloc.index = 1;
     } else if (notification['type'] == "transaction") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
           .popUntil(ModalRoute.withName('/dashboard'));
@@ -273,14 +284,14 @@ class _DashboardState extends State<Dashboard> {
         'id': idOfMessage,
       });
     } else if (notification['type'].toString().contains("orders-list")) {
-      Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+      Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(context).pushNamed('/orders-list');
     } else if (notification['type'].toString().contains("order-detail-page")) {
       Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
           : notification["data"]);
 
-      Navigator.of(context).pushNamed('/order-detail-page', arguments: {
+      Navigator.of(context).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
         'order': order,
       });
     }
@@ -290,9 +301,9 @@ class _DashboardState extends State<Dashboard> {
     PaymentAndBankingAuth().getFeeStructure().then((value) async {
       //  deleteFeeStructure();
       await DatabaseHelper().saveFeeStructure(value);
-    }).catchError((e) {
+    }).catchError((dds, e) {
       debugPrint(e.toString());
-      showToast(message: e);
+      showToast(message: e.toString());
     });
   }
 
@@ -358,8 +369,8 @@ class _DashboardState extends State<Dashboard> {
             actionTwoTextColor: blackFont,
             title: "Exit app",
             description: "Are you sure want to exit app?",
-            actionOne: AppLocalization.of(context)!.exit,
-            actionTwo: AppLocalization.of(context)!.cancel,
+            actionOneText: AppLocalization.of(context)!.exit,
+            actionTwoText: AppLocalization.of(context)!.cancel,
           );
           if (result != null && result) {
             SystemChannels.platform.invokeMethod<void>('SystemNavigator.pop');
@@ -390,10 +401,10 @@ class _DashboardState extends State<Dashboard> {
               wantKeepAlive: false,
             ),
             KeepAlivePage(
-              child: PaymentRequestList(),
+              child: QRCodeView(arguments: {'isRequest': false}),
               wantKeepAlive: false,
             ),
-            KeepAlivePage(child: SearchModule()),
+            KeepAlivePage(child: ConnectionDashboard()),
             KeepAlivePage(child: ShoppingCart()),
             KeepAlivePage(
               child: UserDashboard(),
@@ -431,24 +442,34 @@ class _DashboardState extends State<Dashboard> {
             title: AppLocalization.of(context)!.home,
           ),
           bottomNavigationBarItem(
-            key: tutorialRequestPaymentListKey,
-            icon: SlydoAppIcon.receive,
-            title: AppLocalization.of(context)!.requests,
+            key: tutorialScanQrCodeKey,
+            icon: SlydoAppIcon.qr_code,
+            title: AppLocalization.of(context)!.qrCode,
           ),
           bottomNavigationBarItem(
-            key: tutorialSearchItemsKey,
-            icon: SlydoAppIcon.search,
-            title: AppLocalization.of(context)!.search,
+            isChatIcon: true,
+            icon: SlydoAppIcon.text_message,
+            title: AppLocalization.of(context)!.chat,
           ),
           bottomNavigationBarItem(
             key: tutorialShoppingCartKey,
             icon: SlydoAppIcon.cart,
             title: AppLocalization.of(context)!.basket,
           ),
-          bottomNavigationBarItem(
-            key: tutorialProfileKey,
-            icon: SlydoAppIcon.user,
-            title: AppLocalization.of(context)!.explore,
+          BottomNavigationBarItem(
+            icon: Container(
+              height: 50,
+              width: 60,
+              child: Icon(
+                Icons.explore,
+                color: blackFont,
+                size: 18,
+              ),
+            ),
+            label: "",
+            activeIcon: activeIcon(
+                title: AppLocalization.of(context)!.explore,
+                icon: Icons.explore),
           ),
         ],
       ),
@@ -457,25 +478,71 @@ class _DashboardState extends State<Dashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData? icon, required String title, Key? key}) {
+      {IconData? icon,
+      required String title,
+      double? size,
+      bool isChatIcon = false,
+      Key? key}) {
     return BottomNavigationBarItem(
-      icon: Container(
-        key: key,
-        height: 50,
-        width: 60,
-        child: Icon(
-          icon,
-          color: blackFont,
-          size: 16,
-        ),
-      ),
+      icon: isChatIcon
+          ? Stack(
+              children: [
+                Container(
+                  key: key,
+                  height: 50,
+                  width: 60,
+                  child: Icon(
+                    icon,
+                    color: blackFont,
+                    size: size ?? 16,
+                  ),
+                ),
+                StreamBuilder(
+                    stream: ChatMessageSynchronizer().getChatMessageCountStream,
+                    builder: (context, snapshot) {
+                      return FutureBuilder(
+                          future: ChatUserManager().checkForChatMessagesCount(),
+                          initialData: false,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              if (snapshot.data == true) {
+                                return Positioned(
+                                  top: 14,
+                                  right: 18,
+                                  child: ClipOval(
+                                    child: Container(
+                                      height: 8,
+                                      width: 8,
+                                      color: naturalGreen,
+                                    ),
+                                  ),
+                                );
+                              }
+                              return Container();
+                            }
+                            return Container();
+                          });
+                    }),
+              ],
+            )
+          : Container(
+              key: key,
+              height: 50,
+              width: 60,
+              child: Icon(
+                icon,
+                color: blackFont,
+                size: size ?? 16,
+              ),
+            ),
       label: "",
-      activeIcon: activeIcon(icon: icon, title: title),
+      activeIcon: activeIcon(icon: icon, title: title, isChatIcon: isChatIcon),
     );
   }
 
   // How BottomNavigationBarItem will look when active
-  Widget activeIcon({IconData? icon, required String title}) {
+  Widget activeIcon(
+      {IconData? icon, required String title, bool isChatIcon = false}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Container(
@@ -488,6 +555,8 @@ class _DashboardState extends State<Dashboard> {
             SizedBox(
               height: 4,
             ),
+
+            // TODO: Add icon here.
             Expanded(
               child: Icon(
                 icon,

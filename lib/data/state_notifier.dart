@@ -11,6 +11,8 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/more_apps/shopping/models/store.dart';
+
 class UserBloc extends ChangeNotifier {
   // This block notify the change in user status and pass it round the app.
   User _user = User(
@@ -30,6 +32,14 @@ class UserBloc extends ChangeNotifier {
 
   set chatMessageSettings(ChatMessageSettings val) {
     _chatMessageSettings = val;
+    notifyListeners();
+  }
+
+  bool get shouldReloadPostPage => _shouldReloadPostPage;
+  bool _shouldReloadPostPage = false;
+
+  set shouldReloadPostPage(bool shouldReload) {
+    _shouldReloadPostPage = shouldReload;
     notifyListeners();
   }
 
@@ -164,6 +174,10 @@ class BackgroundFetchStopBloc extends ChangeNotifier {
 }
 
 class BasketBloc extends ChangeNotifier {
+  int orderTotal = 0;
+  int totalShippingCost = 0;
+  Map<String, int?> userSelectedShippingOption = {};
+
   // will accept products and services
   List<Map<String, dynamic>> _items = [];
   int _total = 0;
@@ -177,15 +191,58 @@ class BasketBloc extends ChangeNotifier {
 
   List get items => _items;
 
+  Map<String, String> merchantNameMap = {};
+  Map<String, String> merchantNameMapCopy = {};
+
   set items(List value) {
     _items = value as List<Map<String, dynamic>>;
     notifyListeners();
   }
 
+  int getSubTotalPriceByMerchant({required String merchantUserName}) {
+    int subTotal = 0;
+    items.forEach((element) {
+      if (merchantUserName == element['item'].getMerchantUserName()) {
+        subTotal = int.parse(element['qty'].toString()) *
+            int.parse(element['item'].price);
+      }
+    });
+
+    return subTotal;
+  }
+
+  int getTotalPriceByMerchant(
+      {required String merchantUserName, required int shippingOptionPrice}) {
+    int total = getSubTotalPriceByMerchant(merchantUserName: merchantUserName) +
+        shippingOptionPrice;
+
+    return total;
+  }
+
   // this will add the product or service in the cart;
   void addItemToCart({required var item, required String type}) {
     addItemInBasketWithQty(item, type);
+    addMerchantName(item);
+
     notifyListeners();
+  }
+
+  void addMerchantName(var item) {
+    var merchantUserName = item is Product ? item.seller : item.provider;
+    var merchantFullName =
+        item is Product ? item.sellerFullName : item.providerFullName;
+
+    merchantNameMap[merchantFullName] = merchantUserName;
+    merchantNameMapCopy[merchantFullName] = merchantUserName;
+  }
+
+  void removeMerchantName(var item) {
+    var merchantUserName = item is Product ? item.seller : item.provider;
+    var merchantFullName =
+        item is Product ? item.sellerFullName : item.providerFullName;
+
+    merchantNameMap.remove(merchantUserName);
+    merchantNameMapCopy.remove(merchantUserName);
   }
 
   void addItemInBasketWithQty(var item, String type) {
@@ -212,6 +269,8 @@ class BasketBloc extends ChangeNotifier {
   // this will remove the product or service from the cart;
   void removeItemFromCart(item) {
     removeItemInBasketWithQty(item);
+    removeMerchantName(item);
+
     notifyListeners();
   }
 

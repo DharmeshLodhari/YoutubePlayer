@@ -12,6 +12,7 @@ import 'package:Slydo/services/logout_helper.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -21,6 +22,9 @@ import 'package:uuid/uuid.dart';
 import 'device_info.dart';
 
 class AuthService {
+  // static int authCallCount = 0;
+  // static int authCallLimit = 5;
+
   final Duration timeOutDuration = Duration(seconds: 4);
   final String timeOutErrorMessage = "Server Time-out !!";
 
@@ -60,6 +64,8 @@ class AuthService {
       "User-Agent": "Slydo-Mobile",
     };
 
+    debugPrint('TRANSACTION-ID :: $transactionId');
+
     // Because the jwt expires every 5 minutes we will take note of the time they
     // where  created and the use that to compute the expiration time of the
     // token. So that we will only use the token if its still valid.
@@ -77,7 +83,10 @@ class AuthService {
     Uri url = Uri.parse(uri);
 
     debugPrint("URL => $url BODY => $_body");
+
     var response = await http.post(url, body: _body, headers: headers);
+    print('RESPONSE:-----> $response');
+
     if (response.statusCode == 200) {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
@@ -103,7 +112,6 @@ class AuthService {
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     try {
-      // Save user to database
       var jsonData = jsonDecode(response.body);
 
       if (jsonData["detail"] != null) {
@@ -169,10 +177,7 @@ class AuthService {
     return await _db.getJwt();
   }
 
-  // For fetching new token for user if somehow user is not found then
-  // we are logging out that user to get a fresh token
-  Future<Jwt> fetchNewToken() async {
-    debugPrint("Token Expired getting new one");
+  Future<Map<String, String>> getUserAuthDetails() async {
     User? _user = await _db.getUser();
 
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -192,16 +197,48 @@ class AuthService {
       phoneNumber = _user?.phoneNumber ?? "";
       password = _user?.password ?? "";
     }
+    return {'phoneNumber': phoneNumber, 'password': password};
+  }
 
-    await authenticate(phoneNumber, password).catchError((error) async {
-      debugPrint("ERROR:- while fetching new Token $error");
-      await LogoutHelper().logoutUser();
+  // For fetching new token for user if somehow user is not found then
+  // we are logging out that user to get a fresh token
+  Future<Jwt> fetchNewToken() async {
+    debugPrint("Token Expired getting new one");
+
+    Jwt? jwt;
+
+    await Connectivity().checkConnectivity().then((value) async {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        try {
+          Map<String, String> userAuthDetailsMap = await getUserAuthDetails();
+
+          await authenticate(userAuthDetailsMap['phoneNumber'],
+              userAuthDetailsMap['password']);
+        } catch (error) {
+          debugPrint("ERROR:- while fetching new Token $error");
+          await Future.delayed(Duration(milliseconds: 500));
+          fetchNewToken();
+        }
+
+        jwt = await _db.getJwt(); // get new token now
+
+        if (jwt == null) {
+          debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
+          await Future.delayed(Duration(milliseconds: 500));
+          fetchNewToken();
+        }
+      } else {
+        await Future.delayed(Duration(milliseconds: 500));
+        fetchNewToken();
+      }
     });
-    Jwt? jwt = await _db.getJwt(); // get new token now
 
-    if (jwt == null) {
-      await LogoutHelper().logoutUser();
-    }
+    // if (jwt == null) {
+    //   fetchNewToken();
+    // }
+
     return jwt!;
   }
 
@@ -242,6 +279,10 @@ class AuthService {
     // log("$bearer");
     var uuid = Uuid();
     var transactionId = uuid.v4();
+
+    debugPrint('BEARER :: $bearer');
+    debugPrint('TRANSACTION ID  :: $transactionId');
+
     var headers = {
       "Authorization": bearer,
       "Content-type": "application/json; charset=utf-8",
@@ -357,6 +398,7 @@ class AuthService {
     var response = await httpGet(url, headers: headers)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
+    print('SEARCH USER ::: ${response.body}');
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
@@ -407,8 +449,9 @@ class AuthService {
     Uri uri = Uri.parse(url);
     debugPrint("URL:- $uri");
 
-    var response =
-        await http.get(uri, headers: headers as Map<String, String>?);
+    var response = await http
+        .get(uri, headers: headers as Map<String, String>?)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     // var utf8runs = response.body.runes.toList();
     // Response res = Response(utf8.decode(utf8runs), response.statusCode);
@@ -419,8 +462,10 @@ class AuthService {
   Future<Response> httpPost(String url,
       {Map<String, dynamic>? headers, String? body}) async {
     Uri uri = Uri.parse(url);
-    var response = await http.post(uri,
-        headers: headers as Map<String, String>?, body: body);
+    var response = await http
+        .post(uri, headers: headers as Map<String, String>?, body: body)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
     wasTokenBlackListed(response);
     return response;
   }
@@ -428,18 +473,30 @@ class AuthService {
   Future<Response> httpPatch(String url,
       {Map<String, dynamic>? headers, String? body}) async {
     Uri uri = Uri.parse(url);
-    var response = await http.patch(uri,
-        headers: headers as Map<String, String>?, body: body);
+    var response = await http
+        .patch(uri, headers: headers as Map<String, String>?, body: body)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
     wasTokenBlackListed(response);
     return response;
   }
+
+  // Future<Response> imageUploader(
+  //   String url, {
+  //   Map<String, dynamic>? headers,
+  //   String? body,
+  // }) {
+  //   var request = http.MultipartRequest("PATCH", Uri.parse(url));
+  // }
 
   Future<Response> httpDelete(String url,
       {Map<String, dynamic>? headers}) async {
     Uri uri = Uri.parse(url);
     var response =
         await http.delete(uri, headers: headers as Map<String, String>?);
-    wasTokenBlackListed(response);
+    wasTokenBlackListed(response)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
     return response;
   }
 }

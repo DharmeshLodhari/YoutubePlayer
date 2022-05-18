@@ -19,6 +19,11 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../routes/route_constants.dart';
+import '../../../../utils/navigation_util.dart';
+import '../../../../widget/LoadingIndicator.dart';
+import '../../../search_user.dart';
+
 // ignore: must_be_immutable
 class AddContract extends StatefulWidget {
   var arguments;
@@ -31,6 +36,8 @@ class AddContract extends StatefulWidget {
 }
 
 class _AddContractState extends State<AddContract> {
+  String? conversationId;
+  TextEditingController _noteCtrl = TextEditingController();
   TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   TextEditingController _referenceController = TextEditingController();
@@ -39,11 +46,11 @@ class _AddContractState extends State<AddContract> {
 
   final _formKey = GlobalKey<FormState>();
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
-  CustomerProfile? _payee;
+  CustomerProfile? _payee; //The person you are offering the contract to.
   late UserBloc userBloc;
 
   bool isValidPayee = false;
-  int? amount;
+  double? amount;
   String reference = "";
   String category = "";
   String errorMessage = "";
@@ -52,7 +59,7 @@ class _AddContractState extends State<AddContract> {
   DateTime startingDate = DateTime.now();
   DateTime endingDate = DateTime.now();
 
-  Contract? contract;
+  ContractModel? contract;
 
   PaymentDuration? selectedDuration;
 
@@ -113,7 +120,7 @@ class _AddContractState extends State<AddContract> {
         },
       ),
       title: Text(
-        "Add contract",
+        AppLocalization.of(context)!.addContract,
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -161,7 +168,7 @@ class _AddContractState extends State<AddContract> {
         child: Column(
           children: [
             Expanded(
-              flex: 8,
+              flex: 9,
               child: Card(
                 elevation: 2,
                 margin: EdgeInsets.zero,
@@ -189,9 +196,11 @@ class _AddContractState extends State<AddContract> {
                                   flexibleSpace(),
                                   displayAmountField(),
                                   flexibleSpace(),
+                                  getPaymentPeriodDropDown(),
+                                  flexibleSpace(),
                                   getDateField(),
                                   flexibleSpace(),
-                                  getPaymentPeriodDropDown(),
+                                  getNoteField(),
                                   flexibleSpace(),
                                   errorMessage == ""
                                       ? Container()
@@ -215,16 +224,17 @@ class _AddContractState extends State<AddContract> {
               ),
             ),
             Expanded(
-                flex: 3,
-                child: Container(
-                  child: Column(
-                    children: [
-                      flexibleSpace(),
-                      getSubmitButton(),
-                      flexibleSpace(flex: 2),
-                    ],
-                  ),
-                )),
+              flex: 2,
+              child: Container(
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    getSubmitButton(),
+                    flexibleSpace(flex: 2),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -236,7 +246,7 @@ class _AddContractState extends State<AddContract> {
       return IconButton(
         icon: Icon(Icons.person),
         onPressed: () {
-          Navigator.pushNamed(context, '/profile',
+          Navigator.pushNamed(context, Routes.PROFILE,
               arguments: {"searchedUserName": _payee!.userName});
         },
       );
@@ -327,6 +337,7 @@ class _AddContractState extends State<AddContract> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -347,13 +358,31 @@ class _AddContractState extends State<AddContract> {
           });
         }
       },
+      onTap: () async {
+        CustomerProfile? userFound =
+            await NavigationUtil.push(context, screen: SearchUser());
+
+        if (userFound != null) {
+          _payee = userFound;
+          _recipientController.text = _payee!.userName!;
+          if (mounted) setState(() {});
+        }
+      },
+    );
+  }
+
+  Widget getNoteField() {
+    return CustomizedTextFormField(
+      maxLines: 3,
+      controller: _noteCtrl,
+      labelText: AppLocalization.of(context)!.note,
     );
   }
 
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -362,16 +391,21 @@ class _AddContractState extends State<AddContract> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = double.parse(val.replaceAll(',', ''));
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int.parse(val);
-            return null;
-          } catch (e) {}
+            double amount = double.parse(val.replaceAll(',', ''));
+
+            if (amount > 0.0) {
+              return null;
+            }
+          } catch (e) {
+            debugPrint('ERROR VALIDATING AMOUNT FIELD ::: ${e.toString()}');
+          }
         }
         return AppLocalization.of(context)!.invalidAmount;
       },
@@ -386,13 +420,14 @@ class _AddContractState extends State<AddContract> {
             });
           }
           var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
+              await UserAuth().fetchCustomerProfileWithAuth(recipient);
           if (mounted) {
             setState(() {
               _payee = customerProfile;
               isValidPayee = _payee!.userName != userBloc.user.userName;
             });
           }
+          _recipientController.text = customerProfile.userName!;
         }
       },
     );
@@ -535,7 +570,7 @@ class _AddContractState extends State<AddContract> {
 
   void selectDuration() async {
     final pressedDuration = await showDialog<PaymentDuration>(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -614,7 +649,7 @@ class _AddContractState extends State<AddContract> {
       onPressed: onSubmit,
       backgroundColor: navyBlue,
       textColor: Colors.white,
-      text: "Add contract",
+      text: AppLocalization.of(context)!.submit,
     );
   }
 
@@ -630,7 +665,7 @@ class _AddContractState extends State<AddContract> {
       });
     }
 
-    if (recipient == _payee!.userName) {
+    if (_recipientController.text != userBloc.user.userName) {
       if (!isValidPayee) {
         setState(() {
           errorMessage = AppLocalization.of(context)!.invalidRecipient;
@@ -639,32 +674,64 @@ class _AddContractState extends State<AddContract> {
       }
 
       if (isValidPayee && _formKey.currentState!.validate()) {
-        if (userBloc.user.userName != recipient) {
-          try {
-            var data = {
-              "contractor": recipient!.trim().toString(),
-              "contractee": userBloc.user.userName.toString(),
-              "currency": userBloc.user.currency.toString(),
-              "amount": amount.toString().trim(),
-              "start_date": dateToString(startingDate),
-              "end_date": dateToString(endingDate),
-              "payment_duration": selectedDuration!.value.toString(),
-              "note": " hello test contract",
-            };
-
-            BusinessAuth().addContract(data).then((result) {
-              if (result) {
-                Navigator.pop(context);
-              }
-            }).catchError((error) {
-              showToast(message: error.toString());
-            });
-          } catch (e) {
-            debugPrint(e.toString());
-            showToast(message: e.toString());
-          }
+        if (selectedDuration == null) {
+          setState(() {
+            errorMessage = AppLocalization.of(context)!.selectPaymentDuration;
+            return;
+          });
         } else {
-          showToast(message: AppLocalization.of(context)!.invalidRecipient);
+          if (userBloc.user.userName != recipient) {
+            try {
+              showDialog(
+                  context: context,
+                  builder: (dialogLoadingContext) => LoadingIndicator());
+
+              await BusinessAuth()
+                  .getConversationId(name: _recipientController.text)
+                  .then(
+                (value) {
+                  if (value != null) {
+                    conversationId = value;
+                  }
+                },
+              );
+
+              var data = {
+                "contractor": _recipientController.text,
+                "currency": userBloc.user.currency.toString(),
+                "amount": moneyInputNormalizer(amount.toString().trim()),
+                "start_date": dateToString(startingDate),
+                "end_date": dateToString(endingDate),
+                "payment_duration": selectedDuration!.value.toString(),
+              };
+
+              if (_noteCtrl.text.isNotEmpty) {
+                data['note'] = _noteCtrl.text;
+              }
+              if (conversationId != null) {
+                data['conversation_id'] = conversationId!;
+              }
+
+              BusinessAuth().addContract(data).then((result) {
+                Navigator.pop(context); // Dismiss the loading indicator
+
+                if (result) {
+                  Navigator.pop(context,
+                      true); // Pop this screen to go back to my_contract_list
+                }
+              }).catchError((error) {
+                Navigator.pop(context);
+                showToast(message: error.toString());
+              });
+            } catch (e) {
+              Navigator.pop(context);
+              debugPrint(e.toString());
+
+              showToast(message: e.toString());
+            }
+          } else {
+            showToast(message: AppLocalization.of(context)!.invalidRecipient);
+          }
         }
       }
     } else {
@@ -675,6 +742,7 @@ class _AddContractState extends State<AddContract> {
 
   @override
   void dispose() {
+    _noteCtrl.dispose();
     _recipientController.dispose();
     _amountController.dispose();
     _referenceController.dispose();

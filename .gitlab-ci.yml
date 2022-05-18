@@ -1,9 +1,12 @@
-image: cirrusci/flutter:1.22.5
+image: cirrusci/flutter:2.10.5
 
 stages:
   - Test
   - Build Android
   - Deploy
+
+variables:
+  BUILDNAME: slydp-$(date +"%m-%d-%Y-%I-%M-%p").apk
 
 before_script:
   - flutter pub get
@@ -33,6 +36,9 @@ android:build:
     - touch android/key.properties
     - cat $KEYFILE >> android/key.properties
 
+  after_script:
+    - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
+
   script:
     # Flutter local configuration
     - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
@@ -44,13 +50,19 @@ android:build:
     - bundle exec fastlane build_android
     - rm -f local.properties
     - rm -f key.properties
+    - mkdir -p /tmp/build/app/outputs/flutter-apk/
+    - touch build/app/outputs/flutter-apk/$BUILDNAME
 
   artifacts:
     paths:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
+      - build/app/outputs/flutter-apk/$BUILDNAME
     expire_in: 1 week
   interruptible: true
+
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
 
   tags:
     - flutter

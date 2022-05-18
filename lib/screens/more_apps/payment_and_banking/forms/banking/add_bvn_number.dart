@@ -113,10 +113,9 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
               buildGetIdType(),
               buildBusinessRegistrationLicense(),
               getVerificationWarning(),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               getSubmitButton(),
+              SizedBox(height: 4),
             ],
           ),
         ),
@@ -151,7 +150,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             height: 16,
           ),
           Text(
-            "Id proof",
+            "Identification",
             style: TextStyle(color: darkGrey, fontSize: 14),
           ),
           getIdPhoto(),
@@ -178,9 +177,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             style: TextStyle(color: darkGrey, fontSize: 14),
           ),
           getBusinessRegistrationLicense(),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
         ],
       );
     }
@@ -198,7 +195,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
 
   Widget getVerificationWarning() {
     return Text(
-      "It will take up to 48 hours to verify user details",
+      "It may take up to 48 hours to verify user details",
       style:
           TextStyle(color: navyBlue, fontSize: 14, fontWeight: FontWeight.w600),
     );
@@ -233,6 +230,8 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       };
       PaymentAndBankingAuth().addBvnNumberAndIdProof(data).then((value) {
         if (value) {
+          showToast(message: 'Account upgraded');
+
           Navigator.pop(context);
           Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
         }
@@ -251,6 +250,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       controller: bvnNumberController,
       hintText: "Enter BVN Number",
       labelText: "BVN Number",
+      maxLength: 11,
       keyboardType: TextInputType.number,
       validator: (val) {
         if (val.toString().length == 11) {
@@ -272,7 +272,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           width: MediaQuery.of(context).size.width - 32,
           // height: MediaQuery.of(context).size.width - 32,
           constraints:
-              BoxConstraints(minHeight: MediaQuery.of(context).size.width / 2),
+              BoxConstraints(minHeight: MediaQuery.of(context).size.width / 3),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -283,6 +283,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                   ? Image.file(
                       File(pickedGovernmentId!),
                       fit: BoxFit.fitWidth,
+                      height: MediaQuery.of(context).size.width / 3,
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -296,7 +297,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                           height: 16,
                         ),
                         Text(
-                          "Upload image",
+                          "Upload identification",
                           style: TextStyle(color: darkGrey, fontSize: 14),
                         ),
                       ],
@@ -355,7 +356,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           width: MediaQuery.of(context).size.width - 32,
           // height: MediaQuery.of(context).size.width - 32,
           constraints:
-              BoxConstraints(minHeight: MediaQuery.of(context).size.width / 2),
+              BoxConstraints(minHeight: MediaQuery.of(context).size.width / 3),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -366,20 +367,15 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
                   ? Image.file(
                       File(pickedBusinessRegistrationLicense!),
                       fit: BoxFit.fitWidth,
+                      height: MediaQuery.of(context).size.width / 3,
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Icon(
-                          SlydoAppIcon.add_image,
-                          color: darkGrey,
-                          size: 55,
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
+                        Icon(SlydoAppIcon.add_image, color: darkGrey, size: 55),
+                        SizedBox(height: 16),
                         Text(
-                          "Upload image",
+                          "Upload license",
                           style: TextStyle(color: darkGrey, fontSize: 14),
                         ),
                       ],

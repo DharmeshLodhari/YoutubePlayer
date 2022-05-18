@@ -6,10 +6,10 @@ import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../utils/colors.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../widget/LoadingIndicator.dart';
 
 class Registration extends StatefulWidget {
   @override
@@ -26,7 +26,7 @@ class _RegistrationState extends State<Registration> {
   TextEditingController? phoneNumberController;
 
   // this variable is responsible to enable and disable submit btn
-  bool isValid = false;
+  bool showButton = false;
 
   @override
   void initState() {
@@ -140,13 +140,49 @@ class _RegistrationState extends State<Registration> {
       labelColor: darkGrey,
       labelText: "Phone number",
       hintText: "08023000000",
+      isNumberOnlyInput: true,
       keyboardType: TextInputType.phone,
       controller: phoneNumberController,
       validator: validatePhoneNumber,
-      onChanged: (val) {
-        validateField();
+      onChanged: (value) {
+        if (value.isEmpty || value.length < 11) {
+          setState(() {
+            showButton = false;
+          });
+        }
+      },
+      whenToVerifyInputFromServer: (value) => value.length == 11,
+      verifyInputFromServerFunc: () => _verifyPhoneNumber(),
+      extraFunctionWhenInputWasVerifiedFromServerSuccessfully: () {
+        setState(() {
+          showButton = true;
+        });
+      },
+      extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully: () {
+        setState(() {
+          showButton = false;
+          showToast(message: 'Phone number not valid');
+        });
       },
     );
+  }
+
+  Future<bool> _verifyPhoneNumber() async {
+    bool verified = false;
+    await UserAuth()
+        .verifyPhoneNumberFromServer(phoneNumber: phoneNumberController!.text)
+        .then((verifiedPhoneNumber) {
+      if (verifiedPhoneNumber) {
+        verified = true;
+      } else {
+        verified = false;
+      }
+    }).catchError((e) {
+      Navigator.pop(context);
+      showToast(message: 'EROOR - ${e.toString()}');
+    });
+
+    return verified;
   }
 
   String? validatePhoneNumber(number) {
@@ -171,28 +207,26 @@ class _RegistrationState extends State<Registration> {
 
   void validateField() {
     if (phoneNumberController!.text.length >= 9) {
-      isValid = true;
+      showButton = true;
       setState(() {});
     } else {
-      isValid = false;
+      showButton = false;
       setState(() {});
     }
   }
 
   Widget continueBtn() {
-    return isValid
+    return showButton
         ? CurvedButton(
-            onPressed: continuePressed,
+            onPressed: submit,
             text: "Continue",
             textColor: Colors.white,
             backgroundColor: navyBlue,
           )
-        : Container(
-            height: 42,
-          );
+        : Container(height: 42);
   }
 
-  void continuePressed() {
+  void submit() {
     var phoneNumberFromTextField = phoneNumberController!.text.trim();
 
     if (phoneNumberFromTextField.substring(0, 1) == "0") {
@@ -209,14 +243,18 @@ class _RegistrationState extends State<Registration> {
     }
 
     if (_registrationFormKey.currentState!.validate()) {
+      showDialog(context: context, builder: (context) => LoadingIndicator());
+
       UserAuth().registerPhoneNumber(phoneNumberWithCountryCode).then((value) {
+        Navigator.of(context).pop();
         Navigator.of(context).popAndPushNamed(
-          "/verify-registration-otp",
+          Routes.VERIFY_REGISTRATION_OTP,
           arguments: {
             "phoneNumber": phoneNumberWithCountryCode,
           },
         );
       }).catchError((error) {
+        Navigator.of(context).pop();
         showToast(message: "$error");
       });
     }

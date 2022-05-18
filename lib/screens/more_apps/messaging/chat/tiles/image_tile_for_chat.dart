@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/common.dart';
@@ -33,15 +34,12 @@ class ImageTileForChat extends StatelessWidget {
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
+            isSend ? Container() : Container(width: 20),
+
             GestureDetector(
               onTap: () async {
                 await Navigator.of(context).pushNamed(
-                  "/view-chat-media",
+                  Routes.VIEW_CHAT_MEDIA,
                   arguments: {
                     "type": "image",
                     "file": message!['media'],
@@ -126,12 +124,8 @@ class ImageTileForChat extends StatelessWidget {
                                   ),
                                 ],
                               )
-                            : Container(
-                                width: 0,
-                              )
-                        : Container(
-                            width: 0,
-                          ),
+                            : Container(width: 0)
+                        : Container(width: 0),
                     isMessageEmpty
                         ? Container()
                         : Container(
@@ -140,27 +134,17 @@ class ImageTileForChat extends StatelessWidget {
                                     chatConversation!.isGroupConversation!
                                         ? 0
                                         : 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    messageText!,
-                                    style: TextStyle(
-                                        color:
-                                            isSend ? Colors.white : blackFont,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              messageText!,
+                              style: TextStyle(
+                                  color: isSend ? Colors.white : blackFont,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400),
                             ),
                           ),
-                    isMessageEmpty
-                        ? Container()
-                        : SizedBox(
-                            height: 8,
-                          ),
+                    isMessageEmpty ? Container() : SizedBox(height: 8),
                     Container(
+                      height: 200,
                       padding: EdgeInsets.symmetric(
                           horizontal: chatConversation!.isGroupConversation!
                               ? 0
@@ -168,6 +152,12 @@ class ImageTileForChat extends StatelessWidget {
                                   ? 0
                                   : 8),
                       child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(isSend ? 10 : 0),
+                          bottomRight: Radius.circular(isSend ? 0 : 10),
+                        ),
                         child: CachedNetworkImage(
                           imageUrl: message!['media'],
                           fit: BoxFit.cover,
@@ -188,13 +178,14 @@ class ImageTileForChat extends StatelessWidget {
                           ),
                           errorWidget: imageErrorWidget,
                         ),
-                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
+
+            //Message tick
             isSend
                 ? Container(
                     width: 20,
@@ -207,9 +198,7 @@ class ImageTileForChat extends StatelessWidget {
                 : Container(),
           ],
         ),
-        SizedBox(
-          height: 1,
-        ),
+        SizedBox(height: 1),
         Row(
           mainAxisAlignment:
               isSend ? MainAxisAlignment.end : MainAxisAlignment.start,

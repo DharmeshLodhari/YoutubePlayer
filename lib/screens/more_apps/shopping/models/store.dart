@@ -86,6 +86,14 @@ class Product {
     canRate = object["can_rate"] ?? false;
   }
 
+  String? getMerchantUserName() {
+    return this.seller;
+  }
+
+  String? getMerchantName() {
+    return this.sellerFullName;
+  }
+
   List<String> getProductImages(List? data) {
     List<String> images = [];
 
@@ -173,6 +181,14 @@ class Service {
       this.pictureMap,
       this.rating = 0.0,
       this.canRate});
+
+  String? getMerchantUserName() {
+    return this.provider;
+  }
+
+  String? getMerchantName() {
+    return this.providerFullName;
+  }
 
   // ignore: missing_return
   String getImageId(String? imageUrl) {
@@ -404,7 +420,7 @@ class ServiceCategory {
 class Order {
   String? id;
   String? status;
-  String? customer;
+  String? customerName;
   String? merchant;
   String? customerAvatar;
   String? customerType;
@@ -420,7 +436,7 @@ class Order {
   Order({
     this.id,
     this.status,
-    this.customer,
+    this.customerName,
     this.merchant,
     this.customerAvatar,
     this.customerType = "User",
@@ -437,7 +453,7 @@ class Order {
   Order.fromJson(object) {
     this.id = object["id"].toString();
     this.status = object["status"];
-    this.customer = object["customer"];
+    this.customerName = object["customer"];
     this.merchant = object["merchant"];
     this.customerAvatar = object["customer_avatar"];
     this.customerType = object["customer_type"] ?? "User";

@@ -26,6 +26,7 @@ class UserAuth extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/user/customer/" + userName.trim();
     var uuid = Uuid();
     var transactionId = uuid.v4();
+
     var headers = {
       "Content-type": "application/json",
       "TransactionId": transactionId,
@@ -36,6 +37,7 @@ class UserAuth extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      debugPrint("FETCH USER PROFILE RESPONSE BODY:- ${response.body}");
 
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
@@ -55,6 +57,7 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    print('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
@@ -67,7 +70,7 @@ class UserAuth extends AuthService {
   }
 
   // Update User Avatar
-  Future<CustomerProfile> updateUserAvatar(File avatar) async {
+  Future<CustomerProfile> updateUserAvatar(File? avatar) async {
     User? user = await getUser();
     if (user == null) return Future.error("Try after Some time");
     var headers = await getAuthHeaders();
@@ -86,7 +89,7 @@ class UserAuth extends AuthService {
       request.fields["full_name"] = user.fullName!;
       request.fields["avatar"] = user.avatar!;
 
-      //create multipart using filepath, string or bytes
+      //create multipart using filepath, string or bytes.
       var multipartFile =
           await http.MultipartFile.fromPath("avatar", avatarPath);
 
@@ -190,8 +193,11 @@ class UserAuth extends AuthService {
 
     var _data = jsonEncode(data);
 
+    debugPrint('USER REGISTRATION DATA ::: $_data');
+
     var response = await httpPost(url,
         headers: headers as Map<String, dynamic>?, body: _data);
+    debugPrint('USER REGISTRATION RESPONSE ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
@@ -209,6 +215,8 @@ class UserAuth extends AuthService {
       "phone": phoneNumber,
     };
 
+    debugPrint('PHONE NUMBER DATA ::: $data');
+
     var _data = jsonEncode(data);
     var response = await httpPost(url,
         body: _data, headers: headers as Map<String, dynamic>?);
@@ -224,12 +232,43 @@ class UserAuth extends AuthService {
     }
   }
 
+  Future<bool> verifyPhoneNumberFromServer(
+      {required String phoneNumber}) async {
+    String url = AppConfig.baseUrl + "/api/v1/user/auth/verify-phone";
+
+    var data = {'phone': phoneNumber};
+    var headers = await getAuthHeaders();
+
+    await Future.delayed(
+      Duration(seconds: 3),
+      () {},
+    );
+    return true;
+
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+
+    print('VERIFY PHONE RESPONSE ::: $response');
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['msg'] == 'valid') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   // it will verify the phone number to  OTP
   Future<String?> verifyPhoneNumber(
       // ignore: non_constant_identifier_names
       String? phoneNumber,
       String otp,
       String passwordToken) async {
+    late String result;
     var url = AppConfig.baseUrl + "/api/v1/sms/verify";
     var headers = getNonAuthHeader();
     var data = {
@@ -237,18 +276,27 @@ class UserAuth extends AuthService {
       "code": otp,
       "password-token": passwordToken,
     };
+
+    debugPrint('VERIFY PHONE NUMBER DATA ::: $data');
+
     var _data = jsonEncode(data);
     var response = await httpPost(url,
         body: _data, headers: headers as Map<String, dynamic>?);
+
+    debugPrint('VERIFY PHONE NUMBER RESPONSE DATA ::: ${response.body}');
     var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       var resetToken = jsonData['reset-token'];
-      return resetToken;
+
+      if (resetToken != null) {
+        return resetToken;
+      } else {
+        return 'Successful';
+      }
     } else {
-      debugPrint("DATA SENT:- $data");
       debugPrint(
           "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-      throw jsonData;
+      return Future.error(jsonData);
     }
   }
 
@@ -265,10 +313,10 @@ class UserAuth extends AuthService {
       "phone-number": phoneNumber,
     };
     var _data = jsonEncode(data);
-    debugPrint(_data);
+    debugPrint('_data :: $data');
     var response = await httpPatch(url,
         headers: headers as Map<String, dynamic>?, body: _data);
-    var jsonData = json.decode(response.body);
+    var jsonData = jsonDecode(response.body);
     debugPrint(
         "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
@@ -307,17 +355,23 @@ class UserAuth extends AuthService {
 
       return {"new_password": data["new_password1"]};
     } else {
-      return Future.error("ERROR: -");
+      return Future.error("ERROR: - ${response.body}");
     }
   }
 
-  Future<Address> fetchUserAddress() async {
-    var url = AppConfig.baseUrl + "/api/v1/user/address/";
+  Future<Address> fetchUserAddress({String? customerName}) async {
+    String url = "";
+    if (customerName != null) {
+      url = AppConfig.baseUrl + "/api/v1/user/shipping-address/$customerName/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/user/address/";
+    }
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
+      debugPrint('USER ADDRESS ::: $jsonData');
       return Address.fromJson(jsonData);
     }
     return Address(
@@ -333,6 +387,8 @@ class UserAuth extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/user/about/$userName/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    debugPrint('FETCH USER ABOUT INFO RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
@@ -419,6 +475,7 @@ class UserAuth extends AuthService {
 
     var response = await httpDelete(url, headers: headers);
 
+    debugPrint('DELETE COVER ::::  ${response.body}');
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -432,7 +489,10 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
+      debugPrint("ADDRESS ADDED: ${response.body}");
+
       return true;
     }
     debugPrint("address add failed : ${response.body}");
@@ -451,9 +511,11 @@ class UserAuth extends AuthService {
     }
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+    debugPrint('USER RES CONTACTS :::: $response');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body) ?? {};
+      debugPrint('USER CONTACTS :::: $jsonData');
 
       Map<String, dynamic> result = {
         "count": jsonData["count"],

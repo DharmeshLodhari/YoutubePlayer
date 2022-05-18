@@ -19,13 +19,13 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/search_text_field.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../user_auth.dart';
 
 class ConnectionList extends StatefulWidget {
@@ -193,9 +193,7 @@ class _ConnectionListState extends State<ConnectionList> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            height: 8,
-          ),
+          SizedBox(height: 8),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
@@ -256,7 +254,7 @@ class _ConnectionListState extends State<ConnectionList> {
       color: Colors.white,
       padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
       child: SearchTextField(
-        hintText: "Search...",
+        hintText: "Search my contacts",
         hintStyle: TextStyle(
             fontSize: 14, fontWeight: FontWeight.w400, color: darkGrey),
         onSubmit: () {
@@ -316,10 +314,7 @@ class _ConnectionListState extends State<ConnectionList> {
   Widget _buildConnectionsList() {
     try {
       return _connectionListBloc.connectionUsers.length == 0
-          ? NoItemInList(
-              msg: "No contact found !!",
-              isResult: true,
-            )
+          ? NoItemInList(msg: "No contact found !!", isResult: true)
           : ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
@@ -389,7 +384,7 @@ class _ConnectionListState extends State<ConnectionList> {
 
         // ConnectionListManager().saveConnectionsToDB(connections: users);
 
-        if (mounted) setState(() {});
+        // if (mounted) setState(() {});
 
         /// adding chat Users in database
         ChatUserManager().addUsers(users);
@@ -429,7 +424,7 @@ class _ConnectionListState extends State<ConnectionList> {
         backgroundColor: mateRed,
         icon: SlydoAppIcon.block,
         onTap: () {
-          blockUserAlert(customerProfile, index);
+          blockUserAlert(customerProfile);
         },
         title: AppLocalization.of(context)!.block,
         slideController: _slideController,
@@ -474,7 +469,7 @@ class _ConnectionListState extends State<ConnectionList> {
     ];
   }
 
-  void blockUserAlert(CustomerProfile user, int index) async {
+  void blockUserAlert(CustomerProfile user) async {
     bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -496,12 +491,12 @@ class _ConnectionListState extends State<ConnectionList> {
       title: AppLocalization.of(context)!.block,
       description: AppLocalization.of(context)!.areYouSureWantToBlock +
           " ${user.displayName()}",
-      actionOne: AppLocalization.of(context)!.block,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.block,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await UserAuth().blockUser(user);
-      done = true;
+      // done = true;
       if (done) {
         _showSnackBar(
             context,
@@ -544,8 +539,8 @@ class _ConnectionListState extends State<ConnectionList> {
       actionTwoTextColor: blackFont,
       title: "Exit",
       description: "Are you sure want to leave ${chatConversation.fullName} ?",
-      actionOne: "Exit",
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: "Exit",
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await MessageAuth()
@@ -589,8 +584,8 @@ class _ConnectionListState extends State<ConnectionList> {
       description: AppLocalization.of(context)!.areYouSureWantToDelete +
           " ${user.displayName()} " +
           "From Your Connection List",
-      actionOne: AppLocalization.of(context)!.delete,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.delete,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await UserAuth().removeFromContactList(user);
@@ -650,7 +645,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         ChatUserManager().clearChatUserMessageCount(
             conversationId: widget.user.conversationId);
 
-        await Navigator.pushNamed(context, '/chat-screen',
+        await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
             arguments: {"searchedUser": widget.user});
         if (mounted) setState(() {});
       },

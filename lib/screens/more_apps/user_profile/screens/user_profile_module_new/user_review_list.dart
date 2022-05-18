@@ -104,6 +104,16 @@ class _UserReviewListState extends State<UserReviewList> {
           return;
         }
 
+        String? error = result['error'];
+        if (error != null && error.toLowerCase().contains('review not found')) {
+          noReviewInList = true;
+          isReviewLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
         reviewCount = result['count'];
         reviewNext = result['next'];
         reviewPrevious = result['previous'];

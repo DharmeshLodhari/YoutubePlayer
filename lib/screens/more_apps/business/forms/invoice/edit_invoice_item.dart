@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -11,7 +10,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -25,6 +23,8 @@ class EditInvoiceItem extends StatefulWidget {
 }
 
 class _EditInvoiceItemState extends State<EditInvoiceItem> {
+  double totalCost = 0;
+
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
@@ -36,17 +36,12 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
   final _formKey = GlobalKey<FormState>();
   final _addItemScaffoldKey = GlobalKey<ScaffoldState>();
 
-  int? amount;
+  double? amount;
 
   String errorMessage = "";
   String? recipient;
   late AddInvoiceBloc addInvoiceBloc;
   bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void getInvoiceItem() async {
     if (_invoiceItem == null) {
@@ -54,6 +49,9 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
       _invoiceItem = addInvoiceBloc.items.elementAt(itemIndex!);
       _descriptionController.text = _invoiceItem!.name!;
       _amountController.text = _invoiceItem!.amount.toString();
+      totalCost =
+          (double.parse(_amountController.text) * _invoiceItem!.quantity!)
+              .toDouble();
       setState(() {});
     }
   }
@@ -140,10 +138,10 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                                       height: 20,
                                     ),
                                     displayAmountField(),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
+                                    SizedBox(height: 20),
                                     getQtyOfItem(),
+                                    SizedBox(height: 20),
+                                    getTotalText(),
                                     errorMessage == ""
                                         ? Container()
                                         : Text(
@@ -153,9 +151,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16),
                                           ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
+                                    SizedBox(height: 20),
                                   ],
                                 ),
                               ),
@@ -168,9 +164,7 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                   Container(
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 20,
-                        ),
+                        SizedBox(height: 20),
                         getSubmitButton(),
                         SizedBox(
                           height: 20,
@@ -187,6 +181,21 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
           );
   }
 
+  Widget getTotalText() {
+    return _amountController.text.isNotEmpty
+        ? Row(
+            children: [
+              Text(
+                'Total: ',
+                style: TextStyle(
+                    color: darkGrey, fontWeight: FontWeight.w500, fontSize: 14),
+              ),
+              Text("$totalCost"),
+            ],
+          )
+        : SizedBox.shrink();
+  }
+
   Widget showBackArrow() {
     return IconButton(
       icon: Icon(Icons.arrow_back_ios),
@@ -200,13 +209,20 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
     return CustomizedTextFormField(
       labelText: "Item description",
       controller: _descriptionController,
+      validator: (value) {
+        if (value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Field cannot be empty';
+        }
+      },
     );
   }
 
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
+      isAmountField: true,
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
@@ -215,14 +231,18 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val);
+            amount = double.parse(val.replaceAll(',', ''));
+
+            totalCost =
+                double.parse(_amountController.text.replaceAll(',', '')) *
+                    _invoiceItem!.quantity!;
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            int.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {}
         }
@@ -257,13 +277,13 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                   onTap: () {
                     if (_invoiceItem!.quantity! > 1) {
                       _invoiceItem!.quantity = _invoiceItem!.quantity! - 1;
+                      totalCost = (double.parse(_amountController.text) *
+                          _invoiceItem!.quantity!);
                       setState(() {});
                     }
                   }),
               Expanded(
-                child: SizedBox(
-                  width: 10,
-                ),
+                child: SizedBox(width: 10),
               ),
               Text(
                 _invoiceItem!.quantity.toString(),
@@ -286,6 +306,8 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
                   ),
                   onTap: () {
                     _invoiceItem!.quantity = _invoiceItem!.quantity! + 1;
+                    totalCost = double.parse(_amountController.text) *
+                        _invoiceItem!.quantity!;
                     setState(() {});
                   }),
             ],
@@ -317,9 +339,11 @@ class _EditInvoiceItemState extends State<EditInvoiceItem> {
         debugPrint("$data");
 
         _invoiceItem!.name = _descriptionController.text.trim();
-        _invoiceItem!.amount = int.parse(_amountController.text.trim());
+        _invoiceItem!.amount = int.parse(
+            _amountController.text.replaceAll(',', '').split('.')[0].trim());
         _invoiceItem!.currency = userBloc.user.currency;
 
+        print('INVOICE AMOUUNT SENT =------> ${_invoiceItem!.amount}');
         addInvoiceBloc.updateItem(index: itemIndex!, invoiceItem: _invoiceItem);
 
         ///
