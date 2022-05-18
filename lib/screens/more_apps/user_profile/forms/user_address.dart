@@ -1,18 +1,25 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../locale/app_localization.dart';
+import '../../shopping/screens/order_summary_screen.dart';
 import '../user_auth.dart';
 
 class UserAddress extends StatefulWidget {
+  String? customerName;
+  bool fromCheckoutScreen;
+
+  UserAddress({this.customerName, this.fromCheckoutScreen = false});
   @override
   _UserAddressState createState() => _UserAddressState();
 }
@@ -25,6 +32,7 @@ class _UserAddressState extends State<UserAddress> {
   TextEditingController addressLineTwoController = TextEditingController();
   TextEditingController cityController = TextEditingController();
   TextEditingController stateController = TextEditingController();
+  TextEditingController deliveryNoteController = TextEditingController();
 
   Country selectedCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
@@ -36,7 +44,9 @@ class _UserAddressState extends State<UserAddress> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    UserAuth().fetchUserAddress().then((value) {
+    UserAuth()
+        .fetchUserAddress(customerName: widget.customerName)
+        .then((value) {
       addressBloc.address = value;
       isLoading = false;
 
@@ -48,7 +58,6 @@ class _UserAddressState extends State<UserAddress> {
           addressBloc.address!.countryIsoCode);
       if (mounted) setState(() {});
     });
-
     super.initState();
   }
 
@@ -64,7 +73,9 @@ class _UserAddressState extends State<UserAddress> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+        body: isLoading
+            ? Center(child: CircularLoadingIndicator())
+            : scaffoldBody(),
       ),
     );
   }
@@ -86,16 +97,26 @@ class _UserAddressState extends State<UserAddress> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.addAddress,
+        getAppBarText(),
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
 
+  String billingAddressDesc =
+      "Your billing address will not be publicly available. It will only be used to send you your ordered product and services.";
+
+  String getAppBarText() {
+    if (widget.customerName == null && widget.fromCheckoutScreen == false) {
+      return AppLocalization.of(context)!.billingAddress;
+    } else {
+      return AppLocalization.of(context)!.shippingAddress;
+    }
+  }
+
   Widget scaffoldBody() {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
       child: Container(
         height: MediaQuery.of(context).size.height -
             (AppBar().preferredSize.height +
@@ -105,7 +126,7 @@ class _UserAddressState extends State<UserAddress> {
         child: Column(
           children: [
             Expanded(
-              flex: 8,
+              flex: 16,
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -122,21 +143,44 @@ class _UserAddressState extends State<UserAddress> {
                     flexibleSpace(),
                     getCountryDropdown(),
                     flexibleSpace(),
+                    getDeliveryNote(),
                     Text(
                       errorMessage,
                       style: TextStyle(color: mateRed, fontSize: 14),
                     ),
                     flexibleSpace(),
                     getSubmitButton(),
-                    flexibleSpace(),
+                    SizedBox(height: 12),
+                    widget.customerName == null
+                        ? Text(
+                            billingAddressDesc,
+                            style: TextStyle(
+                                color: Colors.black.withOpacity(0.4),
+                                fontSize: 14),
+                          )
+                        : SizedBox.shrink()
                   ],
                 ),
               ),
             ),
-            flexibleSpace(flex: 2)
+            flexibleSpace(flex: 2),
           ],
         ),
       ),
+    );
+  }
+
+  Widget getDeliveryNote() {
+    return widget.fromCheckoutScreen
+        ? getDeliveryNoteTextField()
+        : SizedBox.shrink();
+  }
+
+  Widget getDeliveryNoteTextField() {
+    return CustomizedTextFormField(
+      labelText: 'Shipping Note',
+      maxLines: 3,
+      controller: deliveryNoteController,
     );
   }
 
@@ -145,6 +189,7 @@ class _UserAddressState extends State<UserAddress> {
       labelText: "Address line 1",
       controller: addressLineOneController,
       hintText: "1 Main Street",
+      enabled: widget.customerName == null,
       validator: (val) => val.length == 0 ? "Field is required" : null,
     );
   }
@@ -153,6 +198,7 @@ class _UserAddressState extends State<UserAddress> {
     return CustomizedTextFormField(
       labelText: "Address line 2",
       hintText: "Main Avenue",
+      enabled: widget.customerName == null,
       controller: addressLineTwoController,
       validator: (val) => val.length == 0 ? "Field is required" : null,
     );
@@ -162,6 +208,7 @@ class _UserAddressState extends State<UserAddress> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.city,
       controller: cityController,
+      enabled: widget.customerName == null,
       validator: (val) =>
           val.length == 0 ? AppLocalization.of(context)!.invalidCity : null,
     );
@@ -171,6 +218,7 @@ class _UserAddressState extends State<UserAddress> {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.state,
       controller: stateController,
+      enabled: widget.customerName == null,
       validator: (val) =>
           val.length == 0 ? AppLocalization.of(context)!.invalidState : null,
     );
@@ -181,12 +229,12 @@ class _UserAddressState extends State<UserAddress> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppLocalization.of(context)!.selectYourCountry,
+          widget.customerName == null
+              ? AppLocalization.of(context)!.selectYourCountry
+              : AppLocalization.of(context)!.country,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
-          height: 6,
-        ),
+        SizedBox(height: 6),
         Card(
           elevation: 0,
           color: Colors.white,
@@ -197,7 +245,8 @@ class _UserAddressState extends State<UserAddress> {
           borderOnForeground: true,
           child: ListTile(
             dense: true,
-            onTap: _openCountryPickerDialog,
+            onTap:
+                widget.customerName == null ? _openCountryPickerDialog : null,
             title: _buildDialogItem(selectedCountry),
             trailing: Icon(
               Icons.keyboard_arrow_down,
@@ -249,23 +298,44 @@ class _UserAddressState extends State<UserAddress> {
       );
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: onSubmit,
-      text: AppLocalization.of(context)!.submitButton,
-      textColor: Colors.white,
-      backgroundColor: navyBlue,
+    return widget.customerName == null
+        ? CurvedButton(
+            onPressed:
+                widget.fromCheckoutScreen ? goToOrderSummaryPage : onSubmit,
+            text: widget.fromCheckoutScreen
+                ? 'Next'
+                : AppLocalization.of(context)!.submit,
+            textColor: Colors.white,
+            backgroundColor: navyBlue,
+          )
+        : SizedBox.shrink();
+  }
+
+  void goToOrderSummaryPage() {
+    Address address = Address(
+      city: cityController.text,
+      state: stateController.text,
+      country: selectedCountry.name,
+      countryIsoCode: selectedCountry.isoCode,
+      shippingNote: deliveryNoteController.text,
+      addressLineOne: addressLineOneController.text,
+      addressLineTwo: addressLineTwoController.text,
+    );
+    NavigationUtil.push(
+      context,
+      screen: OrderSummaryScreen(address: address),
     );
   }
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
       Map data = {
-        "address_line_1": addressLineOneController.text,
-        "address_line_2": addressLineTwoController.text,
         "city": cityController.text,
         "state": stateController.text,
         "country": selectedCountry.name,
-        "coutry_iso_name": selectedCountry.isoCode,
+        "iso_code": selectedCountry.isoCode,
+        "address_line_1": addressLineOneController.text,
+        "address_line_2": addressLineTwoController.text,
       };
       UserAuth().addUserAddress(data).then((value) {
         showToast(

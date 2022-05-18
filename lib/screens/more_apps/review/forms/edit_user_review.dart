@@ -100,7 +100,7 @@ class _EditUserReviewState extends State<EditUserReview> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           SizedBox(
-                            height: 20,
+                            height: 20
                           ),
                           Text(
                             getTitle(),
@@ -111,7 +111,7 @@ class _EditUserReviewState extends State<EditUserReview> {
                             ),
                           ),
                           SizedBox(
-                            height: 8,
+                            height: 8
                           ),
                           Text(
                             getSubTitle(),
@@ -125,7 +125,7 @@ class _EditUserReviewState extends State<EditUserReview> {
                       ),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 20
                     ),
                     _buildWriteUserReview(),
                     SizedBox(
@@ -197,11 +197,11 @@ class _EditUserReviewState extends State<EditUserReview> {
                     ),
                     _buildRatingBar(),
                     SizedBox(
-                      height: 32,
+                      height: 32
                     ),
                     _buildWriteReviewTextField(),
                     SizedBox(
-                      height: 16,
+                      height: 16
                     ),
                   ],
                 ),
@@ -209,7 +209,7 @@ class _EditUserReviewState extends State<EditUserReview> {
             ),
           ),
           SizedBox(
-            height: 30,
+            height: 30
           ),
           CurvedButton(
             onPressed: onButtonTap,
@@ -223,24 +223,13 @@ class _EditUserReviewState extends State<EditUserReview> {
 
   Widget _buildRatingBar() {
     return Center(
-      child: RatingBar.builder(
-        initialRating: rating.toDouble(),
-        minRating: 1,
-        direction: Axis.horizontal,
-        allowHalfRating: false,
-        itemCount: 5,
-        itemPadding: EdgeInsets.symmetric(horizontal: 8),
-        itemBuilder: (context, _) => Icon(
-          SlydoAppIcon.star,
-          color: starYellow,
-        ),
-        onRatingUpdate: (rate) {
+      child: getClickableRatingBar(initialRating: rating.toDouble(), onRatingUpdate: (rate){
+        {
           rating = rate.floor();
-        },
-        unratedColor: starYellow.withOpacity(0.2),
-        glowColor: starYellow.withOpacity(0.2),
-      ),
-    );
+        }
+      },));
+
+
   }
 
   Widget _buildWriteReviewTextField() {

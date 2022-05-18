@@ -228,12 +228,14 @@ class LocationTileForChatMessage extends StatelessWidget {
                     location.latitude!, location.longitude!);
               },
               child: Container(
-                constraints: BoxConstraints(
-                  // maxWidth: MediaQuery.of(context).size.width / 1.30,
-                  // minWidth: MediaQuery.of(context).size.width / 1.30,
-                  maxWidth: MediaQuery.of(context).size.width / 1.8,
-                  minWidth: MediaQuery.of(context).size.width / 1.8,
-                ),
+                width: MediaQuery.of(context).size.width / 1.30,
+
+                // constraints: BoxConstraints(
+                //   maxWidth: MediaQuery.of(context).size.width / 1.30,
+                //   minWidth: MediaQuery.of(context).size.width / 1.30,
+                //   // maxWidth: MediaQuery.of(context).size.width / 1.8,
+                //   // minWidth: MediaQuery.of(context).size.width / 1.8,
+                // ),
                 decoration: BoxDecoration(
                   color: chatConversation!.isGroupConversation!
                       ? isSend
@@ -286,9 +288,14 @@ class LocationTileForChatMessage extends StatelessWidget {
                             width: 0,
                           ),
                     Container(
-                      height: MediaQuery.of(context).size.width / 3,
-                      width: MediaQuery.of(context).size.width / 1.8,
-                      padding: EdgeInsets.symmetric(horizontal: 0),
+                      height: MediaQuery.of(context).size.width / 2.5,
+                      // width: MediaQuery.of(context).size.width / 1.8,
+                      padding: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              width: 3,
+                              color: isSend ? navyBlue : Colors.white)),
                       child: ClipRRect(
                         child: IgnorePointer(
                           ignoring: true,

@@ -28,6 +28,8 @@ import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../routes/route_constants.dart';
+
 class UserLogin extends StatefulWidget {
   @override
   _UserLoginState createState() => _UserLoginState();
@@ -557,7 +559,7 @@ class _UserLoginState extends State<UserLogin> {
           //  startWorkManager();
 
           Navigator.of(context).pushNamedAndRemoveUntil(
-            "/dashboard",
+            Routes.DASHBOARD,
             (Route<dynamic> route) => false,
           );
         } else {

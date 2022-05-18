@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/post_title_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -164,7 +165,7 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                         width: 20,
                       ),
                 Text(
-                  formatTime(message['created_at']),
+                  formatTime(message["created_at"]),
                   style: TextStyle(
                       color: darkGrey,
                       fontSize: 10,
@@ -311,27 +312,45 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
     return getSimpleMessage(message: message, isSend: isSend!);
   }
 
+  getPreviewIcon(String? url) {
+    if (url != null) {
+      if (url.endsWith('.png') ||
+          url.endsWith('.jpg') ||
+          url.endsWith('.jpeg')) {
+        return url;
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+
   List<Widget> getPreview(WebInfo webInfo) {
     List<Widget> children = [
       Center(
         child: Row(
           children: <Widget>[
-            CachedNetworkImage(
-              imageUrl: webInfo.icon ?? "",
-              errorWidget: imageErrorWidget,
-              imageBuilder: (context, imageProvider) {
-                return Image(
-                  image: imageProvider,
-                  fit: BoxFit.contain,
-                  width: 30,
-                  height: 30,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.link);
-                  },
-                );
-              },
-            ),
-            const SizedBox(width: 8),
+            getPreviewIcon(webInfo.icon).isEmpty
+                ? SizedBox.shrink()
+                : CachedNetworkImage(
+                    imageUrl: getPreviewIcon(webInfo.icon),
+                    errorWidget: imageErrorWidget,
+                    imageBuilder: (context, imageProvider) {
+                      return Image(
+                        image: imageProvider,
+                        fit: BoxFit.contain,
+                        width: 30,
+                        height: 30,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.link);
+                        },
+                      );
+                    },
+                  ),
+            getPreviewIcon(webInfo.icon).isEmpty
+                ? SizedBox.shrink()
+                : const SizedBox(width: 8),
             Expanded(
               child: Text(
                 webInfo.title!,
@@ -575,6 +594,13 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
             isSend: isSend!,
             isRepliedSend: isRepliedSend);
         return getEnvelopeUI;
+
+      case "blog_post":
+        Widget getPostUI = renderPost(
+            message: messageData,
+            isSend: isSend!,
+            isRepliedSend: isRepliedSend);
+        return getPostUI;
 
       default:
         debugPrint(
@@ -1051,6 +1077,77 @@ class _TextMessageRendererForChatState extends State<TextMessageRendererForChat>
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget renderPost(
+      {required Map<String, dynamic> message,
+      required bool isSend,
+      bool? isRepliedSend}) {
+    late PostForChatModel post;
+    if (message["meta_data"] is String) {
+      post = PostForChatModel.fromJson(jsonDecode(message["meta_data"]));
+    } else if (message["meta_data"] is Map) {
+      post = PostForChatModel.fromJson(message["meta_data"]);
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+              width: 2.0,
+              color: getDividerColor(
+                  isSend: isSend, isRepliedSend: isRepliedSend)),
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: CachedNetworkImage(
+              errorWidget: imageErrorWidget,
+              height: 48,
+              width: 48,
+              fit: BoxFit.cover,
+              imageUrl: post.image!,
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  post.title!,
+                  style: TextStyle(
+                      color: getDividerColor(
+                          isSend: isSend, isRepliedSend: isRepliedSend),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  post.authorUsername!,
+                  style: TextStyle(
+                      color: greyBorderColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
                 ),
               ],
             ),

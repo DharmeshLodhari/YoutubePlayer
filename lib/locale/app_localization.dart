@@ -77,10 +77,10 @@ class AppLocalization {
     );
   }
 
-  String get submitButton {
+  String get submit {
     return Intl.message(
       "Submit",
-      name: "submitButton",
+      name: "submit",
     );
   }
 
@@ -213,6 +213,20 @@ class AppLocalization {
     );
   }
 
+  String get addItems {
+    return Intl.message(
+      "Add Items",
+      name: "addItems",
+    );
+  }
+
+  String get selectPaymentDuration {
+    return Intl.message(
+      "Please select a payment duration",
+      name: "selectPaymentDuration",
+    );
+  }
+
   String get recipient {
     return Intl.message(
       "Recipient",
@@ -306,6 +320,13 @@ class AppLocalization {
     );
   }
 
+  String get searchPageTextFieldHint {
+    return Intl.message(
+      "Username, phone number, nickname",
+      name: "searchPageTextFieldHint",
+    );
+  }
+
   String get password {
     return Intl.message(
       "Password",
@@ -377,9 +398,23 @@ class AppLocalization {
     );
   }
 
+  String get invalidFormat {
+    return Intl.message(
+      "Invalid Format",
+      name: "invalidFormat",
+    );
+  }
+
+  String get invalidDate {
+    return Intl.message(
+      "Invalid Date",
+      name: "invalidDate",
+    );
+  }
+
   String get serverError {
     return Intl.message(
-      "Server Error Please try after some time !",
+      "Server Error Please try again after some time !",
       name: "serverError",
     );
   }
@@ -406,6 +441,13 @@ class AppLocalization {
     );
   }
 
+  String get country {
+    return Intl.message(
+      "Country",
+      name: "country",
+    );
+  }
+
   String get selectYourCountry {
     return Intl.message(
       "Select your Country",
@@ -417,6 +459,41 @@ class AppLocalization {
     return Intl.message(
       "Search",
       name: "search",
+    );
+  }
+
+  String get chat {
+    return Intl.message(
+      "Chat",
+      name: "chat",
+    );
+  }
+
+  String get kycDetails {
+    return Intl.message(
+      "KYC Details",
+      name: "kycDetails",
+    );
+  }
+
+  String get bvnStatus {
+    return Intl.message(
+      "BVN Status",
+      name: "bvnStatus",
+    );
+  }
+
+  String get documentResult {
+    return Intl.message(
+      "Document result",
+      name: "documentResult",
+    );
+  }
+
+  String get remark {
+    return Intl.message(
+      "Remark",
+      name: "remark",
     );
   }
 
@@ -496,6 +573,20 @@ class AppLocalization {
     return Intl.message(
       "Send Payment",
       name: "sendPayment",
+    );
+  }
+
+  String get makePayment {
+    return Intl.message(
+      "Make Payment",
+      name: "makePayment",
+    );
+  }
+
+  String get paySomeone {
+    return Intl.message(
+      "Pay someone",
+      name: "paySomeone",
     );
   }
 
@@ -603,6 +694,62 @@ class AppLocalization {
     );
   }
 
+  String get cards {
+    return Intl.message(
+      "Cards",
+      name: "cards",
+    );
+  }
+
+  String get creditCards {
+    return Intl.message(
+      "Credit Cards",
+      name: "creditCards",
+    );
+  }
+
+  String get cashOut {
+    return Intl.message(
+      "Cashout",
+      name: "cashOut",
+    );
+  }
+
+  String get myCreditAndDebitCards {
+    return Intl.message(
+      "My Credit/Debit Cards",
+      name: "myCreditAndDebitCards",
+    );
+  }
+
+  String get addPaymentCard {
+    return Intl.message(
+      "Add Payment Card",
+      name: "addPaymentCard",
+    );
+  }
+
+  String get wallet {
+    return Intl.message(
+      "Wallet",
+      name: "wallet",
+    );
+  }
+
+  String get walletFunding {
+    return Intl.message(
+      "Wallet Funding",
+      name: "walletFunding",
+    );
+  }
+
+  String get youWillGetAmount {
+    return Intl.message(
+      "You will get following amount in your card",
+      name: "youWillGetAmount",
+    );
+  }
+
   String get youCanAddMaximumTwoAccount {
     return Intl.message(
       "You can add maximum two bank account",
@@ -610,10 +757,24 @@ class AppLocalization {
     );
   }
 
+  String get youCanAddMaximumTwoCreditCards {
+    return Intl.message(
+      "You can add maximum two credit cards",
+      name: "youCanAddMaximumTwoCreditCards",
+    );
+  }
+
   String get youDontHaveAnyAccountPleaseAddOne {
     return Intl.message(
       "You Don't have any Bank Account Please Add one",
       name: "youDontHaveAnyAccountPleaseAddOne",
+    );
+  }
+
+  String get youDontHaveAnyCreditCardPleaseAddOne {
+    return Intl.message(
+      "You don't have any credit card. Please Add one.",
+      name: "youDontHaveAnyCreditCardPleaseAddOne",
     );
   }
 
@@ -640,8 +801,15 @@ class AppLocalization {
 
   String get youCanNotDeleteOnlyBankAccount {
     return Intl.message(
-      "You can not delete only bank account",
+      "You can not delete your only bank account",
       name: "youCanNotDeleteOnlyBankAccount",
+    );
+  }
+
+  String get youCanNotDeleteOnlyCreditAccount {
+    return Intl.message(
+      "You can not delete your only credit card",
+      name: "youCanNotDeleteOnlyCreditAccount",
     );
   }
 
@@ -652,10 +820,24 @@ class AppLocalization {
     );
   }
 
+  String get cardDeletedSuccessfully {
+    return Intl.message(
+      "Credit Card Deleted Successfully",
+      name: "cardDeletedSuccessfully",
+    );
+  }
+
   String get accountIsNotDeleted {
     return Intl.message(
       "Account is not deleted !!",
       name: "accountIsNotDeleted",
+    );
+  }
+
+  String get cardIsNotDeleted {
+    return Intl.message(
+      "Credit Card not deleted !!",
+      name: "cardIsNotDeleted",
     );
   }
 
@@ -668,8 +850,15 @@ class AppLocalization {
 
   String get thisAccountIsAlreadyDefaultAccount {
     return Intl.message(
-      "This Account is Alerady Default Account",
+      "This Account is already the default Account",
       name: "thisAccountIsAlreadyDefaultAccount",
+    );
+  }
+
+  String get thisCardIsAlreadyDefaultCard {
+    return Intl.message(
+      "This credit card is already the default card",
+      name: "thisCardIsAlreadyDefaultCard",
     );
   }
 
@@ -680,10 +869,24 @@ class AppLocalization {
     );
   }
 
+  String get creditCardUpdatedSuccessfully {
+    return Intl.message(
+      "Credit Card updated successfully !!",
+      name: "creditCardUpdatedSuccessfully",
+    );
+  }
+
   String get accountIsNotUpdated {
     return Intl.message(
       "Account is not updated !!",
       name: "accountIsNotUpdated",
+    );
+  }
+
+  String get cardNotUpdated {
+    return Intl.message(
+      "Credit Card not updated !!",
+      name: "cardNotUpdated",
     );
   }
 
@@ -699,6 +902,13 @@ class AppLocalization {
     return Intl.message(
       "Requests",
       name: "requests",
+    );
+  }
+
+  String get qrCode {
+    return Intl.message(
+      "QR Code",
+      name: "qrCode",
     );
   }
 
@@ -728,6 +938,13 @@ class AppLocalization {
     return Intl.message(
       "Message",
       name: "message",
+    );
+  }
+
+  String get pay {
+    return Intl.message(
+      "Pay",
+      name: "pay",
     );
   }
 
@@ -767,11 +984,17 @@ class AppLocalization {
     );
   }
 
-  //home
   String get exit {
     return Intl.message(
       "Exit",
       name: "exit",
+    );
+  }
+
+  String get choosePlan {
+    return Intl.message(
+      "Choose Plan",
+      name: "choosePlan",
     );
   }
 
@@ -1111,6 +1334,13 @@ class AppLocalization {
     );
   }
 
+  String get selectTheVideoSource {
+    return Intl.message(
+      "Select the video Source",
+      name: "selectTheVideoSource",
+    );
+  }
+
   String get camera {
     return Intl.message(
       "Camera",
@@ -1188,11 +1418,18 @@ class AppLocalization {
     );
   }
 
-  //transaction detail page
   String get transaction {
     return Intl.message(
       "Transaction",
       name: "transaction",
+    );
+  }
+
+  //transaction detail page
+  String get myTransaction {
+    return Intl.message(
+      "My Transaction",
+      name: "myTransaction",
     );
   }
 
@@ -1207,6 +1444,20 @@ class AppLocalization {
     return Intl.message(
       "Category",
       name: "category",
+    );
+  }
+
+  String get accountType {
+    return Intl.message(
+      "Account Type",
+      name: "accountType",
+    );
+  }
+
+  String get chooseAccountType {
+    return Intl.message(
+      "Choose Account Type",
+      name: "chooseAccountType",
     );
   }
 
@@ -1229,6 +1480,48 @@ class AppLocalization {
     return Intl.message(
       "Transaction history empty",
       name: "transactionHistoryEmpty",
+    );
+  }
+
+  String get invoiceEmpty {
+    return Intl.message(
+      "Invoice empty",
+      name: "invoiceEmpty",
+    );
+  }
+
+  String get addContract {
+    return Intl.message(
+      "Add Contract",
+      name: "addContract",
+    );
+  }
+
+  String get contractEmpty {
+    return Intl.message(
+      "Contract empty",
+      name: "contractEmpty",
+    );
+  }
+
+  String get utilityHistoryEmpty {
+    return Intl.message(
+      "Utility history empty",
+      name: "utilityHistoryEmpty",
+    );
+  }
+
+  String get utilityTransactionHistory {
+    return Intl.message(
+      "Utility Transaction History",
+      name: "utilityTransactionHistory",
+    );
+  }
+
+  String get providerListEmpty {
+    return Intl.message(
+      "Provider list empty",
+      name: "providerListEmpty",
     );
   }
 
@@ -1526,10 +1819,24 @@ class AppLocalization {
     );
   }
 
+  String get post {
+    return Intl.message(
+      "Post ",
+      name: "post",
+    );
+  }
+
   String get noPosts {
     return Intl.message(
       "No Posts",
       name: "noPosts",
+    );
+  }
+
+  String get notNow {
+    return Intl.message(
+      "Not now",
+      name: "notNow",
     );
   }
 
@@ -1700,6 +2007,27 @@ class AppLocalization {
     );
   }
 
+  String get address {
+    return Intl.message(
+      "Address",
+      name: "Address",
+    );
+  }
+
+  String get billingAddress {
+    return Intl.message(
+      "Billing Address",
+      name: "billingAddress",
+    );
+  }
+
+  String get shippingAddress {
+    return Intl.message(
+      "Shipping Address",
+      name: "shippingAddress",
+    );
+  }
+
   String get addressLine1 {
     return Intl.message(
       "Address Line 1",
@@ -1779,6 +2107,41 @@ class AppLocalization {
     );
   }
 
+  String get cardHolderName {
+    return Intl.message(
+      "Card Holder's Name",
+      name: "cardHolderName",
+    );
+  }
+
+  String get fieldCannotBeEmpty {
+    return Intl.message(
+      "Field cannot be empty",
+      name: "fieldCannotBeEmpty",
+    );
+  }
+
+  String get slydoPayAccepts {
+    return Intl.message(
+      "Slydopay accepts the following credit card:",
+      name: "slydoPayAccepts",
+    );
+  }
+
+  String get securelySaveCard {
+    return Intl.message(
+      "Securely save this card",
+      name: "securelySaveCard",
+    );
+  }
+
+  String get doesNotSaveUsersCard {
+    return Intl.message(
+      "Slydo does not store user's credit cards info on it's servers. It is stored and processed by our gateway partners.",
+      name: "doesNotSaveUsersCard",
+    );
+  }
+
   String get expiredDate {
     return Intl.message(
       "Expied Date",
@@ -1800,10 +2163,52 @@ class AppLocalization {
     );
   }
 
-  String get topUp {
+  String get top_Up {
     return Intl.message(
       "Top Up",
+      name: "top_Up",
+    );
+  }
+
+  String get topUp {
+    return Intl.message(
+      "TopUp",
       name: "topUp",
+    );
+  }
+
+  String get topUpByCreditCard {
+    return Intl.message(
+      "Top up by credit card",
+      name: "topUpByCreditCard",
+    );
+  }
+
+  String get topUpWithCreditAndDebitCard {
+    return Intl.message(
+      "Top up with Credit/Debit card",
+      name: "topUpWithCreditAndCard",
+    );
+  }
+
+  String get creditDebitCard {
+    return Intl.message(
+      "Credit/Debit Card",
+      name: "creditDebitCard",
+    );
+  }
+
+  String get virtualAccount {
+    return Intl.message(
+      "Virtual Account",
+      name: "virtualAccount",
+    );
+  }
+
+  String get myWallet {
+    return Intl.message(
+      "My Wallet",
+      name: "myWallet",
     );
   }
 
@@ -2047,8 +2452,29 @@ class AppLocalization {
 
   String get myProfile {
     return Intl.message(
-      "MyProfile",
+      "My Profile",
       name: "myProfile",
+    );
+  }
+
+  String get business {
+    return Intl.message(
+      "Business",
+      name: "business",
+    );
+  }
+
+  String get more {
+    return Intl.message(
+      "More",
+      name: "more",
+    );
+  }
+
+  String get madeInNigeria {
+    return Intl.message(
+      "Made in Nigeria",
+      name: "madeInNigeria",
     );
   }
 
@@ -2059,10 +2485,38 @@ class AppLocalization {
     );
   }
 
-  String get address {
+  String get createAPost {
     return Intl.message(
-      "Address",
-      name: "address",
+      "Create a post",
+      name: "createAPost",
+    );
+  }
+
+  String get editPost {
+    return Intl.message(
+      "Edit post",
+      name: "editPost",
+    );
+  }
+
+  String get deletePost {
+    return Intl.message(
+      "Delete Post",
+      name: "deleteBlog",
+    );
+  }
+
+  String get postSettings {
+    return Intl.message(
+      "Post settings",
+      name: "postSettings",
+    );
+  }
+
+  String get createPost {
+    return Intl.message(
+      "Create Post",
+      name: "createPost",
     );
   }
 
@@ -2252,6 +2706,13 @@ class AppLocalization {
     return Intl.message(
       "Block",
       name: "block",
+    );
+  }
+
+  String get connect {
+    return Intl.message(
+      "Connect",
+      name: "connect",
     );
   }
 

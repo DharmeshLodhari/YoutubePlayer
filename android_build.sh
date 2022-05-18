@@ -1,2 +1,2 @@
 
-flutter build appbundle  --obfuscate --split-debug-info=/Users/brijeshsakariya/AndroidStudioProjects/slydo
+flutter build appbundle  --obfuscate --split-debug-info=../slydo

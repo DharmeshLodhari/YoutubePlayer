@@ -21,6 +21,7 @@ class ConnectionSynchronizer {
   static String? _previous = "";
 
   Future<void> fetch({bool isRefresh = false}) async {
+    print('FETCH ----->');
     if (isRefresh) {
       _next = "";
       _previous = "";
@@ -47,6 +48,8 @@ class ConnectionSynchronizer {
 
       tempList
           .forEach((element) => users.add(ChatConversation.fromJson(element)));
+
+      print('USERS ::: $users');
 
       await connectionListBloc.setConnectionUsers(users: users);
 

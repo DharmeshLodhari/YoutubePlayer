@@ -4,7 +4,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/cache_manager.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -106,6 +105,7 @@ class _EditProductState extends State<EditProduct> {
         setState(() {
           currentProduct = value;
           // assigning to our edit controllers
+          print('CURRENT PRODUCT :::: ${currentProduct.price}');
 
           productTitleController.text = currentProduct.name!;
           productDescriptionController.text = currentProduct.description!;
@@ -813,11 +813,11 @@ class _EditProductState extends State<EditProduct> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            productPrice = double.parse(val).toString();
+            productPrice = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -826,7 +826,7 @@ class _EditProductState extends State<EditProduct> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;
@@ -851,9 +851,7 @@ class _EditProductState extends State<EditProduct> {
                   deleteProduct();
                 }),
           ),
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           Expanded(
             child: CurvedButton(
               textColor: Colors.white,

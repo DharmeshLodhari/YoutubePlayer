@@ -5,17 +5,133 @@ import 'dart:ui';
 
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
 
+import '../locale/app_localization.dart';
+import '../screens/more_apps/messaging/chat/utils.dart';
+import '../screens/more_apps/payment_and_banking/models/transactions.dart';
+import '../widget/LoadingIndicator.dart';
+import '../widget/image_crop.dart';
 import 'colors.dart';
 
 export 'colors.dart';
 export 'common.dart';
+
+int amountLimit =
+    10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
+
+enum MediaType { picture, video }
+
+Future<String?> getFile(BuildContext context,
+    {MediaType fileType = MediaType.picture}) async {
+  String? videoPath;
+  String? croppedImage;
+
+  final fileSource = await showDialog<ImageSource>(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      title: Text(
+        fileType == MediaType.picture
+            ? AppLocalization.of(context)!.selectTheImageSource
+            : AppLocalization.of(context)!.selectTheVideoSource,
+        style: TextStyle(fontSize: 18, color: blackFont),
+      ),
+      actions: <Widget>[
+        MaterialButton(
+          child: Text(
+            AppLocalization.of(context)!.camera,
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.camera),
+        ),
+        MaterialButton(
+          child: Text(
+            "Gallery",
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.gallery),
+        ),
+      ],
+    ),
+  );
+
+  if (fileSource != null) {
+    if (fileType == MediaType.picture) {
+      final file =
+          await ImagePicker().pickImage(source: fileSource, imageQuality: 70);
+
+      if (file != null) {
+        print('IOS PICKED IMAGE :::: $file');
+
+        /// for cropping the image
+        croppedImage = await ImageCrop().cropImage(file.path);
+        if (croppedImage == null) {
+          return null;
+        }
+      }
+    } else {
+      final file = await ImagePicker().pickVideo(source: fileSource);
+      if (file != null) {
+        return file.path;
+      }
+    }
+  }
+  return fileType == MediaType.picture ? croppedImage : videoPath;
+}
+
+Future<String?> getCroppedImage(BuildContext context) async {
+  String? croppedImage;
+  final imageSource = await showDialog<ImageSource>(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      title: Text(
+        AppLocalization.of(context)!.selectTheImageSource,
+        style: TextStyle(fontSize: 18, color: blackFont),
+      ),
+      actions: <Widget>[
+        MaterialButton(
+          child: Text(
+            AppLocalization.of(context)!.camera,
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.camera),
+        ),
+        MaterialButton(
+          child: Text(
+            "Gallery",
+            style: TextStyle(fontSize: 16, color: blackFont),
+          ),
+          onPressed: () => Navigator.pop(context, ImageSource.gallery),
+        ),
+      ],
+    ),
+  );
+
+  if (imageSource != null) {
+    final file =
+        await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
+    if (file != null) {
+      /// for cropping the image
+      croppedImage = await ImageCrop().cropImage(file.path);
+      if (croppedImage == null) {
+        return null;
+      }
+    }
+  }
+  return croppedImage;
+}
 
 // this function will build image frame by frame and load image from opacity 0 to 1 use this function in every image
 Widget imageFrameBuilder(BuildContext context, Widget child, int? frame,
@@ -125,6 +241,167 @@ BoxDecoration decorateBox(
   );
 }
 
+void androidBottomSheet(
+    {required BuildContext context, required Widget child}) {
+  showModalBottomSheet<void>(
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    context: context,
+    builder: (BuildContext context) {
+      return Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        color: Colors.white,
+        margin: EdgeInsets.zero,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
+Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
+    {Transaction? transaction,
+    Widget? trailingWidget,
+    TextStyle? subtitleTextStyle}) {
+  debugPrint("==>$subtitle");
+  return Container(
+    child: ListTile(
+      dense: true,
+      leading: RoundedBackgroundIcon(
+        icon: Icon(icon, color: blackFont, size: 18),
+        backgroundColor: iconBtnGrey,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: blackFont,
+          fontSize: 14,
+        ),
+      ),
+      subtitle: Text(
+        getCurrency(subtitle, transaction?.currency),
+        style: subtitleTextStyle ??
+            TextStyle(
+              color: blackFont,
+              fontSize: 14,
+              fontFamily: "roberto",
+            ),
+      ),
+      trailing: trailingWidget,
+    ),
+  );
+}
+
+Widget getSettingTile(
+    {Widget? image,
+    String title = "",
+    Function()? onTap,
+    IconData? icon,
+    Color? iconColor}) {
+  if (iconColor == null) {
+    iconColor = navyBlue;
+  }
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    shadowColor: boxShadowTwo,
+    elevation: 6,
+    child: Container(
+      decoration: decorateBox(),
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: ListTile(
+        leading: RoundedBackgroundIcon(
+          height: 50,
+          width: 50,
+          icon: image ??
+              Icon(
+                icon,
+                color: iconColor,
+                size: 20,
+              ),
+          backgroundColor: iconColor.withOpacity(0.08),
+          borderRadius: 20,
+          onTap: onTap,
+        ),
+        title: Text(
+          title,
+          maxLines: 1,
+          style: TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+          overflow: TextOverflow.fade,
+          softWrap: false,
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_right_outlined,
+          color: Color(0XFF1A399D),
+        ),
+        onTap: () {
+          if (onTap != null) {
+            onTap();
+          }
+        },
+      ),
+    ),
+  );
+}
+
+Widget getChatSettingTitle() {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 20),
+    child: Text(
+      "How would you like to pay?",
+      style:
+          TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: darkGrey),
+    ),
+  );
+}
+
+Widget buildIndicator({required bool isLoading}) {
+  return new Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: new Center(
+      child: new Opacity(
+        opacity: isLoading ? 1.0 : 00,
+        child: CircularLoadingIndicator(),
+      ),
+    ),
+  );
+}
+
+Widget customAppBar({required BuildContext context, required String title}) {
+  return AppBar(
+    elevation: 0,
+    titleSpacing: 0,
+    backgroundColor: Colors.white,
+    automaticallyImplyLeading: false,
+    leading: IconButton(
+      icon: Icon(
+        Icons.keyboard_arrow_left,
+        color: navyBlue,
+        size: 24,
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    ),
+    centerTitle: false,
+    title: Text(
+      title,
+      style: TextStyle(
+          color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+  );
+}
+
 // for having expanded space
 Widget flexibleSpace({int flex = 1}) {
   return Expanded(
@@ -134,6 +411,14 @@ Widget flexibleSpace({int flex = 1}) {
       width: 10,
     ),
   );
+}
+
+showSnackbar(BuildContext context,
+    {required String message, int duration = 500}) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(message),
+    duration: Duration(milliseconds: duration),
+  ));
 }
 
 List monthName = [
@@ -289,7 +574,7 @@ String moneyNormalizer(int? amount) {
   // Format the money into double as server returns money in integer
   // amount = 1050500;
 
-  return (amount! / 100).toString();
+  return (amount! / 100).toStringAsFixed(2);
 }
 
 int moneyDisplayNormalizerForGraph(int? amount) {
@@ -369,29 +654,177 @@ void showToast({String? message}) {
   );
 }
 
+String? validateSlydoName(String userInput) {
+  String lowerCaseInput = userInput.toLowerCase();
+  String cleanName = lowerCaseInput
+      .replaceAll(".", "")
+      .replaceAll(" ", "")
+      .replaceAll("_", "")
+      .replaceAll("-", "");
+
+  if (cleanName.contains('slydo')) {
+    return null;
+  } else {
+    return 'Passed';
+  }
+}
+
+String slydoNameMsg = 'You can not use slydo in name';
 String? checkSlydoName(String name) {
   String? result;
 
   if (name.isNotEmpty && name != "") {
-    List<String> listOfWords = name.split(" ").toList();
-    for (int i = 0; i < listOfWords.length; i++) {
-      if (listOfWords[i].toLowerCase() == "slydo") {
-        result = "You can not use slydo in name.";
-        break;
-      }
-    }
-  }
-  debugPrint("ERROR:- $result");
+    String lowerCaseInput = name.toLowerCase();
+    String cleanName = lowerCaseInput
+        .replaceAll(".", "")
+        .replaceAll(" ", "")
+        .replaceAll("_", "")
+        .replaceAll("-", "");
 
+    if (cleanName.contains('slydo')) {
+      result = slydoNameMsg;
+    }
+
+    debugPrint("ERROR:- $result");
+  }
   return result;
 }
 
 String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
+  if (accountNumber.length != 10) {
+    accountNumber = '0000' + accountNumber;
+  }
   return '******' +
-      accountNumber.substring(
-          accountNumber.length - 5, accountNumber.length - 1);
+      accountNumber.substring(accountNumber.length - 5, accountNumber.length);
 }
 
 double formatRating(double rating) {
   return double.parse(rating.toStringAsFixed(1));
+}
+
+class BlogSettingsTitles extends StatefulWidget {
+  final Function()? onTap;
+  bool? isSwitched;
+  final Widget icon;
+  final String title;
+  final bool hasSwitch;
+  final String description;
+  final bool addElevation;
+  final Widget? trailingWidget;
+  final Function(bool isSwitched)? onChanged;
+  BlogSettingsTitles(
+      {required this.icon,
+      required this.title,
+      this.onChanged,
+      this.onTap,
+      this.isSwitched,
+      required this.description,
+      this.hasSwitch = true,
+      this.trailingWidget,
+      this.addElevation = true,
+      Key? key})
+      : super(key: key);
+
+  @override
+  State<BlogSettingsTitles> createState() => _BlogSettingsTitlesState();
+}
+
+class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: widget.addElevation ? 2 : 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: EdgeInsets.symmetric(vertical: 2),
+      child: ListTile(
+        onTap: widget.onTap,
+        contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        leading: CircleAvatar(
+          backgroundColor: lightGrey,
+          child: widget.icon,
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.title,
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+              overflow: TextOverflow.fade,
+              softWrap: false,
+            ),
+            Text(
+              widget.description,
+              style: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+        trailing: widget.hasSwitch
+            ? Switch(
+                activeColor: navyBlue,
+                value: widget.isSwitched!,
+                onChanged: widget.onChanged,
+                activeTrackColor: navyBlueLight,
+                inactiveTrackColor: navyBlueLight,
+              )
+            : widget.trailingWidget ?? SizedBox.shrink(),
+      ),
+    );
+  }
+}
+
+Widget getClickableRatingBar(
+    {required double initialRating, required Function(double) onRatingUpdate}) {
+  return RatingBar.builder(
+    initialRating: initialRating,
+    minRating: 1,
+    direction: Axis.horizontal,
+    allowHalfRating: false,
+    itemCount: 5,
+    itemPadding: EdgeInsets.symmetric(horizontal: 8),
+    itemBuilder: (context, _) => Icon(
+      SlydoAppIcon.star,
+      color: starYellow,
+    ),
+    onRatingUpdate: onRatingUpdate,
+    unratedColor: greyBorderColor,
+    glowColor: greyBorderColor,
+  );
+}
+
+Widget getRating({required int? numberOfRating}) {
+  List<Widget> widgets = [];
+
+  for (int i = 1; i < 6; i++) {
+    widgets.add(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 1.0),
+        child: Icon(
+          SlydoAppIcon.star,
+          color: getRatingColor(numberOfRating, i),
+          size: 11,
+        ),
+      ),
+    );
+  }
+  return Row(children: widgets);
+}
+
+Color getRatingColor(int? numberOfRating, int i) {
+  return numberOfRating != null
+      ? numberOfRating >= i
+          ? starYellow
+          : greyBorderColor
+      : Colors.grey;
+}
+
+String enumToString(mEnum) {
+  return mEnum.toString().split('.')[1];
 }

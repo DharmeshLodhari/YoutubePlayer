@@ -1,0 +1,455 @@
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
+import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import '../bloc/invoice_bloc.dart';
+import '../business_auth.dart';
+
+// ignore: must_be_immutable
+class ContractTile extends StatefulWidget {
+  final ContractModel contract;
+
+  ContractTile({required this.contract});
+
+  @override
+  _ContractTileState createState() => _ContractTileState();
+}
+
+class _ContractTileState extends State<ContractTile> {
+  UserBloc? userBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.CONTRACT_DETAIL,
+            arguments: {"id": widget.contract.id});
+      },
+      child: Column(
+        children: [
+          Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            shadowColor: boxShadowTwo,
+            elevation: 0,
+            child: Container(
+              decoration: decorateBox(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Stack(
+                  children: [
+                    ListTile(
+                      dense: true,
+                      title: getContractTitle(),
+                      subtitle: getSubTitle(),
+                      leading: getLeading(),
+                      trailing: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          getAmount(),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          getPaymentDuration()
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getIconForContract() {
+    if (userBloc!.user.userName == widget.contract.contractor) {
+      return Icon(Icons.check, color: navyBlue);
+    }
+    return Icon(Icons.check, color: mateRed);
+  }
+
+  Widget getPaymentDuration() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      decoration: BoxDecoration(
+          color: getStatusColor(), borderRadius: BorderRadius.circular(4)),
+      child: Text(getPaymentDurationText(),
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+    );
+  }
+
+  Color getStatusColor() {
+    switch (widget.contract.status) {
+      case "Paused":
+        return starYellow;
+
+      case "Active":
+        return naturalGreen;
+
+      case "Ended":
+        return mateRed;
+
+      case "Stopped":
+        return mateRed;
+
+      default:
+        return navyBlue;
+    }
+  }
+
+  String getPaymentDurationText() {
+    switch (widget.contract.paymentDuration) {
+      case "daily":
+        return "Daily";
+
+      case "weekday_only":
+        return "Weekdays only";
+
+      case "weekly":
+        return "Weekly";
+
+      case "monthly":
+        return "Monthly";
+
+      case "yearly":
+        return "Yearly";
+
+      default:
+        return "";
+    }
+  }
+
+  Widget getContractTitle() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 2),
+      child: Text(
+        getName(),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+            color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+      ),
+    );
+  }
+
+  String getName() {
+    if (userBloc!.user.userName == widget.contract.contractor) {
+      return widget.contract.contracteeDisplayName!;
+    }
+    return widget.contract.contractorDisplayName!;
+  }
+
+  Widget getLeading() {
+    late String imageUrl;
+    if (userBloc!.user.userName == widget.contract.contractor) {
+      imageUrl = widget.contract.contracteeAvatar!;
+    } else {
+      imageUrl = widget.contract.contractorAvatar!;
+    }
+
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        height: 48,
+        width: 48,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        errorWidget: imageErrorWidget,
+        placeholder: (context, url) => widget.contract.contractorAvatar == ""
+            ? Icon(Icons.person)
+            : CircularLoadingIndicator(),
+      ),
+    );
+  }
+
+  Widget getAmount() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[widget.contract.currency!]!,
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: getAmountColor(),
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+        Text(
+          moneyDisplayNormalizer(widget.contract.amount),
+          style: TextStyle(
+              color: getAmountColor(),
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Color getAmountColor() {
+    if (userBloc!.user.userName == widget.contract.contractor) {
+      return navyBlue;
+    }
+    return blackFont;
+  }
+
+  Widget getSubTitle() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          widget.contract.note == null ? '---' : widget.contract.note!,
+          style: TextStyle(color: darkGrey, fontSize: 12),
+          maxLines: 1,
+        ),
+        Row(
+          children: [
+            getDateTime(),
+            SizedBox(width: 10),
+            getAcceptOrPendingLabel(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget getAcceptOrPendingLabel() {
+    if (!widget.contract.isAccepted) {
+      bool isContractor = userBloc!.user.userName == widget.contract.contractor;
+      String labelName = isContractor ? 'New' : 'Pending';
+      Color labelColor = isContractor ? naturalGreen : starYellow;
+      Color labelBgColor = labelName == 'New'
+          ? naturalGreen.withOpacity(0.1)
+          : starYellow.withOpacity(0.1);
+
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+        decoration: BoxDecoration(
+            color: labelBgColor, borderRadius: BorderRadius.circular(4)),
+        child: Text(
+          labelName,
+          style: TextStyle(
+            color: labelColor,
+            fontSize: 12,
+          ),
+        ),
+      );
+    }
+    return SizedBox.shrink();
+  }
+
+  Widget getDateTime() {
+    DateTime transactionTime = DateTime.parse(widget.contract.createdAt!);
+    String date = DateFormat("dd/MM/yyyy").format(transactionTime);
+    // String time = DateFormat("hh:mm a").format(transactionTime);
+    return Text(
+      "$date",
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(color: darkGrey, fontSize: 10),
+    );
+  }
+}
+
+class InvoiceTile extends StatefulWidget {
+  final InvoiceModel invoice;
+  final Function? onTap;
+
+  InvoiceTile({required this.invoice, this.onTap});
+
+  @override
+  _InvoiceTileState createState() => _InvoiceTileState();
+}
+
+class _InvoiceTileState extends State<InvoiceTile> {
+  UserBloc? userBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
+    bool isReceiver = widget.invoice.fromCustomer !=
+        userBloc!.user.userName; //The person who receives the invoice.
+
+    return Stack(
+      children: [
+        Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          shadowColor: boxShadowTwo,
+          elevation: 0,
+          child: Container(
+            decoration: decorateBox(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: ListTile(
+                dense: true,
+                title: getInvoiceTitle(),
+                subtitle: getSubTitle(),
+                leading: getLeading(),
+                trailing: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    getAmount(),
+                    SizedBox(height: 4),
+                    invoiceStatus(),
+                  ],
+                ),
+                onTap: widget.onTap as void Function()?,
+              ),
+            ),
+          ),
+        ),
+        // Positioned(
+        //   top: 8,
+        //   right: 120,
+        //   child: IconButton(
+        //       icon: Icon(Icons.payment, color: navyBlue),
+        //       onPressed: () {
+        //         if (isReceiver && widget.invoice.status == "Unpaid") {}
+        //       }),
+        // ),
+      ],
+    );
+  }
+
+  Widget invoiceStatus() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+      decoration: BoxDecoration(
+          color: getStatusColor(), borderRadius: BorderRadius.circular(4)),
+      child: Text(widget.invoice.status!,
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12)),
+    );
+  }
+
+  Color getStatusColor() {
+    switch (widget.invoice.status) {
+      case "Draft":
+        return starYellow.withOpacity(0.4);
+
+      case "Pending":
+        return starYellow;
+
+      case "Paid":
+        return naturalGreen;
+
+      case "Unpaid":
+        return mateRed;
+
+      default:
+        return navyBlue;
+    }
+  }
+
+  Widget getInvoiceTitle() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 2),
+      child: Text(
+        "${widget.invoice.toCustomerDisplayName}",
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+            color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+      ),
+    );
+  }
+
+  Widget getLeading() {
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: widget.invoice.toCustomerAvatar!,
+        errorWidget: imageErrorWidget,
+        height: 48,
+        width: 48,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => widget.invoice.toCustomerAvatar == ""
+            ? Icon(Icons.person)
+            : CircularLoadingIndicator(),
+      ),
+    );
+  }
+
+  Widget getAmount() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[widget.invoice.currency!]!,
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: getInvoiceCurrencyColor(),
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+        Text(
+          moneyDisplayNormalizer(widget.invoice.amount),
+          style: TextStyle(
+            color: getInvoiceAmountColor(),
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color getInvoiceAmountColor() {
+    if (userBloc!.user.userName == widget.invoice.fromCustomer) {
+      return navyBlue;
+    }
+    return blackFont;
+  }
+
+  Color getInvoiceCurrencyColor() => getInvoiceAmountColor();
+
+  Widget getSubTitle() {
+    DateTime dateAndTime = DateTime.parse(widget.invoice.dueDate!);
+    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    String time = DateFormat("hh:mm a").format(dateAndTime);
+
+    bool paymentIsDue = dateAndTime.isBefore(DateTime.now());
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "$date • $time",
+          style:
+              TextStyle(color: paymentIsDue ? mateRed : darkGrey, fontSize: 12),
+          maxLines: 1,
+        ),
+        // getDateTime(context),
+      ],
+    );
+  }
+
+  Widget getDateTime(BuildContext context) {
+    DateTime dateAndTime = DateTime.parse(widget.invoice.createdAt!);
+    String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
+    String time = DateFormat("hh:mm a").format(dateAndTime);
+    return Text(
+      "$date • $time",
+      softWrap: false,
+      overflow: TextOverflow.visible,
+      style: TextStyle(color: darkGrey, fontSize: 10),
+    );
+  }
+}

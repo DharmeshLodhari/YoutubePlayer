@@ -1,9 +1,9 @@
 class InvoiceItem {
   int? amount;
-  String? currency;
   int? id;
   String? name;
   int? quantity;
+  String? currency;
 
   InvoiceItem(
       {this.amount,

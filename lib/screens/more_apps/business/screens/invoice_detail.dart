@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/business/models/Item.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -8,9 +11,19 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:Slydo/services/auth.dart';
+
+import '../../../../data/environment.dart';
+import '../../../../data/state_notifier.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../widget/curved_btn.dart';
 
 import '../business_auth.dart';
+import '../forms/invoice/add_invoice_item.dart';
 import '../models/Invoice.dart';
+import 'package:dio/dio.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {
@@ -25,18 +38,23 @@ class InvoiceDetail extends StatefulWidget {
 
 class _InvoiceDetailState extends State<InvoiceDetail> {
   var arguments;
-  late Invoice invoice;
+  late InvoiceModel invoice;
   bool isLoading = false;
+  late UserBloc userBloc;
+  // var imageUrl =
+  //     "https://www.itl.cat/pngfile/big/10-100326_desktop-wallpaper-hd-full-screen-free-download-full.jpg";
+  bool isDownloading = false;
+  String savePath = "";
 
   _InvoiceDetailState({this.arguments});
 
   @override
   void initState() {
-    fetchContract();
+    fetchInvoice();
     super.initState();
   }
 
-  void fetchContract() async {
+  void fetchInvoice() async {
     isLoading = true;
     setState(() {});
     BusinessAuth().getInvoice(arguments["id"].toString()).then((value) {
@@ -59,6 +77,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return WillPopScope(
       onWillPop: () async {
         return true;
@@ -67,7 +86,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+        body: isLoading
+            ? Center(child: CircularLoadingIndicator())
+            : scaffoldBody(),
       ),
     );
   }
@@ -94,6 +115,18 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        isLoading
+            ? SizedBox.shrink()
+            : invoice.status != 'Draft'
+                ? IconButton(
+                    icon: Icon(Icons.download_rounded, color: navyBlue),
+                    onPressed: () {
+                      downloadFile(invoice);
+                    },
+                  )
+                : SizedBox.shrink(),
+        SizedBox(width: 16),
+
         // openGraphBtn(),
         // SizedBox(
         //   width: 16,
@@ -118,25 +151,59 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget scaffoldBody() {
-    return isLoading
-        ? Center(
-            child: CircularLoadingIndicator(),
-          )
-        : SingleChildScrollView(
-            child: Container(
-              height: MediaQuery.of(context).size.height -
-                  (AppBar().preferredSize.height +
-                      MediaQuery.of(context).padding.top),
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Column(
-                children: [
-                  displayContractInfo(),
-                  flexibleSpace(),
-                ],
-              ),
-            ),
-          );
+    bool canPayForInvoice = invoice.fromCustomer != userBloc.user.userName &&
+        invoice.status == "Unpaid";
+
+    return SingleChildScrollView(
+      child: Container(
+        height: MediaQuery.of(context).size.height -
+            (AppBar().preferredSize.height +
+                MediaQuery.of(context).padding.top),
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Column(
+          children: [
+            isDownloading
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularLoadingIndicator(),
+                        SizedBox(width: 12),
+                        Text(
+                          'Downloading...',
+                          style: TextStyle(color: darkGrey, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  )
+                : SizedBox.shrink(),
+            displayContractInfo(),
+            SizedBox(height: 14),
+            canPayForInvoice
+                ? CurvedButton(
+                    text: "Pay",
+                    onPressed: () {
+                      _payInvoice();
+                    })
+                : SizedBox.shrink(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _payInvoice() {
+    BusinessAuth().payInvoice(invoiceId: invoice.id!).then(
+      (value) {
+        showToast(message: "Invoice Paid");
+      },
+    ).catchError(
+      (e) {
+        showToast(message: "Something went wrong, please try again.");
+      },
+    );
   }
 
   Widget displaySenderInfo() {
@@ -146,7 +213,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": invoice.toCustomer});
       },
     );
@@ -220,7 +287,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           ),
         ),
         Text(
-          invoice.amount.toString(),
+          moneyDisplayNormalizer(invoice.amount),
           style: TextStyle(
               color: navyBlue, fontWeight: FontWeight.bold, fontSize: 14),
         ),
@@ -285,6 +352,12 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget getInvoiceItems() {
+    bool canDeleteInvoiceItem =
+        invoice.fromCustomer == userBloc.user.userName &&
+            invoice.status != "Paid" &&
+            invoice.items!.length > 1;
+    bool canEditInvoiceItem = invoice.status != "Paid";
+    bool canShowActionsText = canDeleteInvoiceItem || canEditInvoiceItem;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -295,17 +368,13 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             style: TextStyle(
                 fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
-            height: 12,
-          ),
+          SizedBox(height: 12),
           Divider(
             height: 0,
             color: dividerColor,
             thickness: 1,
           ),
-          SizedBox(
-            height: 4,
-          ),
+          SizedBox(height: 4),
           Column(
             children: [
               Row(
@@ -326,11 +395,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    width: 8,
-                  ),
+                  SizedBox(width: 8),
                   Expanded(
-                    flex: 5,
+                    flex: 7,
                     child: Row(
                       children: [
                         Text(
@@ -350,43 +417,49 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         ),
                         flexibleSpace(),
                         Text(
-                          "Sub total  ",
+                          "Sub total",
                           style: TextStyle(
                               color: blackFont,
                               fontSize: 12,
                               fontWeight: FontWeight.w600),
                         ),
+                        canShowActionsText
+                            ? flexibleSpace()
+                            : SizedBox.shrink(),
+                        canShowActionsText
+                            ? Text(
+                                "Actions",
+                                style: TextStyle(
+                                    color: blackFont,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600),
+                              )
+                            : SizedBox.shrink(),
                       ],
                     ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 4,
-              ),
+              SizedBox(height: 4),
               Divider(
                 height: 0,
                 color: dividerColor,
                 thickness: 1,
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Column(
-                children:
-                    invoice.items!.map((e) => getItemTile(item: e)).toList(),
+                children: invoice.items!
+                    .map((e) =>
+                        getItemTile(length: invoice.items!.length, item: e))
+                    .toList(),
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Divider(
                 height: 0,
                 color: dividerColor,
                 thickness: 1,
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
@@ -397,9 +470,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontSize: 14,
                         fontWeight: FontWeight.w700),
                   ),
-                  SizedBox(
-                    width: 8,
-                  ),
+                  SizedBox(width: 8),
                   Text(
                     worldCurrencies[invoice.currency!]!,
                     style: TextStyle(
@@ -409,14 +480,12 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    invoice.amount.toString(),
+                    moneyDisplayNormalizer(invoice.amount),
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
             ],
           )
         ],
@@ -424,7 +493,18 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  Widget getItemTile({required InvoiceItem item}) {
+  Widget getItemTile({required int length, required InvoiceItem item}) {
+    bool canDeleteInvoiceItem =
+        invoice.fromCustomer == userBloc.user.userName &&
+            invoice.status != "Paid" &&
+            length > 1;
+    bool canEditInvoiceItem = invoice.status != "Paid";
+
+    String subtotalAmount =
+        moneyDisplayNormalizer(item.quantity! * item.amount!);
+
+    String itemAmount = moneyDisplayNormalizer(item.amount!);
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -442,15 +522,15 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               ],
             ),
           ),
-          SizedBox(
-            width: 12,
-          ),
+          SizedBox(width: 12),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Row(
               children: [
                 Text(item.quantity.toString()),
                 flexibleSpace(),
+
+                //Amount (figure)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -463,10 +543,14 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text(item.amount.toString()),
+                    Text(itemAmount.length > 8
+                        ? '${itemAmount.substring(0, 8)}...'
+                        : itemAmount),
                   ],
                 ),
                 flexibleSpace(),
+
+                //Subtotal amount
                 Row(
                   children: [
                     Text(
@@ -477,9 +561,41 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text("${item.quantity! * item.amount!}"),
+                    Text(subtotalAmount.length > 8
+                        ? '${subtotalAmount.substring(0, 8)}...'
+                        : subtotalAmount),
                   ],
                 ),
+                canDeleteInvoiceItem || canEditInvoiceItem
+                    ? flexibleSpace()
+                    : SizedBox.shrink(),
+                !canDeleteInvoiceItem
+                    ? InkWell(
+                        child: Icon(Icons.delete, color: mateRed),
+                        onTap: () {
+                          _deleteInvoiceItem(item);
+                        },
+                      )
+                    : SizedBox.shrink(),
+                canEditInvoiceItem
+                    ? InkWell(
+                        child: Icon(
+                          Icons.edit,
+                        ),
+                        onTap: () async {
+                          bool? updated = await NavigationUtil.push(
+                            context,
+                            screen: AddInvoiceItem(
+                              invoiceItem: item,
+                            ),
+                          );
+
+                          if (updated == true) {
+                            fetchInvoice();
+                          }
+                        },
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
           ),
@@ -521,5 +637,76 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
 
   void goToMap() {
     debugPrint("go to Map Called !");
+  }
+
+  void _deleteInvoiceItem(InvoiceItem item) {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+
+    BusinessAuth().deleteInvoiceItem(itemId: item.id!).then((value) {
+      Navigator.of(context).pop();
+      // invoice.status = action;
+      fetchInvoice();
+      showToast(message: "Item deleted successfully");
+    }).catchError((error) {
+      Navigator.of(context).pop();
+
+      showToast(message: "Something went wrong, please try again.");
+    });
+  }
+
+  Future downloadFile(InvoiceModel invoice) async {
+    print('INVOICE ID :: ${invoice.id}');
+    if (mounted) {
+      setState(() {
+        isDownloading = true;
+      });
+    }
+    try {
+      Dio dio = Dio();
+
+      String pdfUrl =
+          "${AppConfig.baseUrl}/api/v1/transactions/invoice/download/${invoice.id}/?download=true";
+
+      String fileName = 'Invoice_${invoice.id}.pdf';
+
+      var authHeaders = await BusinessAuth().getAuthHeaders();
+
+      savePath = await getFilePath(fileName);
+      Response response = await dio.download(
+        pdfUrl,
+        savePath,
+        options: Options(
+          headers: authHeaders,
+        ),
+        onReceiveProgress: (rec, total) {},
+      );
+      setState(() {
+        isDownloading = false;
+      });
+      if (response.statusCode == 200) {
+        showToast(message: 'Download complete');
+      } else {
+        showToast(message: 'Something went wrong, please try again');
+      }
+    } catch (e) {
+      setState(() {
+        isDownloading = false;
+      });
+      print(e.toString());
+      showToast(message: 'ERROR ::: ${e.toString()}');
+    }
+  }
+
+  Future<String> getFilePath(uniqueFileName) async {
+    String path = '';
+
+    Directory dir = Directory('/storage/emulated/0/Download');
+    // Directory dir = await getApplicationDocumentsDirectory();
+
+    path = '${dir.path}/$uniqueFileName';
+
+    return path;
   }
 }

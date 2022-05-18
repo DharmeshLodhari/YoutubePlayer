@@ -1,12 +1,30 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../utils/util.dart';
+import 'LoadingIndicator.dart';
+
+typedef Widget? BuildCounterWidget(
+    int? currentLength, int? maxLength, bool? isFocused);
+
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
+  final String? helperText;
+  final Widget? suffixIcon;
+  TextInputAction? textInputAction;
+  Function(String? value)? onFieldSubmitted;
+  bool hasLabel;
+  bool hasBorder;
+  TextStyle? textStyle;
+  BuildCounterWidget? buildCounterWidget;
+  bool isNumberOnlyInput;
   Function? validator;
   Function? onChanged;
   Function? onTap;
@@ -17,34 +35,58 @@ class CustomizedTextFormField extends StatefulWidget {
   bool isPassword;
   bool isReadOnly;
   bool? enabled;
-  bool isAmount;
+  bool isAmountField;
   String labelText;
-  String hintText;
+  String? hintText;
   Color? labelColor;
   int? maxLength;
-  int maxLines;
+  int? maxLines;
   FocusNode? focusNode;
+  EdgeInsets contentPadding;
+  bool showLabelOrPassword;
   TextCapitalization textCapitalization;
 
-  CustomizedTextFormField(
-      {this.validator,
-      this.onChanged,
-      this.onTap,
-      this.controller,
-      this.keyboardType = TextInputType.text,
-      this.obscureText = false,
-      this.isPassword = false,
-      this.isReadOnly = false,
-      this.isAmount = false,
-      this.labelText = "",
-      this.hintText = "",
-      this.labelColor,
-      this.maxLength,
-      this.maxLines = 1,
-      this.focusNode,
-      this.enabled = true,
-      this.textCapitalization = TextCapitalization.none,
-      this.inputFormatters});
+  Future<bool>? Function()? verifyInputFromServerFunc;
+  bool? Function(String val)?
+      whenToVerifyInputFromServer; //If this is true, verifyInputFromServerFunc will be executed
+  Function? extraFunctionWhenInputWasVerifiedFromServerSuccessfully;
+  Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
+
+  CustomizedTextFormField({
+    this.helperText,
+    this.verifyInputFromServerFunc,
+    this.whenToVerifyInputFromServer,
+    this.extraFunctionWhenInputWasVerifiedFromServerSuccessfully,
+    this.extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully,
+    this.suffixIcon,
+    this.hasBorder = true,
+    this.hasLabel = true,
+    this.textInputAction,
+    this.validator,
+    this.onChanged,
+    this.textStyle,
+    this.onTap,
+    this.onFieldSubmitted,
+    this.controller,
+    this.buildCounterWidget,
+    this.showLabelOrPassword = true,
+    this.isNumberOnlyInput = false,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
+    this.isPassword = false,
+    this.isReadOnly = false,
+    this.isAmountField = false,
+    this.labelText = "",
+    this.hintText = "",
+    this.labelColor,
+    this.maxLength,
+    this.maxLines = 1,
+    this.focusNode,
+    this.enabled = true,
+    this.textCapitalization = TextCapitalization.none,
+    this.inputFormatters,
+    this.contentPadding = const EdgeInsets.symmetric(vertical: 10),
+  });
 
   @override
   _CustomizedTextFormFieldState createState() =>
@@ -52,77 +94,86 @@ class CustomizedTextFormField extends StatefulWidget {
 }
 
 class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
+  bool? inputVerified;
+  bool verifyingInput = false;
+  bool? showSuffixIconWhenTryingToValidateInputFromServer;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              widget.labelText,
-              style: TextStyle(
-                  color:
-                      widget.labelColor != null ? widget.labelColor : darkGrey,
-                  fontSize: 14),
-            ),
-            SizedBox(
-              height: 6,
-            ),
-            widget.isPassword
-                ? Text(
-                    "${widget.controller!.text.toString().length}/6",
-                    style: TextStyle(
-                      color: widget.labelColor != null
-                          ? widget.labelColor
-                          : darkGrey,
-                      fontSize: 14,
-                    ),
-                  )
-                : Container(),
-          ],
-        ),
-        SizedBox(
-          height: 6,
-        ),
+        widget.showLabelOrPassword
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  widget.hasLabel
+                      ? Text(
+                          widget.labelText,
+                          style: TextStyle(
+                              color: widget.labelColor != null
+                                  ? widget.labelColor
+                                  : darkGrey,
+                              fontSize: 14),
+                        )
+                      : SizedBox.shrink(),
+                  widget.hasLabel
+                      ? SizedBox(
+                          height: 6,
+                        )
+                      : SizedBox.shrink(),
+                  widget.isPassword
+                      ? Text(
+                          "${widget.controller!.text.toString().length}/6",
+                          style: TextStyle(
+                            color: widget.labelColor != null
+                                ? widget.labelColor
+                                : darkGrey,
+                            fontSize: 14,
+                          ),
+                        )
+                      : Container(),
+                ],
+              )
+            : SizedBox.shrink(),
+        widget.hasLabel
+            ? SizedBox(
+                height: 6,
+              )
+            : SizedBox.shrink(),
         TextFormField(
+          onFieldSubmitted: widget.onFieldSubmitted,
+          textInputAction: widget.textInputAction,
           readOnly: widget.isReadOnly,
-          style: TextStyle(
-              fontSize: widget.isPassword ? 20 : 16,
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              letterSpacing: widget.isPassword ? 2 : 0),
+          style: widget.textStyle ??
+              TextStyle(
+                  fontSize: widget.isPassword ? 20 : 16,
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: widget.isPassword ? 2 : 0),
           buildCounter: (BuildContext context,
                   {int? currentLength, int? maxLength, bool? isFocused}) =>
-              null,
+              widget.buildCounterWidget != null
+                  ? widget.buildCounterWidget!(
+                      currentLength, maxLength, isFocused)
+                  : null,
           cursorWidth: 1.5,
           enabled: widget.enabled,
           textCapitalization: widget.textCapitalization,
           cursorColor: navyBlue,
           decoration: InputDecoration(
+            helperText: widget.helperText,
             hintText: widget.hintText != null ? widget.hintText : null,
             hintStyle: TextStyle(
               color: darkGrey.withOpacity(0.5),
               fontSize: 16,
               fontWeight: FontWeight.w400,
             ),
-            suffixIcon: widget.isPassword
-                ? IconButton(
-                    icon: Icon(
-                      Icons.remove_red_eye,
-                      color: widget.obscureText ? darkGrey : navyBlue,
-                    ),
-                    onPressed: () {
-                      widget.obscureText = !widget.obscureText;
-                      setState(() {});
-                    },
-                  )
-                : null,
+            suffixIcon: _getSuffixIcon(),
             prefix: Padding(
-              padding: EdgeInsets.only(left: widget.isAmount ? 8 : 16),
+              padding: EdgeInsets.only(left: widget.isAmountField ? 8 : 16),
             ),
-            prefixIcon: widget.isAmount
+            prefixIcon: widget.isAmountField
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -142,48 +193,62 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     ],
                   )
                 : null,
-            contentPadding: EdgeInsets.symmetric(vertical: 10),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: navyBlue,
-                width: 1.0,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: greyBorderColor,
-                width: 1.0,
-              ),
-            ),
+            border: widget.hasBorder ? null : InputBorder.none,
+            contentPadding: widget.contentPadding,
+            enabledBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            disabledBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            focusedBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: navyBlue,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            errorBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
+            focusedErrorBorder: widget.hasBorder
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: greyBorderColor,
+                      width: 1.0,
+                    ),
+                  )
+                : null,
           ),
-          inputFormatters:
-              widget.inputFormatters != null ? widget.inputFormatters : [],
+          inputFormatters: getInputFormatters(),
           validator: (value) {
             if (widget.validator != null) {
-              return widget.validator!(value);
+              if (widget.isAmountField == true) {
+                return widget.validator!(value!.replaceAll(',', ''));
+              } else {
+                return widget.validator!(value!);
+              }
             }
             return null;
           },
@@ -194,7 +259,24 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
           maxLines: widget.maxLines,
           focusNode: widget.focusNode != null ? widget.focusNode : null,
           onChanged: (val) {
-            if (widget.onChanged != null) widget.onChanged!(val);
+            if (widget.whenToVerifyInputFromServer != null) {
+              if (widget.whenToVerifyInputFromServer!(val) == true) {
+                showSuffixIconWhenTryingToValidateInputFromServer = true;
+                _verifyInputFromServer();
+              } else {
+                showSuffixIconWhenTryingToValidateInputFromServer = false;
+              }
+            }
+
+            if (widget.isAmountField == true) {
+              if (widget.onChanged != null) {
+                widget.onChanged!(val.replaceAll(',', ''));
+              }
+            } else {
+              if (widget.onChanged != null) {
+                widget.onChanged!(val);
+              }
+            }
             setState(() {});
           },
           onTap: () {
@@ -207,11 +289,102 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
   }
 
   TextInputType getKeyBoardType(TextInputType textInputType) {
+    TextInputType numberInputType = Platform.isIOS
+        ? TextInputType.numberWithOptions(decimal: true)
+        : TextInputType.number;
+    if (widget.isAmountField == true) {
+      return numberInputType;
+    }
+
     if (textInputType == TextInputType.number) {
-      return Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number;
+      return numberInputType;
     }
     return textInputType;
+  }
+
+  Future _verifyInputFromServer() async {
+    setState(() => verifyingInput = true);
+
+    bool? verifyInputFromServerFunc = await widget.verifyInputFromServerFunc!();
+    if (verifyInputFromServerFunc == true) {
+      setState(() {
+        inputVerified = true;
+        verifyingInput = false;
+      });
+      widget.extraFunctionWhenInputWasVerifiedFromServerSuccessfully!();
+    } else {
+      setState(() {
+        inputVerified = false;
+        verifyingInput = false;
+      });
+      widget.extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully!();
+    }
+  }
+
+  // widget.suffixIcon != null
+  // ? widget.suffixIcon
+  //     : widget.isPassword
+  // ? IconButton(
+  // icon: Icon(
+  // Icons.remove_red_eye,
+  // color: widget.obscureText ? darkGrey : navyBlue,
+  // ),
+  // onPressed: () {
+  // widget.obscureText = !widget.obscureText;
+  // setState(() {});
+  // },
+  // )
+  //     : null,
+
+  Widget? _getSuffixIcon() {
+    if (showSuffixIconWhenTryingToValidateInputFromServer == false) {
+      return SizedBox.shrink();
+    }
+    if (widget.suffixIcon != null) {
+      return widget.suffixIcon;
+    } else if (widget.isPassword) {
+      return IconButton(
+        icon: Icon(
+          Icons.remove_red_eye,
+          color: widget.obscureText ? darkGrey : navyBlue,
+        ),
+        onPressed: () {
+          widget.obscureText = !widget.obscureText;
+          setState(() {});
+        },
+      );
+    } else if (verifyingInput) {
+      return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: CircularLoadingIndicator(),
+      );
+    } else if (inputVerified != null) {
+      if (inputVerified!) {
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: CircleAvatar(
+            radius: 14,
+            backgroundColor: navyBlue,
+            child: Icon(Icons.check, size: 20, color: Colors.white),
+          ),
+        );
+      } else {
+        return Icon(Icons.cancel, color: Colors.red);
+      }
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
+  List<TextInputFormatter>? getInputFormatters() {
+    if (widget.isAmountField) {
+      return [CurrencyTextInputFormatter(symbol: '')];
+    }
+
+    if (widget.inputFormatters != null) {
+      return widget.inputFormatters;
+    } else {
+      return [];
+    }
   }
 }

@@ -172,13 +172,20 @@ class MessageAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/messaging/list/" + filter! + "/";
+      if (filter == null) {
+        url = AppConfig.baseUrl + "/api/v1/messaging/list/all";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/messaging/list/" + filter + "/";
+      }
     } else {
       url = getSecureUrl(url: next);
     }
     var headers = await getAuthHeaders();
 
     var response = await httpGet(url, headers: headers);
+
+    debugPrint('MESSAGE URL ::: ${response.statusCode}');
+    debugPrint('MESSAGE ::: ${response.body}');
 
     if (response.statusCode == 200) {
       List<PartialMessage> messagesList = [];

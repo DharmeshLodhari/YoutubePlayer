@@ -564,8 +564,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   Widget addAddressField() {
     return CustomizedTextFormField(
       controller: addressController,
-      labelText: "Address",
+      labelText: "Office Address",
       maxLines: 3,
+      hintText: "This address will be publicly available.",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
@@ -1064,7 +1065,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     list.add(
       bottomSheetItem(
           title: "Update $imageName",
-          icon: SlydoAppIcon.edit,
+          iconData: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context, "update");
           }),
@@ -1073,7 +1074,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     list.add(bottomSheetItem(
       title: "Remove $imageName",
       isLast: true,
-      icon: SlydoAppIcon.delete,
+      iconData: SlydoAppIcon.delete,
       onTap: () {
         Navigator.pop(context, "remove");
       },

@@ -1,8 +1,10 @@
-class Contract {
+class ContractModel {
   int? amount;
   String? contractee;
   String? contracteeAvatar;
   String? contractor;
+  String? contractorDisplayName;
+  String? contracteeDisplayName;
   String? contractorAvatar;
   String? createdAt;
   String? currency;
@@ -12,15 +14,19 @@ class Contract {
   String? paymentDuration;
   String? startDate;
   String? status;
+  bool isAccepted;
 
-  Contract(
+  ContractModel(
       {this.amount,
       this.contractee,
+      this.contractorDisplayName,
+      this.contracteeDisplayName,
       this.contracteeAvatar,
       this.contractor,
       this.contractorAvatar,
       this.createdAt,
       this.currency,
+      required this.isAccepted,
       this.endDate,
       this.id,
       this.note,
@@ -28,10 +34,12 @@ class Contract {
       this.startDate,
       this.status});
 
-  factory Contract.fromJson(Map<String, dynamic> json) {
-    return Contract(
+  factory ContractModel.fromJson(Map<String, dynamic> json) {
+    return ContractModel(
       amount: json['amount'],
       contractee: json['contractee'],
+      contracteeDisplayName: json['contractee_display_name'],
+      contractorDisplayName: json['contractor_display_name'],
       contracteeAvatar: json['contractee_avatar'],
       contractor: json['contractor'],
       contractorAvatar: json['contractor_avatar'],
@@ -43,6 +51,7 @@ class Contract {
       paymentDuration: json['payment_duration'],
       startDate: json['start_date'],
       status: json['status'],
+      isAccepted: json['is_accepted'],
     );
   }
 

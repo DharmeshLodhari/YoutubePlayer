@@ -21,7 +21,7 @@ class FeeStructure {
   int? magicEnvelopeFee;
   int? emptyEnvelopeFee;
   int? anonymousTransactionFee;
-  int? taxRate;
+  double? taxRate;
   String? country;
   String? currency;
 
@@ -36,6 +36,7 @@ class FeeStructure {
       this.currency});
 
   FeeStructure.fromJson(dynamic json) {
+    print('double :: ${json['tax_rate']}');
     customerApiTransactionFee = json['customer_api_transaction_fee'];
     businessTransactionFee = json['business_transaction_fee'];
     magicEnvelopeFee = json['magic_envelope_fee'];
@@ -82,7 +83,7 @@ class FeeStructure {
   }
 
   String calculatePrice(int price) {
-    int total = price + (price * taxRate!);
+    double total = price + (price * taxRate!);
     return (total / 100).toString();
   }
 }

@@ -15,14 +15,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
+import '../../../../../widget/search_text_field.dart';
 import '../../user_auth.dart';
 
-class BlockList extends StatefulWidget {
+class BlockedList extends StatefulWidget {
   @override
-  _BlockListState createState() => _BlockListState();
+  _BlockedListState createState() => _BlockedListState();
 }
 
-class _BlockListState extends State<BlockList> {
+class _BlockedListState extends State<BlockedList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
       new GlobalKey<ScaffoldState>();
   SlidableController? _slideController;
@@ -223,8 +225,8 @@ class _BlockListState extends State<BlockList> {
       title: AppLocalization.of(context)!.unblock,
       description: AppLocalization.of(context)!.areYouSureWantToUnblock +
           " ${user.displayName()}",
-      actionOne: AppLocalization.of(context)!.cancel,
-      actionTwo: AppLocalization.of(context)!.accept,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.accept,
     );
     if (result != null && result) {
       bool done = await UserAuth().unBlockUser(user);
@@ -276,10 +278,13 @@ class VerticalListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
+      onTap: () {
+        Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
+            ? Slidable.of(context)?.open()
+            : Slidable.of(context)?.close();
+        Navigator.pushNamed(context, Routes.PROFILE,
+            arguments: {"searchedUserName": user.userName});
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 2),
         child: UserTile(user: user),

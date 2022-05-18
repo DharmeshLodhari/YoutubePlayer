@@ -2074,11 +2074,11 @@ class _EditPropertyState extends State<EditProperty> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            propertyPrice = double.parse(val).toString();
+            propertyPrice = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -2087,7 +2087,7 @@ class _EditPropertyState extends State<EditProperty> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;

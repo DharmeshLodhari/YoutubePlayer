@@ -49,37 +49,12 @@ class _SelectCableProviderState extends State<SelectCableProvider> {
   }
 
   Widget getListOfProvider() {
-    return ListView.builder(
-      itemBuilder: (context, index) =>
-          cableProviderTile(item: cableProviders[index]),
-      itemCount: cableProviders.length,
-    );
-  }
-
-  Widget cableProviderTile({required Map<String, dynamic> item}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).pushNamed("/select-cable-plan-and-decoder-number",
-            arguments: {"provider": item});
-      },
-      child: Row(
-        children: [
-          Image.asset(
-            item['image'],
-            fit: BoxFit.fill,
-            height: 80,
-            width: 80,
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Text(
-            item['name'],
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-          ),
-        ],
-      ),
-    );
+    return Container();
+    // ListView.builder(
+    //   // itemBuilder: (context, index) =>
+    //     cableProviderTile(item: cableProviders[index]),
+    //   // itemCount: cableProviders.length,
+    // );
   }
 
   Widget selectProviderText() {

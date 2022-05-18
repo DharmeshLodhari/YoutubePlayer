@@ -3,11 +3,12 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/location_service.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -16,11 +17,12 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../search_user.dart';
 import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -71,6 +73,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   bool isLoading = true;
 
   List<String?> paymentCategoriesTest = [];
+
   String? selectedCategory;
 
   PaymentCategory? selectedPaymentCategory;
@@ -186,9 +189,12 @@ class _RequestPaymentState extends State<RequestPayment> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.requestPayment,
+        "Request Payment",
         style: TextStyle(
-            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       actions: <Widget>[
         scanQRCodeBtn(),
@@ -210,7 +216,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       ),
       onTap: () {
         Navigator.of(context)
-            .pushNamed('/scan-qr', arguments: {"isRequest": true});
+            .pushNamed(Routes.SCAN_QR, arguments: {"isRequest": true});
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -366,7 +372,7 @@ class _RequestPaymentState extends State<RequestPayment> {
         child: GestureDetector(
           onTap: () {
             Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: _payee!.avatar);
+                .pushNamed(Routes.PHOTO_VIEWER, arguments: _payee!.avatar);
           },
           child: ClipOval(
             child: CachedNetworkImage(
@@ -383,7 +389,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       qrCodeImage = GestureDetector(
         onTap: () {
           Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: _payee!.qrCode);
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: _payee!.qrCode);
         },
         child: CachedNetworkImage(
           height: 48,
@@ -423,7 +429,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
-                    Navigator.pushNamed(context, '/profile',
+                    Navigator.pushNamed(context, Routes.PROFILE,
                         arguments: {"searchedUserName": _payee!.userName});
                   },
                 ),
@@ -439,6 +445,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   Widget getRecipientField() {
     return CustomizedTextFormField(
+      isReadOnly: true,
       labelText: AppLocalization.of(context)!.recipient,
       controller: _recipientController,
       focusNode: _recipientFocus,
@@ -449,15 +456,29 @@ class _RequestPaymentState extends State<RequestPayment> {
         }
         return null;
       },
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            if (!isFromProfile! && _payee != null) {
-              recipient = _payee!.userName;
-            } else {
-              recipient = val.toLowerCase();
-            }
-          });
+      // onChanged: (val) {
+      //   if (mounted) {
+      //     setState(() {
+      //       if (!isFromProfile! && _payee != null) {
+      //         recipient = _payee!.userName;
+      //       } else {
+      //         recipient = val.toLowerCase();
+      //       }
+      //     });
+      //   }
+      // },
+      onTap: () async {
+        CustomerProfile? userFound = await NavigationUtil.push(
+          context,
+          screen: SearchUser(),
+        );
+
+        if (userFound != null) {
+          _payee = userFound;
+          _recipientController.text = _payee!.userName!;
+          isValidPayee = _payee!.userName != userBloc.user.userName;
+          print('IS VALID PAYEE :: $isValidPayee');
+          if (mounted) setState(() {});
         }
       },
     );
@@ -466,49 +487,50 @@ class _RequestPaymentState extends State<RequestPayment> {
   Widget displayAmountField() {
     return CustomizedTextFormField(
       labelText: "Amount",
-      isAmount: true,
-      keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      isAmountField: true,
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = double.parse(val);
+            amount = double.parse(val.replaceAll(',', ''));
           });
         }
       },
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double amount = double.parse(val);
+            double amount = double.parse(val.replaceAll(',', ''));
             if (amount > 0.0) {
               return null;
             } else {
+              print('throw invalid');
+
               throw Exception("Invalid amount");
             }
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;
           }
         }
+
         return AppLocalization.of(context)!.invalidAmount;
       },
       onTap: () async {
-        isValidPayee = false;
-        if (mounted) setState(() {});
-        if (recipient != null) {
-          recipient = recipient!.trim();
-
-          _recipientController.text = recipient!;
-          if (mounted) setState(() {});
-          var customerProfile =
-              await UserAuth().fetchCustomerProfile(recipient);
-
-          _payee = customerProfile;
-          isValidPayee = _payee!.userName != userBloc.user.userName;
-
-          if (mounted) setState(() {});
-        }
+        // isValidPayee = false;
+        // if (mounted) setState(() {});
+        // if (recipient != null) {
+        //   recipient = recipient!.trim();
+        //
+        //   _recipientController.text = recipient!;
+        //   if (mounted) setState(() {});
+        //   var customerProfile =
+        //       await UserAuth().fetchCustomerProfileWithAuth(recipient);
+        //
+        //   _payee = customerProfile;
+        //   isValidPayee = _payee!.userName != userBloc.user.userName;
+        //
+        //   _recipientController.text = customerProfile.userName!;
+        //
+        //   if (mounted) setState(() {});
+        // }
       },
     );
   }
@@ -572,9 +594,7 @@ class _RequestPaymentState extends State<RequestPayment> {
           AppLocalization.of(context)!.category,
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
-          height: 6,
-        ),
+        SizedBox(height: 6),
         Card(
           elevation: 0,
           color: Colors.white,
@@ -712,6 +732,8 @@ class _RequestPaymentState extends State<RequestPayment> {
 
     await Future.delayed(Duration(milliseconds: 500));
 
+    isValidPayee = _payee!.userName != userBloc.user.userName;
+
     if (!isValidPayee) {
       if (mounted) {
         setState(() {
@@ -721,7 +743,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       }
     }
 
-    if (recipient == _payee!.userName) {
+    if (_recipientController.text == _payee!.userName) {
       if (!isValidPayee) {
         if (mounted) {
           setState(() {
@@ -751,9 +773,9 @@ class _RequestPaymentState extends State<RequestPayment> {
 
                   var data = {
                     "from_customer": userBloc.user.userName!.trim(),
-                    "to_customer": recipient!.trim(),
+                    "to_customer": _recipientController.text.trim(),
                     "currency": userBloc.user.currency,
-                    "amount": moneyInputNormalizer(amount.toString()),
+                    "amount": moneyInputNormalizer(amount!.toString()),
                     "category": selectedCategory!.trim(),
                     "notes": reference.trim(),
                     "description": reference.trim(),
@@ -769,7 +791,8 @@ class _RequestPaymentState extends State<RequestPayment> {
                     response = value;
                     if (response.statusCode == 201) {
                       if (!isFromChat!) {
-                        _dashboardBloc.index = 1;
+                        _dashboardBloc.index = 0;
+                        showToast(message: 'Payment request sent');
                         RefreshBlocForRequestPayment
                             refreshBlocForRequestPayment =
                             Provider.of<RefreshBlocForRequestPayment>(context,

@@ -177,13 +177,12 @@ class _SelectCablePlanState extends State<SelectCablePlan> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
-              child: Container(
-            child: getListOfProvider(),
-          ))
+            child: Container(
+              child: getListOfProvider(),
+            ),
+          )
         ],
       ),
     );

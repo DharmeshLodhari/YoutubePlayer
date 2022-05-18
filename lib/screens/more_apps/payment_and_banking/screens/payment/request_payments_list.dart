@@ -6,7 +6,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/tiles/transaction.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -17,12 +16,16 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/navigation_util.dart';
+import '../../../../search_user.dart';
+import '../../../user_profile/models/user.dart';
 import '../../payment_and_banking_auth.dart';
 
 class PaymentRequestList extends StatefulWidget {
@@ -33,6 +36,7 @@ class PaymentRequestList extends StatefulWidget {
 class _PaymentRequestListState extends State<PaymentRequestList> {
   final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
       new GlobalKey<ScaffoldState>();
+
   final _auth = PaymentAndBankingAuth();
   SlidableController? _slideController;
   int? count = 0;
@@ -48,13 +52,16 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   // variables for to getting filter requestPaymentList
   String filterValue = "all";
-  bool fromMe = false;
-  bool toMe = false;
+  bool? fromMe;
+  String? userName;
+  DateTimeRange? newDateTimeRange;
+  DateFormat dateFormat = DateFormat('yyyy-MM-dd');
 
   GlobalKey _key = LabeledGlobalKey("paymentRequestListPopUpMenu");
   late CustomizedPopUpMenu menu;
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
+  bool isFirstTime = true;
 
   @protected
   void initState() {
@@ -97,18 +104,25 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     _onRefresh();
   }
 
+  _refresh() {
+    count = 0;
+    next = "";
+    previous = "";
+    isLoading = false;
+    isFirstTime = true;
+    isRefreshing = true;
+    noItemInList = false;
+    requestPaymentList = [];
+    if (mounted) setState(() {});
+    getList();
+  }
+
   void _onRefresh() async {
     await Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        requestPaymentList = [];
-        noItemInList = false;
-        isLoading = false;
-        getList();
+        _refresh();
         _refreshController.refreshCompleted();
       } else {
         showToast(
@@ -120,22 +134,37 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   void menuItemSelectionChange(String value, int index) {
-    selectedMenuItemIndex = index;
-    setState(() {});
+    if (index == 3) {
+      newDateTimeRange = null;
+    } else if (index != 4) {
+      selectedMenuItemIndex = index;
+    }
+
     switch (value) {
       case "received":
-        toMe = true;
         fromMe = false;
         break;
       case "sent":
-        toMe = false;
         fromMe = true;
         break;
+
+      case "clear_date":
+        fromMe =
+            fromMe; // To maintain the 'filter value' when you clear the date.
+        break;
+
+      case "clear_all":
+        fromMe = null;
+        userName = null;
+        newDateTimeRange = null;
+        selectedMenuItemIndex = 0;
+        break;
+
       default:
-        toMe = false;
-        fromMe = false;
+        fromMe = null;
         break;
     }
+    setState(() {});
     _onRefresh();
   }
 
@@ -151,8 +180,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       context: context,
       children: [
         CustomizedPopUpMenuItem(title: "All", value: "all"),
-        CustomizedPopUpMenuItem(title: "Received", value: "received"),
-        CustomizedPopUpMenuItem(title: "Sent", value: "sent"),
+        CustomizedPopUpMenuItem(title: "From me", value: "received"),
+        CustomizedPopUpMenuItem(title: "To me", value: "sent"),
+        CustomizedPopUpMenuItem(title: "Clear Date", value: 'clear_date'),
+        CustomizedPopUpMenuItem(title: "Clear All", value: 'clear_all'),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -168,17 +199,31 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: appBar() as PreferredSizeWidget?,
-      body: SmartRefresher(
-        enablePullDown: true,
-        header: WaterDropHeader(
-          complete: Container(),
-          waterDropColor: navyBlue,
-        ),
-        controller: _refreshController,
-        onRefresh: _onRefresh,
-        child: _buildRequestPaymentList(),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          getDateRangeText(),
+          Expanded(child: _buildRequestPaymentList()),
+        ],
       ),
     );
+  }
+
+  Widget getDateRangeText() {
+    return newDateTimeRange != null
+        ? Container(
+            color: greyBorderColor.withOpacity(0.2),
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Text(
+              '${dateFormat.format(newDateTimeRange!.start)} - ${dateFormat.format(newDateTimeRange!.end)}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+              ),
+            ),
+          )
+        : SizedBox.shrink();
   }
 
   Widget appBar() {
@@ -188,21 +233,99 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
       title: Text(
-        "Payment request",
+        AppLocalization.of(context)!.requests,
         style: TextStyle(
-            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        paymentRequestBtn(),
-        SizedBox(
-          width: 10.0,
-        ),
+        getSearchBtn(),
+        SizedBox(width: 10.0),
+        dateFilterIcon(),
+        SizedBox(width: 10.0),
         popUpMenuButton(),
-        SizedBox(
-          width: 16,
-        ),
+        SizedBox(width: 10.0),
+        paymentRequestBtn(),
+        SizedBox(width: 16),
       ],
+    );
+  }
+
+  Widget getSearchBtn() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.search,
+            color: Colors.black,
+            size: 20,
+          ),
+          onPressed: () async {
+            CustomerProfile? userFound = await NavigationUtil.push(
+              context,
+              screen: SearchUser(),
+            );
+
+            if (userFound != null) {
+              userName = userFound.userName;
+              _refresh();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget dateFilterIcon() {
+    return SizedBox(
+      height: 34,
+      width: 34,
+      child: Card(
+        color: iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.date_range_rounded,
+            color: Colors.black,
+            size: 20,
+          ),
+          onPressed: () async {
+            newDateTimeRange = await showDateRangePicker(
+              context: context,
+              firstDate: DateTime.parse("2020-01-01"),
+              lastDate: DateTime.now(),
+              builder: customThemeBuilder,
+            );
+
+            if (newDateTimeRange != null) {
+              setState(() {});
+              _onRefresh();
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -216,7 +339,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         color: blackFont,
       ),
       onTap: () async {
-        Navigator.of(context).pushNamed('/request-payment',
+        Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
             arguments: <String, bool>{
               'isRequest': true,
               'isFromProfile': true
@@ -341,15 +464,12 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                 filterValue = object;
                 switch (filterValue) {
                   case "received":
-                    toMe = true;
                     fromMe = false;
                     break;
                   case "sent":
-                    toMe = false;
                     fromMe = true;
                     break;
                   default:
-                    toMe = false;
                     fromMe = false;
                     break;
                 }
@@ -365,19 +485,28 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noPendingPaymentRequest,
           )
-        : ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            //+1 for progressbar
-            itemCount: requestPaymentList.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == requestPaymentList.length) {
-                return _buildIndicator();
-              } else {
-                return _getSlideLists(
-                    context, requestPaymentList[index], index);
-              }
-            },
-            controller: _scrollController,
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(vertical: 4),
+              //+1 for progressbar
+              itemCount: requestPaymentList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == requestPaymentList.length) {
+                  return _buildIndicator();
+                } else {
+                  return _getSlideLists(
+                      context, requestPaymentList[index], index);
+                }
+              },
+              controller: _scrollController,
+            ),
           );
   }
 
@@ -392,6 +521,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     );
   }
 
+  bool isRefreshing = false;
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -400,15 +530,21 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         if (mounted) setState(() {});
 
         try {
-          Map<String, dynamic>? result =
-              await _auth.listPaymentRequests(next, previous, toMe, fromMe);
+          Map<String, dynamic>? result = await _auth.listPaymentRequests(
+            next,
+            previous,
+            fromMe: fromMe,
+            userName: userName,
+            isRefreshing: isRefreshing,
+            dateTimeRange: newDateTimeRange,
+          );
           if (result == null) {
             isLoading = false;
             return;
           }
 
-          count = result['count'];
           next = result['next'];
+          count = result['count'];
           previous = result['previous'];
           var tempList = result['results'];
 
@@ -417,7 +553,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
           if (mounted) setState(() {});
 
-          if (next != null) {
+          if (isFirstTime && next != null && next != "") {
+            isFirstTime = false;
             getList();
           }
         } catch (error) {
@@ -571,8 +708,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       title: "Pay",
       description:
           AppLocalization.of(context)!.areYouSureWantToAcceptThisRequest,
-      actionOne: "Pay",
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: "Pay",
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       BottomSheetPassCode(
@@ -643,8 +780,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       title: AppLocalization.of(context)!.reject,
       description:
           AppLocalization.of(context)!.areYouSureWantToRejectThisPayment,
-      actionOne: AppLocalization.of(context)!.reject,
-      actionTwo: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.reject,
+      actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);
@@ -687,8 +824,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.cancel,
       description: "Are you sure want to cancel this request?",
-      actionOne: AppLocalization.of(context)!.cancel,
-      actionTwo: "Close",
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: "Close",
     );
     if (result == null) return;
     if (result) {
@@ -754,7 +891,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
             ? Slidable.of(context)?.open()
             : Slidable.of(context)?.close();
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": widget.paymentRequest.payee});
       },
       onLongPress: () {

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 Widget bottomSheetItem(
     {Function? onTap,
-    IconData? icon,
+    Widget? icon,
+    IconData? iconData,
     required String title,
     bool isLast = false,
+    Widget? extraWidget,
     double iconSize = 14}) {
   return InkWell(
     child: Container(
@@ -16,22 +18,28 @@ Widget bottomSheetItem(
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: [
-            RoundedBackgroundIcon(
-              icon: Icon(
-                icon,
-                size: iconSize,
-              ),
-              backgroundColor: lightGrey,
-              width: 32,
-              height: 32,
-            ),
-            SizedBox(
-              width: 16,
-            ),
+            iconData != null
+                ? RoundedBackgroundIcon(
+                    icon: Icon(
+                      iconData,
+                      size: iconSize,
+                    ),
+                    backgroundColor: lightGrey,
+                    width: 32,
+                    height: 32,
+                  )
+                : RoundedBackgroundIcon(
+                    icon: icon,
+                    backgroundColor: lightGrey,
+                    width: 32,
+                    height: 32,
+                  ),
+            SizedBox(width: 16),
             Text(
               title,
               style: TextStyle(fontSize: 16, color: blackFont),
-            )
+            ),
+            extraWidget != null ? extraWidget : SizedBox.shrink(),
           ],
         ),
       ),

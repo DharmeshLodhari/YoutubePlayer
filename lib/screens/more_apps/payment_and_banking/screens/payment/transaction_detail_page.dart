@@ -11,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 
-import '../../../../../utils/colors.dart';
-
 // ignore: must_be_immutable
 class TransactionDetail extends StatefulWidget {
   var arguments;
@@ -87,9 +85,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
       ),
       actions: <Widget>[
         showMap(),
-        SizedBox(
-          width: 16,
-        ),
+        SizedBox(width: 16),
       ],
     );
   }
@@ -263,60 +259,27 @@ class _TransactionDetailState extends State<TransactionDetail> {
             thickness: 1,
             height: 0,
           ),
-          detailTile(
+          transactionOrKycDetailTile(
             SlydoAppIcon.user,
             AppLocalization.of(context)!.status,
             transaction!.status!,
           ),
-          detailTile(
+          transactionOrKycDetailTile(
             SlydoAppIcon.category,
             AppLocalization.of(context)!.category,
             transaction!.category!,
           ),
-          detailTile(
+          transactionOrKycDetailTile(
             SlydoAppIcon.note_filled,
             AppLocalization.of(context)!.note,
-            transaction!.note!,
+            transaction!.note ?? '---',
           ),
-          detailTile(
+          transactionOrKycDetailTile(
             SlydoAppIcon.note,
             AppLocalization.of(context)!.description,
-            transaction!.description!,
+            transaction!.description ?? '---',
           ),
         ],
-      ),
-    );
-  }
-
-  Widget detailTile(IconData icon, String title, String subtitle) {
-    debugPrint("==>$subtitle");
-    return Container(
-      child: ListTile(
-        dense: true,
-        leading: RoundedBackgroundIcon(
-          icon: Icon(
-            icon,
-            color: blackFont,
-            size: 18,
-          ),
-          backgroundColor: iconBtnGrey,
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: blackFont,
-            fontSize: 14,
-          ),
-        ),
-        subtitle: Text(
-          getCurrency(subtitle, transaction!.currency),
-          style: TextStyle(
-            color: blackFont,
-            fontSize: 14,
-            fontFamily: "roberto",
-          ),
-        ),
       ),
     );
   }

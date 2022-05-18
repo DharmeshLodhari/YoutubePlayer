@@ -20,6 +20,48 @@ class BankAccount {
   });
 }
 
+class CreditCard {
+  int? cvv;
+  int? cardId;
+  String? icon;
+  String? type;
+  bool? isDefault;
+  int? cardNumber;
+  bool? isVisaCard;
+  String? expiryDate;
+
+  CreditCard({
+    this.cvv,
+    this.type,
+    this.icon,
+    this.cardId,
+    this.isDefault,
+    this.isVisaCard,
+    this.expiryDate,
+    this.cardNumber,
+  });
+
+  static String getCreditCardImg(bool isVisa) {
+    return isVisa
+        ? 'assets/images/visa_icon.png'
+        : 'assets/images/master_card_icon.png';
+  }
+
+  factory CreditCard.fromJson(Map<String, dynamic> json) {
+    return CreditCard(
+      cvv: json['cvv'],
+      cardId: json['id'],
+      type: json['type'],
+      cardNumber: json['card_number'],
+      expiryDate: json['expiry_date'],
+      isDefault: json['is_default_cc'] ?? false,
+      isVisaCard: json['type'].toString().toLowerCase().contains('visa'),
+      icon: getCreditCardImg(
+          json['type'].toString().toLowerCase().contains('visa')),
+    );
+  }
+}
+
 class Transaction {
   String? status;
   String? uuid;

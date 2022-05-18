@@ -3,12 +3,14 @@ import 'dart:developer';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
+import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 import 'models/store.dart';
 
@@ -94,6 +96,36 @@ class ShoppingAuthService extends AuthService {
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
+    }
+  }
+
+  Future<ShoppingCartModelFromQrCode?> getShoppingCartDataFromQrCode(
+      {required url}) async {
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('SHOPPING CART MODEL ::: ${response.body}');
+    if (response.statusCode == 200) {
+      ShoppingCartModelFromQrCode shoppingCartModel =
+          ShoppingCartModelFromQrCode.fromJson(jsonDecode(response.body));
+      return shoppingCartModel;
+    } else {
+      return null;
+      // return Future.error(response.body);
+    }
+  }
+
+  Future<bool> payForShoppingCart({required String cartId}) async {
+    String url = AppConfig.baseUrl +
+        "/api/v1/anonymous-shopping-cart/check-out-payment/$cartId/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -371,6 +403,8 @@ class ShoppingAuthService extends AuthService {
         "results": serviceList
       };
       return result;
+    } else if (response.statusCode == 404) {
+      return jsonDecode(response.body);
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
@@ -536,37 +570,54 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List of Orders
-  Future<dynamic> listOrders(
-      String? next, String? previous, String filterValue, String? date) async {
+  Future<dynamic> listOrders(String? next, String? previous, String filterValue,
+      DateTimeRange? dateTimeRange,
+      {required bool isMerchant}) async {
     var url = "";
     if (next == null) {
       return null;
     }
+
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/order/";
+
+      url = url + "?merchant=$isMerchant";
+
       if (filterValue != "") {
-        url = url + "?status__iexact=$filterValue";
+        url = url + "&status=$filterValue";
       }
-      if (filterValue != "" && date != null) {
-        url = url + "&created_at=$date";
-      }
-      if (filterValue == "" && date != null) {
-        url = url + "?created_at=$date";
+      if (dateTimeRange != null) {
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
+
+        if (url.contains('?')) {
+          url = url + "&start_date=$fromDate&end_date=$toDate";
+        } else {
+          url = url + "?start_date=$fromDate&end_date=$toDate";
+        }
       }
     } else {
       url = getSecureUrl(url: next);
     }
 
+    debugPrint('URL ::: $url');
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
       List items = [];
       var data = jsonData["results"];
+
       for (int i = 0; i < data.length; i++) {
         var order = Order.fromJson(data[i]);
+
         items.add(order);
       }
+
       jsonData["results"] = items;
       return jsonData;
     } else if (response.statusCode == 500) {
@@ -574,6 +625,30 @@ class ShoppingAuthService extends AuthService {
     } else {
       debugPrint("STATUS CODE:- ${response.statusCode} ");
       throw json.decode(response.body);
+    }
+  }
+
+  // Get the shipping options when making an order.
+  Future<List<ShippingOptionsModel>> getShippingOptions(
+      {required String merchantName}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/shipping-options/public-list/$merchantName/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    var jsonData = jsonDecode(response.body);
+
+    debugPrint('URL :: $url');
+    debugPrint('BODY :: ${response.body}');
+    debugPrint('STATUS CO :: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      List jsonDataResult = jsonData['results'];
+
+      return jsonDataResult
+          .map((json) => ShippingOptionsModel.fromJson(json))
+          .toList();
+    } else {
+      return Future.error(response.body);
     }
   }
 
@@ -631,6 +706,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+
     var jsonData = jsonDecode(response.body);
     debugPrint("sent data: " + _data.toString());
     if (response.statusCode == 200) {
@@ -657,16 +733,20 @@ class ShoppingAuthService extends AuthService {
   Future<dynamic> placeOrderOfShoppingCart(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/shopping-cart/";
     var _data = jsonEncode(data);
+    debugPrint('PLACE DATA ::: $_data');
+
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
+
     debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        "PLACE ORDER URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 201) {
       return jsonData;
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return null;
     }
   }
 
@@ -702,7 +782,6 @@ class ShoppingAuthService extends AuthService {
     if (exclude != null) {
       url += "?exclude=$exclude";
     }
-
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     List items = [];
@@ -817,6 +896,7 @@ class ShoppingAuthService extends AuthService {
         url = url + "&price__lte=${filterOptions.maxAmount}";
       }
 
+      debugPrint('SEARCH URL ---> $url');
       url = Uri.encodeFull(url);
     } else {
       url = getSecureUrl(url: next);
@@ -899,5 +979,43 @@ class ShoppingAuthService extends AuthService {
           "URL: $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
       return Future.value(<ProductCategory>[]);
     }
+  }
+}
+
+class ShoppingCartModelFromQrCode {
+  String id;
+  int subTotal;
+  String status;
+  String qrCode;
+  int totalPrice;
+  int shippingPrice;
+  String merchantName;
+  String merchantAvatar;
+  String merchantCurrency;
+
+  ShoppingCartModelFromQrCode({
+    required this.id,
+    required this.status,
+    required this.qrCode,
+    required this.subTotal,
+    required this.totalPrice,
+    required this.merchantName,
+    required this.shippingPrice,
+    required this.merchantAvatar,
+    required this.merchantCurrency,
+  });
+
+  factory ShoppingCartModelFromQrCode.fromJson(Map<String, dynamic> json) {
+    return ShoppingCartModelFromQrCode(
+      id: json['id'],
+      status: json['status'],
+      qrCode: json['qr_code'],
+      subTotal: json['subtotal'],
+      totalPrice: json['total_price'],
+      shippingPrice: json['shipping_price'],
+      merchantName: json['merchant']['name'] ?? "",
+      merchantAvatar: json['merchant']['avatar'] ?? "",
+      merchantCurrency: json['merchant']['currency'] ?? "",
+    );
   }
 }

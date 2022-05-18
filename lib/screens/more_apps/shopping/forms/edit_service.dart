@@ -624,12 +624,12 @@ class _EditServiceState extends State<EditService> {
       keyboardType: Platform.isIOS
           ? TextInputType.numberWithOptions(decimal: true)
           : TextInputType.number,
-      isAmount: true,
+      isAmountField: true,
       labelText: "Price of service",
       onChanged: (val) {
         if (val.isNotEmpty) {
           try {
-            servicePrice = double.parse(val).toString();
+            servicePrice = double.parse(val.replaceAll(',', '')).toString();
           } catch (e) {
             showToast(message: e.toString());
           }
@@ -638,7 +638,7 @@ class _EditServiceState extends State<EditService> {
       validator: (val) {
         if (val.isNotEmpty) {
           try {
-            double.parse(val);
+            double.parse(val.replaceAll(',', ''));
             return null;
           } catch (e) {
             return AppLocalization.of(context)!.invalidAmount;

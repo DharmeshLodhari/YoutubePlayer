@@ -7,6 +7,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../utils/enums.dart';
+import '../../post_detail_page.dart';
 import 'models/NewsListItem.dart';
 import 'news_tile.dart';
 
@@ -97,7 +99,15 @@ class _LatestNewsListState extends State<LatestNewsList> {
                                 ),
                               ),
                               onTap: () {
-                                Navigator.of(context).pushNamed("/news-detail");
+                                // Navigator.of(context).pushNamed("/news-detail");
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (context) {
+                                  return PostDetailPage(
+                                    postId: '',
+                                    onDeleteBlog: () {},
+                                    postType: PostType.news,
+                                  );
+                                }));
                               },
                             ))
                         .toList()),

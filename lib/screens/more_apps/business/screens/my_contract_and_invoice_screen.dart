@@ -1,18 +1,25 @@
+import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../data/state_notifier.dart';
+import '../bloc/contract_bloc.dart';
 import 'invoice_list.dart';
 import 'my_contract_list.dart';
 
-class MyContractScreen extends StatefulWidget {
+class MyContractAndInvoiceScreen extends StatefulWidget {
   @override
-  _MyContractScreenState createState() => _MyContractScreenState();
+  _MyContractAndInvoiceScreenState createState() =>
+      _MyContractAndInvoiceScreenState();
 }
 
-class _MyContractScreenState extends State<MyContractScreen> {
+class _MyContractAndInvoiceScreenState
+    extends State<MyContractAndInvoiceScreen> {
   int currentIndex = 0;
 
   GlobalKey _key = LabeledGlobalKey("myInvoiceList");
@@ -20,10 +27,65 @@ class _MyContractScreenState extends State<MyContractScreen> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
 
+  late InvoiceBloc invoiceBloc;
+  late ContractBloc contractBloc;
+
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
     setState(() {});
+
+    if (currentIndex == 0) {
+      switchStatementForContractPage(value);
+    } else {
+      switchStatementForInvoicePage(value);
+    }
+  }
+
+  switchStatementForInvoicePage(String value) {
+    invoiceBloc.noItemInList = false;
+    invoiceBloc.isRefreshing = true;
+
     switch (value) {
+      case "Draft":
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Draft);
+        break;
+
+      case "Paid":
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Paid);
+        break;
+
+      case "Unpaid":
+        invoiceBloc.getInvoiceList(invoiceStatus: InvoiceStatus.Unpaid);
+        break;
+
+      default:
+        invoiceBloc.getInvoiceList();
+    }
+  }
+
+  switchStatementForContractPage(String value) {
+    contractBloc.noItemInList = false;
+    contractBloc.isRefreshing = true;
+
+    switch (value) {
+      case "Ended":
+        contractBloc.getContractList(contractStatus: ContractStatus.Ended);
+        break;
+
+      case "Active":
+        contractBloc.getContractList(contractStatus: ContractStatus.Active);
+        break;
+
+      case "Paused":
+        contractBloc.getContractList(contractStatus: ContractStatus.Paused);
+        break;
+
+      case "All":
+        contractBloc.getContractList();
+        break;
+
+      default:
+        contractBloc.getContractList();
     }
   }
 
@@ -34,17 +96,25 @@ class _MyContractScreenState extends State<MyContractScreen> {
 
   @override
   Widget build(BuildContext context) {
+    invoiceBloc = Provider.of<InvoiceBloc>(context, listen: false);
+    contractBloc = Provider.of<ContractBloc>(context, listen: false);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
-      children: [
-        CustomizedPopUpMenuItem(title: "All", value: "all"),
-        CustomizedPopUpMenuItem(title: "Drafts", value: "drafts"),
-        CustomizedPopUpMenuItem(title: "Paid", value: "paid"),
-        CustomizedPopUpMenuItem(title: "Unpaid", value: "unpaid"),
-      ],
+      children: currentIndex == 0
+          ? [
+              CustomizedPopUpMenuItem(title: "All", value: "All"),
+              CustomizedPopUpMenuItem(title: "Ended", value: "Ended"),
+              CustomizedPopUpMenuItem(title: "Active", value: "Active"),
+              CustomizedPopUpMenuItem(title: "Paused", value: "Paused"),
+            ]
+          : [
+              CustomizedPopUpMenuItem(title: "All", value: "All"),
+              CustomizedPopUpMenuItem(title: "Paid", value: "Paid"),
+              CustomizedPopUpMenuItem(title: "Drafts", value: "Draft"),
+              CustomizedPopUpMenuItem(title: "Unpaid", value: "Unpaid"),
+            ],
       selectedIndex: selectedMenuItemIndex,
-      right: 16,
     );
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
@@ -89,17 +159,53 @@ class _MyContractScreenState extends State<MyContractScreen> {
       ),
       bottom: tabBar() as PreferredSizeWidget?,
       actions: [
+        Row(
+          children: [
+            Text(
+              'In',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            appBarSwitch(currentIndex: currentIndex),
+            Text(
+              'Out',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(width: 10.0),
         addContractAndInvoiceButton(),
-        currentIndex == 1
-            ? SizedBox(
-                width: 10.0,
-              )
-            : Container(),
-        currentIndex == 1 ? popUpMenuButton() : Container(),
-        SizedBox(
-          width: 16,
-        )
+        SizedBox(width: 10.0),
+        popUpMenuButton(),
+        SizedBox(width: 16)
       ],
+    );
+  }
+
+  bool invoiceIsSwitched = true;
+  bool contractIsSwitched = true;
+  Widget appBarSwitch({required int currentIndex}) {
+    return Switch(
+      activeColor: navyBlue,
+      value: currentIndex == 0 ? contractIsSwitched : invoiceIsSwitched,
+      onChanged: (value) {
+        if (currentIndex == 0) {
+          setState(() => contractIsSwitched = value);
+          contractBloc.isRefreshing = true;
+          contractBloc.isContractor = value;
+          contractBloc.getContractList();
+        } else {
+          setState(() => invoiceIsSwitched = value);
+          invoiceBloc.isRefreshing = true;
+          invoiceBloc.isSender = value;
+          invoiceBloc.getInvoiceList();
+        }
+      },
     );
   }
 
@@ -112,11 +218,25 @@ class _MyContractScreenState extends State<MyContractScreen> {
         size: 16,
         color: blackFont,
       ),
-      onTap: () {
+      onTap: () async {
         if (currentIndex == 0) {
-          Navigator.of(context).pushNamed("/add-contract");
+          var contractAdded =
+              await Navigator.of(context).pushNamed("/add-contract");
+          print('CONTRACT ADDED ::: $contractAdded');
+
+          if (contractAdded == true) {
+            contractBloc.isRefreshing = true;
+            contractBloc.getContractList();
+          }
         } else if (currentIndex == 1) {
-          Navigator.of(context).pushNamed("/add-invoice");
+          var invoiceAdded =
+              await Navigator.of(context).pushNamed("/add-invoice");
+          print('INVOICE ADDED ::: $invoiceAdded');
+          if (invoiceAdded == true) {
+            Provider.of<InvoiceBloc>(context, listen: false).isRefreshing =
+                true;
+            Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+          }
         }
       },
       backgroundColor: iconBtnGrey,

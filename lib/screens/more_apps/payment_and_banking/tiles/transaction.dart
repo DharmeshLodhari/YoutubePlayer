@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/colors.dart';
+import '../../../../routes/route_constants.dart';
 
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatelessWidget {
@@ -38,10 +38,9 @@ class PaymentRequestTile extends StatelessWidget {
                   dense: true,
                   leading: getLeading(),
                   title: getTitle(),
-                  trailing:
-                      moneyDisplayNormalizer(paymentRequest!.amount).length > 6
-                          ? null
-                          : getTrailing(),
+                  trailing: paymentRequest!.amount! >= amountLimit
+                      ? null
+                      : getTrailing(),
                   subtitle: getSubtitle(context)),
             ),
             expandedWidget!
@@ -89,7 +88,7 @@ class PaymentRequestTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2),
       child: Text(
-        "${paymentRequest!.displayCustomer}",
+        getCustomerName(),
         maxLines: 1,
         style: TextStyle(
           color: blackFont,
@@ -102,27 +101,12 @@ class PaymentRequestTile extends StatelessWidget {
     );
   }
 
-  Widget getTrailing() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          worldCurrencies[paymentRequest!.currency!]!,
-          style: TextStyle(
-              fontFamily: "Roboto",
-              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
-        ),
-        Text(
-          moneyDisplayNormalizer(paymentRequest!.amount),
-          style: TextStyle(
-              color: paymentRequest!.isCredit! ? navyBlue : blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
-        ),
-      ],
-    );
+  String getCustomerName() {
+    if (paymentRequest!.displayCustomer.length > 24) {
+      return "${paymentRequest!.displayCustomer.substring(0, 25)}...";
+    } else {
+      return paymentRequest!.displayCustomer;
+    }
   }
 
   Widget getSubtitle(BuildContext context) {
@@ -136,10 +120,31 @@ class PaymentRequestTile extends StatelessWidget {
                 maxLines: 1,
               )
             : Container(),
-        moneyDisplayNormalizer(paymentRequest!.amount).length > 6
-            ? getTrailing()
-            : Container(),
+        paymentRequest!.amount! >= amountLimit ? getTrailing() : Container(),
         getDateTime(context)
+      ],
+    );
+  }
+
+  Widget getTrailing() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          worldCurrencies[paymentRequest!.currency!]!,
+          style: TextStyle(
+              fontFamily: "Roboto",
+              color: paymentRequest!.isCredit! ? blackFont : navyBlue,
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
+        Text(
+          moneyDisplayNormalizer(paymentRequest!.amount),
+          style: TextStyle(
+              color: paymentRequest!.isCredit! ? blackFont : navyBlue,
+              fontWeight: FontWeight.bold,
+              fontSize: 14),
+        ),
       ],
     );
   }
@@ -189,11 +194,11 @@ class TransactionTile extends StatelessWidget {
                 title: getTitle(),
                 subtitle: getSubTitle(context),
                 leading: getLeading(),
-                trailing: transaction!.amount.toString().length > 6
+                trailing: transaction!.amount.toString().length >= amountLimit
                     ? null
                     : getAmount(),
                 onTap: () {
-                  Navigator.of(context).pushNamed('/transaction-detail',
+                  Navigator.of(context).pushNamed(Routes.TRANSACTION_DETAIL,
                       arguments: {'transaction': transaction});
                 },
               ),
@@ -289,14 +294,16 @@ class TransactionTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        transaction!.description != ""
+        transaction!.description != "" && transaction!.description != null
             ? Text(
                 "${transaction!.description}",
                 style: TextStyle(color: darkGrey, fontSize: 12),
                 maxLines: 1,
               )
             : Container(),
-        transaction!.amount.toString().length > 6 ? getAmount() : Container(),
+        transaction!.amount.toString().length >= amountLimit
+            ? getAmount()
+            : Container(),
         getDateTime(context),
       ],
     );

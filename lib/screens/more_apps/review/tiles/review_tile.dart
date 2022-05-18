@@ -85,7 +85,7 @@ class _ReviewTileState extends State<ReviewTile> {
           elevation: 4,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.zero,
+          margin: EdgeInsets.all(6.0),
           shadowColor: boxShadowTwo,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
@@ -93,9 +93,7 @@ class _ReviewTileState extends State<ReviewTile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildAuthorReviewAvatar(),
-                SizedBox(
-                  width: 10,
-                ),
+                SizedBox(width: 10),
                 _buildReviewDetail(),
               ],
             ),
@@ -122,9 +120,7 @@ class _ReviewTileState extends State<ReviewTile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 4,
-          ),
+          SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -136,9 +132,7 @@ class _ReviewTileState extends State<ReviewTile> {
             height: 8,
           ),
           _buildRateReview(),
-          SizedBox(
-            height: 6,
-          ),
+          SizedBox(height: 6),
           _buildReviewFirstValue(),
           getLikeUnlikeReportTile(),
         ],
@@ -182,31 +176,8 @@ class _ReviewTileState extends State<ReviewTile> {
   }
 
   Widget _buildRateReview() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        RatingBar.builder(
-          initialRating: widget.review!.rating == null
-              ? 0
-              : widget.review!.rating!.toDouble(),
-          minRating: 1,
-          direction: Axis.horizontal,
-          allowHalfRating: true,
-          itemCount: 5,
-          itemPadding: EdgeInsets.symmetric(horizontal: 1),
-          itemBuilder: (context, _) => Icon(
-            SlydoAppIcon.star,
-            color: starYellow,
-          ),
-          itemSize: 12,
-          onRatingUpdate: (rating) {
-            print(rating);
-          },
-          unratedColor: starYellow.withOpacity(0.2),
-          glowColor: starYellow.withOpacity(0.2),
-        ),
-      ],
-    );
+    return getRating(numberOfRating: widget.review!.rating);
+
   }
 
   Widget _buildReviewFirstValue() {

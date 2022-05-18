@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -69,7 +70,7 @@ class _MaterialControlsState extends State<MaterialControls> {
           absorbing: _hideStuff,
           child: Stack(
             children: [
-              widget.posterUrl! != ""
+              widget.posterUrl != null && widget.posterUrl != ""
                   ? AnimatedOpacity(
                       opacity: _latestValue != null && _latestValue!.isPlaying
                           ? 0.0
@@ -78,10 +79,17 @@ class _MaterialControlsState extends State<MaterialControls> {
                       child: Container(
                         height: double.infinity,
                         width: double.infinity,
-                        child: CachedNetworkImage(
-                          fit: BoxFit.fill,
-                          imageUrl: widget.posterUrl!,
-                        ),
+                        child: widget.posterUrl!.startsWith('http')
+                            ? CachedNetworkImage(
+                                fit: BoxFit.fill,
+                                imageUrl: widget.posterUrl!,
+                              )
+                            : Image.file(
+                                File(widget.posterUrl!),
+                                height: double.infinity,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     )
                   : Container(),
@@ -180,9 +188,11 @@ class _MaterialControlsState extends State<MaterialControls> {
                 children: <Widget>[
                   flexibleSpace(),
                   Text(
-                    widget.titleName!.length > 45
-                        ? widget.titleName!.substring(0, 45) + "..."
-                        : widget.titleName!,
+                    widget.titleName != null
+                        ? widget.titleName!.length > 45
+                            ? widget.titleName!.substring(0, 45) + "..."
+                            : widget.titleName!
+                        : '',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,

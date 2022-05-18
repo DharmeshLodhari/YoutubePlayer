@@ -1,8 +1,15 @@
-import 'package:Slydo/screens/more_apps/utility/tiles/utility_payment_tile.dart';
+import 'package:Slydo/screens/more_apps/utility/tiles/utility_history_tile.dart';
+import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../../locale/app_localization.dart';
+import '../../../widget/LoadingIndicator.dart';
+import '../../../widget/noItemInList.dart';
 
 class UtilityHistory extends StatefulWidget {
   @override
@@ -10,6 +17,16 @@ class UtilityHistory extends StatefulWidget {
 }
 
 class _UtilityHistoryState extends State<UtilityHistory> {
+  int? count = 0;
+  String? next = "";
+  String? previous = "";
+
+  ScrollController _scrollController = ScrollController();
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  bool isLoading = false;
+  bool noItemInList = false;
+
   List<Map<String, dynamic>> utilityPayment = [
     {
       "name": "DStv Subscription",
@@ -97,6 +114,104 @@ class _UtilityHistoryState extends State<UtilityHistory> {
     },
   ];
 
+  bool isFirstTime = true;
+  List utilityHistoryList = [];
+
+  @override
+  void initState() {
+    // secureScreen();
+    getList();
+
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getList();
+      }
+    });
+  }
+
+  void getList() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+          });
+        }
+        Map<String, dynamic>? result =
+            await UtilityAuth().getUtilityTransactions(next, previous);
+        if (result == null) {
+          isLoading = false;
+          return;
+        }
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+
+        isLoading = false;
+
+        utilityHistoryList.addAll(tempList);
+
+        if (mounted) setState(() {});
+
+        if (isFirstTime && next != null && next != "") {
+          isFirstTime = false;
+          getList();
+        }
+      }
+      if (utilityHistoryList.isEmpty) {
+        noItemInList = true;
+
+        if (mounted) setState(() {});
+      } else if (next == null && utilityHistoryList.length > 6) {
+        showReachedToBottomSnackBar();
+      }
+    }
+  }
+
+  void _onRefresh() async {
+    //check network connectivity and if true then refresh the list
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        utilityHistoryList = [];
+        noItemInList = false;
+        isFirstTime = true;
+        if (mounted) setState(() {});
+        isLoading = false;
+        getList();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  void showReachedToBottomSnackBar() {
+    if (mounted) {
+      if (next == null &&
+          _scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,21 +223,50 @@ class _UtilityHistoryState extends State<UtilityHistory> {
 
   Widget foregroundScreen() {
     return Container(
-      padding: EdgeInsets.only(top: 16, bottom: 8),
-      child: getUtilityPaymentHistory(),
-    );
+        padding: EdgeInsets.only(top: 16, bottom: 8),
+        child: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          child: _buildUtilityPaymentHistoryList(),
+        ));
   }
 
-  Widget getUtilityPaymentHistory() {
-    return ListView.builder(
-      itemBuilder: (context, index) =>
-          getUtilityPaymentTile(item: utilityPayment[index]),
-      itemCount: utilityPayment.length,
-    );
+  Widget _buildUtilityPaymentHistoryList() {
+    return noItemInList
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.utilityHistoryEmpty,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: utilityHistoryList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == utilityHistoryList.length) {
+                return _buildIndicator();
+              } else {
+                return UtilityHistoryTile(
+                    utilityHistoryModel: utilityHistoryList[index]);
+              }
+            },
+            controller: _scrollController,
+          );
   }
 
-  Widget getUtilityPaymentTile({Map<String, dynamic>? item}) {
-    return UtilityPaymentTile(payment: item);
+  Widget _buildIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity: isLoading ? 1.0 : 0.0,
+          child: CircularLoadingIndicator(),
+        ),
+      ),
+    );
   }
 
   Widget appBar() {

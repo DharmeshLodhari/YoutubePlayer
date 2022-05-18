@@ -176,46 +176,188 @@ Future<bool?> showDialogBoxWithImageForNudge({
   ).show();
 }
 
-Future<bool?> showDialogBox({
-  BuildContext? context,
-  String? title,
-  String? description,
-  String? actionOne,
-  bool firstActionPrimary = true,
-  String? image,
-  RoundedBackgroundIcon? roundedBackgroundIcon,
-  Color? actionOneBgColor,
-  Color? actionOneTextColor,
-  Color? actionTwoBgColor,
-  Color? actionTwoTextColor,
-  String? actionTwo,
-}) {
+Future<bool?> showDialogBox(
+    {Widget? content,
+    required BuildContext context,
+    String? title,
+    String? description,
+    required String actionOneText,
+    bool firstActionPrimary = true,
+    String? image,
+    Color? actionOneBgColor,
+    Color? actionOneTextColor,
+    Color? actionTwoBgColor,
+    Color? actionTwoTextColor,
+    Function()? leftButtonOnPressed,
+    Function()? rightButtonOnPressed,
+    required String actionTwoText, // DialogButton's text
+    bool isOverlayTapDismiss = false,
+    RoundedBackgroundIcon? roundedBackgroundIcon}) {
   return CustomizedAlert(
-    context: context,
     title: title,
+    content: content,
+    context: context,
     desc: description,
     roundedBackgroundIcon: roundedBackgroundIcon,
     style: AlertStyle(
-      isOverlayTapDismiss: false,
+      isOverlayTapDismiss: isOverlayTapDismiss,
       isCloseButton: false,
     ),
     buttons: [
       DialogButton(
-        onPressed: () =>
-            Navigator.pop(context!, firstActionPrimary ? true : false),
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? true : false);
+          if (leftButtonOnPressed != null) {
+            leftButtonOnPressed();
+          }
+        },
         textColor: actionOneTextColor,
-        text: actionOne,
+        text: actionOneText,
         backgroundColor: actionOneBgColor,
       ),
       DialogButton(
-        onPressed: () =>
-            Navigator.pop(context!, firstActionPrimary ? false : true),
+        onPressed: () {
+          Navigator.pop(context, firstActionPrimary ? false : true);
+          if (rightButtonOnPressed != null) {
+            rightButtonOnPressed();
+          }
+        },
         textColor: actionTwoTextColor,
-        text: actionTwo,
+        text: actionTwoText,
         backgroundColor: actionTwoBgColor,
       )
     ],
   ).show();
+}
+
+Widget dropDownPickItemWidget(
+    {required String? selectedItem, required Function onTap, String? label}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label ?? '',
+        style: TextStyle(
+          color: blackFont,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      SizedBox(height: 5),
+      Card(
+        elevation: 0,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: greyBorderColor)),
+        margin: EdgeInsets.all(0),
+        borderOnForeground: true,
+        child: ListTile(
+          dense: true,
+          title: Text(
+            selectedItem != null ? selectedItem : "",
+            softWrap: false,
+            overflow: TextOverflow.fade,
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          trailing: Icon(
+            Icons.keyboard_arrow_down,
+            color: darkGrey,
+          ),
+          onTap: () {
+            onTap();
+          },
+        ),
+      ),
+    ],
+  );
+}
+
+Future<T?> showPickItemDialog<T>({
+  required BuildContext context,
+  required List items,
+  required T? selectedItem,
+  Widget? unSelectedItemWidget,
+  Widget? selectedItemWidget,
+  Function(T)? onTapItem,
+}) async {
+  return await showDialog<T>(
+    context: context,
+    builder: (context) => AlertDialog(
+      insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+      contentPadding: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      content: Container(
+        width: MediaQuery.of(context).size.width - 40,
+        child: Card(
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: SingleChildScrollView(
+              child: Column(
+                children: items.map((item) {
+                  if (selectedItem == item) {
+                    return unSelectedItemWidget ??
+                        Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              item,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontFamily: "Roboto",
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              onTapItem != null
+                                  ? onTapItem(item)
+                                  : Navigator.pop(context, item);
+                            },
+                          ),
+                        );
+                  }
+                  return selectedItemWidget ??
+                      ListTile(
+                        title: Text(
+                          item,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: blackFont,
+                              fontFamily: "Roboto",
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          onTapItem != null
+                              ? onTapItem(item)
+                              : Navigator.pop(context, item);
+                        },
+                      );
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 void showSwipeHintCard({required BuildContext context}) {

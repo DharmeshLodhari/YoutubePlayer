@@ -1,9 +1,10 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/tiles/order_detail_item_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -11,11 +12,13 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../utils/navigation_util.dart';
+import '../../../payment_and_banking/payment_and_banking_auth.dart';
+import '../../../user_profile/forms/user_address.dart';
 import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -149,16 +152,37 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        locationBtn(),
+        SizedBox(width: 10.0),
         noteSheetBtn(),
-        SizedBox(
-          width: 10.0,
-        ),
+        SizedBox(width: 10.0),
         changeOrderStatusSheetBtn(),
         // popUpMenuButton(),
         SizedBox(
           width: 16,
         ),
       ],
+    );
+  }
+
+  Widget locationBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Icon(
+        SlydoAppIcon.location,
+        size: 16,
+        color: blackFont,
+      ),
+      onTap: () {
+        // showNoteAndroidSheet();
+        NavigationUtil.push(
+          context,
+          screen: UserAddress(customerName: order!.customerName),
+        );
+      },
+      backgroundColor: iconBtnGrey,
+      enableMargin: true,
     );
   }
 
@@ -227,6 +251,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget scaffoldBody() {
+    bool canPay = order!.status == 'Awaiting Payment' &&
+        userBloc.user.userName != order!.merchant;
+
     return Column(
       children: <Widget>[
         Expanded(
@@ -239,11 +266,58 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                     getOrderDetail(),
                     Expanded(
                       child: ListView.builder(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          itemCount: items.length,
-                          itemBuilder: (BuildContext context, int index) =>
-                              getItemTile(index)),
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        itemCount: items.length,
+                        itemBuilder: (BuildContext context, int index) =>
+                            getItemTile(index),
+                      ),
                     ),
+                    canPay
+                        ? Expanded(
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: CurvedButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (dialogLoadingContext) =>
+                                            LoadingIndicator());
+
+                                    var data = {
+                                      "orders": [order!.id]
+                                    };
+                                    PaymentAndBankingAuth()
+                                        .makePaymentForCartOrder(data)
+                                        .then(
+                                      (response) {
+                                        Navigator.pop(context);
+                                        if (response.statusCode == 200) {
+                                          Navigator.pop(context, true);
+
+                                          showToast(
+                                              message: 'Payment successful');
+                                        } else if (response.statusCode == 500) {
+                                          showToast(
+                                              message:
+                                                  AppLocalization.of(context)!
+                                                      .serverError);
+                                        } else {
+                                          showToast(
+                                              message:
+                                                  jsonDecode(response.body)[0]
+                                                      ['errors']);
+                                        }
+                                      },
+                                    );
+                                  },
+                                  text: 'Pay Now',
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
         ),
@@ -321,7 +395,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Widget getBodyOfNoteBottomSheet() {
     bool result =
-        order!.note == "" && order!.customer == userBloc.user.userName;
+        order!.note == "" && order!.customerName == userBloc.user.userName;
     if (!result) {
       return Expanded(
         child: SingleChildScrollView(

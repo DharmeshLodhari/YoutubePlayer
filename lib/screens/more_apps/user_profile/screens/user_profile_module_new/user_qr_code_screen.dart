@@ -16,14 +16,14 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../widget/dialog.dart';
+import '../../../messaging/chat/helpers/connection_list_manager.dart';
 import '../../user_auth.dart';
 
 // ignore: must_be_immutable
 class UserQRCodeScreen extends StatefulWidget {
   CustomerProfile? user;
-  UserQRCodeScreen({
-    required this.user,
-  });
+  UserQRCodeScreen({required this.user});
 
   @override
   _UserQRCodeScreenState createState() => _UserQRCodeScreenState();
@@ -43,25 +43,23 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   int? accountBalance = 0;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void checkCurrentUserIsInContact() async {
     if (userBloc.user.userName != widget.user!.userName) {
-      UserAuth()
-          .checkInContactList(widget.user!.userName, userBloc.user.userName)
-          .then((value) {
-        if (mounted) {
-          setState(() {
-            if (value) {
-              isInContactList = true;
-              debugPrint("is In Contact : $isInContactList");
-            }
-          });
-        }
-      });
+      isInContactList = await ConnectionListManager()
+          .checkUserInConnectionFromDB(searchedText: widget.user!.userName!);
+
+      // UserAuth()
+      //     .checkInContactList(widget.user!.userName, userBloc.user.userName)
+      //     .then((value) {
+      //   if (mounted) {
+      //     setState(() {
+      //       if (value) {
+      //         isInContactList = true;
+      //         debugPrint("is In Contact : $isInContactList");
+      //       }
+      //     });
+      //   }
+      // });
     }
   }
 
@@ -128,7 +126,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                 displayUserInfo(),
                 SizedBox(height: 30),
                 // displayPaymentButtons(),
-                displayUserProfileUpgradeOptions(),
               ],
             ),
           ),
@@ -137,7 +134,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
     );
   }
 
-  Widget displayUserNameAndContect() {
+  Widget displayUserNameAndConnect() {
     return Card(
       margin: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
       child: ListTile(
@@ -201,8 +198,9 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                   filterQuality: FilterQuality.high,
                   placeholder: (context, url) => CircularLoadingIndicator(),
                 )),
+            displayUserType(),
             SizedBox(
-              height: 8,
+              height: 12,
             ),
             userBloc.user.userName != widget.user!.userName
                 ? Divider(
@@ -230,10 +228,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                           child: Container(
                             height: double.infinity,
                             child: InkWell(
-                              onTap: () {
-                                showToast(
-                                    message: "${widget.user!.displayName()} " +
-                                        AppLocalization.of(context)!.isBlocked);
+                              onTap: () async {
+                                blockUserAlert(widget.user!);
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -264,45 +260,79 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                       ],
                     ),
                   )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        child: displayUserType(),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      )
-                    ],
-                  ),
+                : SizedBox.shrink(),
           ],
         ),
       ),
     );
   }
 
-  Widget displayUserType() {
-    if (userBloc.user.userName == widget.user!.userName) {
-      return Container(
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            color: userBloc.user.type != "User"
-                ? userBloc.user.type != "Business"
-                    ? starYellow
-                    : naturalGreen
-                : navyBlue),
-        child: Text(
-          userBloc.user.type!,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+  void blockUserAlert(CustomerProfile user) async {
+    bool? result = await showDialogBox(
+      context: context,
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        backgroundColor: mateRed.withOpacity(0.08),
+        borderRadius: 20,
+        width: 48,
+        height: 48,
+        icon: Icon(
+          SlydoAppIcon.block,
+          color: mateRed,
+          size: 16,
         ),
-      );
+        enableMargin: false,
+      ),
+      actionOneBgColor: mateRed,
+      actionOneTextColor: Colors.white,
+      actionTwoBgColor: greyBorderColor,
+      actionTwoTextColor: blackFont,
+      title: AppLocalization.of(context)!.block,
+      description: AppLocalization.of(context)!.areYouSureWantToBlock +
+          " ${user.displayName()}",
+      actionOneText: AppLocalization.of(context)!.block,
+      actionTwoText: AppLocalization.of(context)!.cancel,
+    );
+    if (result != null && result) {
+      bool done = await UserAuth().blockUser(user);
+      if (done) {
+        showSnackbar(context,
+            message: "${user.displayName()} " +
+                AppLocalization.of(context)!.isBlockedSuccessfully);
+
+        ConnectionListBloc connectionListBloc =
+            Provider.of<ConnectionListBloc>(context, listen: false);
+        connectionListBloc.deleteChatConversation(
+            conversationId: user.conversationId);
+
+        // if (connectionsList.length <= 9) {
+        //   getList();
+        // }
+        setState(() {});
+      } else {
+        showSnackbar(context, message: AppLocalization.of(context)!.error);
+      }
     }
-    return Container();
+  }
+
+  Widget displayUserType() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: widget.user!.type != "User"
+              ? widget.user!.type != "Business"
+                  ? starYellow
+                  : naturalGreen
+              : navyBlue),
+      child: Text(
+        widget.user!.type!,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 
   Widget contactActionButtons() {
@@ -327,19 +357,17 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
             width: 28,
             icon: Icon(
               SlydoAppIcon.remove_connection,
-              color: blackFont,
+              color: mateRed,
               size: 14,
             ),
-            backgroundColor: blackFont.withOpacity(0.1),
+            backgroundColor: mateRed.withOpacity(0.1),
           ),
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           Expanded(
             child: Text(
-              "Remove Connection",
+              "Disconnect",
               style: TextStyle(
-                color: blackFont,
+                color: mateRed,
                 fontSize: 14,
               ),
             ),
@@ -391,9 +419,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           ),
           backgroundColor: naturalGreen.withOpacity(0.1),
         ),
-        SizedBox(
-          width: 8,
-        ),
+        SizedBox(width: 8),
         Expanded(
           child: Text(
             "Add Connection",
@@ -638,29 +664,6 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         ),
       ),
     );
-  }
-
-  Widget displayUserProfileUpgradeOptions() {
-    if (userBloc.user.userName == widget.user!.userName) {
-      return userBloc.user.type == "User"
-          ? CurvedButton(
-              backgroundColor: navyBlue,
-              onPressed: upgradeAccount,
-              text: "Upgrade Profile",
-              textColor: Colors.white,
-            )
-          : Container();
-    }
-    return Container();
-  }
-
-  void upgradeAccount() async {
-    await getAccountBalance();
-    if (accountBalance! > 0) {
-      Navigator.pushNamed(context, "/upgrade-user-profile");
-    } else {
-      showToast(message: "Insufficient funds!!");
-    }
   }
 
   Future<void> getAccountBalance() async {

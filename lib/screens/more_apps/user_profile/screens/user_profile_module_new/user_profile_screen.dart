@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -26,6 +27,8 @@ import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../../../../locale/app_localization.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
@@ -271,8 +274,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   child: Text(
                     searchedUser!.displayName()!,
                     style: TextStyle(
-                      color: Colors.white,
                       fontSize: 22,
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
@@ -331,7 +334,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           height: 16,
                         ),
                         Text(
-                          searchedUser!.displayName()!,
+                          searchedUser!.displayName()!.length <= 53
+                              ? searchedUser!.displayName()!
+                              : '${searchedUser!.displayName()!.substring(0, 54)}...',
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -442,27 +447,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               ),
                               padding: EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 5),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    SlydoAppIcon.star,
-                                    color: starYellow,
-                                    size: 14,
-                                  ),
-                                  SizedBox(
-                                    width: 4,
-                                  ),
-                                  Text(
-                                    searchedUser?.rating.toString() ?? "0.0",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color: blackFont,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: getRating(
+                                  numberOfRating: searchedUser?.rating.toInt()),
                             ),
                           ),
                         )
@@ -558,7 +544,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         color: Colors.white,
       ),
       onTap: () {
-        Navigator.of(context).pushNamed("/user-product-and-service-search",
+        Navigator.of(context).pushNamed(Routes.USER_PRODUCT_AND_SERVICE_SEARCH,
             arguments: {"searchedUser": searchedUser});
       },
       backgroundColor: lightGrey.withOpacity(0.1),
@@ -583,10 +569,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget getTabUI({
-    String title = "",
-    @required int? tabIndex,
-  }) {
+  Widget getTabUI({String title = "", @required int? tabIndex}) {
     return Tab(
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -729,7 +712,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
       list.add(
         KeepAlivePage(
-          child: UserReviewList(user: searchedUser),
+          child: Center(child: UserReviewList(user: searchedUser)),
         ),
       );
       list.add(
@@ -825,8 +808,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     if (searchedUser!.userName == userBloc.user.userName) {
       list.add(
         bottomSheetItem(
-          title: "Edit",
-          icon: SlydoAppIcon.edit,
+          title: AppLocalization.of(context)!.createAPost,
+          iconData: Icons.add_circle_outlined,
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
+          },
+        ),
+      );
+
+      list.add(
+        bottomSheetItem(
+          title: "Edit bio",
+          iconData: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context);
             var result = await Navigator.of(context).pushNamed(
@@ -844,23 +838,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           },
         ),
       );
-      list.add(
-        bottomSheetItem(
-          title: "Change Password",
-          icon: Icons.lock,
-          onTap: () async {
-            Navigator.pop(context);
-            Navigator.of(context).pushNamed('/change-password');
-          },
-        ),
-      );
     }
 
     if (searchedUser?.type?.toLowerCase() != "user") {
       list.add(
         bottomSheetItem(
           title: "Terms and Condition",
-          icon: Icons.insert_link_sharp,
+          iconData: Icons.insert_link_sharp,
           onTap: () async {
             Navigator.pop(context);
             String termsAndConditionUrl =
@@ -879,10 +863,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     list.add(
       bottomSheetItem(
         title: "Share",
-        icon: SlydoAppIcon.share,
+        iconData: SlydoAppIcon.share,
         onTap: () {
           Navigator.pop(context);
-          var shareBody = "https://slydo.co/" + searchedUser!.userName!;
+          String merchantUrl =
+              'https://merchant.slydo.co/${searchedUser!.userName!}/payme';
+          var shareBody = userBloc.user.type != 'User'
+              ? merchantUrl
+              : "https://slydo.co/" + searchedUser!.userName!;
           Share.share(shareBody, subject: "${searchedUser!.displayName()}");
         },
       ),
@@ -891,7 +879,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        icon: SlydoAppIcon.text_message,
+        iconData: SlydoAppIcon.text_message,
         isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);
@@ -905,7 +893,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         list.add(
           bottomSheetItem(
             title: "Write Review",
-            icon: SlydoAppIcon.star,
+            iconData: SlydoAppIcon.star,
             isLast: userBloc.user.userName == searchedUser!.userName,
             onTap: () async {
               Navigator.pop(context);
@@ -918,55 +906,99 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
 
     if (userBloc.user.userName != searchedUser!.userName) {
-      list.addAll([
-        bottomSheetItem(
-          title: "Message",
-          icon: SlydoAppIcon.message,
-          onTap: () {
-            Navigator.pop(context);
-            if (!isOwner) {
-              Navigator.of(context).pushNamed('/compose_message', arguments: {
-                'recipient': searchedUser!.userName,
-                'subject': "",
-              });
-            }
-          },
-        ),
-        bottomSheetItem(
-          title: "Send",
-          icon: SlydoAppIcon.send,
-          onTap: () {
-            UserAuth()
-                .fetchCustomerProfile(searchedUserName)
-                .then((fetchedUser) {
-              customerProfileBloc.customer = fetchedUser;
+      list.addAll(
+        [
+          bottomSheetItem(
+            title: "Message",
+            iconData: SlydoAppIcon.message,
+            onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).pushNamed('/send-payment',
-                  arguments: <String, bool>{'isFromProfile': false});
-            });
-          },
-        ),
-        bottomSheetItem(
-            title: "Request",
-            icon: SlydoAppIcon.receive,
-            isLast: true,
+              if (!isOwner) {
+                Navigator.of(context).pushNamed('/compose_message', arguments: {
+                  'recipient': searchedUser!.userName,
+                  'subject': "",
+                });
+              }
+            },
+          ),
+          bottomSheetItem(
+            title: "Send",
+            iconData: SlydoAppIcon.send,
             onTap: () {
               UserAuth()
                   .fetchCustomerProfile(searchedUserName)
                   .then((fetchedUser) {
                 customerProfileBloc.customer = fetchedUser;
                 Navigator.pop(context);
-                Navigator.of(context).pushNamed('/request-payment',
-                    arguments: <String, bool>{
-                      'isFromProfile': false,
-                      'isRequest': true
-                    });
+                Navigator.of(context).pushNamed('/send-payment',
+                    arguments: <String, bool>{'isFromProfile': false});
               });
-            }),
-      ]);
+            },
+          ),
+          bottomSheetItem(
+              title: "Request",
+              iconData: SlydoAppIcon.receive,
+              isLast: true,
+              onTap: () {
+                UserAuth()
+                    .fetchCustomerProfile(searchedUserName)
+                    .then((fetchedUser) {
+                  customerProfileBloc.customer = fetchedUser;
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed('/request-payment',
+                      arguments: <String, bool>{
+                        'isFromProfile': false,
+                        'isRequest': true
+                      });
+                });
+              }),
+        ],
+      );
+    }
+    if (userBloc.user.type == "User") {
+      list.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: bottomSheetItem(
+            title: "Upgrade",
+            icon: Icon(Icons.upgrade_rounded),
+            isLast: userBloc.user.userName == searchedUser!.userName,
+            onTap: () async {
+              Navigator.pop(context);
+              upgradeAccount();
+            },
+            extraWidget: Container(
+              margin: EdgeInsets.only(left: 8.0),
+              padding: EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                'PRO',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     return list;
+  }
+
+  void upgradeAccount() async {
+    Navigator.pushNamed(context, "/choose-subscriptions");
+
+    // await getAccountBalance();
+    // if (accountBalance! > 0) {
+    //   Navigator.pushNamed(context, "/upgrade-user-profile");
+    // } else {
+    //   showToast(message: "Insufficient funds!!");
+    // }
   }
 
   void sendProfileToUsersInChat() async {

@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/utility/cable/model/CablePlan.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -190,9 +189,10 @@ class _SelectPlanAndDecoderNumberState
                       fontWeight: FontWeight.w600),
                 ),
                 Expanded(
-                    child: SizedBox(
-                  width: 2,
-                )),
+                  child: SizedBox(
+                    width: 2,
+                  ),
+                ),
                 Text(
                   selectedPlan != null ? selectedPlan!.price! : "",
                   overflow: TextOverflow.fade,

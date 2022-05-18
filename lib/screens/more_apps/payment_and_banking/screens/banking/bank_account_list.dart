@@ -14,8 +14,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../../utils/colors.dart';
 import '../../payment_and_banking_auth.dart';
+import 'package:Slydo/widget/vertical_list_item.dart';
 
 class BankAccountList extends StatefulWidget {
   @override
@@ -173,7 +173,7 @@ class _BankAccountListState extends State<BankAccountList> {
             itemCount: bankAccountList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == bankAccountList.length) {
-                return _buildIndicator();
+                return buildIndicator(isLoading: isLoading);
               } else {
                 return _getSlidableWithLists(
                     context,
@@ -185,18 +185,6 @@ class _BankAccountListState extends State<BankAccountList> {
             },
             controller: _scrollController,
           );
-  }
-
-  Widget _buildIndicator() {
-    return new Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: new Center(
-        child: new Opacity(
-          opacity: isLoading ? 1.0 : 00,
-          child: CircularLoadingIndicator(),
-        ),
-      ),
-    );
   }
 
   void getList() async {
@@ -447,25 +435,5 @@ class _BankAccountListState extends State<BankAccountList> {
     _scrollController.dispose();
     _refreshController.dispose();
     super.dispose();
-  }
-}
-
-class VerticalListItem extends StatelessWidget {
-  VerticalListItem(this.child);
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () =>
-          Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
-              ? Slidable.of(context)?.open()
-              : Slidable.of(context)?.close(),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
-        child: child,
-      ),
-    );
   }
 }

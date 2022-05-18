@@ -16,9 +16,8 @@ class NoItemInList extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-                child: SizedBox(
-              height: 2,
-            )),
+              child: SizedBox(height: 2),
+            ),
             Expanded(
               flex: 2,
               child: Image.asset(
@@ -30,18 +29,17 @@ class NoItemInList extends StatelessWidget {
                 width: 150,
               ),
             ),
-            SizedBox(
-              height: 16,
-            ),
+            SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 msg,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: blackFont,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
+                  color: blackFont,
+                  fontSize: 12,
+                  fontFamily: "roberto",
+                ),
               ),
             ),
             Expanded(

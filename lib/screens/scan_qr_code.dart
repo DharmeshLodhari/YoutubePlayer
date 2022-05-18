@@ -1,14 +1,23 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import '../data/currency.dart';
+import '../routes/route_constants.dart';
+import '../utils/util.dart';
+import '../widget/LoadingIndicator.dart';
+import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
+import '../widget/dialog.dart';
+import 'more_apps/shopping/shopping_auth.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
@@ -23,7 +32,8 @@ class QRCodeView extends StatefulWidget {
 
 class _QRCodeViewState extends State<QRCodeView> {
   var arguments;
-
+  late bool
+      canShowDialogBox; // We need this variable to show the dialogbox just once cause qrscanner controller uses a stream(using a stream will make the dialogbox show up multiple times).
   _QRCodeViewState({this.arguments});
 
   bool? isRequest = false;
@@ -33,9 +43,11 @@ class _QRCodeViewState extends State<QRCodeView> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
   QRViewController? controller;
+  late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
+    canShowDialogBox = true;
     isRequest = arguments != null
         ? arguments['isRequest'] != null
             ? arguments['isRequest']
@@ -46,6 +58,8 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   @override
   Widget build(BuildContext context) {
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -121,51 +135,294 @@ class _QRCodeViewState extends State<QRCodeView> {
         Provider.of<CustomerProfileBloc>(context, listen: false);
     userBloc = Provider.of<UserBloc>(context, listen: false);
     this.controller = controller;
+
     controller.scannedDataStream.listen((scanData) async {
-      //if we get a text that belongs to us then we process it
+      // if we get a text that belongs to us then we process it
       if (scanData != null) {
         if (scanData.code.startsWith(AppConfig.baseUrl) ||
             scanData.code.startsWith(AppConfig.baseUrl) ||
+            scanData.code.startsWith(AppConfig.merchantUrl) ||
             scanData.code.startsWith(AppConfig.localHost)) {
           var scanDataList = scanData.code.split('/');
+
           scanDataList.removeWhere((value) => value == "");
-          getNavigationRoot(scanDataList);
+          if (canShowDialogBox) {
+            getNavigationRoot(scanDataList, scanDataCode: scanData.code);
+          }
+          canShowDialogBox = false;
         }
       }
     });
   }
 
   // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error
-  void getNavigationRoot(List<String> scanDataList) async {
-    debugPrint("test: " + scanDataList[scanDataList.length - 2]);
-    if (scanDataList[scanDataList.length - 2] == "products") {
+  void getNavigationRoot(List<String> scanDataList,
+      {String? scanDataCode}) async {
+    int qrCodeIndex = scanDataList.length - 2;
+
+    debugPrint('SCANNED DATA ::: $scanDataList');
+    debugPrint('SCANNED DATA LAST ::: ${scanDataList.length}');
+
+    if (scanDataList[qrCodeIndex] == "products") {
       var productId = scanDataList.last;
       var product = getProduct(productId);
 
-      Navigator.pop(context);
+      _dashboardBloc.index = 0;
+
       Navigator.of(context)
           .pushNamed("/product", arguments: {"product": product});
-    } else if (scanDataList[scanDataList.length - 2] == "services") {
+    } else if (scanDataList[qrCodeIndex] == "services") {
       var serviceId = scanDataList.last;
       var service = getService(serviceId);
-      Navigator.pop(context);
+      _dashboardBloc.index = 0;
+
       Navigator.of(context)
-          .pushNamed("/service-detail", arguments: {"service": service});
+          .pushNamed(Routes.SERVICE_DETAIL, arguments: {"service": service});
+    } else if (scanDataList[qrCodeIndex - 1] == 'anonymous-shopping-cart') {
+      try {
+        ShoppingCartModelFromQrCode? shoppingCartModel =
+            await ShoppingAuthService()
+                .getShoppingCartDataFromQrCode(url: scanDataCode);
+
+        if (shoppingCartModel != null) {
+          showDialogBox(
+            context: context,
+            actionTwoText: 'Pay',
+            actionOneText: 'Cancel',
+            actionTwoTextColor: white,
+            actionOneBgColor: greyBorderColor,
+            actionTwoBgColor: navyBlue,
+            leftButtonOnPressed: () {
+              canShowDialogBox = true;
+              _dashboardBloc.index = 0;
+            },
+            rightButtonOnPressed: () {
+              BottomSheetPassCode(
+                  context: context,
+                  isValidCallback: () async {
+                    showDialog(
+                        context: context,
+                        builder: (dialogLoadingContext) => LoadingIndicator());
+
+                    bool isPaid = await ShoppingAuthService()
+                        .payForShoppingCart(cartId: shoppingCartModel.id);
+                    if (isPaid) {
+                      Navigator.pop(context);
+                      _dashboardBloc.index = 0;
+                      Navigator.pushNamed(context, '/orders-list');
+                      showToast(message: 'Paid successfully');
+                    } else {
+                      Navigator.pop(context);
+                      showToast(message: 'Something went wrong');
+                    }
+                  },
+                  cancelCallBack: () {
+                    Navigator.pop(context);
+                  });
+            },
+            content: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl: shoppingCartModel.merchantAvatar,
+                            errorWidget: imageErrorWidget,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            shoppingCartModel.merchantName,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: blackFont,
+                            ),
+                          ),
+                          Text(
+                            'Merchant',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: greyBorderColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Your Order',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Status',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Text(
+                        shoppingCartModel.status,
+                        style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Shipping price',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[
+                                    shoppingCartModel.merchantCurrency] ??
+                                'NGN',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(
+                                shoppingCartModel.shippingPrice),
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Sub total',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[
+                                    shoppingCartModel.merchantCurrency] ??
+                                'NGN',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(shoppingCartModel.subTotal),
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Divider(thickness: 2),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total Price',
+                        style: TextStyle(
+                            color: blackFont,
+                            fontSize: 16.0,
+                            fontFamily: "roberto"),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[
+                                    shoppingCartModel.merchantCurrency] ??
+                                'NGN',
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(
+                                shoppingCartModel.totalPrice),
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        print('ERROR :: ${e.toString()}');
+        showToast(message: 'Something went wrong, please try again.');
+      }
     } else {
       var recipient = scanDataList.last;
       getRecipient(recipient);
 
-      Navigator.pop(context);
+      print('RECIPIENT ::: $recipient');
+
+      _dashboardBloc.index = 0;
+
       if (isRequest!) {
         Navigator.of(context).pushNamed(
-          '/request-payment',
+          Routes.REQUEST_PAYMENT,
           arguments: {
             'isRequest': true,
           },
         );
       } else {
         Navigator.of(context).pushNamed(
-          '/send-payment',
+          Routes.SEND_PAYMENT,
           arguments: {
             'isFromProfile': false,
           },
@@ -177,7 +434,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   // Pull the user from the server
   void getRecipient(String recipient) async {
     customerProfileBloc.customer =
-        await UserAuth().fetchCustomerProfile(recipient);
+        await UserAuth().fetchCustomerProfileWithAuth(recipient);
   }
 
   Product getProduct(String productId) {

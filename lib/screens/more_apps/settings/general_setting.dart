@@ -4,20 +4,22 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/logout_helper.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/BottomSheetItemWithCheck.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../routes/route_constants.dart';
+import '../payment_and_banking/screens/banking/user_kyc.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
   @override
@@ -108,7 +110,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 getOutGoingSoundTile(),
                 getCurrencyTile(),
                 getLanguageTile(),
-                getSettingTile(
+                getSettingsTile(
                     title: "Terms & Conditions",
                     onTap: () async {
                       try {
@@ -118,7 +120,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                         debugPrint("Error:- $error");
                       }
                     }),
-                getSettingTile(
+                getSettingsTile(
                     title: "Privacy Policy",
                     onTap: () async {
                       try {
@@ -127,6 +129,43 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                       } catch (error) {
                         debugPrint("Error:- $error");
                       }
+                    }),
+                getSettingsTile(
+                  title: "Upgrade Account Tier/KYC",
+                  onTap: () async {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            Center(child: LoadingIndicator()));
+                    PaymentAndBankingAuth()
+                        .checkIfKycIsVerified(userName: userBloc.user.userName!)
+                        .then(
+                      (kycModel) {
+                        Navigator.pop(context);
+
+                        if (kycModel != null) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UserKyc(kycModel: kycModel),
+                            ),
+                          );
+                        } else {
+                          Navigator.pushNamed(context, '/upgrade-account');
+                        }
+                      },
+                    ).catchError(
+                      (e) {
+                        Navigator.pop(context);
+                        showToast(message: e.toString());
+                      },
+                    );
+                  },
+                ),
+                getSettingsTile(
+                    title: "Change Password",
+                    onTap: () async {
+                      Navigator.of(context).pushNamed(Routes.CHANGE_PASSWORD);
                     }),
                 getLogoutTile(),
               ],
@@ -194,7 +233,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     );
   }
 
-  Widget getSettingTile({String title = "", Function()? onTap}) {
+  Widget getSettingsTile({String title = "", Function()? onTap}) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),

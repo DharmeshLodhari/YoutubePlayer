@@ -19,85 +19,100 @@
 class UserPost {
   UserPost({
     this.id,
-    this.authorAvatar,
-    this.title,
-    this.tagLine,
+    this.tags,
     this.text,
     this.image,
     this.video,
-    this.isPublished,
-    this.enableCommenting,
-    this.enableLike,
-    this.authorUsername,
-    this.viewers,
-    this.createdAt,
-    this.modifiedAt,
-    this.publishedDate,
+    this.title,
     this.likes,
+    this.viewers,
+    this.tagLine,
     this.dislikes,
+    this.readTime,
+    this.createdAt,
+    this.enableLike,
+    this.authorName,
+    this.publicRead,
+    this.modifiedAt,
+    this.isPublished,
+    this.authorAvatar,
+    this.publishedDate,
+    this.authorUsername,
+    this.enableCommenting,
   });
 
   UserPost.fromJson(dynamic json) {
     id = json['id'];
-    authorAvatar = json['author_avatar'];
-    title = json['title'];
-    tagLine = json['tag_line'];
+    tags = json['tags'];
     text = json['text'];
+    title = json['title'];
     image = json['image'];
     video = json['video'];
-    isPublished = json['is_published'];
-    enableCommenting = json['enable_commenting'];
-    enableLike = json['enable_like'];
-    authorUsername = json['author_username'];
+    likes = json['likes'];
     viewers = json['viewers'];
-    createdAt =
-        json['created_at'] != null ? DateTime.parse(json['created_at']) : null;
+    tagLine = json['tag_line'];
+    dislikes = json['dislikes'];
+    readTime = json['read_time'];
+    publicRead = json['public_read'];
+    enableLike = json['enable_like'];
+    authorName = json['author_name'];
+    isPublished = json['is_published'];
+    authorAvatar = json['author_avatar'];
+    authorUsername = json['author_username'];
+    enableCommenting = json['enable_commenting'];
     modifiedAt = json['modified_at'] != null
         ? DateTime.parse(json['modified_at'])
         : null;
     publishedDate = json['published_date'] != null
         ? DateTime.parse(json['published_date'])
         : null;
-    likes = json['likes'];
-    dislikes = json['dislikes'];
+    createdAt =
+        json['created_at'] != null ? DateTime.parse(json['created_at']) : null;
   }
+
   String? id;
-  String? authorAvatar;
-  String? title;
-  String? tagLine;
+  int? likes;
   String? text;
+  String? title;
+  int? dislikes;
   String? image;
   String? video;
-  bool? isPublished;
-  bool? enableCommenting;
-  bool? enableLike;
-  String? authorUsername;
   dynamic viewers;
+  String? tagLine;
+  bool? enableLike;
+  bool? publicRead;
+  int? readTime;
+  bool? isPublished;
+  String? authorName;
+  List<dynamic>? tags;
   DateTime? createdAt;
   DateTime? modifiedAt;
+  String? authorAvatar;
+  bool? enableCommenting;
+  String? authorUsername;
   DateTime? publishedDate;
-  int? likes;
-  int? dislikes;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
-    map['author_avatar'] = authorAvatar;
-    map['title'] = title;
-    map['tag_line'] = tagLine;
     map['text'] = text;
-    map['image'] = image;
+    map['title'] = title;
     map['video'] = video;
-    map['is_published'] = isPublished;
-    map['enable_commenting'] = enableCommenting;
-    map['enable_like'] = enableLike;
-    map['author_username'] = authorUsername;
-    map['viewers'] = viewers;
-    map['created_at'] = createdAt;
-    map['modified_at'] = modifiedAt;
-    map['published_date'] = publishedDate;
+    map['image'] = image;
     map['likes'] = likes;
+    map['viewers'] = viewers;
+    map['tag_line'] = tagLine;
     map['dislikes'] = dislikes;
+    map['created_at'] = createdAt?.toIso8601String();
+
+    map['modified_at'] = modifiedAt?.toIso8601String();
+
+    map['enable_like'] = enableLike;
+    map['is_published'] = isPublished;
+    map['author_avatar'] = authorAvatar;
+    map['published_date'] = publishedDate?.toIso8601String();
+    map['author_username'] = authorUsername;
+    map['enable_commenting'] = enableCommenting;
     return map;
   }
 }

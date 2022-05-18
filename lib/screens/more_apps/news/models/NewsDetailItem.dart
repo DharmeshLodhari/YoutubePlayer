@@ -1,12 +1,13 @@
 import 'package:Slydo/screens/more_apps/news/models/NewsListItem.dart';
 
 class NewsDetailItem {
+  String? image;
   String? author;
   String? authorAvatar;
   String? description;
   List<NewsListItem>? newsListItems;
   String? poster;
-  String? read;
+  int? readTime;
   String? shortDescription;
   String? subHeader;
   List<String>? tags;
@@ -15,12 +16,13 @@ class NewsDetailItem {
   String? video;
 
   NewsDetailItem(
-      {this.author = "",
+      {this.image,
+      this.author = "",
       this.authorAvatar = "",
       this.description = "",
       this.newsListItems = const [],
       this.poster = "",
-      this.read = "",
+      this.readTime,
       this.shortDescription = "",
       this.subHeader = "",
       this.tags = const [],
@@ -31,6 +33,7 @@ class NewsDetailItem {
   factory NewsDetailItem.fromJson(Map<String, dynamic> json) {
     return NewsDetailItem(
       author: json['author'],
+      image: json['image'],
       authorAvatar: json['author_avatar'],
       description: json['description'],
       newsListItems: json['news_list_items'] != null
@@ -39,7 +42,7 @@ class NewsDetailItem {
               .toList()
           : null,
       poster: json['poster'],
-      read: json['read'],
+      readTime: json['read'],
       shortDescription: json['short_description'],
       subHeader: json['sub_header'],
       tags: json['tags'] != null ? new List<String>.from(json['tags']) : null,
@@ -55,7 +58,7 @@ class NewsDetailItem {
     data['author_avatar'] = this.authorAvatar;
     data['description'] = this.description;
     data['poster'] = this.poster;
-    data['read'] = this.read;
+    data['read'] = this.readTime;
     data['short_description'] = this.shortDescription;
     data['sub_header'] = this.subHeader;
     data['title'] = this.title;

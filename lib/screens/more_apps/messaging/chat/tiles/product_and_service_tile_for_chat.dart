@@ -346,14 +346,14 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
         basketBloc.addItemToCart(item: item, type: type);
         late var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].id == item.id) {
+          if (element["item"].subscriptionId == item.subscriptionId) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].id,
+          "id": mapData["item"].subscriptionId,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");

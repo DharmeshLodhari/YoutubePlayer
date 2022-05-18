@@ -1,11 +1,13 @@
 import 'Item.dart';
 
-class Invoice {
+class InvoiceModel {
   int? amount;
   String? createdAt;
   String? currency;
   String? dueDate;
   String? fromCustomer;
+  String? fromCustomerDisplayName;
+  String? toCustomerDisplayName;
   String? fromCustomerAvatar;
   int? id;
   String? invoiceDate;
@@ -14,12 +16,14 @@ class Invoice {
   String? toCustomer;
   String? toCustomerAvatar;
 
-  Invoice(
+  InvoiceModel(
       {this.amount,
       this.createdAt,
       this.currency,
       this.dueDate,
       this.fromCustomer,
+      this.fromCustomerDisplayName,
+      this.toCustomerDisplayName,
       this.fromCustomerAvatar,
       this.id,
       this.invoiceDate,
@@ -28,13 +32,15 @@ class Invoice {
       this.toCustomer,
       this.toCustomerAvatar});
 
-  factory Invoice.fromJson(Map<String, dynamic> json) {
-    return Invoice(
+  factory InvoiceModel.fromJson(Map<String, dynamic> json) {
+    return InvoiceModel(
       amount: json['amount'],
       createdAt: json['created_at'],
       currency: json['currency'],
       dueDate: json['due_date'],
       fromCustomer: json['from_customer'],
+      fromCustomerDisplayName: json['from_customer_display_name'],
+      toCustomerDisplayName: json['to_customer_display_name'],
       fromCustomerAvatar: json['from_customer_avatar'],
       id: json['id'],
       invoiceDate: json['invoice_date'],

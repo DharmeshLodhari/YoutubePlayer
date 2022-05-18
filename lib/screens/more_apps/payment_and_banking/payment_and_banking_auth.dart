@@ -3,17 +3,19 @@ import 'dart:convert';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/kyc_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 import 'models/payout.dart';
 import 'models/transactions.dart';
 
 class PaymentAndBankingAuth extends AuthService {
-  // List the users bank accounts
   Future<List<BankAccount>> getBankAccounts() async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/bank-accounts-list/";
     var headers = await getAuthHeaders();
@@ -45,7 +47,6 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  // Get Account Balance
   Future<Map<String, dynamic>?> getAccountBalance() async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/check-account-balance/";
     var headers = await getAuthHeaders();
@@ -56,6 +57,92 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       return {"balance": 0, "spendable_balance": 0, "over_draft": 0};
     }
+  }
+
+  Future<bool> verifyCardNumber({required String cardNumber}) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/transactions/credit-card/verify-card/";
+
+    var data = {'card_number': cardNumber};
+    var headers = await getAuthHeaders();
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+
+    print('VERIFY CARD RESPONSE ::: $response');
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['msg'] == 'valid') {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<String?> verifyOtp(String otp) async {
+    var url = AppConfig.baseUrl + "/api/v1/sms/verify";
+    var headers = getNonAuthHeader();
+    var data = {
+      "code": otp,
+    };
+    var _data = jsonEncode(data);
+    var response = await httpPost(url,
+        body: _data, headers: headers as Map<String, dynamic>?);
+    var jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      var resetToken = jsonData['reset-token'];
+      return resetToken;
+    } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      throw jsonData;
+    }
+  }
+
+  Future<String> verifyCreditCardOtp(String otp) async {
+    String responseString = 'Something went wrong';
+    var url =
+        AppConfig.baseUrl + "/api/v1/transactions/credit-card/verify-card-otp/";
+    var headers = await getAuthHeaders();
+    var data = {"otp": otp};
+    var _data = jsonEncode(data);
+
+    var response = await httpPost(url, body: _data, headers: headers);
+    print('OTP RESPONSE ----> ${response.body}');
+
+    print('OTP RESPONSE ----> ${response.statusCode}');
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      responseString = 'successful';
+    } else if (response.statusCode == 400) {
+      if (jsonDecode(response.body)['errMsg']
+          .toLowerCase()
+          .contains('please enter the otp')) {
+        responseString = 'invalid otp';
+      } else if (jsonDecode(response.body)['errMsg']
+          .toLowerCase()
+          .contains('session expired')) {
+        responseString = 'session expired';
+      } else if (jsonDecode(response.body)['errMsg']
+          .toLowerCase()
+          .contains('insufficient funds')) {
+        responseString = 'insufficient funds';
+      } else {
+        responseString = jsonDecode(response.body)['errMsg'];
+      }
+    } else {
+      debugPrint("DATA SENT:- $data");
+      debugPrint(
+          "URL:- $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+      return Future.error(response.body);
+    }
+    print('RESPONSE STRING ::: $responseString');
+    return responseString;
   }
 
   // delete single bankaccount
@@ -148,6 +235,149 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       throw "Can't get https.";
     }
+  }
+
+  Future<String> addCreditCard(CreditCardData creditCardData) async {
+    late String responseString;
+    var url = AppConfig.baseUrl + "/api/v1/transactions/credit-card/";
+    var headers = await getAuthHeaders();
+
+    Map<String, dynamic> data = creditCardData.toJson();
+    data.removeWhere((key, value) => value == null);
+
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+
+    print('ADD CREDIT CARD RESPONSE ----> ${response.body}');
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['validationRequired'] == true) {
+        responseString = 'otp';
+      }
+    } else if (response.statusCode == 400) {
+      if (response.body.toLowerCase().contains('too many connections')) {
+        responseString = 'too many connections';
+      } else if (response.body.toLowerCase().contains('pin')) {
+        responseString = 'invalid pin';
+      } else if (response.body.toLowerCase().contains('insufficient funds')) {
+        responseString = 'insufficient funds';
+      } else {
+        responseString = response.body;
+      }
+    } else {
+      responseString = response.body;
+      return Future.error(response.body);
+    }
+
+    return responseString;
+  }
+
+  Future<String> fundWallet(CreditCardData creditCardData) async {
+    late String responseString;
+
+    var url = AppConfig.baseUrl +
+        "/api/v1/transactions/credit-card/credit-wallet-account/";
+    var headers = await getAuthHeaders();
+
+    Map<String, dynamic> data = creditCardData.toJson();
+    data.removeWhere((key, value) => value == null);
+    print('CREDIT CARD DATA :::: $data');
+
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+    print('FUND WALLET ----> ${response.body}');
+    if (response.statusCode == 200) {
+      if (jsonDecode(response.body)['validationRequired'] == true) {
+        responseString = 'otp';
+      }
+    } else if (response.statusCode == 400) {
+      if (response.body.toLowerCase().contains('too many connections')) {
+        responseString = 'too many connections';
+      } else if (response.body.toLowerCase().contains('pin')) {
+        responseString = 'invalid pin';
+      } else if (response.body.toLowerCase().contains('insufficient funds')) {
+        responseString = 'insufficient funds';
+      } else {
+        responseString = response.body;
+      }
+    } else {
+      responseString = response.body;
+      return Future.error(response.body);
+    }
+
+    return responseString;
+  }
+
+  Future<Map<String, dynamic>?> getCreditCardPagination(
+      String? next, String? previous) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/transactions/credit-card/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      List resultData = jsonData['results'];
+      List<CreditCard> creditCardList =
+          resultData.map((json) => CreditCard.fromJson(json)).toList();
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": creditCardList
+      };
+
+      print('CREDIT CARD LIST RESULT ----> ${result['results']}');
+      return result;
+    } else {
+      throw "Can't get https.";
+    }
+  }
+
+  // delete credit card
+  Future<bool> deleteCreditCard(int cardId) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/transactions/credit-card/" +
+        '$cardId' +
+        "/";
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    debugPrint(
+        "status code :- ${response.statusCode} DELETE ---> response ${response.body}");
+    if (response.statusCode == 204) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // update credit card information
+  Future<bool> updateCreditCard(int id) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/transactions/credit-card/" + '$id' + '/';
+    var headers = await getAuthHeaders();
+    late var response;
+    var _data = jsonEncode({"is_default_cc": true});
+    try {
+      response = await httpPatch(url, headers: headers, body: _data);
+      print('RESPONSE -----> ${response.body}');
+    } catch (e) {
+      debugPrint("update credit card : " + e.toString());
+    }
+    if (response.statusCode != 200) {
+      var jsonData = response.body;
+      debugPrint(jsonData);
+    }
+    return response.statusCode == 200;
   }
 
   // Transactions graph and Category
@@ -244,22 +474,49 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> listPaymentRequests(
-      String? next, String? previous, bool toMe, bool fromMe) async {
+      String? next, String? previous,
+      {required bool? fromMe,
+      required String? userName,
+      required bool isRefreshing,
+      DateTimeRange? dateTimeRange}) async {
+    if (isRefreshing) next = "";
     var url = "";
     if (next == null) {
       return null;
     }
+
+    debugPrint('NEXT ---> $next');
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/request-payment/list/";
-      if (toMe) {
-        url = url + "?to_me=true";
+
+      if (userName != null) {
+        url = url + "?search=$userName";
       }
-      if (fromMe) {
-        url = url + "?from_me=true";
+
+      if (fromMe != null) {
+        if (url.contains('?')) {
+          url = url + "&from_me=$fromMe";
+        } else {
+          url = url + "?from_me=$fromMe";
+        }
+      }
+
+      if (dateTimeRange != null) {
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
+
+        if (url.contains('?')) {
+          url = url + "&start_date=$fromDate&end_date=$toDate";
+        } else {
+          url = url + "?start_date=$fromDate&end_date=$toDate";
+        }
       }
     } else {
       url = getSecureUrl(url: next);
     }
+
+    debugPrint('PAYMENT REQUEST URL ::: $url');
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -295,6 +552,11 @@ class PaymentAndBankingAuth extends AuthService {
         "previous": jsonData["previous"],
         "results": paymentRequests
       };
+      List lsts = jsonData['results'];
+      lsts.forEach((element) {
+        print(element['created_at']);
+      });
+
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
@@ -307,32 +569,62 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // List users transactions
-  Future<Map<String, dynamic>?> getTransactions(
-      String? next, String? previous, bool moneyIn, bool moneyOut) async {
+  Future<Map<String, dynamic>?> getTransactions(String? next, String? previous,
+      bool? moneyIn, DateTimeRange? dateTimeRange,
+      {String? userName}) async {
     var url = "";
     if (next == null) {
       return null;
     }
+
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/list/";
-      if (moneyIn) {
-        url = url + "?money_in=true";
+
+      if (userName != null) {
+        url = url + "?search=$userName";
       }
-      if (moneyOut) {
-        url = url + "?money_out=true";
+
+      if (moneyIn != null) {
+        if (url.contains('?')) {
+          url = url + "&money_in=$moneyIn";
+        } else {
+          url = url + "?money_in=$moneyIn";
+        }
+      }
+
+      if (dateTimeRange != null) {
+        DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+        String toDate = dateFormat.format(dateTimeRange.end);
+        String fromDate = dateFormat.format(dateTimeRange.start);
+
+        if (url.contains('?')) {
+          url = url + "&start_date=$fromDate&end_date=$toDate";
+        } else {
+          url = url + "?start_date=$fromDate&end_date=$toDate";
+        }
       }
     } else {
       url = getSecureUrl(url: next);
     }
+
     var headers = await getAuthHeaders();
-    debugPrint("URL:- $url");
+    debugPrint("URL :::: $url");
 
     var response = await httpGet(url, headers: headers);
-    if (response.statusCode == 200) {
+    debugPrint("URL resonspose :::: ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 400) {
       List<Transaction> transactions = [];
       // This variable will hold list of transactions we got from server
       // var user = await getUser();
-      var jsonData = json.decode(response.body);
+
+      var jsonData;
+      if (response.statusCode == 400) {
+        jsonData = {"results": [], "count": 0, "previous": "", "next": ""};
+        return jsonData;
+      } else {
+        jsonData = json.decode(response.body);
+      }
 
       for (var item in jsonData["results"]) {
         // if sender is not current user then
@@ -351,7 +643,7 @@ class PaymentAndBankingAuth extends AuthService {
     } else if (response.statusCode == 500) {
       throw "Server Error";
     } else {
-      throw json.decode(response.body);
+      throw response.body;
     }
   }
 
@@ -372,6 +664,7 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
+    debugPrint('MAKE ORDER ::: ${response.body}');
     return response;
   }
 
@@ -505,6 +798,22 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
+  Future<KycModel?> checkIfKycIsVerified({required String userName}) async {
+    var url = AppConfig.baseUrl + "/api/v1/user/kyc/$userName";
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+    print('URL RESPONSE ----> ${response.statusCode}');
+    print('URL RESPONSE ----> ${response.body}');
+    if (response.statusCode == 200) {
+      return KycModel.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      return null;
+    } else {
+      return Future.error(jsonDecode(response.body));
+    }
+  }
+
   Future<bool> addBvnNumberAndIdProof(Map<String, dynamic> data) async {
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/user/kyc/";
@@ -573,7 +882,8 @@ class PaymentAndBankingAuth extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/transactions/fees/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
-    debugPrint("Response ${response.statusCode}");
+    debugPrint("Fee Structure Response status code ${response.statusCode}");
+    debugPrint("Fee Structure Response body ${response.body}");
     if (response.statusCode == 200 || response.statusCode == 201) {
       return FeeStructure.fromJson(jsonDecode(response.body));
     } else {
