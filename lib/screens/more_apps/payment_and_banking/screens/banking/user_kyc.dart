@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,7 @@ class _UserKycState extends State<UserKyc> {
   bool isLoading = true;
   String? userTier;
   VirtualAccount? virtualAccount;
+  bool showVirtualAccountNotAvailableText = false;
 
   @override
   void initState() {
@@ -39,7 +41,11 @@ class _UserKycState extends State<UserKyc> {
     }
 
     if (isFromServer) {
-      await DatabaseHelper().saveVirtualAccount(virtualAccount!);
+      if (virtualAccount != null) {
+        await DatabaseHelper().saveVirtualAccount(virtualAccount!);
+      } else {
+        showVirtualAccountNotAvailableText = true;
+      }
     }
 
     userTier = virtualAccount?.accountTier?.tierType;
@@ -77,56 +83,74 @@ class _UserKycState extends State<UserKyc> {
       appBar: appBar() as PreferredSizeWidget?,
       body: SafeArea(
         child: !isLoading
-            ? Column(
-                children: [
-                  Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    margin: EdgeInsets.all(8.0),
-                    shadowColor: dividerColor,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: dividerColor, width: 0.5),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          transactionOrKycDetailTile(
-                            Icons.description_outlined,
-                            AppLocalization.of(context)!.bvnStatus,
-                            widget.kycModel.bvnResult ?? '----',
+            ? showVirtualAccountNotAvailableText
+                ? getVirtualAccountUnAvailableText()
+                : Column(
+                    children: [
+                      Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        margin: EdgeInsets.all(8.0),
+                        shadowColor: dividerColor,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: dividerColor, width: 0.5),
                           ),
-                          transactionOrKycDetailTile(
-                            Icons.event_note,
-                            AppLocalization.of(context)!.documentResult,
-                            widget.kycModel.documentResult ?? '----',
-                          ),
-                          transactionOrKycDetailTile(
-                            Icons.receipt_long_outlined,
-                            AppLocalization.of(context)!.remark,
-                            widget.kycModel.verificationNote ?? '----',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  userTier == '3' &&
-                          widget.kycModel.bvnResult == 'Successful' &&
-                          widget.kycModel.documentResult == 'Successful'
-                      ? SizedBox.shrink()
-                      : Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: CurvedButton(
-                            text: 'Upgrade Account',
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/upgrade-account');
-                            },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              transactionOrKycDetailTile(
+                                Icons.description_outlined,
+                                AppLocalization.of(context)!.bvnStatus,
+                                widget.kycModel.bvnResult ?? '----',
+                              ),
+                              transactionOrKycDetailTile(
+                                Icons.event_note,
+                                AppLocalization.of(context)!.documentResult,
+                                widget.kycModel.documentResult ?? '----',
+                              ),
+                              transactionOrKycDetailTile(
+                                Icons.receipt_long_outlined,
+                                AppLocalization.of(context)!.remark,
+                                widget.kycModel.verificationNote ?? '----',
+                              ),
+                            ],
                           ),
                         ),
-                ],
-              )
+                      ),
+                      userTier == '3' &&
+                              widget.kycModel.bvnResult == 'Successful' &&
+                              widget.kycModel.documentResult == 'Successful'
+                          ? SizedBox.shrink()
+                          : Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: CurvedButton(
+                                text: 'Upgrade Account',
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, Routes.UPGRADE_ACCOUNT);
+                                },
+                              ),
+                            ),
+                    ],
+                  )
             : Center(child: CircularLoadingIndicator()),
+      ),
+    );
+  }
+
+  getVirtualAccountUnAvailableText() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      decoration: decorateBox(),
+      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.all(16),
+      child: Text(
+        "You do not have a Virtual account.\nCheck back later.",
+        style: TextStyle(
+            fontSize: 14, color: navyBlue, fontWeight: FontWeight.w600),
+        textAlign: TextAlign.center,
       ),
     );
   }

@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/review/models/review.dart';
 import 'package:Slydo/screens/more_apps/review/review_auth.dart';
 import 'package:Slydo/screens/more_apps/review/tiles/review_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -335,8 +336,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         ),
       ),
       onTap: () {
-        _dashboardBloc.index = 3;
-        Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

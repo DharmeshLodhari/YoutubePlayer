@@ -422,7 +422,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
     }
 
-    if (userPost != null  &&
+    if (userPost != null &&
         userBloc.user.userName == userPost!.authorUsername!) {
       list.add(
         bottomSheetItem(
@@ -663,7 +663,7 @@ class _PostDetailPageScaffoldBodyState
       contentPadding: EdgeInsets.zero,
       leading: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, '/profile',
+          Navigator.pushNamed(context, Routes.PROFILE,
               arguments: {"searchedUserName": widget.authorUserName});
         },
         child: SizedBox(
@@ -686,7 +686,7 @@ class _PostDetailPageScaffoldBodyState
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, '/profile',
+                  Navigator.pushNamed(context, Routes.PROFILE,
                       arguments: {"searchedUserName": widget.authorUserName});
                 },
                 child: Text(

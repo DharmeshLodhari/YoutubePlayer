@@ -42,7 +42,7 @@ class UtilityHistoryTile extends StatelessWidget {
                 children: [
                   getTitle(),
                   SizedBox(height: 4),
-                  utilityHistoryModel.amount >= amountLimit
+                  utilityHistoryModel.amount.toString().length >= amountLimit
                       ? getAmount()
                       : SizedBox.shrink(),
                   SizedBox(height: 4),
@@ -58,16 +58,14 @@ class UtilityHistoryTile extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  utilityHistoryModel.amount >= amountLimit
+                  utilityHistoryModel.amount.toString().length >= amountLimit
                       ? SizedBox.shrink()
                       : getAmount(),
                   SizedBox(height: 8),
                   getPaymentStatus(),
                 ],
               ),
-              SizedBox(
-                width: 16,
-              ),
+              SizedBox(width: 16),
             ],
           ),
         ),
@@ -97,13 +95,14 @@ class UtilityHistoryTile extends StatelessWidget {
 
   Widget getLeading() {
     return Card(
-      elevation: 7,
+      elevation: 10,
+      shadowColor: Color(0XFF314167).withOpacity(0.08),
       margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(12.0),
         child: CachedNetworkImage(
           height: 35,
           width: 35,
@@ -153,7 +152,7 @@ class UtilityHistoryTile extends StatelessWidget {
       // payment!['name'],
       style: TextStyle(
         color: blackFont,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w600,
         fontSize: 16,
       ),
     );

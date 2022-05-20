@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
@@ -162,7 +163,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
             leading: avatarImage,
             // trailing: qrCodeImage,
             onTap: () {
-              Navigator.pushNamed(context, '/profile',
+              Navigator.pushNamed(context, Routes.PROFILE,
                   arguments: {"searchedUserName": chatConversation!.userName});
             },
           ),
@@ -398,7 +399,8 @@ class _SendEnvelopeState extends State<SendEnvelope> {
               showToast(message: "ERROR:- $error");
             });
 
-            Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
+            Navigator.popUntil(
+                context, ModalRoute.withName(Routes.CHAT_SCREEN));
           },
           cancelCallBack: () {
             _sendEnvelopeScaffold.currentState!.showSnackBar(SnackBar(

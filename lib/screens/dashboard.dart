@@ -15,7 +15,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
-import 'package:Slydo/screens/search_module.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
@@ -29,14 +28,15 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:badges/badges.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../utils/colors.dart';
 import 'home.dart';
+import 'moments_screen.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
@@ -244,15 +244,15 @@ class _DashboardState extends State<Dashboard> {
             await UserAuth().fetchContactProfile(recipientUsername);
 
         Navigator.of(MyGlobals().navigationKey.currentContext!)
-            .popUntil(ModalRoute.withName('/dashboard'));
+            .popUntil(ModalRoute.withName(Routes.DASHBOARD));
         Navigator.pushNamed(
-            MyGlobals().navigationKey.currentContext!, '/chat-screen',
+            MyGlobals().navigationKey.currentContext!, Routes.CHAT_SCREEN,
             arguments: {"searchedUser": chatConversation});
       }
     } else if (notification['type'] == "request-payment") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .popUntil(ModalRoute.withName('/dashboard'));
-      Navigator.of(context).popUntil(ModalRoute.withName('/accounts'));
+          .popUntil(ModalRoute.withName(Routes.DASHBOARD));
+      Navigator.of(context).popUntil(ModalRoute.withName(Routes.ACCOUNTS));
 
       // DashboardBloc _dashboardBloc = Provider.of<DashboardBloc>(
       //     MyGlobals().navigationKey.currentContext!,
@@ -260,32 +260,32 @@ class _DashboardState extends State<Dashboard> {
       // _dashboardBloc.index = 1;
     } else if (notification['type'] == "transaction") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .popUntil(ModalRoute.withName('/dashboard'));
+          .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed('/transactions');
+          .pushNamed(Routes.TRANSACTIONS);
     } else if (notification['type'] == "connection-request") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .popUntil(ModalRoute.withName('/dashboard'));
+          .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed('/friends-dashboard', arguments: {"index": 1});
+          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 1});
     } else if (notification['type'] == "friends-dashboard") {
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .popUntil(ModalRoute.withName('/dashboard'));
+          .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed('/friends-dashboard', arguments: {"index": 0});
+          .pushNamed(Routes.FRIENDS_DASHBOARD, arguments: {"index": 0});
     } else if (notification['type'] == "detail_message") {
       //this variable will fetch the id of message from the response
       String? idOfMessage =
           notification['actions'].replaceAll("/detail_message/", "");
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .popUntil(ModalRoute.withName('/dashboard'));
+          .popUntil(ModalRoute.withName(Routes.DASHBOARD));
       Navigator.of(MyGlobals().navigationKey.currentContext!)
-          .pushNamed('/detail_message', arguments: {
+          .pushNamed(Routes.DETAIL_MESSAGE, arguments: {
         'id': idOfMessage,
       });
     } else if (notification['type'].toString().contains("orders-list")) {
       Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
-      Navigator.of(context).pushNamed('/orders-list');
+      Navigator.of(context).pushNamed(Routes.ORDERS_LIST);
     } else if (notification['type'].toString().contains("order-detail-page")) {
       Order order = Order.fromJson(notification["data"] is String
           ? jsonDecode(notification["data"])
@@ -404,8 +404,8 @@ class _DashboardState extends State<Dashboard> {
               child: QRCodeView(arguments: {'isRequest': false}),
               wantKeepAlive: false,
             ),
+            KeepAlivePage(child: MomentsScreen()),
             KeepAlivePage(child: ConnectionDashboard()),
-            KeepAlivePage(child: ShoppingCart()),
             KeepAlivePage(
               child: UserDashboard(),
               wantKeepAlive: false,
@@ -438,35 +438,41 @@ class _DashboardState extends State<Dashboard> {
         },
         items: [
           bottomNavigationBarItem(
-            icon: SlydoAppIcon.home,
+            iconData: SlydoAppIcon.home,
             title: AppLocalization.of(context)!.home,
           ),
+
           bottomNavigationBarItem(
             key: tutorialScanQrCodeKey,
-            icon: SlydoAppIcon.qr_code,
+            iconData: SlydoAppIcon.qr_code,
             title: AppLocalization.of(context)!.qrCode,
           ),
           bottomNavigationBarItem(
-            isChatIcon: true,
-            icon: SlydoAppIcon.text_message,
-            title: AppLocalization.of(context)!.chat,
+            iconSize: 24,
+            iconData: Icons.play_circle_filled,
+            title: AppLocalization.of(context)!.moments,
           ),
           bottomNavigationBarItem(
-            key: tutorialShoppingCartKey,
-            icon: SlydoAppIcon.cart,
-            title: AppLocalization.of(context)!.basket,
+            isChatIcon: true,
+            iconData: SlydoAppIcon.text_message,
+            title: AppLocalization.of(context)!.chat,
           ),
+          // bottomNavigationBarItem(
+          //   isChatIcon: true,
+          //   icon: SlydoAppIcon.more,
+          //   title: AppLocalization.of(context)!.chat,
+          // ),
+
           BottomNavigationBarItem(
             icon: Container(
               height: 50,
-              width: 60,
               child: Icon(
                 Icons.explore,
                 color: blackFont,
                 size: 18,
               ),
             ),
-            label: "",
+            label: "Explore",
             activeIcon: activeIcon(
                 title: AppLocalization.of(context)!.explore,
                 icon: Icons.explore),
@@ -478,9 +484,10 @@ class _DashboardState extends State<Dashboard> {
 
   // to create BottomNavigationBarItem
   BottomNavigationBarItem bottomNavigationBarItem(
-      {IconData? icon,
+      {Widget? icon,
+      IconData? iconData,
       required String title,
-      double? size,
+      double? iconSize,
       bool isChatIcon = false,
       Key? key}) {
     return BottomNavigationBarItem(
@@ -492,9 +499,9 @@ class _DashboardState extends State<Dashboard> {
                   height: 50,
                   width: 60,
                   child: Icon(
-                    icon,
+                    iconData,
                     color: blackFont,
-                    size: size ?? 16,
+                    size: iconSize ?? 16,
                   ),
                 ),
                 StreamBuilder(
@@ -529,14 +536,16 @@ class _DashboardState extends State<Dashboard> {
               key: key,
               height: 50,
               width: 60,
-              child: Icon(
-                icon,
-                color: blackFont,
-                size: size ?? 16,
-              ),
+              child: icon ??
+                  Icon(
+                    iconData,
+                    color: blackFont,
+                    size: iconSize ?? 16,
+                  ),
             ),
       label: "",
-      activeIcon: activeIcon(icon: icon, title: title, isChatIcon: isChatIcon),
+      activeIcon:
+          activeIcon(icon: iconData, title: title, isChatIcon: isChatIcon),
     );
   }
 

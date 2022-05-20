@@ -374,6 +374,27 @@ class BusinessAuth extends AuthService {
     return Future.error(jsonData.toString());
   }
 
+  Future<bool> addInvoiceItemToExistingInvoice(
+      {required int invoiceId, required InvoiceItem invoiceItem}) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$invoiceId/";
+    var headers = await getAuthHeaders();
+    var data = invoiceItem.toJson();
+    data.removeWhere((key, value) => value == null);
+
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+    debugPrint('ADD INVOICE ITEM TO EXISTING INVOICE ::: ${response.body}');
+    debugPrint(
+        'ADD INVOICE ITEM TO EXISTING INVOICE::: ${response.statusCode}');
+    return true;
+    if (response.statusCode == 200) {
+      return true;
+    }
+
+    return Future.error(response.body);
+  }
+
   Future<bool> updateInvoiceItem(
       {required int itemId, required InvoiceItem invoiceItem}) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";

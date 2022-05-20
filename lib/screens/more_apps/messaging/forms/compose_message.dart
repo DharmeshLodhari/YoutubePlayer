@@ -1,9 +1,9 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -264,9 +264,10 @@ class _ComposeMessageState extends State<ComposeMessage> {
             };
             _messageAuth.sendMessage(data).then((value) {
               if (value) {
-                Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+                Navigator.popUntil(
+                    context, ModalRoute.withName(Routes.DASHBOARD));
                 _dashboardBloc.index = 0;
-                Navigator.of(context).pushNamed('/message-list');
+                Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
                 // Navigator.of(context).pushNamedAndRemoveUntil(
                 //   "/dashboard",
                 //   (Route<dynamic> route) => false,
@@ -330,7 +331,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   _messageAuth.sendMessage(data).then((value) {
                     if (value) {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        "/dashboard",
+                        Routes.DASHBOARD,
                         (Route<dynamic> route) => false,
                         arguments: {"dashboardIndex": 4},
                       );
@@ -381,8 +382,8 @@ class _ComposeMessageState extends State<ComposeMessage> {
             border: Border.all(color: borderColor, width: 2)),
         child: GestureDetector(
           onTap: () {
-            Navigator.of(context)
-                .pushNamed("/photo-viewer", arguments: messageReceiver!.avatar);
+            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                arguments: messageReceiver!.avatar);
           },
           child: ClipOval(
             child: CachedNetworkImage(
@@ -428,7 +429,7 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
-                    Navigator.pushNamed(context, '/profile', arguments: {
+                    Navigator.pushNamed(context, Routes.PROFILE, arguments: {
                       "searchedUserName": messageReceiver!.userName
                     });
                   },

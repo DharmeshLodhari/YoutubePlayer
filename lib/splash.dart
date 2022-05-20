@@ -517,6 +517,8 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       debugPrint("initializeShoppingCart called");
       List items = await ShoppingAuthService().getShoppingCart();
+      debugPrint('CART ::: $items');
+      debugPrint('CART LENGTH::: ${items.length}');
       items.forEach((element) {
         String type = element is Product ? "product" : "service";
         basketBloc.addItemToCart(item: element, type: type);

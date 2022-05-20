@@ -297,38 +297,39 @@ class AppTutorialController {
 
   TargetFocus _getShoppingCartTutorial() {
     return TargetFocus(
-        identify: "Target 8",
-        keyTarget: tutorialShoppingCartKey,
-        shape: ShapeLightFocus.RRect,
+      identify: "Target 8",
+      keyTarget: tutorialShoppingCartKey,
+      shape: ShapeLightFocus.RRect,
 
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Shopping Cart",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+            align: ContentAlign.bottom,
+            child: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Shopping Cart",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Click here to view your shopping cart.",
+                      style: TextStyle(color: Colors.white),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to view your shopping cart.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
-                ),
-              ))
-        ]);
+                  ),
+                  nextButton()
+                ],
+              ),
+            ))
+      ],
+    );
   }
 
   TargetFocus _getProfileTutorial() {

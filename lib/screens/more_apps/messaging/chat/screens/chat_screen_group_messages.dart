@@ -897,7 +897,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message:
                 "${messageData['meta_data']['author']} has deleted this group !!");
 
-        Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+        Navigator.popUntil(
+            context, ModalRoute.withName(Routes.FRIENDS_DASHBOARD));
         return;
       } else if (messageData['meta_data']['action'] == "remove_user") {
         List users = messageData['meta_data']['users'];
@@ -912,7 +913,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   "${messageData['meta_data']['author']} has removed you from group !!");
 
           Navigator.popUntil(
-              context, ModalRoute.withName("/friends-dashboard"));
+              context, ModalRoute.withName(Routes.FRIENDS_DASHBOARD));
           return;
         }
       }
@@ -1310,7 +1311,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           if (chatConversation!.isGroupConversation!) {
             navigateToGroupDetailScreen();
           } else {
-            await Navigator.pushNamed(context, '/profile',
+            await Navigator.pushNamed(context, Routes.PROFILE,
                 arguments: {"searchedUserName": chatConversation!.userName});
           }
           setupShakeDetector();
@@ -1555,7 +1556,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             border: Border.all(color: borderColor, width: 2)),
         child: GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed("/photo-viewer",
+            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                 arguments: chatConversation != null
                     ? chatConversation!.avatar ?? defaultImage
                     : defaultImage);
@@ -1849,9 +1850,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               assignTitleToAction(text: "Voice", child: addVoiceBtn()),
             ],
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Row(
             children: <Widget>[
               assignTitleToAction(
@@ -1868,18 +1867,18 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   text: "Location\n", child: sendUserLocation()),
             ],
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Row(
             children: <Widget>[
               assignTitleToAction(text: "GIF", child: sendGIFButton()),
               flexibleSpace(),
               assignTitleToAction(text: "Sticker", child: sendStickersButton()),
               flexibleSpace(),
-              Container(
-                constraints: BoxConstraints(maxWidth: 60),
-              ),
+              assignTitleToAction(text: "Files", child: sendFilesButton()),
+              // flexibleSpace(),
+              // Container(
+              //   constraints: BoxConstraints(maxWidth: 60),
+              // ),
               flexibleSpace(),
               Container(
                 constraints: BoxConstraints(maxWidth: 60),
@@ -1957,7 +1956,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       stopShakeDetector();
       await Navigator.of(context).pushNamed(
-        '/request-payment',
+        Routes.REQUEST_PAYMENT,
         arguments: <String, dynamic>{
           'isFromProfile': false,
           'isFromChat': true,
@@ -2084,7 +2083,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       stopShakeDetector();
       await Navigator.of(context).pushNamed(
-        '/send-payment',
+        Routes.SEND_PAYMENT,
         arguments: <String, dynamic>{
           'isFromProfile': false,
           'isFromChat': true,
@@ -2225,6 +2224,38 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         if (mounted) setState(() {});
         // pickSticker();
       },
+    );
+  }
+
+  Widget sendFilesButton() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        Icons.file_copy,
+        color: blackFont,
+        size: 20,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+        pickDocumentFiles();
+      },
+    );
+  }
+
+  pickDocumentFiles() async {
+    List<String> listOfAllowedFileExtensions = [
+      'pdf',
+      'apk',
+      'zip',
+      'txt',
+      'xls'
+    ];
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: listOfAllowedFileExtensions,
     );
   }
 
@@ -2393,7 +2424,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     stopShakeDetector();
     var result = await Navigator.of(context)
-        .pushNamed("/send-envelope", arguments: arguments);
+        .pushNamed(Routes.SEND_ENVELOPE, arguments: arguments);
 
     setupShakeDetector();
     debugPrint("Result From send Envelope :- $result");
@@ -2641,7 +2672,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       }
 
       Object? result = await Navigator.of(context).pushNamed(
-        "/send-media-to-chat-message",
+        Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
         arguments: {
           "data": {
             "conversation": chatConversation!.conversationId,
@@ -2757,7 +2788,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (capturedMediaPath != null) {
       stopShakeDetector();
       Object? result = await Navigator.of(context).pushNamed(
-        "/send-media-to-chat-message",
+        Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
         arguments: {
           "data": {
             "conversation": chatConversation!.conversationId,
@@ -2788,7 +2819,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Future<String?> captureVideo() async {
     XFile? media = await ImagePicker().pickVideo(
-        source: ImageSource.camera, maxDuration: Duration(seconds: 5));
+        source: ImageSource.camera, maxDuration: Duration(seconds: 29));
 
     if (media == null) return null;
     return media.path;

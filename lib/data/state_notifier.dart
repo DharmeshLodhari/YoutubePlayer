@@ -234,15 +234,18 @@ class BasketBloc extends ChangeNotifier {
 
     merchantNameMap[merchantFullName] = merchantUserName;
     merchantNameMapCopy[merchantFullName] = merchantUserName;
+
+    debugPrint('MERCHANT NAME COPY LENGTH ::: ${merchantNameMapCopy.length}');
+    debugPrint('MERCHANT NAME COPY ::: ${merchantNameMapCopy}');
   }
 
   void removeMerchantName(var item) {
-    var merchantUserName = item is Product ? item.seller : item.provider;
+    // var merchantUserName = item is Product ? item.seller : item.provider;
     var merchantFullName =
         item is Product ? item.sellerFullName : item.providerFullName;
 
-    merchantNameMap.remove(merchantUserName);
-    merchantNameMapCopy.remove(merchantUserName);
+    merchantNameMap.remove(merchantFullName);
+    merchantNameMapCopy.remove(merchantFullName);
   }
 
   void addItemInBasketWithQty(var item, String type) {
@@ -269,7 +272,6 @@ class BasketBloc extends ChangeNotifier {
   // this will remove the product or service from the cart;
   void removeItemFromCart(item) {
     removeItemInBasketWithQty(item);
-    removeMerchantName(item);
 
     notifyListeners();
   }
@@ -291,6 +293,7 @@ class BasketBloc extends ChangeNotifier {
         } else if (foundItem["qty"] == 1) {
           _items.remove(foundItem);
           _total = _total - int.parse(item.price);
+          removeMerchantName(item);
         } else {
           debugPrint("ERROR while removing element");
         }

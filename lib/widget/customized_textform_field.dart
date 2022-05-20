@@ -380,11 +380,10 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
     if (widget.isAmountField) {
       return [CurrencyTextInputFormatter(symbol: '')];
     }
-
-    if (widget.inputFormatters != null) {
-      return widget.inputFormatters;
+    if (widget.isNumberOnlyInput) {
+      return [FilteringTextInputFormatter.digitsOnly];
     } else {
-      return [];
+      return widget.inputFormatters;
     }
   }
 }

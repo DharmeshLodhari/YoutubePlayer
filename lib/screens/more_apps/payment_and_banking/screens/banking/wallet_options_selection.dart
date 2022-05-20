@@ -1,13 +1,14 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
-class TopUpOptionSelection extends StatefulWidget {
+class WalletOptionsSelection extends StatefulWidget {
   @override
-  _TopUpOptionSelectionState createState() => _TopUpOptionSelectionState();
+  _WalletOptionsSelectionState createState() => _WalletOptionsSelectionState();
 }
 
-class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
+class _WalletOptionsSelectionState extends State<WalletOptionsSelection> {
   final GlobalKey<ScaffoldState> _scaffoldTopUpOptionSelectionKey =
       new GlobalKey<ScaffoldState>();
 
@@ -44,7 +45,7 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                     iconColor: HexColor("#3F61DB"),
                     onTap: () async {
                       Navigator.of(context)
-                          .pushNamed('/add-money-to-slydo-one');
+                          .pushNamed(Routes.ADD_MONEY_TO_SLYDO_ONE);
                     }),
                 getSettingTile(
                   title: AppLocalization.of(context)!.creditDebitCard,
@@ -52,7 +53,7 @@ class _TopUpOptionSelectionState extends State<TopUpOptionSelection> {
                   iconColor: naturalGreen,
                   onTap: () {
                     Navigator.of(context)
-                        .pushNamed('/credit-card-option-selection');
+                        .pushNamed(Routes.CREDIT_CARD_OPTION_SELECTION);
                   },
                 ),
               ],
