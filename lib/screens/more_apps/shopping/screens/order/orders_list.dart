@@ -209,7 +209,19 @@ class _OrdersListState extends State<OrdersList> {
         ],
       ),
       actions: <Widget>[
-        Switch(
+        getSwitchBtn(),
+        SizedBox(width: 8),
+        dateFilterIcon(),
+        SizedBox(width: 8),
+        popUpMenuButton(),
+        SizedBox(width: 16),
+      ],
+    );
+  }
+
+  Widget getSwitchBtn() {
+    return userBloc.user.type != 'User'
+        ? Switch(
             value: isMerchant,
             activeThumbImage: AssetImage('assets/images/incoming_arrow.png'),
             inactiveThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
@@ -229,14 +241,8 @@ class _OrdersListState extends State<OrdersList> {
                 isMerchant = value;
                 _refresh();
               }
-            }),
-        SizedBox(width: 8),
-        dateFilterIcon(),
-        SizedBox(width: 8),
-        popUpMenuButton(),
-        SizedBox(width: 16),
-      ],
-    );
+            })
+        : SizedBox.shrink();
   }
 
   Widget dateFilterIcon() {
@@ -346,6 +352,8 @@ class _OrdersListState extends State<OrdersList> {
   }
 
   void getList() async {
+    bool isNormalUser =
+        Provider.of<UserBloc>(context, listen: false).user.type == 'User';
     if (!isLoading) {
       if (next != null && !isLoading) {
         if (mounted) {
@@ -359,7 +367,7 @@ class _OrdersListState extends State<OrdersList> {
           previous,
           filterValue,
           newDateTimeRange,
-          isMerchant: isMerchant,
+          isMerchant: isNormalUser ? false : isMerchant,
         );
         if (result == null) {
           isLoading = false;
@@ -414,7 +422,7 @@ class _OrdersListState extends State<OrdersList> {
             var connectionResult = value;
             if (connectionResult == ConnectivityResult.wifi ||
                 connectionResult == ConnectivityResult.mobile) {
-              Navigator.of(context).pushNamed('/request-payment',
+              Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
                   arguments: <String, bool>{
                     'isRequest': true,
                     'isFromProfile': true

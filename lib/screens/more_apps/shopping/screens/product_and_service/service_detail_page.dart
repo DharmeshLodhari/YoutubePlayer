@@ -28,6 +28,8 @@ import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/navigation_util.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../shopping_auth.dart';
 
@@ -338,8 +340,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
       ),
       onTap: () {
-        _dashboardBloc.index = 3;
-        Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -362,7 +363,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
       ),
       onTap: () async {
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": service!.provider});
       },
     );
@@ -381,7 +382,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
         if (isValidCustomer) {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': service!.provider,
             'subject': service!.name,
           });
@@ -444,7 +445,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
         onPressed: () {
           Navigator.of(context).pushNamedAndRemoveUntil(
-            "/dashboard",
+            Routes.DASHBOARD,
             (Route<dynamic> route) => false,
             arguments: {"dashboardIndex": 2},
           );
@@ -489,7 +490,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             SizedBox(
               width: 8,
             ),
-            _buildBuyButtonWidget(),
+            _buildPayButtonWidget(),
           ],
         ),
       ),
@@ -615,7 +616,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   buildReviewTitle(),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed("/review-list-screen",
+                      Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
                           arguments: {"reviewedService": service});
                     },
                     child: Text(
@@ -685,7 +686,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         GestureDetector(
           onTap: () async {
             var result = await Navigator.of(context).pushNamed(
-              "/add-review",
+              Routes.ADD_REVIEW,
               arguments: {
                 "service": service,
               },
@@ -734,7 +735,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                 leading: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushNamed("/photo-viewer",
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                         arguments: service!.providerAvatar);
                   },
                   child: Container(
@@ -767,7 +768,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   textAlign: TextAlign.justify,
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, '/profile',
+                  Navigator.pushNamed(context, Routes.PROFILE,
                       arguments: {"searchedUserName": service!.provider});
                 },
               ),
@@ -942,8 +943,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ? Center(child: CircularLoadingIndicator())
               : GestureDetector(
                   onTap: () {
-                    Navigator.of(context)
-                        .pushNamed("/photo-viewer", arguments: service!.qrCode);
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                        arguments: service!.qrCode);
                   },
                   child: CachedNetworkImage(
                     imageUrl: service!.qrCode!,
@@ -1065,7 +1066,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     ),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, '/profile', arguments: {
+                    Navigator.pushNamed(context, Routes.PROFILE, arguments: {
                       "searchedUserName": service!.provider,
                       "index": 3
                     });
@@ -1093,12 +1094,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  Widget _buildBuyButtonWidget() {
+  Widget _buildPayButtonWidget() {
     return Expanded(
       child: CurvedButton(
         backgroundColor: navyBlue,
         textColor: Colors.white,
-        text: "BUY NOW",
+        text: "PAY NOW",
         onPressed: () async {
           if (isValidCustomer) {
             bool result = await showDisclaimerDialogueForGoods(context);
@@ -1124,7 +1125,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   void navigateToSendPayment() {
     Navigator.of(context).pushNamed(
-      '/send-payment',
+      Routes.SEND_PAYMENT,
       arguments: {'isFromProfile': false, 'service': service},
     );
   }

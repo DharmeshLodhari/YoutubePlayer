@@ -17,7 +17,6 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/device_info.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/navigation_util.dart';

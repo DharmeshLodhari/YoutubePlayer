@@ -4,6 +4,8 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/user_dashboard_item_tile.dart';
 import 'package:flutter/material.dart';
 
+import '../routes/route_constants.dart';
+
 class MoreApps extends StatefulWidget {
   @override
   _MoreAppsState createState() => _MoreAppsState();
@@ -26,7 +28,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.utility,
         title: "Utility",
         onTap: () {
-          Navigator.pushNamed(context, "/utility-dashboard");
+          Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
         },
         iconColor: HexColor("#FFAB00"),
         height: GRID_ITEM_HEIGHT,
@@ -35,7 +37,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.movies_moreapps,
         title: "Movies",
         onTap: () {
-          Navigator.of(context).pushNamed("/movies");
+          Navigator.of(context).pushNamed(Routes.MOVIES);
         },
         iconColor: HexColor("#9B51E0"),
         height: GRID_ITEM_HEIGHT,
@@ -44,7 +46,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.music_moreapps,
         title: "Music",
         onTap: () {
-          Navigator.of(context).pushNamed("/musics");
+          Navigator.of(context).pushNamed(Routes.MUSICS);
         },
         iconColor: HexColor("#FFAB00"),
         height: GRID_ITEM_HEIGHT,
@@ -53,7 +55,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.events_moreapps,
         title: "Events",
         onTap: () {
-          Navigator.of(context).pushNamed("/events");
+          Navigator.of(context).pushNamed(Routes.EVENTS);
         },
         iconColor: HexColor("#46CECE"),
         height: GRID_ITEM_HEIGHT,
@@ -62,7 +64,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.hotels_moreapps,
         title: "Hotels",
         onTap: () {
-          Navigator.of(context).pushNamed("/hotels");
+          Navigator.of(context).pushNamed(Routes.HOTELS);
         },
         iconColor: HexColor("#F35B46"),
         height: GRID_ITEM_HEIGHT,
@@ -71,7 +73,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.property_moreapps,
         title: "Property",
         onTap: () {
-          Navigator.of(context).pushNamed("/property");
+          Navigator.of(context).pushNamed(Routes.PROPERTY);
         },
         iconColor: HexColor("#3F61DB"),
         height: GRID_ITEM_HEIGHT,
@@ -80,7 +82,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.transport_category,
         title: "Bus",
         onTap: () {
-          Navigator.of(context).pushNamed("/bus");
+          Navigator.of(context).pushNamed(Routes.BUS);
         },
         iconColor: HexColor("#374677"),
         height: GRID_ITEM_HEIGHT,
@@ -89,7 +91,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.train_moreapps,
         title: "Train",
         onTap: () {
-          Navigator.of(context).pushNamed("/train");
+          Navigator.of(context).pushNamed(Routes.TRAIN);
         },
         iconColor: HexColor("#46CE7C"),
         height: GRID_ITEM_HEIGHT,
@@ -98,7 +100,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.flight_moreapps,
         title: "Flight",
         onTap: () {
-          Navigator.of(context).pushNamed("/flight");
+          Navigator.of(context).pushNamed(Routes.FLIGHT);
         },
         iconColor: HexColor("#F07097"),
         height: GRID_ITEM_HEIGHT,
@@ -107,7 +109,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: Icons.directions_car_rounded,
         title: "Ride",
         onTap: () {
-          Navigator.of(context).pushNamed("/taxi");
+          Navigator.of(context).pushNamed(Routes.TAXI);
         },
         iconColor: HexColor("#FFC42E"),
         height: GRID_ITEM_HEIGHT,
@@ -123,7 +125,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.shopping_category,
         title: "Shopping",
         onTap: () {
-          Navigator.of(context).pushNamed("/shopping");
+          Navigator.of(context).pushNamed(Routes.SHOPPING);
         },
         iconColor: HexColor("#5218E9"),
         height: GRID_ITEM_HEIGHT,
@@ -138,7 +140,7 @@ class _MoreAppsState extends State<MoreApps> {
               child: CircularLoadingIndicator(),
             ),
           );
-          Navigator.of(context).popAndPushNamed("/news");
+          Navigator.of(context).popAndPushNamed(Routes.NEWS);
         },
         iconColor: HexColor("#46CE7C"),
         height: GRID_ITEM_HEIGHT,

@@ -122,36 +122,39 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     data['address'] = widget.address.toJson();
     data['shipping_options'] = basketBloc.userSelectedShippingOption;
 
-    await checkAccountBalance();
+    bool ableToPay = await checkAccountBalance();
     //
     // Create the orders
-    var userOrder = await ShoppingAuthService().placeOrderOfShoppingCart(data);
+    if (ableToPay) {
+      var userOrder =
+          await ShoppingAuthService().placeOrderOfShoppingCart(data);
 
-    if (userOrder != null) {
-      basketBloc.items.clear(); // Shopping cart
-      basketBloc.total = 0; // clearing the total amount
+      if (userOrder != null) {
+        basketBloc.items.clear(); // Shopping cart
+        basketBloc.total = 0; // clearing the total amount
 
-      // Send the list of of orders for payment processing
-      for (int i = 0; i < userOrder.length; i++) {
-        orders.add(userOrder[i]["id"]);
-      }
-      var response = await _auth.makePaymentForCartOrder({"orders": orders});
+        // Send the list of of orders for payment processing
+        for (int i = 0; i < userOrder.length; i++) {
+          orders.add(userOrder[i]["id"]);
+        }
+        var response = await _auth.makePaymentForCartOrder({"orders": orders});
 
-      debugPrint('STATUS COde :: ${response.statusCode}');
-      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
-      if (response.statusCode == 200) {
-        Navigator.pushNamed(context, Routes.ORDERS_LIST);
-      } else if (response.statusCode == 500) {
-        showToast(message: AppLocalization.of(context)!.serverError);
+        debugPrint('STATUS COde :: ${response.statusCode}');
+        Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+        if (response.statusCode == 200) {
+          Navigator.pushNamed(context, Routes.ORDERS_LIST);
+        } else if (response.statusCode == 500) {
+          showToast(message: AppLocalization.of(context)!.serverError);
+        } else {
+          debugPrint(
+            "MakePaymentForCartOrder Unsuccessful",
+          );
+        }
       } else {
         debugPrint(
-          "MakePaymentForCartOrder Unsuccessful",
+          "Could Not Place The Order",
         );
       }
-    } else {
-      debugPrint(
-        "Could Not Place The Order",
-      );
     }
   }
 
@@ -249,13 +252,15 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     );
   }
 
-  Future<void> checkAccountBalance() async {
+  Future<bool> checkAccountBalance() async {
     BankAccountBloc bankAccountBloc =
         Provider.of<BankAccountBloc>(context, listen: false);
+
     if (bankAccountBloc.bankAccount == null ||
         bankAccountBloc.bankAccount!.bankName == null) {
-      Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
       showToast(message: "Please add bank account first !!");
+      return false;
     } else {
       double accountBalance = await getAccountBalance();
       // Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
@@ -264,8 +269,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       debugPrint("spendingAmount:- $spendingAmount");
       if (spendingAmount > accountBalance) {
         showToast(message: "You don't have enough money in Slydo account!!");
-        return;
+        return false;
       }
+      return true;
     }
   }
 }

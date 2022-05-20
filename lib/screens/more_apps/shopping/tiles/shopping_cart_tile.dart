@@ -1,5 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -60,7 +61,7 @@ class _ShoppingCartTileForProductState
                     trailing: getTrailing(),
                     subtitle: getSubtitle(context),
                     onTap: () {
-                      Navigator.pushNamed(context, "/product",
+                      Navigator.pushNamed(context, Routes.PRODUCT,
                           arguments: {"product": widget.item});
                     },
                   ),
@@ -252,7 +253,7 @@ class _ShoppingCartTileForServiceState
                     trailing: getTrailing(),
                     subtitle: getSubtitle(context),
                     onTap: () {
-                      Navigator.pushNamed(context, "/service-detail",
+                      Navigator.pushNamed(context, Routes.SERVICE_DETAIL,
                           arguments: {"service": widget.item});
                     },
                   ),
@@ -271,7 +272,7 @@ class _ShoppingCartTileForServiceState
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed("/photo-viewer", arguments: widget.item?.cover);
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.item?.cover);
       },
       child: ClipOval(
         child: CachedNetworkImage(

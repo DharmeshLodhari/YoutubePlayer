@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
@@ -108,6 +108,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         child: Form(
           key: _formKeyTwo,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               buildBvnNumberDropDown(),
               buildGetIdType(),
@@ -115,12 +116,15 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
               getVerificationWarning(),
               SizedBox(height: 16),
               getSubmitButton(),
-              SizedBox(height: 4),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget showBvnForm() {
+    return Container();
   }
 
   Widget buildBvnNumberDropDown() {
@@ -129,9 +133,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
       return Column(
         children: [
           addBvnNumberTextField(),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
         ],
       );
     }
@@ -194,32 +196,43 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   Widget getVerificationWarning() {
+    if (selectedTier == "3" &&
+        (virtualAccount!.accountTier!.tierType! == "2" ||
+            virtualAccount!.accountTier!.tierType! == "1")) {
+      return SizedBox.shrink();
+    }
+
     return Text(
-      "It may take up to 48 hours to verify user details",
+      "It may take up to 48 hours to verify user details.",
+      textAlign: TextAlign.center,
       style:
           TextStyle(color: navyBlue, fontSize: 14, fontWeight: FontWeight.w600),
     );
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: onSubmit,
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: "SUBMIT",
-    );
+    if (selectedTier == "3" &&
+        (virtualAccount!.accountTier!.tierType! == "2" ||
+            virtualAccount!.accountTier!.tierType! == "1")) {
+      return CurvedButton(
+        onPressed: onSubmit,
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: "SUBMIT",
+      );
+    }
+    return SizedBox.shrink();
   }
 
   void onSubmit() async {
     //for closing the keypad if it is open
     FocusScope.of(context).unfocus();
 
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(child: CircularLoadingIndicator()));
-
-    if (_formKeyTwo.currentState!.validate()) {
+    if (_formKeyTwo.currentState!.validate() && selectedIdType != null) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(child: CircularLoadingIndicator()));
       var data = {
         "bvn_number": bvnNumberController!.text,
         "government_id_type": selectedIdType!["value"],
@@ -233,7 +246,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           showToast(message: 'Account upgraded');
 
           Navigator.pop(context);
-          Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+          Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
         }
       }).catchError((e) {
         Navigator.pop(context);
@@ -241,7 +254,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         showToast(message: e);
       });
     } else {
-      Navigator.pop(context);
+      showToast(message: 'All fields must be filled correctly');
     }
   }
 

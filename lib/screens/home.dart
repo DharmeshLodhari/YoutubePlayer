@@ -183,6 +183,8 @@ class _HomeState extends State<Home> {
         SizedBox(
           width: 4.0,
         ),
+        _cartBtn(),
+        SizedBox(width: 8.0),
       ],
     );
   }
@@ -281,6 +283,41 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget _cartBtn() {
+    return Stack(
+      key: tutorialShoppingCartKey,
+      clipBehavior: Clip.none,
+      children: [
+        Column(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 34,
+                width: 34,
+                child: InkWell(
+                  child: Card(
+                    elevation: 0,
+                    color: lightGrey.withOpacity(0.1),
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(SlydoAppIcon.cart, size: 16),
+                  ),
+                  onTap: () async {
+                    await Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
+
+                    setState(() {});
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _displayUserInfo() {
     Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
 
@@ -304,7 +341,7 @@ class _HomeState extends State<Home> {
                       EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
                   leading: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed("/photo-viewer",
+                      Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                           arguments: userBloc.user.avatar);
                     },
                     child: Container(
@@ -337,7 +374,7 @@ class _HomeState extends State<Home> {
                     style: TextStyle(fontSize: 14),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, '/profile', arguments: {
+                    Navigator.pushNamed(context, Routes.PROFILE, arguments: {
                       "searchedUserName": userBloc.user.userName
                     });
                   },

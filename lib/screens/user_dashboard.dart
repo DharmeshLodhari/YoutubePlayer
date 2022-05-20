@@ -184,7 +184,7 @@ class _UserDashboardState extends State<UserDashboard> {
               .then((user) {
             if (mounted) {
               Navigator.pushNamed(
-                  myGlobals.navigationKey.currentContext!, '/profile',
+                  myGlobals.navigationKey.currentContext!, Routes.PROFILE,
                   arguments: {"searchedUserName": user.userName});
             }
           });
@@ -344,7 +344,7 @@ class _UserDashboardState extends State<UserDashboard> {
           title: "Orders",
           onTap: () {
             hideBalance();
-            Navigator.pushNamed(context, '/orders-list');
+            Navigator.pushNamed(context, Routes.ORDERS_LIST);
           },
           iconColor: HexColor("#FFAB00"),
         )),
@@ -399,14 +399,15 @@ class _UserDashboardState extends State<UserDashboard> {
         ),
         SizedBox(width: 12),
         Expanded(
-            child: UserDashboardItemTile(
-          icon: Icons.account_balance_wallet_rounded,
-          title: AppLocalization.of(context)!.wallet,
-          onTap: () {
-            Navigator.of(context).pushNamed("/top-up-options");
-          },
-          iconColor: HexColor("#F35B46"),
-        )),
+          child: UserDashboardItemTile(
+            icon: Icons.account_balance_wallet_rounded,
+            title: AppLocalization.of(context)!.wallet,
+            onTap: () {
+              Navigator.of(context).pushNamed(Routes.WALLET_OPTIONS_SELECTION);
+            },
+            iconColor: HexColor("#F35B46"),
+          ),
+        ),
         // Expanded(
         //     child: UserDashboardItemTile(
         //   icon: Icons.account_balance_wallet_rounded,
@@ -444,7 +445,7 @@ class _UserDashboardState extends State<UserDashboard> {
             icon: SlydoAppIcon.utility,
             title: "Utility",
             onTap: () {
-              Navigator.pushNamed(context, "/utility-dashboard");
+              Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
             },
             iconColor: HexColor("#FFAB00"),
           ),
@@ -700,7 +701,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 if (mounted) {
                   Navigator.pop(myGlobals.navigationKey.currentContext!);
                   Navigator.pushNamed(
-                      myGlobals.navigationKey.currentContext!, '/profile',
+                      myGlobals.navigationKey.currentContext!, Routes.PROFILE,
                       arguments: {"searchedUserName": user.userName});
                 }
               });
@@ -791,7 +792,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     iconData: SlydoAppIcon.bank,
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, "/bank-account-list");
+                      Navigator.pushNamed(context, Routes.BANK_ACCOUNT_LIST);
                     },
                   ),
                   bottomSheetItem(
@@ -808,7 +809,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                   message: "Please add bank account first !!");
                             } else {
                               Navigator.pop(context);
-                              Navigator.pushNamed(context, "/payout");
+                              Navigator.pushNamed(context, Routes.PAYOUT);
                             }
                           },
                           cancelCallBack: () {
@@ -825,7 +826,7 @@ class _UserDashboardState extends State<UserDashboard> {
                           context: context,
                           isValidCallback: () {
                             Navigator.pop(context);
-                            Navigator.pushNamed(context, "/payout-list");
+                            Navigator.pushNamed(context, Routes.PAYOUT_LIST);
                           },
                           cancelCallBack: () {
                             Navigator.pop(context);
@@ -922,7 +923,7 @@ class _UserDashboardState extends State<UserDashboard> {
     ).then((String? value) {
       if (value != null) {
         if (value == "My Profile") {
-          Navigator.pushNamed(context, '/profile',
+          Navigator.pushNamed(context, Routes.PROFILE,
               arguments: {"searchedUserName": userBloc.user.userName});
         } else if (value == "Update My Avatar") {
           pickImage();
@@ -934,28 +935,28 @@ class _UserDashboardState extends State<UserDashboard> {
         } else if (value == "My Connections") {
           Navigator.pushNamed(
             context,
-            '/friends-dashboard',
+            Routes.FRIENDS_DASHBOARD,
           );
         } else if (value == "Bank Accounts") {
-          Navigator.pushNamed(context, "/bank-account-list");
+          Navigator.pushNamed(context, Routes.BANK_ACCOUNT_LIST);
         } else if (value == "Payout List") {
           PassCodePopup(
               context: context,
               isValidCallback: () {
-                Navigator.pushNamed(context, "/payout-list");
+                Navigator.pushNamed(context, Routes.PAYOUT_LIST);
               },
               cancelCallBack: () {});
         } else if (value == "Payout") {
           PassCodePopup(
               context: context,
               isValidCallback: () {
-                Navigator.pushNamed(context, "/payout");
+                Navigator.pushNamed(context, Routes.PAYOUT);
               },
               cancelCallBack: () {});
         } else if (value == "Add Product") {
-          Navigator.pushNamed(context, '/add-product');
+          Navigator.pushNamed(context, Routes.ADD_PRODUCT);
         } else if (value == "Add Service") {
-          Navigator.pushNamed(context, '/add-service');
+          Navigator.pushNamed(context, Routes.ADD_SERVICE);
         }
       }
     });
@@ -984,7 +985,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       iconData: SlydoAppIcon.product,
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, '/add-product');
+                        Navigator.pushNamed(context, Routes.ADD_PRODUCT);
                       },
                     ),
                     bottomSheetItem(
@@ -993,7 +994,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       isLast: true,
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.pushNamed(context, '/add-service');
+                        Navigator.pushNamed(context, Routes.ADD_SERVICE);
                       },
                     ),
                   ],

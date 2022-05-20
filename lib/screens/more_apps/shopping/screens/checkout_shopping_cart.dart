@@ -80,14 +80,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
       backgroundColor: Colors.white,
       appBar: appBar() as PreferredSizeWidget?,
       body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _buildBodyOfCart()),
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        child: _buildBodyOfCart(),
+      ),
       floatingActionButton:
           basketBloc.total == 0 ? Container() : checkoutWidget(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -101,6 +102,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       centerTitle: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
       title: Text(
         AppLocalization.of(context)!.basket,
         style: TextStyle(
@@ -126,7 +137,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       ),
       onTap: () {
         Navigator.of(context)
-            .pushNamed('/scan-qr', arguments: {'isRequest': false});
+            .pushNamed(Routes.SCAN_QR, arguments: {'isRequest': false});
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -256,7 +267,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
       child: InkWell(
         onTap: () {
           Navigator.of(context)
-              .pushNamed('/scan-qr', arguments: {'isRequest': false});
+              .pushNamed(Routes.SCAN_QR, arguments: {'isRequest': false});
         },
         child: Image.asset(
           'assets/images/qr_code.png',
@@ -328,7 +339,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     customerProfileBloc.customer =
         await UserAuth().fetchCustomerProfile(product.seller);
     Navigator.of(context).pushNamed(
-      '/send-payment',
+      Routes.SEND_PAYMENT,
       arguments: {
         'isFromProfile': false,
         'product': product,
@@ -490,11 +501,11 @@ class _ShoppingCartState extends State<ShoppingCart> {
         Provider.of<BankAccountBloc>(context, listen: false);
     if (bankAccountBloc.bankAccount == null ||
         bankAccountBloc.bankAccount!.bankName == null) {
-      Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
       showToast(message: "Please add bank account first !!");
     } else {
       double accountBalance = await getAccountBalance();
-      Navigator.popUntil(context, ModalRoute.withName("/dashboard"));
+      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
       debugPrint("accountBalance:- $accountBalance");
       double spendingAmount = basketBloc.total / 100;
       debugPrint("spendingAmount:- $spendingAmount");
@@ -530,12 +541,12 @@ class VerticalListItem extends StatelessWidget {
       onTap: () {
         if (type == "product") {
           Product? product = item;
-          Navigator.pushNamed(context, "/product",
+          Navigator.pushNamed(context, Routes.PRODUCT,
               arguments: {"product": product});
         }
         if (type == "service") {
           Service? service = item;
-          Navigator.pushNamed(context, "/service-detail",
+          Navigator.pushNamed(context, Routes.SERVICE_DETAIL,
               arguments: {"service": service});
         }
       },

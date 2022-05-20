@@ -36,13 +36,13 @@ class FeeStructure {
       this.currency});
 
   FeeStructure.fromJson(dynamic json) {
-    print('double :: ${json['tax_rate']}');
+    print('double ::: ${json['tax_rate']}');
     customerApiTransactionFee = json['customer_api_transaction_fee'];
     businessTransactionFee = json['business_transaction_fee'];
     magicEnvelopeFee = json['magic_envelope_fee'];
     emptyEnvelopeFee = json['empty_envelope_fee'];
     anonymousTransactionFee = json['anonymous_transaction_fee'];
-    taxRate = json['tax_rate'];
+    taxRate = json['tax_rate'].toDouble();
     country = json['country'];
     currency = json['currency'];
   }

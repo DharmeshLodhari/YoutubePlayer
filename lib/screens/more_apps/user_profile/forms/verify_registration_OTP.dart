@@ -268,8 +268,8 @@ class _VerifyRegistrationOTPScreenState
         if (widget.arguments['isWalletFunding'] == true) {
           showToast(message: 'Wallet Funded successfully');
         } else {
-          Navigator.pushNamed(
-              context, '/credit-card-list'); //To reload credit-card-list page.
+          Navigator.pushNamed(context,
+              Routes.CREDIT_CARD_LIST); //To reload credit-card-list page.
 
         }
         break;

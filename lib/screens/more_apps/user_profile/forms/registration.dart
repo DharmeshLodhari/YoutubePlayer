@@ -17,22 +17,16 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  final _registrationFormKey = GlobalKey<FormState>();
-
   String phoneNumberWithCountryCode = "";
+
+  final _registrationFormKey = GlobalKey<FormState>();
 
   Country _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
-  TextEditingController? phoneNumberController;
+  TextEditingController phoneNumberController = TextEditingController();
 
   // this variable is responsible to enable and disable submit btn
   bool showButton = false;
-
-  @override
-  void initState() {
-    phoneNumberController = TextEditingController();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,21 +61,13 @@ class _RegistrationState extends State<Registration> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20),
                     appIcon(),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    SizedBox(height: 20),
                     registerTitle(),
-                    SizedBox(
-                      height: 50,
-                    ),
+                    SizedBox(height: 50),
                     selectCountryField(),
-                    SizedBox(
-                      height: 12,
-                    ),
+                    SizedBox(height: 12),
                     phoneNumberField(),
                     SizedBox(
                       height: 40,
@@ -145,41 +131,46 @@ class _RegistrationState extends State<Registration> {
       controller: phoneNumberController,
       validator: validatePhoneNumber,
       onChanged: (value) {
-        if (value.isEmpty || value.length < 11) {
+        if (value.isEmpty || value.length < 10) {
           setState(() {
             showButton = false;
           });
         }
       },
-      whenToVerifyInputFromServer: (value) => value.length == 11,
+      whenToVerifyInputFromServer: (value) => value.length >= 10,
       verifyInputFromServerFunc: () => _verifyPhoneNumber(),
       extraFunctionWhenInputWasVerifiedFromServerSuccessfully: () {
-        setState(() {
-          showButton = true;
-        });
+        if (phoneNumberController.text.length >= 10) {
+          setState(() {
+            showButton = true;
+          });
+        }
       },
       extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully: () {
         setState(() {
           showButton = false;
-          showToast(message: 'Phone number not valid');
+          showToast(message: 'Phone number already exists');
         });
       },
     );
   }
 
   Future<bool> _verifyPhoneNumber() async {
+    setState(() => showButton = false);
     bool verified = false;
     await UserAuth()
-        .verifyPhoneNumberFromServer(phoneNumber: phoneNumberController!.text)
+        .canContinueRegistrationWithPhoneNumber(
+            phoneNumber: phoneNumberController.text)
         .then((verifiedPhoneNumber) {
       if (verifiedPhoneNumber) {
         verified = true;
       } else {
         verified = false;
+        setState(() => showButton = false);
       }
     }).catchError((e) {
       Navigator.pop(context);
-      showToast(message: 'EROOR - ${e.toString()}');
+      showToast(message: 'VERIFY PHONE NUMBER ERROR :- ${e.toString()}');
     });
 
     return verified;
@@ -206,7 +197,7 @@ class _RegistrationState extends State<Registration> {
   }
 
   void validateField() {
-    if (phoneNumberController!.text.length >= 9) {
+    if (phoneNumberController.text.length >= 9) {
       showButton = true;
       setState(() {});
     } else {
@@ -227,7 +218,7 @@ class _RegistrationState extends State<Registration> {
   }
 
   void submit() {
-    var phoneNumberFromTextField = phoneNumberController!.text.trim();
+    var phoneNumberFromTextField = phoneNumberController.text.trim();
 
     if (phoneNumberFromTextField.substring(0, 1) == "0") {
       phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");

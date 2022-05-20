@@ -191,7 +191,7 @@ Future<bool?> showDialogBox(
     Function()? leftButtonOnPressed,
     Function()? rightButtonOnPressed,
     required String actionTwoText, // DialogButton's text
-    bool isOverlayTapDismiss = false,
+    bool isOverlayTapDismiss = true,
     RoundedBackgroundIcon? roundedBackgroundIcon}) {
   return CustomizedAlert(
     title: title,

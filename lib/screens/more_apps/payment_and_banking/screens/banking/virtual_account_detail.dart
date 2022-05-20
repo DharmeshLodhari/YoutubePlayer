@@ -1,5 +1,6 @@
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -57,15 +58,23 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     }
 
     isLoading = false;
-    if (virtualAccount == null) {
-      isAccountExist = false;
-      Navigator.of(context).pushNamed("/add-bvn-number");
-    } else {
+
+    if (virtualAccount != null) {
       isAccountExist = true;
       if (isFromServer) {
         await DatabaseHelper().saveVirtualAccount(virtualAccount!);
       }
     }
+
+    // if (virtualAccount == null) {
+    //   isAccountExist = false;
+    //   Navigator.of(context).pushNamed(Routes.ADD_BVN_NUMBER);
+    // } else {
+    //   isAccountExist = true;
+    //   if (isFromServer) {
+    //     await DatabaseHelper().saveVirtualAccount(virtualAccount!);
+    //   }
+    // }
 
     _currentTier = virtualAccount?.accountTier?.tierType;
 
@@ -174,7 +183,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
 
     var data = {
       "amount": moneyInputNormalizer(amount.toString()),
-      "currency": "NGN"
+      "currency": "NGN",
     };
 
     showDialog(
@@ -189,7 +198,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         if (value != null) {
           Navigator.pop(context);
           var result = value;
-          Navigator.popAndPushNamed(context, "/add-money-to-slydo-two",
+          Navigator.popAndPushNamed(context, Routes.ADD_MONEY_TO_SLYDO_TWO,
               arguments: result);
         }
       }).catchError((e) {

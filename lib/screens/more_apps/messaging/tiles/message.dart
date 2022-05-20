@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -60,6 +61,8 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getLeading() {
+    bool currentUserIsSender = userBloc.user.userName == partialMessage!.sender;
+
     return Container(
       height: 48,
       width: 48,
@@ -72,12 +75,14 @@ class _MessageTileState extends State<MessageTile> {
       ),
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context).pushNamed("/photo-viewer",
+          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
               arguments: partialMessage!.senderAvatar);
         },
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: partialMessage!.senderAvatar!,
+            imageUrl: currentUserIsSender
+                ? partialMessage!.recipientAvatar!
+                : partialMessage!.senderAvatar!,
             height: 48,
             width: 48,
             errorWidget: imageErrorWidget,
@@ -94,10 +99,14 @@ class _MessageTileState extends State<MessageTile> {
   }
 
   Widget getTitle() {
+    bool currentUserIsSender = userBloc.user.userName == partialMessage!.sender;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 2.0),
       child: Text(
-        partialMessage!.subject!,
+        currentUserIsSender
+            ? partialMessage!.recipient!
+            : partialMessage!.subject!,
         maxLines: 1,
         style: TextStyle(
             color: partialMessage!.isRead! ? darkGrey : Colors.black,
