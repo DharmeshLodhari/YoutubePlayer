@@ -690,6 +690,14 @@ String? checkSlydoName(String name) {
   return result;
 }
 
+String truncateString(String str, {required int lengthToTruncateAt}) {
+  if (str.length <= lengthToTruncateAt) {
+    return '$str';
+  } else {
+    return '${str.substring(0, lengthToTruncateAt + 1)}...';
+  }
+}
+
 String getFormattedAccountNumber({String accountNumber = "0000000000"}) {
   if (accountNumber.length != 10) {
     accountNumber = '0000' + accountNumber;

@@ -46,6 +46,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   //     "https://www.itl.cat/pngfile/big/10-100326_desktop-wallpaper-hd-full-screen-free-download-full.jpg";
   bool isDownloading = false;
   String savePath = "";
+  DateTime invoiceDate = DateTime.now();
 
   _InvoiceDetailState({this.arguments});
 
@@ -266,7 +267,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     DateTime dateAndTime = DateTime.parse(datetime);
     String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
     String time = DateFormat("hh:mm a").format(dateAndTime);
-    return "$date • $time";
+    return "$date • $time ";
   }
 
   Widget getLeading() {
@@ -343,6 +344,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget displayBodyOfTransaction() {
+    bool canEditDate = invoice.status == 'Draft';
     return Container(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -362,11 +364,13 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             SlydoAppIcon.date,
             "Invoice date",
             formatDate(invoice.invoiceDate!),
+            editDate: canEditDate,
           ),
           detailTile(
             SlydoAppIcon.date,
             "Due date",
             formatDate(invoice.dueDate!),
+            editDate: canEditDate,
           ),
           getInvoiceItems()
         ],
@@ -633,7 +637,8 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  Widget detailTile(IconData icon, String title, String subtitle) {
+  Widget detailTile(IconData icon, String title, String subtitle,
+      {bool editDate = false}) {
     return Container(
       child: ListTile(
         dense: true,
@@ -645,13 +650,46 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           ),
           backgroundColor: iconBtnGrey,
         ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: blackFont,
-            fontSize: 14,
-          ),
+        title: Row(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: blackFont,
+                fontSize: 14,
+              ),
+            ),
+            SizedBox(width: 5),
+            editDate
+                ? InkWell(
+                    onTap: () {
+                      showDatePicker(
+                        builder: customThemeBuilder,
+                        context: context,
+                        initialDate: DateTime(DateTime.now().year,
+                            DateTime.now().month, DateTime.now().day),
+                        firstDate: DateTime(DateTime.now().year,
+                            DateTime.now().month, DateTime.now().day),
+                        lastDate: DateTime(2101),
+                      ).then((value) {
+                        invoiceDate =
+                            DateTime(value!.year, value.month, value.day);
+
+                        _updateInvoiceDate();
+                        // setState(() {});
+                      }).catchError((error) {});
+                    },
+                    child: Text(
+                      'Edit',
+                      style: TextStyle(
+                        color: navyBlue,
+                        fontSize: 12,
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ],
         ),
         subtitle: Text(
           subtitle,
@@ -661,6 +699,34 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           ),
         ),
       ),
+    );
+  }
+
+  _updateInvoiceDate({bool isDueDate = false}) {
+    BusinessAuth()
+        .updateInvoice(
+      id: invoice.id.toString(),
+      data: isDueDate
+          ? {
+              "due_date": dateToString(invoiceDate),
+            }
+          : {
+              "invoice_date": dateToString(invoiceDate),
+            },
+    )
+        .then(
+      (updated) {
+        if (updated) {
+          fetchInvoice();
+          showToast(message: 'Updated successfully');
+        } else {
+          showToast(message: 'Something went wrong');
+        }
+      },
+    ).catchError(
+      (e) {
+        showToast(message: e.toString());
+      },
     );
   }
 

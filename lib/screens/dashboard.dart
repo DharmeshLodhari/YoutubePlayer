@@ -448,7 +448,7 @@ class _DashboardState extends State<Dashboard> {
             title: AppLocalization.of(context)!.qrCode,
           ),
           bottomNavigationBarItem(
-            iconSize: 24,
+            iconSize: 22,
             iconData: Icons.play_circle_filled,
             title: AppLocalization.of(context)!.moments,
           ),

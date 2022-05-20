@@ -16,6 +16,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_migration/sqflite_migration.dart';
 
+import '../screens/more_apps/messaging/chat/models/DocumentFileInChatModel.dart';
+
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
 
@@ -969,5 +971,19 @@ class DatabaseHelper {
     if (feeStructure.length > 0)
       return FeeStructure.fromJson(feeStructure.first);
     return null;
+  }
+
+  Future<int> saveDocumentFileInChat(
+      DocumentFileInChatDownloadModel model) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert(
+        DOCUMENT_FILE_IN_CHAT_DOWNLOAD_TABLE, model.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+
+    debugPrint(
+        "DOCUMENT FILE DATABASE:- Save $DOCUMENT_FILE_IN_CHAT_DOWNLOAD_TABLE !!");
+
+    return res;
   }
 }

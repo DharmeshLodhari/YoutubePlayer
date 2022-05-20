@@ -167,7 +167,12 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(
-            userBloc.user.displayName()!,
+            truncateString(userBloc.user.displayName()!,
+                lengthToTruncateAt: 37),
+
+            // userBloc.user.displayName()!.length <= 37
+            //     ? userBloc.user.displayName()!
+            //     : '${userBloc.user.displayName()!.substring(0, 38)}...',
             style: TextStyle(
               fontSize: 14,
             ),

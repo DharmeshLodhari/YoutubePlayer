@@ -293,6 +293,8 @@ class BusinessAuth extends AuthService {
   Future<bool> addInvoice(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/";
     var headers = await getAuthHeaders();
+
+    debugPrint('DATE ::: $data');
     var _data = jsonEncode(data);
     var response = await httpPost(url, body: _data, headers: headers);
 
