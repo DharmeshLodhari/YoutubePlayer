@@ -19,6 +19,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
@@ -77,11 +78,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../data/database_helper.dart';
 import '../../../../../routes/route_constants.dart';
-<<<<<<< HEAD
-import '../models/DocumentFileInChatModel.dart';
-=======
-import '../models/document_file_in_chat_download_model.dart';
->>>>>>> hot-fix
+
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
@@ -2263,10 +2260,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       type: FileType.custom,
       allowedExtensions: listOfAllowedFileExtensions,
     );
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> hot-fix
 
     if (result != null) {
       DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
@@ -2276,11 +2269,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       DatabaseHelper().saveDocumentFileInChat(model);
       debugPrint('FILE NAME ::${result.names}');
     }
-<<<<<<< HEAD
-=======
->>>>>>> master
-=======
->>>>>>> hot-fix
   }
 
   void pickGIF() async {

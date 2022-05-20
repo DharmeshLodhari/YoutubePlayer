@@ -16,11 +16,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_migration/sqflite_migration.dart';
 
-<<<<<<< HEAD
-import '../screens/more_apps/messaging/chat/models/DocumentFileInChatModel.dart';
-=======
 import '../screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
->>>>>>> hot-fix
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
@@ -977,8 +973,6 @@ class DatabaseHelper {
     return null;
   }
 
-<<<<<<< HEAD
-=======
   Future<bool> retrieveFileNameFromDatabase({required String fileName}) async {
     Database dbClient = await db;
 
@@ -992,24 +986,14 @@ class DatabaseHelper {
     }
   }
 
->>>>>>> hot-fix
   Future<int> saveDocumentFileInChat(
       DocumentFileInChatDownloadModel model) async {
     Database dbClient = await db;
 
-<<<<<<< HEAD
-    int res = await dbClient.insert(
-        DOCUMENT_FILE_IN_CHAT_DOWNLOAD_TABLE, model.toJson(),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
+    debugPrint("DOCUMENT FILE DATABASE:- Save $DOWNLOAD_FILE_IN_CHAT_TABLE !!");
 
-    debugPrint(
-        "DOCUMENT FILE DATABASE:- Save $DOCUMENT_FILE_IN_CHAT_DOWNLOAD_TABLE !!");
-=======
     int res = await dbClient.insert(DOWNLOAD_FILE_IN_CHAT_TABLE, model.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
-
-    debugPrint("DATABASE:- Save $CHAT_USER_TABLE !!");
->>>>>>> hot-fix
 
     return res;
   }

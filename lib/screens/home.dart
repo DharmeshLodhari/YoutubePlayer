@@ -162,15 +162,10 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(
-<<<<<<< HEAD
-            truncateString(userBloc.user.displayName()!,
-                lengthToTruncateAt: 37),
-=======
             truncateString(
               str: userBloc.user.displayName()!,
               lengthToTruncateAt: 37,
             ),
->>>>>>> hot-fix
 
             // userBloc.user.displayName()!.length <= 37
             //     ? userBloc.user.displayName()!

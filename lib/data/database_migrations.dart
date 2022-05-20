@@ -11,12 +11,7 @@ const String NOTIFICATION_TABLE = "Notification";
 const String VIRTUAL_ACCOUNT_TABLE = "VirtualAccount";
 const String APP_SETTING_TABLE = "GeneralSettings";
 const String FEE_STRUCTURE = "FeeStructure";
-<<<<<<< HEAD
-const String DOCUMENT_FILE_IN_CHAT_DOWNLOAD_TABLE =
-    "DocumentFileInChatDownloadTable";
-=======
 const String DOWNLOAD_FILE_IN_CHAT_TABLE = "DownloadFileInChatTable";
->>>>>>> hot-fix
 
 final initialDBSchema = [
   // Create the user table
