@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/messaging/tiles/message.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -162,7 +163,7 @@ class _MessageListState extends State<MessageList> {
           size: 20,
         ),
         onPressed: () {
-          Navigator.of(context).pushNamed("/compose_message");
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE);
         },
       ),
     );
@@ -505,11 +506,11 @@ class _VerticalListItemState extends State<VerticalListItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        Navigator.of(context).pushNamed('/detail_message',
+        Navigator.of(context).pushNamed(Routes.DETAIL_MESSAGE,
             arguments: {'id': widget.partialMessage.id});
       },
       onDoubleTap: () {
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": widget.partialMessage.sender});
       },
       onLongPress: () {
@@ -602,7 +603,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             setState(() {
               isExpanded = false;
             });
-            Navigator.of(context).pushNamed('/compose_message', arguments: {
+            Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
               'recipient': user.userName,
               'subject': "",
             });

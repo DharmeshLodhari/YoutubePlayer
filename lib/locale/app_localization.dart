@@ -912,6 +912,13 @@ class AppLocalization {
     );
   }
 
+  String get moments {
+    return Intl.message(
+      "Moments",
+      name: "moments",
+    );
+  }
+
   String get transactions {
     return Intl.message(
       "Transactions",

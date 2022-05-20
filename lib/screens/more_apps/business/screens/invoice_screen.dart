@@ -354,7 +354,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         slideController: _slideController),
                   ]
                 : null,
-            secondaryActions: invoice.status != "Paid"
+            secondaryActions: invoice.status != "Paid" && invoice.amount! > 0
                 ? [
                     SlideActionButton(
                         backgroundColor: getBgColor(invoice),

@@ -7,8 +7,6 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-import '../../../../../utils/colors.dart';
 import '../../payment_and_banking_auth.dart';
 
 class PayoutTransactions extends StatefulWidget {

@@ -16,17 +16,17 @@ import '../../../../../utils/date_time_and_money_converter.dart';
 import '../../../../../widget/LoadingIndicator.dart';
 
 // ignore: must_be_immutable
-class AddInvoiceItem extends StatefulWidget {
+class AddOrUpdateInvoiceItem extends StatefulWidget {
+  int? invoiceId;
   final InvoiceItem? invoiceItem;
 
-  AddInvoiceItem({this.invoiceItem});
+  AddOrUpdateInvoiceItem({this.invoiceItem, this.invoiceId});
 
-  // Declare a field that holds the userData.
   @override
-  _AddInvoiceItemState createState() => _AddInvoiceItemState();
+  _AddOrUpdateInvoiceItemState createState() => _AddOrUpdateInvoiceItemState();
 }
 
-class _AddInvoiceItemState extends State<AddInvoiceItem> {
+class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
   double totalCost = 0;
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
@@ -361,47 +361,70 @@ class _AddInvoiceItemState extends State<AddInvoiceItem> {
     }
 
     if (_formKey.currentState!.validate()) {
+      InvoiceItem invoiceItem = InvoiceItem(
+        amount: int.parse(_amountController.text
+                .trim()
+                .replaceAll(',', '')
+                .split('.')[0]) *
+            100,
+        quantity: _invoiceItem!.quantity,
+        currency: userBloc.user.currency,
+        name: _descriptionController.text.trim(),
+      );
+      // To update an invoice
       if (widget.invoiceItem != null) {
-        InvoiceItem invoiceItem = InvoiceItem(
-          amount: int.parse(_amountController.text
-                  .trim()
-                  .replaceAll(',', '')
-                  .split('.')[0]) *
-              100,
-          quantity: _invoiceItem!.quantity,
-          currency: userBloc.user.currency,
-          name: _descriptionController.text.trim(),
-        );
-
         _updateInvoiceItem(widget.invoiceItem!.id!, invoiceItem);
+      }
+      // To add an item to an existing invoice.
+      else if (widget.invoiceId != null) {
+        _addInvoiceItemToExistingInvoice(widget.invoiceId!, invoiceItem);
       } else {
-        if (userBloc.user.userName != recipient) {
-          try {
-            var data = {
-              "amount": amount.toString().trim(),
-            };
+        // To add an item when creating a fresh invoice.
+        try {
+          // var data = {
+          //   "amount": amount.toString().trim(),
+          // };
+          //
+          // debugPrint(data.toString());
 
-            debugPrint(data.toString());
+          _invoiceItem!.name = _descriptionController.text.trim();
+          _invoiceItem!.amount = int.parse(
+              _amountController.text.replaceAll(",", "").split('.')[0].trim());
+          _invoiceItem!.currency = userBloc.user.currency;
 
-            _invoiceItem!.name = _descriptionController.text.trim();
-            _invoiceItem!.amount = int.parse(_amountController.text
-                .replaceAll(",", "")
-                .split('.')[0]
-                .trim());
-            _invoiceItem!.currency = userBloc.user.currency;
+          addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
 
-            addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
-
-            Navigator.pop(context);
-          } catch (e) {
-            debugPrint(e.toString());
-            showToast(message: e.toString());
-          }
-        } else {
-          showToast(message: AppLocalization.of(context)!.invalidRecipient);
+          Navigator.pop(context);
+        } catch (e) {
+          debugPrint(e.toString());
+          showToast(message: e.toString());
         }
       }
     }
+  }
+
+  _addInvoiceItemToExistingInvoice(int invoiceId, InvoiceItem invoiceItem) {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    BusinessAuth()
+        .addInvoiceItemToExistingInvoice(
+            invoiceId: invoiceId, invoiceItem: invoiceItem)
+        .then(
+      (updated) {
+        Navigator.pop(context); // Dismiss the loader.
+
+        if (updated) {
+          Navigator.pop(context, true); // Pop to Invoice detail page;
+
+        }
+      },
+    ).catchError(
+      (e) {
+        Navigator.of(context).pop();
+        showToast(message: 'ERROR ::: ${e.toString()}');
+      },
+    );
   }
 
   _updateInvoiceItem(int itemId, InvoiceItem invoiceItem) {

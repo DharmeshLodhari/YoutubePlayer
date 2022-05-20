@@ -7,6 +7,7 @@ import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ import '../../../../routes/route_constants.dart';
 import '../../../../widget/curved_btn.dart';
 
 import '../business_auth.dart';
-import '../forms/invoice/add_invoice_item.dart';
+import '../forms/invoice/add_or_update_invoice_item.dart';
 import '../models/Invoice.dart';
 import 'package:dio/dio.dart';
 
@@ -153,6 +154,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   Widget scaffoldBody() {
     bool canPayForInvoice = invoice.fromCustomer != userBloc.user.userName &&
         invoice.status == "Unpaid";
+    bool canAddInvoiceItem = invoice.status == 'Draft';
 
     return SingleChildScrollView(
       child: Container(
@@ -162,6 +164,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             isDownloading
                 ? Padding(
@@ -183,11 +186,31 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             SizedBox(height: 14),
             canPayForInvoice
                 ? CurvedButton(
-                    text: "Pay",
+                    text: "Pay Now",
                     onPressed: () {
                       _payInvoice();
                     })
                 : SizedBox.shrink(),
+            SizedBox(height: 10),
+            canAddInvoiceItem
+                ? CurvedButton(
+                    width: 150,
+                    text: 'Add  item',
+                    onPressed: () async {
+                      bool? updated = await NavigationUtil.push(
+                        context,
+                        screen: AddOrUpdateInvoiceItem(
+                          invoiceId: invoice.id,
+                          // invoiceItem: item,
+                        ),
+                      );
+
+                      if (updated == true) {
+                        fetchInvoice();
+                      }
+                    },
+                  )
+                : SizedBox.shrink()
           ],
         ),
       ),
@@ -569,23 +592,29 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                 canDeleteInvoiceItem || canEditInvoiceItem
                     ? flexibleSpace()
                     : SizedBox.shrink(),
-                !canDeleteInvoiceItem
+                canDeleteInvoiceItem
                     ? InkWell(
-                        child: Icon(Icons.delete, color: mateRed),
+                        child: Icon(
+                          Icons.delete,
+                          size: 20,
+                          color: mateRed,
+                        ),
                         onTap: () {
-                          _deleteInvoiceItem(item);
+                          showDeleteDialog(item);
                         },
                       )
                     : SizedBox.shrink(),
+                SizedBox(width: 5),
                 canEditInvoiceItem
                     ? InkWell(
                         child: Icon(
                           Icons.edit,
+                          size: 20,
                         ),
                         onTap: () async {
                           bool? updated = await NavigationUtil.push(
                             context,
-                            screen: AddInvoiceItem(
+                            screen: AddOrUpdateInvoiceItem(
                               invoiceItem: item,
                             ),
                           );
@@ -708,5 +737,28 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     path = '${dir.path}/$uniqueFileName';
 
     return path;
+  }
+
+  showDeleteDialog(InvoiceItem item) {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: mateRed,
+      actionTwoTextColor: Colors.white,
+      actionOneBgColor: greyBorderColor,
+      title: AppLocalization.of(context)!.delete,
+      actionTwoText: AppLocalization.of(context)!.delete,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      description: 'Are you sure you want to delete your invoice item?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        _deleteInvoiceItem(item);
+      },
+    );
   }
 }

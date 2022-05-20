@@ -1,15 +1,12 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:page_view_indicators/page_view_indicators.dart';
 import 'package:sizer/sizer.dart';
-
-import '../utils/colors.dart';
 
 // ignore: must_be_immutable
 class Index extends StatefulWidget {
@@ -123,7 +120,7 @@ class _IndexState extends State<Index> {
                       CurvedButton(
                         backgroundColor: Colors.white,
                         onPressed: () {
-                          Navigator.of(context).pushNamed('/login');
+                          Navigator.of(context).pushNamed(Routes.LOGIN);
                         },
                         text: "Log in",
                         textColor: HexColor("#3F61DB"),
@@ -134,7 +131,8 @@ class _IndexState extends State<Index> {
                       CurvedButton(
                         backgroundColor: Color.fromARGB(38, 255, 255, 255),
                         onPressed: () {
-                          Navigator.of(context).pushNamed('/new-registration');
+                          Navigator.of(context)
+                              .pushNamed(Routes.NEW_REGISTRATION);
                         },
                         text: "Register",
                         textColor: Colors.white,
@@ -165,7 +163,7 @@ class _IndexState extends State<Index> {
         child: GestureDetector(
       onTap: () {
         // Navigator.of(context).pushNamed("/verify-reset-device-otp");
-        Navigator.of(context).pushNamed('/reset-device');
+        Navigator.of(context).pushNamed(Routes.RESET_DEVICE);
       },
       child: Text(
         "Reset device?",
@@ -180,7 +178,7 @@ class _IndexState extends State<Index> {
       child: MaterialButton(
         minWidth: 300,
         onPressed: () {
-          Navigator.of(context).pushNamed('/login');
+          Navigator.of(context).pushNamed(Routes.LOGIN);
         },
         textColor: Colors.white,
         color: blackFont,
@@ -195,7 +193,7 @@ class _IndexState extends State<Index> {
       child: MaterialButton(
         minWidth: 300,
         onPressed: () {
-          Navigator.of(context).pushNamed('/new-registration');
+          Navigator.of(context).pushNamed(Routes.NEW_REGISTRATION);
         },
         textColor: Colors.white,
         color: blackFont,

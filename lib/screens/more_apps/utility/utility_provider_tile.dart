@@ -26,8 +26,9 @@ class UtilityProviderTile extends StatelessWidget {
       child: Row(
         children: [
           Card(
-            elevation: 7,
-            margin: EdgeInsets.symmetric(vertical: 6),
+            elevation: 8,
+            shadowColor: Color(0XFF314167).withOpacity(0.08),
+            margin: EdgeInsets.symmetric(vertical: 8),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),

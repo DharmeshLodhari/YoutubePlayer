@@ -359,7 +359,13 @@ class _PostTileState extends State<PostTile> {
         padding: EdgeInsets.all(12),
         child: Row(
           children: [
-            Icon(Icons.thumb_up_alt_outlined, size: 16),
+            Icon(
+              widget.post?.likes != 0
+                  ? Icons.thumb_up_alt_rounded
+                  : Icons.thumb_up_alt_outlined,
+              size: 16,
+              color: widget.post?.likes != 0 ? navyBlue : blackFont,
+            ),
             SizedBox(
               width: 4,
             ),
@@ -421,8 +427,11 @@ class _PostTileState extends State<PostTile> {
         child: Row(
           children: [
             Icon(
-              Icons.thumb_down_alt_outlined,
+              widget.post?.dislikes != 0
+                  ? Icons.thumb_down_alt_rounded
+                  : Icons.thumb_down_alt_outlined,
               size: 16,
+              color: widget.post?.dislikes != 0 ? mateRed : blackFont,
             ),
             SizedBox(width: 4),
             Text(

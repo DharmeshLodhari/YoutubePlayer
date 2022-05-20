@@ -106,79 +106,81 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
 
   Widget scaffoldBody() {
     return SingleChildScrollView(
-        child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 20),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            elevation: 2,
-            margin: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            shadowColor: iconBtnGrey,
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: iconBtnGrey, width: 1)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 20),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Card(
+              elevation: 2,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              shadowColor: iconBtnGrey,
               child: Container(
-                child: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: getProvider(),
-                    ),
-                    Divider(
-                      color: dividerColor,
-                      thickness: 1.5,
-                    ),
-                    SizedBox(height: 30),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: utilityProviderDetails.isNotEmpty
-                          ? selectPlanDropDown()
-                          : hasError
-                              ? Text('Something went wrong, try again')
-                              : CircularLoadingIndicator(),
-                    ),
-                    SizedBox(height: 20),
-                    Visibility(
-                      visible: planSelected,
-                      child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: iconBtnGrey, width: 1)),
+                child: Container(
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10),
+                      Container(
                         padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: getReferenceNumber(),
+                        child: getProvider(),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Visibility(
-                      visible: planSelected,
-                      child: Container(
+                      Divider(
+                        color: dividerColor,
+                        thickness: 1.5,
+                      ),
+                      SizedBox(height: 30),
+                      Container(
                         padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: getAmount(),
+                        child: utilityProviderDetails.isNotEmpty
+                            ? selectPlanDropDown()
+                            : hasError
+                                ? Text('Something went wrong, try again')
+                                : CircularLoadingIndicator(),
                       ),
-                    ),
-                    SizedBox(height: 50),
-                  ],
+                      SizedBox(height: 20),
+                      Visibility(
+                        visible: planSelected,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: getReferenceNumber(),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Visibility(
+                        visible: planSelected,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: getAmount(),
+                        ),
+                      ),
+                      SizedBox(height: 50),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        SizedBox(height: 40),
-        Visibility(
-          visible: planSelected &&
-              referenceNumVerified &&
-              amountCtrl.text.isNotEmpty,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: submitButton(),
+          SizedBox(height: 40),
+          Visibility(
+            visible: planSelected &&
+                referenceNumVerified &&
+                amountCtrl.text.isNotEmpty,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: submitButton(),
+            ),
           ),
-        )
-      ],
-    ));
+          SizedBox(height: 20),
+        ],
+      ),
+    );
   }
 
   Widget getProvider() {
@@ -186,12 +188,24 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
       padding: const EdgeInsets.all(12.0),
       child: Row(
         children: [
-          CachedNetworkImage(
-            width: 30,
-            height: 30,
-            imageUrl: widget.providerModel.avatar,
-            placeholder: (context, url) =>
-                Center(child: CircularLoadingIndicator()),
+          Card(
+            elevation: 8,
+            shadowColor: Color(0XFF314167).withOpacity(0.08),
+            margin: EdgeInsets.symmetric(vertical: 6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: CachedNetworkImage(
+                width: 30,
+                height: 30,
+                imageUrl: widget.providerModel.avatar,
+                placeholder: (context, url) => Center(
+                  child: CircularLoadingIndicator(),
+                ),
+              ),
+            ),
           ),
           SizedBox(width: 8),
           Expanded(
@@ -201,6 +215,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
               style: TextStyle(
                 fontSize: 16,
                 color: blackFont,
+                fontFamily: 'OpenSans',
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -339,6 +354,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
   Widget getReferenceNumber() {
     return CustomizedTextFormField(
       labelText: "Meter no",
+      isNumberOnlyInput: true,
       controller: referenceNumCtrl,
       keyboardType: TextInputType.number,
       whenToVerifyInputFromServer: (val) {

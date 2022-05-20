@@ -154,6 +154,6 @@ class Routes {
   static const String REVIEW_LIST_SCREEN = "/review-list-screen";
   static const String ADD_REVIEW = "/add-review";
   static const String EDIT_REVIEW = "/edit-review";
-  static const String TOP_UP_OPTIONS = "/top-up-options";
+  static const String WALLET_OPTIONS_SELECTION = "/wallet-options-selection";
   static const String WEB_VIEW = "/web-view";
 }

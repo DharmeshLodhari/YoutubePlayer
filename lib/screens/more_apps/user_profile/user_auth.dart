@@ -232,30 +232,27 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<bool> verifyPhoneNumberFromServer(
+  Future<bool> canContinueRegistrationWithPhoneNumber(
       {required String phoneNumber}) async {
-    String url = AppConfig.baseUrl + "/api/v1/user/auth/verify-phone";
+    String url = AppConfig.baseUrl + "/api/v1/user/verify-phone-number/";
 
-    var data = {'phone': phoneNumber};
-    var headers = await getAuthHeaders();
+    var data = {"phone_number": '+234$phoneNumber'};
+    var headers = getNonAuthHeader();
 
-    await Future.delayed(
-      Duration(seconds: 3),
-      () {},
-    );
-    return true;
+    var response = await httpPost(url,
+        headers: headers as Map<String, dynamic>?, body: jsonEncode(data));
 
-    var response =
-        await httpPost(url, headers: headers, body: jsonEncode(data));
+    var jsonData = jsonDecode(response.body);
 
-    print('VERIFY PHONE RESPONSE ::: $response');
+    debugPrint('PHONE NUMBER DATA ::: $data');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 200) {
-      if (jsonDecode(response.body)['msg'] == 'valid') {
-        return true;
-      } else {
+      if (jsonData['exist'] == true) {
+        // If {"exist":true} it means phone number already exists on our server so the user can't proceed with the entered phone number.
         return false;
+      } else {
+        return true;
       }
     } else {
       return false;

@@ -93,9 +93,19 @@ class _UtilityHistoryDetailScreenState
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
+        downloadBtn(),
         // showMap(),
         SizedBox(width: 16),
       ],
+    );
+  }
+
+  Widget downloadBtn() {
+    return IconButton(
+      icon: Icon(Icons.download_rounded, color: navyBlue),
+      onPressed: () {
+        // downloadContractFile();
+      },
     );
   }
 
@@ -158,34 +168,6 @@ class _UtilityHistoryDetailScreenState
     );
   }
 
-  Widget displayUtilityHeader() {
-    return ListTile(
-      leading: displayUtilityImage(),
-      title: displayUtilityName(),
-      // subtitle: getSubtitle(),
-      trailing: getAmount(),
-      onTap: () async {
-        // if (transaction?.payee == "slydo_envelope" ||
-        //     transaction?.payee == "slydo" ||
-        //     transaction?.displayCustomer == "slydo" ||
-        //     transaction?.displayCustomer == "slydo_envelope") {
-        //   return;
-        // }
-        // if (!transaction!.isAnonymous!) {
-        //   Navigator.pushNamed(context, '/profile',
-        //       arguments: {"searchedUserName": transaction!.payee});
-        // }
-      },
-    );
-  }
-
-  Widget getDescriptionWidget() {
-    return Text(
-      "___description",
-      maxLines: 1,
-    );
-  }
-
   String _getFormattedDateTime() {
     DateTime utilityTransactionTime =
         DateTime.parse(_utilityHistoryModel.createdAt);
@@ -215,12 +197,13 @@ class _UtilityHistoryDetailScreenState
   Widget displayUtilityImage() {
     return Card(
       elevation: 7,
+      shadowColor: Color(0XFF314167).withOpacity(0.08),
       margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(12.0),
         child: CachedNetworkImage(
           height: 35,
           width: 35,
@@ -233,12 +216,16 @@ class _UtilityHistoryDetailScreenState
   }
 
   Widget displayUtilityName() {
-    return Text(
-      _utilityHistoryModel.customerUsername,
-      style: TextStyle(
-        color: blackFont,
-        fontWeight: FontWeight.bold,
-        fontSize: 17,
+    return Expanded(
+      child: Text(
+        _utilityHistoryModel.providerName,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontFamily: 'OpenSans',
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -266,27 +253,6 @@ class _UtilityHistoryDetailScreenState
               fontSize: 14),
         ),
       ],
-    );
-  }
-
-  Widget displayTransactionInfo() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.zero,
-      shadowColor: dividerColor,
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: dividerColor, width: 0.5)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            displayUtilityHeader(),
-            displayUtilityHistoryBody(),
-          ],
-        ),
-      ),
     );
   }
 
@@ -327,9 +293,9 @@ class _UtilityHistoryDetailScreenState
 
   getStatusWidget() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+      padding: EdgeInsets.all(7),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(8),
         color: _utilityHistoryModel.status == 'Successful'
             ? navyBlue.withOpacity(0.1)
             : mateRed.withOpacity(0.1),
@@ -367,7 +333,7 @@ class _UtilityHistoryDetailScreenState
                 Text(
                   title,
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     color: blackFont,
                     fontSize: 14,
                   ),

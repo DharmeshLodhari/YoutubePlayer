@@ -1,6 +1,7 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/movies/models/MovieItem.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -143,7 +144,7 @@ class _MixCartItemState extends State<MixCartItem> {
       ),
       onTap: () {
         Navigator.of(context)
-            .pushNamed('/scan-qr', arguments: {'isRequest': false});
+            .pushNamed(Routes.SCAN_QR, arguments: {'isRequest': false});
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -379,7 +380,7 @@ class _MixCartItemState extends State<MixCartItem> {
       child: InkWell(
         onTap: () {
           Navigator.of(context)
-              .pushNamed('/scan-qr', arguments: {'isRequest': false});
+              .pushNamed(Routes.SCAN_QR, arguments: {'isRequest': false});
         },
         child: Image.asset(
           'assets/images/qr_code.png',
@@ -453,7 +454,7 @@ class _MixCartItemState extends State<MixCartItem> {
     customerProfileBloc.customer =
         await UserAuth().fetchCustomerProfile(product.seller);
     Navigator.of(context).pushNamed(
-      '/send-payment',
+      Routes.SEND_PAYMENT,
       arguments: {
         'isFromProfile': false,
         'product': product,
@@ -576,7 +577,7 @@ class _MixCartItemState extends State<MixCartItem> {
                   if (response.statusCode == 200) {
                     Navigator.popAndPushNamed(
                       context,
-                      '/orders-list',
+                      Routes.ORDERS_LIST,
                     );
                   } else if (response.statusCode == 500) {
                     Navigator.pop(context);
@@ -634,12 +635,12 @@ class VerticalListItem extends StatelessWidget {
       onTap: () {
         if (type == "product") {
           Product? product = item;
-          Navigator.pushNamed(context, "/product",
+          Navigator.pushNamed(context, Routes.PRODUCT,
               arguments: {"product": product});
         }
         if (type == "service") {
           Service? service = item;
-          Navigator.pushNamed(context, "/service-detail",
+          Navigator.pushNamed(context, Routes.SERVICE_DETAIL,
               arguments: {"service": service});
         }
       },
