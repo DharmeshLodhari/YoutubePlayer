@@ -303,14 +303,22 @@ class FileTileForChat extends StatelessWidget {
             radius: 18,
             backgroundColor: Colors.white,
             child: SvgPicture.asset(
+<<<<<<< HEAD
               'assets/images/pdf_icon.svg',
+=======
+              'assets/images/apk_icon.svg',
+>>>>>>> master
               width: 20,
               height: 20,
               fit: BoxFit.cover,
             ),
           ),
           title: Text(
+<<<<<<< HEAD
             'file.pdf',
+=======
+            'file.apk',
+>>>>>>> master
             style: TextStyle(color: Colors.white),
           ),
           trailing: Expanded(

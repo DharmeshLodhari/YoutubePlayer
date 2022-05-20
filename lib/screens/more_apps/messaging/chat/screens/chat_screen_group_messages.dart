@@ -2259,6 +2259,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       type: FileType.custom,
       allowedExtensions: listOfAllowedFileExtensions,
     );
+<<<<<<< HEAD
 
     if (result != null) {
       DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
@@ -2268,6 +2269,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       DatabaseHelper().saveDocumentFileInChat(model);
       debugPrint('FILE NAME ::${result.names}');
     }
+=======
+>>>>>>> master
   }
 
   void pickGIF() async {

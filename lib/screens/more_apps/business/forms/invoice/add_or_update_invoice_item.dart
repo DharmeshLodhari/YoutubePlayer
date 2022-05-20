@@ -384,6 +384,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
           // };
           //
           // debugPrint(data.toString());
+<<<<<<< HEAD:lib/screens/more_apps/business/forms/invoice/add_or_update_invoice_item.dart
 
           _invoiceItem!.name = _descriptionController.text.trim();
           _invoiceItem!.amount = int.parse(
@@ -392,6 +393,16 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
 
           addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
 
+=======
+
+          _invoiceItem!.name = _descriptionController.text.trim();
+          _invoiceItem!.amount = int.parse(
+              _amountController.text.replaceAll(",", "").split('.')[0].trim());
+          _invoiceItem!.currency = userBloc.user.currency;
+
+          addInvoiceBloc.addItem(invoiceItem: _invoiceItem);
+
+>>>>>>> master:lib/screens/more_apps/business/forms/invoice/add_invoice_item.dart
           Navigator.pop(context);
         } catch (e) {
           debugPrint(e.toString());
