@@ -669,6 +669,18 @@ String? validateSlydoName(String userInput) {
   }
 }
 
+String truncateString({required String str, required int lengthToTruncateAt}) {
+  if (str.length <= lengthToTruncateAt) {
+    return str;
+  } else {
+    return '${str.substring(0, lengthToTruncateAt + 1)}...';
+  }
+
+  // userBloc.user.displayName()!.length <= 37
+  //     ? userBloc.user.displayName()!
+  //     : '${userBloc.user.displayName()!.substring(0, 38)}...',
+}
+
 String slydoNameMsg = 'You can not use slydo in name';
 String? checkSlydoName(String name) {
   String? result;

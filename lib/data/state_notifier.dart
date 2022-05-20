@@ -236,7 +236,7 @@ class BasketBloc extends ChangeNotifier {
     merchantNameMapCopy[merchantFullName] = merchantUserName;
 
     debugPrint('MERCHANT NAME COPY LENGTH ::: ${merchantNameMapCopy.length}');
-    debugPrint('MERCHANT NAME COPY ::: ${merchantNameMapCopy}');
+    debugPrint('MERCHANT NAME COPY ::: $merchantNameMapCopy');
   }
 
   void removeMerchantName(var item) {
