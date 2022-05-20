@@ -12,7 +12,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
@@ -30,16 +29,13 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../utils/colors.dart';
 import 'home.dart';
 import 'moments_screen.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
-import 'more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 
 // ignore: must_be_immutable
@@ -449,10 +445,14 @@ class _DashboardState extends State<Dashboard> {
           ),
           bottomNavigationBarItem(
 <<<<<<< HEAD
+<<<<<<< HEAD
             iconSize: 22,
 =======
             iconSize: 24,
 >>>>>>> master
+=======
+            iconSize: 22,
+>>>>>>> hot-fix
             iconData: Icons.play_circle_filled,
             title: AppLocalization.of(context)!.moments,
           ),

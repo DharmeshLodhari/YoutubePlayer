@@ -2,23 +2,18 @@ import 'dart:io';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
-import '../data/currency.dart';
 import '../routes/route_constants.dart';
-import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'more_apps/shopping/shopping_auth.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -167,8 +162,15 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(
+<<<<<<< HEAD
             truncateString(userBloc.user.displayName()!,
                 lengthToTruncateAt: 37),
+=======
+            truncateString(
+              str: userBloc.user.displayName()!,
+              lengthToTruncateAt: 37,
+            ),
+>>>>>>> hot-fix
 
             // userBloc.user.displayName()!.length <= 37
             //     ? userBloc.user.displayName()!

@@ -41,7 +41,7 @@ class BusinessAuth extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      debugPrint('GET CONTRACT LIST :::: ${jsonData}');
+      debugPrint('GET CONTRACT LIST :::: $jsonData');
 
       List<ContractModel> contractList = [];
       List jsonResult = jsonData['results'];
@@ -389,7 +389,6 @@ class BusinessAuth extends AuthService {
     debugPrint('ADD INVOICE ITEM TO EXISTING INVOICE ::: ${response.body}');
     debugPrint(
         'ADD INVOICE ITEM TO EXISTING INVOICE::: ${response.statusCode}');
-    return true;
     if (response.statusCode == 200) {
       return true;
     }

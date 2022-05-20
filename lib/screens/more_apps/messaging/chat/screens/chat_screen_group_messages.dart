@@ -77,7 +77,11 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../data/database_helper.dart';
 import '../../../../../routes/route_constants.dart';
+<<<<<<< HEAD
 import '../models/DocumentFileInChatModel.dart';
+=======
+import '../models/document_file_in_chat_download_model.dart';
+>>>>>>> hot-fix
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
@@ -2260,6 +2264,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       allowedExtensions: listOfAllowedFileExtensions,
     );
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> hot-fix
 
     if (result != null) {
       DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
@@ -2269,8 +2276,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       DatabaseHelper().saveDocumentFileInChat(model);
       debugPrint('FILE NAME ::${result.names}');
     }
+<<<<<<< HEAD
 =======
 >>>>>>> master
+=======
+>>>>>>> hot-fix
   }
 
   void pickGIF() async {

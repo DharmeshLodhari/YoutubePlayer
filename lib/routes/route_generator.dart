@@ -151,6 +151,7 @@ import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/dashboard.dart';
@@ -308,6 +309,8 @@ import '../screens/more_apps/utility/select_provider_screen.dart';
 import '../screens/more_apps/utility/utility_payment_screen.dart';
 
 >>>>>>> master
+=======
+>>>>>>> hot-fix
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
