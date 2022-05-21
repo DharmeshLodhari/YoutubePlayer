@@ -75,7 +75,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../data/database_helper.dart';
 import '../../../../../routes/route_constants.dart';
+import '../models/document_file_in_chat_download_model.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
@@ -2257,6 +2259,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       type: FileType.custom,
       allowedExtensions: listOfAllowedFileExtensions,
     );
+
+    if (result != null) {
+      DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+        fileName: result.names[0]!,
+        downloaded: false,
+      );
+      DatabaseHelper().saveDocumentFileInChat(model);
+      debugPrint('FILE NAME ::${result.names}');
+    }
   }
 
   void pickGIF() async {

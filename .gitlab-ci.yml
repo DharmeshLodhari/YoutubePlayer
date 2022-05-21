@@ -6,9 +6,10 @@ stages:
   - Deploy
 
 variables:
-  BUILDNAME: slydp-$(date +"%m-%d-%Y-%I-%M-%p").apk
+  BUILDNAME: slydo-`date +"%m-%d-%Y-%I-%M-%p"`.apk
 
 before_script:
+  - echo $BUILDNAME
   - flutter pub get
   - flutter clean
   - touch android/key.properties
@@ -36,8 +37,8 @@ android:build:
     - touch android/key.properties
     - cat $KEYFILE >> android/key.properties
 
-  after_script:
-    - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
+  # after_script:
+  #   - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
 
   script:
     # Flutter local configuration
