@@ -167,9 +167,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16),
                                     ),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: 20),
                             ],
                           ),
                         ),
