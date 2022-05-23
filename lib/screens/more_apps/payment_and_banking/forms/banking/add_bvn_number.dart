@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../widget/customized_dropdown_field.dart';
+
 // ignore: must_be_immutable
 class AddBvnNumber extends StatefulWidget {
   var arguments;
@@ -44,6 +46,11 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
 
   VirtualAccount? virtualAccount;
   String? selectedTier;
+
+  String? gender;
+  bool? isValidAge;
+  DateTime dob = DateTime.now();
+  List<String> genders = ["Male", "Female"];
 
   @override
   void initState() {
@@ -112,6 +119,8 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             children: <Widget>[
               buildBvnNumberDropDown(),
               buildGetIdType(),
+              getDOBField(),
+              getGenderField(),
               buildBusinessRegistrationLicense(),
               getVerificationWarning(),
               SizedBox(height: 16),
@@ -121,6 +130,150 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         ),
       ),
     );
+  }
+
+  Widget getDOBField() {
+    return GestureDetector(
+      onTap: () {
+        showDatePicker(
+          builder: customThemeBuilder,
+          context: context,
+          initialDate: DateTime(dob.year, dob.month, dob.day),
+          firstDate: DateTime(1920, 0, 1),
+          lastDate: DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day),
+        ).then((value) {
+          dob = DateTime(value!.year, value.month, value.day);
+          setState(() {});
+          validateDOB();
+        }).catchError((error) {});
+      },
+      child: CustomizedDropDownField(
+        title: "Birthdate",
+        child: Container(
+          child: ListTile(
+            dense: true,
+            title: Text(
+              formatDate(dob),
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+            trailing: Icon(
+              SlydoAppIcon.date,
+              size: 16,
+              color: darkGrey,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool validateDOB() {
+    DateTime dateTime = DateTime.now();
+
+    if (dob.add(Duration(days: 4745)).isBefore(dateTime)) {
+      isValidAge = true;
+      return true;
+    } else {
+      isValidAge = false;
+      setState(() {});
+      return false;
+    }
+  }
+
+  Widget getGenderField() {
+    return CustomizedDropDownField(
+      title: "Gender",
+      child: ListTile(
+        dense: true,
+        title: Text(
+          gender != null ? gender! : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          selectGenderField();
+        },
+      ),
+    );
+  }
+
+  void selectGenderField() async {
+    final pressedGender = await showDialog<String>(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              contentPadding: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              content: Container(
+                width: MediaQuery.of(context).size.width - 40,
+                child: Card(
+                  margin: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: genders.map<Widget>((data) {
+                          if (gender == data) {
+                            return Container(
+                              color: selectedListItemBackgroundBlue,
+                              child: ListTile(
+                                dense: true,
+                                title: Text(
+                                  data,
+                                  style: TextStyle(
+                                      color: navyBlue,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(
+                                  SlydoAppIcon.checked,
+                                  color: navyBlue,
+                                  size: 12,
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context, data);
+                                },
+                              ),
+                            );
+                          }
+                          return ListTile(
+                            title: Text(
+                              data,
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            dense: true,
+                            onTap: () {
+                              Navigator.pop(context, data);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+    if (pressedGender != null) {
+      gender = pressedGender;
+      setState(() {});
+    }
   }
 
   Widget showBvnForm() {
