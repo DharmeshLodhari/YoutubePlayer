@@ -990,10 +990,10 @@ class DatabaseHelper {
       DocumentFileInChatDownloadModel model) async {
     Database dbClient = await db;
 
+    debugPrint("DOCUMENT FILE DATABASE:- Save $DOWNLOAD_FILE_IN_CHAT_TABLE !!");
+
     int res = await dbClient.insert(DOWNLOAD_FILE_IN_CHAT_TABLE, model.toJson(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
-
-    debugPrint("DATABASE:- Save $CHAT_USER_TABLE !!");
 
     return res;
   }

@@ -5,8 +5,8 @@ stages:
   - Build Android
   - Deploy
 
-variables:
-  BUILDNAME: slydo-`date +"%m-%d-%Y-%I-%M-%p"`.apk
+#variables:
+#  BUILDNAME: slydo-`date +"%m-%d-%Y-%I-%M-%p`.apk
 
 before_script:
   - echo $BUILDNAME
@@ -40,6 +40,7 @@ android:build:
   # after_script:
   #   - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
 
+
   script:
     # Flutter local configuration
     - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
@@ -52,13 +53,13 @@ android:build:
     - rm -f local.properties
     - rm -f key.properties
     - mkdir -p /tmp/build/app/outputs/flutter-apk/
-    - touch build/app/outputs/flutter-apk/$BUILDNAME
+#    - touch build/app/outputs/flutter-apk/$BUILDNAME
 
   artifacts:
     paths:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
-      - build/app/outputs/flutter-apk/$BUILDNAME
+#      - build/app/outputs/flutter-apk/$BUILDNAME
     expire_in: 1 week
   interruptible: true
 
