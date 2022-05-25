@@ -658,6 +658,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
       log("DATA=> $jsonData");
       List items = [];

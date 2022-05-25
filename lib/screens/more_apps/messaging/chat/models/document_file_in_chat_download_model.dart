@@ -1,16 +1,21 @@
 class DocumentFileInChatDownloadModel {
-  String fileName;
-  bool downloaded;
+  String checkID;
+  String conversationID;
+  String? filePathInOs;
 
   DocumentFileInChatDownloadModel({
-    required this.fileName,
-    required this.downloaded,
+    this.filePathInOs,
+    required this.checkID,
+    required this.conversationID,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      "file_name": fileName,
-      "downloaded": downloaded,
-    };
+  Map<String, dynamic> toDBJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+
+    data['check_id'] = this.checkID;
+    data['file_path_in_os'] = this.filePathInOs;
+    data['conversation_id'] = this.conversationID;
+
+    return data;
   }
 }

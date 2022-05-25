@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
@@ -50,12 +52,17 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     mediaFile = widget.arguments!["media"];
     mediaType = widget.arguments!["mediaType"];
 
+    debugPrint('MEDIA FILE ::: ${mediaFile}');
+
     if (mediaType == "video") {
       setUpVideoPlayer();
     }
 
     if (mediaType == "image") {
       cropImage();
+    }
+    if (mediaType == "file") {
+      debugPrint('DOC FILE WAS PICKED');
     }
 
     super.initState();
@@ -153,31 +160,32 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
       child: Column(
         children: [
           Expanded(
-              child: Stack(
-            children: [
-              getMediaRenderer(),
-              Positioned(
-                top: 4,
-                left: 4,
-                child: InkWell(
-                  child: ClipOval(
-                    child: Container(
-                      height: 36,
-                      width: 36,
-                      child: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: Colors.white,
-                        size: 18,
+            child: Stack(
+              children: [
+                getMediaRenderer(),
+                Positioned(
+                  top: 4,
+                  left: 4,
+                  child: InkWell(
+                    child: ClipOval(
+                      child: Container(
+                        height: 36,
+                        width: 36,
+                        child: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                       ),
                     ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
                 ),
-              )
-            ],
-          )),
+              ],
+            ),
+          ),
           mediaType != "audio"
               ? Container(
                   color: Colors.white,
@@ -195,16 +203,12 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                         onTap: sendMessage,
                         child: Row(
                           children: [
-                            SizedBox(
-                              width: 8,
-                            ),
+                            SizedBox(width: 8),
                             Icon(
                               Icons.send,
                               color: navyBlue,
                             ),
-                            SizedBox(
-                              width: 8,
-                            ),
+                            SizedBox(width: 8),
                           ],
                         ),
                       ),
@@ -458,6 +462,14 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
               )
             ],
           ),
+        ),
+      );
+    } else if (mediaType == "file") {
+      return Center(
+        child: Icon(
+          Icons.file_copy_sharp,
+          color: Colors.white,
+          size: 80,
         ),
       );
     }

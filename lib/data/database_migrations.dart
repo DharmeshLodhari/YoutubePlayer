@@ -29,6 +29,16 @@ final initialDBSchema = [
       "url"	TEXT,
       "currency"	TEXT);
     ''',
+
+  //Create download file in chat table
+  '''CREATE TABLE $DOWNLOAD_FILE_IN_CHAT_TABLE (
+      "check_id" TEXT,
+      "conversation_id" TEXT,
+      "file_path_in_os" TEXT UNIQUE,
+      UNIQUE(check_id,conversation_id) 
+      );
+    ''',
+
   // Create the jwt table
   '''CREATE TABLE $JWT_TABLE (
       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,

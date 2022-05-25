@@ -1,3 +1,4 @@
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
@@ -12,6 +13,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import '../../models/VirtualAccount.dart';
 
 class CreditCardList extends StatefulWidget {
   final arguments;
@@ -28,6 +31,7 @@ class _CreditCardListState extends State<CreditCardList> {
   String? previous = "";
   bool isLoading = false;
   bool noItemInList = false;
+  bool hasVirtualAccount = false;
   List<CreditCard> creditCardList = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -47,6 +51,17 @@ class _CreditCardListState extends State<CreditCardList> {
     );
 
     super.initState();
+  }
+
+  checkForVirtualAccount() async {
+    VirtualAccount? virtualAccount = await DatabaseHelper().getVirtualAccount();
+
+    if (virtualAccount != null) {
+      hasVirtualAccount = true;
+    }
+    {
+      hasVirtualAccount = false;
+    }
   }
 
   void _onRefresh() async {
@@ -124,7 +139,7 @@ class _CreditCardListState extends State<CreditCardList> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        creditCardList.isEmpty ? SizedBox.shrink() : openGraphBtn(),
+        openGraphBtn(),
         SizedBox(width: 16),
       ],
     );
@@ -137,14 +152,24 @@ class _CreditCardListState extends State<CreditCardList> {
       icon: Icon(
         SlydoAppIcon.add,
         size: 16,
-        color:
-            creditCardList.length == 2 ? blackFont.withOpacity(0.3) : blackFont,
+        color: creditCardList.length == 2 || !hasVirtualAccount
+            ? blackFont.withOpacity(0.3)
+            : blackFont,
       ),
-      onTap: () {
-        //for adding new account
-        creditCardList.length == 2
-            ? showToast(message: "You cannot add more than two credit cards")
-            : Navigator.of(context).pushNamed(Routes.CARD_PAYMENT_PAGE);
+      onTap: () async {
+        VirtualAccount? virtualAccount =
+            await DatabaseHelper().getVirtualAccount();
+
+        if (hasVirtualAccount) {
+          //for adding new account
+          creditCardList.length == 2
+              ? showToast(message: "You cannot add more than two credit cards")
+              : Navigator.of(context).pushNamed(Routes.CARD_PAYMENT_PAGE);
+        } else {
+          showToast(
+              message:
+                  'You cannot add a credit card while your virtual account is being processed.');
+        }
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,

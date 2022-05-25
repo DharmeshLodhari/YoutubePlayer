@@ -31,6 +31,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -62,6 +63,7 @@ void main() async {
 
   AppConfig();
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize();
 
   // initializeBackgroundService();
 

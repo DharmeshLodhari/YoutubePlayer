@@ -870,14 +870,13 @@ class _AddInvoiceState extends State<AddInvoice> {
               "from_customer": userBloc.user.userName,
               "to_customer": _recipientController.text.trim(),
               "invoice_number": _invoiceController.text.trim().toString(),
-              // "invoice_date": dateToString(invoiceDate),
+              "invoice_date": dateToString(invoiceDate),
               "due_date": dateToString(dueDate),
               "items": invoiceItem
             };
 
             invoiceItem.forEach(
               (item) {
-                print('AMOUNT PR ::: ${item!.amount}');
                 int index = invoiceItem.indexOf(item);
                 invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
               },

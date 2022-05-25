@@ -360,6 +360,10 @@ class _UserDashboardState extends State<UserDashboard> {
             hideBalance();
             if (!storeLocked) {
               storeItemAndroidSheet();
+            } else {
+              showToast(
+                  message:
+                      'You need to upgrade to a business account to use this feature.');
             }
           },
           iconColor: HexColor("#46CE7C"),
@@ -435,6 +439,10 @@ class _UserDashboardState extends State<UserDashboard> {
             if (!storeLocked) {
               // Navigator.of(context).pushNamed(Routes.CONTRACTS);
               businessAndroidSheet();
+            } else {
+              showToast(
+                  message:
+                      'You need to upgrade to a business account to use this feature.');
             }
           },
           iconColor: HexColor("#5218E9"),
@@ -455,7 +463,7 @@ class _UserDashboardState extends State<UserDashboard> {
         //     icon: SlydoAppIcon.more,
         //     title: AppLocalization.of(context)!.more,
         //     onTap: () {
-        //       Navigator.pushNamed(context, "/more-apps");
+        //       Navigator.pushNamed(context, Routes.MORE_APPS);
         //     },
         //     iconColor: HexColor("#374677"),
         //   ),

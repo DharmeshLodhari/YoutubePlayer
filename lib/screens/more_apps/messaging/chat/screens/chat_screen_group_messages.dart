@@ -79,6 +79,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../data/database_helper.dart';
 import '../../../../../routes/route_constants.dart';
 import '../models/document_file_in_chat_download_model.dart';
+import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
@@ -2242,33 +2243,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        showMoreAction = false;
-        pickDocumentFiles();
+        addDocumentFileToMessage();
       },
     );
-  }
-
-  pickDocumentFiles() async {
-    List<String> listOfAllowedFileExtensions = [
-      'pdf',
-      'apk',
-      'zip',
-      'txt',
-      'xls'
-    ];
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: listOfAllowedFileExtensions,
-    );
-
-    if (result != null) {
-      DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
-        fileName: result.names[0]!,
-        downloaded: false,
-      );
-      DatabaseHelper().saveDocumentFileInChat(model);
-      debugPrint('FILE NAME ::${result.names}');
-    }
   }
 
   void pickGIF() async {
@@ -2706,6 +2683,50 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
+  void addDocumentFileToMessage() async {
+    FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: fileExtensions,
+    );
+
+    if (pickedMedia != null) {
+      // DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+      //   fileName: pickedMedia.names[0]!,
+      //   downloaded: false,
+      // );
+      // DatabaseHelper().saveDocumentFileInChat(model);
+      // debugPrint('FILE NAME ::${pickedMedia.names}');
+
+      File file = File(pickedMedia.files.single.path!);
+      String mediaType = getFileType(pickedMedia);
+      if (mediaType == "") {
+        setupShakeDetector();
+        return;
+      }
+
+      Object? result = await Navigator.of(context).pushNamed(
+        Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
+        arguments: {
+          "data": {
+            "conversation": chatConversation!.conversationId,
+            "author": userBloc!.user.userName,
+          },
+          "media": file,
+          "message": messageController!.text.trim(),
+          "mediaType": mediaType
+        },
+      ).catchError((error) {
+        debugPrint("Error: = = = = $error");
+      });
+      setupShakeDetector();
+
+      if (result == null) return;
+
+      messageController!.text = "";
+      debugPrint("Result:- $result");
+    }
+  }
+
   Future<String?> selectMediaType() async {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
@@ -3099,6 +3120,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         break;
       case "invoice":
         finalUI = renderInvoiceUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+
+      case "file":
+        finalUI = renderDocumentFileUI(
             message: messageData, chatConversation: chatConversation);
         break;
 
@@ -3736,6 +3762,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
+  Widget renderDocumentFileUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return DocumentFileTileForChat(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
   Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
@@ -3753,14 +3787,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         basketBloc.addItemToCart(item: item, type: type);
         late var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].messageId == item.messageId) {
+          if (element["item"].checkID == item.checkID) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].messageId,
+          "id": mapData["item"].checkID,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");

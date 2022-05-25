@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/utils/common.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/enums.dart';
 
 class VideoTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
@@ -256,7 +256,6 @@ class VideoTileForChat extends StatelessWidget {
           ],
         ),
         SizedBox(height: 4),
-        FileTileForChat(),
       ],
     );
   }
@@ -271,117 +270,5 @@ class VideoTileForChat extends StatelessWidget {
     );
 
     return uInt8list;
-  }
-}
-
-class FileTileForChat extends StatelessWidget {
-  const FileTileForChat({Key? key}) : super(key: key);
-
-  final bool isSend = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width / 1.8,
-          minWidth: MediaQuery.of(context).size.width / 1.8,
-        ),
-        margin: EdgeInsets.only(right: 20),
-        padding: EdgeInsets.symmetric(vertical: 4),
-        decoration: BoxDecoration(
-          color: navyBlue,
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(10),
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-          ),
-        ),
-        child: ListTile(
-          leading: CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.white,
-            child: SvgPicture.asset(
-              'assets/images/pdf_icon.svg',
-              width: 20,
-              height: 20,
-              fit: BoxFit.cover,
-            ),
-          ),
-          title: Text(
-            'file.pdf',
-            style: TextStyle(color: Colors.white),
-          ),
-          trailing: Expanded(
-            child: InkWell(
-                child: SvgPicture.asset(
-                    'assets/images/file_in_chat_download_icon.svg')),
-          ),
-        ),
-      ),
-    );
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            isSend
-                ? Container()
-                : Container(
-                    width: 20,
-                  ),
-            Container(
-              decoration: BoxDecoration(
-                color: navyBlue,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10),
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                ),
-              ),
-              child: SizedBox(height: 40, child: Text('')),
-            ),
-            isSend
-                ? Container(
-                    width: 20,
-                    child: isSend
-                        ? Center(
-                            child: getMessageTick(message: {'delivered': true}),
-                          )
-                        : Container(),
-                  )
-                : Container(),
-          ],
-        ),
-        SizedBox(height: 1),
-        Row(
-          mainAxisAlignment:
-              isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
-          children: [
-            isSend
-                ? Container()
-                : SizedBox(
-                    width: 20,
-                  ),
-            Text(
-              '3:43pm',
-              style: TextStyle(
-                  color: darkGrey, fontSize: 10, fontWeight: FontWeight.w500),
-            ),
-            isSend
-                ? SizedBox(
-                    width: 20,
-                  )
-                : Container(),
-          ],
-        ),
-        SizedBox(height: 4),
-      ],
-    );
   }
 }

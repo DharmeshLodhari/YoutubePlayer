@@ -18,6 +18,7 @@ List<String> videoExtensions = [
   "webm",
   "mkv"
 ];
+List<String> fileExtensions = ['pdf', 'apk', 'zip', 'txt', 'xls'];
 List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
 Future<String?> getVideoThumbnail(File file) async {
@@ -40,6 +41,7 @@ String getFileType(FilePickerResult pickedMedia) {
   debugPrint(
       " pickedMedia.files.single.path => ${pickedMedia.files.single.path}");
 
+  if (fileExtensions.contains(extension)) return "file";
   if (imageExtensions.contains(extension)) return "image";
   if (videoExtensions.contains(extension)) return "video";
   if (audioExtensions.contains(extension)) return "audio";

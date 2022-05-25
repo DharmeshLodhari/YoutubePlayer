@@ -50,6 +50,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   final _auth = ShoppingAuthService();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   String? statusOfOrder = "";
+  String? statusOfOrderCopy =
+      ""; //This variable is used to track if the statusOfOrder has changed.
 
   GlobalKey _key = LabeledGlobalKey("orderDetailPagePopUpMenu");
   late CustomizedPopUpMenu menu;
@@ -60,6 +62,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void initState() {
     order = arguments['order'];
     statusOfOrder = order!.status!.toLowerCase();
+    statusOfOrderCopy = order!.status!.toLowerCase();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -69,6 +72,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void fetchOrder(String orderId) async {
+    setState(() {
+      isLoading = true;
+    });
     _auth.getOrder(orderId).then((value) {
       if (mounted) {
         setState(() {
@@ -157,7 +163,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         noteSheetBtn(),
         SizedBox(width: 10.0),
         changeOrderStatusSheetBtn(),
-        // popUpMenuButton(),
         SizedBox(
           width: 16,
         ),
@@ -234,20 +239,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   Widget changeOrderStatusSheetBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.settings,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        showChangeStatusAndroidSheet();
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
-    );
+    if (userBloc.user.userName == order!.merchant) {
+      return RoundedBackgroundIcon(
+        height: 34,
+        width: 34,
+        icon: Icon(
+          SlydoAppIcon.settings,
+          size: 16,
+          color: blackFont,
+        ),
+        onTap: () {
+          showChangeStatusAndroidSheet();
+        },
+        backgroundColor: iconBtnGrey,
+        enableMargin: true,
+      );
+    }
+    return SizedBox.shrink();
   }
 
   Widget scaffoldBody() {
@@ -778,7 +786,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     var item = items[index];
     Map data = {
       "type": item["type"],
-      "id": item.conversationId,
+      "id": item.conversationID,
     };
 
     _auth.removeItemToShoppingCart(data);
@@ -822,7 +830,21 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   void updateStatus(value) {
-    _auth.updateOrderStatus(value, order!.id.toString());
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+
+    _auth.updateOrderStatus(value, order!.id.toString()).then((updated) {
+      if (updated) {
+        Navigator.pop(context); // Dismiss the loader.
+        Navigator.pop(context); // Dismiss bottom-sheet.
+        Navigator.pop(context,
+            true); //Dismiss the order details page and reload the order list page.
+        showToast(message: 'Status updated successfully');
+      } else {
+        showToast(message: 'Something went wrong while updating status.');
+      }
+    });
   }
 }
 
