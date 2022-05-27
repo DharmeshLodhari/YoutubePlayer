@@ -18,7 +18,7 @@ List<String> videoExtensions = [
   "webm",
   "mkv"
 ];
-List<String> fileExtensions = ['pdf', 'apk', 'zip', 'txt', 'xls'];
+List<String> fileExtensions = ['txt', 'pdf', 'apk', 'zip', 'xls'];
 List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
 Future<String?> getVideoThumbnail(File file) async {

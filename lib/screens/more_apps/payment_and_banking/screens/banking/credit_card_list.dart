@@ -31,7 +31,7 @@ class _CreditCardListState extends State<CreditCardList> {
   String? previous = "";
   bool isLoading = false;
   bool noItemInList = false;
-  bool hasVirtualAccount = false;
+  VirtualAccount? virtualAccount;
   List<CreditCard> creditCardList = [];
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -45,6 +45,7 @@ class _CreditCardListState extends State<CreditCardList> {
   @override
   void initState() {
     this.getList();
+    checkForVirtualAccount();
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -54,14 +55,22 @@ class _CreditCardListState extends State<CreditCardList> {
   }
 
   checkForVirtualAccount() async {
-    VirtualAccount? virtualAccount = await DatabaseHelper().getVirtualAccount();
+    bool isFromServer = false;
+
+    virtualAccount = await DatabaseHelper().getVirtualAccount();
+
+    if (virtualAccount == null) {
+      virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
+      isFromServer = true;
+    }
 
     if (virtualAccount != null) {
-      hasVirtualAccount = true;
+      if (isFromServer) {
+        await DatabaseHelper().saveVirtualAccount(virtualAccount!);
+      }
     }
-    {
-      hasVirtualAccount = false;
-    }
+
+    if (mounted) setState(() {});
   }
 
   void _onRefresh() async {
@@ -152,16 +161,12 @@ class _CreditCardListState extends State<CreditCardList> {
       icon: Icon(
         SlydoAppIcon.add,
         size: 16,
-        color: creditCardList.length == 2 || !hasVirtualAccount
+        color: creditCardList.length == 2 || virtualAccount == null
             ? blackFont.withOpacity(0.3)
             : blackFont,
       ),
       onTap: () async {
-        VirtualAccount? virtualAccount =
-            await DatabaseHelper().getVirtualAccount();
-
-        if (hasVirtualAccount) {
-          //for adding new account
+        if (virtualAccount != null) {
           creditCardList.length == 2
               ? showToast(message: "You cannot add more than two credit cards")
               : Navigator.of(context).pushNamed(Routes.CARD_PAYMENT_PAGE);

@@ -304,17 +304,17 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: navyBlue,
+      actionOneBgColor: mateRed,
       actionOneTextColor: Colors.white,
-      actionTwoBgColor: mateRed,
+      actionTwoBgColor: navyBlue,
       actionTwoTextColor: Colors.white,
-      firstActionPrimary: true,
+      firstActionPrimary: false,
       title: AppLocalization.of(context)!.accept,
       description: "Are you sure you want to add" +
           " ${user.displayName()} " +
           "into your Connections?",
-      actionOneText: AppLocalization.of(context)!.accept,
-      actionTwoText: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.accept,
     );
     if (result != null && result) {
       bool done = await UserAuth().acceptContactRequest(user);

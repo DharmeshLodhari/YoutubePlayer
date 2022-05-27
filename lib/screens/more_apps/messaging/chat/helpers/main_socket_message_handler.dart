@@ -132,6 +132,8 @@ class MainSocketMessageHandler {
               break;
             case "image":
               break;
+            case "file":
+              break;
 
             default:
               debugPrint(

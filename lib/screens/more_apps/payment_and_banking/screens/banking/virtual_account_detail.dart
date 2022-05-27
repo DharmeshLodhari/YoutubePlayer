@@ -52,6 +52,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
     bool isFromServer = false;
 
     virtualAccount = await DatabaseHelper().getVirtualAccount();
+
     if (virtualAccount == null) {
       virtualAccount = await PaymentAndBankingAuth().getVirtualAccountDetail();
       isFromServer = true;
@@ -65,16 +66,6 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
         await DatabaseHelper().saveVirtualAccount(virtualAccount!);
       }
     }
-
-    // if (virtualAccount == null) {
-    //   isAccountExist = false;
-    //   Navigator.of(context).pushNamed(Routes.ADD_BVN_NUMBER);
-    // } else {
-    //   isAccountExist = true;
-    //   if (isFromServer) {
-    //     await DatabaseHelper().saveVirtualAccount(virtualAccount!);
-    //   }
-    // }
 
     _currentTier = virtualAccount?.accountTier?.tierType;
 

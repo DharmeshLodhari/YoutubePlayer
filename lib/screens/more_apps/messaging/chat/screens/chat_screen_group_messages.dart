@@ -1034,6 +1034,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             newMessageText!.replaceAll(RegExp(r"\s+"), "") ==
                 previousMessageText!.replaceAll(RegExp(r"\s+"), "")) {
           messageList[i] = jsonEncode(newMessage);
+
+          debugPrint('MESSAGE LIST ::: ${messageList[i]}');
           if (mounted) setState(() {});
           isMatchFound = true;
 
@@ -2428,76 +2430,77 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           alignment: Alignment.centerRight,
           children: [
             Theme(
-                data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
-                child: Scrollbar(
-                  radius: Radius.circular(12),
-                  thickness: 2.5,
-                  child: TextFormField(
-                    controller: messageController,
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    focusNode: messageFocus,
-                    onFieldSubmitted: (value) {
-                      getSendMessageAction();
-                    },
-                    cursorColor: blackFont,
-                    cursorWidth: 1,
-                    cursorHeight: 20,
-                    maxLines: null,
-                    cursorRadius: Radius.circular(16),
-                    decoration: InputDecoration(
-                      hintText: "Type a message",
-                      hintStyle: TextStyle(
-                        color: darkGrey,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+              data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+              child: Scrollbar(
+                radius: Radius.circular(12),
+                thickness: 2.5,
+                child: TextFormField(
+                  controller: messageController,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  focusNode: messageFocus,
+                  onFieldSubmitted: (value) {
+                    getSendMessageAction();
+                  },
+                  cursorColor: blackFont,
+                  cursorWidth: 1,
+                  cursorHeight: 20,
+                  maxLines: null,
+                  cursorRadius: Radius.circular(16),
+                  decoration: InputDecoration(
+                    hintText: "Type a message",
+                    hintStyle: TextStyle(
+                      color: darkGrey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    prefix: Padding(
+                      padding: EdgeInsets.only(left: 16),
+                    ),
+                    suffix: Padding(
+                      padding: EdgeInsets.only(right: 36),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10),
+                    isDense: true,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      prefix: Padding(
-                        padding: EdgeInsets.only(left: 16),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      suffix: Padding(
-                        padding: EdgeInsets.only(right: 36),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 10),
-                      isDense: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
                     ),
                   ),
-                )),
+                ),
+              ),
+            ),
             Positioned(
               child: captureImageOrVideoBtn(),
               right: 8,
@@ -2690,14 +2693,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
 
     if (pickedMedia != null) {
-      // DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
-      //   fileName: pickedMedia.names[0]!,
-      //   downloaded: false,
-      // );
-      // DatabaseHelper().saveDocumentFileInChat(model);
-      // debugPrint('FILE NAME ::${pickedMedia.names}');
-
       File file = File(pickedMedia.files.single.path!);
+
       String mediaType = getFileType(pickedMedia);
       if (mediaType == "") {
         setupShakeDetector();
@@ -3628,13 +3625,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     return TextMessageRendererForChat(
-        message: message,
-        chatConversation: chatConversation,
-        onReplyMessageTap: isReplyMessage
-            ? () {
-                replyMessageTapped(repliedTo: isReplyTo);
-              }
-            : null);
+      message: message,
+      chatConversation: chatConversation,
+      onReplyMessageTap: isReplyMessage
+          ? () {
+              replyMessageTapped(repliedTo: isReplyTo);
+            }
+          : null,
+    );
   }
 
   void replyMessageTapped({required Map<String, dynamic> repliedTo}) {
@@ -3763,7 +3761,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   Widget renderDocumentFileUI(
-      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+      {required Map<String, dynamic> message,
+      ChatConversation? chatConversation}) {
     return DocumentFileTileForChat(
       message: message,
       chatConversation: chatConversation,

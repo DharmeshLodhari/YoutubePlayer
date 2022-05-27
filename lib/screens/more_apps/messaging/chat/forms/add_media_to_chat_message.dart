@@ -14,9 +14,12 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
+
+import '../../../../../utils/enums.dart';
 
 // ignore: must_be_immutable
 class AddMediaToChatMessage extends StatefulWidget {
@@ -52,7 +55,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     mediaFile = widget.arguments!["media"];
     mediaType = widget.arguments!["mediaType"];
 
-    debugPrint('MEDIA FILE ::: ${mediaFile}');
+    debugPrint('MEDIA FILE ::: $mediaFile');
 
     if (mediaType == "video") {
       setUpVideoPlayer();
@@ -173,7 +176,7 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
                         width: 36,
                         child: Icon(
                           Icons.arrow_back_ios_rounded,
-                          color: Colors.white,
+                          color: mediaType == "file" ? blackFont : Colors.white,
                           size: 18,
                         ),
                       ),
@@ -465,14 +468,66 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
         ),
       );
     } else if (mediaType == "file") {
-      return Center(
-        child: Icon(
-          Icons.file_copy_sharp,
-          color: Colors.white,
-          size: 80,
+      return Container(
+        color: Colors.white,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                getDocumentFileIcon(
+                  getDocumentFileTypeForChat(mediaFile!.path.split('.').last),
+                ),
+                fit: BoxFit.cover,
+                width: 150,
+                height: 150,
+              ),
+              SizedBox(height: 12),
+              Text(
+                mediaFile!.path.split('/').last,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: blackFont,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
     return Container();
+  }
+}
+
+getDocumentFileTypeForChat(String extension) {
+  switch (extension) {
+    case 'pdf':
+      return DocumentFileTypeForChat.pdf;
+    case 'apk':
+      return DocumentFileTypeForChat.apk;
+    case 'xls':
+      return DocumentFileTypeForChat.xls;
+    case 'zip':
+      return DocumentFileTypeForChat.zip;
+    case 'txt':
+      return DocumentFileTypeForChat.txt;
+  }
+}
+
+String getDocumentFileIcon(DocumentFileTypeForChat docsType) {
+  switch (docsType) {
+    case DocumentFileTypeForChat.apk:
+      return 'assets/images/apk_icon.svg';
+    case DocumentFileTypeForChat.pdf:
+      return 'assets/images/pdf_icon.svg';
+    case DocumentFileTypeForChat.txt:
+      return 'assets/images/txt_icon.svg';
+    case DocumentFileTypeForChat.xls:
+      return 'assets/images/xls_icon.svg';
+    case DocumentFileTypeForChat.zip:
+      return 'assets/images/zip_icon.svg';
+    default:
+      return 'assets/images/zip_icon.svg';
   }
 }
