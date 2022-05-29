@@ -997,6 +997,7 @@ class DatabaseHelper {
     String? filePathInOs;
     Database dbClient = await db;
 
+<<<<<<< HEAD
     List<Map<String, dynamic>> downloadedFileInChatTable = await dbClient.query(
       DOWNLOAD_FILE_IN_CHAT_TABLE,
       where: "conversation_id = ? AND check_id = ?",
@@ -1029,6 +1030,13 @@ class DatabaseHelper {
     debugPrint(
         "DATABASE:- $DOWNLOAD_FILE_IN_CHAT_TABLE ${model.checkID} is Deleted !!");
 
+=======
+    debugPrint("DOCUMENT FILE DATABASE:- Save $DOWNLOAD_FILE_IN_CHAT_TABLE !!");
+
+    int res = await dbClient.insert(DOWNLOAD_FILE_IN_CHAT_TABLE, model.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
     return res;
   }
 }
