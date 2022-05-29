@@ -1035,7 +1035,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 previousMessageText!.replaceAll(RegExp(r"\s+"), "")) {
           messageList[i] = jsonEncode(newMessage);
 
-          debugPrint('MESSAGE LIST ::: ${messageList[i]}');
           if (mounted) setState(() {});
           isMatchFound = true;
 
