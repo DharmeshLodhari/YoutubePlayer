@@ -137,29 +137,26 @@ class _UtilityHistoryDetailScreenState
             : Stack(
                 children: [
                   Image.asset(
-                      'assets/images/utility_history_details_background_card.png'),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12.0, horizontal: 20),
-                    child: Column(
-                      children: [
-                        Row(
+                    'assets/images/utility_history_details_background_card.png',
+                  ),
+                  SingleChildScrollView(
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: Column(
                           children: [
-                            displayUtilityImage(),
-                            SizedBox(width: 10),
-                            displayUtilityName(),
+                            Row(
+                              children: [
+                                displayUtilityImage(),
+                                SizedBox(width: 10),
+                                displayUtilityName(),
+                              ],
+                            ),
+                            SizedBox(height: 12),
+                            displayUtilityHistoryBody(),
                           ],
                         ),
-                        SizedBox(height: 18),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                          child: Row(
-                            children: getDashes(numberOfDashes: 14),
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        displayUtilityHistoryBody(),
-                      ],
+                      ),
                     ),
                   ),
                 ],
@@ -247,10 +244,11 @@ class _UtilityHistoryDetailScreenState
         Text(
           moneyDisplayNormalizer(_utilityHistoryModel.amount),
           style: TextStyle(
-              color: blackFont,
-              // color: transaction!.isCredit! ? navyBlue : blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 14),
+            color: blackFont,
+            // color: transaction!.isCredit! ? navyBlue : blackFont,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -261,8 +259,9 @@ class _UtilityHistoryDetailScreenState
       padding: EdgeInsets.only(left: 14),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          SizedBox(height: 20),
           _historyDetailsTile(
             title: AppLocalization.of(context)!.amount,
             subTitleText:
@@ -281,11 +280,58 @@ class _UtilityHistoryDetailScreenState
             subTitleWidget: getStatusWidget(),
             imagePathName: 'status_icon.png',
           ),
-          _historyDetailsTile(
-            title: AppLocalization.of(context)!.description,
-            subTitleText: _utilityHistoryModel.description ?? "---",
-            imagePathName: 'desc_icon.png',
+          SizedBox(height: 28),
+          Card(
+            elevation: 1,
+            shadowColor: Color(0XFFD7DAEC),
+            margin: EdgeInsets.only(right: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset(
+                    'assets/images/desc_icon.png',
+                    width: 34,
+                    height: 34,
+                  ),
+                  SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Description',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: blackFont,
+                            fontSize: 14,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text('------'),
+                        SizedBox(width: 5),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
+
+          // _historyDetailsTile(
+          //   title: AppLocalization.of(context)!.description,
+          //   subTitleText:
+          //       '_utilityHistoryModel.description ?? "---", kljksjfklsjf kljsklfj skljfklsj flkj',
+          //   // subTitleText: _utilityHistoryModel.description ?? "---",
+          //   imagePathName: 'desc_icon.png',
+          // ),
         ],
       ),
     );
@@ -316,7 +362,7 @@ class _UtilityHistoryDetailScreenState
       Widget? subTitleWidget, // use this if you need a widget for the subtitle.
       required String imagePathName}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
       child: Row(
         children: [
           Image.asset(
@@ -325,31 +371,33 @@ class _UtilityHistoryDetailScreenState
             height: 34,
           ),
           SizedBox(width: 14),
-          Padding(
-            padding: const EdgeInsets.only(top: 18.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    color: blackFont,
-                    fontSize: 14,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 18.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: blackFont,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                SizedBox(height: 8),
-                subTitleWidget ??
-                    Text(
-                      subTitleText,
-                      style: TextStyle(
-                        color: blackFont,
-                        fontSize: 16,
-                        fontFamily: "roberto",
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-              ],
+                  SizedBox(height: 8),
+                  subTitleWidget ??
+                      Text(
+                        subTitleText,
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 16,
+                          fontFamily: "roberto",
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
+                ],
+              ),
             ),
           ),
         ],

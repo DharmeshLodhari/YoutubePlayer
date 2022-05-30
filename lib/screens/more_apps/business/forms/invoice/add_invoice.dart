@@ -877,7 +877,6 @@ class _AddInvoiceState extends State<AddInvoice> {
 
             invoiceItem.forEach(
               (item) {
-                print('AMOUNT PR ::: ${item!.amount}');
                 int index = invoiceItem.indexOf(item);
                 invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
               },

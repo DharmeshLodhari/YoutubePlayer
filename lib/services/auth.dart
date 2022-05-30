@@ -25,7 +25,7 @@ class AuthService {
   // static int authCallCount = 0;
   // static int authCallLimit = 5;
 
-  final Duration timeOutDuration = Duration(seconds: 4);
+  final Duration timeOutDuration = Duration(seconds: 8);
   final String timeOutErrorMessage = "Server Time-out !!";
 
   DatabaseHelper _db = DatabaseHelper();
@@ -47,7 +47,85 @@ class AuthService {
     return (ms / 1000).round();
   }
 
+  // To get refresh token
   // Log user in if credentials are correct
+  // Future<User> getRefreshToken() async {
+  //   // This method will pass the user name and password to the backend server
+  //   // and if credentials are correct will receive payload with jwt and user info
+  //   // which will be saved to the user table and jwt table then create
+  //   // a user instance which we should pass around throughout the application as
+  //   // the auth user.
+  //
+  //   var uri = AppConfig.baseUrl + "/api/v1/user/auth/refresh-token";
+  //   var uuid = Uuid();
+  //   var transactionId = uuid.v4();
+  //   var headers = {
+  //     "TransactionId": transactionId,
+  //     "DeviceType": Platform.isAndroid ? "Android" : "IOS",
+  //     "User-Agent": "Slydo-Mobile",
+  //   };
+  //
+  //   debugPrint('TRANSACTION-ID :: $transactionId');
+  //
+  //   // Because the jwt expires every 5 minutes we will take note of the time they
+  //   // where  created and the use that to compute the expiration time of the
+  //   // token. So that we will only use the token if its still valid.
+  //   // We play safe and use 4 minutes
+  //   DateTime now = DateTime.now();
+  //   int expirationTime =
+  //       getEpochTime(now.add(Duration(seconds: 220))); // 3.66667 Minute
+  //
+  //   Map _body = {"refresh": refreshToken};
+  //   var data = await getDeviceInfo();
+  //   // data['device_id'] = "CB52C6A6-4C0E-4FE0-A753-C9A936AEA8BB";
+  //   _body.addAll(data);
+  //
+  //   debugPrint("=> $_body");
+  //   Uri url = Uri.parse(uri);
+  //
+  //   debugPrint("URL => $url BODY => $_body");
+  //
+  //   var response = await http.post(url, body: _body, headers: headers);
+  //   print('RESPONSE:-----> $response');
+  //
+  //   if (response.statusCode == 200) {
+  //     debugPrint(
+  //         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+  //
+  //     Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+  //     jsonResponse["expiration"] = expirationTime;
+  //     jsonResponse["refresh_token"] = refreshToken;
+  //
+  //     Jwt jwt = Jwt.fromJson(jsonResponse);
+  //     await _db.saveJwt(jwt);
+  //
+  //     // Save user to database
+  //     var jsonData = jsonResponse["user"];
+  //     log("User=> $jsonData");
+  //     jsonData["password"] = password;
+  //     jsonData["url"] =
+  //         AppConfig.baseUrl + "/api/v1/user/customer/" + jsonData["username"];
+  //     User user = await createUser(jsonData);
+  //
+  //     return Future.value(user);
+  //   }
+  //
+  //   debugPrint(
+  //       "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+  //
+  //   try {
+  //     var jsonData = jsonDecode(response.body);
+  //
+  //     if (jsonData["detail"] != null) {
+  //       return Future.error("${jsonData["detail"]}");
+  //     } else {
+  //       return Future.error("${response.body}");
+  //     }
+  //   } catch (e) {
+  //     return Future.error("${response.body}");
+  //   }
+  // }
+
   Future<User> authenticate(String? phoneNumber, String? password) async {
     // This method will pass the user name and password to the backend server
     // and if credentials are correct will receive payload with jwt and user info
@@ -214,8 +292,10 @@ class AuthService {
         try {
           Map<String, String> userAuthDetailsMap = await getUserAuthDetails();
 
-          await authenticate(userAuthDetailsMap['phoneNumber'],
-              userAuthDetailsMap['password']);
+          await authenticate(
+            userAuthDetailsMap['phoneNumber'],
+            userAuthDetailsMap['password'],
+          );
         } catch (error) {
           debugPrint("ERROR:- while fetching new Token $error");
           await Future.delayed(Duration(milliseconds: 500));

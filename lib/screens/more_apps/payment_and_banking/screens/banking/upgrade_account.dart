@@ -3,6 +3,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../data/database_helper.dart';
+import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../../widget/customized_dropdown_field.dart';
 import '../../models/VirtualAccount.dart';
@@ -200,7 +201,7 @@ class _UpgradeAccountState extends State<UpgradeAccount> {
       textColor: Colors.white,
       text: "Next",
       onPressed: () {
-        Navigator.of(context).pushNamed("/add-bvn-number", arguments: {
+        Navigator.of(context).pushNamed(Routes.ADD_BVN_NUMBER, arguments: {
           "account": virtualAccount,
           "selected_tier": _selectedTier
         });

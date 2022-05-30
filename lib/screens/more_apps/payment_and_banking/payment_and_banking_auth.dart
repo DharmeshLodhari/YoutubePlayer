@@ -318,8 +318,13 @@ class PaymentAndBankingAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
+
+    debugPrint('URL ->>> $url');
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    debugPrint('CREDIT CARD LIST STATUS CODE ::: ${response.statusCode}');
+    print('CREDIT CARD LIST ----> ${response.body}');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -335,7 +340,6 @@ class PaymentAndBankingAuth extends AuthService {
         "results": creditCardList
       };
 
-      print('CREDIT CARD LIST RESULT ----> ${result['results']}');
       return result;
     } else {
       throw "Can't get https.";
@@ -760,6 +764,7 @@ class PaymentAndBankingAuth extends AuthService {
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
+    debugPrint('GET VIRTUAL ACCOUNT ::: ${response.body}');
     if (response.statusCode == 200 || response.statusCode == 201) {
       VirtualAccount virtualAccount =
           VirtualAccount.fromJson(jsonDecode(response.body));

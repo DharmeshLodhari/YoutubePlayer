@@ -177,6 +177,8 @@ class _PostTileForInvoiceState extends State<PostTileForInvoice> {
   }
 
   Widget getAvatar() {
+    debugPrint('INVOICE ::: ${invoiceModel.fromCustomerAvatar}');
+
     return Stack(
       children: [
         Container(

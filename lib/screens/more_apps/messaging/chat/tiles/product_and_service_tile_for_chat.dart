@@ -688,14 +688,14 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
         basketBloc.addItemToCart(item: item, type: type);
         late var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].messageId == item.messageId) {
+          if (element["item"].checkID == item.checkID) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].messageId,
+          "id": mapData["item"].checkID,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");

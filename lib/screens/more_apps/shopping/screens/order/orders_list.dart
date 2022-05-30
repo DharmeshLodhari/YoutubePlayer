@@ -552,9 +552,10 @@ class VerticalListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        var paid = await Navigator.pushNamed(context, Routes.ORDER_DETAIL_PAGE,
+        var reloadPage = await Navigator.pushNamed(
+            context, Routes.ORDER_DETAIL_PAGE,
             arguments: {"order": order});
-        if (paid != null && paid == true) {
+        if (reloadPage != null && reloadPage == true) {
           onPaymentSuccessfulFromDetailPage();
         }
       },

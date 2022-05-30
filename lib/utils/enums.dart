@@ -11,4 +11,4 @@ enum UtilitiesProvidersEnum {
 }
 enum InvoiceStatus { Draft, Paid, Unpaid, Pending }
 enum ContractStatus { Ended, Paused, Active }
-enum DocumentFileType { pdf, apk, txt, xls, zip }
+enum DocumentFileTypeForChat { pdf, apk, txt, xls, zip }

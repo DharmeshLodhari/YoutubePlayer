@@ -164,12 +164,8 @@ class _HomeState extends State<Home> {
           Text(
             truncateString(
               str: userBloc.user.displayName()!,
-              lengthToTruncateAt: 37,
+              lengthToTruncateAt: 38,
             ),
-
-            // userBloc.user.displayName()!.length <= 37
-            //     ? userBloc.user.displayName()!
-            //     : '${userBloc.user.displayName()!.substring(0, 38)}...',
             style: TextStyle(
               fontSize: 14,
             ),

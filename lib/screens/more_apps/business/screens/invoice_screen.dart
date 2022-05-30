@@ -106,8 +106,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   Widget appBarSwitch() {
     return Switch(
-      activeThumbImage: AssetImage('assets/images/incoming_arrow.png'),
-      inactiveThumbImage: AssetImage('assets/images/outgoing_arrow.png'),
+      activeThumbImage: AssetImage('assets/images/invoice_outgoing_arrow.png'),
+      inactiveThumbImage:
+          AssetImage('assets/images/invoice_incoming_arrow.png'),
       activeColor: Colors.grey.withOpacity(0.9),
       value: isSender,
       onChanged: (value) {
@@ -120,10 +121,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           invoiceBloc.getInvoiceList();
           if (value == true) {
             showSnackbar(context,
-                message: 'These are your incoming invoice', duration: 1000);
+                message: 'These are your outgoing invoice', duration: 1000);
           } else {
             showSnackbar(context,
-                message: 'These are your outgoing invoice', duration: 1000);
+                message: 'These are your incoming invoice', duration: 1000);
           }
         }
       },
@@ -325,7 +326,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
           bool canDeleteInvoice =
               invoice.fromCustomer == userBloc.user.userName &&
-                  invoice.status != "Paid";
+                  invoice.status == "Draft";
 
           bool canPay = invoice.fromCustomer != userBloc.user.userName &&
               invoice.status == "Unpaid";
@@ -412,7 +413,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     Map<String, String> data = {"status": action};
 
     BusinessAuth()
-        .updateInvoice(id: invoice.id.toString(), data: data)
+        .updateInvoice(invoiceId: invoice.id.toString(), data: data)
         .then((value) {
       // invoice.status = action;
       Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
@@ -443,6 +444,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   void deleteInvoice(InvoiceModel invoice) {
     BusinessAuth().deleteInvoice(invoiceId: invoice.id!).then((value) {
       // invoice.status = action;
+      Provider.of<InvoiceBloc>(context, listen: false).isSender = true;
+      Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
       Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
       showToast(message: "Invoice deleted");
     }).catchError((error) {
