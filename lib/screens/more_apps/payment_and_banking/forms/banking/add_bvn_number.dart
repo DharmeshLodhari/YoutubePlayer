@@ -118,6 +118,8 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               buildBvnNumberDropDown(),
+              buildDobField(),
+              getGenderField(),
               buildGetIdType(),
               getDOBField(),
               getGenderField(),
@@ -125,6 +127,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
               getVerificationWarning(),
               SizedBox(height: 16),
               getSubmitButton(),
+              SizedBox(height: 12),
             ],
           ),
         ),
@@ -132,6 +135,18 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     );
   }
 
+<<<<<<< HEAD
+  buildDobField() {
+    return Column(
+      children: [
+        getDOBField(),
+        SizedBox(height: 16),
+      ],
+    );
+  }
+
+=======
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
   Widget getDOBField() {
     return GestureDetector(
       onTap: () {
@@ -186,6 +201,30 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   Widget getGenderField() {
+<<<<<<< HEAD
+    return Column(
+      children: [
+        CustomizedDropDownField(
+          title: "Gender",
+          child: ListTile(
+            dense: true,
+            title: Text(
+              gender != null ? gender! : "",
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+            onTap: () {
+              selectGenderField();
+            },
+          ),
+        ),
+        SizedBox(height: 16),
+      ],
+=======
     return CustomizedDropDownField(
       title: "Gender",
       child: ListTile(
@@ -203,6 +242,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           selectGenderField();
         },
       ),
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
     );
   }
 
@@ -349,7 +389,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   Widget getVerificationWarning() {
-    if (selectedTier == "3" &&
+    if ((selectedTier == "3" || selectedTier == "2") &&
         (virtualAccount!.accountTier!.tierType! == "2" ||
             virtualAccount!.accountTier!.tierType! == "1")) {
       return SizedBox.shrink();
@@ -364,7 +404,7 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   Widget getSubmitButton() {
-    if (selectedTier == "3" &&
+    if ((selectedTier == "3" || selectedTier == "2") &&
         (virtualAccount!.accountTier!.tierType! == "2" ||
             virtualAccount!.accountTier!.tierType! == "1")) {
       return CurvedButton(
@@ -386,14 +426,26 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
           context: context,
           barrierDismissible: false,
           builder: (context) => Center(child: CircularLoadingIndicator()));
-      var data = {
-        "bvn_number": bvnNumberController!.text,
-        "government_id_type": selectedIdType!["value"],
-        "government_id": pickedGovernmentId ?? "",
-        "business_registration_license":
-            pickedBusinessRegistrationLicense ?? "",
-        "tier": selectedTier,
-      };
+
+      var data;
+
+      if (selectedTier == "2") {
+        data = {
+          "bvn_number": bvnNumberController!.text,
+          "gender": gender,
+          'dob': dob,
+        };
+      } else {
+        data = {
+          "bvn_number": bvnNumberController!.text,
+          "government_id_type": selectedIdType!["value"],
+          "government_id": pickedGovernmentId ?? "",
+          "business_registration_license":
+              pickedBusinessRegistrationLicense ?? "",
+          "tier": selectedTier,
+        };
+      }
+
       PaymentAndBankingAuth().addBvnNumberAndIdProof(data).then((value) {
         if (value) {
           showToast(message: 'Account upgraded');

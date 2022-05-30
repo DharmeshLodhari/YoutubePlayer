@@ -79,6 +79,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../data/database_helper.dart';
 import '../../../../../routes/route_constants.dart';
 import '../models/document_file_in_chat_download_model.dart';
+import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
@@ -1033,6 +1034,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             newMessageText!.replaceAll(RegExp(r"\s+"), "") ==
                 previousMessageText!.replaceAll(RegExp(r"\s+"), "")) {
           messageList[i] = jsonEncode(newMessage);
+
           if (mounted) setState(() {});
           isMatchFound = true;
 
@@ -2242,33 +2244,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        showMoreAction = false;
-        pickDocumentFiles();
+        addDocumentFileToMessage();
       },
     );
-  }
-
-  pickDocumentFiles() async {
-    List<String> listOfAllowedFileExtensions = [
-      'pdf',
-      'apk',
-      'zip',
-      'txt',
-      'xls'
-    ];
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: listOfAllowedFileExtensions,
-    );
-
-    if (result != null) {
-      DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
-        fileName: result.names[0]!,
-        downloaded: false,
-      );
-      DatabaseHelper().saveDocumentFileInChat(model);
-      debugPrint('FILE NAME ::${result.names}');
-    }
   }
 
   void pickGIF() async {
@@ -2451,76 +2429,77 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           alignment: Alignment.centerRight,
           children: [
             Theme(
-                data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
-                child: Scrollbar(
-                  radius: Radius.circular(12),
-                  thickness: 2.5,
-                  child: TextFormField(
-                    controller: messageController,
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    focusNode: messageFocus,
-                    onFieldSubmitted: (value) {
-                      getSendMessageAction();
-                    },
-                    cursorColor: blackFont,
-                    cursorWidth: 1,
-                    cursorHeight: 20,
-                    maxLines: null,
-                    cursorRadius: Radius.circular(16),
-                    decoration: InputDecoration(
-                      hintText: "Type a message",
-                      hintStyle: TextStyle(
-                        color: darkGrey,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+              data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+              child: Scrollbar(
+                radius: Radius.circular(12),
+                thickness: 2.5,
+                child: TextFormField(
+                  controller: messageController,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  focusNode: messageFocus,
+                  onFieldSubmitted: (value) {
+                    getSendMessageAction();
+                  },
+                  cursorColor: blackFont,
+                  cursorWidth: 1,
+                  cursorHeight: 20,
+                  maxLines: null,
+                  cursorRadius: Radius.circular(16),
+                  decoration: InputDecoration(
+                    hintText: "Type a message",
+                    hintStyle: TextStyle(
+                      color: darkGrey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    prefix: Padding(
+                      padding: EdgeInsets.only(left: 16),
+                    ),
+                    suffix: Padding(
+                      padding: EdgeInsets.only(right: 36),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10),
+                    isDense: true,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      prefix: Padding(
-                        padding: EdgeInsets.only(left: 16),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      suffix: Padding(
-                        padding: EdgeInsets.only(right: 36),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 10),
-                      isDense: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
                     ),
                   ),
-                )),
+                ),
+              ),
+            ),
             Positioned(
               child: captureImageOrVideoBtn(),
               right: 8,
@@ -2677,6 +2656,44 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (pickedMedia != null) {
       File file = File(pickedMedia.files.single.path!);
+      String mediaType = getFileType(pickedMedia);
+      if (mediaType == "") {
+        setupShakeDetector();
+        return;
+      }
+
+      Object? result = await Navigator.of(context).pushNamed(
+        Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
+        arguments: {
+          "data": {
+            "conversation": chatConversation!.conversationId,
+            "author": userBloc!.user.userName,
+          },
+          "media": file,
+          "message": messageController!.text.trim(),
+          "mediaType": mediaType
+        },
+      ).catchError((error) {
+        debugPrint("Error: = = = = $error");
+      });
+      setupShakeDetector();
+
+      if (result == null) return;
+
+      messageController!.text = "";
+      debugPrint("Result:- $result");
+    }
+  }
+
+  void addDocumentFileToMessage() async {
+    FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: fileExtensions,
+    );
+
+    if (pickedMedia != null) {
+      File file = File(pickedMedia.files.single.path!);
+
       String mediaType = getFileType(pickedMedia);
       if (mediaType == "") {
         setupShakeDetector();
@@ -3099,6 +3116,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         break;
       case "invoice":
         finalUI = renderInvoiceUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+
+      case "file":
+        finalUI = renderDocumentFileUI(
             message: messageData, chatConversation: chatConversation);
         break;
 
@@ -3602,13 +3624,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     return TextMessageRendererForChat(
-        message: message,
-        chatConversation: chatConversation,
-        onReplyMessageTap: isReplyMessage
-            ? () {
-                replyMessageTapped(repliedTo: isReplyTo);
-              }
-            : null);
+      message: message,
+      chatConversation: chatConversation,
+      onReplyMessageTap: isReplyMessage
+          ? () {
+              replyMessageTapped(repliedTo: isReplyTo);
+            }
+          : null,
+    );
   }
 
   void replyMessageTapped({required Map<String, dynamic> repliedTo}) {
@@ -3736,6 +3759,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
+  Widget renderDocumentFileUI(
+      {required Map<String, dynamic> message,
+      ChatConversation? chatConversation}) {
+    return DocumentFileTileForChat(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
   Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
@@ -3753,14 +3785,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         basketBloc.addItemToCart(item: item, type: type);
         late var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].messageId == item.messageId) {
+          if (element["item"].checkID == item.checkID) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].messageId,
+          "id": mapData["item"].checkID,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");

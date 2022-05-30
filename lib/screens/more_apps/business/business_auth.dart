@@ -306,14 +306,32 @@ class BusinessAuth extends AuthService {
     return Future.error(jsonData.toStiring());
   }
 
-  Future<bool> updateInvoice({String? id, Map? data}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$id/";
+  Future<bool> updateInvoice({String? invoiceId, Map? data}) async {
+    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
     var headers = await getAuthHeaders();
 
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
 
+    debugPrint('DATA ::: $_data');
+    debugPrint('UPDATE INVOICE RESPONSE ::: ${response.body}');
+
     if (response.statusCode == 200) {
+      return true;
+    }
+    var jsonData = json.decode(response.body);
+    return Future.error(jsonData.toString());
+  }
+
+  Future<bool> deleteInvoice({required int invoiceId}) async {
+    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
+    var headers = await getAuthHeaders();
+
+    var response = await httpDelete(url, headers: headers);
+
+    debugPrint('DELETE INVOICE RESPONSE ::: ${response.body}');
+
+    if (response.statusCode == 204) {
       return true;
     }
     var jsonData = json.decode(response.body);
@@ -349,19 +367,6 @@ class BusinessAuth extends AuthService {
     return Future.error(jsonData.toString());
   }
 
-  Future<bool> deleteInvoice({required int invoiceId}) async {
-    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
-    var headers = await getAuthHeaders();
-    var response = await httpDelete(url, headers: headers);
-    debugPrint('DELETE INVOICE ::: ${response.body}');
-
-    if (response.statusCode == 204) {
-      return true;
-    }
-    var jsonData = json.decode(response.body);
-    return Future.error(jsonData.toString());
-  }
-
   Future<bool> deleteInvoiceItem({required int itemId}) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$itemId/";
     var headers = await getAuthHeaders();
@@ -378,8 +383,7 @@ class BusinessAuth extends AuthService {
 
   Future<bool> addInvoiceItemToExistingInvoice(
       {required int invoiceId, required InvoiceItem invoiceItem}) async {
-    var url =
-        AppConfig.baseUrl + "/api/v1/transactions/invoice/item/$invoiceId/";
+    var url = AppConfig.baseUrl + "/api/v1/transactions/invoice/$invoiceId/";
     var headers = await getAuthHeaders();
     var data = invoiceItem.toJson();
     data.removeWhere((key, value) => value == null);
@@ -389,7 +393,7 @@ class BusinessAuth extends AuthService {
     debugPrint('ADD INVOICE ITEM TO EXISTING INVOICE ::: ${response.body}');
     debugPrint(
         'ADD INVOICE ITEM TO EXISTING INVOICE::: ${response.statusCode}');
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return true;
     }
 

@@ -8,16 +8,21 @@ import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 import '../locale/app_localization.dart';
+import '../screens/more_apps/business/business_auth.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
 import '../screens/more_apps/payment_and_banking/models/transactions.dart';
 import '../widget/LoadingIndicator.dart';
@@ -26,6 +31,7 @@ import 'colors.dart';
 
 export 'colors.dart';
 export 'common.dart';
+import 'package:path_provider/path_provider.dart' as pathProvider;
 
 int amountLimit =
     10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
@@ -672,13 +678,8 @@ String? validateSlydoName(String userInput) {
 String truncateString({required String str, required int lengthToTruncateAt}) {
   if (str.length <= lengthToTruncateAt) {
     return str;
-  } else {
-    return '${str.substring(0, lengthToTruncateAt + 1)}...';
   }
-
-  // userBloc.user.displayName()!.length <= 37
-  //     ? userBloc.user.displayName()!
-  //     : '${userBloc.user.displayName()!.substring(0, 38)}...',
+  return '${str.substring(0, lengthToTruncateAt)}...';
 }
 
 String slydoNameMsg = 'You can not use slydo in name';
@@ -839,4 +840,149 @@ Color getRatingColor(int? numberOfRating, int i) {
 
 String enumToString(mEnum) {
   return mEnum.toString().split('.')[1];
+}
+
+Future<bool> doesFileExist(String filePath) async {
+  return await File(filePath).exists();
+}
+
+void downloadFileFromServer({
+  Function? onDownloadStart,
+  Function? onDownloadComplete,
+  required String uniqueFileName,
+  required String downloadUrl,
+  Function(dynamic)? catchErrorOccurred,
+}) async {
+  if (await checkStoragePermission()) {
+    var localPath =
+        await getLocalPathToSaveDownloads(uniqueFileName: uniqueFileName);
+
+    final savedDir = Directory(localPath);
+    bool isExisting = await savedDir.exists();
+    if (!isExisting) {
+      savedDir.create();
+    }
+
+    if (onDownloadStart != null) {
+      onDownloadStart();
+    }
+
+    Dio dio = Dio();
+
+    String pdfUrl = downloadUrl;
+
+    var authHeaders = await BusinessAuth().getAuthHeaders();
+
+    // savePath = await getFilePath(fileName);
+
+    debugPrint("res-- $pdfUrl");
+
+    Response response = await dio.download(
+      pdfUrl,
+      localPath,
+      options: Options(headers: authHeaders),
+      onReceiveProgress: (rec, total) {},
+    );
+    debugPrint("res-- ${response.statusCode}");
+    if (onDownloadComplete != null) {
+      onDownloadComplete();
+    }
+
+    if (response.statusCode == 200) {
+      showToast(message: 'Download complete');
+      if (Platform.isIOS) {
+        OpenFile.open(localPath);
+      }
+    } else {
+      showToast(message: 'Something went wrong, please try again');
+    }
+    try {} catch (e) {
+      if (catchErrorOccurred != null) {
+        catchErrorOccurred(e);
+      }
+    }
+
+    // try {
+    //   Dio dio = Dio();
+    //
+    //   String pdfUrl =
+    //       "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
+    //
+    //   String fileName = 'Contract_${contract.id}.pdf';
+    //
+    //   var authHeaders = await BusinessAuth().getAuthHeaders();
+    //
+    //   savePath = await getFilePath(fileName);
+    //   Response response = await dio.download(
+    //     pdfUrl,
+    //     savePath,
+    //     options: Options(
+    //       headers: authHeaders,
+    //     ),
+    //     onReceiveProgress: (rec, total) {},
+    //   );
+    //   setState(() {
+    //     isDownloading = false;
+    //   });
+    //
+    //   if (response.statusCode == 200) {
+    //     showToast(message: 'Download complete');
+    //     if (Platform.isIOS) {
+    //       OpenFile.open(localPath);
+    //     }
+    //   } else {
+    //     showToast(message: 'Something went wrong, please try again');
+    //   }
+    // }
+    //
+    // catch (e) {
+    //   setState(() {
+    //     isDownloading = false;
+    //   });
+    // showToast(message: 'Something went wrong, please try again');
+
+    // }
+  } else {
+    showToast(message: 'Please grant storage permission');
+  }
+}
+
+Future<String> getLocalPathToSaveDownloads(
+    {required String uniqueFileName}) async {
+  if (Platform.isAndroid) {
+    String path = '';
+
+    // Directory dir = Directory('/storage/emulated/0/Download');
+    // // Directory dir = await getApplicationDocumentsDirectory();
+    // //
+    // path = '${dir.path}/$uniqueFileName';
+
+    path = await ExternalPath.getExternalStoragePublicDirectory(
+        ExternalPath.DIRECTORY_DOWNLOADS);
+
+    return path;
+  } else {
+    var directory = await pathProvider.getApplicationDocumentsDirectory();
+
+    return '${directory.path}/$uniqueFileName';
+  }
+}
+
+Future<bool> checkStoragePermission() async {
+  var status = await Permission.storage.status;
+
+  if (status.isGranted) {
+    return true;
+  } else if (status.isPermanentlyDenied) {
+    openAppSettings();
+  } else {
+    Map<Permission, PermissionStatus> permissions =
+        await [Permission.storage].request();
+
+    if (permissions[Permission.storage] == PermissionStatus.granted) {
+      return true;
+    }
+  }
+
+  return false;
 }

@@ -21,6 +21,7 @@ import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/curved_btn.dart';
 
+import '../bloc/invoice_bloc.dart';
 import '../business_auth.dart';
 import '../forms/invoice/add_or_update_invoice_item.dart';
 import '../models/Invoice.dart';
@@ -126,7 +127,12 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                       downloadFile(invoice);
                     },
                   )
-                : SizedBox.shrink(),
+                : IconButton(
+                    icon: Icon(Icons.delete, color: mateRed),
+                    onPressed: () {
+                      showDeleteDialogForInvoice();
+                    },
+                  ),
         SizedBox(width: 16),
 
         // openGraphBtn(),
@@ -134,6 +140,52 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         //   width: 16,
         // ),
       ],
+    );
+  }
+
+  showDeleteDialogForInvoice() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: mateRed,
+      actionTwoTextColor: Colors.white,
+      actionOneBgColor: greyBorderColor,
+      title: AppLocalization.of(context)!.delete,
+      actionTwoText: AppLocalization.of(context)!.delete,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      description: 'Are you sure you want to delete this invoice?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
+      ),
+      rightButtonOnPressed: () {
+        deleteInvoice();
+      },
+    );
+  }
+
+  deleteInvoice() {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    BusinessAuth().deleteInvoice(invoiceId: invoice.id!).then((deleted) {
+      Navigator.pop(context);
+      if (deleted) {
+        showToast(message: 'Invoice deleted.');
+        Navigator.pop(context);
+        Provider.of<InvoiceBloc>(context, listen: false).isSender = true;
+        Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
+        Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+      } else {
+        showToast(message: 'Something went wrong.');
+      }
+    }).catchError(
+      (error) {
+        Navigator.pop(context);
+        showToast(message: 'Something went wrong');
+      },
     );
   }
 
@@ -365,12 +417,20 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             "Invoice date",
             formatDate(invoice.invoiceDate!),
             editDate: canEditDate,
+<<<<<<< HEAD
+            isDueDate: false,
+=======
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
           ),
           detailTile(
             SlydoAppIcon.date,
             "Due date",
             formatDate(invoice.dueDate!),
             editDate: canEditDate,
+<<<<<<< HEAD
+            isDueDate: true,
+=======
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
           ),
           getInvoiceItems()
         ],
@@ -381,9 +441,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   Widget getInvoiceItems() {
     bool canDeleteInvoiceItem =
         invoice.fromCustomer == userBloc.user.userName &&
-            invoice.status != "Paid" &&
+            invoice.status == "Draft" &&
             invoice.items!.length > 1;
-    bool canEditInvoiceItem = invoice.status != "Paid";
+    bool canEditInvoiceItem = invoice.status == "Draft";
     bool canShowActionsText = canDeleteInvoiceItem || canEditInvoiceItem;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -476,8 +536,8 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               SizedBox(height: 8),
               Column(
                 children: invoice.items!
-                    .map((e) =>
-                        getItemTile(length: invoice.items!.length, item: e))
+                    .map((e) => getItemTile(
+                        invoiceItemLength: invoice.items!.length, item: e))
                     .toList(),
               ),
               SizedBox(height: 8),
@@ -520,12 +580,13 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  Widget getItemTile({required int length, required InvoiceItem item}) {
+  Widget getItemTile(
+      {required int invoiceItemLength, required InvoiceItem item}) {
     bool canDeleteInvoiceItem =
         invoice.fromCustomer == userBloc.user.userName &&
-            invoice.status != "Paid" &&
-            length > 1;
-    bool canEditInvoiceItem = invoice.status != "Paid";
+            invoice.status == "Draft" &&
+            invoiceItemLength > 1;
+    bool canEditInvoiceItem = invoice.status == "Draft";
 
     String subtotalAmount =
         moneyDisplayNormalizer(item.quantity! * item.amount!);
@@ -570,9 +631,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text(itemAmount.length > 8
-                        ? '${itemAmount.substring(0, 8)}...'
-                        : itemAmount),
+                    Text(
+                      truncateString(str: itemAmount, lengthToTruncateAt: 8),
+                    ),
                   ],
                 ),
                 flexibleSpace(),
@@ -604,7 +665,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                           color: mateRed,
                         ),
                         onTap: () {
-                          showDeleteDialog(item);
+                          showDeleteDialogForInvoiceItem(item);
                         },
                       )
                     : SizedBox.shrink(),
@@ -638,7 +699,11 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget detailTile(IconData icon, String title, String subtitle,
+<<<<<<< HEAD
+      {bool editDate = false, bool isDueDate = false}) {
+=======
       {bool editDate = false}) {
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
     return Container(
       child: ListTile(
         dense: true,
@@ -676,7 +741,11 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         invoiceDate =
                             DateTime(value!.year, value.month, value.day);
 
+<<<<<<< HEAD
+                        _updateInvoiceDate(isDueDate: isDueDate);
+=======
                         _updateInvoiceDate();
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
                         // setState(() {});
                       }).catchError((error) {});
                     },
@@ -702,6 +771,12 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
+<<<<<<< HEAD
+  _updateInvoiceDate({required bool isDueDate}) {
+    BusinessAuth().updateInvoice(invoiceId: invoice.id.toString(), data: {
+      isDueDate ? "due_date" : "invoice_date": dateToString(invoiceDate),
+    }).then(
+=======
   _updateInvoiceDate({bool isDueDate = false}) {
     BusinessAuth()
         .updateInvoice(
@@ -715,6 +790,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             },
     )
         .then(
+>>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
       (updated) {
         if (updated) {
           fetchInvoice();
@@ -805,7 +881,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     return path;
   }
 
-  showDeleteDialog(InvoiceItem item) {
+  showDeleteDialogForInvoiceItem(InvoiceItem item) {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,
@@ -815,7 +891,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       title: AppLocalization.of(context)!.delete,
       actionTwoText: AppLocalization.of(context)!.delete,
       actionOneText: AppLocalization.of(context)!.cancel,
-      description: 'Are you sure you want to delete your invoice item?',
+      description: 'Are you sure you want to delete this invoice item?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,
         width: 90,
