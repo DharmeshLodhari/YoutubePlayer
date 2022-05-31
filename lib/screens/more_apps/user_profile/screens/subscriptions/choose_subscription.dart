@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/subscription_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/subscription_model.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -34,6 +35,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
   late UserBloc userBloc;
   String? selectedAccountType;
   final _auth = AuthService();
+  late AppLocalization appLocalization;
   bool?
       businessNameVerified; // Variable to show the submit button and check mark in textfield when business name is verified.
   bool verifyingBusinessName =
@@ -70,6 +72,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    appLocalization = AppLocalization.of(context)!;
 
     return Scaffold(
       appBar: customAppBar(context: context, title: 'Subscription')
@@ -353,7 +356,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
           businessNameVerified = false;
           verifyingBusinessName = false;
         });
-        showToast(message: 'Business name not available');
+        showToast(message: appLocalization.businessNameNotAvailable);
       }
     }).catchError((e) {
       Navigator.pop(context);
@@ -384,10 +387,10 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
       await UserAuth()
           .fetchCustomerProfile(userBloc.user.userName)
           .then((user) {
-        showToast(message: "Your profile upgrade was successful.");
+        showToast(message: appLocalization.profileUpgradeSuccessful);
 
         Navigator.pop(context);
-        Navigator.pushNamed(context, '/profile',
+        Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": user.userName, "index": 0});
       });
     });
@@ -519,14 +522,5 @@ String getPlan(String subscriptionType) {
       return 'per week';
     default:
       return '';
-  }
-}
-
-Widget getCurrencySymbol(String currency, {double symbolSize = 16}) {
-  switch (currency) {
-    case 'NGN':
-      return Icon(SlydoAppIcon.naira, size: symbolSize);
-    default:
-      return Container();
   }
 }

@@ -5,7 +5,10 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
+import '../../../../data/state_notifier.dart';
 
 /// allowed message types
 List<String> imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
@@ -66,6 +69,21 @@ Color getMessageTickColor({required Map<String, dynamic> message}) {
           ? navyBlue
           : darkGrey
       : darkGrey;
+}
+
+Widget getUserCurrencySymbol(BuildContext context,
+    {Color? color, double? fontSize}) {
+  UserBloc userBloc = Provider.of<UserBloc>(context);
+
+  return Text(
+    worldCurrencies[userBloc.user.currency!]!,
+    style: TextStyle(
+      color: color ?? navyBlue,
+      fontSize: fontSize ?? 16,
+      fontFamily: "Roboto",
+      fontWeight: FontWeight.w500,
+    ),
+  );
 }
 
 Widget getMessageTick({required Map<String, dynamic> message}) {

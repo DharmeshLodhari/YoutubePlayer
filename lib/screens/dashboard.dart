@@ -62,6 +62,7 @@ class _DashboardState extends State<Dashboard> {
   StreamSubscription? streamSubscription;
 
   bool? isNFCPermissionAccepted;
+  late AppLocalization appLocalization;
 
   _DashboardState({this.arguments});
 
@@ -347,6 +348,7 @@ class _DashboardState extends State<Dashboard> {
     basketBloc = Provider.of<BasketBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
+    appLocalization = AppLocalization.of(context)!;
     initializeListener();
 
     if (_currentIndex != 0) {
@@ -363,8 +365,8 @@ class _DashboardState extends State<Dashboard> {
             actionOneTextColor: Colors.white,
             actionTwoBgColor: greyBorderColor,
             actionTwoTextColor: blackFont,
-            title: "Exit app",
-            description: "Are you sure want to exit app?",
+            title: appLocalization.exitApp,
+            description: appLocalization.youSureYouWantToExitApp,
             actionOneText: AppLocalization.of(context)!.exit,
             actionTwoText: AppLocalization.of(context)!.cancel,
           );

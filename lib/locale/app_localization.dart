@@ -632,6 +632,22 @@ class AppLocalization {
     );
   }
 
+  //Subscription
+
+  String get profileUpgradeSuccessful {
+    return Intl.message(
+      "Your profile upgrade was successful.",
+      name: "profileUpgradeSuccessful",
+    );
+  }
+
+  String get businessNameNotAvailable {
+    return Intl.message(
+      "'Business name not available'",
+      name: "businessNameNotAvailable",
+    );
+  }
+
   //TILES
   //bank account
   String get accountBalance {
@@ -998,6 +1014,20 @@ class AppLocalization {
     );
   }
 
+  String get exitApp {
+    return Intl.message(
+      "Exit App",
+      name: "exitApp",
+    );
+  }
+
+  String get youSureYouWantToExitApp {
+    return Intl.message(
+      "Are you sure want to exit the app?",
+      name: "youSureYouWantToExitApp",
+    );
+  }
+
   String get choosePlan {
     return Intl.message(
       "Choose Plan",
@@ -1324,6 +1354,27 @@ class AppLocalization {
     return Intl.message(
       "Edit Profile",
       name: "editProfile",
+    );
+  }
+
+  String get goodMorning {
+    return Intl.message(
+      "Good Morning",
+      name: "goodMorning",
+    );
+  }
+
+  String get goodAfternoon {
+    return Intl.message(
+      "Good Afternoon",
+      name: "goodAfternoon",
+    );
+  }
+
+  String get goodEvening {
+    return Intl.message(
+      "Good Evening",
+      name: "goodEvening",
     );
   }
 

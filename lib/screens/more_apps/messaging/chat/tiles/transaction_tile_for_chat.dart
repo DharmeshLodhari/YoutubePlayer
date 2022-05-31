@@ -109,10 +109,10 @@ class _TransactionTileForChatState extends State<TransactionTileForChat> {
                               ),
                               Row(
                                 children: [
-                                  Icon(
-                                    SlydoAppIcon.naira,
-                                    color: navyBlue,
-                                    size: 14,
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2.0),
+                                    child: getUserCurrencySymbol(context,
+                                        fontSize: 20),
                                   ),
                                   Text(
                                     moneyDisplayNormalizer(int.parse(
@@ -421,11 +421,12 @@ class _PaymentRequestTileForChatState extends State<PaymentRequestTileForChat> {
                                 width: 6,
                               ),
                               Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Icon(
-                                    SlydoAppIcon.naira,
-                                    color: navyBlue,
-                                    size: 14,
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 2.0),
+                                    child: getUserCurrencySymbol(context,
+                                        fontSize: 20),
                                   ),
                                   Text(
                                     moneyDisplayNormalizer(int.parse(

@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -56,6 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   bool? isUserFound;
   Timer? timer;
+  late AppConfigurationBloc appConfiguration;
 
   @override
   void initState() {
@@ -210,6 +212,8 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
+    appConfiguration = Provider.of<AppConfigurationBloc>(context);
+
     return WillPopScope(
       onWillPop: () async => Future.value(false),
       child: hasConnection
@@ -366,6 +370,7 @@ class _SplashScreenState extends State<SplashScreen>
             setState(() {});
 
             await initializeShoppingCart();
+            await initializeAppConfiguration();
 
             setState(() {});
 
@@ -529,5 +534,13 @@ class _SplashScreenState extends State<SplashScreen>
       isUserFound = false;
       CacheManager().deleteCache(clearAll: true);
     }
+  }
+
+  Future initializeAppConfiguration() async {
+    AppConfigurationService().getAppConfigurations().then((appConfig) {
+      if (appConfig != null) {
+        appConfiguration.appConfigurationModel = appConfig;
+      }
+    });
   }
 }

@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
+import '../messaging/chat/utils.dart';
+
 class MovieDetailPage extends StatefulWidget {
   @override
   _MovieDetailPageState createState() => _MovieDetailPageState();
@@ -236,11 +238,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ),
             Row(
               children: [
-                Icon(
-                  SlydoAppIcon.naira,
-                  color: navyBlue,
-                  size: 12,
-                ),
+                getUserCurrencySymbol(context),
                 Text(
                   movieDetailItem.price!,
                   style: TextStyle(

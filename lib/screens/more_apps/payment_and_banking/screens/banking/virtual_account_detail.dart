@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../messaging/chat/utils.dart';
 import '../../payment_and_banking_auth.dart';
 
 class VirtualAccountDetail extends StatefulWidget {
@@ -174,7 +175,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
 
     var data = {
       "amount": moneyInputNormalizer(amount.toString()),
-      "currency": "NGN",
+      "currency": userBloc!.user.currency,
     };
 
     showDialog(
@@ -456,11 +457,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(
-          SlydoAppIcon.naira,
-          color: navyBlue,
-          size: 22,
-        ),
+        getUserCurrencySymbol(context),
         Text(
           " " + getFinalAmount(),
           style: TextStyle(

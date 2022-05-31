@@ -5,6 +5,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../messaging/chat/utils.dart';
+
 class EventTile extends StatelessWidget {
   final PartialEventItem? partialEventItem;
 
@@ -163,11 +165,7 @@ class _EventTileWithHeartState extends State<EventTileWithHeart> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            SlydoAppIcon.naira,
-                            color: navyBlue,
-                            size: 10,
-                          ),
+                          getUserCurrencySymbol(context),
                           Text(
                             widget.partialEvent!.price!,
                             style: TextStyle(

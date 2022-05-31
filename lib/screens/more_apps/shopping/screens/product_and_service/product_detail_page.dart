@@ -106,6 +106,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     isReviewLoading = true;
     if (mounted) setState(() {});
 
+    debugPrint('CAN RATE : $canRate');
+
     await ReviewAuth().fetchProductReviews(product: product).then((value) {
       List? tempList =
           value.containsKey('results') ? value['results'] as List : [];
@@ -613,7 +615,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   buildReviewTitle(),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed("/review-list-screen",
+                      Navigator.of(context).pushNamed(Routes.REVIEW_LIST_SCREEN,
                           arguments: {"reviewedProduct": product});
                     },
                     child: Text(

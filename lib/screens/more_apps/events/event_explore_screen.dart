@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/events/event_auth.dart';
 import 'package:Slydo/screens/more_apps/events/event_tile.dart';
 import 'package:Slydo/screens/more_apps/events/models/EventPoster.dart';
@@ -14,6 +15,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../messaging/chat/utils.dart';
 import 'models/CityData.dart';
 
 class EventExploreScreen extends StatefulWidget {
@@ -510,7 +512,7 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                         color: navyBlue),
                   ),
                   onTap: () {
-                    Navigator.of(context).pushNamed("/event-category");
+                    Navigator.of(context).pushNamed(Routes.EVENT_CATEGORY);
                   },
                 ),
               ],
@@ -617,11 +619,8 @@ class _EventExploreScreenState extends State<EventExploreScreen> {
                                                     mainAxisSize:
                                                         MainAxisSize.min,
                                                     children: [
-                                                      Icon(
-                                                        SlydoAppIcon.naira,
-                                                        color: navyBlue,
-                                                        size: 10,
-                                                      ),
+                                                      getUserCurrencySymbol(
+                                                          context),
                                                       Text(
                                                         eventList[0].price!,
                                                         style: TextStyle(

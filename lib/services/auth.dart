@@ -162,8 +162,10 @@ class AuthService {
 
     debugPrint("URL => $url BODY => $_body");
 
+    print('RESPONSE:-----> LOGIN');
+
     var response = await http.post(url, body: _body, headers: headers);
-    print('RESPONSE:-----> $response');
+    print('RESPONSE:-----> ${response}');
 
     if (response.statusCode == 200) {
       debugPrint(

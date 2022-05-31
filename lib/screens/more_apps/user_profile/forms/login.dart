@@ -144,7 +144,7 @@ class _UserLoginState extends State<UserLogin> {
                           flexibleSpace(flex: 1),
                           rememberMeAndForgotPasswordField(),
                           flexibleSpace(flex: 4),
-                          loginBtnField(),
+                          loginBtn(),
                           flexibleSpace(flex: 2),
                         ],
                       ),
@@ -473,7 +473,7 @@ class _UserLoginState extends State<UserLogin> {
     );
   }
 
-  Widget loginBtnField() {
+  Widget loginBtn() {
     return CurvedButton(
       backgroundColor: navyBlue,
       textColor: Colors.white,

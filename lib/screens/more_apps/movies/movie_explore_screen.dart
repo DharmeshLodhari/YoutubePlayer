@@ -12,6 +12,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../messaging/chat/utils.dart';
+
 class MovieExploreScreen extends StatefulWidget {
   @override
   _MovieExploreScreenState createState() => _MovieExploreScreenState();
@@ -473,11 +475,7 @@ class _MovieExploreScreenState extends State<MovieExploreScreen> {
                 ),
                 Row(
                   children: [
-                    Icon(
-                      SlydoAppIcon.naira,
-                      color: navyBlue,
-                      size: 8,
-                    ),
+                    getUserCurrencySymbol(context, fontSize: 14),
                     Text(
                       movieItem.price!,
                       style: TextStyle(

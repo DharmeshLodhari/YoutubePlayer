@@ -135,7 +135,6 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     );
   }
 
-<<<<<<< HEAD
   buildDobField() {
     return Column(
       children: [
@@ -145,8 +144,6 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
     );
   }
 
-=======
->>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
   Widget getDOBField() {
     return GestureDetector(
       onTap: () {
@@ -201,7 +198,6 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
   }
 
   Widget getGenderField() {
-<<<<<<< HEAD
     return Column(
       children: [
         CustomizedDropDownField(
@@ -224,25 +220,6 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
         ),
         SizedBox(height: 16),
       ],
-=======
-    return CustomizedDropDownField(
-      title: "Gender",
-      child: ListTile(
-        dense: true,
-        title: Text(
-          gender != null ? gender! : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          selectGenderField();
-        },
-      ),
->>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
     );
   }
 

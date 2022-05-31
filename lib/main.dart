@@ -18,6 +18,7 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/local_notification_service.dart';
@@ -286,5 +287,8 @@ List<ChangeNotifierProvider> providersList = [
   ),
   ChangeNotifierProvider<CheckoutScreenBloc>.value(
     value: CheckoutScreenBloc(),
+  ),
+  ChangeNotifierProvider<AppConfigurationBloc>.value(
+    value: AppConfigurationBloc(),
   ),
 ];

@@ -417,20 +417,14 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             "Invoice date",
             formatDate(invoice.invoiceDate!),
             editDate: canEditDate,
-<<<<<<< HEAD
             isDueDate: false,
-=======
->>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
           ),
           detailTile(
             SlydoAppIcon.date,
             "Due date",
             formatDate(invoice.dueDate!),
             editDate: canEditDate,
-<<<<<<< HEAD
             isDueDate: true,
-=======
->>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
           ),
           getInvoiceItems()
         ],
@@ -699,11 +693,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget detailTile(IconData icon, String title, String subtitle,
-<<<<<<< HEAD
       {bool editDate = false, bool isDueDate = false}) {
-=======
-      {bool editDate = false}) {
->>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
     return Container(
       child: ListTile(
         dense: true,
@@ -741,11 +731,8 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         invoiceDate =
                             DateTime(value!.year, value.month, value.day);
 
-<<<<<<< HEAD
                         _updateInvoiceDate(isDueDate: isDueDate);
-=======
-                        _updateInvoiceDate();
->>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
+
                         // setState(() {});
                       }).catchError((error) {});
                     },
@@ -771,26 +758,10 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-<<<<<<< HEAD
   _updateInvoiceDate({required bool isDueDate}) {
     BusinessAuth().updateInvoice(invoiceId: invoice.id.toString(), data: {
       isDueDate ? "due_date" : "invoice_date": dateToString(invoiceDate),
     }).then(
-=======
-  _updateInvoiceDate({bool isDueDate = false}) {
-    BusinessAuth()
-        .updateInvoice(
-      id: invoice.id.toString(),
-      data: isDueDate
-          ? {
-              "due_date": dateToString(invoiceDate),
-            }
-          : {
-              "invoice_date": dateToString(invoiceDate),
-            },
-    )
-        .then(
->>>>>>> 61eda40c5bbeb0a835424c1d3ca1f39cf464ca21
       (updated) {
         if (updated) {
           fetchInvoice();

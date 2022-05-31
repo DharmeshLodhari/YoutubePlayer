@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
+import '../data/state_notifier.dart';
 import '../utils/util.dart';
 import 'LoadingIndicator.dart';
 
@@ -100,6 +103,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    UserBloc userBloc = Provider.of<UserBloc>(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -179,10 +183,14 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 16, right: 12),
-                        child: Icon(
-                          SlydoAppIcon.naira,
-                          color: blackFont,
-                          size: 12,
+                        child: Text(
+                          worldCurrencies[userBloc.user.currency!]!,
+                          style: TextStyle(
+                            color: blackFont,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            fontFamily: "Roboto",
+                          ),
                         ),
                       ),
                       Container(

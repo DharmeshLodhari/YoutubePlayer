@@ -13,6 +13,7 @@ import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:provider/provider.dart';
 import '../../../../../widget/LoadingIndicator.dart';
+import '../../../messaging/chat/utils.dart';
 
 // ignore: must_be_immutable
 class CardPaymentPage extends StatefulWidget {
@@ -344,8 +345,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(SlydoAppIcon.naira, color: navyBlue),
-                              SizedBox(width: 5),
+                              getUserCurrencySymbol(context, fontSize: 30),
                               Text(
                                 getUserFinalAmount(),
                                 style: TextStyle(

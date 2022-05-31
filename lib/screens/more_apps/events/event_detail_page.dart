@@ -12,6 +12,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../data/currency.dart';
+import '../../../data/state_notifier.dart';
+
 class EventDetailPage extends StatefulWidget {
   @override
   _EventDetailPageState createState() => _EventDetailPageState();
@@ -306,6 +309,8 @@ class _EventDetailPageState extends State<EventDetailPage> {
   }
 
   Widget eventTimeAndPlaceDetail() {
+    UserBloc userBloc = Provider.of<UserBloc>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -415,10 +420,13 @@ class _EventDetailPageState extends State<EventDetailPage> {
                             ),
                             Row(
                               children: [
-                                Icon(
-                                  SlydoAppIcon.naira,
-                                  color: navyBlue,
-                                  size: 10,
+                                Text(
+                                  worldCurrencies[userBloc.user.currency!]!,
+                                  style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 16,
+                                    fontFamily: "Roboto",
+                                  ),
                                 ),
                                 Text(
                                   event.price!,

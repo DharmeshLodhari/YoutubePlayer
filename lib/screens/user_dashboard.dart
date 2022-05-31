@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -265,20 +266,31 @@ class _UserDashboardState extends State<UserDashboard> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             isBalanceHidden
                 ? Container()
-                : Icon(
-                    SlydoAppIcon.naira,
-                    color: blackFont,
-                    size: 16,
+                : Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: Text(
+                      worldCurrencies[userBloc.user.currency!]!,
+                      style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        fontFamily: "Roboto",
+                      ),
+                    ),
                   ),
             Text(
               isBalanceHidden
                   ? "*********"
                   : moneyDisplayNormalizer(int.parse(accountBalance)),
               style: TextStyle(
-                  color: blackFont, fontWeight: FontWeight.bold, fontSize: 26),
+                color: blackFont,
+                fontWeight: FontWeight.bold,
+                fontSize: 26,
+              ),
             ),
           ],
         ),
@@ -392,7 +404,17 @@ class _UserDashboardState extends State<UserDashboard> {
 
         Expanded(
           child: UserDashboardItemTile(
-            icon: SlydoAppIcon.naira,
+            iconWidget: Center(
+              child: Text(
+                worldCurrencies[userBloc.user.currency!]!,
+                style: TextStyle(
+                  color: HexColor("#46CE7C"),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  fontFamily: "Roboto",
+                ),
+              ),
+            ),
             title: "Cashout",
             onTap: () {
               hideBalance();
@@ -458,6 +480,9 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#FFAB00"),
           ),
         ),
+
+        SizedBox(width: 12),
+
         // Expanded(
         //   child: UserDashboardItemTile(
         //     icon: SlydoAppIcon.more,
@@ -468,7 +493,7 @@ class _UserDashboardState extends State<UserDashboard> {
         //     iconColor: HexColor("#374677"),
         //   ),
         // ),
-        SizedBox(width: 12),
+        // SizedBox(width: 12),
         Expanded(child: Container()),
       ],
     );

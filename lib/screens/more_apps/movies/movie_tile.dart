@@ -7,6 +7,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../messaging/chat/utils.dart';
+
 class MovieTile extends StatelessWidget {
   final MovieItem? movieItem;
 
@@ -164,11 +166,7 @@ class _MovieTileWithHeartState extends State<MovieTileWithHeart> {
             subtitle: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  SlydoAppIcon.naira,
-                  color: navyBlue,
-                  size: 10,
-                ),
+                getUserCurrencySymbol(context, fontSize: 18),
                 Text(
                   widget.movieItem!.price!,
                   style: TextStyle(
@@ -268,11 +266,7 @@ class _MovieTileGeneralState extends State<MovieTileGeneral> {
             subtitle: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  SlydoAppIcon.naira,
-                  color: navyBlue,
-                  size: 10,
-                ),
+                getUserCurrencySymbol(context, fontSize: 18),
                 Text(
                   widget.movieItem!.price!,
                   style: TextStyle(
