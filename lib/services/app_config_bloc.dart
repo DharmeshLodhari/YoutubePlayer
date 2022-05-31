@@ -25,10 +25,13 @@ class AppConfigurationModel {
 class AppConfigurationService extends AuthService {
   Future<AppConfigurationModel?> getAppConfigurations() async {
     String url = AppConfig.baseUrl + "api/v1/app-config";
+
+    await Future.delayed(Duration(seconds: 3), () {});
+    return AppConfigurationModel(creditCardWorks: false);
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    return AppConfigurationModel(creditCardWorks: false);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
     }

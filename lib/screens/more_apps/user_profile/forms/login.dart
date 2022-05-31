@@ -29,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../../../services/app_config_bloc.dart';
 
 class UserLogin extends StatefulWidget {
   @override
@@ -95,6 +96,7 @@ class _UserLoginState extends State<UserLogin> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {

@@ -208,6 +208,16 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
+  Future initializeAppConfiguration() async {
+    debugPrint('APP CONFIGU');
+    await AppConfigurationService().getAppConfigurations().then((appConfig) {
+      if (appConfig != null) {
+        appConfiguration.appConfigurationModel = appConfig;
+      }
+    });
+    debugPrint('APP CONF ::; ${appConfiguration.appConfigurationModel}');
+  }
+
   @override
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/app_logo.png"), context);
@@ -534,13 +544,5 @@ class _SplashScreenState extends State<SplashScreen>
       isUserFound = false;
       CacheManager().deleteCache(clearAll: true);
     }
-  }
-
-  Future initializeAppConfiguration() async {
-    AppConfigurationService().getAppConfigurations().then((appConfig) {
-      if (appConfig != null) {
-        appConfiguration.appConfigurationModel = appConfig;
-      }
-    });
   }
 }
