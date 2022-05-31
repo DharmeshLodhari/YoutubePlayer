@@ -148,7 +148,6 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
-import '../screens/more_apps/business/screens/my_contract_and_invoice_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 
 import 'package:Slydo/routes/route_constants.dart';
@@ -300,7 +299,6 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 
-import '../screens/more_apps/business/screens/my_contract_and_invoice_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
 import '../screens/more_apps/utility/select_provider_screen.dart';
@@ -879,15 +877,6 @@ class RouteGenerator {
       case Routes.ALREADY_HAVE_REFERENCE:
         return PageTransition(
           child: AlreadyHaveReferenceScreen(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings,
-        );
-
-      /// Contracts & Invoice
-      case Routes.CONTRACTS:
-        return PageTransition(
-          child: MyContractAndInvoiceScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
