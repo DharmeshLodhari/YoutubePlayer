@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -10,9 +12,12 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:Slydo/services/auth.dart';
 
@@ -25,7 +30,6 @@ import '../bloc/invoice_bloc.dart';
 import '../business_auth.dart';
 import '../forms/invoice/add_or_update_invoice_item.dart';
 import '../models/Invoice.dart';
-import 'package:dio/dio.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {
@@ -34,8 +38,7 @@ class InvoiceDetail extends StatefulWidget {
   InvoiceDetail({required this.arguments});
 
   @override
-  _InvoiceDetailState createState() =>
-      _InvoiceDetailState(arguments: arguments);
+  _InvoiceDetailState createState() => _InvoiceDetailState();
 }
 
 class _InvoiceDetailState extends State<InvoiceDetail> {
@@ -43,18 +46,58 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   late InvoiceModel invoice;
   bool isLoading = false;
   late UserBloc userBloc;
-  // var imageUrl =
-  //     "https://www.itl.cat/pngfile/big/10-100326_desktop-wallpaper-hd-full-screen-free-download-full.jpg";
   bool isDownloading = false;
   String savePath = "";
   DateTime invoiceDate = DateTime.now();
 
-  _InvoiceDetailState({this.arguments});
+  // _InvoiceDetailState({this.arguments});
+
+  int downloadProgress = 0;
+  ReceivePort receivePort = ReceivePort();
 
   @override
   void initState() {
     fetchInvoice();
+    IsolateNameServer.registerPortWithName(
+        receivePort.sendPort, 'invoice_downloader_send_port');
+
+    receivePort.listen((message) {
+      downloadProgress = message[2];
+      if (downloadProgress != 0) {
+        isDownloading = true;
+        if (mounted) setState(() {});
+
+        if (downloadProgress == 100) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'Downloaded');
+        } else if (downloadProgress == -1) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'File cannot be downloaded at the moment');
+        }
+      }
+
+      debugPrint('DOWNLOAD MESSAGE ::: $message');
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
     super.initState();
+  }
+
+  @pragma(
+      'vm:entry-point') // To avoid tree shaking in release mode for Android.
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('invoice_downloader_send_port')!;
+    send.send([id, status, progress]);
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('invoice_downloader_send_port');
+    super.dispose();
   }
 
   void fetchInvoice() async {
@@ -122,9 +165,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             ? SizedBox.shrink()
             : invoice.status != 'Draft'
                 ? IconButton(
-                    icon: Icon(Icons.download_rounded, color: navyBlue),
+                    icon: getDownloadIconWidget(),
                     onPressed: () {
-                      downloadFile(invoice);
+                      _downloadInvoice();
                     },
                   )
                 : IconButton(
@@ -134,13 +177,21 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                     },
                   ),
         SizedBox(width: 16),
-
-        // openGraphBtn(),
-        // SizedBox(
-        //   width: 16,
-        // ),
       ],
     );
+  }
+
+  Widget getDownloadIconWidget() {
+    if (isDownloading) {
+      return SizedBox(
+        width: 25,
+        height: 25,
+        child: CircularLoadingIndicator(
+          color: navyBlue,
+        ),
+      );
+    }
+    return Icon(Icons.download_rounded, color: navyBlue);
   }
 
   showDeleteDialogForInvoice() {
@@ -186,21 +237,6 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
         Navigator.pop(context);
         showToast(message: 'Something went wrong');
       },
-    );
-  }
-
-  Widget openGraphBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.location,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: goToMap,
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -777,10 +813,6 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  void goToMap() {
-    debugPrint("go to Map Called !");
-  }
-
   void _deleteInvoiceItem(InvoiceItem item) {
     showDialog(
         context: context,
@@ -798,58 +830,30 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     });
   }
 
-  Future downloadFile(InvoiceModel invoice) async {
-    print('INVOICE ID :: ${invoice.id}');
-    if (mounted) {
+  _downloadInvoice() async {
+    String fileName = 'Invoice_${invoice.id}.pdf';
+    PermissionStatus status = await Permission.storage.request();
+
+    var downloadsDirectoryPath =
+        await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
+
+    if (status.isGranted) {
       setState(() {
         isDownloading = true;
       });
-    }
-    try {
-      Dio dio = Dio();
+      String formattedFileName =
+          await makeFileName(downloadsDirectoryPath, fileName);
 
-      String pdfUrl =
-          "${AppConfig.baseUrl}/api/v1/transactions/invoice/download/${invoice.id}/?download=true";
-
-      String fileName = 'Invoice_${invoice.id}.pdf';
-
-      var authHeaders = await BusinessAuth().getAuthHeaders();
-
-      savePath = await getFilePath(fileName);
-      Response response = await dio.download(
-        pdfUrl,
-        savePath,
-        options: Options(
-          headers: authHeaders,
-        ),
-        onReceiveProgress: (rec, total) {},
+      await FlutterDownloader.enqueue(
+        url:
+            "${AppConfig.baseUrl}/api/v1/transactions/invoice/download/${invoice.id}/?download=true",
+        fileName: formattedFileName,
+        savedDir: downloadsDirectoryPath,
       );
-      setState(() {
-        isDownloading = false;
-      });
-      if (response.statusCode == 200) {
-        showToast(message: 'Download complete');
-      } else {
-        showToast(message: 'Something went wrong, please try again');
-      }
-    } catch (e) {
-      setState(() {
-        isDownloading = false;
-      });
-      print(e.toString());
-      showToast(message: 'ERROR ::: ${e.toString()}');
+    } else {
+      Permission.storage.request();
     }
-  }
-
-  Future<String> getFilePath(uniqueFileName) async {
-    String path = '';
-
-    Directory dir = Directory('/storage/emulated/0/Download');
-    // Directory dir = await getApplicationDocumentsDirectory();
-
-    path = '${dir.path}/$uniqueFileName';
-
-    return path;
   }
 
   showDeleteDialogForInvoiceItem(InvoiceItem item) {

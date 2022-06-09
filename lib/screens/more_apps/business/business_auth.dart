@@ -89,8 +89,6 @@ class BusinessAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    debugPrint('ACCEPT CONTRACT ::: ${json.decode(response.body)}');
-    debugPrint('ACCEPT CONTRACT STATUS CODE::: ${response.statusCode}');
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -98,14 +96,12 @@ class BusinessAuth extends AuthService {
     }
   }
 
-  Future<bool> cancelContract({required int contractId}) async {
+  Future<bool> cancelOrRejectContract({required int contractId}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/transactions/payment-contract/reject-or-cancel/$contractId/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    debugPrint('CANCEL CONTRACT ::: ${response.body}');
-    debugPrint('CANCEL CONTRACT STATUSCODE ::: ${response.statusCode}');
     if (response.statusCode == 204) {
       return true;
     } else {

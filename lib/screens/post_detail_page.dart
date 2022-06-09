@@ -72,7 +72,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   @override
   void initState() {
     super.initState();
-    getPostFuture = UserPostAuth().getPost(postID: widget.postId!);
+    getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
     // if (widget.postType == PostType.blog) {
     // } else {
     //   getNewsResultAndInitializeVideoController();
@@ -175,7 +175,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   reloadPage() {
     setState(() {
-      getPostFuture = UserPostAuth().getPost(postID: widget.postId!);
+      getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
     });
   }
 

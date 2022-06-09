@@ -10,9 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../constant.dart';
 import '../../../../../data/currency.dart';
 import '../../../../../data/state_notifier.dart';
 import '../../../../../locale/app_localization.dart';
+import '../../../../../main.dart';
+import '../../../../../services/app_config_bloc.dart';
 import '../../../../../services/auth.dart';
 import '../../../../../widget/LoadingIndicator.dart';
 import '../../../../../widget/curved_btn.dart';
@@ -43,6 +46,23 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
   late SubscriptionsModel subscriptionsModelCopy;
   Future<List<SubscriptionsModel>>? getSubscriptionsFuture;
   TextEditingController _businessNameCtrl = TextEditingController();
+  AppConfigurationModel? appConfigurationModel;
+
+  @override
+  void initState() {
+    getAppConfigurationModelFromLocalStorage();
+    super.initState();
+  }
+
+  getAppConfigurationModelFromLocalStorage() async {
+    bool con = await storage.containsKey(key: appConfigurationKey);
+    debugPrint('CON :: $con');
+    String? str = await storage.read(key: appConfigurationKey);
+    debugPrint('STR ::: ${str}');
+
+    appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    debugPrint('ENABLE SUB ::: ${appConfigurationModel?.freeSubscription}');
+  }
 
   _onChanged(String value) {
     const duration = Duration(milliseconds: 1000);
@@ -93,10 +113,29 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
             ),
             SizedBox(height: 20),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: getAccountTypeField(),
             ),
+            Visibility(
+              visible: _id != 0,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    CustomizedTextFormField(
+                      onChanged: _onChanged,
+                      controller: _businessNameCtrl,
+                      hintText: 'Full business name',
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: _getBusinessNameSuffixIcon(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 15),
             getSubscriptionsFuture != null
                 ? FutureBuilder<List<SubscriptionsModel>>(
                     future: getSubscriptionsFuture,
@@ -110,10 +149,39 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                               shrinkWrap: true,
                               padding: EdgeInsets.zero,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount: snapshot.data!.length,
+                              itemCount:
+                                  appConfigurationModel?.freeSubscription ==
+                                          null
+                                      ? 1
+                                      : snapshot.data!.length,
                               itemBuilder: (context, index) {
                                 SubscriptionsModel subscriptionsModel =
                                     snapshot.data![index];
+                                if (appConfigurationModel?.freeSubscription ==
+                                    null) {
+                                  return SubscriptionTile(
+                                    id: _id,
+                                    isVisible: true,
+                                    freeSubscription: true,
+                                    currency: subscriptionsModel.currency,
+                                    subscriptionId: subscriptionsModel.id,
+                                    amount: subscriptionsModel.price.toString(),
+                                    subscriptionType:
+                                        subscriptionsModel.subscriptionType,
+                                    onTap: () {
+                                      if (_id == 0) {
+                                        _selectSubscriptionsPlan(
+                                            subscriptionsModel);
+                                      } else {
+                                        setState(() {
+                                          _id = 0;
+                                          _businessNameCtrl.clear();
+                                          businessNameVerified = null;
+                                        });
+                                      }
+                                    },
+                                  );
+                                }
                                 return SubscriptionTile(
                                   id: _id,
                                   isVisible: _id == 0
@@ -148,25 +216,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                       }
                     })
                 : SizedBox.shrink(),
-            Visibility(
-              visible: _id != 0,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    CustomizedTextFormField(
-                      onChanged: _onChanged,
-                      controller: _businessNameCtrl,
-                      hintText: 'Full business name',
-                      suffixIcon: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: _getBusinessNameSuffixIcon(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            SizedBox(height: 10),
             Visibility(
               visible: businessNameVerified ?? false,
               child: Column(
@@ -283,7 +333,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
       actionOneTextColor: blackFont,
       actionOneBgColor: greyBorderColor,
       actionTwoTextColor: white,
-      actionTwoBgColor: navyBlue,
+      actionTwoBgColor: naturalGreen,
       title: _getDialogTitle(subscriptionsModel),
       actionTwoText: 'Yes',
       actionOneText: 'No',
@@ -390,6 +440,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
         showToast(message: appLocalization.profileUpgradeSuccessful);
 
         Navigator.pop(context);
+        Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
         Navigator.pushNamed(context, Routes.PROFILE,
             arguments: {"searchedUserName": user.userName, "index": 0});
       });
@@ -404,17 +455,19 @@ class SubscriptionTile extends StatelessWidget {
   final String amount;
   final Function() onTap;
   final String currency;
+  final bool freeSubscription;
   final String subscriptionType;
-  const SubscriptionTile(
-      {Key? key,
-      required this.isVisible,
-      required this.currency,
-      required this.id,
-      required this.subscriptionId,
-      required this.onTap,
-      required this.amount,
-      required this.subscriptionType})
-      : super(key: key);
+  const SubscriptionTile({
+    Key? key,
+    this.freeSubscription = false,
+    required this.isVisible,
+    required this.currency,
+    required this.id,
+    required this.subscriptionId,
+    required this.onTap,
+    required this.amount,
+    required this.subscriptionType,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -455,31 +508,41 @@ class SubscriptionTile extends StatelessWidget {
                                   size: 20, color: Colors.white),
                             ),
                           )
-                        : Icon(
-                            Icons.radio_button_unchecked_outlined,
-                          ),
+                        : Icon(Icons.radio_button_unchecked_outlined),
                   ],
                 ),
+                freeSubscription
+                    ? Text(
+                        'Free (one year) Plan',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: naturalGreen.withOpacity(0.8),
+                            fontWeight: FontWeight.w700),
+                      )
+                    : SizedBox.shrink(),
                 SizedBox(height: 12),
-                Row(
-                  children: [
-                    Text(
-                      worldCurrencies[currency]!,
-                      style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                    Text(
-                      '${moneyDisplayNormalizer(int.parse(amount))} ($subscriptionType) plan',
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Color(0xff030F36),
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
+                freeSubscription
+                    ? SizedBox.shrink()
+                    : Row(
+                        children: [
+                          Text(
+                            worldCurrencies[currency]!,
+                            style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            '${moneyDisplayNormalizer(int.parse(amount))} ($subscriptionType) plan',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Color(0xff030F36),
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                freeSubscription ? SizedBox.shrink() : SizedBox(height: 10),
                 RichText(
                   text: TextSpan(
                     text: 'then ',
@@ -499,7 +562,7 @@ class SubscriptionTile extends StatelessWidget {
                           alignment: PlaceholderAlignment.baseline),
                       TextSpan(
                           text:
-                              '${moneyDisplayNormalizer(int.parse(amount))}  ${getPlan(subscriptionType)}. Cancel anytime')
+                              '${moneyDisplayNormalizer(int.parse(amount))}  ${getPlan(subscriptionType)}. Cancel anytime'),
                     ],
                   ),
                 ),

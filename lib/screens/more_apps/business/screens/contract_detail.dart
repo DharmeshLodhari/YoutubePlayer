@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -7,8 +11,11 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../data/environment.dart';
 import '../business_auth.dart';
@@ -20,30 +27,69 @@ class ContractDetail extends StatefulWidget {
   ContractDetail({required this.arguments});
 
   @override
-  _ContractDetailState createState() =>
-      _ContractDetailState(arguments: arguments);
+  _ContractDetailState createState() => _ContractDetailState();
 }
 
 class _ContractDetailState extends State<ContractDetail> {
-  var arguments;
   late ContractModel contract;
-  // Contract contract;
   bool isLoading = false;
   bool isDownloading = false;
   String savePath = "";
 
-  _ContractDetailState({this.arguments});
+  // _ContractDetailState({this.arguments});
+
+  int downloadProgress = 0;
+  ReceivePort receivePort = ReceivePort();
 
   @override
   void initState() {
     fetchContract();
+    IsolateNameServer.registerPortWithName(
+        receivePort.sendPort, 'contract_downloader_send_port');
+
+    receivePort.listen((message) {
+      downloadProgress = message[2];
+      if (downloadProgress != 0) {
+        isDownloading = true;
+        if (mounted) setState(() {});
+
+        if (downloadProgress == 100) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'Downloaded');
+        } else if (downloadProgress == -1) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'File cannot be downloaded at the moment');
+        }
+      }
+
+      debugPrint('DOWNLOAD MESSAGE ::: $message');
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('contract_downloader_send_port');
+    super.dispose();
+  }
+
+  @pragma(
+      'vm:entry-point') // To avoid tree shaking in release mode for Android.
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('contract_downloader_send_port')!;
+    send.send([id, status, progress]);
   }
 
   void fetchContract() async {
     isLoading = true;
     setState(() {});
-    BusinessAuth().getContract(arguments["id"].toString()).then((value) {
+    BusinessAuth().getContract(widget.arguments["id"].toString()).then((value) {
       contract = value;
       isLoading = false;
 
@@ -102,38 +148,55 @@ class _ContractDetailState extends State<ContractDetail> {
         isLoading
             ? SizedBox.shrink()
             : IconButton(
-                icon: Icon(Icons.download_rounded, color: navyBlue),
+                icon: getDownloadIconWidget(),
                 onPressed: () {
-                  downloadFileFromServer(
-                    onDownloadStart: () {
-                      if (mounted) {
-                        setState(() {
-                          isDownloading = true;
-                        });
-                      }
-                    },
-                    downloadUrl:
-                        "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true",
-                    onDownloadComplete: () {
-                      setState(() {
-                        isDownloading = false;
-                      });
-                    },
-                    uniqueFileName: 'Contract_${contract.id}.pdf',
-                    catchErrorOccurred: (error) {
-                      setState(() {
-                        isDownloading = false;
-                      });
-                      showToast(
-                          message: 'Something went wrong, please try again.');
-                    },
-                  );
+                  _downloadContract();
                 },
               ),
         // transactionHistoryBtn(),
         SizedBox(width: 16),
       ],
     );
+  }
+
+  Widget getDownloadIconWidget() {
+    if (isDownloading) {
+      return SizedBox(
+        width: 25,
+        height: 25,
+        child: CircularLoadingIndicator(
+          color: navyBlue,
+        ),
+      );
+    }
+
+    return Icon(Icons.download_rounded, color: navyBlue);
+  }
+
+  _downloadContract() async {
+    String fileName = 'Contract_${contract.id}.pdf';
+    PermissionStatus status = await Permission.storage.request();
+
+    var downloadsDirectoryPath =
+        await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
+
+    if (status.isGranted) {
+      setState(() {
+        isDownloading = true;
+      });
+      String formattedFileName =
+          await makeFileName(downloadsDirectoryPath, fileName);
+
+      await FlutterDownloader.enqueue(
+        url:
+            "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true",
+        fileName: formattedFileName,
+        savedDir: downloadsDirectoryPath,
+      );
+    } else {
+      Permission.storage.request();
+    }
   }
 
   Widget transactionHistoryBtn() {
@@ -167,22 +230,6 @@ class _ContractDetailState extends State<ContractDetail> {
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
-                  isDownloading
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularLoadingIndicator(),
-                              SizedBox(width: 12),
-                              Text(
-                                'Downloading...',
-                                style: TextStyle(color: darkGrey, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        )
-                      : SizedBox.shrink(),
                   displayContractInfo(),
                   flexibleSpace(),
                 ],

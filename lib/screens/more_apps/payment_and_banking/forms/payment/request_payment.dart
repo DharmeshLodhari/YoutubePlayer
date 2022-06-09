@@ -799,7 +799,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                                 listen: false);
                         refreshBlocForRequestPayment.isRefresh = true;
                         Navigator.popUntil(
-                            context, ModalRoute.withName("/dashboard"));
+                            context, ModalRoute.withName(Routes.DASHBOARD));
                       } else {
                         //Pop Circular Progress Indicator
                         Navigator.pop(context);

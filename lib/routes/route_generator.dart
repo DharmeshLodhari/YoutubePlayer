@@ -729,7 +729,7 @@ class RouteGenerator {
         );
 
       /// Contracts & Invoice
-      case Routes.CONTRACTS:
+      case Routes.CONTRACT_SCREEN:
         return PageTransition(
           child: ContractScreen(),
           type: PageTransitionType.bottomToTop,

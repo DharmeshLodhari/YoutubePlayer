@@ -13,8 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import 'package:workmanager/workmanager.dart';
 
 import '../routes/route_constants.dart';
+import '../services/app_config_bloc.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -30,6 +32,7 @@ class _HomeState extends State<Home> {
 
   bool hasMessage = true;
   late AppLocalization appLocalization;
+  late AppConfigurationBloc appConfigurationBloc;
 
   @override
   void initState() {
@@ -62,6 +65,7 @@ class _HomeState extends State<Home> {
     userBloc = Provider.of<UserBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     socketProvider = Provider.of<MainSocketProvider>(context);
+    appConfigurationBloc = Provider.of<AppConfigurationBloc>(context);
 
     return Scaffold(
       key: _scaffoldHomeKey,
@@ -473,40 +477,39 @@ class _HomeState extends State<Home> {
         highlightColor: Colors.transparent,
       ),
       child: InkWell(
-        child: Row(
-          children: <Widget>[
-            SizedBox(
-              height: 50,
-              width: 50,
-              child: Card(
-                elevation: 0,
-                color: navyBlue.withOpacity(0.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  SlydoAppIcon.receive,
-                  size: 20,
-                  color: navyBlue,
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: Card(
+                  elevation: 0,
+                  color: navyBlue.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    SlydoAppIcon.receive,
+                    size: 20,
+                    color: navyBlue,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Text(
-              appLocalization.request,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
-            'isFromProfile': true,
-          });
-        },
-      ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                appLocalization.request,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
+              'isFromProfile': true,
+            });
+          }),
     );
   }
 
@@ -517,39 +520,38 @@ class _HomeState extends State<Home> {
         highlightColor: Colors.white,
       ),
       child: InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              height: 50,
-              width: 50,
-              child: Card(
-                elevation: 0,
-                color: naturalGreen.withOpacity(0.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  SlydoAppIcon.send,
-                  size: 20,
-                  color: naturalGreen,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: Card(
+                  elevation: 0,
+                  color: naturalGreen.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    SlydoAppIcon.send,
+                    size: 20,
+                    color: naturalGreen,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Text(
-              appLocalization.send,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-              arguments: <String, bool>{'isFromProfile': true});
-        },
-      ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                appLocalization.send,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+                arguments: <String, bool>{'isFromProfile': true});
+          }),
     );
   }
 

@@ -376,6 +376,27 @@ class AppLocalization {
     );
   }
 
+  String get create {
+    return Intl.message(
+      "Create",
+      name: "create",
+    );
+  }
+
+  String get yes {
+    return Intl.message(
+      "Yes",
+      name: "yes",
+    );
+  }
+
+  String get no {
+    return Intl.message(
+      "No",
+      name: "no",
+    );
+  }
+
   //payout
   String get payout {
     return Intl.message(
@@ -738,6 +759,20 @@ class AppLocalization {
     );
   }
 
+  String get creditCardFeatureNotAvailable {
+    return Intl.message(
+      "Credit card feature not available at the moment",
+      name: "creditCardFeatureNotAvailable",
+    );
+  }
+
+  String get walletFeatureNotAvailable {
+    return Intl.message(
+      "Wallet feature not available at the moment",
+      name: "walletFeatureNotAvailable",
+    );
+  }
+
   String get addPaymentCard {
     return Intl.message(
       "Add Payment Card",
@@ -928,6 +963,13 @@ class AppLocalization {
     );
   }
 
+  String get moment {
+    return Intl.message(
+      "Moment",
+      name: "moment",
+    );
+  }
+
   String get moments {
     return Intl.message(
       "Moments",
@@ -1039,20 +1081,6 @@ class AppLocalization {
     return Intl.message(
       "Are You Sure Want To Exit?",
       name: "areYouSureWantToExit",
-    );
-  }
-
-  String get yes {
-    return Intl.message(
-      "Yes",
-      name: "yes",
-    );
-  }
-
-  String get no {
-    return Intl.message(
-      "No",
-      name: "no",
     );
   }
 
@@ -1274,6 +1302,13 @@ class AppLocalization {
     return Intl.message(
       "Payment Request Rejected !!",
       name: "paymentRequestRejected",
+    );
+  }
+
+  String get paymentRequestCancelled {
+    return Intl.message(
+      "Payment Request Cancelled !!",
+      name: "paymentRequestCancelled",
     );
   }
 
@@ -2842,6 +2877,13 @@ class AppLocalization {
     return Intl.message(
       "My Contacts/Request",
       name: "myContactsAndRequest",
+    );
+  }
+
+  String get myContacts {
+    return Intl.message(
+      "My Contacts",
+      name: "myContacts",
     );
   }
 

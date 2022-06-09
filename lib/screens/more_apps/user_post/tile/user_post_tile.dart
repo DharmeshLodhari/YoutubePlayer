@@ -49,6 +49,9 @@ class _PostTileState extends State<PostTile> {
   @override
   void initState() {
     super.initState();
+
+    debugPrint('USER LIKED ::: ${widget.post?.userLiked}');
+    debugPrint('USER Dis LIKED ::: ${widget.post?.userDisLiked}');
     if (widget.post?.video != null) {
       _mainVideoController = VideoPlayerController.network(widget.post!.video!);
 
@@ -360,15 +363,13 @@ class _PostTileState extends State<PostTile> {
         child: Row(
           children: [
             Icon(
-              widget.post?.likes != 0
+              widget.post?.userLiked == true
                   ? Icons.thumb_up_alt_rounded
                   : Icons.thumb_up_alt_outlined,
               size: 16,
-              color: widget.post?.likes != 0 ? navyBlue : blackFont,
+              color: widget.post?.userLiked == true ? navyBlue : blackFont,
             ),
-            SizedBox(
-              width: 4,
-            ),
+            SizedBox(width: 4),
             Text(
               widget.post?.likes.toString() ?? "",
               style: TextStyle(
@@ -427,11 +428,11 @@ class _PostTileState extends State<PostTile> {
         child: Row(
           children: [
             Icon(
-              widget.post?.dislikes != 0
+              widget.post?.userDisLiked == true
                   ? Icons.thumb_down_alt_rounded
                   : Icons.thumb_down_alt_outlined,
               size: 16,
-              color: widget.post?.dislikes != 0 ? mateRed : blackFont,
+              color: widget.post?.userDisLiked! == true ? mateRed : blackFont,
             ),
             SizedBox(width: 4),
             Text(

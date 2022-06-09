@@ -29,8 +29,12 @@ class UserPostAuth extends AuthService {
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
+
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
+      jsonData['results'][0].forEach((key, value) {
+        print('JKEYS ::: $key');
+      });
 
       return jsonData;
     } else if (response.statusCode == 500) {
@@ -61,7 +65,7 @@ class UserPostAuth extends AuthService {
     }
   }
 
-  Future<UserPost?> getPost({required String postID}) async {
+  Future<UserPost?> getSinglePost({required String postID}) async {
     var url = AppConfig.baseUrl + "/api/v1/social/posts/$postID/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -218,6 +222,8 @@ class UserPostAuth extends AuthService {
 
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    debugPrint('LIKE URL :: $url');
     if (response.statusCode == 200 || response.statusCode == 201) {
       UserPost userPost = UserPost.fromJson(jsonDecode(response.body));
 

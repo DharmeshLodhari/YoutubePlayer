@@ -21,6 +21,7 @@ import 'package:quiver/iterables.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../widget/LoadingIndicator.dart';
+import '../../../../../widget/dialog.dart';
 import '../../../../search_user.dart';
 import '../../business_auth.dart';
 
@@ -852,61 +853,25 @@ class _AddInvoiceState extends State<AddInvoice> {
 
       if (isValidPayee && _formKey.currentState!.validate()) {
         if (userBloc.user.userName != recipient) {
-          try {
-            List<InvoiceItem?> invoiceItem = [];
-
-            invoiceItem = _addInvoiceBloc.items;
-
-            await BusinessAuth()
-                .getConversationId(name: _recipientController.text)
-                .then(
-              (value) {
-                if (value != null) {
-                  conversationId = value;
-                }
-              },
-            );
-            var data = {
-              "from_customer": userBloc.user.userName,
-              "to_customer": _recipientController.text.trim(),
-              "invoice_number": _invoiceController.text.trim().toString(),
-              // "invoice_date": dateToString(invoiceDate),
-              "due_date": dateToString(dueDate),
-              "items": invoiceItem
-            };
-
-            invoiceItem.forEach(
-              (item) {
-                int index = invoiceItem.indexOf(item);
-                invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
-              },
-            );
-            if (conversationId != null) {
-              data['conversation_id'] = conversationId!;
-            }
-
-            showDialog(
-                context: context,
-                builder: (dialogLoadingContext) => LoadingIndicator());
-
-            BusinessAuth().addInvoice(data).then((result) {
-              Navigator.pop(context); // Dismiss the loading indicator
-
-              if (result) {
-                _addInvoiceBloc.clearItems();
-                Navigator.pop(context, true);
-              }
-            }).catchError((error) {
-              Navigator.pop(context); // Dismiss the loading indicator
-              showToast(
-                message: error.toString(),
-              );
-            });
-          } catch (e) {
-            Navigator.pop(context);
-            debugPrint(e.toString());
-            showToast(message: e.toString());
-          }
+          showDialogBox(
+              context: context,
+              actionOneTextColor: blackFont,
+              actionOneBgColor: greyBorderColor,
+              actionTwoTextColor: white,
+              actionTwoBgColor: naturalGreen,
+              title: 'Create Invoice',
+              actionTwoText: AppLocalization.of(context)!.create,
+              actionOneText: AppLocalization.of(context)!.cancel,
+              description: 'Are you sure you want to create this invoice?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                enableMargin: false,
+                width: 90,
+                height: 90,
+                image: Image.asset('assets/images/accept_dialog_icon.png'),
+              ),
+              rightButtonOnPressed: () {
+                createInvoice();
+              });
         } else {
           showToast(message: AppLocalization.of(context)!.invalidRecipient);
         }
@@ -914,6 +879,64 @@ class _AddInvoiceState extends State<AddInvoice> {
     } else {
       var msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
+    }
+  }
+
+  createInvoice() async {
+    try {
+      List<InvoiceItem?> invoiceItem = [];
+
+      invoiceItem = _addInvoiceBloc.items;
+
+      await BusinessAuth()
+          .getConversationId(name: _recipientController.text)
+          .then(
+        (value) {
+          if (value != null) {
+            conversationId = value;
+          }
+        },
+      );
+      var data = {
+        "from_customer": userBloc.user.userName,
+        "to_customer": _recipientController.text.trim(),
+        "invoice_number": _invoiceController.text.trim().toString(),
+        "invoice_date": dateToString(invoiceDate),
+        "due_date": dateToString(dueDate),
+        "items": invoiceItem
+      };
+
+      invoiceItem.forEach(
+        (item) {
+          int index = invoiceItem.indexOf(item);
+          invoiceItem[index]!.amount = invoiceItem[index]!.amount! * 100;
+        },
+      );
+      if (conversationId != null) {
+        data['conversation_id'] = conversationId!;
+      }
+
+      showDialog(
+          context: context,
+          builder: (dialogLoadingContext) => LoadingIndicator());
+
+      BusinessAuth().addInvoice(data).then((result) {
+        Navigator.pop(context); // Dismiss the loading indicator
+
+        if (result) {
+          _addInvoiceBloc.clearItems();
+          Navigator.pop(context, true);
+        }
+      }).catchError((error) {
+        Navigator.pop(context); // Dismiss the loading indicator
+        showToast(
+          message: error.toString(),
+        );
+      });
+    } catch (e) {
+      Navigator.pop(context);
+      debugPrint(e.toString());
+      showToast(message: e.toString());
     }
   }
 

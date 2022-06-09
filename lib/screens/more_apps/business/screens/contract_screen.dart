@@ -15,6 +15,7 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/enums.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../widget/customized_popup_menu.dart';
+import '../../../../widget/dialog.dart';
 import '../../../../widget/noItemInList.dart';
 import '../../../../widget/rounded_background_icon.dart';
 import '../bloc/contract_bloc.dart';
@@ -331,6 +332,7 @@ class _ContractScreenState extends State<ContractScreen> {
                 (!contract.isAccepted && !userIsContractor);
 
             if (!contract.isAccepted) {
+              String actionText = userIsContractor ? ' Reject' : 'Cancel';
               return Slidable(
                 controller: _slideController,
                 direction: Axis.horizontal,
@@ -342,7 +344,27 @@ class _ContractScreenState extends State<ContractScreen> {
                       backgroundColor: mateRed,
                       icon: Icons.stop_circle_outlined,
                       onTap: () {
-                        cancelContract(id: contract.id!);
+                        showDialogBox(
+                          context: context,
+                          actionOneTextColor: blackFont,
+                          actionOneBgColor: greyBorderColor,
+                          actionTwoTextColor: white,
+                          actionTwoBgColor: mateRed,
+                          title: '$actionText contract',
+                          actionTwoText: AppLocalization.of(context)!.yes,
+                          actionOneText: AppLocalization.of(context)!.no,
+                          description:
+                              'Are you sure you want to ${actionText.toLowerCase()} this contract?',
+                          roundedBackgroundIcon: RoundedBackgroundIcon(
+                            enableMargin: false,
+                            width: 90,
+                            height: 90,
+                            image: Icon(SlydoAppIcon.remove),
+                          ),
+                          rightButtonOnPressed: () {
+                            cancelOrRejectContract(id: contract.id!);
+                          },
+                        );
                       },
                       title: userIsContractor ? 'Reject' : "Cancel",
                       slideController: _slideController),
@@ -353,7 +375,28 @@ class _ContractScreenState extends State<ContractScreen> {
                             backgroundColor: naturalGreen,
                             icon: Icons.stop_circle_outlined,
                             onTap: () {
-                              acceptContract(id: contract.id!);
+                              showDialogBox(
+                                context: context,
+                                actionOneTextColor: blackFont,
+                                actionTwoBgColor: naturalGreen,
+                                actionTwoTextColor: Colors.white,
+                                actionOneBgColor: greyBorderColor,
+                                title: 'Accept contract',
+                                actionTwoText:
+                                    AppLocalization.of(context)!.accept,
+                                actionOneText: AppLocalization.of(context)!.no,
+                                description:
+                                    'Are you sure you want to accept this contract?',
+                                roundedBackgroundIcon: RoundedBackgroundIcon(
+                                  enableMargin: false,
+                                  width: 90,
+                                  height: 90,
+                                  image: Icon(SlydoAppIcon.remove),
+                                ),
+                                rightButtonOnPressed: () {
+                                  acceptContract(id: contract.id!);
+                                },
+                              );
                             },
                             title: "Accept",
                             slideController: _slideController),
@@ -473,7 +516,26 @@ class _ContractScreenState extends State<ContractScreen> {
           backgroundColor: mateRed,
           icon: Icons.stop_circle_outlined,
           onTap: () {
-            updateContractStatus(contract, 'Ended');
+            showDialogBox(
+              context: context,
+              actionOneBgColor: greyBorderColor,
+              actionOneTextColor: blackFont,
+              actionTwoBgColor: naturalGreen,
+              actionTwoTextColor: Colors.white,
+              title: 'End contract',
+              actionTwoText: AppLocalization.of(context)!.yes,
+              actionOneText: AppLocalization.of(context)!.no,
+              description: 'Are you sure you want to end this contract?',
+              roundedBackgroundIcon: RoundedBackgroundIcon(
+                enableMargin: false,
+                width: 90,
+                height: 90,
+                image: Icon(SlydoAppIcon.remove),
+              ),
+              rightButtonOnPressed: () {
+                updateContractStatus(contract, 'Ended');
+              },
+            );
           },
           title: "End",
           slideController: _slideController),
@@ -497,11 +559,11 @@ class _ContractScreenState extends State<ContractScreen> {
     }
   }
 
-  void cancelContract({required int id}) async {
+  void cancelOrRejectContract({required int id}) async {
     showDialog(
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
-    bool accepted = await BusinessAuth().cancelContract(contractId: id);
+    bool accepted = await BusinessAuth().cancelOrRejectContract(contractId: id);
     Navigator.pop(context);
     if (accepted) {
       contractBloc.isRefreshing = true;

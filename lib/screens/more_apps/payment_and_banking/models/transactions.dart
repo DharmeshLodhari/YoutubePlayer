@@ -192,10 +192,9 @@ class PaymentRequest {
     UserBloc currentUser =
         Provider.of(MyGlobals().navigationKey.currentContext!, listen: false);
 
-    bool isRequested = (json["from_customer"] != currentUser.user.userName &&
-            json["to_customer"] == currentUser.user.userName)
-        ? true
-        : false;
+    //
+    bool isRequested =
+        (json["from_customer"] == currentUser.user.userName) ? false : true;
 
     var payee =
         (isRequested ? json["from_customer"] : json['to_customer']) ?? "";

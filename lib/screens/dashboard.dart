@@ -33,7 +33,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'home.dart';
-import 'moments_screen.dart';
+import 'moments/moments_screen.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/user_profile/screens/connection_module/connections_dashboard.dart';

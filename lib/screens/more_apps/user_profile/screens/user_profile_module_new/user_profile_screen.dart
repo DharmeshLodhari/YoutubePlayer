@@ -967,20 +967,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               Navigator.pop(context);
               upgradeAccount();
             },
-            extraWidget: Container(
-              margin: EdgeInsets.only(left: 8.0),
-              padding: EdgeInsets.all(6.0),
-              decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                'PRO',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
-              ),
+            extraWidget: getColoredLabeledWidget(
+              text: 'Pro',
+              color: naturalGreen,
             ),
           ),
         ),

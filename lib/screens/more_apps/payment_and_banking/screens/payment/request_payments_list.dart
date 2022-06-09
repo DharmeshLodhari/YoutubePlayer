@@ -62,16 +62,20 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
   bool isFirstTime = true;
+  late UserBloc userBloc;
 
   @protected
   void initState() {
     // secureScreen();
+    debugPrint('INIT STATE');
     this.getList();
     super.initState();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
+        debugPrint('END OF LIST');
+
         getList();
       }
     });
@@ -91,17 +95,13 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         if (_refreshBloc!.isRefresh) {
           debugPrint("refreshing !!");
           if (mounted) {
+            debugPrint('_onRefreshOnResume--->');
+
             _onRefresh();
             _refreshBloc!.isRefresh = false;
           }
         }
       });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _onRefresh();
   }
 
   _refresh() {
@@ -114,6 +114,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     noItemInList = false;
     requestPaymentList = [];
     if (mounted) setState(() {});
+    debugPrint('_REFRESH');
+
     getList();
   }
 
@@ -122,6 +124,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
           connectionResult == ConnectivityResult.mobile) {
+        debugPrint('_onRefresh()');
+
         _refresh();
         _refreshController.refreshCompleted();
       } else {
@@ -165,6 +169,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         break;
     }
     setState(() {});
+    debugPrint('menuItemSelectionChange--->');
     _onRefresh();
   }
 
@@ -175,6 +180,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
@@ -244,7 +250,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         },
       ),
       title: Text(
-        AppLocalization.of(context)!.requests,
+        'Payment Request',
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
@@ -321,6 +327,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
             if (newDateTimeRange != null) {
               setState(() {});
+              debugPrint('dateFilterIcon--->');
+
               _onRefresh();
             }
           },
@@ -473,6 +481,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                     fromMe = false;
                     break;
                 }
+                debugPrint('_threeItemPopup--->');
+
                 _onRefresh();
               }
             });
@@ -523,6 +533,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   bool isRefreshing = false;
   void getList() async {
+    debugPrint('GET LIST _--->');
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
@@ -547,10 +558,10 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           count = result['count'];
           previous = result['previous'];
           var tempList = result['results'];
+          debugPrint('REQUEST PAYMENT ::: $tempList');
 
           isLoading = false;
           requestPaymentList.addAll(tempList);
-
           if (mounted) setState(() {});
 
           if (isFirstTime && next != null && next != "") {
@@ -625,9 +636,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   }
 
   List<Widget> listSecondaryActions(PaymentRequest paymentRequest, int index) {
-    if (!paymentRequest.isCredit!) {
-      return [];
-    } else {
+    if (paymentRequest.isCredit!) {
       return [
         SlideActionButton(
             backgroundColor: navyBlue,
@@ -636,25 +645,27 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
               acceptPaymentRequestAlert(paymentRequest, index);
             },
             title: "Pay",
-            slideController: _slideController)
+            slideController: _slideController),
       ];
+    } else {
+      return [];
     }
   }
 
   List<Widget> listActionSlideActions(
       PaymentRequest paymentRequest, int index) {
-    String caption = !paymentRequest.isCredit!
-        ? AppLocalization.of(context)!.cancel
-        : AppLocalization.of(context)!.reject;
+    String caption = paymentRequest.isCredit!
+        ? AppLocalization.of(context)!.reject
+        : AppLocalization.of(context)!.cancel;
     return [
       SlideActionButton(
           backgroundColor: mateRed,
           icon: SlydoAppIcon.remove,
           onTap: () {
-            if (!paymentRequest.isCredit!) {
-              cancelPaymentRequestAlert(paymentRequest, index);
-            } else {
+            if (paymentRequest.isCredit!) {
               rejectPaymentRequestAlert(paymentRequest, index);
+            } else {
+              cancelPaymentRequestAlert(paymentRequest, index);
             }
           },
           title: caption,
@@ -732,6 +743,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
                 setState(() {
                   requestPaymentList.removeAt(index);
                   if (requestPaymentList.length <= 9) {
+                    debugPrint('LENGTH LESS THAN 9');
                     getList();
                   }
                 });
@@ -773,15 +785,15 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: mateRed,
+      actionOneBgColor: naturalGreen,
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
       title: AppLocalization.of(context)!.reject,
       description:
           AppLocalization.of(context)!.areYouSureWantToRejectThisPayment,
-      actionOneText: AppLocalization.of(context)!.reject,
-      actionTwoText: AppLocalization.of(context)!.cancel,
+      actionOneText: 'Yes',
+      actionTwoText: 'No',
     );
     if (result != null && result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);
@@ -804,6 +816,8 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
 
   Future<void> cancelPaymentRequestAlert(
       PaymentRequest paymentRequest, int index) async {
+    String actionText = paymentRequest.isCredit! ? 'Reject' : 'Cancel';
+
     bool? result = await showDialogBox(
       context: context,
       roundedBackgroundIcon: RoundedBackgroundIcon(
@@ -818,21 +832,25 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: mateRed,
+      actionOneBgColor: naturalGreen,
       actionOneTextColor: Colors.white,
       actionTwoBgColor: greyBorderColor,
       actionTwoTextColor: blackFont,
-      title: AppLocalization.of(context)!.cancel,
-      description: "Are you sure want to cancel this request?",
-      actionOneText: AppLocalization.of(context)!.cancel,
-      actionTwoText: "Close",
+      title: paymentRequest.isCredit!
+          ? AppLocalization.of(context)!.reject
+          : AppLocalization.of(context)!.cancel,
+      description: "Are you sure you want to $actionText this request?",
+      actionOneText: paymentRequest.isCredit!
+          ? AppLocalization.of(context)!.reject
+          : 'Yes',
+      actionTwoText: "No",
     );
     if (result == null) return;
     if (result) {
       bool done = await _auth.rejectPaymentRequests(paymentRequest);
       if (done) {
         _showSnackBar(
-            context, AppLocalization.of(context)!.paymentRequestRejected);
+            context, AppLocalization.of(context)!.paymentRequestCancelled);
         if (mounted) {
           setState(() {
             requestPaymentList.removeAt(index);

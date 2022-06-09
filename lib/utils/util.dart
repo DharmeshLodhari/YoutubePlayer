@@ -8,7 +8,6 @@ import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -404,6 +403,25 @@ Widget customAppBar({required BuildContext context, required String title}) {
       title,
       style: TextStyle(
           color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+    ),
+  );
+}
+
+Widget getColoredLabeledWidget({required String text, required Color color}) {
+  return Container(
+    margin: EdgeInsets.only(left: 8.0),
+    padding: EdgeInsets.symmetric(horizontal: 6.0),
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(6),
+    ),
+    child: Text(
+      text,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+      ),
     ),
   );
 }
@@ -846,105 +864,50 @@ Future<bool> doesFileExist(String filePath) async {
   return await File(filePath).exists();
 }
 
-void downloadFileFromServer({
-  Function? onDownloadStart,
-  Function? onDownloadComplete,
-  required String uniqueFileName,
-  required String downloadUrl,
-  Function(dynamic)? catchErrorOccurred,
-}) async {
-  if (await checkStoragePermission()) {
-    var localPath =
-        await getLocalPathToSaveDownloads(uniqueFileName: uniqueFileName);
+// This function helps to add a string at the back of each file name IF that
+// file already exists in the user's file system, so that each file name will
+// be unique.
+Future<String> makeFileName(String path, String fileName) async {
+  bool fileExists = await File('$path/$fileName').exists();
 
-    final savedDir = Directory(localPath);
-    bool isExisting = await savedDir.exists();
-    if (!isExisting) {
-      savedDir.create();
-    }
+  if (fileExists) {
+    int counter = 1;
+    List newFileExt = fileName.split('.');
+    String ext = newFileExt[1];
 
-    if (onDownloadStart != null) {
-      onDownloadStart();
-    }
+    String fName = newFileExt[0];
 
-    Dio dio = Dio();
+    String newFileName = '$fName($counter).$ext';
 
-    String pdfUrl = downloadUrl;
+    bool newFileExists = await File('$path/$newFileName').exists();
 
-    var authHeaders = await BusinessAuth().getAuthHeaders();
+    while (newFileExists) {
+      List newFileExt = fileName.split('.');
 
-    // savePath = await getFilePath(fileName);
+      String ext = newFileExt[1];
 
-    debugPrint("res-- $pdfUrl");
+      String fName = newFileExt[0];
 
-    Response response = await dio.download(
-      pdfUrl,
-      localPath,
-      options: Options(headers: authHeaders),
-      onReceiveProgress: (rec, total) {},
-    );
-    debugPrint("res-- ${response.statusCode}");
-    if (onDownloadComplete != null) {
-      onDownloadComplete();
-    }
+      /// The regex here is used to get the last occurrence of something like this: (1) (opening and closing bracket with digit(s) inside.
+      RegExp regExp = RegExp(r'\([0-9]+\)$');
+      String? stringMatch = regExp.stringMatch(fName);
 
-    if (response.statusCode == 200) {
-      showToast(message: 'Download complete');
-      if (Platform.isIOS) {
-        OpenFile.open(localPath);
+      if (stringMatch != null) {
+        fName = fName.replaceAll(regExp, "(${counter + 1})");
+      } else {
+        fName = "$fName($counter)";
       }
-    } else {
-      showToast(message: 'Something went wrong, please try again');
-    }
-    try {} catch (e) {
-      if (catchErrorOccurred != null) {
-        catchErrorOccurred(e);
-      }
+
+      newFileName = '$fName.$ext';
+
+      newFileExists = await File('$path/$newFileName').exists();
+      counter += 1;
     }
 
-    // try {
-    //   Dio dio = Dio();
-    //
-    //   String pdfUrl =
-    //       "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
-    //
-    //   String fileName = 'Contract_${contract.id}.pdf';
-    //
-    //   var authHeaders = await BusinessAuth().getAuthHeaders();
-    //
-    //   savePath = await getFilePath(fileName);
-    //   Response response = await dio.download(
-    //     pdfUrl,
-    //     savePath,
-    //     options: Options(
-    //       headers: authHeaders,
-    //     ),
-    //     onReceiveProgress: (rec, total) {},
-    //   );
-    //   setState(() {
-    //     isDownloading = false;
-    //   });
-    //
-    //   if (response.statusCode == 200) {
-    //     showToast(message: 'Download complete');
-    //     if (Platform.isIOS) {
-    //       OpenFile.open(localPath);
-    //     }
-    //   } else {
-    //     showToast(message: 'Something went wrong, please try again');
-    //   }
-    // }
-    //
-    // catch (e) {
-    //   setState(() {
-    //     isDownloading = false;
-    //   });
-    // showToast(message: 'Something went wrong, please try again');
-
-    // }
-  } else {
-    showToast(message: 'Please grant storage permission');
+    return newFileName;
   }
+
+  return fileName;
 }
 
 Future<String> getLocalPathToSaveDownloads(

@@ -261,9 +261,11 @@ class PushNotificationService {
           isDialogueOpen = false;
         }
         if (!isDialogueOpen) {
-          showAlertMessage(
-              notification: notification,
-              context: myGlobals.scaffoldKey.currentContext!);
+          Future.delayed(Duration(seconds: 3), () {
+            showAlertMessage(
+                notification: notification,
+                context: myGlobals.scaffoldKey.currentContext!);
+          });
         }
       }
     });
@@ -295,23 +297,21 @@ class PushNotificationService {
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
     // icon: null, badge: null, sound: null, `link: null, tag: null, dir: auto,
     // actions: /detail_message/40892023-fa43-4652-b3eb-fd584f6530e9}
+
     try {
       debugPrint("payload : $payload");
-      if (payload == "/request-payment") {
-        print('REQU3ST PAYMENT --->');
-
-        NavigationUtil.pushNamed(context!, routeName: Routes.ACCOUNTS);
-        // Navigator.of(context!).popUntil(ModalRoute.withName('/accounts'));
-
-        // Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
-        // DashboardBloc _dashboardBloc =
-        //     Provider.of<DashboardBloc>(context, listen: false);
-        // _dashboardBloc.index = 1;
+      if (payload == Routes.REQUEST_PAYMENT) {
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        NavigationUtil.pushNamed(context, routeName: Routes.ACCOUNTS);
       } else if (payload == Routes.INVOICE_SCREEN) {
-        Navigator.of(context!).pushNamed(Routes.INVOICE_SCREEN);
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed(Routes.INVOICE_SCREEN);
+      } else if (payload == '/contracts') {
+        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context).pushNamed(Routes.CONTRACT_SCREEN);
       } else if (payload == "/transaction") {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(context).pushNamed('/transactions');
+        Navigator.of(context).pushNamed(Routes.TRANSACTIONS);
       } else if (payload == "/connection-request") {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context)

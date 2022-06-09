@@ -27,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'data/socket_provider.dart';
 import 'data/state_notifier.dart';
@@ -208,15 +209,16 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  Future initializeAppConfiguration() async {
-    debugPrint('APP CONFIGU');
-    await AppConfigurationService().getAppConfigurations().then((appConfig) {
-      if (appConfig != null) {
-        appConfiguration.appConfigurationModel = appConfig;
-      }
-    });
-    debugPrint('APP CONF ::; ${appConfiguration.appConfigurationModel}');
-  }
+  // Future initializeAppConfiguration() async {
+  //   debugPrint('APP CONFIGU');
+  //   AppConfigurationService().getAppConfigurations().then((appConfig) {
+  //     if (appConfig != null) {
+  //       appConfiguration.appConfigurationModel = appConfig;
+  //     }
+  //   }).catchError((e) {
+  //     showToast(message: 'Error: ${e.toString()}');
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -380,7 +382,7 @@ class _SplashScreenState extends State<SplashScreen>
             setState(() {});
 
             await initializeShoppingCart();
-            await initializeAppConfiguration();
+            // await initializeAppConfiguration();
 
             setState(() {});
 

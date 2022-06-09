@@ -198,7 +198,7 @@ class AuthService {
         return Future.error("${response.body}");
       }
     } catch (e) {
-      return Future.error("${response.body}");
+      return Future.error("Something went wrong, please try again.");
     }
   }
 

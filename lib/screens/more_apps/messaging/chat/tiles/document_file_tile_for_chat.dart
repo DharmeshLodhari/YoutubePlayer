@@ -140,7 +140,6 @@ class _FileTileForChatState extends State<FileTileForChat> {
     super.initState();
 
     media = widget.message['media'];
-    debugPrint('MEDIA ---> $media');
     checkID = widget.message['check_id'];
     messageText = widget.message['text'] ?? "";
     conversationID = widget.message['conversation_id'];
@@ -305,16 +304,12 @@ class _FileTileForChatState extends State<FileTileForChat> {
         await ExternalPath.getExternalStoragePublicDirectory(
             ExternalPath.DIRECTORY_DOWNLOADS);
 
-    debugPrint('FILE DOWNLOADS PATH ::: $downloadsDirectoryPath');
-
     if (status.isGranted) {
       setState(() {
         isDownloading = true;
       });
       String formattedFileName =
           await makeFileName(downloadsDirectoryPath, fileName);
-
-      debugPrint('FORMATTED FILE NAME ::: $formattedFileName');
 
       await FlutterDownloader.enqueue(
         url: media,
@@ -332,64 +327,6 @@ class _FileTileForChatState extends State<FileTileForChat> {
     } else {
       Permission.storage.request();
     }
-  }
-
-  // This function helps to add a string at the back of each file name IF that
-  // file already exists in the user's file system, so that each file name will
-  // be unique.
-  Future<String> makeFileName(String path, String fileName) async {
-    bool fileExists = await File('$path/$fileName').exists();
-
-    /// "/download/contract_52.pdf"
-    if (fileExists) {
-      int counter = 1;
-      List newFileExt = fileName.split('.');
-      String ext = newFileExt[1];
-
-      /// "pdf"
-      String fName = newFileExt[0];
-
-      /// "contract_52"
-      String newFileName = '$fName($counter).$ext';
-
-      /// "contract_52(1).pdf"
-
-      bool newFileExists = await File('$path/$newFileName').exists();
-
-      /// "contract_52(1).pdf"
-      while (newFileExists) {
-        debugPrint('NEW FILE EXISTS ::: $newFileExists');
-        List newFileExt = fileName.split('.');
-
-        /// "pdf"
-        String ext = newFileExt[1];
-
-        /// "contract_52(1)"
-        String fName = newFileExt[0];
-
-        RegExp regExp = RegExp(r'\([0-9]+\)$');
-        String? stringMatch = regExp.stringMatch(fName);
-
-        if (stringMatch != null) {
-          fName = fName.replaceAll(regExp, "(${counter + 1})");
-        } else {
-          fName = "$fName($counter)";
-        }
-
-        debugPrint('fName ::: $fName');
-
-        newFileName = '$fName.$ext';
-
-        /// Invoice_36(1).pdf.pdf
-        debugPrint('FINAL NEWFILEANME ::: $newFileName');
-        newFileExists = await File('$path/$newFileName').exists();
-        counter += 1;
-      }
-
-      return newFileName;
-    }
-
-    return fileName;
   }
 
   getTrailingIcon(bool isSend) {
