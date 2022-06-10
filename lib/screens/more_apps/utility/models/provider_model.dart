@@ -1,10 +1,12 @@
 class ProviderModel {
   String name;
+  String label;
   String avatar;
   String providerId;
 
   ProviderModel({
     required this.name,
+    required this.label,
     required this.avatar,
     required this.providerId,
   });
@@ -12,6 +14,7 @@ class ProviderModel {
   factory ProviderModel.fromJson(Map<String, dynamic> json) {
     return ProviderModel(
       name: json['name'],
+      label: json['label'],
       providerId: json['id'],
       avatar: json['avatar'] ??
           "https://www.nicepng.com/png/full/413-4139394_other-internet-providers-in-czech-republic-internet-service.png",

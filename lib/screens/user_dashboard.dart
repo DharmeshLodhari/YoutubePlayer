@@ -76,6 +76,7 @@ class _UserDashboardState extends State<UserDashboard> {
 
     String? str = await storage.read(key: appConfigurationKey);
     appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    debugPrint('ENABLE UTILITY ::: ${appConfigurationModel?.enableUtility}');
   }
 
   @override
@@ -529,7 +530,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 title: 'Contract',
                 iconData: Icons.description_rounded,
                 onTap: () {
-                  if (appConfigurationModel?.enableContract != false) {
+                  if (appConfigurationModel?.enableContract == true) {
                     hideBalance();
                     Navigator.pop(context);
                     Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
@@ -541,7 +542,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 title: "Invoice",
                 iconData: Icons.receipt_outlined,
                 onTap: () {
-                  if (appConfigurationModel?.enableInvoice != true) {
+                  if (appConfigurationModel?.enableInvoice == true) {
                     hideBalance();
                     Navigator.pop(context);
                     Navigator.pushNamed(context, Routes.INVOICE_SCREEN);

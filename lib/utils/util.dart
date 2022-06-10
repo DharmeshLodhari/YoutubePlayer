@@ -857,7 +857,9 @@ Color getRatingColor(int? numberOfRating, int i) {
 }
 
 String enumToString(mEnum) {
-  return mEnum.toString().split('.')[1];
+  //UtilitiesProvidersEnum.Electricity
+
+  return mEnum.toString().split('.')[1].replaceAll('_', ' ');
 }
 
 Future<bool> doesFileExist(String filePath) async {

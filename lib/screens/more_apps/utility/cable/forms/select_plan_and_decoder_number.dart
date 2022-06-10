@@ -164,9 +164,7 @@ class _SelectPlanAndDecoderNumberState
           "Select a plan",
           style: TextStyle(color: darkGrey, fontSize: 14),
         ),
-        SizedBox(
-          height: 6,
-        ),
+        SizedBox(height: 6),
         Card(
           elevation: 0,
           color: Colors.white,

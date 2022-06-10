@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/utility/models/provider_details_model.dart';
+import 'package:Slydo/screens/more_apps/utility/models/provider_product_model.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/services.dart';
 
@@ -24,12 +24,13 @@ class UtilityPaymentScreen extends StatefulWidget {
 
 class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
   int? amount;
+  bool lookUp = true;
   String? customerId;
   bool hasError = false;
   bool planSelected = false;
   bool referenceNumVerified = false;
-  ProviderDetailsModel? selectedPlan;
-  List<ProviderDetailsModel> utilityProviderDetails = [];
+  ProviderProductModel? selectedPlan;
+  List<ProviderProductModel> utilityProviderDetails = [];
   final TextEditingController amountCtrl = TextEditingController();
   final TextEditingController referenceNumCtrl = TextEditingController();
 
@@ -52,7 +53,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
 
   getProviderListDetails() {
     UtilityAuth()
-        .getUtilityProviderDetails(providerId: widget.providerModel.providerId)
+        .getUtilityProviderProduct(providerId: widget.providerModel.providerId)
         .then(
       (providerDetails) {
         providerDetails.forEach((element) {
@@ -152,7 +153,6 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
                           child: getReferenceNumber(),
                         ),
                       ),
-                      SizedBox(height: 20),
                       Visibility(
                         visible: planSelected,
                         child: Container(
@@ -274,7 +274,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
   }
 
   void selectPlan() async {
-    final pressedPlan = await showDialog<ProviderDetailsModel>(
+    final pressedPlan = await showDialog<ProviderProductModel>(
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -344,6 +344,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
             ));
     if (pressedPlan != null) {
       selectedPlan = pressedPlan;
+      lookUp = selectedPlan!.lookUp;
       amount = selectedPlan!.amount;
       amountCtrl.text = amount == null ? '' : moneyDisplayNormalizer(amount);
       planSelected = true;
@@ -352,18 +353,28 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
   }
 
   Widget getReferenceNumber() {
-    return CustomizedTextFormField(
-      labelText: "Meter no",
-      isNumberOnlyInput: true,
-      controller: referenceNumCtrl,
-      keyboardType: TextInputType.number,
-      whenToVerifyInputFromServer: (val) {
-        return true;
-      },
-      verifyInputFromServerFunc: () => verifyReferenceNumber(),
-      extraFunctionWhenInputWasVerifiedFromServerSuccessfully: () {},
-      extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully: () {},
-    );
+    if (lookUp) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomizedTextFormField(
+            labelText: widget.providerModel.label,
+            isNumberOnlyInput: true,
+            controller: referenceNumCtrl,
+            keyboardType: TextInputType.number,
+            whenToVerifyInputFromServer: (val) {
+              return true;
+            },
+            verifyInputFromServerFunc: () => verifyReferenceNumber(),
+            extraFunctionWhenInputWasVerifiedFromServerSuccessfully: () {},
+            extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully: () {},
+          ),
+          SizedBox(height: 20),
+        ],
+      );
+    }
+
+    return SizedBox.shrink();
   }
 
   Future<bool> verifyReferenceNumber() async {
