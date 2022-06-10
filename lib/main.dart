@@ -91,6 +91,7 @@ void main() async {
   debugPrint('MAIN RUNNING');
 
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize();
 
   AppConfig();
 

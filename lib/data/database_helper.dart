@@ -1032,5 +1032,5 @@ class DatabaseHelper {
     return res;
   }
 
-  // Future deleteMessagesFromThirtyDaysAgo() {}
+// Future deleteMessagesFromThirtyDaysAgo() {}
 }
