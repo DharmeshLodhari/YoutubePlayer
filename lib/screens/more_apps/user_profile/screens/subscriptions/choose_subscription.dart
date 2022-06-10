@@ -151,42 +151,17 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount:
                                   appConfigurationModel?.freeSubscription ==
-                                          null
+                                          true
                                       ? 1
                                       : snapshot.data!.length,
                               itemBuilder: (context, index) {
                                 SubscriptionsModel subscriptionsModel =
                                     snapshot.data![index];
-                                if (appConfigurationModel?.freeSubscription ==
-                                    null) {
-                                  return SubscriptionTile(
-                                    id: _id,
-                                    isVisible: true,
-                                    freeSubscription: true,
-                                    currency: subscriptionsModel.currency,
-                                    subscriptionId: subscriptionsModel.id,
-                                    amount: subscriptionsModel.price.toString(),
-                                    subscriptionType:
-                                        subscriptionsModel.subscriptionType,
-                                    onTap: () {
-                                      if (_id == 0) {
-                                        _selectSubscriptionsPlan(
-                                            subscriptionsModel);
-                                      } else {
-                                        setState(() {
-                                          _id = 0;
-                                          _businessNameCtrl.clear();
-                                          businessNameVerified = null;
-                                        });
-                                      }
-                                    },
-                                  );
-                                }
                                 return SubscriptionTile(
                                   id: _id,
-                                  isVisible: _id == 0
-                                      ? true
-                                      : _id == subscriptionsModel.id,
+                                  isVisible: true,
+                                  freeSubscription:
+                                      appConfigurationModel!.freeSubscription,
                                   currency: subscriptionsModel.currency,
                                   subscriptionId: subscriptionsModel.id,
                                   amount: subscriptionsModel.price.toString(),

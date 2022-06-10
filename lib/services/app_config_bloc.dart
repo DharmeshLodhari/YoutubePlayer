@@ -41,18 +41,18 @@ class AppConfigurationService extends AuthService {
 class AppConfigurationModel {
   int? id;
   String? country;
-  bool? enableMoment;
-  bool? enableLocationSharing;
-  bool? enableEmptyEnvelope;
-  bool? enableMagicEnvelope;
-  bool? enableCashout;
-  bool? enableInvoice;
-  bool? enableContract;
-  bool? enableUtility;
-  bool? enableGroupChat;
-  bool? freeSubscription;
-  bool? enableAddUserCreditCard;
-  bool? enableWalletTopupWithCreditCard;
+  bool enableMoment;
+  bool enableLocationSharing;
+  bool enableEmptyEnvelope;
+  bool enableMagicEnvelope;
+  bool enableCashout;
+  bool enableInvoice;
+  bool enableContract;
+  bool enableUtility;
+  bool enableGroupChat;
+  bool freeSubscription;
+  bool enableAddUserCreditCard;
+  bool enableWalletTopupWithCreditCard;
 
   AppConfigurationModel({
     required this.id,
@@ -94,6 +94,7 @@ class AppConfigurationModel {
   static Map<String, dynamic> toMap(AppConfigurationModel model) => {
         'id': model.id,
         'country': model.country,
+        'free_subscription': model.freeSubscription,
         'enable_moments': model.enableMoment,
         'enable_add_user_credit_card': model.enableAddUserCreditCard,
         'enable_cashout': model.enableCashout,

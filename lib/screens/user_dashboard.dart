@@ -76,7 +76,6 @@ class _UserDashboardState extends State<UserDashboard> {
 
     String? str = await storage.read(key: appConfigurationKey);
     appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    debugPrint('ENABLE UTILITY ::: ${appConfigurationModel?.enableUtility}');
   }
 
   @override
