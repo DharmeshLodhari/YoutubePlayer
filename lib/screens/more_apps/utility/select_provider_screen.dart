@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/utility/utility_provider_tile.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -26,6 +27,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
   String? next = "";
   String? previous = "";
   List providerList = [];
+  List providerListCopy = [];
   bool isFirstTime = true;
   bool noItemInList = false;
   ScrollController _scrollController = ScrollController();
@@ -71,6 +73,7 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
 
         isLoading = false;
         providerList.addAll(tempList);
+        providerListCopy.addAll(tempList);
 
         if (mounted) setState(() {});
 
@@ -135,6 +138,15 @@ class _SelectProviderScreenState extends State<SelectProviderScreen> {
               children: [
                 selectProviderText(),
                 SizedBox(height: 8),
+                // CustomizedTextFormField(
+                //   onChanged: (value){
+                //     if(providerList.contains(value)){
+                //       setState(() {
+                //         providerListCopy.addAll(iterable);
+                //       });
+                //     }
+                //   },
+                // ),
                 Expanded(child: _buildProviderList()),
               ],
             ),

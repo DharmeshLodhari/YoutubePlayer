@@ -137,20 +137,15 @@ void initializeBackgroundService() async {
   try {
     await AppConfigurationService().getAppConfigurations().then(
       (value) async {
-        debugPrint('APP CONFIGS ::: $value');
-        debugPrint('FREE SUBSCRIPTION ::: ${value?.freeSubscription}');
-
         storage.write(
             key: appConfigurationKey,
             value: AppConfigurationModel.serialize(value!));
-
-        String? str = await storage.read(key: appConfigurationKey);
-        debugPrint('STRI ::: ${str}');
       },
     );
   } catch (e) {
-    debugPrint('APP CONFIG ERROR ---> ${e.toString()}');
+    debugPrint('APP CONFIG ERROR :: ${e.toString()}');
   }
+
   Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
   debugPrint('BACKGROUND SERVICE RUNNING');
   Workmanager().registerPeriodicTask(

@@ -1,4 +1,5 @@
 import '../../../utils/colors.dart';
+import '../../../utils/util.dart';
 import 'models/provider_model.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_payment_screen.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -23,45 +24,54 @@ class UtilityProviderTile extends StatelessWidget {
           ),
         );
       },
-      child: Row(
-        children: [
-          Card(
-            elevation: 8,
-            shadowColor: Color(0XFF314167).withOpacity(0.08),
-            margin: EdgeInsets.symmetric(vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: CachedNetworkImage(
-                width: 30,
-                height: 30,
-                imageUrl: providerModel.avatar,
-                placeholder: (context, url) => Center(
-                  child: CircularLoadingIndicator(),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: CachedNetworkImage(
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    imageUrl: providerModel.avatar,
+                    placeholder: (context, url) => Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              getProviderName(),
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: blackFont,
+              SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  getProviderName(),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: blackFont,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   String getProviderName() {
+    if (providerModel.name.toLowerCase().startsWith('eedc')) {
+      debugPrint(
+          'PROVIDER NAME :: ${providerModel.name} '); // EEDC (Enugu Electric)
+    }
     List<String> splitString = providerModel.name.split(' ');
 
     String providerName = "";

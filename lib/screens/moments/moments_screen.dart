@@ -46,13 +46,14 @@ class _MomentsScreenState extends State<MomentsScreen> {
   ScrollController _myConnectionsScrollController = ScrollController();
   ScrollController _exploreScrollController = ScrollController();
 
-  late AppConfigurationModel? appConfigurationModel;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
     super.initState();
     getContactMoments();
     getExploreMoments();
+    getAppConfigurationModelFromLocalStorage();
 
     _myConnectionsScrollController.addListener(() {
       if (_myConnectionsScrollController.position.pixels ==
@@ -74,7 +75,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
   void dispose() {
     _exploreScrollController.dispose();
     _myConnectionsScrollController.dispose();
-    getAppConfigurationModelFromLocalStorage();
     super.dispose();
   }
 
@@ -227,6 +227,9 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   Widget scaffoldBody() {
+    if (appConfigurationModel == null) {
+      return Center(child: CircularLoadingIndicator());
+    }
     if (appConfigurationModel?.enableMoment == false) {
       return comingSoonWidget();
     }
