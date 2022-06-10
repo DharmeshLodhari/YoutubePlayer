@@ -200,163 +200,190 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget serviceTile(int index) {
-    return CustomBoxShadow(
-      child: SizedBox(
-        height: 300,
-        child: Card(
-          elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(vertical: 10.0),
-          shadowColor: boxShadowTwo,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(children: <Widget>[
-                    InkWell(
-                      child: CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl: serviceList[index].serverImages![0]!,
-                        fit: BoxFit.fill,
-                        filterQuality: FilterQuality.high,
-                        errorWidget: productAndServiceBigErrorWidget,
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/service-detail',
-                            arguments: {"service": serviceList[index]});
-                      },
-                    ),
-                    widget.isOwner
-                        ? Positioned(
-                            left: 8,
-                            top: 8,
-                            child: RoundedBackgroundIcon(
-                                height: 28,
-                                width: 28,
-                                backgroundColor: Colors.white,
-                                icon: Icon(
-                                  Icons.print,
-                                  color: blackFont,
-                                  size: 16,
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(
-                                    '/print-qr',
-                                    arguments: {
-                                      "imageUrl": serviceList[index].qrCode,
-                                      "itemName": serviceList[index].name
-                                    },
-                                  );
-                                }),
-                          )
-                        : Container(),
-                    widget.isOwner
-                        ? Positioned(
-                            right: 8,
-                            top: 8,
-                            child: RoundedBackgroundIcon(
-                              height: 28,
-                              width: 28,
-                              backgroundColor: Colors.white,
-                              icon: Icon(
-                                SlydoAppIcon.edit,
-                                color: blackFont,
-                                size: 12,
-                              ),
-                              onTap: () async {
-                                var result =
-                                    await Navigator.of(context).pushNamed(
-                                  '/edit-service',
-                                  arguments: {
-                                    "serviceId":
-                                        serviceList[index].id.toString(),
-                                  },
-                                );
+    return Stack(
+      children: [
+        CustomBoxShadow(
+          child: SizedBox(
+            height: 300,
+            child: Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              margin: EdgeInsets.symmetric(vertical: 10.0),
+              shadowColor: boxShadowTwo,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: Stack(children: <Widget>[
+                        InkWell(
+                          child: CachedNetworkImage(
+                            width: double.infinity,
+                            imageUrl: serviceList[index].serverImages![0]!,
+                            fit: BoxFit.fill,
+                            filterQuality: FilterQuality.high,
+                            errorWidget: productAndServiceBigErrorWidget,
+                          ),
+                          onTap: () {
+                            Navigator.pushNamed(context, '/service-detail',
+                                arguments: {"service": serviceList[index]});
+                          },
+                        ),
+                        widget.isOwner
+                            ? Positioned(
+                                left: 8,
+                                top: 8,
+                                child: RoundedBackgroundIcon(
+                                    height: 28,
+                                    width: 28,
+                                    backgroundColor: Colors.white,
+                                    icon: Icon(
+                                      Icons.print,
+                                      color: blackFont,
+                                      size: 16,
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(
+                                        '/print-qr',
+                                        arguments: {
+                                          "imageUrl": serviceList[index].qrCode,
+                                          "itemName": serviceList[index].name
+                                        },
+                                      );
+                                    }),
+                              )
+                            : Container(),
+                        widget.isOwner
+                            ? Positioned(
+                                right: 8,
+                                top: 8,
+                                child: RoundedBackgroundIcon(
+                                  height: 28,
+                                  width: 28,
+                                  backgroundColor: Colors.white,
+                                  icon: Icon(
+                                    SlydoAppIcon.edit,
+                                    color: blackFont,
+                                    size: 12,
+                                  ),
+                                  onTap: () async {
+                                    var result =
+                                        await Navigator.of(context).pushNamed(
+                                      '/edit-service',
+                                      arguments: {
+                                        "serviceId":
+                                            serviceList[index].id.toString(),
+                                      },
+                                    );
 
-                                if (result != null) {
-                                  if (result is String) {
-                                    if (result == "delete_item" ||
-                                        result == "update_item") {
-                                      _onServiceRefresh();
+                                    if (result != null) {
+                                      if (result is String) {
+                                        if (result == "delete_item" ||
+                                            result == "update_item") {
+                                          _onServiceRefresh();
+                                        }
+                                      }
                                     }
-                                  }
-                                }
-                              },
-                            ),
-                          )
-                        : Container()
-                  ]),
-                ),
-                ListTile(
-                  dense: true,
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(serviceList[index].name!) ??
-                              "",
-                          maxLines: 1,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: blackFont),
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: worldCurrencies[
-                                    serviceList[index].currency!],
-                                style: TextStyle(
-                                    fontFamily: "Roboto",
-                                    color: navyBlue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14)),
-                            TextSpan(
-                              text: moneyDisplayNormalizer(int.parse(
-                                  serviceList[index].price.toString())),
+                                  },
+                                ),
+                              )
+                            : Container()
+                      ]),
+                    ),
+                    ListTile(
+                      dense: true,
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              messageDecoderWithEmoji(
+                                      serviceList[index].name!) ??
+                                  "",
+                              maxLines: 1,
                               style: TextStyle(
-                                color: navyBlue,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: blackFont),
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
                             ),
-                          ],
-                        ),
+                          ),
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: worldCurrencies[
+                                        serviceList[index].currency!],
+                                    style: TextStyle(
+                                        fontFamily: "Roboto",
+                                        color: navyBlue,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14)),
+                                TextSpan(
+                                  text: moneyDisplayNormalizer(int.parse(
+                                      serviceList[index].price.toString())),
+                                  style: TextStyle(
+                                    color: navyBlue,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  subtitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(
-                                  serviceList[index].shortDescription!) ??
-                              "",
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 14, color: darkGrey),
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                        ),
+                      subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              messageDecoderWithEmoji(
+                                      serviceList[index].shortDescription!) ??
+                                  "",
+                              maxLines: 1,
+                              style: TextStyle(fontSize: 14, color: darkGrey),
+                              softWrap: false,
+                              overflow: TextOverflow.fade,
+                            ),
+                          ),
+                          getRating(
+                            numberOfRating: serviceList[index].rating?.toInt(),
+                          ),
+                        ],
                       ),
-                      getRating(
-                        numberOfRating: serviceList[index].rating?.toInt(),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+        getOutOfStockTag(index),
+      ],
     );
+  }
+
+  Widget getOutOfStockTag(int index) {
+    if (!serviceList[index].isAvailable!) {
+      if (widget.isOwner) {
+        return Positioned(
+          left: 38,
+          top: 24,
+          child: getColoredLabeledWidget(
+              text: AppLocalization.of(context)!.outOfStock, color: starYellow),
+        );
+      } else {
+        return Positioned(
+          left: 8,
+          top: 20,
+          child: getColoredLabeledWidget(
+              text: AppLocalization.of(context)!.outOfStock, color: starYellow),
+        );
+      }
+    }
+    return SizedBox.shrink();
   }
 }

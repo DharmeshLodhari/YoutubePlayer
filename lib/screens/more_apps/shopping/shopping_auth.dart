@@ -970,6 +970,7 @@ class ShoppingAuthService extends AuthService {
 
       List<ProductCategory> categories = [];
 
+
       for (int i = 0; i < results.length; i++) {
         categories.add(ProductCategory(messageDecoderWithEmoji(results[i])!));
       }

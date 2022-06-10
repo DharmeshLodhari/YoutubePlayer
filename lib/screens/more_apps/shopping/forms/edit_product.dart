@@ -105,7 +105,6 @@ class _EditProductState extends State<EditProduct> {
         setState(() {
           currentProduct = value;
           // assigning to our edit controllers
-          print('CURRENT PRODUCT :::: ${currentProduct.price}');
 
           productTitleController.text = currentProduct.name!;
           productDescriptionController.text = currentProduct.description!;
@@ -129,11 +128,21 @@ class _EditProductState extends State<EditProduct> {
           productAvailableFrom = currentProduct.availableFrom;
 
           // assigning the dropdown from currentProduct
+          print('CURRENT PRODUCT CATEGORIES :::: ${productCategories}');
+
+          print(
+              'CURRENT CATEGORY :::: ${messageDecoderWithEmoji(currentProduct.category)}');
+
           productCategories?.forEach((catagory) {
-            if (catagory.name == currentProduct.category) {
+            print('CURRENT CATEGORY :::: ${catagory}');
+
+            if (catagory.name ==
+                messageDecoderWithEmoji(currentProduct.category)) {
               selectedProductCategory = catagory;
             }
           });
+          print('CURRENT PRODUCT :::: ${selectedProductCategory}');
+          print('CURRENT PRODUCT NAME :::: ${selectedProductCategory?.name}');
 
           conditions.forEach((condition) {
             if (condition.name == currentProduct.condition) {
@@ -228,9 +237,7 @@ class _EditProductState extends State<EditProduct> {
                       getAmountField(),
                       SizedBox(height: 10),
                       getCategoryField(),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                       getProductConditionField(),
                       SizedBox(height: 16),
                       getIsAvailableField(),
@@ -881,10 +888,11 @@ class _EditProductState extends State<EditProduct> {
     if (_formKey.currentState!.validate()) {
       if (productLocalImages.length >= 0) {
         if (validateDropdown()) {
+          debugPrint('PRODUCT CATEGORY ::: $productCategory');
           // setting updated value
           currentProduct.name = productName;
           currentProduct.description = productDescription;
-          currentProduct.category = productCategory;
+          currentProduct.category = messageDecoderWithEmoji(productCategory);
           currentProduct.condition = productCondition;
           currentProduct.price = moneyInputNormalizer(productPrice!).toString();
           currentProduct.localImages =

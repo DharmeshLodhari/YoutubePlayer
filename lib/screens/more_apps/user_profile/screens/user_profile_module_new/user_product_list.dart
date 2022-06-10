@@ -271,7 +271,8 @@ class _UserProductListState extends State<UserProductList> {
                                     }
                                   }),
                             )
-                          : Container()
+                          : Container(),
+                      getOutOfStockTag(index),
                     ],
                   ),
                 ),
@@ -342,6 +343,27 @@ class _UserProductListState extends State<UserProductList> {
         ),
       ),
     );
+  }
+
+  Widget getOutOfStockTag(int index) {
+    if (!productList[index].isAvailable!) {
+      if (widget.isOwner) {
+        return Positioned(
+          left: 38,
+          top: 14,
+          child: getColoredLabeledWidget(
+              text: AppLocalization.of(context)!.outOfStock, color: starYellow),
+        );
+      } else {
+        return Positioned(
+          left: 8,
+          top: 8,
+          child: getColoredLabeledWidget(
+              text: AppLocalization.of(context)!.outOfStock, color: starYellow),
+        );
+      }
+    }
+    return SizedBox.shrink();
   }
 
   Widget _buildProductIndicator() {

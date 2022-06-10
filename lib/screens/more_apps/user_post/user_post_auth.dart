@@ -30,15 +30,13 @@ class UserPostAuth extends AuthService {
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
 
+    debugPrint('POST BODY ::: ${response.body}');
+    debugPrint('POST BODY ::: ${response.statusCode}');
+
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = jsonDecode(response.body);
-      jsonData['results'][0].forEach((key, value) {
-        print('JKEYS ::: $key');
-      });
 
       return jsonData;
-    } else if (response.statusCode == 500) {
-      return Future.error("${response.body}");
     }
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode}  BODY:- ${response.body}");

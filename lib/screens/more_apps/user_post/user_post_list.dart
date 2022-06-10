@@ -106,7 +106,8 @@ class _UserPostListState extends State<UserPostList> {
           if (mounted) {
             setState(() {});
           }
-          showToast(message: 'Server error. Please refresh');
+          showToast(
+              message: 'Server error. Please refresh ::: ${e.toString()}');
           return;
         }
 

@@ -56,12 +56,9 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
 
   getAppConfigurationModelFromLocalStorage() async {
     bool con = await storage.containsKey(key: appConfigurationKey);
-    debugPrint('CON :: $con');
     String? str = await storage.read(key: appConfigurationKey);
-    debugPrint('STR ::: ${str}');
 
     appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    debugPrint('ENABLE SUB ::: ${appConfigurationModel?.freeSubscription}');
   }
 
   _onChanged(String value) {

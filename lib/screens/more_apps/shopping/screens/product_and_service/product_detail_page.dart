@@ -398,57 +398,38 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       width: 44,
       icon: Icon(
         SlydoAppIcon.add_cart,
-        color: navyBlue,
+        color: product!.isAvailable! ? navyBlue : greyBorderColor,
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (isValidCustomer) {
-          String type = product is Product ? "product" : "service";
-          basketBloc.addItemToCart(item: product, type: type);
-          late var mapData;
-          basketBloc.items.forEach((element) {
-            if (element["item"].id == product!.id) {
-              mapData = element;
-              return;
-            }
-          });
-          Map data = {
-            "type": type,
-            "id": mapData["item"].id,
-            "qty": mapData["qty"],
-          };
-          debugPrint("Data From Product Page : $data");
-          await _auth.addItemToShoppingCart(data);
+        if (product!.isAvailable!) {
+          if (isValidCustomer) {
+            String type = product is Product ? "product" : "service";
+            basketBloc.addItemToCart(item: product, type: type);
+            late var mapData;
+            basketBloc.items.forEach((element) {
+              if (element["item"].id == product!.id) {
+                mapData = element;
+                return;
+              }
+            });
+            Map data = {
+              "type": type,
+              "id": mapData["item"].id,
+              "qty": mapData["qty"],
+            };
+            debugPrint("Data From Product Page : $data");
+            await _auth.addItemToShoppingCart(data);
+          } else {
+            showToast(
+                message:
+                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          }
         } else {
-          showToast(
-              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          showToast(message: AppLocalization.of(context)!.productOutOfStock);
         }
       },
-    );
-  }
-
-  Widget goToBasket() {
-    return Badge(
-      badgeColor: Colors.green,
-      animationType: BadgeAnimationType.slide,
-      badgeContent: getBadgeContent(),
-      padding:
-          basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(end: 6, top: 6),
-      child: IconButton(
-        icon: Icon(
-          Icons.shopping_cart,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            "/dashboard",
-            (Route<dynamic> route) => false,
-            arguments: {"dashboardIndex": 2},
-          );
-        },
-      ),
     );
   }
 
@@ -708,23 +689,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ),
                   )
                 : imgList?.length == 1
-                    ? AspectRatio(
-                        aspectRatio: 1.7,
-                        child: Container(
-                          child: Center(
-                              child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            child: CachedNetworkImage(
-                              placeholder: (context, url) =>
-                                  Center(child: CircularLoadingIndicator()),
-                              imageUrl: imgList?[0] ?? "",
-                              fit: BoxFit.fill,
-                              height: double.infinity,
-                              width: double.infinity,
-                              errorWidget: productAndServiceBigErrorWidget,
+                    ? Stack(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 1.7,
+                            child: Container(
+                              child: Center(
+                                  child: ClipRRect(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                                child: CachedNetworkImage(
+                                  placeholder: (context, url) =>
+                                      Center(child: CircularLoadingIndicator()),
+                                  imageUrl: imgList?[0] ?? "",
+                                  fit: BoxFit.fill,
+                                  height: double.infinity,
+                                  width: double.infinity,
+                                  errorWidget: productAndServiceBigErrorWidget,
+                                ),
+                              )),
                             ),
-                          )),
-                        ),
+                          ),
+                          getOutOfStockTag(),
+                        ],
                       )
                     : Column(
                         children: <Widget>[
@@ -741,24 +728,32 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                       sliderIndex.sink.add(index);
                                     }),
                                 items: imgList!
-                                    .map((item) => Container(
-                                          child: Center(
-                                              child: ClipRRect(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                            child: CachedNetworkImage(
-                                              placeholder: (context, url) => Center(
-                                                  child:
-                                                      CircularLoadingIndicator()),
-                                              imageUrl: item!,
-                                              fit: BoxFit.fill,
-                                              height: double.infinity,
-                                              width: double.infinity,
-                                              errorWidget:
-                                                  productAndServiceBigErrorWidget,
-                                            ),
-                                          )),
-                                        ))
+                                    .map(
+                                      (item) => Stack(
+                                        children: [
+                                          Container(
+                                            child: Center(
+                                                child: ClipRRect(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10)),
+                                              child: CachedNetworkImage(
+                                                placeholder: (context, url) =>
+                                                    Center(
+                                                        child:
+                                                            CircularLoadingIndicator()),
+                                                imageUrl: item!,
+                                                fit: BoxFit.fill,
+                                                height: double.infinity,
+                                                width: double.infinity,
+                                                errorWidget:
+                                                    productAndServiceBigErrorWidget,
+                                              ),
+                                            )),
+                                          ),
+                                          getOutOfStockTag(),
+                                        ],
+                                      ),
+                                    )
                                     .toList(),
                               ),
                               Positioned(
@@ -791,6 +786,18 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       ),
           );
         });
+  }
+
+  Widget getOutOfStockTag() {
+    if (!product!.isAvailable!) {
+      return Positioned(
+        left: 8,
+        top: 8,
+        child: getColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: starYellow),
+      );
+    }
+    return SizedBox.shrink();
   }
 
   Widget _buildProductTitleAndPriceWidget() {
@@ -1099,20 +1106,24 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   Widget _buildBuyButtonWidget() {
     return Expanded(
       child: CurvedButton(
-        backgroundColor: navyBlue,
+        backgroundColor: product!.isAvailable! ? navyBlue : greyBorderColor,
         textColor: Colors.white,
         text: "BUY NOW",
         onPressed: () async {
-          if (isValidCustomer) {
-            bool result = await showDisclaimerDialogueForGoods(context);
-            if (result) {
-              getRecipient();
-              navigateToSendPayment();
+          if (product!.isAvailable!) {
+            if (isValidCustomer) {
+              bool result = await showDisclaimerDialogueForGoods(context);
+              if (result) {
+                getRecipient();
+                navigateToSendPayment();
+              }
+            } else {
+              showToast(
+                  message:
+                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
             }
           } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+            showToast(message: AppLocalization.of(context)!.productOutOfStock);
           }
         },
       ),
@@ -1127,7 +1138,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   void navigateToSendPayment() {
     Navigator.of(context).pushNamed(
-      '/send-payment',
+      Routes.SEND_PAYMENT,
       arguments: {'isFromProfile': false, 'product': product},
     );
   }

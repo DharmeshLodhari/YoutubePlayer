@@ -1263,6 +1263,27 @@ class AppLocalization {
     );
   }
 
+  String get outOfStock {
+    return Intl.message(
+      "Out Of Stock",
+      name: "outOfStock",
+    );
+  }
+
+  String get productOutOfStock {
+    return Intl.message(
+      "Product Out Of Stock",
+      name: "productOutOfStock",
+    );
+  }
+
+  String get serviceOutOfStock {
+    return Intl.message(
+      "Service Out Of Stock",
+      name: "serviceOutOfStock",
+    );
+  }
+
   String get sendMoney {
     return Intl.message(
       "Send Money",
