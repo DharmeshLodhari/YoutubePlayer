@@ -68,22 +68,6 @@ void callbackDispatcher() {
       },
     );
     return Future.value(true);
-    // try {
-    //   debugPrint("WorkManager started app configuration synchronization");
-    //   await AppConfigurationService().getAppConfigurations().then(
-    //     (value) {
-    //       debugPrint('APP CONFIGS ::: $value');
-    //       locator<AppConfigurationBloc>().appConfigurationModel = value;
-    //
-    //       debugPrint(
-    //           'CONFIG MODEL :: ${locator<AppConfigurationBloc>().appConfigurationModel?.enableUtility}');
-    //     },
-    //   );
-    //   return Future.value(true);
-    // } catch (e) {
-    //   debugPrint("WorkManager exception caught: $e");
-    //   return Future.error('Fetching app configuration failed:: $e');
-    // }
   });
 }
 
@@ -91,12 +75,10 @@ void main() async {
   debugPrint('MAIN RUNNING');
 
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize();
 
   AppConfig();
 
   initializeBackgroundService();
-
   await FlutterDownloader.initialize();
 
   await LocalNotificationService().init();
