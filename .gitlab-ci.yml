@@ -52,14 +52,12 @@ android:build:
     - bundle exec fastlane build_android
     - rm -f local.properties
     - rm -f key.properties
-    - mkdir -p /tmp/build/app/outputs/flutter-apk/
-#    - touch build/app/outputs/flutter-apk/$BUILDNAME
 
   artifacts:
     paths:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
-#      - build/app/outputs/flutter-apk/$BUILDNAME
+
     expire_in: 1 week
   interruptible: true
 
@@ -79,9 +77,25 @@ internal:android:deploy:
 
   before_script:
     - gem install bundler
+    #    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
+    - flutter pub get
+    - flutter clean
+    - touch android/key.properties
+    - cat $KEYFILE >> android/key.properties
+    - gem install bundler
     - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
 
   script:
+    # Flutter local configuration
+    - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
+    - echo sdk.dir=$ANDROID_SDK_PATH >> android/local.properties
+    - echo flutter.buildMode=release >> android/local.properties
+    - cd android
+    - bundle install
+    - fastlane env
+    - bundle exec fastlane build_android
+    - rm -f local.properties
+    - rm -f key.properties
     - cd android
     - bundle install
     - bundle exec fastlane deploy_android internal:true
