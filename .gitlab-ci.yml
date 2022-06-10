@@ -1,20 +1,17 @@
-image: cirrusci/flutter:2.10.5
+image: cirrusci/flutter:1.22.5
 
 stages:
   - Test
   - Build Android
   - Deploy
 
-#variables:
-#  BUILDNAME: slydo-`date +"%m-%d-%Y-%I-%M-%p`.apk
-
 before_script:
-  - echo $BUILDNAME
   - flutter pub get
   - flutter clean
   - touch android/key.properties
   - cat $KEYFILE >> android/key.properties
   - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
+
 
 test:
   stage: Test
@@ -24,6 +21,7 @@ test:
   tags:
     - flutter
 
+
 android:build:
   stage: Build Android
   dependencies:
@@ -31,21 +29,19 @@ android:build:
 
   before_script:
     - gem install bundler
-#    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
+    #    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
     - flutter pub get
     - flutter clean
     - touch android/key.properties
     - cat $KEYFILE >> android/key.properties
-
-  # after_script:
-  #   - cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/$BUILDNAME
-
 
   script:
     # Flutter local configuration
     - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
     - echo sdk.dir=$ANDROID_SDK_PATH >> android/local.properties
     - echo flutter.buildMode=release >> android/local.properties
+    #    - touch android/key.properties
+    #    - cat $KEYFILE >> android/key.properties
     - cd android
     - bundle install
     - fastlane env
@@ -57,12 +53,8 @@ android:build:
     paths:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/bundle/release/app-release.aab
-
     expire_in: 1 week
   interruptible: true
-
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
 
   tags:
     - flutter
@@ -77,25 +69,9 @@ internal:android:deploy:
 
   before_script:
     - gem install bundler
-    #    - export WD=$(pwd) && cd android && gem install fastlane && cd $WD
-    - flutter pub get
-    - flutter clean
-    - touch android/key.properties
-    - cat $KEYFILE >> android/key.properties
-    - gem install bundler
     - cat $SERVICE_FILE >> android/fastlane/slydo_play_console.json
 
   script:
-    # Flutter local configuration
-    - echo flutter.sdk=$FLUTTER_PATH > android/local.properties
-    - echo sdk.dir=$ANDROID_SDK_PATH >> android/local.properties
-    - echo flutter.buildMode=release >> android/local.properties
-    - cd android
-    - bundle install
-    - fastlane env
-    - bundle exec fastlane build_android
-    - rm -f local.properties
-    - rm -f key.properties
     - cd android
     - bundle install
     - bundle exec fastlane deploy_android internal:true
