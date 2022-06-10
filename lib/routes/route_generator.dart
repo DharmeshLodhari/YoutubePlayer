@@ -150,163 +150,6 @@ import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 
-<<<<<<< HEAD
-import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/dashboard.dart';
-import 'package:Slydo/screens/explore.dart';
-import 'package:Slydo/screens/home.dart';
-import 'package:Slydo/screens/index.dart';
-import 'package:Slydo/screens/more_apps.dart';
-import 'package:Slydo/screens/more_apps/bus/bus_dashboard.dart';
-import 'package:Slydo/screens/more_apps/bus/search_bus.dart';
-import 'package:Slydo/screens/more_apps/bus/ticket_detail.dart';
-import 'package:Slydo/screens/more_apps/business/forms/add_contract.dart';
-import 'package:Slydo/screens/more_apps/business/forms/invoice/add_invoice.dart';
-import 'package:Slydo/screens/more_apps/business/forms/invoice/add_or_update_invoice_item.dart';
-import 'package:Slydo/screens/more_apps/business/forms/invoice/edit_invoice_item.dart';
-import 'package:Slydo/screens/more_apps/business/screens/contract_detail.dart';
-import 'package:Slydo/screens/more_apps/business/screens/contract_transaction_history.dart';
-import 'package:Slydo/screens/more_apps/business/screens/invoice_detail.dart';
-import 'package:Slydo/screens/more_apps/events/event_dashboard.dart';
-import 'package:Slydo/screens/more_apps/events/event_detail_page.dart';
-import 'package:Slydo/screens/more_apps/events/event_ticket_detail.dart';
-import 'package:Slydo/screens/more_apps/events/search_event.dart';
-import 'package:Slydo/screens/more_apps/events/specific_category_event_list.dart';
-import 'package:Slydo/screens/more_apps/flight/flight_dashboard.dart';
-import 'package:Slydo/screens/more_apps/flight/search_flight.dart';
-import 'package:Slydo/screens/more_apps/hotels/hotel_dashboard.dart';
-import 'package:Slydo/screens/more_apps/hotels/hotel_detail_page.dart';
-import 'package:Slydo/screens/more_apps/hotels/partner_detail_page.dart';
-import 'package:Slydo/screens/more_apps/hotels/search_hotel.dart';
-import 'package:Slydo/screens/more_apps/hotels/specific_category_hotel_list.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/forms/add_media_to_chat_message.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/set_name_and_profile_for_group.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/forms/group/update_group_name_and_profile.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/forms/put_money_in_envelope.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/forms/send_envelope.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/add_chat_group/select_user_for_group.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/chat_screen_group_messages.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/envelope_detail_screen.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/group_detail_screen.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/search_group_member.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/screens/view_chat_media.dart';
-import 'package:Slydo/screens/more_apps/messaging/detailed_message.dart';
-import 'package:Slydo/screens/more_apps/messaging/forms/compose_message.dart';
-import 'package:Slydo/screens/more_apps/messaging/message_list.dart';
-import 'package:Slydo/screens/more_apps/movies/movie_dashboard.dart';
-import 'package:Slydo/screens/more_apps/movies/movie_detail_page.dart';
-import 'package:Slydo/screens/more_apps/movies/search_movie.dart';
-import 'package:Slydo/screens/more_apps/movies/specific_category_movie_list.dart';
-import 'package:Slydo/screens/more_apps/music/album_detail_page.dart';
-import 'package:Slydo/screens/more_apps/music/music_dashboard.dart';
-import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
-import 'package:Slydo/screens/more_apps/music/search_music.dart';
-import 'package:Slydo/screens/more_apps/music/specific_category_music_list.dart';
-import 'package:Slydo/screens/more_apps/news/news_dashboard.dart';
-import 'package:Slydo/screens/more_apps/news/news_detail_page.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bank_account.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/add_bvn_number.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/already_have_reference.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/payout_screen.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/banking/verify_reference.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/request_payment.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/forms/payment/send_payment.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/bank_account_list.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card_payment_page.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_list.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_option_selection.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/wallet_options_selection.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transactions_list.dart';
-import 'package:Slydo/screens/more_apps/property/forms/add_property.dart';
-import 'package:Slydo/screens/more_apps/property/forms/edit_property.dart';
-import 'package:Slydo/screens/more_apps/property/property_dashboard.dart';
-import 'package:Slydo/screens/more_apps/property/property_detail_page.dart';
-import 'package:Slydo/screens/more_apps/property/search_property.dart';
-import 'package:Slydo/screens/more_apps/property/specific_category_property_list.dart';
-import 'package:Slydo/screens/more_apps/review/forms/add_user_review.dart';
-import 'package:Slydo/screens/more_apps/review/forms/edit_user_review.dart';
-import 'package:Slydo/screens/more_apps/review/main_review.dart';
-import 'package:Slydo/screens/more_apps/review/screen/review_detail_screen.dart';
-import 'package:Slydo/screens/more_apps/review/screen/review_list_screen.dart';
-import 'package:Slydo/screens/more_apps/settings/general_setting.dart';
-import 'package:Slydo/screens/more_apps/shopping/forms/add_product.dart';
-import 'package:Slydo/screens/more_apps/shopping/forms/add_service.dart';
-import 'package:Slydo/screens/more_apps/shopping/forms/edit_product.dart';
-import 'package:Slydo/screens/more_apps/shopping/forms/edit_service.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/checkout_shopping_cart.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/mix_cart_item.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/order/order_detail_page.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/order/orders_list.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
-import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
-import 'package:Slydo/screens/more_apps/taxi/cancle_booking.dart';
-import 'package:Slydo/screens/more_apps/taxi/contact_driver.dart';
-import 'package:Slydo/screens/more_apps/taxi/no_vehicale_found.dart';
-import 'package:Slydo/screens/more_apps/taxi/payment_options.dart';
-import 'package:Slydo/screens/more_apps/taxi/rate_and_tip_driver.dart';
-import 'package:Slydo/screens/more_apps/taxi/ride_option.dart';
-import 'package:Slydo/screens/more_apps/taxi/searching_for_driver.dart';
-import 'package:Slydo/screens/more_apps/taxi/select_address_screen.dart';
-import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
-import 'package:Slydo/screens/more_apps/taxi/terms_and_condition.dart';
-import 'package:Slydo/screens/more_apps/taxi/trip_ended.dart';
-import 'package:Slydo/screens/more_apps/train/search_train.dart';
-import 'package:Slydo/screens/more_apps/train/train_dashboard.dart';
-import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_document.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/add_or_edit_user_bio.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/change_password.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/forgot_password.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/login.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/registration.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/reset_device.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/reset_password.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/signup.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/upgrade_user_profile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
-import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
-import 'package:Slydo/screens/more_apps/utility/cable/forms/select_plan_and_decoder_number.dart';
-import 'package:Slydo/screens/more_apps/utility/cable/screens/cable_plan_detail_page.dart';
-import 'package:Slydo/screens/more_apps/utility/cable/screens/cable_plan_payment_detail.dart';
-import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_plan.dart';
-import 'package:Slydo/screens/more_apps/utility/cable/screens/select_cabel_provider.dart';
-import 'package:Slydo/screens/more_apps/utility/utility_dashboard.dart';
-import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
-import 'package:Slydo/screens/scan_qr_code.dart';
-import 'package:Slydo/screens/search_module.dart';
-import 'package:Slydo/screens/user_dashboard.dart';
-import 'package:Slydo/splash.dart';
-import 'package:Slydo/widget/photo_viewer.dart';
-import 'package:Slydo/widget/video_recorder.dart';
-import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
-import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:Slydo/screens/blog/create_or_edit_post.dart';
-
-import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
-import '../screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
-import '../screens/more_apps/utility/select_provider_screen.dart';
-import '../screens/more_apps/utility/utility_payment_screen.dart';
-
-=======
->>>>>>> 421411667d9de5a791046f03bcf1c05eaa3267dd
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
@@ -717,7 +560,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Chat
+    /// Chat
 
       case Routes.CHAT_SCREEN:
         return PageTransition(
@@ -809,7 +652,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Video Recorder
+    /// Video Recorder
 
       case Routes.VIDEO_RECORDER:
         return PageTransition(
@@ -819,7 +662,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// TopUp
+    /// TopUp
 
       case Routes.CREDIT_CARD_LIST:
         return PageTransition(
@@ -852,13 +695,13 @@ class RouteGenerator {
           settings: settings,
         );
 
-      // case '/user-kyc':
-      //   return PageTransition(
-      //     child: UserKyc(),
-      //     type: PageTransitionType.bottomToTop,
-      //     curve: Curves.ease,
-      //     settings: settings,
-      //   );
+    // case '/user-kyc':
+    //   return PageTransition(
+    //     child: UserKyc(),
+    //     type: PageTransitionType.bottomToTop,
+    //     curve: Curves.ease,
+    //     settings: settings,
+    //   );
 
       case Routes.ADD_MONEY_TO_SLYDO_ONE:
         return PageTransition(
@@ -885,9 +728,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-<<<<<<< HEAD
-=======
-      /// Contracts & Invoice
+    /// Contracts & Invoice
       case Routes.CONTRACT_SCREEN:
         return PageTransition(
           child: ContractScreen(),
@@ -896,7 +737,6 @@ class RouteGenerator {
           settings: settings,
         );
 
->>>>>>> 421411667d9de5a791046f03bcf1c05eaa3267dd
       case Routes.INVOICE_SCREEN:
         return PageTransition(
           child: InvoiceScreen(),
@@ -975,7 +815,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      ///    Utility Route     ///
+    ///    Utility Route     ///
 
       case Routes.UTILITY_DASHBOARD:
         return PageTransition(
@@ -1036,7 +876,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      ///    More Apps Route     ///
+    ///    More Apps Route     ///
 
       case Routes.MORE_APPS:
         return PageTransition(
@@ -1046,7 +886,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Movie Route
+    /// Movie Route
 
       case Routes.TAXI:
         return PageTransition(
@@ -1144,7 +984,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Movie Route
+    /// Movie Route
 
       case Routes.MOVIES:
         return PageTransition(
@@ -1178,7 +1018,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Music
+    /// Music
 
       case Routes.MUSICS:
         return PageTransition(
@@ -1224,7 +1064,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Event Route
+    /// Event Route
 
       case Routes.EVENTS:
         return PageTransition(
@@ -1266,7 +1106,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Hotel Route
+    /// Hotel Route
 
       case Routes.HOTELS:
         return PageTransition(
@@ -1316,7 +1156,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Property Route
+    /// Property Route
 
       case Routes.PROPERTY:
         return PageTransition(
@@ -1365,7 +1205,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// News
+    /// News
 
       case Routes.NEWS:
         return PageTransition(
@@ -1383,7 +1223,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Bus
+    /// Bus
 
       case Routes.BUS:
         return PageTransition(
@@ -1409,7 +1249,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Train
+    /// Train
 
       case Routes.TRAIN:
         return PageTransition(
@@ -1427,7 +1267,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Flight
+    /// Flight
 
       case Routes.FLIGHT:
         return PageTransition(
@@ -1445,7 +1285,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Shopping
+    /// Shopping
 
       case Routes.SHOPPING:
         return PageTransition(
@@ -1471,7 +1311,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Review
+    /// Review
 
       case Routes.REVIEWS:
         return PageTransition(
@@ -1497,13 +1337,13 @@ class RouteGenerator {
           settings: settings,
         );
 
-      // case "/nfc-reader":
-      //   return PageTransition(
-      //     child: NfcWriter(),
-      //     type: PageTransitionType.bottomToTop,
-      //     curve: Curves.ease,
-      //     settings: settings,
-      //   );
+    // case "/nfc-reader":
+    //   return PageTransition(
+    //     child: NfcWriter(),
+    //     type: PageTransitionType.bottomToTop,
+    //     curve: Curves.ease,
+    //     settings: settings,
+    //   );
 
       case Routes.GENERAL_SETTING:
         return PageTransition(
@@ -1530,13 +1370,13 @@ class RouteGenerator {
           settings: settings,
         );
 
-      // case "/add-review":
-      //   return PageTransition(
-      //     child: AddReview(),
-      //     type: PageTransitionType.bottomToTop,
-      //     curve: Curves.ease,
-      //     settings: settings,
-      //   );
+    // case "/add-review":
+    //   return PageTransition(
+    //     child: AddReview(),
+    //     type: PageTransitionType.bottomToTop,
+    //     curve: Curves.ease,
+    //     settings: settings,
+    //   );
 
       case Routes.REVIEW_LIST_SCREEN:
         return PageTransition(
@@ -1575,7 +1415,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      /// Custom Services
+    /// Custom Services
       case Routes.WEB_VIEW:
         return PageTransition(
           child: CustomWebView(webUrl: settings.arguments as String),
@@ -1585,7 +1425,7 @@ class RouteGenerator {
         );
 
       default:
-        // If there is no such named route in the switch statement, e.g. /third
+      // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
     }
   }
@@ -1603,3 +1443,4 @@ class RouteGenerator {
     });
   }
 }
+
