@@ -2,6 +2,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
+import '../messaging/chat/utils.dart';
 import 'models/Transport.dart';
 
 class FlightTicketTile extends StatelessWidget {
@@ -50,11 +51,7 @@ class FlightTicketTile extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          SlydoAppIcon.naira,
-                          color: navyBlue,
-                          size: 10,
-                        ),
+                        getUserCurrencySymbol(context),
                         Text(
                           transport!.price!,
                           style: TextStyle(

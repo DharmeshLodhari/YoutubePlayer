@@ -4,6 +4,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
+import 'package:flutter/foundation.dart';
 
 /// This helper will perform all db operation related to chat message
 class ChatMessageHandler {
@@ -11,6 +12,8 @@ class ChatMessageHandler {
 
   Future<List<ChatMessage>> saveChatMessages(
       {required List<String> messages}) async {
+    debugPrint('SAVE CHAT MESSAGE --->');
+
     List<ChatMessage> chatMessages = [];
 
     /// Converting CustomerProfile in to Chat Users
@@ -20,6 +23,7 @@ class ChatMessageHandler {
     /// adding Chat User into DataBase
     List<ChatMessage> insertedMessages =
         await _db.saveChatMessage(chatMessages);
+
     return insertedMessages;
   }
 

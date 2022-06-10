@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -10,9 +12,12 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:Slydo/services/auth.dart';
 
@@ -21,10 +26,10 @@ import '../../../../data/state_notifier.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../widget/curved_btn.dart';
 
+import '../bloc/invoice_bloc.dart';
 import '../business_auth.dart';
 import '../forms/invoice/add_or_update_invoice_item.dart';
 import '../models/Invoice.dart';
-import 'package:dio/dio.dart';
 
 // ignore: must_be_immutable
 class InvoiceDetail extends StatefulWidget {
@@ -33,8 +38,7 @@ class InvoiceDetail extends StatefulWidget {
   InvoiceDetail({required this.arguments});
 
   @override
-  _InvoiceDetailState createState() =>
-      _InvoiceDetailState(arguments: arguments);
+  _InvoiceDetailState createState() => _InvoiceDetailState();
 }
 
 class _InvoiceDetailState extends State<InvoiceDetail> {
@@ -42,17 +46,58 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   late InvoiceModel invoice;
   bool isLoading = false;
   late UserBloc userBloc;
-  // var imageUrl =
-  //     "https://www.itl.cat/pngfile/big/10-100326_desktop-wallpaper-hd-full-screen-free-download-full.jpg";
   bool isDownloading = false;
   String savePath = "";
+  DateTime invoiceDate = DateTime.now();
 
-  _InvoiceDetailState({this.arguments});
+  // _InvoiceDetailState({this.arguments});
+
+  int downloadProgress = 0;
+  ReceivePort receivePort = ReceivePort();
 
   @override
   void initState() {
     fetchInvoice();
+    IsolateNameServer.registerPortWithName(
+        receivePort.sendPort, 'invoice_downloader_send_port');
+
+    receivePort.listen((message) {
+      downloadProgress = message[2];
+      if (downloadProgress != 0) {
+        isDownloading = true;
+        if (mounted) setState(() {});
+
+        if (downloadProgress == 100) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'Downloaded');
+        } else if (downloadProgress == -1) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'File cannot be downloaded at the moment');
+        }
+      }
+
+      debugPrint('DOWNLOAD MESSAGE ::: $message');
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
     super.initState();
+  }
+
+  @pragma(
+      'vm:entry-point') // To avoid tree shaking in release mode for Android.
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('invoice_downloader_send_port')!;
+    send.send([id, status, progress]);
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('invoice_downloader_send_port');
+    super.dispose();
   }
 
   void fetchInvoice() async {
@@ -120,34 +165,78 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             ? SizedBox.shrink()
             : invoice.status != 'Draft'
                 ? IconButton(
-                    icon: Icon(Icons.download_rounded, color: navyBlue),
+                    icon: getDownloadIconWidget(),
                     onPressed: () {
-                      downloadFile(invoice);
+                      _downloadInvoice();
                     },
                   )
-                : SizedBox.shrink(),
+                : IconButton(
+                    icon: Icon(Icons.delete, color: mateRed),
+                    onPressed: () {
+                      showDeleteDialogForInvoice();
+                    },
+                  ),
         SizedBox(width: 16),
-
-        // openGraphBtn(),
-        // SizedBox(
-        //   width: 16,
-        // ),
       ],
     );
   }
 
-  Widget openGraphBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.location,
-        size: 16,
-        color: blackFont,
+  Widget getDownloadIconWidget() {
+    if (isDownloading) {
+      return SizedBox(
+        width: 25,
+        height: 25,
+        child: CircularLoadingIndicator(
+          color: navyBlue,
+        ),
+      );
+    }
+    return Icon(Icons.download_rounded, color: navyBlue);
+  }
+
+  showDeleteDialogForInvoice() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: blackFont,
+      actionTwoBgColor: mateRed,
+      actionTwoTextColor: Colors.white,
+      actionOneBgColor: greyBorderColor,
+      title: AppLocalization.of(context)!.delete,
+      actionTwoText: AppLocalization.of(context)!.delete,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      description: 'Are you sure you want to delete this invoice?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Image.asset('assets/images/delete_dialog_icon.png'),
       ),
-      onTap: goToMap,
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
+      rightButtonOnPressed: () {
+        deleteInvoice();
+      },
+    );
+  }
+
+  deleteInvoice() {
+    showDialog(
+        context: context,
+        builder: (dialogLoadingContext) => LoadingIndicator());
+    BusinessAuth().deleteInvoice(invoiceId: invoice.id!).then((deleted) {
+      Navigator.pop(context);
+      if (deleted) {
+        showToast(message: 'Invoice deleted.');
+        Navigator.pop(context);
+        Provider.of<InvoiceBloc>(context, listen: false).isSender = true;
+        Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
+        Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+      } else {
+        showToast(message: 'Something went wrong.');
+      }
+    }).catchError(
+      (error) {
+        Navigator.pop(context);
+        showToast(message: 'Something went wrong');
+      },
     );
   }
 
@@ -266,7 +355,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     DateTime dateAndTime = DateTime.parse(datetime);
     String date = DateFormat("dd/MM/yyyy").format(dateAndTime);
     String time = DateFormat("hh:mm a").format(dateAndTime);
-    return "$date • $time";
+    return "$date • $time ";
   }
 
   Widget getLeading() {
@@ -343,6 +432,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   }
 
   Widget displayBodyOfTransaction() {
+    bool canEditDate = invoice.status == 'Draft';
     return Container(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -362,11 +452,15 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
             SlydoAppIcon.date,
             "Invoice date",
             formatDate(invoice.invoiceDate!),
+            editDate: canEditDate,
+            isDueDate: false,
           ),
           detailTile(
             SlydoAppIcon.date,
             "Due date",
             formatDate(invoice.dueDate!),
+            editDate: canEditDate,
+            isDueDate: true,
           ),
           getInvoiceItems()
         ],
@@ -377,9 +471,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   Widget getInvoiceItems() {
     bool canDeleteInvoiceItem =
         invoice.fromCustomer == userBloc.user.userName &&
-            invoice.status != "Paid" &&
+            invoice.status == "Draft" &&
             invoice.items!.length > 1;
-    bool canEditInvoiceItem = invoice.status != "Paid";
+    bool canEditInvoiceItem = invoice.status == "Draft";
     bool canShowActionsText = canDeleteInvoiceItem || canEditInvoiceItem;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -472,8 +566,8 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
               SizedBox(height: 8),
               Column(
                 children: invoice.items!
-                    .map((e) =>
-                        getItemTile(length: invoice.items!.length, item: e))
+                    .map((e) => getItemTile(
+                        invoiceItemLength: invoice.items!.length, item: e))
                     .toList(),
               ),
               SizedBox(height: 8),
@@ -516,12 +610,13 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  Widget getItemTile({required int length, required InvoiceItem item}) {
+  Widget getItemTile(
+      {required int invoiceItemLength, required InvoiceItem item}) {
     bool canDeleteInvoiceItem =
         invoice.fromCustomer == userBloc.user.userName &&
-            invoice.status != "Paid" &&
-            length > 1;
-    bool canEditInvoiceItem = invoice.status != "Paid";
+            invoice.status == "Draft" &&
+            invoiceItemLength > 1;
+    bool canEditInvoiceItem = invoice.status == "Draft";
 
     String subtotalAmount =
         moneyDisplayNormalizer(item.quantity! * item.amount!);
@@ -566,9 +661,9 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                         fontFamily: "Roboto",
                       ),
                     ),
-                    Text(itemAmount.length > 8
-                        ? '${itemAmount.substring(0, 8)}...'
-                        : itemAmount),
+                    Text(
+                      truncateString(str: itemAmount, lengthToTruncateAt: 8),
+                    ),
                   ],
                 ),
                 flexibleSpace(),
@@ -600,7 +695,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
                           color: mateRed,
                         ),
                         onTap: () {
-                          showDeleteDialog(item);
+                          showDeleteDialogForInvoiceItem(item);
                         },
                       )
                     : SizedBox.shrink(),
@@ -633,7 +728,8 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  Widget detailTile(IconData icon, String title, String subtitle) {
+  Widget detailTile(IconData icon, String title, String subtitle,
+      {bool editDate = false, bool isDueDate = false}) {
     return Container(
       child: ListTile(
         dense: true,
@@ -645,13 +741,47 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
           ),
           backgroundColor: iconBtnGrey,
         ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: blackFont,
-            fontSize: 14,
-          ),
+        title: Row(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: blackFont,
+                fontSize: 14,
+              ),
+            ),
+            SizedBox(width: 5),
+            editDate
+                ? InkWell(
+                    onTap: () {
+                      showDatePicker(
+                        builder: customThemeBuilder,
+                        context: context,
+                        initialDate: DateTime(DateTime.now().year,
+                            DateTime.now().month, DateTime.now().day),
+                        firstDate: DateTime(DateTime.now().year,
+                            DateTime.now().month, DateTime.now().day),
+                        lastDate: DateTime(2101),
+                      ).then((value) {
+                        invoiceDate =
+                            DateTime(value!.year, value.month, value.day);
+
+                        _updateInvoiceDate(isDueDate: isDueDate);
+
+                        // setState(() {});
+                      }).catchError((error) {});
+                    },
+                    child: Text(
+                      'Edit',
+                      style: TextStyle(
+                        color: navyBlue,
+                        fontSize: 12,
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ],
         ),
         subtitle: Text(
           subtitle,
@@ -664,8 +794,23 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     );
   }
 
-  void goToMap() {
-    debugPrint("go to Map Called !");
+  _updateInvoiceDate({required bool isDueDate}) {
+    BusinessAuth().updateInvoice(invoiceId: invoice.id.toString(), data: {
+      isDueDate ? "due_date" : "invoice_date": dateToString(invoiceDate),
+    }).then(
+      (updated) {
+        if (updated) {
+          fetchInvoice();
+          showToast(message: 'Updated successfully');
+        } else {
+          showToast(message: 'Something went wrong');
+        }
+      },
+    ).catchError(
+      (e) {
+        showToast(message: e.toString());
+      },
+    );
   }
 
   void _deleteInvoiceItem(InvoiceItem item) {
@@ -685,61 +830,33 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
     });
   }
 
-  Future downloadFile(InvoiceModel invoice) async {
-    print('INVOICE ID :: ${invoice.id}');
-    if (mounted) {
+  _downloadInvoice() async {
+    String fileName = 'Invoice_${invoice.id}.pdf';
+    PermissionStatus status = await Permission.storage.request();
+
+    var downloadsDirectoryPath =
+        await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
+
+    if (status.isGranted) {
       setState(() {
         isDownloading = true;
       });
-    }
-    try {
-      Dio dio = Dio();
+      String formattedFileName =
+          await makeFileName(downloadsDirectoryPath, fileName);
 
-      String pdfUrl =
-          "${AppConfig.baseUrl}/api/v1/transactions/invoice/download/${invoice.id}/?download=true";
-
-      String fileName = 'Invoice_${invoice.id}.pdf';
-
-      var authHeaders = await BusinessAuth().getAuthHeaders();
-
-      savePath = await getFilePath(fileName);
-      Response response = await dio.download(
-        pdfUrl,
-        savePath,
-        options: Options(
-          headers: authHeaders,
-        ),
-        onReceiveProgress: (rec, total) {},
+      await FlutterDownloader.enqueue(
+        url:
+            "${AppConfig.baseUrl}/api/v1/transactions/invoice/download/${invoice.id}/?download=true",
+        fileName: formattedFileName,
+        savedDir: downloadsDirectoryPath,
       );
-      setState(() {
-        isDownloading = false;
-      });
-      if (response.statusCode == 200) {
-        showToast(message: 'Download complete');
-      } else {
-        showToast(message: 'Something went wrong, please try again');
-      }
-    } catch (e) {
-      setState(() {
-        isDownloading = false;
-      });
-      print(e.toString());
-      showToast(message: 'ERROR ::: ${e.toString()}');
+    } else {
+      Permission.storage.request();
     }
   }
 
-  Future<String> getFilePath(uniqueFileName) async {
-    String path = '';
-
-    Directory dir = Directory('/storage/emulated/0/Download');
-    // Directory dir = await getApplicationDocumentsDirectory();
-
-    path = '${dir.path}/$uniqueFileName';
-
-    return path;
-  }
-
-  showDeleteDialog(InvoiceItem item) {
+  showDeleteDialogForInvoiceItem(InvoiceItem item) {
     showDialogBox(
       context: context,
       actionOneTextColor: blackFont,
@@ -749,7 +866,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       title: AppLocalization.of(context)!.delete,
       actionTwoText: AppLocalization.of(context)!.delete,
       actionOneText: AppLocalization.of(context)!.cancel,
-      description: 'Are you sure you want to delete your invoice item?',
+      description: 'Are you sure you want to delete this invoice item?',
       roundedBackgroundIcon: RoundedBackgroundIcon(
         enableMargin: false,
         width: 90,

@@ -8,15 +8,17 @@ import 'CustomBoxShadow.dart';
 // ignore: must_be_immutable
 class UserDashboardItemTile extends StatelessWidget {
   String title;
-  IconData icon;
+  IconData? icon;
   Color iconColor;
   Function onTap;
   double height;
   bool isLocked;
+  Widget? iconWidget;
 
   UserDashboardItemTile(
-      {required this.title,
-      required this.icon,
+      {this.iconWidget,
+      required this.title,
+      this.icon,
       required this.iconColor,
       required this.onTap,
       this.isLocked = false,
@@ -48,6 +50,7 @@ class UserDashboardItemTile extends StatelessWidget {
                       RoundedBackgroundIcon(
                         height: 50,
                         width: 50,
+                        image: iconWidget,
                         icon: Icon(
                           icon,
                           color: iconColor,

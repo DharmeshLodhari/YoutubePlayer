@@ -34,9 +34,7 @@ class UtilityHistoryTile extends StatelessWidget {
           child: Row(
             children: [
               getLeading(),
-              SizedBox(
-                width: 4,
-              ),
+              SizedBox(width: 4),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -51,9 +49,7 @@ class UtilityHistoryTile extends StatelessWidget {
                 ],
               ),
               Expanded(
-                child: SizedBox(
-                  width: 1,
-                ),
+                child: SizedBox(width: 1),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,

@@ -359,7 +359,7 @@ class PositionSeekWidget extends StatefulWidget {
 
 class _PositionSeekWidgetState extends State<PositionSeekWidget> {
   Duration? _visibleValue;
-  bool listenOnlyUserInterraction = false;
+  bool listenOnlyUserInteraction = false;
   double get percent => widget.duration.inMilliseconds == 0
       ? 0
       : _visibleValue!.inMilliseconds / widget.duration.inMilliseconds;
@@ -373,7 +373,7 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
   @override
   void didUpdateWidget(PositionSeekWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!listenOnlyUserInterraction) {
+    if (!listenOnlyUserInteraction) {
       _visibleValue = widget.currentPosition;
     }
   }
@@ -409,13 +409,13 @@ class _PositionSeekWidgetState extends State<PositionSeekWidget> {
                   (percent * widget.duration.inMilliseconds.toDouble()).abs(),
               onChangeEnd: (newValue) {
                 setState(() {
-                  listenOnlyUserInterraction = false;
+                  listenOnlyUserInteraction = false;
                   widget.seekTo(_visibleValue);
                 });
               },
               onChangeStart: (_) {
                 setState(() {
-                  listenOnlyUserInterraction = true;
+                  listenOnlyUserInteraction = true;
                 });
               },
               onChanged: (newValue) {

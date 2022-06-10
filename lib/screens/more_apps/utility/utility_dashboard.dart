@@ -96,7 +96,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
             child: UtilityDashboardItemTile(
           icon: SlydoAppIcon.utility_airtime,
           title: "Airtime",
-          providersEnum: UtilitiesProvidersEnum.airtime,
+          providersEnum: UtilitiesProvidersEnum.Airtime,
           iconColor: HexColor("#3F61DB"),
           height: 126,
         )),
@@ -105,7 +105,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           child: UtilityDashboardItemTile(
             icon: SlydoAppIcon.utility_svg,
             title: "Cable",
-            providersEnum: UtilitiesProvidersEnum.cable,
+            providersEnum: UtilitiesProvidersEnum.TV,
             iconColor: HexColor("#F07097"),
             height: 126,
           ),
@@ -115,7 +115,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           child: UtilityDashboardItemTile(
             icon: SlydoAppIcon.utility_electricity,
             title: "Electricity",
-            providersEnum: UtilitiesProvidersEnum.electricity,
+            providersEnum: UtilitiesProvidersEnum.Electricity,
             iconColor: HexColor("#FFAB00"),
             height: 126,
           ),
@@ -125,7 +125,7 @@ class _UtilityDashboardState extends State<UtilityDashboard> {
           child: UtilityDashboardItemTile(
             icon: Icons.tap_and_play_outlined,
             title: "Data",
-            providersEnum: UtilitiesProvidersEnum.mobile_data,
+            providersEnum: UtilitiesProvidersEnum.Data_Subscription,
             iconColor: navyBlue,
             height: 126,
             titleFontSize: 14,

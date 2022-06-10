@@ -398,15 +398,15 @@ class _MixCartItemState extends State<MixCartItem> {
     basketBloc.addItemToCart(item: basketBloc.items[index]["item"], type: type);
     late var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].conversationId ==
-          basketBloc.items[index]["item"].conversationId) {
+      if (element["item"].conversationID ==
+          basketBloc.items[index]["item"].conversationID) {
         mapData = element;
         return;
       }
     });
     Map data = {
       "type": type,
-      "id": mapData["item"].conversationId,
+      "id": mapData["item"].conversationID,
       "qty": mapData["qty"],
     };
     debugPrint("Data From increasing the  item : $data");
@@ -419,15 +419,15 @@ class _MixCartItemState extends State<MixCartItem> {
 
     late var mapData;
     basketBloc.items.forEach((element) {
-      if (element["item"].conversationId ==
-          basketBloc.items[index]["item"].conversationId) {
+      if (element["item"].conversationID ==
+          basketBloc.items[index]["item"].conversationID) {
         mapData = element;
         return;
       }
     });
     Map data = {
       "type": type,
-      "id": mapData["item"].conversationId,
+      "id": mapData["item"].conversationID,
       "qty": mapData["qty"] - 1,
     };
 

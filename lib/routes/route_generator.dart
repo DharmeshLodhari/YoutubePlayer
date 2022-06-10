@@ -150,6 +150,7 @@ import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 
+<<<<<<< HEAD
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
@@ -304,6 +305,8 @@ import '../screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
 import '../screens/more_apps/utility/select_provider_screen.dart';
 import '../screens/more_apps/utility/utility_payment_screen.dart';
 
+=======
+>>>>>>> 421411667d9de5a791046f03bcf1c05eaa3267dd
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
@@ -882,6 +885,18 @@ class RouteGenerator {
           settings: settings,
         );
 
+<<<<<<< HEAD
+=======
+      /// Contracts & Invoice
+      case Routes.CONTRACT_SCREEN:
+        return PageTransition(
+          child: ContractScreen(),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+>>>>>>> 421411667d9de5a791046f03bcf1c05eaa3267dd
       case Routes.INVOICE_SCREEN:
         return PageTransition(
           child: InvoiceScreen(),

@@ -37,7 +37,6 @@ class ContractBloc extends ChangeNotifier {
         _isLoading = true;
         notifyListeners();
 
-        debugPrint('IS CONTRACTOR ::: $isContractor');
         Map<String, dynamic>? result = await businessAuth.getContractList(
           next,
           isContractor: isContractor,

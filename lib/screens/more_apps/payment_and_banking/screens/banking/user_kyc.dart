@@ -19,8 +19,8 @@ class UserKyc extends StatefulWidget {
 }
 
 class _UserKycState extends State<UserKyc> {
-  bool isLoading = true;
   String? userTier;
+  bool isLoading = true;
   VirtualAccount? virtualAccount;
   bool showVirtualAccountNotAvailableText = false;
 

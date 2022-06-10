@@ -113,7 +113,7 @@ class PaymentRequestTile extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        paymentRequest!.description != ""
+        paymentRequest!.description != "" && paymentRequest!.description != null
             ? Text(
                 "${paymentRequest!.description}",
                 style: TextStyle(color: darkGrey, fontSize: 12),

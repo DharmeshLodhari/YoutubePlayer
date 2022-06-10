@@ -47,25 +47,21 @@ class _ContractTileState extends State<ContractTile> {
               decoration: decorateBox(),
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
-                child: Stack(
-                  children: [
-                    ListTile(
-                      dense: true,
-                      title: getContractTitle(),
-                      subtitle: getSubTitle(),
-                      leading: getLeading(),
-                      trailing: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          getAmount(),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          getPaymentDuration()
-                        ],
+                child: ListTile(
+                  dense: true,
+                  title: getContractTitle(),
+                  subtitle: getSubTitle(),
+                  leading: getLeading(),
+                  trailing: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      getAmount(),
+                      SizedBox(
+                        height: 4,
                       ),
-                    ),
-                  ],
+                      getPaymentDuration()
+                    ],
+                  ),
                 ),
               ),
             ),

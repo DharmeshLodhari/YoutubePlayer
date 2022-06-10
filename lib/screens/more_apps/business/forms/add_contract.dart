@@ -6,7 +6,6 @@ import 'package:Slydo/screens/more_apps/business/business_auth.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -15,13 +14,13 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../widget/LoadingIndicator.dart';
+import '../../../../widget/dialog.dart';
 import '../../../search_user.dart';
 
 // ignore: must_be_immutable
@@ -30,7 +29,6 @@ class AddContract extends StatefulWidget {
 
   AddContract({this.arguments});
 
-  // Declare a field that holds the userData.
   @override
   _AddContractState createState() => _AddContractState();
 }
@@ -681,54 +679,25 @@ class _AddContractState extends State<AddContract> {
           });
         } else {
           if (userBloc.user.userName != recipient) {
-            try {
-              showDialog(
-                  context: context,
-                  builder: (dialogLoadingContext) => LoadingIndicator());
-
-              await BusinessAuth()
-                  .getConversationId(name: _recipientController.text)
-                  .then(
-                (value) {
-                  if (value != null) {
-                    conversationId = value;
-                  }
-                },
-              );
-
-              var data = {
-                "contractor": _recipientController.text,
-                "currency": userBloc.user.currency.toString(),
-                "amount": moneyInputNormalizer(amount.toString().trim()),
-                "start_date": dateToString(startingDate),
-                "end_date": dateToString(endingDate),
-                "payment_duration": selectedDuration!.value.toString(),
-              };
-
-              if (_noteCtrl.text.isNotEmpty) {
-                data['note'] = _noteCtrl.text;
-              }
-              if (conversationId != null) {
-                data['conversation_id'] = conversationId!;
-              }
-
-              BusinessAuth().addContract(data).then((result) {
-                Navigator.pop(context); // Dismiss the loading indicator
-
-                if (result) {
-                  Navigator.pop(context,
-                      true); // Pop this screen to go back to my_contract_list
-                }
-              }).catchError((error) {
-                Navigator.pop(context);
-                showToast(message: error.toString());
-              });
-            } catch (e) {
-              Navigator.pop(context);
-              debugPrint(e.toString());
-
-              showToast(message: e.toString());
-            }
+            showDialogBox(
+                context: context,
+                actionOneTextColor: blackFont,
+                actionOneBgColor: greyBorderColor,
+                actionTwoTextColor: white,
+                actionTwoBgColor: naturalGreen,
+                title: 'Create Contract',
+                actionTwoText: AppLocalization.of(context)!.create,
+                actionOneText: AppLocalization.of(context)!.cancel,
+                description: 'Are you sure you want to create this contract?',
+                roundedBackgroundIcon: RoundedBackgroundIcon(
+                  enableMargin: false,
+                  width: 90,
+                  height: 90,
+                  image: Image.asset('assets/images/accept_dialog_icon.png'),
+                ),
+                rightButtonOnPressed: () {
+                  sendContract();
+                });
           } else {
             showToast(message: AppLocalization.of(context)!.invalidRecipient);
           }
@@ -737,6 +706,57 @@ class _AddContractState extends State<AddContract> {
     } else {
       var msg = AppLocalization.of(context)!.invalidRecipient;
       showToast(message: msg);
+    }
+  }
+
+  sendContract() async {
+    try {
+      showDialog(
+          context: context,
+          builder: (dialogLoadingContext) => LoadingIndicator());
+
+      await BusinessAuth()
+          .getConversationId(name: _recipientController.text)
+          .then(
+        (value) {
+          if (value != null) {
+            conversationId = value;
+          }
+        },
+      );
+
+      var data = {
+        "contractor": _recipientController.text,
+        "currency": userBloc.user.currency.toString(),
+        "amount": moneyInputNormalizer(amount.toString().trim()),
+        "start_date": dateToString(startingDate),
+        "end_date": dateToString(endingDate),
+        "payment_duration": selectedDuration!.value.toString(),
+      };
+
+      if (_noteCtrl.text.isNotEmpty) {
+        data['note'] = _noteCtrl.text;
+      }
+      if (conversationId != null) {
+        data['conversation_id'] = conversationId!;
+      }
+
+      BusinessAuth().addContract(data).then((result) {
+        Navigator.pop(context); // Dismiss the loading indicator
+
+        if (result) {
+          Navigator.pop(
+              context, true); // Pop this screen to go back to my_contract_list
+        }
+      }).catchError((error) {
+        Navigator.pop(context);
+        showToast(message: error.toString());
+      });
+    } catch (e) {
+      Navigator.pop(context);
+      debugPrint(e.toString());
+
+      showToast(message: e.toString());
     }
   }
 

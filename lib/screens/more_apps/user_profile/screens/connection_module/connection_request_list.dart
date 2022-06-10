@@ -4,7 +4,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -13,7 +12,6 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -304,17 +302,17 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
         ),
         enableMargin: false,
       ),
-      actionOneBgColor: navyBlue,
+      actionOneBgColor: mateRed,
       actionOneTextColor: Colors.white,
-      actionTwoBgColor: mateRed,
+      actionTwoBgColor: navyBlue,
       actionTwoTextColor: Colors.white,
-      firstActionPrimary: true,
+      firstActionPrimary: false,
       title: AppLocalization.of(context)!.accept,
       description: "Are you sure you want to add" +
           " ${user.displayName()} " +
           "into your Connections?",
-      actionOneText: AppLocalization.of(context)!.accept,
-      actionTwoText: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.cancel,
+      actionTwoText: AppLocalization.of(context)!.accept,
     );
     if (result != null && result) {
       bool done = await UserAuth().acceptContactRequest(user);

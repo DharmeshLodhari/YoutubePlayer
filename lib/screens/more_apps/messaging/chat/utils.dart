@@ -5,7 +5,10 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
+import '../../../../data/state_notifier.dart';
 
 /// allowed message types
 List<String> imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
@@ -18,6 +21,7 @@ List<String> videoExtensions = [
   "webm",
   "mkv"
 ];
+List<String> fileExtensions = ['txt', 'pdf', 'apk', 'zip', 'xls'];
 List<String> audioExtensions = ["m4a", "mp3", "ogg", "aac"];
 
 Future<String?> getVideoThumbnail(File file) async {
@@ -40,6 +44,7 @@ String getFileType(FilePickerResult pickedMedia) {
   debugPrint(
       " pickedMedia.files.single.path => ${pickedMedia.files.single.path}");
 
+  if (fileExtensions.contains(extension)) return "file";
   if (imageExtensions.contains(extension)) return "image";
   if (videoExtensions.contains(extension)) return "video";
   if (audioExtensions.contains(extension)) return "audio";
@@ -64,6 +69,21 @@ Color getMessageTickColor({required Map<String, dynamic> message}) {
           ? navyBlue
           : darkGrey
       : darkGrey;
+}
+
+Widget getUserCurrencySymbol(BuildContext context,
+    {Color? color, double? fontSize}) {
+  UserBloc userBloc = Provider.of<UserBloc>(context);
+
+  return Text(
+    worldCurrencies[userBloc.user.currency!]!,
+    style: TextStyle(
+      color: color ?? navyBlue,
+      fontSize: fontSize ?? 16,
+      fontFamily: "Roboto",
+      fontWeight: FontWeight.w500,
+    ),
+  );
 }
 
 Widget getMessageTick({required Map<String, dynamic> message}) {

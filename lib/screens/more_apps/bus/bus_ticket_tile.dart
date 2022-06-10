@@ -1,7 +1,10 @@
+import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/bus/models/Transport.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BusTicketTile extends StatelessWidget {
   final Transport? transport;
@@ -9,6 +12,7 @@ class BusTicketTile extends StatelessWidget {
   const BusTicketTile({Key? key, this.transport}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    UserBloc userBloc = Provider.of<UserBloc>(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.zero,
@@ -49,10 +53,13 @@ class BusTicketTile extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          SlydoAppIcon.naira,
-                          color: navyBlue,
-                          size: 10,
+                        Text(
+                          worldCurrencies[userBloc.user.currency!]!,
+                          style: TextStyle(
+                            color: navyBlue,
+                            fontSize: 16,
+                            fontFamily: "Roboto",
+                          ),
                         ),
                         Text(
                           transport!.price!,

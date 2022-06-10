@@ -116,7 +116,7 @@ class _EditServiceState extends State<EditService> {
 
       serviceImagesFromServer.addAll(currentService.serverImages!);
       serviceName = currentService.name;
-      serviceCategory = currentService.category;
+      serviceCategory = messageDecoderWithEmoji(currentService.category);
       servicePrice = moneyNormalizer(int.parse(currentService.price!));
       serviceDescription = currentService.description;
       serviceIsAvailable = currentService.isAvailable;
@@ -125,7 +125,7 @@ class _EditServiceState extends State<EditService> {
 
       // assigning the dropdown from currentProduct
       serviceCategories?.forEach((catagory) {
-        if (catagory.name == currentService.category) {
+        if (catagory.name == messageDecoderWithEmoji(currentService.category)) {
           selectedServiceCategory = catagory;
         }
       });
@@ -677,7 +677,7 @@ class _EditServiceState extends State<EditService> {
                     isAPILoading = true;
                     if (mounted) setState(() {});
 
-                    await editProduct();
+                    await editService();
 
                     isAPILoading = false;
                     if (mounted) setState(() {});
@@ -689,7 +689,7 @@ class _EditServiceState extends State<EditService> {
     );
   }
 
-  Future<void> editProduct() async {
+  Future<void> editService() async {
     if (_formKey.currentState!.validate()) {
       if (serviceLocalImages.length >= 0) {
         if (validateDropdown()) {
@@ -699,7 +699,7 @@ class _EditServiceState extends State<EditService> {
           currentService.localImages =
               serviceLocalImages.map((file) => File(file.path)).toList();
           currentService.serverImages = serviceImagesFromServer;
-          currentService.category = serviceCategory;
+          currentService.category = messageDecoderWithEmoji(serviceCategory);
           currentService.shortDescription = serviceShortDescription;
           currentService.price = moneyInputNormalizer(servicePrice!).toString();
           currentService.isAvailable = serviceIsAvailable;

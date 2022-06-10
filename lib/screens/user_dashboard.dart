@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:Slydo/constant.dart';
+import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -8,6 +10,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
@@ -31,8 +34,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
+import '../main.dart';
 import '../routes/route_constants.dart';
-import 'more_apps/business/business_auth.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
@@ -55,19 +58,31 @@ class _UserDashboardState extends State<UserDashboard> {
 
   late DashboardBloc dashboardBloc;
   bool isBalanceHidden = true;
+  late AppLocalization appLocalization;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
     getAccountBalance();
     getLanguage();
+    getAppConfigurationModelFromLocalStorage();
     super.initState();
+  }
+
+  getAppConfigurationModelFromLocalStorage() async {
+    debugPrint('getAppConfigurationModelFromLocalStorage');
+    bool con = await storage.containsKey(key: appConfigurationKey);
+    debugPrint('CON :: $con');
+
+    String? str = await storage.read(key: appConfigurationKey);
+    appConfigurationModel = AppConfigurationModel.deserialize(str!);
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    bankAccountBloc = Provider.of<BankAccountBloc>(context);
     dashboardBloc = Provider.of<DashboardBloc>(context);
+    bankAccountBloc = Provider.of<BankAccountBloc>(context);
 
     if (userBloc.user.type != "User") {
       storeLocked = false;
@@ -265,20 +280,31 @@ class _UserDashboardState extends State<UserDashboard> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             isBalanceHidden
                 ? Container()
-                : Icon(
-                    SlydoAppIcon.naira,
-                    color: blackFont,
-                    size: 16,
+                : Padding(
+                    padding: const EdgeInsets.only(bottom: 2.0),
+                    child: Text(
+                      worldCurrencies[userBloc.user.currency!]!,
+                      style: TextStyle(
+                        color: blackFont,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        fontFamily: "Roboto",
+                      ),
+                    ),
                   ),
             Text(
               isBalanceHidden
                   ? "*********"
                   : moneyDisplayNormalizer(int.parse(accountBalance)),
               style: TextStyle(
-                  color: blackFont, fontWeight: FontWeight.bold, fontSize: 26),
+                color: blackFont,
+                fontWeight: FontWeight.bold,
+                fontSize: 26,
+              ),
             ),
           ],
         ),
@@ -360,6 +386,10 @@ class _UserDashboardState extends State<UserDashboard> {
             hideBalance();
             if (!storeLocked) {
               storeItemAndroidSheet();
+            } else {
+              showToast(
+                  message:
+                      'You need to upgrade to a business account to use this feature.');
             }
           },
           iconColor: HexColor("#46CE7C"),
@@ -388,7 +418,17 @@ class _UserDashboardState extends State<UserDashboard> {
 
         Expanded(
           child: UserDashboardItemTile(
-            icon: SlydoAppIcon.naira,
+            iconWidget: Center(
+              child: Text(
+                worldCurrencies[userBloc.user.currency!]!,
+                style: TextStyle(
+                  color: HexColor("#46CE7C"),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  fontFamily: "Roboto",
+                ),
+              ),
+            ),
             title: "Cashout",
             onTap: () {
               hideBalance();
@@ -424,43 +464,56 @@ class _UserDashboardState extends State<UserDashboard> {
   Widget thirdRowOfUserDashboardItem() {
     return Row(
       children: [
-        // Expanded(child: Container()),
         Expanded(
-            child: UserDashboardItemTile(
-          icon: Icons.business_center_rounded,
-          title: AppLocalization.of(context)!.business,
-          isLocked: storeLocked,
-          onTap: () {
-            hideBalance();
-            if (!storeLocked) {
-              // Navigator.of(context).pushNamed(Routes.CONTRACTS);
-              businessAndroidSheet();
-            }
-          },
-          iconColor: HexColor("#5218E9"),
-        )),
+          child: UserDashboardItemTile(
+            icon: Icons.business_center_rounded,
+            title: AppLocalization.of(context)!.business,
+            isLocked: storeLocked,
+            onTap: () {
+              hideBalance();
+              if (!storeLocked) {
+                // Navigator.of(context).pushNamed(Routes.CONTRACTS);
+                businessAndroidSheet();
+              } else {
+                showToast(
+                    message:
+                        'You need to upgrade to a business account to use this feature.');
+              }
+            },
+            iconColor: HexColor("#5218E9"),
+          ),
+        ),
+
         SizedBox(width: 12),
+
         Expanded(
           child: UserDashboardItemTile(
             icon: SlydoAppIcon.utility,
             title: "Utility",
             onTap: () {
-              Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+              if (appConfigurationModel?.enableUtility == true) {
+                Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
+              } else {
+                showToast(message: 'Coming soon.');
+              }
             },
             iconColor: HexColor("#FFAB00"),
           ),
         ),
+
+        SizedBox(width: 12),
+
         // Expanded(
         //   child: UserDashboardItemTile(
         //     icon: SlydoAppIcon.more,
         //     title: AppLocalization.of(context)!.more,
         //     onTap: () {
-        //       Navigator.pushNamed(context, "/more-apps");
+        //       Navigator.pushNamed(context, Routes.MORE_APPS);
         //     },
         //     iconColor: HexColor("#374677"),
         //   ),
         // ),
-        SizedBox(width: 12),
+        // SizedBox(width: 12),
         Expanded(child: Container()),
       ],
     );
@@ -473,23 +526,29 @@ class _UserDashboardState extends State<UserDashboard> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             bottomSheetItem(
-              title: 'Contract',
-              iconData: Icons.description_rounded,
-              onTap: () {
-                hideBalance();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
-              },
-            ),
+                title: 'Contract',
+                iconData: Icons.description_rounded,
+                onTap: () {
+                  if (appConfigurationModel?.enableContract == true) {
+                    hideBalance();
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, Routes.CONTRACT_SCREEN);
+                  } else {
+                    showToast(message: 'Coming soon');
+                  }
+                }),
             bottomSheetItem(
-              title: "Invoice",
-              iconData: Icons.receipt_outlined,
-              onTap: () {
-                hideBalance();
-                Navigator.pop(context);
-                Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
-              },
-            ),
+                title: "Invoice",
+                iconData: Icons.receipt_outlined,
+                onTap: () {
+                  if (appConfigurationModel?.enableInvoice == true) {
+                    hideBalance();
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, Routes.INVOICE_SCREEN);
+                  } else {
+                    showToast(message: 'Coming soon');
+                  }
+                }),
           ],
         ));
   }
@@ -796,27 +855,32 @@ class _UserDashboardState extends State<UserDashboard> {
                     },
                   ),
                   bottomSheetItem(
-                    title: AppLocalization.of(context)!.cashOut,
-                    iconData: SlydoAppIcon.payout,
-                    onTap: () {
-                      BottomSheetPassCode(
-                          context: context,
-                          isValidCallback: () {
-                            if (bankAccountBloc.bankAccount == null ||
-                                bankAccountBloc.bankAccount!.bankName == null) {
-                              Navigator.pop(context);
-                              showToast(
-                                  message: "Please add bank account first !!");
-                            } else {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, Routes.PAYOUT);
-                            }
-                          },
-                          cancelCallBack: () {
-                            Navigator.pop(context);
-                          });
-                    },
-                  ),
+                      title: AppLocalization.of(context)!.cashOut,
+                      iconData: SlydoAppIcon.payout,
+                      onTap: () {
+                        if (appConfigurationModel?.enableCashout == false) {
+                          BottomSheetPassCode(
+                              context: context,
+                              isValidCallback: () {
+                                if (bankAccountBloc.bankAccount == null ||
+                                    bankAccountBloc.bankAccount!.bankName ==
+                                        null) {
+                                  Navigator.pop(context);
+                                  showToast(
+                                      message:
+                                          "Please add bank account first !!");
+                                } else {
+                                  Navigator.pop(context);
+                                  Navigator.pushNamed(context, Routes.PAYOUT);
+                                }
+                              },
+                              cancelCallBack: () {
+                                Navigator.pop(context);
+                              });
+                        } else {
+                          showToast(message: 'Coming soon');
+                        }
+                      }),
                   bottomSheetItem(
                     title: "Cashout transactions",
                     iconData: SlydoAppIcon.payout_list,

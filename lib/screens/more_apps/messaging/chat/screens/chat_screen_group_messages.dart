@@ -19,6 +19,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
@@ -75,7 +76,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../constant.dart';
+import '../../../../../data/database_helper.dart';
+import '../../../../../main.dart';
 import '../../../../../routes/route_constants.dart';
+import '../../../../../services/app_config_bloc.dart';
+import '../models/document_file_in_chat_download_model.dart';
+import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
@@ -224,6 +231,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   GroupedItemScrollController? messageListController;
   ItemPositionsListener? messageListPositionListener;
   bool isUserNudging = false;
+  late AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
@@ -257,6 +265,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         getProductOrServiceList();
       }
     });
+    getAppConfigurationModelFromLocalStorage();
 
     super.initState();
 
@@ -264,6 +273,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     /// on this screen by this method
     // lib/screens/more_apps/messaging/chat/screens/chat_screen.dart:294
     WidgetsBinding.instance!.addObserver(this);
+  }
+
+  getAppConfigurationModelFromLocalStorage() async {
+    String? str = await storage.read(key: appConfigurationKey);
+    appConfigurationModel = AppConfigurationModel.deserialize(str!);
   }
 
   void checkNetworkConnectivity() async {
@@ -1030,6 +1044,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             newMessageText!.replaceAll(RegExp(r"\s+"), "") ==
                 previousMessageText!.replaceAll(RegExp(r"\s+"), "")) {
           messageList[i] = jsonEncode(newMessage);
+
           if (mounted) setState(() {});
           isMatchFound = true;
 
@@ -1836,59 +1851,87 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget moreActionsBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 28),
-      child: Column(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      child: Wrap(
+        spacing: 45,
+        runSpacing: 20,
         children: [
-          Row(
-            children: <Widget>[
-              assignTitleToAction(text: "Request", child: requestMoneyBtn()),
-              flexibleSpace(),
-              assignTitleToAction(text: "Send", child: sendMoneyBtn()),
-              flexibleSpace(),
-              assignTitleToAction(text: "Media", child: addMediaButton()),
-              flexibleSpace(),
-              assignTitleToAction(text: "Voice", child: addVoiceBtn()),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: <Widget>[
-              assignTitleToAction(
-                  text: "Product/ Service",
-                  child: searchProductAndServiceBtn()),
-              flexibleSpace(),
-              assignTitleToAction(
-                  text: "Magic\nEnvelope", child: sendEnvelopeButton()),
-              flexibleSpace(),
-              assignTitleToAction(
-                  text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
-              flexibleSpace(),
-              assignTitleToAction(
-                  text: "Location\n", child: sendUserLocation()),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: <Widget>[
-              assignTitleToAction(text: "GIF", child: sendGIFButton()),
-              flexibleSpace(),
-              assignTitleToAction(text: "Sticker", child: sendStickersButton()),
-              flexibleSpace(),
-              assignTitleToAction(text: "Files", child: sendFilesButton()),
-              // flexibleSpace(),
-              // Container(
-              //   constraints: BoxConstraints(maxWidth: 60),
-              // ),
-              flexibleSpace(),
-              Container(
-                constraints: BoxConstraints(maxWidth: 60),
-              ),
-            ],
-          ),
+          assignTitleToAction(text: "Request", child: requestMoneyBtn()),
+          assignTitleToAction(text: "Send", child: sendMoneyBtn()),
+          assignTitleToAction(text: "Media", child: addMediaButton()),
+          assignTitleToAction(text: "Voice", child: addVoiceBtn()),
+          assignTitleToAction(
+              text: "Product/ Service", child: searchProductAndServiceBtn()),
+          assignTitleToAction(
+              text: "Magic\nEnvelope", child: sendMagicEnvelopeButton()),
+          assignTitleToAction(
+              text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
+          assignTitleToAction(text: "Location\n", child: sendUserLocation()),
+          assignTitleToAction(text: "GIF", child: sendGIFButton()),
+          assignTitleToAction(text: "Sticker", child: sendStickersButton()),
+          assignTitleToAction(text: "Files", child: sendFilesButton()),
         ],
       ),
     );
   }
+
+  // Widget moreActionsBtn() {
+  //   return Container(
+  //     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 28),
+  //     child: Column(
+  //       children: [
+  //         Row(
+  //           children: <Widget>[
+  //             assignTitleToAction(text: "Request", child: requestMoneyBtn()),
+  //             flexibleSpace(),
+  //             assignTitleToAction(text: "Send", child: sendMoneyBtn()),
+  //             flexibleSpace(),
+  //             assignTitleToAction(text: "Media", child: addMediaButton()),
+  //             flexibleSpace(),
+  //             assignTitleToAction(text: "Voice", child: addVoiceBtn()),
+  //           ],
+  //         ),
+  //         SizedBox(height: 16),
+  //         Row(
+  //           children: <Widget>[
+  //             assignTitleToAction(
+  //                 text: "Product/ Service",
+  //                 child: searchProductAndServiceBtn()),
+  //
+  //             flexibleSpace(),
+  //             assignTitleToAction(
+  //                 text: "Magic\nEnvelope", child: sendEnvelopeButton()),
+  //             flexibleSpace(),
+  //
+  //             assignTitleToAction(
+  //                 text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
+  //             flexibleSpace(),
+  //             assignTitleToAction(
+  //                 text: "Location\n", child: sendUserLocation()),
+  //           ],
+  //         ),
+  //         SizedBox(height: 16),
+  //         Row(
+  //           children: <Widget>[
+  //             assignTitleToAction(text: "GIF", child: sendGIFButton()),
+  //             flexibleSpace(),
+  //             assignTitleToAction(text: "Sticker", child: sendStickersButton()),
+  //             flexibleSpace(),
+  //             assignTitleToAction(text: "Files", child: sendFilesButton()),
+  //             // flexibleSpace(),
+  //             // Container(
+  //             //   constraints: BoxConstraints(maxWidth: 60),
+  //             // ),
+  //             flexibleSpace(),
+  //             Container(
+  //               constraints: BoxConstraints(maxWidth: 60),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget assignTitleToAction({required String text, required Widget child}) {
     return Container(
@@ -2177,9 +2220,13 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        showMoreAction = false;
-        if (mounted) setState(() {});
-        sendUserLocationToSocket();
+        if (appConfigurationModel?.enableLocationSharing == true) {
+          showMoreAction = false;
+          if (mounted) setState(() {});
+          sendUserLocationToSocket();
+        } else {
+          showToast(message: 'Coming soon');
+        }
       },
     );
   }
@@ -2239,23 +2286,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        showMoreAction = false;
-        pickDocumentFiles();
+        addDocumentFileToMessage();
       },
-    );
-  }
-
-  pickDocumentFiles() async {
-    List<String> listOfAllowedFileExtensions = [
-      'pdf',
-      'apk',
-      'zip',
-      'txt',
-      'xls'
-    ];
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: listOfAllowedFileExtensions,
     );
   }
 
@@ -2333,40 +2365,43 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  Widget sendEnvelopeButton() {
+  Widget sendMagicEnvelopeButton() {
     return RoundedBackgroundIcon(
-      borderRadius: 20,
-      height: 50,
-      width: 50,
-      icon: Container(
-        margin: EdgeInsets.symmetric(vertical: 14),
-        child: Image.asset(
-          "assets/images/envelope/envelope_blue.png",
+        borderRadius: 20,
+        height: 50,
+        width: 50,
+        icon: Container(
+          margin: EdgeInsets.symmetric(vertical: 14),
+          child: Image.asset(
+            "assets/images/envelope/envelope_blue.png",
+          ),
         ),
-      ),
-      backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () async {
-        showMoreAction = false;
+        backgroundColor: navyBlue.withOpacity(0.08),
+        onTap: () async {
+          if (appConfigurationModel?.enableMagicEnvelope == true) {
+            showMoreAction = false;
 
-        if (mounted) setState(() {});
+            if (mounted) setState(() {});
 
-        CustomerProfile? user;
+            CustomerProfile? user;
 
-        if (chatConversation!.isGroupConversation!) {
-          if (groupDetail!.participants.isEmpty) {
-            getGroupDetailFromServer();
+            if (chatConversation!.isGroupConversation!) {
+              if (groupDetail!.participants.isEmpty) {
+                getGroupDetailFromServer();
+              }
+
+              user = await selectRecipientForAction();
+            } else {
+              user = CustomerProfile.fromChatConversation(chatConversation!);
+            }
+
+            if (user != null) {
+              sendEnvelope(recipient: user);
+            }
+          } else {
+            showToast(message: 'Coming soon');
           }
-
-          user = await selectRecipientForAction();
-        } else {
-          user = CustomerProfile.fromChatConversation(chatConversation!);
-        }
-
-        if (user != null) {
-          sendEnvelope(recipient: user);
-        }
-      },
-    );
+        });
   }
 
   Widget sendEmptyEnvelopeButton() {
@@ -2382,24 +2417,28 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        showMoreAction = false;
+        if (appConfigurationModel?.enableMagicEnvelope == true) {
+          showMoreAction = false;
 
-        if (mounted) setState(() {});
+          if (mounted) setState(() {});
 
-        CustomerProfile? user;
+          CustomerProfile? user;
 
-        if (chatConversation!.isGroupConversation!) {
-          if (groupDetail!.participants.isEmpty) {
-            getGroupDetailFromServer();
+          if (chatConversation!.isGroupConversation!) {
+            if (groupDetail!.participants.isEmpty) {
+              getGroupDetailFromServer();
+            }
+
+            user = await selectRecipientForAction();
+          } else {
+            user = CustomerProfile.fromChatConversation(chatConversation!);
           }
 
-          user = await selectRecipientForAction();
+          if (user != null) {
+            sendEnvelope(recipient: user, isEmpty: true);
+          }
         } else {
-          user = CustomerProfile.fromChatConversation(chatConversation!);
-        }
-
-        if (user != null) {
-          sendEnvelope(recipient: user, isEmpty: true);
+          showToast(message: 'Coming soon');
         }
       },
     );
@@ -2439,76 +2478,77 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           alignment: Alignment.centerRight,
           children: [
             Theme(
-                data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
-                child: Scrollbar(
-                  radius: Radius.circular(12),
-                  thickness: 2.5,
-                  child: TextFormField(
-                    controller: messageController,
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    focusNode: messageFocus,
-                    onFieldSubmitted: (value) {
-                      getSendMessageAction();
-                    },
-                    cursorColor: blackFont,
-                    cursorWidth: 1,
-                    cursorHeight: 20,
-                    maxLines: null,
-                    cursorRadius: Radius.circular(16),
-                    decoration: InputDecoration(
-                      hintText: "Type a message",
-                      hintStyle: TextStyle(
-                        color: darkGrey,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+              data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+              child: Scrollbar(
+                radius: Radius.circular(12),
+                thickness: 2.5,
+                child: TextFormField(
+                  controller: messageController,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  focusNode: messageFocus,
+                  onFieldSubmitted: (value) {
+                    getSendMessageAction();
+                  },
+                  cursorColor: blackFont,
+                  cursorWidth: 1,
+                  cursorHeight: 20,
+                  maxLines: null,
+                  cursorRadius: Radius.circular(16),
+                  decoration: InputDecoration(
+                    hintText: "Type a message",
+                    hintStyle: TextStyle(
+                      color: darkGrey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    prefix: Padding(
+                      padding: EdgeInsets.only(left: 16),
+                    ),
+                    suffix: Padding(
+                      padding: EdgeInsets.only(right: 36),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10),
+                    isDense: true,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      prefix: Padding(
-                        padding: EdgeInsets.only(left: 16),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      suffix: Padding(
-                        padding: EdgeInsets.only(right: 36),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 10),
-                      isDense: true,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        borderSide: BorderSide(
-                          color: chatBackgroundColor,
-                          width: 1.0,
-                        ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(3),
+                      borderSide: BorderSide(
+                        color: chatBackgroundColor,
+                        width: 1.0,
                       ),
                     ),
                   ),
-                )),
+                ),
+              ),
+            ),
             Positioned(
               child: captureImageOrVideoBtn(),
               right: 8,
@@ -2665,6 +2705,44 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     if (pickedMedia != null) {
       File file = File(pickedMedia.files.single.path!);
+      String mediaType = getFileType(pickedMedia);
+      if (mediaType == "") {
+        setupShakeDetector();
+        return;
+      }
+
+      Object? result = await Navigator.of(context).pushNamed(
+        Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
+        arguments: {
+          "data": {
+            "conversation": chatConversation!.conversationId,
+            "author": userBloc!.user.userName,
+          },
+          "media": file,
+          "message": messageController!.text.trim(),
+          "mediaType": mediaType
+        },
+      ).catchError((error) {
+        debugPrint("Error: = = = = $error");
+      });
+      setupShakeDetector();
+
+      if (result == null) return;
+
+      messageController!.text = "";
+      debugPrint("Result:- $result");
+    }
+  }
+
+  void addDocumentFileToMessage() async {
+    FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: fileExtensions,
+    );
+
+    if (pickedMedia != null) {
+      File file = File(pickedMedia.files.single.path!);
+
       String mediaType = getFileType(pickedMedia);
       if (mediaType == "") {
         setupShakeDetector();
@@ -3087,6 +3165,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         break;
       case "invoice":
         finalUI = renderInvoiceUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+
+      case "file":
+        finalUI = renderDocumentFileUI(
             message: messageData, chatConversation: chatConversation);
         break;
 
@@ -3590,13 +3673,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
 
     return TextMessageRendererForChat(
-        message: message,
-        chatConversation: chatConversation,
-        onReplyMessageTap: isReplyMessage
-            ? () {
-                replyMessageTapped(repliedTo: isReplyTo);
-              }
-            : null);
+      message: message,
+      chatConversation: chatConversation,
+      onReplyMessageTap: isReplyMessage
+          ? () {
+              replyMessageTapped(repliedTo: isReplyTo);
+            }
+          : null,
+    );
   }
 
   void replyMessageTapped({required Map<String, dynamic> repliedTo}) {
@@ -3724,6 +3808,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     );
   }
 
+  Widget renderDocumentFileUI(
+      {required Map<String, dynamic> message,
+      ChatConversation? chatConversation}) {
+    return DocumentFileTileForChat(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
   Widget addToCartWidget({var item}) {
     return RoundedBackgroundIcon(
       borderRadius: 16,
@@ -3741,14 +3834,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         basketBloc.addItemToCart(item: item, type: type);
         late var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].messageId == item.messageId) {
+          if (element["item"].checkID == item.checkID) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].messageId,
+          "id": mapData["item"].checkID,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");

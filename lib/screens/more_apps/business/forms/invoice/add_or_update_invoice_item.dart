@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../../utils/date_time_and_money_converter.dart';
 import '../../../../../widget/LoadingIndicator.dart';
+import '../../bloc/invoice_bloc.dart';
 
 // ignore: must_be_immutable
 class AddOrUpdateInvoiceItem extends StatefulWidget {
@@ -167,9 +168,7 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16),
                                     ),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: 20),
                             ],
                           ),
                         ),
@@ -438,6 +437,9 @@ class _AddOrUpdateInvoiceItemState extends State<AddOrUpdateInvoiceItem> {
         Navigator.pop(context); // Dismiss the loader.
 
         if (updated) {
+          Provider.of<InvoiceBloc>(context, listen: false).isSender = true;
+          Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
+          Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
           Navigator.pop(context, true); // Pop to Invoice detail page;
 
         }

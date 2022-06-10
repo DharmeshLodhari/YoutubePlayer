@@ -26,93 +26,93 @@ class _UtilityHistoryState extends State<UtilityHistory> {
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
-
-  List<Map<String, dynamic>> utilityPayment = [
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Processing"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Complete"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Pending"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Processing"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Canceled"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Paused"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Processing"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Complete"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Pending"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Processing"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Canceled"
-    },
-    {
-      "name": "DStv Subscription",
-      "image": "assets/images/utility/dstv.png",
-      "time": "18/08/2020 • 6:54 AM",
-      "amount": "₦34.00",
-      "status": "Paused"
-    },
-  ];
+  //
+  // List<Map<String, dynamic>> utilityPayment = [
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Processing"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Complete"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Pending"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Processing"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Canceled"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Paused"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Processing"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Complete"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Pending"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Processing"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Canceled"
+  //   },
+  //   {
+  //     "name": "DStv Subscription",
+  //     "image": "assets/images/utility/dstv.png",
+  //     "time": "18/08/2020 • 6:54 AM",
+  //     "amount": "₦34.00",
+  //     "status": "Paused"
+  //   },
+  // ];
 
   bool isFirstTime = true;
   List utilityHistoryList = [];

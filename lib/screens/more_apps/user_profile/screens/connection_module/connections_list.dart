@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -52,6 +53,7 @@ class _ConnectionListState extends State<ConnectionList> {
   TextEditingController? searchChatConversation;
   bool isUserIsSearching = false;
   List<ChatConversation> searchedChatConnection = [];
+  late AppConfigurationBloc appConfigurationBloc;
 
   RefreshBlocForConnectionDashboard? _refreshBloc;
   RefreshController _refreshController =
@@ -125,6 +127,7 @@ class _ConnectionListState extends State<ConnectionList> {
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
+    appConfigurationBloc = Provider.of<AppConfigurationBloc>(context);
     _connectionListBloc = Provider.of<ConnectionListBloc>(context);
 
     return Scaffold(
@@ -311,6 +314,22 @@ class _ConnectionListState extends State<ConnectionList> {
   //     );
   //   }
   // }
+
+  /// If appConfigurationModel?.groupChatWorks is false (i.e, we want to disable the groupChat feature),
+  /// remove groupChat conversations from the list of connections.
+  int getConnectionListItemCount() {
+    int itemCount = 0;
+    if (appConfigurationBloc.appConfigurationModel?.enableGroupChat == true) {
+      _connectionListBloc.connectionUsers
+          .removeWhere((element) => element.isGroupConversation!);
+      itemCount = _connectionListBloc.connectionUsers.length;
+    } else {
+      itemCount = _connectionListBloc.connectionUsers.length;
+    }
+
+    return itemCount;
+  }
+
   Widget _buildConnectionsList() {
     try {
       return _connectionListBloc.connectionUsers.length == 0
@@ -318,10 +337,20 @@ class _ConnectionListState extends State<ConnectionList> {
           : ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
-              itemCount: _connectionListBloc.connectionUsers.length,
+              itemCount: getConnectionListItemCount(),
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               itemBuilder: (BuildContext context, int index) {
+                ChatConversation chatConversation =
+                    _connectionListBloc.connectionUsers[index];
+
+                if (appConfigurationBloc
+                        .appConfigurationModel?.enableGroupChat ==
+                    true) {
+                  if (chatConversation.isGroupConversation!) {
+                    return SizedBox.shrink();
+                  }
+                }
                 return _getSlidableWithLists(
                     context, _connectionListBloc.connectionUsers[index], index);
               },

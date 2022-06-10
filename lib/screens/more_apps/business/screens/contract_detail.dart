@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -9,14 +11,15 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
-import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart' as pathProvider;
+
 import 'package:permission_handler/permission_handler.dart';
+
 import '../../../../data/environment.dart';
 import '../business_auth.dart';
-import 'package:open_file/open_file.dart';
 
 // ignore: must_be_immutable
 class ContractDetail extends StatefulWidget {
@@ -25,30 +28,69 @@ class ContractDetail extends StatefulWidget {
   ContractDetail({required this.arguments});
 
   @override
-  _ContractDetailState createState() =>
-      _ContractDetailState(arguments: arguments);
+  _ContractDetailState createState() => _ContractDetailState();
 }
 
 class _ContractDetailState extends State<ContractDetail> {
-  var arguments;
   late ContractModel contract;
-  // Contract contract;
   bool isLoading = false;
   bool isDownloading = false;
   String savePath = "";
 
-  _ContractDetailState({this.arguments});
+  // _ContractDetailState({this.arguments});
+
+  int downloadProgress = 0;
+  ReceivePort receivePort = ReceivePort();
 
   @override
   void initState() {
     fetchContract();
+    IsolateNameServer.registerPortWithName(
+        receivePort.sendPort, 'contract_downloader_send_port');
+
+    receivePort.listen((message) {
+      downloadProgress = message[2];
+      if (downloadProgress != 0) {
+        isDownloading = true;
+        if (mounted) setState(() {});
+
+        if (downloadProgress == 100) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'Downloaded');
+        } else if (downloadProgress == -1) {
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'File cannot be downloaded at the moment');
+        }
+      }
+
+      debugPrint('DOWNLOAD MESSAGE ::: $message');
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('contract_downloader_send_port');
+    super.dispose();
+  }
+
+  @pragma(
+      'vm:entry-point') // To avoid tree shaking in release mode for Android.
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('contract_downloader_send_port')!;
+    send.send([id, status, progress]);
   }
 
   void fetchContract() async {
     isLoading = true;
     setState(() {});
-    BusinessAuth().getContract(arguments["id"].toString()).then((value) {
+    BusinessAuth().getContract(widget.arguments["id"].toString()).then((value) {
       contract = value;
       isLoading = false;
 
@@ -107,15 +149,55 @@ class _ContractDetailState extends State<ContractDetail> {
         isLoading
             ? SizedBox.shrink()
             : IconButton(
-                icon: Icon(Icons.download_rounded, color: navyBlue),
+                icon: getDownloadIconWidget(),
                 onPressed: () {
-                  downloadContractFile();
+                  _downloadContract();
                 },
               ),
         // transactionHistoryBtn(),
         SizedBox(width: 16),
       ],
     );
+  }
+
+  Widget getDownloadIconWidget() {
+    if (isDownloading) {
+      return SizedBox(
+        width: 25,
+        height: 25,
+        child: CircularLoadingIndicator(
+          color: navyBlue,
+        ),
+      );
+    }
+
+    return Icon(Icons.download_rounded, color: navyBlue);
+  }
+
+  _downloadContract() async {
+    String fileName = 'Contract_${contract.id}.pdf';
+    PermissionStatus status = await Permission.storage.request();
+
+    var downloadsDirectoryPath =
+        await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
+
+    if (status.isGranted) {
+      setState(() {
+        isDownloading = true;
+      });
+      String formattedFileName =
+          await makeFileName(downloadsDirectoryPath, fileName);
+
+      await FlutterDownloader.enqueue(
+        url:
+            "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true",
+        fileName: formattedFileName,
+        savedDir: downloadsDirectoryPath,
+      );
+    } else {
+      Permission.storage.request();
+    }
   }
 
   Widget transactionHistoryBtn() {
@@ -149,22 +231,6 @@ class _ContractDetailState extends State<ContractDetail> {
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Column(
                 children: [
-                  isDownloading
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularLoadingIndicator(),
-                              SizedBox(width: 12),
-                              Text(
-                                'Downloading...',
-                                style: TextStyle(color: darkGrey, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        )
-                      : SizedBox.shrink(),
                   displayContractInfo(),
                   flexibleSpace(),
                 ],
@@ -376,192 +442,5 @@ class _ContractDetailState extends State<ContractDetail> {
         ),
       ),
     );
-  }
-
-  String localPath = '';
-  void downloadContractFile() async {
-    print('CONTRACT ID :: ${contract.id}');
-
-    if (await checkPermission()) {
-      localPath =
-          Platform.isIOS ? (await getLocalPath()) : await getLocalPath();
-
-      final savedDir = Directory(localPath);
-      bool isExisting = await savedDir.exists();
-      print('HAS EXISTED ::: $isExisting');
-      if (!isExisting) {
-        savedDir.create();
-      }
-
-      print('LOCAL PATH :: $localPath');
-
-      if (mounted) {
-        setState(() {
-          isDownloading = true;
-        });
-      }
-
-      Dio dio = Dio();
-
-      String pdfUrl =
-          "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
-
-      var authHeaders = await BusinessAuth().getAuthHeaders();
-
-      // savePath = await getFilePath(fileName);
-
-      Response response = await dio.download(
-        pdfUrl,
-        localPath,
-        options: Options(headers: authHeaders),
-        onReceiveProgress: (rec, total) {},
-      );
-      setState(() {
-        isDownloading = false;
-      });
-
-      if (response.statusCode == 200) {
-        showToast(message: 'Download complete');
-        if (Platform.isIOS) {
-          OpenFile.open(localPath);
-        }
-      } else {
-        showToast(message: 'Something went wrong, please try again');
-      }
-
-      // try {
-      //   Dio dio = Dio();
-      //
-      //   String pdfUrl =
-      //       "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
-      //
-      //   String fileName = 'Contract_${contract.id}.pdf';
-      //
-      //   var authHeaders = await BusinessAuth().getAuthHeaders();
-      //
-      //   savePath = await getFilePath(fileName);
-      //   Response response = await dio.download(
-      //     pdfUrl,
-      //     savePath,
-      //     options: Options(
-      //       headers: authHeaders,
-      //     ),
-      //     onReceiveProgress: (rec, total) {},
-      //   );
-      //   setState(() {
-      //     isDownloading = false;
-      //   });
-      //
-      //   if (response.statusCode == 200) {
-      //     showToast(message: 'Download complete');
-      //     if (Platform.isIOS) {
-      //       OpenFile.open(localPath);
-      //     }
-      //   } else {
-      //     showToast(message: 'Something went wrong, please try again');
-      //   }
-      // }
-      //
-      // catch (e) {
-      //   setState(() {
-      //     isDownloading = false;
-      //   });
-      // showToast(message: 'Something went wrong, please try again');
-
-      // }
-    } else {
-      showSnackbar(context, message: 'Please grant storage permission');
-    }
-  }
-
-  Future<String> getLocalPath() async {
-    String uniqueFileName = 'Contract_${contract.id}.pdf';
-    if (Platform.isAndroid) {
-      String path = '';
-
-      Directory dir = Directory('/storage/emulated/0/Download');
-      // Directory dir = await getApplicationDocumentsDirectory();
-      //
-      path = '${dir.path}/$uniqueFileName';
-
-      return path;
-    } else {
-      var directory = await pathProvider.getApplicationDocumentsDirectory();
-
-      return '${directory.path}/$uniqueFileName';
-    }
-  }
-
-  Future<bool> checkPermission() async {
-    var status = await Permission.storage.status;
-
-    if (status.isGranted) {
-      return true;
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings();
-    } else {
-      Map<Permission, PermissionStatus> permissions =
-          await [Permission.storage].request();
-
-      if (permissions[Permission.storage] == PermissionStatus.granted) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  Future downloadFile(ContractModel contract) async {
-    print('CONTRACT ID :: ${contract.id}');
-    if (mounted) {
-      setState(() {
-        isDownloading = true;
-      });
-    }
-    try {
-      Dio dio = Dio();
-
-      String pdfUrl =
-          "${AppConfig.baseUrl}/api/v1/transactions/payment-contract/download/${contract.id}/?download=true";
-
-      String fileName = 'Contract_${contract.id}.pdf';
-
-      var authHeaders = await BusinessAuth().getAuthHeaders();
-
-      savePath = await getFilePath(fileName);
-      Response response = await dio.download(
-        pdfUrl,
-        savePath,
-        options: Options(
-          headers: authHeaders,
-        ),
-        onReceiveProgress: (rec, total) {},
-      );
-      setState(() {
-        isDownloading = false;
-      });
-      if (response.statusCode == 200) {
-        showToast(message: 'Download complete');
-      } else {
-        showToast(message: 'Something went wrong, please try again');
-      }
-    } catch (e) {
-      setState(() {
-        isDownloading = false;
-      });
-      print(e.toString());
-      showToast(message: 'ERROR ::: ${e.toString()}');
-    }
-  }
-
-  Future<String> getFilePath(uniqueFileName) async {
-    String path = '';
-
-    Directory dir = Directory('/storage/emulated/0/Download');
-    // Directory dir = await getApplicationDocumentsDirectory();
-
-    path = '${dir.path}/$uniqueFileName';
-
-    return path;
   }
 }

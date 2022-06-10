@@ -16,6 +16,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_migration/sqflite_migration.dart';
 
+import '../screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
+
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
 
@@ -796,15 +798,18 @@ class DatabaseHelper {
   }
 
   Future<int> updateSingleChatMessage(ChatMessage chatMessage) async {
+    debugPrint('UPDATE CHAT MESSAGE --->');
     Database dbClient = await db;
     var result = await dbClient.update(
         CHAT_MESSAGE_TABLE, chatMessage.toDBJson(),
         where: "conversation_id = ? AND check_id = ?",
         whereArgs: [chatMessage.conversationId, chatMessage.checkId],
         conflictAlgorithm: ConflictAlgorithm.replace);
+
     if (result == 0) {
       await dbClient.insert("ChatMessage", chatMessage.toDBJson());
     }
+
     return result;
   }
 
@@ -877,6 +882,7 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.ignore);
 
     debugPrint("DATABASE:- Saved Virtual Account !!");
+    debugPrint('SAVE VIR :: $res');
     return res;
   }
 
@@ -970,4 +976,61 @@ class DatabaseHelper {
       return FeeStructure.fromJson(feeStructure.first);
     return null;
   }
+
+  Future<int> saveDocumentFileInChatFromDb(
+      DocumentFileInChatDownloadModel model) async {
+    Database dbClient = await db;
+
+    int res = await dbClient.insert(
+        DOWNLOAD_FILE_IN_CHAT_TABLE, model.toDBJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+
+    debugPrint("DOCUMENT FILE DATABASE:- Save $DOWNLOAD_FILE_IN_CHAT_TABLE !!");
+
+    debugPrint('SAVED FILE TO DB ::: $res');
+    return res;
+  }
+
+  // If file path in os is returned(if it is not null) it means the file exists in db.
+  Future<String?> checkIfFileExistsInDB(
+      {required DocumentFileInChatDownloadModel model}) async {
+    String? filePathInOs;
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> downloadedFileInChatTable = await dbClient.query(
+      DOWNLOAD_FILE_IN_CHAT_TABLE,
+      where: "conversation_id = ? AND check_id = ?",
+      whereArgs: [model.conversationID, model.checkID],
+    );
+
+    if (downloadedFileInChatTable.isEmpty) {
+      filePathInOs = null;
+    } else {
+      filePathInOs = downloadedFileInChatTable[0]['file_path_in_os'];
+    }
+
+    debugPrint('FILE CHECK ID ::: ${model.checkID}');
+    debugPrint('FILE DATA ::: $downloadedFileInChatTable');
+    debugPrint('FILE CONVERSATION ::: ${model.conversationID}');
+    debugPrint('FILE DATA LENGTH ::: ${downloadedFileInChatTable.length}');
+
+    return filePathInOs;
+  }
+
+  Future<int> deleteDocumentFileInChatFromDb(
+      {required DocumentFileInChatDownloadModel model}) async {
+    var dbClient = await db;
+    int res = await dbClient.delete(
+      DOWNLOAD_FILE_IN_CHAT_TABLE,
+      where: "check_id = ? AND conversation_id = ?",
+      whereArgs: [model.checkID, model.conversationID],
+    );
+
+    debugPrint(
+        "DATABASE:- $DOWNLOAD_FILE_IN_CHAT_TABLE ${model.checkID} is Deleted !!");
+
+    return res;
+  }
+
+// Future deleteMessagesFromThirtyDaysAgo() {}
 }

@@ -29,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../../../services/app_config_bloc.dart';
 
 class UserLogin extends StatefulWidget {
   @override
@@ -95,6 +96,7 @@ class _UserLoginState extends State<UserLogin> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+
     return WillPopScope(
       onWillPop: () {
         if (FocusScope.of(context).hasFocus) {
@@ -144,7 +146,7 @@ class _UserLoginState extends State<UserLogin> {
                           flexibleSpace(flex: 1),
                           rememberMeAndForgotPasswordField(),
                           flexibleSpace(flex: 4),
-                          loginBtnField(),
+                          loginBtn(),
                           flexibleSpace(flex: 2),
                         ],
                       ),
@@ -473,7 +475,7 @@ class _UserLoginState extends State<UserLogin> {
     );
   }
 
-  Widget loginBtnField() {
+  Widget loginBtn() {
     return CurvedButton(
       backgroundColor: navyBlue,
       textColor: Colors.white,
@@ -490,11 +492,6 @@ class _UserLoginState extends State<UserLogin> {
         Provider.of<BankAccountBloc>(context, listen: false);
 
     FocusScope.of(context).unfocus();
-
-    // Navigator.of(context).pushNamedAndRemoveUntil(
-    //   "/dashboard",
-    //   (Route<dynamic> route) => false,
-    // );
 
     if (_loginFormKey.currentState!.validate()) {
       showDialog(context: context, builder: (context) => LoadingIndicator());

@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -26,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'data/socket_provider.dart';
 import 'data/state_notifier.dart';
@@ -56,6 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   bool? isUserFound;
   Timer? timer;
+  late AppConfigurationBloc appConfiguration;
 
   @override
   void initState() {
@@ -206,10 +209,23 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
+  // Future initializeAppConfiguration() async {
+  //   debugPrint('APP CONFIGU');
+  //   AppConfigurationService().getAppConfigurations().then((appConfig) {
+  //     if (appConfig != null) {
+  //       appConfiguration.appConfigurationModel = appConfig;
+  //     }
+  //   }).catchError((e) {
+  //     showToast(message: 'Error: ${e.toString()}');
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
+    appConfiguration = Provider.of<AppConfigurationBloc>(context);
+
     return WillPopScope(
       onWillPop: () async => Future.value(false),
       child: hasConnection
@@ -366,6 +382,7 @@ class _SplashScreenState extends State<SplashScreen>
             setState(() {});
 
             await initializeShoppingCart();
+            // await initializeAppConfiguration();
 
             setState(() {});
 

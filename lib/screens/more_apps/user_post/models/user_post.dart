@@ -25,6 +25,8 @@ class UserPost {
     this.video,
     this.title,
     this.likes,
+    this.userLiked,
+    this.userDisLiked,
     this.viewers,
     this.tagLine,
     this.dislikes,
@@ -49,6 +51,8 @@ class UserPost {
     image = json['image'];
     video = json['video'];
     likes = json['likes'];
+    userLiked = json['user_liked'];
+    userDisLiked = json['user_disliked'];
     viewers = json['viewers'];
     tagLine = json['tag_line'];
     dislikes = json['dislikes'];
@@ -77,6 +81,8 @@ class UserPost {
   int? dislikes;
   String? image;
   String? video;
+  bool? userLiked;
+  bool? userDisLiked;
   dynamic viewers;
   String? tagLine;
   bool? enableLike;

@@ -1,0 +1,392 @@
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
+
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../../data/state_notifier.dart';
+import '../../../../../utils/enums.dart';
+import '../models/ChatConversation.dart';
+import 'package:external_path/external_path.dart';
+
+class DocumentFileTileForChat extends StatefulWidget {
+  final Map<String, dynamic> message;
+  final ChatConversation? chatConversation;
+
+  DocumentFileTileForChat({required this.message, this.chatConversation});
+
+  @override
+  State<DocumentFileTileForChat> createState() =>
+      _DocumentFileTileForChatState();
+}
+
+class _DocumentFileTileForChatState extends State<DocumentFileTileForChat> {
+  @override
+  Widget build(BuildContext context) {
+    UserBloc userBloc = Provider.of<UserBloc>(context);
+
+    bool isSend = widget.message["author"] == userBloc.user.userName;
+    String? messageText = widget.message['text'] ?? "";
+    messageText = messageDecoderWithEmoji(messageText);
+
+    return Row(
+      mainAxisAlignment:
+          isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment:
+              isSend ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                isSend ? Container() : Container(width: 20),
+                FileTileForChat(
+                  message: widget.message,
+                  chatConversation: widget.chatConversation!,
+                ),
+                isSend
+                    ? Container(
+                        width: 20,
+                        child: getMessageTick(message: widget.message))
+                    : Container(),
+              ],
+            ),
+            SizedBox(height: 1),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                isSend
+                    ? Container()
+                    : SizedBox(
+                        width: 20,
+                      ),
+                Text(
+                  formatTime(widget.message["created_at"]),
+                  style: TextStyle(
+                      color: darkGrey,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500),
+                ),
+                isSend
+                    ? SizedBox(
+                        width: 20,
+                      )
+                    : Container(),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+Widget getMessageTick({required Map<String, dynamic> message}) {
+  return Icon(
+    message['delivered']
+        ? Icons.check_circle_rounded
+        : Icons.check_circle_outline_outlined,
+    size: 12,
+    color: getMessageTickColor(message: message),
+  );
+}
+
+Color getMessageTickColor({required Map<String, dynamic> message}) {
+  return message['delivered']
+      ? message['read_by_recipient'] ?? false
+          ? navyBlue
+          : darkGrey
+      : darkGrey;
+}
+
+class FileTileForChat extends StatefulWidget {
+  final Map<String, dynamic> message;
+  final ChatConversation chatConversation;
+
+  const FileTileForChat(
+      {Key? key, required this.message, required this.chatConversation})
+      : super(key: key);
+
+  @override
+  State<FileTileForChat> createState() => _FileTileForChatState();
+}
+
+class _FileTileForChatState extends State<FileTileForChat> {
+  late String media;
+  late String checkID;
+  late String fileName;
+  late String? messageText;
+  bool isDownloading = false;
+  bool downloadFailed = false;
+  bool canDownloadFile = true;
+  late String? conversationID;
+  bool isDownloadCompleted = false;
+
+  int downloadProgress = 0;
+  ReceivePort receivePort = ReceivePort();
+  @override
+  void initState() {
+    super.initState();
+
+    media = widget.message['media'];
+    checkID = widget.message['check_id'];
+    messageText = widget.message['text'] ?? "";
+    conversationID = widget.message['conversation_id'];
+    fileName = widget.message['media'].toString().split('/').last;
+
+    IsolateNameServer.registerPortWithName(
+        receivePort.sendPort, 'downloader_send_port');
+
+    receivePort.listen((message) {
+      downloadProgress = message[2];
+      if (downloadProgress != 0) {
+        isDownloading = true;
+        if (mounted) setState(() {});
+
+        if (downloadProgress == 100) {
+          isDownloading = false;
+          isDownloadCompleted = true;
+          if (mounted) setState(() {});
+          showToast(message: 'Downloaded');
+        } else if (downloadProgress == -1) {
+          downloadFailed = true;
+          isDownloading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'File cannot be downloaded at the moment');
+        }
+      }
+
+      debugPrint('DOWNLOAD MESSAGE ::: $message');
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
+    getIfFileIsDownloadable();
+  }
+
+  @pragma(
+      'vm:entry-point') // To avoid tree shaking in release mode for Android.
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port')!;
+    send.send([id, status, progress]);
+  }
+
+  getIfFileIsDownloadable() async {
+    DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+      checkID: checkID,
+      conversationID: conversationID!,
+    );
+    String? filePathInOs =
+        await DatabaseHelper().checkIfFileExistsInDB(model: model);
+
+    debugPrint('file path ::: $filePathInOs');
+
+    if (filePathInOs != null) {
+      bool fileExistsOnFileSystemOS = await doesFileExist(filePathInOs);
+
+      debugPrint('file path exists in os :: $fileExistsOnFileSystemOS');
+
+      if (fileExistsOnFileSystemOS) {
+        canDownloadFile = false;
+      } else {
+        debugPrint('DELETING FILE ::: ${model.checkID}');
+        DatabaseHelper().deleteDocumentFileInChatFromDb(model: model);
+      }
+    }
+
+    debugPrint('CAN DOWNLOAD FILE ::: $canDownloadFile');
+
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    UserBloc userBloc = Provider.of<UserBloc>(context);
+    bool isSend = widget.message["author"] == userBloc.user.userName;
+
+    return Align(
+      alignment: isSend ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width / 1.8,
+          minWidth: MediaQuery.of(context).size.width / 1.8,
+        ),
+        padding: EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: isSend ? navyBlue : Colors.white,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(10),
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            widget.chatConversation.isGroupConversation!
+                ? Padding(
+                    padding: EdgeInsets.only(left: 16),
+                    child: Text(
+                      getAuthorName(
+                          message: widget.message, currentUser: userBloc.user)!,
+                      style: TextStyle(
+                          color: isSend ? Colors.white : navyBlue,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  )
+                : SizedBox.shrink(),
+            ListTile(
+              leading: CircleAvatar(
+                radius: 18,
+                backgroundColor: isSend ? Colors.white : blackFont,
+                child: SvgPicture.asset(
+                  getDocumentFileIcon(
+                    getDocumentFileTypeForChat(media.split('.').last),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              title: Text(
+                truncateFileName(fileName),
+                style: TextStyle(
+                    color: isSend ? Colors.white : blackFont, fontSize: 14),
+              ),
+              trailing: InkWell(
+                onTap: canDownloadFile
+                    ? () async {
+                        _downloadAndSaveFileNameToDb();
+                      }
+                    : null,
+                child: getTrailingIcon(isSend),
+              ),
+            ),
+            messageText != null && messageText!.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      messageText ?? '',
+                      style: TextStyle(
+                          color: isSend ? Colors.white : blackFont,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _downloadAndSaveFileNameToDb() async {
+    PermissionStatus status = await Permission.storage.request();
+
+    var downloadsDirectoryPath =
+        await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
+
+    if (status.isGranted) {
+      setState(() {
+        isDownloading = true;
+      });
+      String formattedFileName =
+          await makeFileName(downloadsDirectoryPath, fileName);
+
+      await FlutterDownloader.enqueue(
+        url: media,
+        fileName: formattedFileName,
+        savedDir: downloadsDirectoryPath,
+      );
+
+      DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+        checkID: checkID,
+        conversationID: conversationID!,
+        filePathInOs: '$downloadsDirectoryPath/$formattedFileName',
+      );
+
+      DatabaseHelper().saveDocumentFileInChatFromDb(model);
+    } else {
+      Permission.storage.request();
+    }
+  }
+
+  getTrailingIcon(bool isSend) {
+    if (isDownloading) {
+      return SizedBox(
+        width: 25,
+        height: 25,
+        child: CircularLoadingIndicator(
+          color: isSend ? Colors.white : blackFont,
+        ),
+      );
+    } else if (isDownloadCompleted) {
+      return Icon(Icons.check, color: isSend ? Colors.white : blackFont);
+    } else if (!canDownloadFile) {
+      return Icon(Icons.check, color: isSend ? Colors.white : blackFont);
+    } else if (downloadFailed) {
+      return SvgPicture.asset('assets/images/file_in_chat_download_icon.svg',
+          color: isSend ? Colors.white : blackFont);
+    }
+    return SvgPicture.asset('assets/images/file_in_chat_download_icon.svg',
+        color: isSend ? Colors.white : blackFont);
+  }
+
+  truncateFileName(String fileName) {
+    String actualFileName = fileName.split('.').first;
+    if (actualFileName.length >= 13) {
+      return '...${fileName.substring(fileName.length - 13)}';
+    }
+    return fileName;
+  }
+}
+
+String getDocumentFileIcon(DocumentFileTypeForChat docsType) {
+  switch (docsType) {
+    case DocumentFileTypeForChat.apk:
+      return 'assets/images/apk_icon.svg';
+    case DocumentFileTypeForChat.pdf:
+      return 'assets/images/pdf_icon.svg';
+    case DocumentFileTypeForChat.txt:
+      return 'assets/images/txt_icon.svg';
+    case DocumentFileTypeForChat.xls:
+      return 'assets/images/xls_icon.svg';
+    case DocumentFileTypeForChat.zip:
+      return 'assets/images/zip_icon.svg';
+    default:
+      return 'assets/images/zip_icon.svg';
+  }
+}
+
+getDocumentFileTypeForChat(String extension) {
+  switch (extension) {
+    case 'pdf':
+      return DocumentFileTypeForChat.pdf;
+    case 'apk':
+      return DocumentFileTypeForChat.apk;
+    case 'xls':
+      return DocumentFileTypeForChat.xls;
+    case 'zip':
+      return DocumentFileTypeForChat.zip;
+    case 'txt':
+      return DocumentFileTypeForChat.txt;
+  }
+}

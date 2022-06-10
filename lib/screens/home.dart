@@ -2,23 +2,21 @@ import 'dart:io';
 
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
+import 'package:workmanager/workmanager.dart';
 
-import '../data/currency.dart';
 import '../routes/route_constants.dart';
-import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
-import 'more_apps/shopping/shopping_auth.dart';
+import '../services/app_config_bloc.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -33,6 +31,8 @@ class _HomeState extends State<Home> {
   late MainSocketProvider socketProvider;
 
   bool hasMessage = true;
+  late AppLocalization appLocalization;
+  late AppConfigurationBloc appConfigurationBloc;
 
   @override
   void initState() {
@@ -63,7 +63,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    appLocalization = AppLocalization.of(context)!;
     socketProvider = Provider.of<MainSocketProvider>(context);
+    appConfigurationBloc = Provider.of<AppConfigurationBloc>(context);
 
     return Scaffold(
       key: _scaffoldHomeKey,
@@ -167,7 +169,10 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           Text(
-            userBloc.user.displayName()!,
+            truncateString(
+              str: userBloc.user.displayName()!,
+              lengthToTruncateAt: 38,
+            ),
             style: TextStyle(
               fontSize: 14,
             ),
@@ -472,40 +477,39 @@ class _HomeState extends State<Home> {
         highlightColor: Colors.transparent,
       ),
       child: InkWell(
-        child: Row(
-          children: <Widget>[
-            SizedBox(
-              height: 50,
-              width: 50,
-              child: Card(
-                elevation: 0,
-                color: navyBlue.withOpacity(0.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  SlydoAppIcon.receive,
-                  size: 20,
-                  color: navyBlue,
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: Card(
+                  elevation: 0,
+                  color: navyBlue.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    SlydoAppIcon.receive,
+                    size: 20,
+                    color: navyBlue,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Text(
-              "Request",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.of(context)
-              .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
-            'isFromProfile': true,
-          });
-        },
-      ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                appLocalization.request,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.of(context)
+                .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
+              'isFromProfile': true,
+            });
+          }),
     );
   }
 
@@ -516,39 +520,38 @@ class _HomeState extends State<Home> {
         highlightColor: Colors.white,
       ),
       child: InkWell(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              height: 50,
-              width: 50,
-              child: Card(
-                elevation: 0,
-                color: naturalGreen.withOpacity(0.1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  SlydoAppIcon.send,
-                  size: 20,
-                  color: naturalGreen,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: Card(
+                  elevation: 0,
+                  color: naturalGreen.withOpacity(0.1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    SlydoAppIcon.send,
+                    size: 20,
+                    color: naturalGreen,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Text(
-              "Send",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-              arguments: <String, bool>{'isFromProfile': true});
-        },
-      ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                appLocalization.send,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+                arguments: <String, bool>{'isFromProfile': true});
+          }),
     );
   }
 
@@ -563,15 +566,15 @@ class _HomeState extends State<Home> {
 
     if (currentTime.hour >= 6 &&
         (currentTime.hour <= 11 && currentTime.minute <= 59)) {
-      return "Good morning,";
+      return "${appLocalization.goodMorning},";
     } else if (currentTime.hour >= 12 &&
         (currentTime.hour <= 16 && currentTime.minute <= 59)) {
-      return "Good afternoon,";
+      return "${appLocalization.goodAfternoon},";
     } else if (currentTime.hour >= 17 &&
         (currentTime.hour <= 19 && currentTime.minute <= 59)) {
-      return "Good evening,";
+      return "${appLocalization.goodEvening},";
     } else {
-      return "Good evening,";
+      return "${appLocalization.goodEvening},";
     }
   }
 }

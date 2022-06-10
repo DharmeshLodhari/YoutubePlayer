@@ -400,31 +400,36 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       width: 44,
       icon: Icon(
         SlydoAppIcon.add_cart,
-        color: navyBlue,
+        color: service!.isAvailable! ? navyBlue : greyBorderColor,
         size: 22,
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (isValidCustomer) {
-          String type = service is Product ? "product" : "service";
-          basketBloc.addItemToCart(item: service, type: type);
-          late var mapData;
-          basketBloc.items.forEach((element) {
-            if (element["item"].subscriptionId == service!.id) {
-              mapData = element;
-              return;
-            }
-          });
-          Map data = {
-            "type": type,
-            "id": mapData["item"].subscriptionId,
-            "qty": mapData["qty"],
-          };
-          debugPrint("Data From Service Page : $data");
-          await _auth.addItemToShoppingCart(data);
+        if (service!.isAvailable!) {
+          if (isValidCustomer) {
+            String type = service is Product ? "product" : "service";
+            basketBloc.addItemToCart(item: service, type: type);
+            late var mapData;
+            basketBloc.items.forEach((element) {
+              if (element["item"].subscriptionId == service!.id) {
+                mapData = element;
+                return;
+              }
+            });
+            Map data = {
+              "type": type,
+              "id": mapData["item"].subscriptionId,
+              "qty": mapData["qty"],
+            };
+            debugPrint("Data From Service Page : $data");
+            await _auth.addItemToShoppingCart(data);
+          } else {
+            showToast(
+                message:
+                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          }
         } else {
-          showToast(
-              message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+          showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
         }
       },
     );
@@ -487,9 +492,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               width: 8,
             ),
             addToCartWidget(),
-            SizedBox(
-              width: 8,
-            ),
+            SizedBox(width: 8),
             _buildPayButtonWidget(),
           ],
         ),
@@ -787,23 +790,28 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ),
             )
           : imgList!.length == 1
-              ? AspectRatio(
-                  aspectRatio: 1.7,
-                  child: Container(
-                    child: Center(
-                        child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) =>
-                            Center(child: CircularLoadingIndicator()),
-                        imageUrl: imgList![0]!,
-                        fit: BoxFit.fill,
-                        height: double.infinity,
-                        width: double.infinity,
-                        errorWidget: productAndServiceBigErrorWidget,
+              ? Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1.7,
+                      child: Container(
+                        child: Center(
+                            child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) =>
+                                Center(child: CircularLoadingIndicator()),
+                            imageUrl: imgList![0]!,
+                            fit: BoxFit.fill,
+                            height: double.infinity,
+                            width: double.infinity,
+                            errorWidget: productAndServiceBigErrorWidget,
+                          ),
+                        )),
                       ),
-                    )),
-                  ),
+                    ),
+                    getOutOfStockTag(),
+                  ],
                 )
               : Column(
                   children: <Widget>[
@@ -824,22 +832,28 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                                 }
                               }),
                           items: imgList!
-                              .map((item) => Container(
-                                    child: Center(
-                                        child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10)),
-                                      child: CachedNetworkImage(
-                                        placeholder: (context, url) => Center(
-                                            child: CircularLoadingIndicator()),
-                                        imageUrl: item!,
-                                        errorWidget:
-                                            productAndServiceBigErrorWidget,
-                                        fit: BoxFit.fill,
-                                        height: double.infinity,
-                                        width: double.infinity,
+                              .map((item) => Stack(
+                                    children: [
+                                      getOutOfStockTag(),
+                                      Container(
+                                        child: Center(
+                                            child: ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
+                                          child: CachedNetworkImage(
+                                            placeholder: (context, url) => Center(
+                                                child:
+                                                    CircularLoadingIndicator()),
+                                            imageUrl: item!,
+                                            errorWidget:
+                                                productAndServiceBigErrorWidget,
+                                            fit: BoxFit.fill,
+                                            height: double.infinity,
+                                            width: double.infinity,
+                                          ),
+                                        )),
                                       ),
-                                    )),
+                                    ],
                                   ))
                               .toList(),
                         ),
@@ -872,6 +886,18 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ],
                 ),
     );
+  }
+
+  Widget getOutOfStockTag() {
+    if (!service!.isAvailable!) {
+      return Positioned(
+        left: 8,
+        top: 8,
+        child: getColoredLabeledWidget(
+            text: AppLocalization.of(context)!.outOfStock, color: starYellow),
+      );
+    }
+    return SizedBox.shrink();
   }
 
   Widget _buildServiceTitleAndPriceWidget() {
@@ -1097,20 +1123,24 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget _buildPayButtonWidget() {
     return Expanded(
       child: CurvedButton(
-        backgroundColor: navyBlue,
+        backgroundColor: service!.isAvailable! ? navyBlue : greyBorderColor,
         textColor: Colors.white,
         text: "PAY NOW",
         onPressed: () async {
-          if (isValidCustomer) {
-            bool result = await showDisclaimerDialogueForGoods(context);
-            if (result) {
-              getRecipient();
-              navigateToSendPayment();
+          if (service!.isAvailable!) {
+            if (isValidCustomer) {
+              bool result = await showDisclaimerDialogueForGoods(context);
+              if (result) {
+                getRecipient();
+                navigateToSendPayment();
+              }
+            } else {
+              showToast(
+                  message:
+                      AppLocalization.of(context)!.youCanNotPurchaseThisItem);
             }
           } else {
-            showToast(
-                message:
-                    AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+            showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
           }
         },
       ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -18,6 +19,7 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/local_notification_service.dart';
@@ -31,17 +33,18 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'locale/app_localization.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final FlutterSecureStorage storage = FlutterSecureStorage();
 
 void callbackDispatcher() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  AppConfig();
-
   // Workmanager().executeTask((task, inputData) {
   //   try {
   //     debugPrint("WorkManager started message synchronization");
@@ -51,19 +54,32 @@ void callbackDispatcher() {
   //   }
   //   return Future.value(true);
   // });
+
+  AppConfig();
+
+  Workmanager().executeTask((task, inputData) async {
+    await AppConfigurationService().getAppConfigurations().then(
+      (value) {
+        debugPrint('APP CONFIGS ::: $value');
+
+        storage.write(
+            key: appConfigurationKey,
+            value: AppConfigurationModel.serialize(value!));
+      },
+    );
+    return Future.value(true);
+  });
 }
 
 void main() async {
-  // Set `enableInDevMode` to true to see reports while in debug mode
-  // This is only to be used for confirming that reports are being
-  // submitted as expected. It is not intended to be used for everyday
-  // development.
-  //Crashlytics.instance.enableInDevMode = true;
+  debugPrint('MAIN RUNNING');
 
-  AppConfig();
   WidgetsFlutterBinding.ensureInitialized();
 
-  // initializeBackgroundService();
+  AppConfig();
+
+  initializeBackgroundService();
+  await FlutterDownloader.initialize();
 
   await LocalNotificationService().init();
 
@@ -100,13 +116,25 @@ void main() async {
   });
 }
 
-void initializeBackgroundService() {
-  AppConfig();
-  // Workmanager().initialize(
-  //   callbackDispatcher, // The top level function, aka callbackDispatcher
-  //   isInDebugMode:
-  //       true, // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-  // );
+void initializeBackgroundService() async {
+  try {
+    await AppConfigurationService().getAppConfigurations().then(
+      (value) async {
+        storage.write(
+            key: appConfigurationKey,
+            value: AppConfigurationModel.serialize(value!));
+      },
+    );
+  } catch (e) {
+    debugPrint('APP CONFIG ERROR :: ${e.toString()}');
+  }
+
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+  debugPrint('BACKGROUND SERVICE RUNNING');
+  Workmanager().registerPeriodicTask(
+    "appConfigPeriodicTask",
+    "appConfigPeriodicTaskName",
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -284,5 +312,8 @@ List<ChangeNotifierProvider> providersList = [
   ),
   ChangeNotifierProvider<CheckoutScreenBloc>.value(
     value: CheckoutScreenBloc(),
+  ),
+  ChangeNotifierProvider<AppConfigurationBloc>.value(
+    value: AppConfigurationBloc(),
   ),
 ];

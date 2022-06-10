@@ -376,6 +376,27 @@ class AppLocalization {
     );
   }
 
+  String get create {
+    return Intl.message(
+      "Create",
+      name: "create",
+    );
+  }
+
+  String get yes {
+    return Intl.message(
+      "Yes",
+      name: "yes",
+    );
+  }
+
+  String get no {
+    return Intl.message(
+      "No",
+      name: "no",
+    );
+  }
+
   //payout
   String get payout {
     return Intl.message(
@@ -632,6 +653,22 @@ class AppLocalization {
     );
   }
 
+  //Subscription
+
+  String get profileUpgradeSuccessful {
+    return Intl.message(
+      "Your profile upgrade was successful.",
+      name: "profileUpgradeSuccessful",
+    );
+  }
+
+  String get businessNameNotAvailable {
+    return Intl.message(
+      "'Business name not available'",
+      name: "businessNameNotAvailable",
+    );
+  }
+
   //TILES
   //bank account
   String get accountBalance {
@@ -719,6 +756,20 @@ class AppLocalization {
     return Intl.message(
       "My Credit/Debit Cards",
       name: "myCreditAndDebitCards",
+    );
+  }
+
+  String get creditCardFeatureNotAvailable {
+    return Intl.message(
+      "Credit card feature not available at the moment",
+      name: "creditCardFeatureNotAvailable",
+    );
+  }
+
+  String get walletFeatureNotAvailable {
+    return Intl.message(
+      "Wallet feature not available at the moment",
+      name: "walletFeatureNotAvailable",
     );
   }
 
@@ -912,6 +963,13 @@ class AppLocalization {
     );
   }
 
+  String get moment {
+    return Intl.message(
+      "Moment",
+      name: "moment",
+    );
+  }
+
   String get moments {
     return Intl.message(
       "Moments",
@@ -998,6 +1056,20 @@ class AppLocalization {
     );
   }
 
+  String get exitApp {
+    return Intl.message(
+      "Exit App",
+      name: "exitApp",
+    );
+  }
+
+  String get youSureYouWantToExitApp {
+    return Intl.message(
+      "Are you sure want to exit the app?",
+      name: "youSureYouWantToExitApp",
+    );
+  }
+
   String get choosePlan {
     return Intl.message(
       "Choose Plan",
@@ -1009,20 +1081,6 @@ class AppLocalization {
     return Intl.message(
       "Are You Sure Want To Exit?",
       name: "areYouSureWantToExit",
-    );
-  }
-
-  String get yes {
-    return Intl.message(
-      "Yes",
-      name: "yes",
-    );
-  }
-
-  String get no {
-    return Intl.message(
-      "No",
-      name: "no",
     );
   }
 
@@ -1205,6 +1263,27 @@ class AppLocalization {
     );
   }
 
+  String get outOfStock {
+    return Intl.message(
+      "Out Of Stock",
+      name: "outOfStock",
+    );
+  }
+
+  String get productOutOfStock {
+    return Intl.message(
+      "Product Out Of Stock",
+      name: "productOutOfStock",
+    );
+  }
+
+  String get serviceOutOfStock {
+    return Intl.message(
+      "Service Out Of Stock",
+      name: "serviceOutOfStock",
+    );
+  }
+
   String get sendMoney {
     return Intl.message(
       "Send Money",
@@ -1244,6 +1323,13 @@ class AppLocalization {
     return Intl.message(
       "Payment Request Rejected !!",
       name: "paymentRequestRejected",
+    );
+  }
+
+  String get paymentRequestCancelled {
+    return Intl.message(
+      "Payment Request Cancelled !!",
+      name: "paymentRequestCancelled",
     );
   }
 
@@ -1324,6 +1410,27 @@ class AppLocalization {
     return Intl.message(
       "Edit Profile",
       name: "editProfile",
+    );
+  }
+
+  String get goodMorning {
+    return Intl.message(
+      "Good Morning",
+      name: "goodMorning",
+    );
+  }
+
+  String get goodAfternoon {
+    return Intl.message(
+      "Good Afternoon",
+      name: "goodAfternoon",
+    );
+  }
+
+  String get goodEvening {
+    return Intl.message(
+      "Good Evening",
+      name: "goodEvening",
     );
   }
 
@@ -2791,6 +2898,13 @@ class AppLocalization {
     return Intl.message(
       "My Contacts/Request",
       name: "myContactsAndRequest",
+    );
+  }
+
+  String get myContacts {
+    return Intl.message(
+      "My Contacts",
+      name: "myContacts",
     );
   }
 

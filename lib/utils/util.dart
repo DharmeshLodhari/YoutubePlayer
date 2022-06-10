@@ -8,16 +8,20 @@ import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:crypto/crypto.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 import '../locale/app_localization.dart';
+import '../screens/more_apps/business/business_auth.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
 import '../screens/more_apps/payment_and_banking/models/transactions.dart';
 import '../widget/LoadingIndicator.dart';
@@ -26,6 +30,7 @@ import 'colors.dart';
 
 export 'colors.dart';
 export 'common.dart';
+import 'package:path_provider/path_provider.dart' as pathProvider;
 
 int amountLimit =
     10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
@@ -402,6 +407,25 @@ Widget customAppBar({required BuildContext context, required String title}) {
   );
 }
 
+Widget getColoredLabeledWidget({required String text, required Color color}) {
+  return Container(
+    margin: EdgeInsets.only(left: 8.0),
+    padding: EdgeInsets.symmetric(horizontal: 6.0),
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(6),
+    ),
+    child: Text(
+      text,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  );
+}
+
 // for having expanded space
 Widget flexibleSpace({int flex = 1}) {
   return Expanded(
@@ -669,6 +693,13 @@ String? validateSlydoName(String userInput) {
   }
 }
 
+String truncateString({required String str, required int lengthToTruncateAt}) {
+  if (str.length <= lengthToTruncateAt) {
+    return str;
+  }
+  return '${str.substring(0, lengthToTruncateAt)}...';
+}
+
 String slydoNameMsg = 'You can not use slydo in name';
 String? checkSlydoName(String name) {
   String? result;
@@ -826,5 +857,97 @@ Color getRatingColor(int? numberOfRating, int i) {
 }
 
 String enumToString(mEnum) {
-  return mEnum.toString().split('.')[1];
+  //UtilitiesProvidersEnum.Electricity
+
+  return mEnum.toString().split('.')[1].replaceAll('_', ' ');
+}
+
+Future<bool> doesFileExist(String filePath) async {
+  return await File(filePath).exists();
+}
+
+// This function helps to add a string at the back of each file name IF that
+// file already exists in the user's file system, so that each file name will
+// be unique.
+Future<String> makeFileName(String path, String fileName) async {
+  bool fileExists = await File('$path/$fileName').exists();
+
+  if (fileExists) {
+    int counter = 1;
+    List newFileExt = fileName.split('.');
+    String ext = newFileExt[1];
+
+    String fName = newFileExt[0];
+
+    String newFileName = '$fName($counter).$ext';
+
+    bool newFileExists = await File('$path/$newFileName').exists();
+
+    while (newFileExists) {
+      List newFileExt = fileName.split('.');
+
+      String ext = newFileExt[1];
+
+      String fName = newFileExt[0];
+
+      /// The regex here is used to get the last occurrence of something like this: (1) (opening and closing bracket with digit(s) inside.
+      RegExp regExp = RegExp(r'\([0-9]+\)$');
+      String? stringMatch = regExp.stringMatch(fName);
+
+      if (stringMatch != null) {
+        fName = fName.replaceAll(regExp, "(${counter + 1})");
+      } else {
+        fName = "$fName($counter)";
+      }
+
+      newFileName = '$fName.$ext';
+
+      newFileExists = await File('$path/$newFileName').exists();
+      counter += 1;
+    }
+
+    return newFileName;
+  }
+
+  return fileName;
+}
+
+Future<String> getLocalPathToSaveDownloads(
+    {required String uniqueFileName}) async {
+  if (Platform.isAndroid) {
+    String path = '';
+
+    // Directory dir = Directory('/storage/emulated/0/Download');
+    // // Directory dir = await getApplicationDocumentsDirectory();
+    // //
+    // path = '${dir.path}/$uniqueFileName';
+
+    path = await ExternalPath.getExternalStoragePublicDirectory(
+        ExternalPath.DIRECTORY_DOWNLOADS);
+
+    return path;
+  } else {
+    var directory = await pathProvider.getApplicationDocumentsDirectory();
+
+    return '${directory.path}/$uniqueFileName';
+  }
+}
+
+Future<bool> checkStoragePermission() async {
+  var status = await Permission.storage.status;
+
+  if (status.isGranted) {
+    return true;
+  } else if (status.isPermanentlyDenied) {
+    openAppSettings();
+  } else {
+    Map<Permission, PermissionStatus> permissions =
+        await [Permission.storage].request();
+
+    if (permissions[Permission.storage] == PermissionStatus.granted) {
+      return true;
+    }
+  }
+
+  return false;
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:Slydo/screens/more_apps/utility/models/bill_payment_model.dart';
-import 'package:Slydo/screens/more_apps/utility/models/provider_details_model.dart';
+import 'package:Slydo/screens/more_apps/utility/models/provider_product_model.dart';
 import 'package:Slydo/screens/more_apps/utility/models/utility_transaction_model.dart';
 
 import 'models/provider_model.dart';
@@ -57,7 +57,7 @@ class UtilityAuth extends AuthService {
     }
   }
 
-  Future<List<ProviderDetailsModel>> getUtilityProviderDetails(
+  Future<List<ProviderProductModel>> getUtilityProviderProduct(
       {required String providerId}) async {
     String url = AppConfig.baseUrl + "/api/v1/utilities/providers/$providerId/";
 
@@ -67,8 +67,8 @@ class UtilityAuth extends AuthService {
 
     if (response.statusCode == 200) {
       List providerProduct = jsonDecode(response.body)['products'];
-      List<ProviderDetailsModel> providerDetailsModelList = providerProduct
-          .map((json) => ProviderDetailsModel.fromJson(json))
+      List<ProviderProductModel> providerDetailsModelList = providerProduct
+          .map((json) => ProviderProductModel.fromJson(json))
           .toList();
       return providerDetailsModelList;
     } else if (response.statusCode == 500) {

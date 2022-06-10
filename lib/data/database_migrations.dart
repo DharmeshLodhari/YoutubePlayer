@@ -11,6 +11,7 @@ const String NOTIFICATION_TABLE = "Notification";
 const String VIRTUAL_ACCOUNT_TABLE = "VirtualAccount";
 const String APP_SETTING_TABLE = "GeneralSettings";
 const String FEE_STRUCTURE = "FeeStructure";
+const String DOWNLOAD_FILE_IN_CHAT_TABLE = "DownloadFileInChatTable";
 
 final initialDBSchema = [
   // Create the user table
@@ -28,6 +29,16 @@ final initialDBSchema = [
       "url"	TEXT,
       "currency"	TEXT);
     ''',
+
+  //Create download file in chat table
+  '''CREATE TABLE $DOWNLOAD_FILE_IN_CHAT_TABLE (
+      "check_id" TEXT,
+      "conversation_id" TEXT,
+      "file_path_in_os" TEXT UNIQUE,
+      UNIQUE(check_id,conversation_id) 
+      );
+    ''',
+
   // Create the jwt table
   '''CREATE TABLE $JWT_TABLE (
       "id"	INTEGER PRIMARY KEY AUTOINCREMENT,

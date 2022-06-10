@@ -658,6 +658,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     var jsonData = json.decode(response.body);
+
     if (response.statusCode == 200) {
       log("DATA=> $jsonData");
       List items = [];
@@ -968,6 +969,7 @@ class ShoppingAuthService extends AuthService {
       List<dynamic> results = jsonData["results"];
 
       List<ProductCategory> categories = [];
+
 
       for (int i = 0; i < results.length; i++) {
         categories.add(ProductCategory(messageDecoderWithEmoji(results[i])!));
