@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class RoundedBackgroundIcon extends StatelessWidget {
+  Key? key;
   Color? backgroundColor;
   Widget? icon;
   Widget? image;
@@ -12,7 +13,8 @@ class RoundedBackgroundIcon extends StatelessWidget {
   double borderRadius;
 
   RoundedBackgroundIcon(
-      {this.backgroundColor,
+      {this.key,
+      this.backgroundColor,
       this.icon,
       this.image,
       this.height = 34,

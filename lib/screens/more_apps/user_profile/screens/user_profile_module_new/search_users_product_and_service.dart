@@ -25,6 +25,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../routes/route_constants.dart';
+
 class SearchUsersProductAndService extends StatefulWidget {
   final arguments;
   SearchUsersProductAndService({required this.arguments});
@@ -1184,7 +1186,7 @@ class _SearchUsersProductAndServiceState
     }
     return [
       SlideActionButton(
-          title: AppLocalization.of(context)!.buy,
+          title: AppLocalization.of(context)!.pay,
           backgroundColor: naturalGreen,
           slideController: slidableController2,
           icon: SlydoAppIcon.cart,
@@ -1193,7 +1195,7 @@ class _SearchUsersProductAndServiceState
                 Provider.of<CustomerProfileBloc>(context, listen: false);
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(service.provider);
-            Navigator.of(context).pushNamed('/send-payment',
+            Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
                 arguments: {'isFromProfile': false, 'service': service});
           }),
     ];

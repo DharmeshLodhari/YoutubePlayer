@@ -55,7 +55,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   final _auth = ShoppingAuthService();
   Product? product;
   late CustomerProfileBloc customerProfileBloc;
-  late UserBloc userBloc;
+  late UserBloc? userBloc;
   late BasketBloc basketBloc;
   List<String?>? imgList = [];
 
@@ -80,6 +80,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   @override
   void initState() {
     product = arguments['product'];
+    userBloc = Provider.of<UserBloc>(context, listen: false);
+
     if (mounted) setState(() {});
     fetchProduct(product!.id.toString());
     _scrollController.addListener(() {
@@ -90,6 +92,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         }
       }
     });
+    canReviewProduct();
+
     fetchReviewList();
     super.initState();
   }
@@ -106,13 +110,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     isReviewLoading = true;
     if (mounted) setState(() {});
 
-    debugPrint('CAN RATE : $canRate');
-
     await ReviewAuth().fetchProductReviews(product: product).then((value) {
       List? tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
-      canRate = value['can_rate'];
 
       reviewList = [];
 
@@ -127,6 +128,25 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       isReviewLoading = false;
       if (mounted) setState(() {});
     });
+  }
+
+  Future canReviewProduct() async {
+    Map<String, String> data = {};
+    data['provider'] = product!.seller!;
+    data['buyer'] = userBloc!.user.userName!;
+    data['type'] = 'products';
+
+    data['id'] = product!.id!;
+
+    debugPrint('product URL :: ${data}');
+
+    ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
+      canRate = value;
+      if (mounted) setState(() {});
+    }).catchError(
+      (error) {},
+    );
+    return true;
   }
 
   void getOtherItems() {
@@ -154,11 +174,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
-    userBloc = Provider.of<UserBloc>(context);
-    isValidCustomer = userBloc.user.userName != product!.seller;
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+
+    isValidCustomer = userBloc?.user.userName != product!.seller;
     return WillPopScope(
       onWillPop: () async {
         customerProfileBloc.customer = null;
@@ -310,7 +331,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       "meta_data": jsonEncode(itemData),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
-      "author": userBloc.user.userName,
+      "author": userBloc?.user.userName,
       "message": url,
       "kind": item is Product ? "product" : "service",
       "created_at": DateTime.now().toUtc().toString(),
@@ -380,7 +401,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
         if (isValidCustomer) {
-          Navigator.of(context).pushNamed('/compose_message', arguments: {
+          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE, arguments: {
             'recipient': product!.seller,
             'subject': product!.name,
           });
@@ -631,7 +652,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Widget _buildWriteReview() {
-    if (product?.seller == userBloc.user.userName) {
+    debugPrint('CAN RATE :: $canRate');
+    if (product?.seller == userBloc?.user.userName) {
       return Container();
     }
 

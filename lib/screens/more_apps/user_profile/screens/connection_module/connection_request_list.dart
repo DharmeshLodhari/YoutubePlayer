@@ -35,11 +35,11 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   String? next = "";
   String? previous = "";
   List connectionRequestList = [];
-  ScrollController _scrollController = new ScrollController();
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
   bool isLoading = false;
   bool noItemInList = false;
+  ScrollController _scrollController = new ScrollController();
 
   @protected
   void initState() {

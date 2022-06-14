@@ -264,15 +264,16 @@ class _ComposeMessageState extends State<ComposeMessage> {
             };
             _messageAuth.sendMessage(data).then((value) {
               if (value) {
-                Navigator.popUntil(
-                    context, ModalRoute.withName(Routes.DASHBOARD));
-                _dashboardBloc.index = 0;
-                Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
-                // Navigator.of(context).pushNamedAndRemoveUntil(
-                //   "/dashboard",
-                //   (Route<dynamic> route) => false,
-                //   arguments: {"dashboardIndex": 4},
-                // );
+                if (widget.arguments == null) {
+                  Navigator.popUntil(
+                      context, ModalRoute.withName(Routes.DASHBOARD));
+                  _dashboardBloc.index = 0;
+                  Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
+                } else {
+                  Navigator.pop(context); // Dismiss the loader.
+                  Navigator.pop(context); // Dismiss the compose message page.
+                  showToast(message: 'Message sent');
+                }
               } else {
                 Navigator.pop(context);
                 var msg = AppLocalization.of(context)!.error;

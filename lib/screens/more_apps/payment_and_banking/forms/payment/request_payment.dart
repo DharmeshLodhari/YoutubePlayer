@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -38,6 +39,8 @@ class RequestPayment extends StatefulWidget {
 }
 
 class _RequestPaymentState extends State<RequestPayment> {
+  bool isConnection = true;
+
   TextEditingController _recipientController = TextEditingController();
   FocusNode _recipientFocus = FocusNode();
 
@@ -62,7 +65,6 @@ class _RequestPaymentState extends State<RequestPayment> {
   double? amount;
   String reference = "";
   String errorMessage = "";
-  String? recipient;
   final locationService = LocationService();
 
   bool showMoreOption = false;
@@ -78,6 +80,7 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   PaymentCategory? selectedPaymentCategory;
   String? paymentCategory;
+  late ConnectionListBloc _connectionListBloc;
 
   @override
   void initState() {
@@ -115,16 +118,25 @@ class _RequestPaymentState extends State<RequestPayment> {
     super.initState();
   }
 
-  void initializeDisplayCard() {
+  void initializeDisplayCard() async {
     if (mounted) {
       if (!isFromProfile!) {
         if (customerProfileBloc.customer != null) {
           if (mounted) {
-            setState(() {
+            bool isAConnection = await DatabaseHelper()
+                .checkUserNameInDB(customerProfileBloc.customer!.userName!);
+
+            if (isAConnection) {
+              isConnection = true;
               _payee = customerProfileBloc.customer;
-              recipient = _payee!.userName;
-              _recipientController.text = recipient!;
-            });
+              _recipientController.text = _payee!.userName!;
+            } else {
+              _payee = null;
+              isConnection = false;
+              _recipientController.text =
+                  customerProfileBloc.customer!.userName!;
+            }
+            if (mounted) setState(() {});
           }
         }
       }
@@ -148,8 +160,9 @@ class _RequestPaymentState extends State<RequestPayment> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
+    _connectionListBloc = Provider.of<ConnectionListBloc>(context);
+    customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -254,35 +267,35 @@ class _RequestPaymentState extends State<RequestPayment> {
                                 padding: EdgeInsets.symmetric(horizontal: 20),
                                 child: Column(
                                   children: [
-                                    SizedBox(
-                                      height: 20,
-                                    ),
+                                    SizedBox(height: 20),
                                     getRecipientField(),
-                                    SizedBox(
-                                      height: 20,
+                                    SizedBox(height: 20),
+                                    Visibility(
+                                      visible: isConnection,
+                                      child: Column(
+                                        children: [
+                                          displayAmountField(),
+                                          SizedBox(height: 20),
+                                          showMoreOption
+                                              ? getMoreOption()
+                                              : Container(),
+                                          getMoreOptionTrigger(),
+                                          errorMessage == ""
+                                              ? Container()
+                                              : Text(
+                                                  errorMessage,
+                                                  style: TextStyle(
+                                                      color: mateRed,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16),
+                                                ),
+                                          errorMessage == ""
+                                              ? Container()
+                                              : SizedBox(height: 20),
+                                        ],
+                                      ),
                                     ),
-                                    displayAmountField(),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    showMoreOption
-                                        ? getMoreOption()
-                                        : Container(),
-                                    getMoreOptionTrigger(),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : Text(
-                                            errorMessage,
-                                            style: TextStyle(
-                                                color: mateRed,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                    errorMessage == ""
-                                        ? Container()
-                                        : SizedBox(
-                                            height: 20,
-                                          ),
                                   ],
                                 ),
                               ),
@@ -456,17 +469,6 @@ class _RequestPaymentState extends State<RequestPayment> {
         }
         return null;
       },
-      // onChanged: (val) {
-      //   if (mounted) {
-      //     setState(() {
-      //       if (!isFromProfile! && _payee != null) {
-      //         recipient = _payee!.userName;
-      //       } else {
-      //         recipient = val.toLowerCase();
-      //       }
-      //     });
-      //   }
-      // },
       onTap: () async {
         CustomerProfile? userFound = await NavigationUtil.push(
           context,
@@ -474,11 +476,21 @@ class _RequestPaymentState extends State<RequestPayment> {
         );
 
         if (userFound != null) {
-          _payee = userFound;
-          _recipientController.text = _payee!.userName!;
-          isValidPayee = _payee!.userName != userBloc.user.userName;
-          print('IS VALID PAYEE :: $isValidPayee');
-          if (mounted) setState(() {});
+          bool isAConnection =
+              await DatabaseHelper().checkUserNameInDB(userFound.userName!);
+
+          if (isAConnection) {
+            _payee = userFound;
+            _recipientController.text = _payee!.userName!;
+            isValidPayee = _payee!.userName != userBloc.user.userName;
+            isConnection = true;
+            if (mounted) setState(() {});
+          } else {
+            isConnection = false;
+            _payee = null;
+            _recipientController.text = userFound.userName!;
+            if (mounted) setState(() {});
+          }
         }
       },
     );
@@ -512,25 +524,6 @@ class _RequestPaymentState extends State<RequestPayment> {
         }
 
         return AppLocalization.of(context)!.invalidAmount;
-      },
-      onTap: () async {
-        // isValidPayee = false;
-        // if (mounted) setState(() {});
-        // if (recipient != null) {
-        //   recipient = recipient!.trim();
-        //
-        //   _recipientController.text = recipient!;
-        //   if (mounted) setState(() {});
-        //   var customerProfile =
-        //       await UserAuth().fetchCustomerProfileWithAuth(recipient);
-        //
-        //   _payee = customerProfile;
-        //   isValidPayee = _payee!.userName != userBloc.user.userName;
-        //
-        //   _recipientController.text = customerProfile.userName!;
-        //
-        //   if (mounted) setState(() {});
-        // }
       },
     );
   }
@@ -719,11 +712,23 @@ class _RequestPaymentState extends State<RequestPayment> {
   }
 
   Widget getSubmitButton() {
-    return CurvedButton(
-      onPressed: onSubmit,
-      backgroundColor: navyBlue,
-      textColor: Colors.white,
-      text: AppLocalization.of(context)!.requestPayment,
+    if (isConnection) {
+      return CurvedButton(
+        onPressed: onSubmit,
+        backgroundColor: navyBlue,
+        textColor: Colors.white,
+        text: AppLocalization.of(context)!.requestPayment,
+      );
+    }
+
+    return Text(
+      'You cannot send payment request to this user because they are not part of your connections list',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 16,
+        color: Colors.red,
+        fontWeight: FontWeight.w400,
+      ),
     );
   }
 
@@ -756,7 +761,7 @@ class _RequestPaymentState extends State<RequestPayment> {
       if (isValidPayee &&
           _formKey.currentState!.validate() &&
           validateDropdown()) {
-        if (userBloc.user.userName != recipient) {
+        if (userBloc.user.userName != _recipientController.text) {
           var userLocation;
           try {
             BottomSheetPassCode(

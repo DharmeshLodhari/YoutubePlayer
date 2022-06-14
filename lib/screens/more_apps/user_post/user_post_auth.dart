@@ -71,6 +71,7 @@ class UserPostAuth extends AuthService {
         "URL GET POST $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
+      debugPrint('AUTHOR NAME ::: ${jsonDecode(response.body)}');
       return UserPost.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 404) {
       return null;

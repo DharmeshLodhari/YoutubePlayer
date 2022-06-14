@@ -82,6 +82,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         service = arguments['service'];
       });
     }
+    userBloc = Provider.of<UserBloc>(context, listen: false);
     fetchService(service!.id.toString());
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -105,6 +106,24 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         });
       }
     });
+  }
+
+  Future canReviewService() async {
+    Map<String, String> data = {};
+    data['provider'] = service!.provider!;
+    data['buyer'] = userBloc.user.userName!;
+    data['type'] = 'services';
+    data['id'] = service!.id!;
+
+    debugPrint('service data :: ${data}');
+
+    ReviewAuth().checkIfCanReviewProductOrService(data).then((value) {
+      canRate = value;
+      if (mounted) setState(() {});
+    }).catchError(
+      (error) {},
+    );
+    return true;
   }
 
   void fetchReviewList() async {
@@ -158,7 +177,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget build(BuildContext context) {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
-    userBloc = Provider.of<UserBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     isValidCustomer = userBloc.user.userName != service!.provider;
     return WillPopScope(

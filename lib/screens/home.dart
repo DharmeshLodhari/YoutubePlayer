@@ -8,6 +8,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,8 @@ import 'package:workmanager/workmanager.dart';
 
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
+import '../utils/navigation_util.dart';
+import '../widget/rounded_background_icon.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -31,6 +34,7 @@ class _HomeState extends State<Home> {
   late MainSocketProvider socketProvider;
 
   bool hasMessage = true;
+  late BasketBloc basketBloc;
   late AppLocalization appLocalization;
   late AppConfigurationBloc appConfigurationBloc;
 
@@ -63,6 +67,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    basketBloc = Provider.of<BasketBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     socketProvider = Provider.of<MainSocketProvider>(context);
     appConfigurationBloc = Provider.of<AppConfigurationBloc>(context);
@@ -289,38 +294,53 @@ class _HomeState extends State<Home> {
   }
 
   Widget _cartBtn() {
-    return Stack(
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
       key: tutorialShoppingCartKey,
-      clipBehavior: Clip.none,
-      children: [
-        Column(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 34,
-                width: 34,
-                child: InkWell(
-                  child: Card(
-                    elevation: 0,
-                    color: lightGrey.withOpacity(0.1),
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(SlydoAppIcon.cart, size: 16),
-                  ),
-                  onTap: () async {
-                    await Navigator.of(context).pushNamed(Routes.SHOPPING_CART);
-
-                    setState(() {});
-                  },
-                ),
-              ),
-            ),
-          ],
+      icon: Badge(
+        badgeColor: naturalGreen,
+        animationType: BadgeAnimationType.slide,
+        badgeContent: getBadgeContent(),
+        padding: basketBloc.items.length == 0
+            ? EdgeInsets.all(0)
+            : EdgeInsets.only(
+                left: getBadgeCount().length == 1 ? 6 : 8,
+                right: 6,
+                top: 4,
+                bottom: 4),
+        position:
+            BadgePosition(end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
+        child: Icon(
+          SlydoAppIcon.cart,
+          size: 16,
         ),
-      ],
+      ),
+      onTap: () {
+        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
+      },
+      backgroundColor: lightGrey.withOpacity(0.1),
+      enableMargin: true,
     );
+  }
+
+  Widget? getBadgeContent() {
+    if (basketBloc.items.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount(),
+      style: TextStyle(
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  String getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.items.forEach((element) {
+      totalItem = totalItem + element['qty'] as int;
+    });
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 
   Widget _displayUserInfo() {

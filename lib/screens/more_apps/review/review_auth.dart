@@ -260,6 +260,25 @@ class ReviewAuth extends AuthService {
     return Future.error("${response.body}");
   }
 
+  Future<bool> checkIfCanReviewProductOrService(
+      Map<String, dynamic> data) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/social/reviews/check-if-user-can-review-product-or-service/";
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    debugPrint('CAN REVIEW URL :: ${_data}');
+
+    var response = await httpPost(url, headers: headers, body: _data);
+    var jsonData = jsonDecode(response.body);
+    debugPrint('CAN REVIEW :: ${response.statusCode}');
+    debugPrint('CAN REVIEW :: ${response.body}');
+    if (response.statusCode == 200 && jsonData['can_review'] == true) {
+      return true;
+    }
+    return Future.error("${response.body}");
+  }
+
   // Fetch Service Reviews
   Future<Map<String, dynamic>> fetchServiceReviews({Service? service}) async {
     var url =

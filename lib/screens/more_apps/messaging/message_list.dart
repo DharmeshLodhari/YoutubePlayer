@@ -163,7 +163,9 @@ class _MessageListState extends State<MessageList> {
           size: 20,
         ),
         onPressed: () {
-          Navigator.of(context).pushNamed(Routes.COMPOSE_MESSAGE);
+          Navigator.of(context).pushNamed(
+            Routes.COMPOSE_MESSAGE,
+          );
         },
       ),
     );

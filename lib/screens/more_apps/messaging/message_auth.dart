@@ -22,6 +22,7 @@ class MessageAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, body: _data, headers: headers);
+
     if (response.statusCode == 201) {
       return true;
     } else {

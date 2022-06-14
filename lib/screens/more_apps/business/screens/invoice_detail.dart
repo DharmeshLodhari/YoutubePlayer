@@ -42,15 +42,12 @@ class InvoiceDetail extends StatefulWidget {
 }
 
 class _InvoiceDetailState extends State<InvoiceDetail> {
-  var arguments;
   late InvoiceModel invoice;
   bool isLoading = false;
   late UserBloc userBloc;
   bool isDownloading = false;
   String savePath = "";
   DateTime invoiceDate = DateTime.now();
-
-  // _InvoiceDetailState({this.arguments});
 
   int downloadProgress = 0;
   ReceivePort receivePort = ReceivePort();
@@ -103,7 +100,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
   void fetchInvoice() async {
     isLoading = true;
     setState(() {});
-    BusinessAuth().getInvoice(arguments["id"].toString()).then((value) {
+    BusinessAuth().getInvoice(widget.arguments["id"].toString()).then((value) {
       invoice = value;
       isLoading = false;
       setState(() {});

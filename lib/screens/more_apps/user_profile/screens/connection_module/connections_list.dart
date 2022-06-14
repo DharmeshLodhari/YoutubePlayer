@@ -26,6 +26,8 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../constant.dart';
+import '../../../../../main.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../user_auth.dart';
 
@@ -58,6 +60,7 @@ class _ConnectionListState extends State<ConnectionList> {
   RefreshBlocForConnectionDashboard? _refreshBloc;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  AppConfigurationModel? appConfigurationModel;
 
   @protected
   void initState() {
@@ -66,6 +69,7 @@ class _ConnectionListState extends State<ConnectionList> {
     setupSearchChatConnection();
 
     super.initState();
+    getAppConfigurationModelFromLocalStorage();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -77,8 +81,14 @@ class _ConnectionListState extends State<ConnectionList> {
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
-
     super.initState();
+  }
+
+  getAppConfigurationModelFromLocalStorage() async {
+    bool con = await storage.containsKey(key: appConfigurationKey);
+
+    String? str = await storage.read(key: appConfigurationKey);
+    appConfigurationModel = AppConfigurationModel.deserialize(str!);
   }
 
   void setupSearchChatConnection() {
@@ -319,7 +329,7 @@ class _ConnectionListState extends State<ConnectionList> {
   /// remove groupChat conversations from the list of connections.
   int getConnectionListItemCount() {
     int itemCount = 0;
-    if (appConfigurationBloc.appConfigurationModel?.enableGroupChat == true) {
+    if (appConfigurationModel?.enableGroupChat == true) {
       _connectionListBloc.connectionUsers
           .removeWhere((element) => element.isGroupConversation!);
       itemCount = _connectionListBloc.connectionUsers.length;
@@ -344,9 +354,7 @@ class _ConnectionListState extends State<ConnectionList> {
                 ChatConversation chatConversation =
                     _connectionListBloc.connectionUsers[index];
 
-                if (appConfigurationBloc
-                        .appConfigurationModel?.enableGroupChat ==
-                    true) {
+                if (appConfigurationModel?.enableGroupChat == true) {
                   if (chatConversation.isGroupConversation!) {
                     return SizedBox.shrink();
                   }

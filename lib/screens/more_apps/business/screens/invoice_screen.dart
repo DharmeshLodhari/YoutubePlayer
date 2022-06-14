@@ -401,6 +401,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   void updateInvoiceStatus(InvoiceModel invoice, String action) {
     if (invoice.status == "Unpaid") {
+      // Current status of the invoice.
       BusinessAuth().markInvoiceAsPaid(invoiceId: invoice.id!).then((value) {
         // invoice.status = action;
         Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
@@ -409,19 +410,20 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       }).catchError((error) {
         showToast(message: "Status not updated");
       });
-    }
-    Map<String, String> data = {"status": action};
+    } else {
+      Map<String, String> data = {"status": action};
 
-    BusinessAuth()
-        .updateInvoice(invoiceId: invoice.id.toString(), data: data)
-        .then((value) {
-      // invoice.status = action;
-      Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
-      Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
-      showToast(message: "Status updated successfully");
-    }).catchError((error) {
-      showToast(message: "Status not updated");
-    });
+      BusinessAuth()
+          .updateInvoice(invoiceId: invoice.id.toString(), data: data)
+          .then((value) {
+        // invoice.status = action;
+        Provider.of<InvoiceBloc>(context, listen: false).isRefreshing = true;
+        Provider.of<InvoiceBloc>(context, listen: false).getInvoiceList();
+        showToast(message: "Status updated successfully");
+      }).catchError((error) {
+        showToast(message: "Status not updated");
+      });
+    }
   }
 
   void handleSlideAnimationChanged(Animation<double>? slideAnimation) {}

@@ -996,11 +996,11 @@ class _SearchModuleState extends State<SearchModule> {
           onTap: () async {
             customerProfileBloc.customer =
                 await UserAuth().fetchCustomerProfile(user.userName);
-            Navigator.of(context).pushNamed(Routes.REQUEST_PAYMENT,
-                arguments: <String, bool>{
-                  'isFromProfile': false,
-                  'isRequest': true
-                });
+            Navigator.of(context)
+                .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
+              'isFromProfile': false,
+              'isRequest': true,
+            });
           },
           title: AppLocalization.of(context)!.request,
           backgroundColor: navyBlue,

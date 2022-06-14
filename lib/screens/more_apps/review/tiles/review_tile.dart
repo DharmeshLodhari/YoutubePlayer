@@ -38,6 +38,7 @@ class _ReviewTileState extends State<ReviewTile> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('REVIEW LIKED :: ${widget.review!.likes}');
     userBloc = Provider.of<UserBloc>(context);
     if (userBloc!.user.userName == widget.review!.authorUsername) {
       isAuthor = true;
@@ -177,7 +178,6 @@ class _ReviewTileState extends State<ReviewTile> {
 
   Widget _buildRateReview() {
     return getRating(numberOfRating: widget.review!.rating);
-
   }
 
   Widget _buildReviewFirstValue() {

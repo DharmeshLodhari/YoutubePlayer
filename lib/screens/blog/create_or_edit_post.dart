@@ -57,7 +57,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
 
   DateTime? datePicked;
   TimeOfDay? timePicked;
-  bool isPublic = false;
+  bool isPublic = true;
   bool isPublished = true;
   bool enableLikes = false;
   dynamic blogBodyTextJson;

@@ -452,6 +452,20 @@ class DatabaseHelper {
     return [];
   }
 
+  Future<bool> checkUserNameInDB(String userName) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> result = await dbClient.query(
+        USER_CONNECTION_TABLE,
+        where: "username = ?",
+        whereArgs: ['$userName'],
+        limit: 1);
+
+    debugPrint('CONNECTION RESULT NAME ::: $userName');
+    debugPrint('CONNECTION RESULT ::: $result');
+    return result.length > 0;
+  }
+
   Future<List<ChatConversation>> getUserConnections() async {
     Database dbClient = await db;
 
@@ -1033,4 +1047,17 @@ class DatabaseHelper {
   }
 
 // Future deleteMessagesFromThirtyDaysAgo() {}
+
+  // updateUserAvatars()async {
+//
+//   await updateContactAvatar();
+//   await updateConversationUserAvatar();
+//
+// }
+//
+// Future updateContactAvatar({required String userName,required String newAvatar}){}
+// Future updateConversationUserAvatar({required String userName,required String newAvatar}){
+//   // update user avatar where recipient  (or author) name == $userName
+//
+// }
 }
