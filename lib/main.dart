@@ -4,6 +4,7 @@ import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/contract_bloc.dart';
@@ -28,6 +29,7 @@ import 'package:Slydo/services/route_provider.dart';
 import 'package:Slydo/services/timer_service.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:camera/camera.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
@@ -35,12 +37,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'locale/app_localization.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+late List<CameraDescription> cameras;
 
 final FlutterSecureStorage storage = FlutterSecureStorage();
 
@@ -75,6 +80,7 @@ void main() async {
   debugPrint('MAIN RUNNING');
 
   WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras();
 
   AppConfig();
 
@@ -130,7 +136,6 @@ void initializeBackgroundService() async {
   }
 
   Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
-  debugPrint('BACKGROUND SERVICE RUNNING');
   Workmanager().registerPeriodicTask(
     "appConfigPeriodicTask",
     "appConfigPeriodicTaskName",
@@ -188,7 +193,7 @@ class _MyAppState extends State<MyApp> {
               const Locale('yo', 'NG'),
               const Locale('zu', 'ZA'),
             ],
-            initialRoute: '/splash',
+            initialRoute: Routes.SPLASH,
             onGenerateRoute: RouteGenerator.generateRoute,
             debugShowCheckedModeBanner: false,
             theme: ThemeData(

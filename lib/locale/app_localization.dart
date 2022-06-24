@@ -998,6 +998,13 @@ class AppLocalization {
     );
   }
 
+  String get previewMoment {
+    return Intl.message(
+      "Preview Moment",
+      name: "previewMoment",
+    );
+  }
+
   //detailed_message
   String get message {
     return Intl.message(

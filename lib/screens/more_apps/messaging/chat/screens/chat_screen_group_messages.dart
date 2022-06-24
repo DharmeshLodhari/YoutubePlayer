@@ -623,7 +623,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   void initializeListener() {
     streamSubscription?.cancel();
     streamSubscription = mainSocketProvider?.socketStream?.listen((event) {
-      determineMessageType(event);
+      determineReceivedChatMessageType(event);
     });
   }
 
@@ -806,8 +806,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
   }
 
-  void determineMessageType(String message) async {
+  void determineReceivedChatMessageType(String message) async {
     Map<String, dynamic> messageData = jsonDecode(message);
+    debugPrint('message type data ::: ${messageData['type']}');
+
+    if (messageData['type'] != "pong") {
+      debugPrint('message type ::: ${messageData}');
+      // debugPrint('(MESSAGE TYPE) ----> $messageData');
+    }
 
     if (mounted) setState(() {});
 
@@ -875,6 +881,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           if (mounted) setState(() {});
         });
 
+        break;
+
+      case "update_user_avatar":
+        debugPrint('UPDATING USER AVATAR ---->');
+        debugPrint('UPDATING USER AVATAR (MESSAGE) ----> $messageData');
+        DatabaseHelper().updateContactAvatar(
+          userName: messageData['username'],
+          newAvatar: messageData['avatar'],
+        );
         break;
 
       case "stop_nudging":
@@ -1874,64 +1889,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
     );
   }
-
-  // Widget moreActionsBtn() {
-  //   return Container(
-  //     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 28),
-  //     child: Column(
-  //       children: [
-  //         Row(
-  //           children: <Widget>[
-  //             assignTitleToAction(text: "Request", child: requestMoneyBtn()),
-  //             flexibleSpace(),
-  //             assignTitleToAction(text: "Send", child: sendMoneyBtn()),
-  //             flexibleSpace(),
-  //             assignTitleToAction(text: "Media", child: addMediaButton()),
-  //             flexibleSpace(),
-  //             assignTitleToAction(text: "Voice", child: addVoiceBtn()),
-  //           ],
-  //         ),
-  //         SizedBox(height: 16),
-  //         Row(
-  //           children: <Widget>[
-  //             assignTitleToAction(
-  //                 text: "Product/ Service",
-  //                 child: searchProductAndServiceBtn()),
-  //
-  //             flexibleSpace(),
-  //             assignTitleToAction(
-  //                 text: "Magic\nEnvelope", child: sendEnvelopeButton()),
-  //             flexibleSpace(),
-  //
-  //             assignTitleToAction(
-  //                 text: "Empty\nEnvelope", child: sendEmptyEnvelopeButton()),
-  //             flexibleSpace(),
-  //             assignTitleToAction(
-  //                 text: "Location\n", child: sendUserLocation()),
-  //           ],
-  //         ),
-  //         SizedBox(height: 16),
-  //         Row(
-  //           children: <Widget>[
-  //             assignTitleToAction(text: "GIF", child: sendGIFButton()),
-  //             flexibleSpace(),
-  //             assignTitleToAction(text: "Sticker", child: sendStickersButton()),
-  //             flexibleSpace(),
-  //             assignTitleToAction(text: "Files", child: sendFilesButton()),
-  //             // flexibleSpace(),
-  //             // Container(
-  //             //   constraints: BoxConstraints(maxWidth: 60),
-  //             // ),
-  //             flexibleSpace(),
-  //             Container(
-  //               constraints: BoxConstraints(maxWidth: 60),
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget assignTitleToAction({required String text, required Widget child}) {
     return Container(
@@ -2945,9 +2902,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               color: navyBlue,
               size: 22,
             ),
-            SizedBox(
-              width: 12,
-            ),
+            SizedBox(width: 12),
           ],
         ),
       ),
@@ -3104,7 +3059,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       case "video":
         finalUI = renderVideoMedia(
             message: messageData, chatConversation: chatConversation);
-
         break;
 
       case "audio":
@@ -3147,7 +3101,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       case "gif_image":
         finalUI = renderGIFImage(
             message: messageData, chatConversation: chatConversation);
-
         break;
 
       case "envelope":
@@ -3379,6 +3332,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
       updateConnectionList(
           messageData: data, conversationId: chatConversation!.conversationId);
+      debugPrint('MESSAGE AUTH --->');
       await sendDataToSocket(data);
     } else {
       showToast(message: "Please check your connection !!");
@@ -4725,4 +4679,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       showToast(message: "Failed to cancel Envelope");
     }
   }
+}
+
+void broadcastUserAvatarUpdate(
+    {required BuildContext context, required String avatar}) async {
+  MainSocketProvider mainSocketProvider =
+      Provider.of<MainSocketProvider>(context, listen: false);
+  UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+  var data = {
+    "kind": "info",
+    "message": avatar,
+    "type": "update_user_avatar",
+    "author": userBloc.user.userName,
+  };
+
+  debugPrint('UPDATE AVATAR DATA ::: $data');
+
+  await mainSocketProvider.add(data);
 }

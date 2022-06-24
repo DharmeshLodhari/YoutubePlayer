@@ -252,6 +252,9 @@ class MainSocketProvider extends ChangeNotifier {
         _isConnected = true;
 
         /// listen every message from the socket
+        // if (message['type'] != "pong") {
+        //
+        // }
         debugPrint(
             "Got Message on main socket:- $message  LastReceive = $_lastReceive");
 

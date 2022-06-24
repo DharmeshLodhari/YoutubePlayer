@@ -489,7 +489,6 @@ class PaymentAndBankingAuth extends AuthService {
       return null;
     }
 
-    debugPrint('NEXT ---> $next');
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/transactions/request-payment/list/";
 
@@ -573,9 +572,13 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   // List users transactions
-  Future<Map<String, dynamic>?> getTransactions(String? next, String? previous,
-      bool? moneyIn, DateTimeRange? dateTimeRange,
-      {String? userName}) async {
+  Future<Map<String, dynamic>?> getTransactions(
+    String? next,
+    String? previous,
+    bool? moneyIn,
+    DateTimeRange? dateTimeRange, {
+    String? userName,
+  }) async {
     var url = "";
     if (next == null) {
       return null;

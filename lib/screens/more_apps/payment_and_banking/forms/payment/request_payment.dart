@@ -52,13 +52,10 @@ class _RequestPaymentState extends State<RequestPayment> {
 
   final _auth = PaymentAndBankingAuth();
   final _formKey = GlobalKey<FormState>();
-  final requestPaymentScaffold = GlobalKey<ScaffoldState>();
   CustomerProfile? _payee;
   late UserBloc userBloc;
   late CustomerProfileBloc customerProfileBloc;
-
   late http.Response response;
-
   bool? isFromProfile = false;
   bool? isFromChat = false;
   bool isValidPayee = false;
@@ -66,21 +63,16 @@ class _RequestPaymentState extends State<RequestPayment> {
   String reference = "";
   String errorMessage = "";
   final locationService = LocationService();
-
   bool showMoreOption = false;
-
   String? conversationId;
-
   //variables for categories
   bool isLoading = true;
-
   List<String?> paymentCategoriesTest = [];
-
   String? selectedCategory;
-
   PaymentCategory? selectedPaymentCategory;
   String? paymentCategory;
   late ConnectionListBloc _connectionListBloc;
+  final requestPaymentScaffold = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {

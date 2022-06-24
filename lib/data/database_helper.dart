@@ -1046,18 +1046,27 @@ class DatabaseHelper {
     return res;
   }
 
-// Future deleteMessagesFromThirtyDaysAgo() {}
+  Future deleteMessagesFromThirtyDaysAgo() async {}
 
-  // updateUserAvatars()async {
-//
-//   await updateContactAvatar();
-//   await updateConversationUserAvatar();
-//
-// }
-//
-// Future updateContactAvatar({required String userName,required String newAvatar}){}
-// Future updateConversationUserAvatar({required String userName,required String newAvatar}){
-//   // update user avatar where recipient  (or author) name == $userName
-//
-// }
+  updateUserAvatars() async {
+    // await updateContactAvatar();
+    // await updateConversationUserAvatar();
+  }
+
+  Future updateContactAvatar(
+      {required String userName, required String newAvatar}) async {
+    // update user avatar where recipient (or author) name == $userName
+
+    var dbClient = await db;
+
+    return await dbClient.update(
+      USER_CONNECTION_TABLE,
+      {"avatar": newAvatar},
+      where: "username = ?",
+      whereArgs: [userName],
+    );
+  }
+
+  Future updateConversationUserAvatar(
+      {required String userName, required String newAvatar}) async {}
 }

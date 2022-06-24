@@ -135,7 +135,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     data['provider'] = product!.seller!;
     data['buyer'] = userBloc!.user.userName!;
     data['type'] = 'products';
-
     data['id'] = product!.id!;
 
     debugPrint('product URL :: ${data}');

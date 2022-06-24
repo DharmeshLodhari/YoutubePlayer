@@ -20,6 +20,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../utils/colors.dart';
+import '../../messaging/chat/screens/chat_screen_group_messages.dart';
 import '../user_auth.dart';
 
 // ignore: must_be_immutable
@@ -550,7 +551,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           if (customerProfile != null) {
             debugPrint("==> ${customerProfile.avatar}");
 
-            userBloc.updateProfileAvatar(customerProfile.avatar);
+            // userBloc.updateProfileAvatar(customerProfile.avatar);
+
+            broadcastUserAvatarUpdate(
+              context: context,
+              avatar: customerProfile.avatar!,
+            );
           }
         } catch (err) {
           isUserAvatarLoading = false;

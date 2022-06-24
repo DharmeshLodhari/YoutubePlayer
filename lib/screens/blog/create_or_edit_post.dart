@@ -35,8 +35,8 @@ class CreateorEditPostScreen extends StatefulWidget {
 
 class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   String? blogId;
-  String? _imageFile;
-  String? _videoFile;
+  String? _imagePath;
+  String? _videoPath;
   bool showMoreOptions = false;
   late FocusNode titleFocusNode;
   bool _userUpdatingPost = false;
@@ -95,12 +95,12 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   initializeUserPostVariables() {
-    isImagePicked = _imageFile != null;
-    _imageFile = widget.userPost!.image;
-    _videoFile = widget.userPost!.video;
+    isImagePicked = _imagePath != null;
+    _imagePath = widget.userPost!.image;
+    _videoPath = widget.userPost!.video;
 
-    if (_videoFile != null) {
-      _mainVideoController = VideoPlayerController.network(_videoFile!);
+    if (_videoPath != null) {
+      _mainVideoController = VideoPlayerController.network(_videoPath!);
 
       videoFromServerChewieMainController = ChewieController(
         videoPlayerController: _mainVideoController!,
@@ -207,7 +207,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
             Visibility(
                 visible: headerMediaIsVisible,
                 child:
-                    _videoFile != null ? getHeaderVideo() : getHeaderImage()),
+                    _videoPath != null ? getHeaderVideo() : getHeaderImage()),
             CustomizedTextFormField(
               hintText: 'Title',
               hasBorder: false,
@@ -244,7 +244,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                           ),
                         ),
                       ),
-                      _imageFile != null
+                      _imagePath != null
                           ? InkWell(
                               onTap: () {
                                 _pickBlogImage();
@@ -260,7 +260,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                               ),
                             )
                           : SizedBox.shrink(),
-                      _videoFile != null
+                      _videoPath != null
                           ? InkWell(
                               onTap: () {
                                 _pickBlogVideo();
@@ -442,11 +442,11 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   File? getVideoFileToUpload() {
-    if (_videoFile != null) {
-      if (_videoFile!.startsWith('http')) {
+    if (_videoPath != null) {
+      if (_videoPath!.startsWith('http')) {
         return null;
       } else {
-        return File(_videoFile!);
+        return File(_videoPath!);
       }
     } else {
       return null;
@@ -454,11 +454,11 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   File? getImageFileToUpload() {
-    if (_imageFile != null) {
-      if (_imageFile!.startsWith('http')) {
+    if (_imagePath != null) {
+      if (_imagePath!.startsWith('http')) {
         return null;
       } else {
-        return File(_imageFile!);
+        return File(_imagePath!);
       }
     } else {
       return null;
@@ -543,7 +543,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
     } else {
       if (croppedImage != null) {
         setState(() {
-          _imageFile = croppedImage;
+          _imagePath = croppedImage;
           isImagePicked = true;
         });
       }
@@ -558,21 +558,21 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
     } else {
       if (videoPath != null) {
         setState(() {
-          _videoFile = videoPath;
+          _videoPath = videoPath;
         });
       }
     }
   }
 
   Widget getHeaderImage() {
-    if (_imageFile != null) {
+    if (_imagePath != null) {
       return Stack(
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: _imageFile!.startsWith('http')
+              child: _imagePath!.startsWith('http')
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: CachedNetworkImage(
@@ -583,7 +583,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                       ),
                     )
                   : Image.file(
-                      File(_imageFile!),
+                      File(_imagePath!),
                       width: 200,
                       height: 200,
                       fit: BoxFit.cover,
@@ -629,17 +629,17 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   bool showSubmitButton() {
-    return _imageFile != null &&
+    return _imagePath != null &&
         blogTitleCtrl.text.isNotEmpty &&
         _quillBodyTextController.document.toPlainText().length > 10;
   }
 
   Widget getHeaderVideo() {
-    bool videoFromServer = _videoFile!.startsWith('http');
+    bool videoFromServer = _videoPath!.startsWith('http');
 
-    if (_videoFile != null) {
+    if (_videoPath != null) {
       if (!videoFromServer) {
-        var mainVideoController = VideoPlayerController.file(File(_videoFile!));
+        var mainVideoController = VideoPlayerController.file(File(_videoPath!));
 
         pickedVideoChewieMainController = ChewieController(
           videoPlayerController: mainVideoController,
@@ -667,7 +667,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
           borderRadius: BorderRadius.circular(12),
           child: Chewie(
             titleName: videoFromServer ? widget.userPost!.title : '',
-            posterUrl: videoFromServer ? widget.userPost!.image : _imageFile,
+            posterUrl: videoFromServer ? widget.userPost!.image : _imagePath,
             controller: videoFromServer
                 ? videoFromServerChewieMainController!
                 : pickedVideoChewieMainController!,
@@ -697,7 +697,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                 } else {
                   pickedVideoChewieMainController?.pause();
                 }
-                setState(() => _videoFile = null);
+                setState(() => _videoPath = null);
               },
             );
           },
@@ -884,22 +884,11 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                 focusNode: textFieldTagFocusNode,
                 child: TextFieldTags(
                   initialTags: userTags,
-                  tagsStyler: TagsStyler(
-                    tagDecoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color: HexColor("#F7F7F9"),
-                    ),
-                    tagTextStyle: TextStyle(
-                        color: darkGrey,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400),
-                    tagCancelIconPadding: EdgeInsets.only(left: 12),
-                    tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
-                  ),
+                  tagsStyler: textFieldTagStyler,
                   validator: (value) {
                     return null;
                   },
-                  textFieldStyler: TextFieldStyler(helperText: ''),
+                  textFieldStyler: textFieldStyler,
                   onTag: (tag) {
                     setState(() {
                       userTags.add(tag);

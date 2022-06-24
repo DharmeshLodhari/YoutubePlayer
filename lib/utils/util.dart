@@ -18,7 +18,9 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../locale/app_localization.dart';
 import '../screens/more_apps/business/business_auth.dart';
@@ -77,8 +79,6 @@ Future<String?> getFile(BuildContext context,
           await ImagePicker().pickImage(source: fileSource, imageQuality: 70);
 
       if (file != null) {
-        print('IOS PICKED IMAGE :::: $file');
-
         /// for cropping the image
         croppedImage = await ImageCrop().cropImage(file.path);
         if (croppedImage == null) {
@@ -183,6 +183,33 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       fit: BoxFit.cover,
       filterQuality: FilterQuality.high,
     );
+
+Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
+  final imageInUnit8List = await VideoThumbnail.thumbnailData(
+    video: videoPath,
+    quality: 85,
+  );
+
+  if (imageInUnit8List != null) {
+    final tempDir = await getTemporaryDirectory();
+    File file = await File('${tempDir.path}/image.png').create();
+    file.writeAsBytesSync(imageInUnit8List);
+    return file.path;
+  }
+  return null;
+}
+
+TagsStyler textFieldTagStyler = TagsStyler(
+  tagDecoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(4),
+    color: HexColor("#F7F7F9"),
+  ),
+  tagTextStyle:
+      TextStyle(color: darkGrey, fontSize: 14, fontWeight: FontWeight.w400),
+  tagCancelIconPadding: EdgeInsets.only(left: 12),
+  tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
+);
+TextFieldStyler textFieldStyler = TextFieldStyler(helperText: '');
 
 Widget productAndServiceErrorWidget(
         BuildContext context, String url, dynamic error) =>

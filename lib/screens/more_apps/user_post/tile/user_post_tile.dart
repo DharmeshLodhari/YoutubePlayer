@@ -50,8 +50,6 @@ class _PostTileState extends State<PostTile> {
   void initState() {
     super.initState();
 
-    debugPrint('USER LIKED ::: ${widget.post?.userLiked}');
-    debugPrint('USER Dis LIKED ::: ${widget.post?.userDisLiked}');
     if (widget.post?.video != null) {
       _mainVideoController = VideoPlayerController.network(widget.post!.video!);
 

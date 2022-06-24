@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/moments/moments_model.dart';
+import 'package:Slydo/screens/moments/models/create_moment_model.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -29,11 +30,11 @@ class MomentsService extends AuthService {
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
-      List<MomentsModel> momentsList = [];
+      List<ExploreMomentsModel> momentsList = [];
       List jsonResult = jsonData['results'];
 
       jsonResult.forEach((json) {
-        momentsList.add(MomentsModel.fromJson(json));
+        momentsList.add(ExploreMomentsModel.fromJson(json));
       });
 
       Map<String, dynamic> result = {
@@ -71,13 +72,15 @@ class MomentsService extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
-      debugPrint('GET CONTRACT LIST :::: $jsonData');
+      debugPrint('GET CONTACT LIST :::: $jsonData');
 
-      List<UserMomentsModel> momentsList = [];
+      List<MomentsModel> momentsList = [];
       List jsonResult = jsonData['results'];
 
+      debugPrint('MOMENT LIS -> $jsonResult');
+
       jsonResult.forEach((json) {
-        momentsList.add(UserMomentsModel.fromJson(json));
+        momentsList.add(MomentsModel.fromJson(json));
       });
 
       Map<String, dynamic> result = {
@@ -87,31 +90,77 @@ class MomentsService extends AuthService {
         "results": momentsList
       };
 
+      momentsList.forEach((element) {
+        debugPrint('M MEDIA POSTER -> ${element.mediaPoster}');
+      });
+
       return result;
     } else {
       return Future.error(response.body);
     }
   }
 
-  Future<List<MomentsModel>> getMomentsWithUserName(
-      {required String userName}) async {
-    String url = AppConfig.baseUrl + "/api/v1/social/moments/user/$userName/";
+  Future<List<MomentsModel>> getMomentsWithOwnerName(
+      {required String owner}) async {
+    String url = AppConfig.baseUrl + "/api/v1/social/moments/user/$owner/";
 
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);
 
-    debugPrint('USER MOMENTS :: $url');
-    debugPrint('USER MOMENTS :: ${response.body}');
-    debugPrint('USER MOMENTS :: ${response.statusCode}');
-
+    debugPrint('MY MOMENTS ::: ${response.body}');
     if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
+      List jsonData = jsonDecode(response.body)['moments'];
 
-      UserMomentsModel userMomentsModel = UserMomentsModel.fromJson(jsonData);
-      return userMomentsModel.moments!;
+      return jsonData.map((e) => MomentsModel.fromJson(e)).toList();
     } else {
       return Future.error(response.body);
+    }
+  }
+
+  Future<bool> createMoment(
+      {required CreateMomentModel createMomentModel}) async {
+    String url = AppConfig.baseUrl + "/api/v1/social/moments/";
+
+    final headers = await getAuthHeaders();
+
+    var request = MultipartRequest("POST", Uri.parse(url));
+
+    MultipartFile mediaMultipartFile =
+        await MultipartFile.fromPath("media", createMomentModel.filePath);
+
+    request.files.add(mediaMultipartFile);
+
+    request.fields["text"] = createMomentModel.text;
+    request.fields["isPublic"] = jsonEncode(createMomentModel.isPublic);
+
+    request.fields["tags"] = jsonEncode(createMomentModel.userTags);
+
+    if (createMomentModel.mediaPoster != null) {
+      MultipartFile thumbnailMultipartFile = await MultipartFile.fromPath(
+          "media_poster", createMomentModel.mediaPoster!);
+      request.files.add(thumbnailMultipartFile);
+    }
+
+    debugPrint('FIELDS ::: ${request.fields}');
+    headers.forEach((k, v) => request.headers[k] = v);
+
+    var response = await request.send();
+
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller video, This video is too large.");
+    }
+
+    var responseBody = await response.stream.bytesToString();
+    debugPrint(
+        "URL FOR CREATE MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return true;
+    } else {
+      return Future.error(
+          "ERROR while calling moment $url StatusCode:- ${response.statusCode} Body:- $responseBody");
     }
   }
 }
