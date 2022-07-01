@@ -434,7 +434,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PROFILE,
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
                         arguments: {"searchedUserName": _payee!.userName});
                   },
                 ),

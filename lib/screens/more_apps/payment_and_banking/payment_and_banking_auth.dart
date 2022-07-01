@@ -671,9 +671,11 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
-    debugPrint('MAKE ORDER ::: ${response.body}');
+    debugPrint('MAKE PAYMENT ::: ${response.body}');
     return response;
   }
+
+
 
   //Send payout to backend
   Future<http.Response> accountPayout(Map data) async {

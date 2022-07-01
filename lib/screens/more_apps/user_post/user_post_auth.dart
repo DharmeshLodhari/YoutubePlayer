@@ -12,7 +12,7 @@ import '../../../utils/util.dart';
 class UserPostAuth extends AuthService {
   // Fetch User Posts Details
   Future<Map<String, dynamic>?> listUserPosts(
-      {String? next, String? userName}) async {
+      {String? next = "", required String? userName}) async {
     var url = "";
     if (next == null) {
       return null;

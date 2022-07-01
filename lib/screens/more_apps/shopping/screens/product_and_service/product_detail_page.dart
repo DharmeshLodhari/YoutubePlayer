@@ -114,11 +114,16 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       List? tempList =
           value.containsKey('results') ? value['results'] as List : [];
       value.containsKey('count') ? reviewCount = value["count"] : 0;
+      debugPrint('RESULTS :: ${value['results']}');
 
       reviewList = [];
 
       tempList.forEach((element) {
         reviewList.add(Review.fromJson(element));
+      });
+
+      reviewList.forEach((element) {
+        debugPrint('LIKES :: ${element.likes}');
       });
 
       isReviewLoading = false;
@@ -558,13 +563,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     height: 10,
                   ),
                   _buildSellerInfoWidget(),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  SizedBox(height: 10),
                   _buildReviewList(),
-                  SizedBox(
-                    height: 16,
-                  ),
+                  SizedBox(height: 16),
                   _buildWriteReview(),
                 ],
               ),
@@ -630,9 +631,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   ),
                 ],
               ),
-              SizedBox(
-                height: 12,
-              ),
+              SizedBox(height: 12),
               Column(
                 children: reviewList
                     .map(
@@ -688,9 +687,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ),
           ),
         ),
-        SizedBox(
-          height: 16,
-        ),
+        SizedBox(height: 16),
       ],
     );
   }

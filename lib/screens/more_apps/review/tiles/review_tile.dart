@@ -129,9 +129,7 @@ class _ReviewTileState extends State<ReviewTile> {
               _buildReviewDate(),
             ],
           ),
-          SizedBox(
-            height: 8,
-          ),
+          SizedBox(height: 8),
           _buildRateReview(),
           SizedBox(height: 6),
           _buildReviewFirstValue(),
@@ -146,9 +144,7 @@ class _ReviewTileState extends State<ReviewTile> {
   Widget getLikeUnlikeReportTile() {
     return Column(
       children: [
-        SizedBox(
-          height: 10,
-        ),
+        SizedBox(height: 10),
         _buildLikeUnLikeReportTile(),
       ],
     );
@@ -196,21 +192,20 @@ class _ReviewTileState extends State<ReviewTile> {
   Widget _buildLikeUnLikeReportTile() {
     return Row(
       children: [
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildReviewLike(),
-              SizedBox(
-                width: 12,
-              ),
-              _buildReviewUnLike(),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildReviewLike(),
+            SizedBox(
+              width: 12,
+            ),
+            _buildReviewUnLike(),
+          ],
         ),
 
-        Expanded(child: Container())
-        // _buildReviewReport(),
+        // Expanded(child: Container())
+        SizedBox(width: 10),
+        _buildReviewReport(),
       ],
     );
   }
@@ -235,11 +230,11 @@ class _ReviewTileState extends State<ReviewTile> {
               Icons.thumb_up_alt_outlined,
               size: 16,
             ),
-            SizedBox(
-              width: 4,
-            ),
+            SizedBox(width: 4),
             Text(
-              widget.review?.likes.toString() ?? "",
+              widget.review?.likes == null
+                  ? "0"
+                  : widget.review!.likes.toString(),
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.bold,
@@ -296,7 +291,9 @@ class _ReviewTileState extends State<ReviewTile> {
               width: 4,
             ),
             Text(
-              widget.review?.dislikes.toString() ?? "",
+              widget.review?.dislikes == null
+                  ? "0"
+                  : widget.review!.dislikes.toString(),
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.bold,

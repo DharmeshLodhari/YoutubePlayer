@@ -317,7 +317,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.PROFILE:
+      case Routes.USER_PROFILE:
         return PageTransition(
           child: UserProfileScreen(arguments: settings.arguments),
           type: PageTransitionType.bottomToTop,
@@ -560,7 +560,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Chat
+      /// Chat
 
       case Routes.CHAT_SCREEN:
         return PageTransition(
@@ -652,7 +652,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Video Recorder
+      /// Video Recorder
 
       case Routes.VIDEO_RECORDER:
         return PageTransition(
@@ -662,7 +662,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// TopUp
+      /// TopUp
 
       case Routes.CREDIT_CARD_LIST:
         return PageTransition(
@@ -695,13 +695,13 @@ class RouteGenerator {
           settings: settings,
         );
 
-    // case '/user-kyc':
-    //   return PageTransition(
-    //     child: UserKyc(),
-    //     type: PageTransitionType.bottomToTop,
-    //     curve: Curves.ease,
-    //     settings: settings,
-    //   );
+      // case '/user-kyc':
+      //   return PageTransition(
+      //     child: UserKyc(),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
 
       case Routes.ADD_MONEY_TO_SLYDO_ONE:
         return PageTransition(
@@ -728,7 +728,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Contracts & Invoice
+      /// Contracts & Invoice
       case Routes.CONTRACT_SCREEN:
         return PageTransition(
           child: ContractScreen(),
@@ -815,7 +815,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    ///    Utility Route     ///
+      ///    Utility Route     ///
 
       case Routes.UTILITY_DASHBOARD:
         return PageTransition(
@@ -876,7 +876,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    ///    More Apps Route     ///
+      ///    More Apps Route     ///
 
       case Routes.MORE_APPS:
         return PageTransition(
@@ -886,7 +886,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Movie Route
+      /// Movie Route
 
       case Routes.TAXI:
         return PageTransition(
@@ -984,7 +984,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Movie Route
+      /// Movie Route
 
       case Routes.MOVIES:
         return PageTransition(
@@ -1018,7 +1018,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Music
+      /// Music
 
       case Routes.MUSICS:
         return PageTransition(
@@ -1064,7 +1064,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Event Route
+      /// Event Route
 
       case Routes.EVENTS:
         return PageTransition(
@@ -1106,7 +1106,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Hotel Route
+      /// Hotel Route
 
       case Routes.HOTELS:
         return PageTransition(
@@ -1156,7 +1156,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Property Route
+      /// Property Route
 
       case Routes.PROPERTY:
         return PageTransition(
@@ -1205,7 +1205,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// News
+      /// News
 
       case Routes.NEWS:
         return PageTransition(
@@ -1223,7 +1223,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Bus
+      /// Bus
 
       case Routes.BUS:
         return PageTransition(
@@ -1249,7 +1249,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Train
+      /// Train
 
       case Routes.TRAIN:
         return PageTransition(
@@ -1267,7 +1267,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Flight
+      /// Flight
 
       case Routes.FLIGHT:
         return PageTransition(
@@ -1285,7 +1285,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Shopping
+      /// Shopping
 
       case Routes.SHOPPING:
         return PageTransition(
@@ -1311,7 +1311,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Review
+      /// Review
 
       case Routes.REVIEWS:
         return PageTransition(
@@ -1337,13 +1337,13 @@ class RouteGenerator {
           settings: settings,
         );
 
-    // case "/nfc-reader":
-    //   return PageTransition(
-    //     child: NfcWriter(),
-    //     type: PageTransitionType.bottomToTop,
-    //     curve: Curves.ease,
-    //     settings: settings,
-    //   );
+      // case "/nfc-reader":
+      //   return PageTransition(
+      //     child: NfcWriter(),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
 
       case Routes.GENERAL_SETTING:
         return PageTransition(
@@ -1370,13 +1370,13 @@ class RouteGenerator {
           settings: settings,
         );
 
-    // case "/add-review":
-    //   return PageTransition(
-    //     child: AddReview(),
-    //     type: PageTransitionType.bottomToTop,
-    //     curve: Curves.ease,
-    //     settings: settings,
-    //   );
+      // case "/add-review":
+      //   return PageTransition(
+      //     child: AddReview(),
+      //     type: PageTransitionType.bottomToTop,
+      //     curve: Curves.ease,
+      //     settings: settings,
+      //   );
 
       case Routes.REVIEW_LIST_SCREEN:
         return PageTransition(
@@ -1415,7 +1415,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-    /// Custom Services
+      /// Custom Services
       case Routes.WEB_VIEW:
         return PageTransition(
           child: CustomWebView(webUrl: settings.arguments as String),
@@ -1425,7 +1425,7 @@ class RouteGenerator {
         );
 
       default:
-      // If there is no such named route in the switch statement, e.g. /third
+        // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
     }
   }
@@ -1443,4 +1443,3 @@ class RouteGenerator {
     });
   }
 }
-

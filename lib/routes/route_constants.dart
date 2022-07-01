@@ -22,7 +22,7 @@ class Routes {
   static const String SEND_PAYMENT = "/send-payment";
   static const String REQUEST_PAYMENT = "/request-payment";
   static const String EXPLORE = "/explore";
-  static const String PROFILE = "/profile";
+  static const String USER_PROFILE = "/profile";
   static const String CREATE_BLOG = "/create-blog";
   static const String CHOOSE_SUBSCRIPTIONS = "/choose-subscriptions";
   static const String USER_PRODUCT_AND_SERVICE_SEARCH =

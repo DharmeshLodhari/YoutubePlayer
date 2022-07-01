@@ -1,7 +1,6 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/bus/models/Transport.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

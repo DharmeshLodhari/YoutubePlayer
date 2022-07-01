@@ -163,7 +163,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
             leading: avatarImage,
             // trailing: qrCodeImage,
             onTap: () {
-              Navigator.pushNamed(context, Routes.PROFILE,
+              Navigator.pushNamed(context, Routes.USER_PROFILE,
                   arguments: {"searchedUserName": chatConversation!.userName});
             },
           ),

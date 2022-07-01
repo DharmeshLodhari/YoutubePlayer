@@ -118,37 +118,69 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
         context: context,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
-    Map data = {'note': 'place'};
+    Map data = {'note': 'places'};
     data['address'] = widget.address.toJson();
     data['shipping_options'] = basketBloc.userSelectedShippingOption;
+
+    List<OrderDataModel> orderDataModelList = [];
+    basketBloc.merchantNameMap.values.forEach((merchantName) {
+      OrderDataModel orderDataModel = OrderDataModel(
+        merchantName: merchantName,
+        address: widget.address.toJson(),
+        shippingNote: widget.address.shippingNote,
+        shippingOption: basketBloc.userSelectedShippingOption[merchantName],
+      );
+
+      orderDataModelList.add(orderDataModel);
+    });
+
+    debugPrint('ORDER DATA LIST ---> $orderDataModelList');
+    orderDataModelList.forEach((element) {
+      debugPrint('ORDER LIST ---> ${element.toJson()}');
+    });
 
     bool ableToPay = await checkAccountBalance();
     //
     // Create the orders
     if (ableToPay) {
-      var userOrder =
+      var userOrders =
           await ShoppingAuthService().placeOrderOfShoppingCart(data);
 
-      if (userOrder != null) {
+      debugPrint('');
+      if (userOrders != null) {
         basketBloc.items.clear(); // Shopping cart
         basketBloc.total = 0; // clearing the total amount
 
         // Send the list of of orders for payment processing
-        for (int i = 0; i < userOrder.length; i++) {
-          orders.add(userOrder[i]["id"]);
+        for (int i = 0; i < userOrders.length; i++) {
+          orders.add(userOrders[i]["id"]);
         }
         var response = await _auth.makePaymentForCartOrder({"orders": orders});
 
-        debugPrint('STATUS COde :: ${response.statusCode}');
-        Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+        debugPrint('STATUS CODE :: ${response.statusCode}');
         if (response.statusCode == 200) {
+          // userOrders.forEach((userOrder) {
+          //   _auth.createReviewableRecord(
+          //     data: {
+          //       'provider': userOrder['merchant'],
+          //       'buyer':
+          //           Provider.of<UserBloc>(context, listen: false).user.userName,
+          //       'type':
+          //           userOrder['type'].toString().toLowerCase().startsWith('p')
+          //               ? 'products'
+          //               : 'services',
+          //       'id': userOrder['id'],
+          //     },
+          //   );
+          // });
+
+          Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
           Navigator.pushNamed(context, Routes.ORDERS_LIST);
+          showToast(message: 'Order placed successfully');
         } else if (response.statusCode == 500) {
           showToast(message: AppLocalization.of(context)!.serverError);
         } else {
-          debugPrint(
-            "MakePaymentForCartOrder Unsuccessful",
-          );
+          debugPrint("MakePaymentForCartOrder Unsuccessful");
         }
       } else {
         debugPrint(
@@ -273,5 +305,36 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
       }
       return true;
     }
+  }
+}
+
+// [
+// {"black": {"addrress": {"address_line": ""}, "shipping-option":5, "note": "the note"},
+// {"cameraman": {"addrress": {"address_line": ""}, "shipping-option":1, "note": "A note"},
+// {"tamara": {"addrress": {"address_line": ""}, "shipping-option":2, "note": "My note"},
+// ]
+
+// {black: {address: {city: Lagos, state: Lagos, country: Nigeria, shipping_note: Just in note, address_line_1: No 2, Adebowale close, Akute, address_line_2: Omole estate, Berger, country_iso_code: NG}, shipping-option: null, note: Just in note}}
+class OrderDataModel {
+  String merchantName;
+  Map<String, dynamic> address;
+  int? shippingOption;
+  String? shippingNote;
+
+  OrderDataModel({
+    required this.merchantName,
+    required this.address,
+    required this.shippingOption,
+    required this.shippingNote,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      merchantName: {
+        "address": address,
+        "shipping-option": shippingOption,
+        "note": shippingNote,
+      }
+    };
   }
 }

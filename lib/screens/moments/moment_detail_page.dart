@@ -7,7 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 
+import '../../utils/navigation_util.dart';
+import '../../utils/util.dart';
+import 'create_moment_screen.dart';
 import 'models/moments_model.dart';
+import 'moments_service.dart';
 import 'widgets/custom_button.dart';
 
 List<String> videos2 = [
@@ -104,34 +108,41 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                             Navigator.pop(context);
                           },
                           icon: CircleAvatar(
-                            backgroundColor: Colors.grey,
+                            backgroundColor: navyBlue,
                             child: const Icon(
                               Icons.arrow_back,
                               color: Colors.white,
                             ),
                           ),
                         ),
-                        CircleAvatar(
-                          child: Text(
-                            '$currentSingleMomentListPosition',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+
+                        // CircleAvatar(
+                        //   child: Text(
+                        //     '$currentSingleMomentListPosition',
+                        //     style: TextStyle(color: Colors.white),
+                        //   ),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Container(
-                                height: 40,
-                                width: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.grey,
-                                ),
-                                child: const Icon(
-                                  Icons.camera_alt_rounded,
-                                  color: Colors.white,
+                              InkWell(
+                                onTap: () async {
+                                  NavigationUtil.push(context,
+                                      screen: AddVideo());
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: navyBlue,
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt_rounded,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ],
@@ -192,7 +203,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
               Positioned.directional(
                 textDirection: Directionality.of(context),
                 end: -10.0,
-                bottom: 80.0,
+                bottom: 100.0,
                 child: Column(
                   children: <Widget>[
                     CustomButton(
@@ -200,39 +211,78 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                       '',
                     ),
                     CustomButton(
-                      isLiked
-                          ? Icon(Icons.thumb_down, color: Colors.white)
-                          : Icon(Icons.thumb_down, color: Colors.white),
-                      '1.2k',
+                      Icon(Icons.thumb_up, color: Colors.white),
+                      int.parse(widget.momentsModelList[index].likes
+                                  .toString()) <
+                              1
+                          ? ''
+                          : widget.momentsModelList[index].likes.toString(),
                       onPressed: () {
-                        setState(() {
-                          isLiked = !isLiked;
+                        MomentsService()
+                            .likeMoment(widget.momentsModelList[index].id!)
+                            .then((value) {
+                          widget.momentsModelList[index] = value;
+                          if (mounted) setState(() {});
                         });
                       },
                     ),
                     CustomButton(
-                      Icon(Icons.thumb_up, color: Colors.white),
-                      '1.2k',
+                      isLiked
+                          ? Icon(Icons.thumb_down, color: Colors.white)
+                          : Icon(Icons.thumb_down, color: Colors.white),
+                      int.parse(widget.momentsModelList[index].dislikes
+                                  .toString()) <
+                              1
+                          ? ''
+                          : widget.momentsModelList[index].dislikes.toString(),
+                      onPressed: () {
+                        MomentsService()
+                            .dislikeMoment(widget.momentsModelList[index].id!)
+                            .then((value) {
+                          widget.momentsModelList[index] = value;
+                          if (mounted) setState(() {});
+                        });
+                      },
                     ),
                     CustomButton(
                       Icon(Icons.messenger, color: Colors.white),
-                      '287',
+                      '',
                       onPressed: () {
                         commentSheet(context);
                       },
                     ),
                     CustomButton(
                       SvgPicture.asset('assets/images/share_icon.svg'),
-                      '287',
+                      '',
                       onPressed: () {
                         commentSheet(context);
                       },
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.symmetric(vertical: 8.0),
-                    //   child:
-                    //       RotatedImage(widget.momentsModelList[index].avatar!),
-                    // ),
+                    Row(
+                      children: [
+                        Container(
+                          width: 70,
+                          margin: EdgeInsets.only(right: 10),
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.link),
+                              SizedBox(width: 5),
+                              Text(
+                                'Link',
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 5),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -240,27 +290,134 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                 textDirection: Directionality.of(context),
                 start: 12.0,
                 bottom: 72.0,
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text:
-                            '${getDateTime(widget.momentsModelList[index].createdAt!)}\n',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${getDateTime(widget.momentsModelList[index].createdAt!)}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 10.0,
+                            offset: Offset(0.0, 0),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        getCircularUserAvatar(
+                            widget.momentsModelList[index].avatar!),
+                        SizedBox(width: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            '${widget.momentsModelList[index].ownerName!}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10.0,
+                                  color: blackFont,
+                                  offset: Offset(0.0, 0),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    SizedBox(
+                      width: 340,
+                      child: Text(
+                        '${widget.momentsModelList[index].text!}',
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: Colors.white54,
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 10.0,
+                              color: blackFont,
+                              offset: Offset(0.0, 0),
+                            ),
+                          ],
                         ),
                       ),
-                      TextSpan(
-                        text:
-                            '${widget.momentsModelList[index].ownerName!}\n\n',
-                      ),
-                      TextSpan(
-                        text: widget.momentsModelList[index].text!,
-                      ),
-                    ],
-                  ),
+                    ),
+                    Wrap(
+                      children: getTags(index),
+                    ),
+                  ],
                 ),
               ),
+              // Positioned.directional(
+              //   textDirection: Directionality.of(context),
+              //   start: 12.0,
+              //   bottom: 72.0,
+              //   child: RichText(
+              //     text: TextSpan(
+              //       children: [
+              //         TextSpan(
+              //           text:
+              //               '${getDateTime(widget.momentsModelList[index].createdAt!)}\n',
+              //           style: TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             shadows: [
+              //               Shadow(
+              //                 blurRadius: 10.0,
+              //                 offset: Offset(0.0, 0),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //         WidgetSpan(
+              //           child: Padding(
+              //             padding: const EdgeInsets.only(top: 18.0),
+              //             child: getCircularUserAvatar(
+              //                 widget.momentsModelList[index].avatar!),
+              //           ),
+              //         ),
+              //         TextSpan(
+              //           text:
+              //               '${widget.momentsModelList[index].ownerName!}\n\n',
+              //           style: TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             shadows: [
+              //               Shadow(
+              //                 blurRadius: 10.0,
+              //                 color: blackFont,
+              //                 offset: Offset(0.0, 0),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //         // TextSpan(
+              //         //   text: '${widget.momentsModelList[index].text!}\n\n',
+              //         //   style: TextStyle(
+              //         //     fontWeight: FontWeight.bold,
+              //         //     shadows: [
+              //         //       Shadow(
+              //         //         blurRadius: 10.0,
+              //         //         color: blackFont,
+              //         //         offset: Offset(0.0, 0),
+              //         //       ),
+              //         //     ],
+              //         //   ),
+              //         //   children: getTags(index),
+              //         // ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         );
@@ -268,10 +425,154 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     );
   }
 
-  String getDateTime(String dateTime) {
-    // 18/08/2020 • 6:54 AM
+  // void likeUnlikePost() async {
+  //   await MomentsService().likeMoment().then((value) {
+  //     widget.post = value;
+  //     if (mounted) setState(() {});
+  //   }).catchError((error) {
+  //     debugPrint("Error:- $error");
+  //     showToast(message: "$error");
+  //   });
+  //   // await UserReviewAuth()
+  //   //     .unlikeUserReview(widget.review!)
+  //   //     .then((value) {})
+  //   //     .catchError((error) {
+  //   //   debugPrint("Error:- $error");
+  //   //   showToast(message: "$error");
+  //   // });
+  // }
 
+  List<Widget> getTags(int index) {
+    List<String> formattedTagList = [];
+
+    if (widget.momentsModelList[index].tags != null) {
+      widget.momentsModelList[index].tags!.join(', ');
+
+      widget.momentsModelList[index].tags!.forEach((tag) {
+        formattedTagList.add('#$tag ');
+      });
+
+      return formattedTagList
+          .map(
+            (e) => Text(
+              e,
+              style: TextStyle(color: Colors.white70),
+            ),
+          )
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
+  String getDateTime(String dateTime) {
     return DateFormat.yMd().add_jm().format(DateTime.parse(dateTime));
+  }
+}
+
+class RenderMedia extends StatefulWidget {
+  final MomentsModel momentsModel;
+  const RenderMedia({Key? key, required this.momentsModel}) : super(key: key);
+
+  @override
+  _RenderMediaState createState() => _RenderMediaState();
+}
+
+class _RenderMediaState extends State<RenderMedia> {
+  @override
+  Widget build(BuildContext context) {
+    if (widget.momentsModel.gif != null) {
+      return CachedNetworkImage(
+        imageUrl: widget.momentsModel.gif!,
+        fit: BoxFit.cover,
+      );
+    }
+    if (widget.momentsModel.mediaType == "image") {
+      return CachedNetworkImage(
+        imageUrl: widget.momentsModel.media!,
+        fit: BoxFit.fill,
+        placeholder: (context, _) {
+          return Container(color: Colors.grey);
+        },
+      );
+    } else if (widget.momentsModel.mediaType == "video") {
+      return VideoDisplay(momentsModel: widget.momentsModel);
+    } else {
+      return Image.asset('assets/images/app_logo.png');
+    }
+  }
+}
+
+class VideoDisplay extends StatefulWidget {
+  final MomentsModel momentsModel;
+  const VideoDisplay({Key? key, required this.momentsModel}) : super(key: key);
+
+  @override
+  _VideoDisplayState createState() => _VideoDisplayState();
+}
+
+class _VideoDisplayState extends State<VideoDisplay> {
+  bool initialized = false;
+  late CachedVideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        CachedVideoPlayerController.network(widget.momentsModel.media!)
+          ..initialize().then((value) {
+            _controller.play();
+            setState(() {
+              initialized = true;
+              _controller.setLooping(true);
+            });
+          });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (initialized) {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: CachedVideoPlayer(
+          _controller,
+        ),
+      );
+    }
+    return widget.momentsModel.mediaPoster != null
+        ? Container(
+            color: greyBorderColor,
+            child: Center(
+              child: Stack(
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: widget.momentsModel.mediaPoster!,
+                    fit: BoxFit.cover,
+                    placeholder: (context, _) {
+                      return Container(color: Colors.grey);
+                    },
+                  ),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            ),
+          )
+        : Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(
+                'assets/images/moment_placeholder_image.png',
+                fit: BoxFit.cover,
+              ),
+              Center(child: CircularProgressIndicator()),
+            ],
+          );
   }
 }
 
@@ -477,323 +778,38 @@ void commentSheet(BuildContext context) async {
   );
 }
 
-class RenderMedia extends StatefulWidget {
-  final MomentsModel momentsModel;
-  const RenderMedia({Key? key, required this.momentsModel}) : super(key: key);
+class MomentDetailDashes extends StatefulWidget {
+  final int lengthOfMoment;
+
+  const MomentDetailDashes({Key? key, required this.lengthOfMoment})
+      : super(key: key);
 
   @override
-  _RenderMediaState createState() => _RenderMediaState();
+  _MomentDetailDashesState createState() => _MomentDetailDashesState();
 }
 
-class _RenderMediaState extends State<RenderMedia> {
+class _MomentDetailDashesState extends State<MomentDetailDashes> {
   @override
   Widget build(BuildContext context) {
-    if (widget.momentsModel.gif != null) {
-      return CachedNetworkImage(
-        imageUrl: widget.momentsModel.gif!,
-        fit: BoxFit.cover,
-      );
-    }
-    if (widget.momentsModel.mediaType == "image") {
-      return CachedNetworkImage(
-        imageUrl: widget.momentsModel.media!,
-        fit: BoxFit.cover,
-        placeholder: (context, _) {
-          return Container(color: Colors.grey);
-        },
-      );
-    } else if (widget.momentsModel.mediaType == "video") {
-      return VideoDisplay(videoUrl: widget.momentsModel.media!);
-    } else {
-      return Image.asset('assets/images/app_logo.png');
-    }
-  }
-}
-
-class VideoDisplay extends StatefulWidget {
-  final String videoUrl;
-  const VideoDisplay({Key? key, required this.videoUrl}) : super(key: key);
-
-  @override
-  _VideoDisplayState createState() => _VideoDisplayState();
-}
-
-class _VideoDisplayState extends State<VideoDisplay> {
-  bool initialized = false;
-  late CachedVideoPlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = CachedVideoPlayerController.network(widget.videoUrl)
-      ..initialize().then((value) {
-        _controller.play();
-        setState(() {
-          initialized = true;
-          _controller.setLooping(true);
-        });
-      });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (initialized) {
-      return AspectRatio(
-        aspectRatio: 16 / 9,
-        child: CachedVideoPlayer(
-          _controller,
-        ),
-      );
-    }
     return Container(
-      color: greyBorderColor,
-      child: Center(child: CircularProgressIndicator()),
-    );
-  }
-}
-
-class FollowingTabPage extends StatelessWidget {
-  final List<String> videos;
-  final List<String> images;
-  final bool isFollowing;
-
-  final int variable;
-
-  const FollowingTabPage(this.videos, this.images, this.isFollowing,
-      {Key? key, required this.variable})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return FollowingTabBody(videos, images, isFollowing, variable);
-  }
-}
-
-class FollowingTabBody extends StatefulWidget {
-  final List<String> videos;
-  final List<String> images;
-
-  final bool isFollowing;
-  final int variable;
-
-  const FollowingTabBody(
-      this.videos, this.images, this.isFollowing, this.variable,
-      {Key? key})
-      : super(key: key);
-
-  @override
-  _FollowingTabBodyState createState() => _FollowingTabBodyState();
-}
-
-class _FollowingTabBodyState extends State<FollowingTabBody> {
-  late PageController _pageController;
-  int current = 0;
-  bool isOnPageTurning = false;
-
-  void scrollListener() {
-    if (isOnPageTurning &&
-        _pageController.page == _pageController.page!.roundToDouble()) {
-      setState(() {
-        current = _pageController.page!.toInt();
-        isOnPageTurning = false;
-      });
-    } else if (!isOnPageTurning &&
-        current.toDouble() != _pageController.page &&
-        (current.toDouble() - _pageController.page!).abs() > 0.1) {
-      setState(() {
-        isOnPageTurning = true;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-    _pageController.addListener(scrollListener);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PageView.builder(
-      physics: const BouncingScrollPhysics(),
-      controller: _pageController,
-      scrollDirection: Axis.vertical,
-      itemBuilder: (context, position) {
-        return VideoPage(
-          widget.videos[position],
-          widget.images[position],
-          pageIndex: position,
-          currentPageIndex: current,
-          isPaused: isOnPageTurning,
-          isFollowing: widget.isFollowing,
-        );
-      },
-      itemCount: widget.videos.length,
-    );
-  }
-}
-
-// Their design
-class VideoPage extends StatefulWidget {
-  final String video;
-  final String image;
-  final int pageIndex;
-  final int currentPageIndex;
-  final bool isPaused;
-  final bool isFollowing;
-
-  const VideoPage(this.video, this.image,
-      {Key? key,
-      required this.pageIndex,
-      required this.currentPageIndex,
-      required this.isPaused,
-      required this.isFollowing})
-      : super(key: key);
-
-  @override
-  _VideoPageState createState() => _VideoPageState();
-}
-
-class _VideoPageState extends State<VideoPage> {
-  late VideoPlayerController _controller;
-  bool initialized = false;
-  bool isLiked = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.network(widget.video)
-      ..initialize().then((value) {
-        setState(() {
-          _controller.setLooping(true);
-          initialized = true;
-        });
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.pageIndex == widget.currentPageIndex &&
-        !widget.isPaused &&
-        initialized) {
-      _controller.play();
-    } else {
-      _controller.pause();
-    }
-
-    return GestureDetector(
-      onTap: () {
-        _controller.value.isPlaying ? _controller.pause() : _controller.play();
-      },
-      child: _controller.value.isInitialized
-          ? VideoPlayer(_controller)
-          : const SizedBox.shrink(),
-    );
-
-    if (widget.pageIndex == 2) _controller.pause();
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              _controller.value.isPlaying
-                  ? _controller.pause()
-                  : _controller.play();
-            },
-            child: _controller.value.isInitialized
-                ? VideoPlayer(_controller)
-                : const SizedBox.shrink(),
-          ),
-          Positioned.directional(
-            textDirection: Directionality.of(context),
-            end: -10.0,
-            bottom: 80.0,
-            child: Column(
-              children: <Widget>[
-                CustomButton(
-                  SvgPicture.asset(
-                    'assets/images/apk_icon.svg',
-                  ),
-                  '',
-                ),
-                CustomButton(
-                  isLiked
-                      ? SvgPicture.asset(
-                          'assets/images/apk_icon.svg',
-                          color: Colors.blue,
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/apk_icon.svg',
-                        ),
-                  '1.2k',
-                  onPressed: () {
-                    setState(() {
-                      isLiked = !isLiked;
-                    });
-                  },
-                ),
-                CustomButton(
-                  Image.asset('assets/images/app_logo.png'),
-                  '1.2k',
-                ),
-                CustomButton(
-                  Image.asset('assets/images/app_logo.png'),
-                  '287',
-                  onPressed: () {
-                    // commentSheet(context);
-                  },
-                ),
-                CustomButton(
-                  Image.asset('assets/images/app_logo.png'),
-                  '287',
-                  onPressed: () {
-                    // commentSheet(context);
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: RotatedImage(widget.image),
-                ),
-              ],
-            ),
-          ),
-          Positioned.directional(
-            textDirection: Directionality.of(context),
-            start: 12.0,
-            bottom: 72.0,
-            child: RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(
-                    text: '18/08/2020 • 6:54 AM\n',
-                    style: TextStyle(
-                      color: Colors.white54,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "sdfsdf",
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
+      height: 50,
+      child: Row(
+        children: dashes(widget.lengthOfMoment),
       ),
     );
+  }
+
+  List<Widget> dashes(int lengthOfMoment) {
+    List<Widget> widgets = [];
+    Widget widget = Expanded(
+      child: Container(
+        height: 10,
+        color: Colors.white,
+      ),
+    );
+    for (int i = 0; i < lengthOfMoment; i++) {
+      widgets.add(widget);
+    }
+    return widgets;
   }
 }

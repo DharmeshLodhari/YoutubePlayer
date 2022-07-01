@@ -1341,7 +1341,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
           if (chatConversation!.isGroupConversation!) {
             navigateToGroupDetailScreen();
           } else {
-            await Navigator.pushNamed(context, Routes.PROFILE,
+            await Navigator.pushNamed(context, Routes.USER_PROFILE,
                 arguments: {"searchedUserName": chatConversation!.userName});
           }
           setupShakeDetector();
@@ -3638,6 +3638,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void replyMessageTapped({required Map<String, dynamic> repliedTo}) {
+    debugPrint('REPLIEDD --->');
     if (repliedTo.isNotEmpty) {
       int messageListLength = messageList.length;
 

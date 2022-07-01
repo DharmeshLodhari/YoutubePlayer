@@ -244,7 +244,7 @@ class _AddContractState extends State<AddContract> {
       return IconButton(
         icon: Icon(Icons.person),
         onPressed: () {
-          Navigator.pushNamed(context, Routes.PROFILE,
+          Navigator.pushNamed(context, Routes.USER_PROFILE,
               arguments: {"searchedUserName": _payee!.userName});
         },
       );

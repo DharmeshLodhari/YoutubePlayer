@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto/crypto.dart';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -26,6 +28,7 @@ import '../locale/app_localization.dart';
 import '../screens/more_apps/business/business_auth.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
 import '../screens/more_apps/payment_and_banking/models/transactions.dart';
+import '../screens/more_apps/user_profile/models/user.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
@@ -184,6 +187,24 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       filterQuality: FilterQuality.high,
     );
 
+Widget getCircularUserAvatar(String imgUrl,
+    {Color borderColor = Colors.black}) {
+  return Container(
+    width: 30,
+    height: 30,
+    padding: EdgeInsets.all(6),
+    decoration: BoxDecoration(
+      border: Border.all(color: borderColor, width: 2),
+      shape: BoxShape.circle,
+      image: DecorationImage(
+        image: CachedNetworkImageProvider(
+          imgUrl,
+        ),
+      ),
+    ),
+  );
+}
+
 Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
   final imageInUnit8List = await VideoThumbnail.thumbnailData(
     video: videoPath,
@@ -192,7 +213,10 @@ Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
 
   if (imageInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
-    File file = await File('${tempDir.path}/image.png').create();
+    String uniqueId = Uuid().v4();
+    File file = await File('${tempDir.path}/$uniqueId.png').create();
+    debugPrint('FILE THUMBNAIL :: $file');
+    //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
     file.writeAsBytesSync(imageInUnit8List);
     return file.path;
   }

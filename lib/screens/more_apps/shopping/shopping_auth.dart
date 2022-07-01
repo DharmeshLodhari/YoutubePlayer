@@ -158,7 +158,7 @@ class ShoppingAuthService extends AuthService {
 
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous,
-      {String? userName}) async {
+      {required String? userName}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -186,6 +186,7 @@ class ShoppingAuthService extends AuthService {
         "previous": jsonData["previous"],
         "results": productList
       };
+
       return result;
     } else if (response.statusCode == 500) {
       throw "Server Error";
@@ -751,6 +752,18 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  Future<http.Response> createReviewableRecord(
+      {required Map<String, dynamic> data}) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/social/reviews/create-reviewable-record/";
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+    var response = await httpPost(url, headers: headers, body: _data);
+    debugPrint('CREATE REVIEWABLE RECORD ::: ${response.statusCode}');
+    debugPrint('CREATE REVIEWABLE RECORD ::: ${response.body}');
+    return response;
+  }
+
   List<dynamic> getCartItems(var jsonResponse) {
     List items = [];
     var data = jsonResponse["results"];
@@ -969,7 +982,6 @@ class ShoppingAuthService extends AuthService {
       List<dynamic> results = jsonData["results"];
 
       List<ProductCategory> categories = [];
-
 
       for (int i = 0; i < results.length; i++) {
         categories.add(ProductCategory(messageDecoderWithEmoji(results[i])!));

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../utils/enums.dart';
 import '../models/Contract.dart';
-import '../models/Invoice.dart';
 
 class ContractBloc extends ChangeNotifier {
   bool endOfList = false;

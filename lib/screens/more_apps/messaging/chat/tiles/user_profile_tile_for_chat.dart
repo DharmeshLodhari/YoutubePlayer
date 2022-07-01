@@ -207,7 +207,7 @@ class _UserProfileTileState extends State<UserProfileTile> {
           subtitle: getSubtitle(),
           leading: getAvatar(),
           onTap: () {
-            Navigator.pushNamed(context, Routes.PROFILE,
+            Navigator.pushNamed(context, Routes.USER_PROFILE,
                 arguments: {"searchedUserName": widget.user!.userName});
           },
           // trailing: getTrailing(),

@@ -10,6 +10,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import '../../main.dart';
@@ -134,6 +135,7 @@ class _AddVideoState extends State<AddVideo> {
     super.initState();
     cameraController = CameraController(cameras[0], ResolutionPreset.max);
     cameraController.initialize().then((_) {
+      cameraController.setFlashMode(FlashMode.off);
       if (!mounted) {
         return;
       }
@@ -184,42 +186,42 @@ class _AddVideoState extends State<AddVideo> {
           mediaCaptured()
               ? showCapturedMedia()
               : CameraPreview(cameraController),
-          Positioned(
-            top: ht / 3,
-            left: 4,
-            child: Column(
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.sync,
-                    color: Colors.white,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.speed,
-                    color: Colors.white,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.timer_outlined,
-                    color: Colors.white,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.join_inner_rounded,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Positioned(
+          //   top: ht / 3,
+          //   left: 4,
+          //   child: Column(
+          //     children: [
+          //       IconButton(
+          //         onPressed: () {},
+          //         icon: const Icon(
+          //           Icons.sync,
+          //           color: Colors.white,
+          //         ),
+          //       ),
+          //       IconButton(
+          //         onPressed: () {},
+          //         icon: const Icon(
+          //           Icons.speed,
+          //           color: Colors.white,
+          //         ),
+          //       ),
+          //       IconButton(
+          //         onPressed: () {},
+          //         icon: const Icon(
+          //           Icons.timer_outlined,
+          //           color: Colors.white,
+          //         ),
+          //       ),
+          //       IconButton(
+          //         onPressed: () {},
+          //         icon: const Icon(
+          //           Icons.join_inner_rounded,
+          //           color: Colors.white,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Positioned(
             width: wt,
             bottom: 48,
@@ -243,6 +245,7 @@ class _AddVideoState extends State<AddVideo> {
                         color: Colors.white,
                       ),
                     ),
+                    child: Image.asset('assets/images/apps_icon.png'),
                   ),
                 ),
                 Column(
@@ -250,12 +253,12 @@ class _AddVideoState extends State<AddVideo> {
                     videoTimer != 30
                         ? Text(
                             videoTimer.toString(),
-                            style: TextStyle(color: Colors.orange),
+                            style: TextStyle(color: navyBlue, fontSize: 16),
                           )
                         : SizedBox.shrink(),
                     SizedBox(height: 4),
                     GestureDetector(
-                      onLongPressDown: mediaCaptured()
+                      onLongPressStart: mediaCaptured()
                           ? null
                           : (longPressDownDetails) async {
                               takePictureOrVideo(mediaType: MediaType.video);
@@ -269,14 +272,15 @@ class _AddVideoState extends State<AddVideo> {
                             },
                       onTap: () {
                         debugPrint('IMAGE PATH XFILE ::');
+                        onTakePictureButtonPressed();
+                        // takePictureOrVideo(mediaType: MediaType.picture);
                       },
-                      // mediaCaptured() ? null : onTakePictureButtonPressed,
                       child: CircleAvatar(
                         radius: 30,
-                        backgroundColor: Colors.grey,
+                        backgroundColor: Colors.white,
                         child: Icon(
                           Icons.camera,
-                          color: Colors.orange,
+                          color: navyBlue,
                           size: 30,
                         ),
                       ),
@@ -291,32 +295,40 @@ class _AddVideoState extends State<AddVideo> {
                       "Preview",
                       style: TextStyle(
                           color: mediaCaptured()
-                              ? Colors.white
+                              ? navyBlue
                               : Colors.white.withOpacity(0.5),
-                          fontSize: 10),
+                          fontSize: 14),
                     ),
                     onPressed: mediaCaptured()
                         ? () {
                             NavigationUtil.push(
                               context,
                               screen: PreviewMomentScreen(
-                                  filePath:
-                                      getMediaPathToSendToPreviewScreen()),
+                                filePath: getMediaPathToSendToPreviewScreen(),
+                              ),
                             );
+                            imagePath = null;
+                            videoPath = null;
+                            if (mounted) setState(() {});
                           }
                         : null,
-                    label: const Icon(
+                    label: Icon(
                       Icons.arrow_forward_ios_rounded,
-                      color: Colors.white,
-                      size: 18,
+                      color: mediaCaptured()
+                          ? navyBlue
+                          : Colors.white.withOpacity(0.5),
+                      size: 16,
                     ),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: const BorderSide(
-                            color: Colors.white,
-                          )),
-                      primary: Colors.transparent,
+                        borderRadius: BorderRadius.circular(30),
+                        side: BorderSide(
+                          color: mediaCaptured()
+                              ? Colors.white
+                              : Colors.white.withOpacity(0.5),
+                        ),
+                      ),
+                      primary: Colors.white,
                       fixedSize: const Size(208, 43),
                     ),
                   ),
@@ -330,11 +342,11 @@ class _AddVideoState extends State<AddVideo> {
   }
 
   void onTakePictureButtonPressed() {
-    debugPrint('IMAGE PATH XFILE ::');
+    debugPrint('IMAGE PATH XFILE :::');
 
     takePictureOrVideo(mediaType: MediaType.picture).then((file) async {
       if (file != null) {
-        debugPrint('IMAGE PATH XFILE ->');
+        debugPrint('IMAGE PATH XFILE -> $file');
 
         String? croppedImagePath = await ImageCrop().cropImage(file.path);
         if (croppedImagePath != null) {
@@ -359,7 +371,7 @@ class _AddVideoState extends State<AddVideo> {
     try {
       if (mediaType == MediaType.picture) {
         final XFile file = await cameraController.takePicture();
-        debugPrint('IMAGE PATH XFILE :: $file');
+        debugPrint('PICTURE TAKEN :: $file');
 
         return file;
       } else {

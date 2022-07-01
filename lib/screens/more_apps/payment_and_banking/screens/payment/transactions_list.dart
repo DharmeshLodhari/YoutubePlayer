@@ -616,7 +616,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         if (widget.transaction.payee != "Slydo" &&
             widget.transaction.payee != "Private") {
           debugPrint(widget.transaction.payee);
-          Navigator.pushNamed(context, Routes.PROFILE,
+          Navigator.pushNamed(context, Routes.USER_PROFILE,
               arguments: {"searchedUserName": widget.transaction.payee});
         }
       },

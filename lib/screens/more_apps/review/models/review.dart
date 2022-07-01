@@ -39,6 +39,7 @@ class Review {
   String? authorUsername;
   int? likes;
   int? dislikes;
+
   String? createdAt;
   String? modelObject;
 

@@ -399,9 +399,10 @@ class _HomeState extends State<Home> {
                     style: TextStyle(fontSize: 14),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PROFILE, arguments: {
-                      "searchedUserName": userBloc.user.userName
-                    });
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": userBloc.user.userName
+                        });
                   },
                 ),
                 Divider(

@@ -413,7 +413,7 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
 
         Navigator.pop(context);
         Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
-        Navigator.pushNamed(context, Routes.PROFILE,
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": user.userName, "index": 0});
       });
     });

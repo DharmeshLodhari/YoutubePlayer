@@ -137,7 +137,7 @@ class _SendPaymentState extends State<SendPayment> {
         moneyDisplayNormalizer(int.parse(product!.price.toString()))
             .replaceAll(",", "");
 
-    amount = double.parse(_amountController.text);
+    amount = double.parse(_amountController.text.replaceAll(',', ''));
     _referenceController.text = product!.name!;
     reference = _referenceController.text;
     selectedCategory = "Shopping";
@@ -147,7 +147,7 @@ class _SendPaymentState extends State<SendPayment> {
   void setAllFieldService() {
     _amountController.text =
         moneyDisplayNormalizer(int.parse(service!.price.toString()));
-    amount = double.parse(_amountController.text);
+    amount = double.parse(_amountController.text.replaceAll(',', ''));
     _referenceController.text = service!.name!;
     reference = _referenceController.text;
     selectedCategory = "Shopping";

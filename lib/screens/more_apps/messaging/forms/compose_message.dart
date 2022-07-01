@@ -430,9 +430,10 @@ class _ComposeMessageState extends State<ComposeMessage> {
                   leading: avatarImage,
                   trailing: qrCodeImage,
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PROFILE, arguments: {
-                      "searchedUserName": messageReceiver!.userName
-                    });
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": messageReceiver!.userName
+                        });
                   },
                 ),
               ),

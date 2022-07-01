@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/events/event_dashboard_bloc.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';

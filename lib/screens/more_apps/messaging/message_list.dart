@@ -512,7 +512,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
             arguments: {'id': widget.partialMessage.id});
       },
       onDoubleTap: () {
-        Navigator.pushNamed(context, Routes.PROFILE,
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": widget.partialMessage.sender});
       },
       onLongPress: () {

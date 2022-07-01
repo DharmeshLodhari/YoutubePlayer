@@ -381,7 +381,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         ),
       ),
       onTap: () async {
-        Navigator.pushNamed(context, Routes.PROFILE,
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": service!.provider});
       },
     );
@@ -429,7 +429,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             basketBloc.addItemToCart(item: service, type: type);
             late var mapData;
             basketBloc.items.forEach((element) {
-              if (element["item"].subscriptionId == service!.id) {
+              if (element["item"].id == service!.id) {
                 mapData = element;
                 return;
               }
@@ -789,7 +789,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   textAlign: TextAlign.justify,
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, Routes.PROFILE,
+                  Navigator.pushNamed(context, Routes.USER_PROFILE,
                       arguments: {"searchedUserName": service!.provider});
                 },
               ),
@@ -1110,10 +1110,11 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     ),
                   ),
                   onTap: () {
-                    Navigator.pushNamed(context, Routes.PROFILE, arguments: {
-                      "searchedUserName": service!.provider,
-                      "index": 3
-                    });
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": service!.provider,
+                          "index": 3
+                        });
                   },
                 ),
               ],

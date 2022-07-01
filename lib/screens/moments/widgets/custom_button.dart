@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../utils/colors.dart';
+
 class CustomButton extends StatelessWidget {
   final Widget icon;
   final String text;
@@ -10,18 +12,34 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+    return TextButton(
       child: Column(
         children: <Widget>[
-          icon,
-          const SizedBox(
-            height: 10,
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                )
+              ],
+            ),
+            child: icon,
           ),
+          const SizedBox(height: 10),
           Text(
             text,
-            style: TextStyle(color: Colors.white),
-          )
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  blurRadius: 10.0,
+                  offset: Offset(0.0, 0),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
       onPressed: onPressed,

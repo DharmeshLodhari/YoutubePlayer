@@ -267,7 +267,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     basketBloc.totalShippingCost +=
         shippingOption != null ? shippingOption!.price : 0;
 
-    debugPrint('USER SELECTED ::: $userSelectedShippingOption');
     if (basketBloc.merchantNameMapCopy.length == 1) {
       basketBloc.userSelectedShippingOption = userSelectedShippingOption;
       NavigationUtil.pushReplacement(context,
@@ -277,16 +276,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       resetData();
     }
   }
-
-  // onCompleteOrderClicked() async {
-  //   var placeOrders = await ShoppingAuthService()
-  //       .placeOrderOfShoppingCart(userSelectedShippingOption);
-  //
-  //   if (placeOrders != null) {
-  //     NavigationUtil.push(context,
-  //         screen: UserAddress(fromCheckoutScreen: true));
-  //   }
-  // }
 
   resetData() {
     deliveryOption = null;
@@ -441,9 +430,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     if (pickedShippingOption != null) {
       shippingOption = pickedShippingOption;
-      userSelectedShippingOption.clear();
+      // userSelectedShippingOption.clear();
       selectedShippingOptionName = shippingOption?.name;
       userSelectedShippingOption[shippingOption!.owner] = shippingOption!.id;
+      debugPrint('OWNER -> ${shippingOption!.owner}');
+      debugPrint('OWNER ID -> ${shippingOption!.id}');
+      debugPrint('USER OWNER  -> $userSelectedShippingOption');
       if (mounted) setState(() {});
     }
   }

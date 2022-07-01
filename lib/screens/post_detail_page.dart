@@ -104,6 +104,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     }
 
     // Try if blog text is decodable, if it isn't the try blog won't run.
+
     try {
       blogBodyTextJson = jsonDecode(userPost.text!);
 
@@ -192,6 +193,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   Widget scaffoldBody() {
+    // debugPrint('USER POST :: ${userPost!.image}');
     return FutureBuilder(
       future: getPostFuture,
       builder: (context, AsyncSnapshot<UserPost?> snapshot) {
@@ -199,6 +201,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
           if (snapshot.hasData) {
             userPost = snapshot.data!;
             if (widget.postType == PostType.blog) {
+              debugPrint('TEXT -> ${userPost!.text!}');
+              debugPrint('TEXT ID -> ${userPost!.id!}');
+
               getBlogDetailsAndInitializeVideoController(userPost: userPost!);
             }
             return PostDetailPageScaffoldBody(
@@ -659,11 +664,12 @@ class _PostDetailPageScaffoldBodyState
   }
 
   Widget bloggerDetail() {
+    debugPrint('AUTH NAM :: ${widget.authorName}');
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, Routes.PROFILE,
+          Navigator.pushNamed(context, Routes.USER_PROFILE,
               arguments: {"searchedUserName": widget.authorUserName});
         },
         child: SizedBox(
@@ -686,13 +692,13 @@ class _PostDetailPageScaffoldBodyState
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, Routes.PROFILE,
+                  Navigator.pushNamed(context, Routes.USER_PROFILE,
                       arguments: {"searchedUserName": widget.authorUserName});
                 },
                 child: Text(
                   widget.authorName.length <= 7
                       ? "${widget.authorName} • "
-                      : "${widget.authorName.substring(0, 8).replaceAll(' ', '')} • ",
+                      : "${widget.authorName.substring(0, 8)} • ",
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,

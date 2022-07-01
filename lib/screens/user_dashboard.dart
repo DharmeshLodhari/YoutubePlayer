@@ -199,7 +199,7 @@ class _UserDashboardState extends State<UserDashboard> {
               .then((user) {
             if (mounted) {
               Navigator.pushNamed(
-                  myGlobals.navigationKey.currentContext!, Routes.PROFILE,
+                  myGlobals.navigationKey.currentContext!, Routes.USER_PROFILE,
                   arguments: {"searchedUserName": user.userName});
             }
           });
@@ -759,8 +759,8 @@ class _UserDashboardState extends State<UserDashboard> {
                   .then((user) {
                 if (mounted) {
                   Navigator.pop(myGlobals.navigationKey.currentContext!);
-                  Navigator.pushNamed(
-                      myGlobals.navigationKey.currentContext!, Routes.PROFILE,
+                  Navigator.pushNamed(myGlobals.navigationKey.currentContext!,
+                      Routes.USER_PROFILE,
                       arguments: {"searchedUserName": user.userName});
                 }
               });
@@ -987,7 +987,7 @@ class _UserDashboardState extends State<UserDashboard> {
     ).then((String? value) {
       if (value != null) {
         if (value == "My Profile") {
-          Navigator.pushNamed(context, Routes.PROFILE,
+          Navigator.pushNamed(context, Routes.USER_PROFILE,
               arguments: {"searchedUserName": userBloc.user.userName});
         } else if (value == "Update My Avatar") {
           pickImage();

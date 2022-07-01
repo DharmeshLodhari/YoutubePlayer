@@ -71,6 +71,8 @@ class ExploreMomentsModel {
 
 class MomentsModel {
   String? id;
+  int? likes;
+  int? dislikes;
   String? mediaType;
   String? avatar;
   String? ownerName;
@@ -82,26 +84,30 @@ class MomentsModel {
   String? createdAt;
   String? expireAt;
   bool? isPublic;
-  int? socialLikes;
-  int? socialDislikes;
+  List<dynamic>? tags;
 
-  MomentsModel(
-      {this.id,
-      this.mediaType,
-      this.avatar,
-      this.ownerName,
-      this.media,
-      this.gif,
-      this.text,
-      this.owner,
-      this.createdAt,
-      this.expireAt,
-      this.isPublic,
-      this.socialLikes,
-      this.socialDislikes});
+  MomentsModel({
+    this.id,
+    this.tags,
+    this.likes,
+    this.dislikes,
+    this.mediaType,
+    this.avatar,
+    this.ownerName,
+    this.media,
+    this.gif,
+    this.text,
+    this.owner,
+    this.createdAt,
+    this.expireAt,
+    this.isPublic,
+  });
 
   MomentsModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    tags = json['tags'];
+    likes = json['likes'];
+    dislikes = json['dislikes'];
     mediaType = json['media_type'];
     avatar = json['avatar'];
     ownerName = json['owner_name'];
@@ -113,7 +119,5 @@ class MomentsModel {
     createdAt = json['created_at'];
     expireAt = json['expire_at'];
     isPublic = json['is_public'];
-    socialLikes = json['social_likes'];
-    socialDislikes = json['social_dislikes'];
   }
 }

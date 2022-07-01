@@ -132,10 +132,14 @@ class MomentsService extends AuthService {
     request.files.add(mediaMultipartFile);
 
     request.fields["text"] = createMomentModel.text;
+    if (createMomentModel.url != null && createMomentModel.url!.isNotEmpty) {
+      request.fields["url"] = createMomentModel.url!;
+    }
     request.fields["isPublic"] = jsonEncode(createMomentModel.isPublic);
 
     request.fields["tags"] = jsonEncode(createMomentModel.userTags);
 
+    debugPrint('REQUEST FIELDS :: ${request.fields}');
     if (createMomentModel.mediaPoster != null) {
       MultipartFile thumbnailMultipartFile = await MultipartFile.fromPath(
           "media_poster", createMomentModel.mediaPoster!);
@@ -161,6 +165,64 @@ class MomentsService extends AuthService {
     } else {
       return Future.error(
           "ERROR while calling moment $url StatusCode:- ${response.statusCode} Body:- $responseBody");
+    }
+  }
+
+  Future<MomentsModel> likeMoment(String momentId) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/moments/like/$momentId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers);
+
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    debugPrint('LIKE URL :: $url');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      MomentsModel momentsModel =
+          MomentsModel.fromJson(jsonDecode(response.body));
+
+      return momentsModel;
+    } else {
+      if (response.statusCode != 500) {
+        var jsonData = jsonDecode(response.body);
+        debugPrint(
+            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        return Future.error(jsonData is Map
+            ? jsonData["error"]
+            : jsonData is List
+                ? jsonData[0]
+                : jsonData);
+      }
+      return Future.error("Server Error");
+    }
+  }
+
+  Future<MomentsModel> dislikeMoment(String momentId) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/moments/dislike/$momentId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers);
+
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    debugPrint('LIKE URL :: $url');
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      MomentsModel momentsModel =
+          MomentsModel.fromJson(jsonDecode(response.body));
+
+      return momentsModel;
+    } else {
+      if (response.statusCode != 500) {
+        var jsonData = jsonDecode(response.body);
+        debugPrint(
+            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        return Future.error(jsonData is Map
+            ? jsonData["error"]
+            : jsonData is List
+                ? jsonData[0]
+                : jsonData);
+      }
+      return Future.error("Server Error");
     }
   }
 }

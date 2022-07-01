@@ -76,6 +76,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       isLoading = true;
     });
     _auth.getOrder(orderId).then((value) {
+      debugPrint('VALUE :: $value');
       if (mounted) {
         setState(() {
           items = value;

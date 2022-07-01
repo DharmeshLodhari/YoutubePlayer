@@ -322,7 +322,7 @@ class _InvoiceDetailState extends State<InvoiceDetail> {
       subtitle: getSubtitle(),
       trailing: getAmount(),
       onTap: () async {
-        Navigator.pushNamed(context, Routes.PROFILE,
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": invoice.toCustomer});
       },
     );

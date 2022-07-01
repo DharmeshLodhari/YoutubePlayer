@@ -390,7 +390,7 @@ class VerticalListItem extends StatelessWidget {
         Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
             ? Slidable.of(context)?.open()
             : Slidable.of(context)?.close();
-        Navigator.pushNamed(context, Routes.PROFILE,
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(

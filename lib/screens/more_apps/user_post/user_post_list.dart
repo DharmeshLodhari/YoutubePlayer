@@ -125,6 +125,7 @@ class _UserPostListState extends State<UserPostList> {
         List tempList = result['results'] as List;
 
         List<UserPost> posts = [];
+
         tempList.forEach((element) {
           posts.add(UserPost.fromJson(element));
         });

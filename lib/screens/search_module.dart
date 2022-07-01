@@ -1263,7 +1263,7 @@ class VerticalListItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
-        Navigator.pushNamed(context, Routes.PROFILE,
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": user.userName});
       },
       child: Container(

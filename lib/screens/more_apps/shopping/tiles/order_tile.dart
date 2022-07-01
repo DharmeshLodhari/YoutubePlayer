@@ -81,7 +81,7 @@ class OrderTile extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           Navigator.pushNamed(
-              myGlobals.navigationKey.currentContext!, Routes.PROFILE,
+              myGlobals.navigationKey.currentContext!, Routes.USER_PROFILE,
               arguments: {
                 "searchedUserName":
                     order!.customerName == userBloc.user.userName

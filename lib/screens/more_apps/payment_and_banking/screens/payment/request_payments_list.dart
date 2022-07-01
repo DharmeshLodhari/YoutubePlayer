@@ -909,7 +909,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
         Slidable.of(context)?.renderingMode == SlidableRenderingMode.none
             ? Slidable.of(context)?.open()
             : Slidable.of(context)?.close();
-        Navigator.pushNamed(context, Routes.PROFILE,
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": widget.paymentRequest.payee});
       },
       onLongPress: () {
