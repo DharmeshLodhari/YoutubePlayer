@@ -37,13 +37,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'locale/app_localization.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 late List<CameraDescription> cameras;
 
@@ -126,6 +125,8 @@ void initializeBackgroundService() async {
   try {
     await AppConfigurationService().getAppConfigurations().then(
       (value) async {
+        debugPrint('WRITING APP CONFIG TO STORAGE');
+
         storage.write(
             key: appConfigurationKey,
             value: AppConfigurationModel.serialize(value!));

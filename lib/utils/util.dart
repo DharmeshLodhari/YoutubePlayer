@@ -16,26 +16,24 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:uuid/uuid.dart';
-import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
+import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
-import '../screens/more_apps/business/business_auth.dart';
 import '../screens/more_apps/messaging/chat/utils.dart';
 import '../screens/more_apps/payment_and_banking/models/transactions.dart';
-import '../screens/more_apps/user_profile/models/user.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
 
 export 'colors.dart';
 export 'common.dart';
-import 'package:path_provider/path_provider.dart' as pathProvider;
 
 int amountLimit =
     10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
@@ -187,6 +185,10 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       filterQuality: FilterQuality.high,
     );
 
+getUserName(BuildContext context) {
+  return Provider.of<UserBloc>(context, listen: false).user.userName;
+}
+
 Widget getCircularUserAvatar(String imgUrl,
     {Color borderColor = Colors.black}) {
   return Container(
@@ -197,6 +199,7 @@ Widget getCircularUserAvatar(String imgUrl,
       border: Border.all(color: borderColor, width: 2),
       shape: BoxShape.circle,
       image: DecorationImage(
+        fit: BoxFit.cover,
         image: CachedNetworkImageProvider(
           imgUrl,
         ),
@@ -744,11 +747,17 @@ String? validateSlydoName(String userInput) {
   }
 }
 
-String truncateString({required String str, required int lengthToTruncateAt}) {
+String truncateString(
+    {required String str,
+    required int lengthToTruncateAt,
+    bool showEllipsis = true}) {
   if (str.length <= lengthToTruncateAt) {
     return str;
   }
-  return '${str.substring(0, lengthToTruncateAt)}...';
+
+  return showEllipsis
+      ? '${str.substring(0, lengthToTruncateAt)}...'
+      : '${str.substring(0, lengthToTruncateAt)}';
 }
 
 String slydoNameMsg = 'You can not use slydo in name';
@@ -1001,4 +1010,35 @@ Future<bool> checkStoragePermission() async {
   }
 
   return false;
+}
+
+String toTimeAgoLabel({required DateTime dateTime}) {
+  final now = DateTime.now();
+  final durationSinceNow = now.difference(dateTime);
+
+  final inDays = durationSinceNow.inDays;
+  if (inDays >= 1) {
+    return (inDays / 7).floor() >= 1
+        ? 'last week'
+        : inDays >= 2
+            ? '$inDays days ago'
+            : 'yesterday';
+  }
+
+  final inHours = durationSinceNow.inHours;
+  if (inHours >= 1) {
+    return inHours >= 2 ? '$inHours hours ago' : 'an hour ago';
+  }
+
+  final inMinutes = durationSinceNow.inMinutes;
+  if (inMinutes >= 2) {
+    return inHours >= 2
+        ? '$inMinutes minutes ago'
+        : '${durationSinceNow.inMinutes} minutes ago';
+  }
+
+  final inSeconds = durationSinceNow.inSeconds;
+  return (inSeconds >= 3 && inSeconds < 61)
+      ? '$inSeconds seconds ago'
+      : 'just now';
 }

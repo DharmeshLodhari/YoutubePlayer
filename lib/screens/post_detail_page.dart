@@ -5,6 +5,7 @@ import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -33,7 +34,6 @@ import 'more_apps/user_post/models/user_post.dart';
 import 'more_apps/user_post/tile/user_post_tile.dart';
 import 'more_apps/user_post/user_post_auth.dart';
 import 'more_apps/user_profile/models/user.dart';
-import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
 
 class PostDetailPage extends StatefulWidget {
   final String? postId;
@@ -72,6 +72,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   @override
   void initState() {
     super.initState();
+    debugPrint('POST ID ---> ${widget.postId}');
     getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
     // if (widget.postType == PostType.blog) {
     // } else {
@@ -664,7 +665,6 @@ class _PostDetailPageScaffoldBodyState
   }
 
   Widget bloggerDetail() {
-    debugPrint('AUTH NAM :: ${widget.authorName}');
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: InkWell(

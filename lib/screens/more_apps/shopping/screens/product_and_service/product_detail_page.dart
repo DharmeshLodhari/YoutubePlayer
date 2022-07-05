@@ -18,7 +18,6 @@ import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/item_display_card.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -77,13 +76,24 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   bool isReviewLoading = false;
   int? reviewCount;
 
+  String? productId;
+  bool productIsLoading = false;
+
   @override
   void initState() {
-    product = arguments['product'];
+    product = arguments[
+        'product']; // We get this when we are coming from the product list page.
+    if (product != null) {
+      productId = product!.id;
+    } else {
+      productId = arguments[
+          'productId']; // We get this when we are coming from the moment detail page.
+    }
+
     userBloc = Provider.of<UserBloc>(context, listen: false);
 
     if (mounted) setState(() {});
-    fetchProduct(product!.id.toString());
+    fetchProduct(productId!);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -99,9 +109,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   void fetchProduct(String productId) async {
+    debugPrint('PRODUCT ID ::$productId');
+    if (mounted)
+      setState(() {
+        productIsLoading = true;
+      });
     await _auth.getProduct(productId).then((value) {
       product = value;
       imgList = product!.serverImages;
+      productIsLoading = false;
       if (mounted) setState(() {});
     });
   }
@@ -178,6 +194,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    if (productIsLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularLoadingIndicator(),
+        ),
+      );
+    }
     basketBloc = Provider.of<BasketBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 

@@ -12,7 +12,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../routes/route_constants.dart';
@@ -210,8 +209,11 @@ class _UserProductListState extends State<UserProductList> {
                           filterQuality: FilterQuality.high,
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, Routes.PRODUCT,
-                              arguments: {"product": productList[index]});
+                          Navigator.pushNamed(
+                            context,
+                            Routes.PRODUCT,
+                            arguments: {"product": productList[index]},
+                          );
                         },
                       ),
                       widget.isOwner

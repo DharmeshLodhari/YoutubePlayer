@@ -19,6 +19,7 @@ typedef Widget? BuildCounterWidget(
 
 // ignore: must_be_immutable
 class CustomizedTextFormField extends StatefulWidget {
+  final bool autoFocus;
   final String? helperText;
   final Widget? suffixIcon;
   TextInputAction? textInputAction;
@@ -56,6 +57,7 @@ class CustomizedTextFormField extends StatefulWidget {
   Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
 
   CustomizedTextFormField({
+    this.autoFocus = false,
     this.helperText,
     this.verifyInputFromServerFunc,
     this.whenToVerifyInputFromServer,
@@ -146,6 +148,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               )
             : SizedBox.shrink(),
         TextFormField(
+          autofocus: widget.autoFocus,
           onFieldSubmitted: widget.onFieldSubmitted,
           textInputAction: widget.textInputAction,
           readOnly: widget.isReadOnly,

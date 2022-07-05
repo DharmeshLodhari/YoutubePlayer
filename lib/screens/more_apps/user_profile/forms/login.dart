@@ -13,7 +13,6 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/country_picker_dialog.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -29,7 +28,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../routes/route_constants.dart';
-import '../../../../services/app_config_bloc.dart';
 
 class UserLogin extends StatefulWidget {
   @override

@@ -229,7 +229,8 @@ class _AddVideoState extends State<AddVideo> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 InkWell(
-                  onTap: () {
+                  onTap:  mediaCaptured()
+                      ? null :() {
                     if (!cameraController.value.isTakingPicture &&
                         !cameraController.value.isRecordingVideo) {
                       pickImageFromMedia();
@@ -270,11 +271,11 @@ class _AddVideoState extends State<AddVideo> {
                               videoTimer = 30;
                               stopVideoRecording();
                             },
-                      onTap: () {
-                        debugPrint('IMAGE PATH XFILE ::');
-                        onTakePictureButtonPressed();
-                        // takePictureOrVideo(mediaType: MediaType.picture);
-                      },
+                      onTap: mediaCaptured()
+                          ? null
+                          : () {
+                              onTakePictureButtonPressed();
+                            },
                       child: CircleAvatar(
                         radius: 30,
                         backgroundColor: Colors.white,
@@ -342,8 +343,7 @@ class _AddVideoState extends State<AddVideo> {
   }
 
   void onTakePictureButtonPressed() {
-    debugPrint('IMAGE PATH XFILE :::');
-
+    debugPrint('onTakePictureButtonPressed');
     takePictureOrVideo(mediaType: MediaType.picture).then((file) async {
       if (file != null) {
         debugPrint('IMAGE PATH XFILE -> $file');
@@ -358,6 +358,7 @@ class _AddVideoState extends State<AddVideo> {
   }
 
   Future<XFile?> takePictureOrVideo({required MediaType mediaType}) async {
+    debugPrint('Trying to take picture');
     if (!cameraController.value.isInitialized) {
       showToast(message: 'Error: select a camera first.');
       return null;
@@ -370,6 +371,8 @@ class _AddVideoState extends State<AddVideo> {
 
     try {
       if (mediaType == MediaType.picture) {
+        debugPrint('Taking picture');
+
         final XFile file = await cameraController.takePicture();
         debugPrint('PICTURE TAKEN :: $file');
 

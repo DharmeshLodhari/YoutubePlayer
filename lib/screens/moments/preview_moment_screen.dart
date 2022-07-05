@@ -5,7 +5,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -139,11 +138,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     momentTitle = value;
                   },
                 ),
-                // CustomizedTextFormField(
-                //   // controller: momentTextCtrl,
-                //   hintText: 'Enter caption...',
-                //   onChanged: (value) {},
-                // ),
                 SizedBox(height: 10),
                 previewMomentSwitchOptions(
                   title: 'Make Moment Public',
@@ -183,12 +177,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     },
                   ),
                 ),
-                SizedBox(height: 15),
-                dropDownPickItemWidget(
-                  label: 'Pick attachment',
-                  selectedItem: pickedAttachmentType,
-                  onTap: () => pickAttachmentWidget(),
-                ),
+                // SizedBox(height: 15),
+                // dropDownPickItemWidget(
+                //   label: 'Pick attachment',
+                //   selectedItem: pickedAttachmentType,
+                //   onTap: () => pickAttachmentWidget(),
+                // ),
                 SizedBox(height: 8),
                 attachmentItemLoading
                     ? Center(child: CircularLoadingIndicator())

@@ -315,9 +315,6 @@ class AuthService {
       }
     });
 
-    // if (jwt == null) {
-    //   fetchNewToken();
-    // }
 
     return jwt!;
   }

@@ -70,6 +70,7 @@ class ExploreMomentsModel {
 }
 
 class MomentsModel {
+  bool? payMe;
   String? id;
   int? likes;
   int? dislikes;
@@ -85,12 +86,17 @@ class MomentsModel {
   String? expireAt;
   bool? isPublic;
   List<dynamic>? tags;
+  int? numberOfComments;
+  Map<String, dynamic>? attachment;
 
   MomentsModel({
     this.id,
+    this.payMe = true,
     this.tags,
     this.likes,
     this.dislikes,
+    this.attachment,
+    this.numberOfComments,
     this.mediaType,
     this.avatar,
     this.ownerName,
@@ -105,10 +111,13 @@ class MomentsModel {
 
   MomentsModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    payMe = json['enable_payme'];
     tags = json['tags'];
     likes = json['likes'];
     dislikes = json['dislikes'];
     mediaType = json['media_type'];
+    attachment = json['attachment'] ?? {};
+    numberOfComments = json['number_of_comments'];
     avatar = json['avatar'];
     ownerName = json['owner_name'];
     media = json['media'];
@@ -119,5 +128,46 @@ class MomentsModel {
     createdAt = json['created_at'];
     expireAt = json['expire_at'];
     isPublic = json['is_public'];
+  }
+}
+
+class SearchMomentModel {
+  String? id;
+  String? owner;
+  String? avatar;
+  String? createdAt;
+  String? mediaType;
+  String? ownerName;
+  List<String>? tags;
+
+  SearchMomentModel(
+      {this.id,
+      this.owner,
+      this.createdAt,
+      this.tags,
+      this.mediaType,
+      this.avatar,
+      this.ownerName});
+
+  SearchMomentModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    owner = json['owner'];
+    createdAt = json['created_at'];
+    tags = json['tags'].cast<String>();
+    mediaType = json['media_type'];
+    avatar = json['avatar'];
+    ownerName = json['owner_name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['owner'] = this.owner;
+    data['created_at'] = this.createdAt;
+    data['tags'] = this.tags;
+    data['media_type'] = this.mediaType;
+    data['avatar'] = this.avatar;
+    data['owner_name'] = this.ownerName;
+    return data;
   }
 }

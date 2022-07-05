@@ -14,6 +14,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
+
 import '../../constant.dart';
 import '../../data/state_notifier.dart';
 import '../../locale/app_localization.dart';
@@ -125,9 +126,13 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   getAppConfigurationModelFromLocalStorage() async {
+    debugPrint('GETTING APP CONFIGURATION -> $appConfigurationModel');
+
     String? str = await storage.read(key: appConfigurationKey);
-    appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    debugPrint('APP CONFIGURATION MOD -> $appConfigurationModel');
+    if (str != null) {
+      appConfigurationModel = AppConfigurationModel.deserialize(str);
+    }
+    debugPrint('APP CONFIGURATION MODEL -> $appConfigurationModel');
     if (mounted) setState(() {});
   }
 
@@ -171,7 +176,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   getExploreMoments() async {
-    debugPrint('GETTING EXPLORE MOMENTS');
     if (!isExploreMomentsLoading) {
       if (nextExploreMoments != null && !isExploreMomentsLoading) {
         if (mounted) {
@@ -297,15 +301,22 @@ class _MomentsScreenState extends State<MomentsScreen> {
         child: ListView(
           controller: _exploreScrollController,
           children: [
-            CustomizedTextFormField(
-              hintText: 'Search',
-              suffixIcon: IconButton(
-                icon: Icon(
-                  SlydoAppIcon.search,
-                  color: darkGrey,
-                  size: 14,
+            InkWell(
+              onTap: () {
+                // NavigationUtil.push(context, screen: MomentSearchScreen());
+              },
+              child: IgnorePointer(
+                child: CustomizedTextFormField(
+                  hintText: 'Search moment',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      SlydoAppIcon.search,
+                      color: darkGrey,
+                      size: 14,
+                    ),
+                    onPressed: () {},
+                  ),
                 ),
-                onPressed: () {},
               ),
             ),
             SizedBox(height: 16),
@@ -510,6 +521,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   void getCurrentUserMoment() {
+    debugPrint('GETTING CURRENT USER MOMENT');
     MomentsService()
         .getMomentsWithOwnerName(owner: userBloc.user.userName!)
         .then((momentsModelList) {
@@ -689,7 +701,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                         ),
                       )
                     : SizedBox.shrink(),
-              )
+              ),
             ],
           ),
         ),
@@ -825,17 +837,13 @@ Widget momentListLengthWidget(int? length, {double? fontSize}) {
         );
 }
 
-/*
-* 1) Fix uploading moment.
-* 2) Fix designs.*/
-
 Widget _getMediaRenderer({required MomentsModel momentModel}) {
   if (momentModel.mediaPoster != null) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
         imageUrl: momentModel.mediaPoster!,
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
         placeholder: (context, _) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -853,7 +861,7 @@ Widget _getMediaRenderer({required MomentsModel momentModel}) {
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
         imageUrl: momentModel.gif!,
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
       ),
     );
   }

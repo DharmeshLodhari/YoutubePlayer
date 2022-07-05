@@ -8,6 +8,7 @@ import 'package:http/http.dart';
 
 import '../../data/environment.dart';
 import '../../utils/util.dart';
+import 'models/comment_model.dart';
 
 class MomentsService extends AuthService {
   Future getExploreMoments(String? next, String? previous) async {
@@ -118,6 +119,75 @@ class MomentsService extends AuthService {
     }
   }
 
+  Future<List<MomentsModel>> getSingleMoment({required String momentId}) async {
+    String url = AppConfig.baseUrl + "/api/v1/social/moments/$momentId/";
+
+    final headers = await getAuthHeaders();
+
+    Response response = await httpGet(url, headers: headers);
+
+    debugPrint('SINGLE MOMENT ::: ${response.body}');
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      return [MomentsModel.fromJson(jsonData)];
+    } else {
+      return Future.error(response.body);
+    }
+  }
+
+  Future<BasePaginationModel<List<CommentModel>>> getMomentComments(
+      {required String? nextUrl, required String momentID}) async {
+    String? url = AppConfig.baseUrl +
+        "/api/v1/social/moments/comments/$momentID/?page_size=8";
+
+    if (nextUrl != null) {
+      url = getSecureUrl(url: nextUrl);
+    }
+
+    final headers = await getAuthHeaders();
+
+    Response response = await httpGet(url, headers: headers);
+
+    debugPrint('COMMENTS MOMENTS ::: ${response.statusCode}');
+    debugPrint('COMMENTS MOMENTS ::: ${response.body}');
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      List results = jsonData['results'];
+
+      return BasePaginationModel<List<CommentModel>>.fromJson(
+        jsonData,
+        results.map((e) => CommentModel.fromJson(e)).toList(),
+      );
+    } else {
+      return Future.error(response.body);
+    }
+  }
+
+  Future<bool> addCommentToMoment(
+      {required String momentID, required Map<String, String> data}) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/social/moments/add-comments/$momentID/";
+
+    debugPrint('MOMENT ID -> $momentID');
+    final headers = await getAuthHeaders();
+
+    var _data = jsonEncode(data);
+
+    Response response = await httpPost(url, headers: headers, body: _data);
+
+    debugPrint('ADD COMMENTS MOMENTS ::: ${response.statusCode}');
+    debugPrint('ADD COMMENTS MOMENTS ::: ${response.body}');
+    if (response.statusCode == 200) {
+      return true;
+      // List jsonData = jsonDecode(response.body)['moments'];
+
+      // return jsonData.map((e) => MomentsModel.fromJson(e)).toList();
+    } else {
+      return Future.error(response.body);
+    }
+  }
+
   Future<bool> createMoment(
       {required CreateMomentModel createMomentModel}) async {
     String url = AppConfig.baseUrl + "/api/v1/social/moments/";
@@ -223,6 +293,44 @@ class MomentsService extends AuthService {
                 : jsonData);
       }
       return Future.error("Server Error");
+    }
+  }
+
+  Future<bool> deleteMoment(String momentId) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/moments/$momentId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    debugPrint(
+        "URL TO DELETE $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      return true;
+    } else {
+      return Future.error(response.body);
+    }
+  }
+
+  Future<BasePaginationModel<List<SearchMomentModel>>> searchMoment(
+      {required String searchText}) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/social/moments/search/?q=$searchText";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL TO DELETE $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      List results = jsonData['results'];
+
+      return BasePaginationModel<List<SearchMomentModel>>.fromJson(
+        jsonData,
+        results.map((e) => SearchMomentModel.fromJson(e)).toList(),
+      );
+    } else {
+      return Future.error(response.body);
     }
   }
 }
