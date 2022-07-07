@@ -45,6 +45,7 @@ import 'package:workmanager/workmanager.dart';
 import 'locale/app_localization.dart';
 
 late List<CameraDescription> cameras;
+late AppConfigurationModel? appConfigModel;
 
 final FlutterSecureStorage storage = FlutterSecureStorage();
 
@@ -63,16 +64,36 @@ void callbackDispatcher() {
 
   Workmanager().executeTask((task, inputData) async {
     await AppConfigurationService().getAppConfigurations().then(
-      (value) {
+      (value) async {
         debugPrint('APP CONFIGS ::: $value');
 
         storage.write(
             key: appConfigurationKey,
             value: AppConfigurationModel.serialize(value!));
+
+        String? str = await storage.read(key: appConfigurationKey);
+        debugPrint('STORAGE -> $str');
+
+        if (str != null) {
+          AppConfigModel().appConfigurationModel =
+              AppConfigurationModel.deserialize(str);
+          // _appConfigurationModel = AppConfigurationModel.deserialize(str);
+        }
+        debugPrint(
+            'APP CONFIG STORAGE -> ${AppConfigModel().appConfigurationModel}');
       },
     );
     return Future.value(true);
   });
+}
+
+class AppConfigModel {
+  static final AppConfigModel _singleton = AppConfigModel.createInstance();
+  AppConfigModel.createInstance();
+  factory AppConfigModel() {
+    return _singleton;
+  }
+  AppConfigurationModel? appConfigurationModel;
 }
 
 void main() async {
@@ -122,6 +143,8 @@ void main() async {
 }
 
 void initializeBackgroundService() async {
+  debugPrint('INITIALIZING BACKGROUND SERVICE');
+
   try {
     await AppConfigurationService().getAppConfigurations().then(
       (value) async {
@@ -130,6 +153,17 @@ void initializeBackgroundService() async {
         storage.write(
             key: appConfigurationKey,
             value: AppConfigurationModel.serialize(value!));
+
+        String? str = await storage.read(key: appConfigurationKey);
+        debugPrint('STORAGE 2 -> $str');
+
+        if (str != null) {
+          AppConfigModel().appConfigurationModel =
+              AppConfigurationModel.deserialize(str);
+          // _appConfigurationModel = AppConfigurationModel.deserialize(str);
+        }
+        debugPrint(
+            'APP CONFIG STORAGE 2 -> ${AppConfigModel().appConfigurationModel}');
       },
     );
   } catch (e) {

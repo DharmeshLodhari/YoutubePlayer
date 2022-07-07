@@ -24,8 +24,8 @@ class AppConfigurationService extends AuthService {
   Future<AppConfigurationModel?> getAppConfigurations() async {
     String url = AppConfig.baseUrl + "/api/v1/user/app-settings";
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    var headers = getNonAuthHeader();
+    var response = await httpGet(url, headers: headers as Map<String, dynamic>?);
 
     debugPrint('SETTINGS :: ${response.body}');
 

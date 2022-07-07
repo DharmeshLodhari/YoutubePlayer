@@ -1,248 +1,302 @@
-// import 'package:Slydo/screens/moments/models/moments_model.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:flutter/material.dart';
-//
-// import '../../utils/colors.dart';
-// import '../../utils/navigation_util.dart';
-// import '../../utils/util.dart';
-// import '../../widget/customized_textform_field.dart';
-// import 'moment_detail_page.dart';
-// import 'moments_service.dart';
-//
-// class MomentSearchScreen extends StatefulWidget {
-//   const MomentSearchScreen({Key? key}) : super(key: key);
-//
-//   @override
-//   _MomentSearchScreenState createState() => _MomentSearchScreenState();
-// }
-//
-// class _MomentSearchScreenState extends State<MomentSearchScreen> {
-//
-//   List<SearchMomentModel> searchMomentModelList = [];
-//
-//   _getMoments(){
-//
-//   }
-//   AppBar appBar() {
-//     return AppBar(
-//       elevation: 0,
-//       backgroundColor: Colors.white,
-//       titleSpacing: 0,
-//       automaticallyImplyLeading: false,
-//       leading: IconButton(
-//         icon: Icon(
-//           Icons.keyboard_arrow_left,
-//           color: navyBlue,
-//           size: 24,
-//         ),
-//         onPressed: () {
-//           Navigator.pop(context);
-//         },
-//       ),
-//       title: Text(
-//         "Search moment",
-//         style: TextStyle(
-//           color: blackFont,
-//           fontSize: 18,
-//           fontWeight: FontWeight.bold,
-//         ),
-//       ),
-//     );
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: appBar(),
-//       body: SafeArea(
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Column(
-//             children: [
-//               CustomizedTextFormField(
-//                 hintText: 'Search',
-//                 autoFocus: true,
-//                 onChanged: (value){
-//                   _getMoments(value);
-//                 },
-//               ),
-//
-//               GridView.builder(
-//                 shrinkWrap: true,
-//                 padding: EdgeInsets.zero,
-//                 physics: NeverScrollableScrollPhysics(),
-//                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-//                   maxCrossAxisExtent: 200,
-//                   mainAxisExtent: 300,
-//                 ),
-//                 itemCount: searchMomentModelList.length,
-//                 itemBuilder: (context, index) {
-//                   return ExploreMomentsCard(
-//                     index: index,
-//                     exploreMomentsModelList: exploreMomentsList,
-//                   );
-//                 },
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-// class SearchMomentSingleWidget extends StatelessWidget {
-//   final SearchMomentModel searchMomentModel;
-//   const SearchMomentSingleWidget({Key? key, required this.searchMomentModel}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return InkWell(
-//       onTap: () {
-//         MomentsService()
-//             .getSingleMoment(momentId: searchMomentModel.id!)
-//             .then((momentsModelList) {
-//           NavigationUtil.push(
-//             context,
-//             screen: MomentsDetailsScreen(
-//               indexOfMoment: 0,
-//               // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
-//               momentsModelList: [momentsModelList],
-//             ),
-//           );
-//         }).catchError((e) {
-//           showToast(message: 'ERROR -> $e');
-//         });
-//       },
-//       child: Card(
-//         color: Colors.grey,
-//         shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadius.circular(6),
-//         ),
-//         child: Stack(
-//           fit: StackFit.expand,
-//           children: [
-//             _getMediaRenderer(
-//                 momentModel: exploreMomentsModelList[index].moments!.first),
-//             Align(
-//               alignment: Alignment.topLeft,
-//               child: Padding(
-//                 padding: const EdgeInsets.only(left: 4.0),
-//                 child: SizedBox(
-//                   width: 25,
-//                   child: getCircularUserAvatar(
-//                       exploreMomentsModelList[index].avatar!),
-//                 ),
-//               ),
-//             ),
-//             Align(
-//               alignment: Alignment.bottomLeft,
-//               child: Padding(
-//                 padding:
-//                 const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-//                 child: Column(
-//                   mainAxisSize: MainAxisSize.min,
-//                   crossAxisAlignment: CrossAxisAlignment.stretch,
-//                   children: [
-//                     Text(
-//                       truncateString(
-//                         str: exploreMomentsModelList[index].ownerName!,
-//                         lengthToTruncateAt: 20,
-//                       ),
-//                       style: TextStyle(
-//                         fontSize: 12,
-//                         shadows: [
-//                           Shadow(
-//                             blurRadius: 4.0,
-//                             color: blackFont,
-//                             offset: Offset(0.0, 0),
-//                           ),
-//                         ],
-//                         color: Colors.white,
-//                         fontWeight: FontWeight.w800,
-//                       ),
-//                     ),
-//                     SizedBox(height: 3),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//             Align(
-//               alignment: Alignment.topRight,
-//               child: momentListLengthWidget(
-//                 exploreMomentsModelList[index].moments!.length,
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//
-//   }
-// }
-//
-// Widget _getMediaRenderer({required SearchMomentModel searchMomentModel}) {
-//   if (searchMomentModel.mediaPoster != null) {
-//     return ClipRRect(
-//       borderRadius: BorderRadius.circular(10),
-//       child: CachedNetworkImage(
-//         imageUrl: momentModel.mediaPoster!,
-//         fit: BoxFit.fill,
-//         placeholder: (context, _) {
-//           return ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: Image.asset(
-//               'assets/images/moment_placeholder_image.png',
-//               fit: BoxFit.cover,
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-//   if (momentModel.gif != null) {
-//     return ClipRRect(
-//       borderRadius: BorderRadius.circular(10),
-//       child: CachedNetworkImage(
-//         imageUrl: momentModel.gif!,
-//         fit: BoxFit.fill,
-//       ),
-//     );
-//   }
-//   if (momentModel.mediaType == "image") {
-//     return ClipRRect(
-//       borderRadius: BorderRadius.circular(10),
-//       child: CachedNetworkImage(
-//         imageUrl: momentModel.media!,
-//         fit: BoxFit.fill,
-//         placeholder: (context, _) {
-//           return ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: Image.asset(
-//               'assets/images/moment_placeholder_image.png',
-//               fit: BoxFit.cover,
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-//
-//   if (momentModel.mediaType == "video") {
-//     if (momentModel.mediaPoster == null) {
-//       return ClipRRect(
-//         borderRadius: BorderRadius.circular(10),
-//         child: Image.asset(
-//           'assets/images/moment_placeholder_image.png',
-//           fit: BoxFit.cover,
-//         ),
-//       );
-//     } else {
-//       return Container();
-//     }
-//   } else {
-//     return Container();
-//   }
-// }
-//
-//
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
+import '../../routes/route_constants.dart';
+import '../../utils/navigation_util.dart';
+import '../../utils/util.dart';
+import '../../widget/customized_textform_field.dart';
+import 'moment_detail_page.dart';
+import 'moments_service.dart';
+
+class MomentSearchScreen extends StatefulWidget {
+  const MomentSearchScreen({Key? key}) : super(key: key);
+
+  @override
+  _MomentSearchScreenState createState() => _MomentSearchScreenState();
+}
+
+class _MomentSearchScreenState extends State<MomentSearchScreen> {
+  String? nextPage; //For pagination.
+  String userSearchedText = '';
+  bool searchMomentLoading = false;
+  List<SearchMomentModel> searchMomentModelList = [];
+  ScrollController _scrollController = ScrollController();
+
+  AppBar appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        "Search moment",
+        style: TextStyle(
+          color: blackFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  _getSearchedMoments({String? searchedText}) {
+    debugPrint('NEXT PAGE --> $nextPage');
+    debugPrint('ZERO RESULT --> ${searchMomentModelList.length}');
+
+    MomentsService()
+        .searchMoment(nextPage: nextPage, searchText: searchedText)
+        .then((value) {
+      debugPrint('FIRST RESULT --> ${searchMomentModelList.length}');
+
+      debugPrint('SECOND RESULT --> ${value.result.length}');
+
+      searchMomentModelList.addAll(value.result);
+      debugPrint('FINAL RESULT --> ${searchMomentModelList.length}');
+      nextPage = value.next;
+      searchMomentLoading = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: appBar(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              CustomizedTextFormField(
+                hintText: 'Search',
+                autoFocus: true,
+                onChanged: (value) {
+                  userSearchedText = value;
+                  nextPage = null;
+                  searchMomentModelList.clear();
+                  debugPrint('LIST - $searchMomentModelList');
+                  searchMomentLoading = true;
+                  if (mounted) setState(() {});
+
+                  _getSearchedMoments(searchedText: value);
+                },
+              ),
+              SizedBox(height: 10),
+              searchMomentLoading
+                  ? Center(
+                      child: CircularLoadingIndicator(),
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        controller: _scrollController,
+                        itemCount: searchMomentModelList.length + 1,
+                        itemBuilder: (context, index) {
+                          if (searchMomentModelList.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'Search for a moment',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            );
+                          }
+                          if (index == searchMomentModelList.length) {
+                            if (nextPage != null) {
+                              _getSearchedMoments();
+                            }
+                            return Center(
+                              child: Opacity(
+                                opacity: nextPage != null ? 1 : 0,
+                                child: CircularLoadingIndicator(
+                                  color: Colors.red,
+                                ),
+                              ),
+                            );
+                          }
+                          return SearchMomentSingleWidget(
+                            userTextToSearch: userSearchedText,
+                            searchMomentModel: searchMomentModelList[index],
+                          );
+                        },
+                      ),
+                    )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SearchMomentSingleWidget extends StatelessWidget {
+  final String userTextToSearch;
+  final SearchMomentModel searchMomentModel;
+  const SearchMomentSingleWidget(
+      {Key? key,
+      required this.userTextToSearch,
+      required this.searchMomentModel})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () {
+          MomentsService()
+              .getSingleMoment(momentId: searchMomentModel.id!)
+              .then((momentsModelList) {
+            NavigationUtil.push(
+              context,
+              screen: MomentsDetailsScreen(
+                indexOfMoment: 0,
+                // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
+                momentsModelList: [momentsModelList],
+              ),
+            );
+          }).catchError((e) {
+            showToast(message: 'ERROR -> $e');
+          });
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: EdgeInsets.zero,
+            shadowColor: boxShadowTwo,
+            elevation: 0,
+            child: Container(
+              decoration: decorateBox(),
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      dense: true,
+                      title: Row(
+                        children: [
+                          Text(
+                            truncateString(str: searchMomentModel.owner!, lengthToTruncateAt: 35),
+                            maxLines: 1,
+                            style: TextStyle(
+                                color: blackFont,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14),
+                          ),
+                          Text(' • '),
+                          Text(
+                            getGetMomentDetailDateTime(
+                                searchMomentModel.createdAt!),
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: SingleChildScrollView(
+                        child: Row(
+                          children: getSubtitleTextWidget(
+                              userTextToSearch: userTextToSearch),
+                        ),
+                      ),
+                      leading: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, Routes.USER_PROFILE,
+                              arguments: {
+                                "searchedUserName": searchMomentModel.owner,
+                              });
+                        },
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: blackFont, width: 2),
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: CachedNetworkImageProvider(
+                                searchMomentModel.avatar!,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+
+  // Padding(
+  // padding: const EdgeInsets.symmetric(vertical: 2.0),
+  // child: Card(
+  // color: Colors.white,
+  // shape: RoundedRectangleBorder(
+  // borderRadius: BorderRadius.circular(6),
+  // ),
+  // child: ListTile(
+  // leading: Container(
+  // width: 30,
+  // height: 30,
+  // padding: EdgeInsets.all(6),
+  // decoration: BoxDecoration(
+  // border: Border.all(color: blackFont, width: 2),
+  // shape: BoxShape.circle,
+  // image: DecorationImage(
+  // fit: BoxFit.cover,
+  // image: CachedNetworkImageProvider(
+  // searchMomentModel.avatar!,
+  // ),
+  // ),
+  // ),
+  // ),
+  // title: Text(searchMomentModel.owner!),
+  // subtitle: SingleChildScrollView(
+  // scrollDirection: Axis.horizontal,
+  // child: Row(
+  // children: getSubtitleText(userTextToSearch: userTextToSearch),
+  // ),
+  // ),
+  // ),
+  // ),
+  // )
+
+  List<Widget> getSubtitleTextWidget({required String userTextToSearch}) {
+    List<Widget> widgets = [];
+
+    searchMomentModel.tags!.forEach((tag) {
+      widgets.add(
+        Text(
+          '#$tag ',
+          style: TextStyle(
+              color: darkGrey,
+              fontSize: 12,
+              //If the tag contains what the user enters, that particular tag will be displayed as bold (or normal if otherwise).
+              fontWeight: tag.contains(userTextToSearch)
+                  ? FontWeight.bold
+                  : FontWeight.normal),
+        ),
+      );
+    });
+    return widgets.take(3).toList();
+  }
+}

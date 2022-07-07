@@ -29,6 +29,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../locale/app_localization.dart';
+import '../../../../../utils/navigation_util.dart';
+import '../../../../moments/moment_detail_page.dart';
+import '../../../../moments/moments_service.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
@@ -73,6 +76,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool isUserIsSimpleUser = false;
   bool showProductTab = false;
   bool showServiceTab = false;
+  bool myMomentsLoading = false;
 
   @override
   void initState() {
@@ -330,20 +334,20 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: 16,
-                        ),
+                        // SizedBox(
+                        //   height: 16,
+                        // ),
+                        // Text(
+                        //   truncateString(
+                        //       str: searchedUser!.displayName()!,
+                        //       lengthToTruncateAt: 53),
+                        //   style: TextStyle(
+                        //       fontSize: 18,
+                        //       fontWeight: FontWeight.w700,
+                        //       color: blackFont),
+                        // ),
                         Text(
-                          searchedUser!.displayName()!.length <= 53
-                              ? searchedUser!.displayName()!
-                              : '${searchedUser!.displayName()!.substring(0, 54)}...',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                        ),
-                        Text(
-                          searchedUser!.userName!,
+                          '@${searchedUser!.userName!}',
                           style: TextStyle(
                               fontSize: 14.0,
                               color: darkGrey,
@@ -352,10 +356,78 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         SizedBox(
                           height: 8,
                         ),
+                        InkWell(
+                          onTap: myMomentsLoading
+                              ? null
+                              : () {
+                                  getCurrentUserMoment();
+                                },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                border:
+                                    Border.all(color: naturalGreen, width: 2)),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                myMomentsLoading
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularLoadingIndicator(),
+                                      )
+                                    : Icon(
+                                        Icons.play_circle_fill,
+                                        color: Colors.black,
+                                        size: 20,
+                                      ),
+                                SizedBox(width: 6),
+                                Text(
+                                  'Moments',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
             ),
           );
+  }
+
+  void getCurrentUserMoment() {
+    myMomentsLoading = true;
+    if (mounted) setState(() {});
+    MomentsService()
+        .getMomentsWithOwnerName(owner: userBloc.user.userName!)
+        .then((momentsModelList) {
+      myMomentsLoading = false;
+      if (mounted) setState(() {});
+      if (momentsModelList.isNotEmpty) {
+        NavigationUtil.push(
+          context,
+          screen: MomentsDetailsScreen(
+            indexOfMoment: 0,
+            // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
+            momentsModelList: [momentsModelList],
+          ),
+        );
+      } else {
+        showToast(message: 'You do not have any moment.');
+      }
+    }).catchError((e) {
+      myMomentsLoading = false;
+      if (mounted) setState(() {});
+      showToast(message: 'ERROR -> $e');
+    });
   }
 
   Widget getProfileCover() {
@@ -422,7 +494,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 shape: BoxShape.circle),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushNamed("/photo-viewer",
+                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                     arguments: searchedUser!.avatar);
               },
               child: searchedUser?.type?.toLowerCase() != "user" &&
@@ -609,7 +681,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       index++;
 
       tabs.add(
-        getTabUI(title: "Post", tabIndex: index),
+        getTabUI(title: "Posts", tabIndex: index),
       );
     } else {
       int index = 0;
@@ -634,7 +706,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         index++;
       }
       tabs.add(
-        getTabUI(title: "Post", tabIndex: index),
+        getTabUI(title: "Posts", tabIndex: index),
       );
       index++;
       tabs.add(

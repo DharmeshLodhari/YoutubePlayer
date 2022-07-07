@@ -1,134 +1,32 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Slydo/screens/moments/models/create_moment_model.dart';
-import 'package:Slydo/screens/moments/moments_service.dart';
 import 'package:Slydo/screens/moments/preview_moment_screen.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
+
 import '../../main.dart';
-import '../../utils/video_player_controller/chewie_player.dart';
-import '../../widget/LoadingIndicator.dart';
 import '../../widget/image_crop.dart';
 
 class CreateMomentScreen extends StatefulWidget {
-  CreateMomentScreen({Key? key}) : super(key: key);
+  const CreateMomentScreen({Key? key}) : super(key: key);
 
   @override
-  State<CreateMomentScreen> createState() => _CreateMomentScreenState();
+  _CreateMomentScreenState createState() => _CreateMomentScreenState();
 }
 
 class _CreateMomentScreenState extends State<CreateMomentScreen> {
-  bool isPublic = false;
-  String? filePath = '';
-
-  final TextEditingController momentTextCtrl = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Create Moment'),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24),
-          child: Column(
-            children: [
-              CurvedButton(
-                text: 'Pick image',
-                onPressed: () async {
-                  filePath = await getFile(context);
-                  if (filePath != null) {
-                    setState(() {});
-                  }
-                },
-              ),
-              SizedBox(height: 20),
-              CurvedButton(
-                text: 'Pick video',
-                onPressed: () async {
-                  filePath = await getFile(context, fileType: MediaType.video);
-                },
-              ),
-              SizedBox(height: 20),
-              Text(filePath!.isNotEmpty
-                  ? filePath!.split('/').last
-                  : 'fileName'),
-              CustomizedTextFormField(
-                controller: momentTextCtrl,
-                hintText: 'Write your moment text...',
-              ),
-              Row(
-                children: [
-                  Text('Make Moment Public'),
-                  Switch(
-                    value: isPublic,
-                    onChanged: (value) {
-                      setState(() {
-                        isPublic = value;
-                      });
-                      debugPrint('is public :: $isPublic');
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              CurvedButton(
-                text: 'Create moment',
-                onPressed: () async {
-                  showDialog(
-                      context: context,
-                      builder: (dialogLoadingContext) => LoadingIndicator());
-
-                  MomentsService()
-                      .createMoment(
-                    createMomentModel: CreateMomentModel(
-                        filePath: filePath!,
-                        isPublic: isPublic,
-                        text: momentTextCtrl.text),
-                  )
-                      .then((created) {
-                    if (created == true) {
-                      Navigator.pop(context);
-                      Navigator.pop(context, true);
-                    }
-                  }).catchError((e) {
-                    Navigator.pop(context);
-                    showToast(message: 'Error message -> $e');
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AddVideo extends StatefulWidget {
-  const AddVideo({Key? key}) : super(key: key);
-
-  @override
-  _AddVideoState createState() => _AddVideoState();
-}
-
-class _AddVideoState extends State<AddVideo> {
   Timer? timer;
   String? videoPath;
   String? imagePath;
   int videoTimer = 30;
   bool videoPlayerLoading = false;
   late CameraController cameraController;
-  VideoPlayerController? videoPlayerController;
+  late VideoPlayerController videoPlayerController;
 
   @override
   void initState() {
@@ -157,7 +55,7 @@ class _AddVideoState extends State<AddVideo> {
   @override
   void dispose() {
     cameraController.dispose();
-    videoPlayerController?.dispose();
+    videoPlayerController.dispose();
     super.dispose();
   }
 
@@ -229,13 +127,14 @@ class _AddVideoState extends State<AddVideo> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 InkWell(
-                  onTap:  mediaCaptured()
-                      ? null :() {
-                    if (!cameraController.value.isTakingPicture &&
-                        !cameraController.value.isRecordingVideo) {
-                      pickImageFromMedia();
-                    }
-                  },
+                  onTap: mediaCaptured()
+                      ? null
+                      : () {
+                          if (!cameraController.value.isTakingPicture &&
+                              !cameraController.value.isRecordingVideo) {
+                            pickImageFromMedia();
+                          }
+                        },
                   child: Container(
                     height: 40,
                     width: 40,
@@ -358,7 +257,6 @@ class _AddVideoState extends State<AddVideo> {
   }
 
   Future<XFile?> takePictureOrVideo({required MediaType mediaType}) async {
-    debugPrint('Trying to take picture');
     if (!cameraController.value.isInitialized) {
       showToast(message: 'Error: select a camera first.');
       return null;
@@ -373,10 +271,21 @@ class _AddVideoState extends State<AddVideo> {
       if (mediaType == MediaType.picture) {
         debugPrint('Taking picture');
 
-        final XFile file = await cameraController.takePicture();
+        final XFile? file = await cameraController.takePicture();
         debugPrint('PICTURE TAKEN :: $file');
 
-        return file;
+
+
+        if (file != null) {
+          String? croppedImagePath = await ImageCrop().cropImage(file.path);
+          if (croppedImagePath != null) {
+            return XFile(croppedImagePath);
+          } else {
+            return null;
+          }
+        } else {
+          return null;
+        }
       } else {
         cameraController.startVideoRecording();
         timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -393,6 +302,8 @@ class _AddVideoState extends State<AddVideo> {
           }
         });
 
+        //We do not need what it returns here (for video) so we can safely return null
+        // (the result for taking the video is done in stopRecording() method).
         return null;
       }
     } on CameraException catch (e) {
@@ -403,20 +314,19 @@ class _AddVideoState extends State<AddVideo> {
 
   setUpVideoPlayer() async {
     videoPlayerController = VideoPlayerController.file(File(videoPath!))
-      ..initialize().then((_) => videoPlayerController!.play())
+      ..initialize().then((_) => videoPlayerController.play())
       ..setLooping(true);
   }
 
   Widget showCapturedMedia() {
     if (videoPath != null) {
       setUpVideoPlayer();
-
       return Stack(
         children: [
           SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: VideoPlayer(videoPlayerController!),
+            child: VideoPlayer(videoPlayerController),
           ),
           Positioned(
             right: 15,
@@ -425,7 +335,7 @@ class _AddVideoState extends State<AddVideo> {
               onPressed: () {
                 setState(() {
                   videoPath = null;
-                  videoPlayerController?.dispose();
+                  videoPlayerController.dispose();
                 });
               },
               icon: Icon(Icons.close, size: 25, color: Colors.red),
@@ -433,6 +343,10 @@ class _AddVideoState extends State<AddVideo> {
           ),
         ],
       );
+
+      // if (videoPlayerController != null &&
+      //     videoPlayerController.value.isInitialized) {
+      // }
     }
 
     debugPrint('IMAGE PATH -> ::: $imagePath');

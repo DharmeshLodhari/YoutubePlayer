@@ -201,13 +201,19 @@ class MomentsService extends AuthService {
 
     request.files.add(mediaMultipartFile);
 
-    request.fields["text"] = createMomentModel.text;
+    if (createMomentModel.text != null) {
+      request.fields["text"] = createMomentModel.text!;
+    }
     if (createMomentModel.url != null && createMomentModel.url!.isNotEmpty) {
       request.fields["url"] = createMomentModel.url!;
     }
     request.fields["isPublic"] = jsonEncode(createMomentModel.isPublic);
 
     request.fields["tags"] = jsonEncode(createMomentModel.userTags);
+    request.fields["enable_payme"] = jsonEncode(createMomentModel.enablePayMe);
+    request.fields["enable_like"] = jsonEncode(createMomentModel.enableLike);
+    request.fields["enable_commenting"] =
+        jsonEncode(createMomentModel.enableCommenting);
 
     debugPrint('REQUEST FIELDS :: ${request.fields}');
     if (createMomentModel.mediaPoster != null) {
@@ -312,19 +318,27 @@ class MomentsService extends AuthService {
   }
 
   Future<BasePaginationModel<List<SearchMomentModel>>> searchMoment(
-      {required String searchText}) async {
-    var url =
-        AppConfig.baseUrl + "/api/v1/social/moments/search/?q=$searchText";
+      {required String? nextPage, required String? searchText}) async {
+    debugPrint('SEARCHED TEXT ---> $searchText');
+    var url;
+
+    if (nextPage != null) {
+      url = getSecureUrl(url: nextPage);
+    } else {
+      url = AppConfig.baseUrl +
+          "/api/v1/social/moments/search/?q=$searchText&page_size=4";
+    }
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
     debugPrint(
-        "URL TO DELETE $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        "SEARCH MOMENT $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       List results = jsonData['results'];
 
+      debugPrint('RESULT LENGTH -> ${results.length}');
       return BasePaginationModel<List<SearchMomentModel>>.fromJson(
         jsonData,
         results.map((e) => SearchMomentModel.fromJson(e)).toList(),

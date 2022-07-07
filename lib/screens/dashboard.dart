@@ -402,7 +402,9 @@ class _DashboardState extends State<Dashboard> {
               child: QRCodeView(arguments: {'isRequest': false}),
               wantKeepAlive: false,
             ),
-            KeepAlivePage(child: MomentsScreen()),
+            KeepAlivePage(child: MomentsScreen(),
+              wantKeepAlive: false,
+            ),
             KeepAlivePage(child: ConnectionDashboard()),
             KeepAlivePage(
               child: UserDashboard(),

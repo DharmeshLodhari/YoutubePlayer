@@ -417,8 +417,7 @@ class _SearchModuleState extends State<SearchModule> {
           isLoading = true;
           setState(() {});
         }
-        debugPrint('text ::: $autoCompleteSearchText');
-        debugPrint('text length ::: ${searchItemTextController.text.length}');
+
         Map<String, dynamic>? result = await _auth
             .searchEndpointPagination(
                 getSearchUrl(autoCompleteSearchText), next, previous)

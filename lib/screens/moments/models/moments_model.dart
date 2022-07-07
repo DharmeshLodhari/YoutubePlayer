@@ -73,6 +73,8 @@ class MomentsModel {
   bool? payMe;
   String? id;
   int? likes;
+  bool? enableLikes;
+  bool? enableCommenting;
   int? dislikes;
   String? mediaType;
   String? avatar;
@@ -93,6 +95,8 @@ class MomentsModel {
     this.id,
     this.payMe = true,
     this.tags,
+    this.enableLikes = false,
+    this.enableCommenting = false,
     this.likes,
     this.dislikes,
     this.attachment,
@@ -113,6 +117,8 @@ class MomentsModel {
     id = json['id'];
     payMe = json['enable_payme'];
     tags = json['tags'];
+    enableLikes = json['enable_like'];
+    enableCommenting = json['enable_commenting'];
     likes = json['likes'];
     dislikes = json['dislikes'];
     mediaType = json['media_type'];

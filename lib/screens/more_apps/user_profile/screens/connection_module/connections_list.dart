@@ -85,10 +85,10 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   getAppConfigurationModelFromLocalStorage() async {
-    bool con = await storage.containsKey(key: appConfigurationKey);
-
     String? str = await storage.read(key: appConfigurationKey);
-    appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    if (str != null) {
+      appConfigurationModel = AppConfigurationModel.deserialize(str);
+    }
   }
 
   void setupSearchChatConnection() {

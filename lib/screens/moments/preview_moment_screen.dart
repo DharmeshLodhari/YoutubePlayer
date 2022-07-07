@@ -18,6 +18,7 @@ import '../../utils/video_player_controller/chewie_player.dart';
 import '../../utils/video_player_controller/chewie_progress_colors.dart';
 import '../../widget/LoadingIndicator.dart';
 import '../../widget/dialog.dart';
+import '../../widget/rounded_background_icon.dart';
 import '../more_apps/shopping/shopping_auth.dart';
 import 'models/create_moment_model.dart';
 import 'moments_service.dart';
@@ -35,7 +36,8 @@ class PreviewMomentScreen extends StatefulWidget {
 class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   late UserBloc userBloc;
   bool isPublic = false;
-  bool enableLike = false;
+  bool enableLikes = false;
+  bool enablePayMe = false;
   bool enableCommenting = false;
   late String fileExtension;
   List<String> userTags = [];
@@ -156,10 +158,10 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                   title: 'Enable likes',
                   description: 'Enable this to allow others like your post',
                   switchBtn: Switch(
-                    value: enableLike,
+                    value: enableLikes,
                     onChanged: (value) {
                       setState(() {
-                        enableLike = value;
+                        enableLikes = value;
                       });
                     },
                   ),
@@ -173,6 +175,19 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     onChanged: (value) {
                       setState(() {
                         enableCommenting = value;
+                      });
+                    },
+                  ),
+                ),
+                previewMomentSwitchOptions(
+                  title: 'Enable Pay Me',
+                  description:
+                  'Enable this to allow others to pay you when you post your moment',
+                  switchBtn: Switch(
+                    value: enablePayMe,
+                    onChanged: (value) {
+                      setState(() {
+                        enablePayMe = value;
                       });
                     },
                   ),
@@ -224,9 +239,32 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                   },
                 ),
                 CurvedButton(
-                  text: 'Submit',
+                  text: 'Post',
                   onPressed: () {
-                    postMoment();
+                    showDialogBox(
+                      context: context,
+                      actionOneTextColor: blackFont,
+                      actionTwoBgColor: navyBlue,
+                      actionTwoTextColor: Colors.white,
+                      actionOneBgColor: greyBorderColor,
+                      title: AppLocalization.of(context)!.post,
+                      actionTwoText: AppLocalization.of(context)!.post,
+                      actionOneText: AppLocalization.of(context)!.notNow,
+                      description:
+                          'Are you sure you want to post\nyour moment now?',
+                      roundedBackgroundIcon: RoundedBackgroundIcon(
+                        enableMargin: false,
+                        width: 90,
+                        height: 90,
+                        image: Image.asset(
+                          'assets/images/accept_dialog_icon.png',
+                          color: navyBlue,
+                        ),
+                      ),
+                      rightButtonOnPressed: () {
+                        postMoment();
+                      },
+                    );
                   },
                 )
               ],
@@ -297,6 +335,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         child: Image.file(
           File(widget.filePath),
           fit: BoxFit.cover,
+          cacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
         ),
       );
     }
@@ -368,11 +407,14 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     MomentsService()
         .createMoment(
       createMomentModel: CreateMomentModel(
+        enableLike: enableLikes,
+        enableCommenting: enableCommenting,
+        enablePayMe: enablePayMe,
         isPublic: isPublic,
         userTags: newUserTags,
         mediaPoster: generatedThumbnail,
         filePath: widget.filePath,
-        text: momentTitle!,
+        text: momentTitle,
         url: urlTextCtrl.text,
       ),
     )

@@ -2,7 +2,6 @@ import 'package:Slydo/screens/moments/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/moment_detail_page.dart';
 import 'package:Slydo/screens/moments/moments_service.dart';
-import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -15,13 +14,13 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../constant.dart';
 import '../../data/state_notifier.dart';
 import '../../locale/app_localization.dart';
 import '../../main.dart';
 import '../../utils/slydo_app_icon_icons.dart';
 import '../../utils/util.dart';
 import '../more_apps/user_profile/models/user.dart';
+import 'moment_search_screen.dart';
 
 class MomentsScreen extends StatefulWidget {
   const MomentsScreen({Key? key}) : super(key: key);
@@ -43,6 +42,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
   String? nextExploreMoments = "";
   int? countContactMoments = 0;
   int? countExploreMoments = 0;
+  bool myMomentsLoading = false;
 
   String? previousContactMoments = "";
   String? previousExploreMoments = "";
@@ -53,7 +53,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
   ScrollController _myConnectionsScrollController = ScrollController();
   ScrollController _exploreScrollController = ScrollController();
 
-  AppConfigurationModel? appConfigurationModel;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -62,9 +61,11 @@ class _MomentsScreenState extends State<MomentsScreen> {
   @override
   void initState() {
     super.initState();
-    getConnectionMoments();
-    getExploreMoments();
+    debugPrint('MOMENT INIT STATE');
     getAppConfigurationModelFromLocalStorage();
+
+    // getConnectionMoments();
+    // getExploreMoments();
 
     _myConnectionsScrollController.addListener(() {
       if (_myConnectionsScrollController.position.pixels ==
@@ -126,14 +127,24 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   getAppConfigurationModelFromLocalStorage() async {
-    debugPrint('GETTING APP CONFIGURATION -> $appConfigurationModel');
+    debugPrint(
+        'APP CONFIG STORAGE <-> ${AppConfigModel().appConfigurationModel}');
 
-    String? str = await storage.read(key: appConfigurationKey);
-    if (str != null) {
-      appConfigurationModel = AppConfigurationModel.deserialize(str);
+    // debugPrint('GETTING APP CONFIGURATION -> $appConfigurationModel');
+    //
+    // String? str = await storage.read(key: appConfigurationKey);
+    // debugPrint('GETTING APP CONFIGURATION STR -> $str');
+    //
+    // if (str != null) {
+    //   appConfigurationModel = AppConfigurationModel.deserialize(str);
+    // }
+    // debugPrint('APP CONFIGURATION MODEL -> $appConfigurationModel');
+    // if (mounted) setState(() {});
+
+    if (AppConfigModel().appConfigurationModel?.enableMoment == true) {
+      getConnectionMoments();
+      getExploreMoments();
     }
-    debugPrint('APP CONFIGURATION MODEL -> $appConfigurationModel');
-    if (mounted) setState(() {});
   }
 
   getConnectionMoments() async {
@@ -257,7 +268,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     return InkWell(
       onTap: () async {
         var momentCreated =
-            await NavigationUtil.push(context, screen: AddVideo());
+            await NavigationUtil.push(context, screen: CreateMomentScreen());
 
         if (momentCreated == true) {
           _refreshPage();
@@ -273,18 +284,26 @@ class _MomentsScreenState extends State<MomentsScreen> {
 
   Widget myMomentsBtn() {
     return InkWell(
-      onTap: () {
-        getCurrentUserMoment();
-      },
-      child: getCircularUserAvatar(userBloc.user.avatar!),
+      onTap: myMomentsLoading
+          ? null
+          : () {
+              getCurrentUserMoment();
+            },
+      child: myMomentsLoading
+          ? Center(
+              child: SizedBox(
+                  width: 30, height: 30, child: CircularLoadingIndicator()),
+            )
+          : getCircularUserAvatar(userBloc.user.avatar!),
     );
   }
 
   Widget scaffoldBody() {
-    if (appConfigurationModel == null) {
-      return Center(child: CircularLoadingIndicator());
+    if (AppConfigModel().appConfigurationModel == null) {
+      return Center(child: Text('Something went wrong..'));
+      // return Center(child: CircularLoadingIndicator());
     }
-    if (appConfigurationModel?.enableMoment == false) {
+    if (AppConfigModel().appConfigurationModel?.enableMoment == false) {
       return comingSoonWidget();
     }
 
@@ -303,7 +322,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
           children: [
             InkWell(
               onTap: () {
-                // NavigationUtil.push(context, screen: MomentSearchScreen());
+                NavigationUtil.push(context, screen: MomentSearchScreen());
               },
               child: IgnorePointer(
                 child: CustomizedTextFormField(
@@ -420,7 +439,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             Text(
               "My Connections",
               style: TextStyle(
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w600,
                 color: blackFont,
                 fontSize: 16,
               ),
@@ -468,7 +487,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
         Text(
           "Explore",
           style: TextStyle(
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w600,
             color: blackFont,
             fontSize: 16,
           ),
@@ -521,10 +540,13 @@ class _MomentsScreenState extends State<MomentsScreen> {
   }
 
   void getCurrentUserMoment() {
-    debugPrint('GETTING CURRENT USER MOMENT');
+    myMomentsLoading = true;
+    if (mounted) setState(() {});
     MomentsService()
         .getMomentsWithOwnerName(owner: userBloc.user.userName!)
         .then((momentsModelList) {
+      myMomentsLoading = false;
+      if (mounted) setState(() {});
       if (momentsModelList.isNotEmpty) {
         NavigationUtil.push(
           context,
@@ -538,6 +560,8 @@ class _MomentsScreenState extends State<MomentsScreen> {
         showToast(message: 'You do not have any moment.');
       }
     }).catchError((e) {
+      myMomentsLoading = false;
+      if (mounted) setState(() {});
       showToast(message: 'ERROR -> $e');
     });
   }
@@ -624,7 +648,8 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _getMediaRenderer(momentModel: widget.userMomentModel),
+              _getMediaRenderer(
+                  momentModel: widget.userMomentModel, context: context),
               Align(
                 alignment: Alignment.topLeft,
                 child: Padding(
@@ -740,7 +765,9 @@ class ExploreMomentsCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             _getMediaRenderer(
-                momentModel: exploreMomentsModelList[index].moments!.first),
+              momentModel: exploreMomentsModelList[index].moments!.first,
+              context: context,
+            ),
             Align(
               alignment: Alignment.topLeft,
               child: Padding(
@@ -837,13 +864,17 @@ Widget momentListLengthWidget(int? length, {double? fontSize}) {
         );
 }
 
-Widget _getMediaRenderer({required MomentsModel momentModel}) {
+Widget _getMediaRenderer(
+    {required MomentsModel momentModel, required BuildContext context}) {
   if (momentModel.mediaPoster != null) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
         imageUrl: momentModel.mediaPoster!,
         fit: BoxFit.fill,
+        // memCacheWidth: 62,
+        // memCacheHeight: 75,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
         placeholder: (context, _) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -856,21 +887,15 @@ Widget _getMediaRenderer({required MomentsModel momentModel}) {
       ),
     );
   }
-  if (momentModel.gif != null) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: CachedNetworkImage(
-        imageUrl: momentModel.gif!,
-        fit: BoxFit.fill,
-      ),
-    );
-  }
   if (momentModel.mediaType == "image") {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
         imageUrl: momentModel.media!,
         fit: BoxFit.fill,
+        // memCacheWidth: 62,
+        // memCacheHeight: 75,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
         placeholder: (context, _) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(10),

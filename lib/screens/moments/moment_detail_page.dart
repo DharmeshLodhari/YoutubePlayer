@@ -133,7 +133,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                               InkWell(
                                 onTap: () async {
                                   NavigationUtil.push(context,
-                                      screen: AddVideo());
+                                      screen: CreateMomentScreen());
                                 },
                                 child: Container(
                                   height: 40,
@@ -197,177 +197,239 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
         debugPrint('ID ---> ${widget.momentsModelList[index].attachment}');
+        debugPrint(
+            'ENABLE LIKE ---> ${widget.momentsModelList[index].enableLikes}');
         return Stack(
           fit: StackFit.expand,
           children: [
             RenderMedia(momentsModel: widget.momentsModelList[index]),
             Align(
               alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: MomentDetailDashes(
-                    currentPageViewIndex: index,
-                    lengthOfMoment: widget.momentsModelList.length),
-              ),
+              child: MomentDetailDashes(
+                  currentPageViewIndex: index,
+                  lengthOfMoment: widget.momentsModelList.length),
             ),
             Positioned.directional(
               textDirection: Directionality.of(context),
               end: -10.0,
-              top: 180.0,
-              child: Column(
-                children: <Widget>[
-                  // TODO: Show or hide button if you are the user.
-                  isMyMoment(index)
-                      ? InkWell(
-                          onTap: () {
-                            showDialogBox(
-                              context: context,
-                              actionOneTextColor: white,
-                              actionOneBgColor: mateRed,
-                              actionTwoTextColor: blackFont,
-                              actionTwoBgColor: greyBorderColor,
-                              title: AppLocalization.of(context)!.delete,
-                              actionTwoText:
-                                  AppLocalization.of(context)!.cancel,
-                              actionOneText:
-                                  AppLocalization.of(context)!.delete,
-                              description:
-                                  'Are you sure you want to delete this moment?',
-                              roundedBackgroundIcon: RoundedBackgroundIcon(
-                                enableMargin: false,
-                                width: 90,
-                                height: 90,
-                                image: Image.asset(
-                                    'assets/images/delete_dialog_icon.png'),
-                              ),
-                              leftButtonOnPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (dialogLoadingContext) =>
-                                        LoadingIndicator());
-                                MomentsService()
-                                    .deleteMoment(
-                                        widget.momentsModelList[index].id!)
-                                    .then(
-                                  (value) {
-                                    Navigator.pop(
-                                        context); // Dismiss loading indicator
-                                    Navigator.pop(context);
-                                  },
-                                ).catchError((e) {
-                                  Navigator.pop(context);
-                                  showToast(message: e.toString());
-                                });
-                              },
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 10,
-                                )
-                              ],
-                            ),
-                            child: Icon(
+              top: MediaQuery.of(context).size.height * 0.3,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Column(
+                  children: <Widget>[
+                    isMyMoment(index)
+                        ? CustomButton(
+                            Icon(
                               Icons.delete,
                               color: mateRed,
                               size: 28,
                             ),
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                  SizedBox(height: 20),
-                  // CustomButton(
-                  //   SvgPicture.asset('assets/images/three_dot.svg'),
-                  //   '',
-                  // ),
-                  CustomButton(
-                    Icon(Icons.thumb_up, color: Colors.white),
-                    int.parse(widget.momentsModelList[index].likes.toString()) <
-                            1
-                        ? ''
-                        : widget.momentsModelList[index].likes.toString(),
-                    onPressed: () {
-                      MomentsService()
-                          .likeMoment(widget.momentsModelList[index].id!)
-                          .then((value) {
-                        widget.momentsModelList[index] = value;
-                        if (mounted) setState(() {});
-                      });
-                    },
-                  ),
-                  CustomButton(
-                    isLiked
-                        ? Icon(Icons.thumb_down, color: Colors.white)
-                        : Icon(Icons.thumb_down, color: Colors.white),
-                    int.parse(widget.momentsModelList[index].dislikes
-                                .toString()) <
-                            1
-                        ? ''
-                        : widget.momentsModelList[index].dislikes.toString(),
-                    onPressed: () {
-                      MomentsService()
-                          .dislikeMoment(widget.momentsModelList[index].id!)
-                          .then((value) {
-                        widget.momentsModelList[index] = value;
-                        if (mounted) setState(() {});
-                      });
-                    },
-                  ),
-                  CustomButton(
-                    Icon(Icons.messenger, color: Colors.white),
-                    widget.momentsModelList[index].numberOfComments! < 1
-                        ? ''
-                        : widget.momentsModelList[index].numberOfComments!
-                            .toString(),
-                    onPressed: () {
-                      commentSheet(
-                        context,
-                        widget.momentsModelList[index].id!,
-                      );
-                    },
-                  ),
-                  // CustomButton(
-                  //   SvgPicture.asset('assets/images/share_icon.svg'),
-                  //   '',
-                  //   onPressed: () {},
-                  // ),
-                  Row(
-                    children: [
-                      getAttachmentWidget(
-                          widget.momentsModelList[index].attachment!),
-                      SizedBox(width: 5),
-                    ],
-                  ),
-                ],
+                            '',
+                            onPressed: () {
+                              showDialogBox(
+                                context: context,
+                                actionOneTextColor: white,
+                                actionOneBgColor: mateRed,
+                                actionTwoTextColor: blackFont,
+                                actionTwoBgColor: greyBorderColor,
+                                title: AppLocalization.of(context)!.delete,
+                                actionTwoText:
+                                    AppLocalization.of(context)!.cancel,
+                                actionOneText:
+                                    AppLocalization.of(context)!.delete,
+                                description:
+                                    'Are you sure you want to delete this moment?',
+                                roundedBackgroundIcon: RoundedBackgroundIcon(
+                                  enableMargin: false,
+                                  width: 90,
+                                  height: 90,
+                                  image: Image.asset(
+                                      'assets/images/delete_dialog_icon.png'),
+                                ),
+                                leftButtonOnPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (dialogLoadingContext) =>
+                                          LoadingIndicator());
+                                  MomentsService()
+                                      .deleteMoment(
+                                          widget.momentsModelList[index].id!)
+                                      .then(
+                                    (value) {
+                                      Navigator.pop(
+                                          context); // Dismiss loading indicator
+                                      Navigator.pop(context);
+                                    },
+                                  ).catchError((e) {
+                                    Navigator.pop(context);
+                                    showToast(message: e.toString());
+                                  });
+                                },
+                              );
+                            },
+                          )
+                        : SizedBox.shrink(),
+
+                    widget.momentsModelList[index].enableLikes != null &&
+                            widget.momentsModelList[index].enableLikes!
+                        ? CustomButton(
+                            Icon(Icons.thumb_up, color: Colors.white),
+                            int.parse(widget.momentsModelList[index].likes
+                                        .toString()) <
+                                    1
+                                ? ''
+                                : widget.momentsModelList[index].likes
+                                    .toString(),
+                            onPressed: () {
+                              MomentsService()
+                                  .likeMoment(
+                                      widget.momentsModelList[index].id!)
+                                  .then((value) {
+                                widget.momentsModelList[index] = value;
+                                if (mounted) setState(() {});
+                              });
+                            },
+                          )
+                        : SizedBox.shrink(),
+                    widget.momentsModelList[index].enableLikes != null &&
+                            widget.momentsModelList[index].enableLikes!
+                        ? CustomButton(
+                            Icon(Icons.thumb_down, color: Colors.white),
+                            int.parse(widget.momentsModelList[index].dislikes
+                                        .toString()) <
+                                    1
+                                ? ''
+                                : widget.momentsModelList[index].dislikes
+                                    .toString(),
+                            onPressed: () {
+                              MomentsService()
+                                  .dislikeMoment(
+                                      widget.momentsModelList[index].id!)
+                                  .then((value) {
+                                widget.momentsModelList[index] = value;
+                                if (mounted) setState(() {});
+                              });
+                            },
+                          )
+                        : SizedBox.shrink(),
+                    widget.momentsModelList[index].enableCommenting != null &&
+                            widget.momentsModelList[index].enableCommenting!
+                        ? CustomButton(
+                            Icon(Icons.messenger, color: Colors.white),
+                            widget.momentsModelList[index].numberOfComments! < 1
+                                ? ''
+                                : widget
+                                    .momentsModelList[index].numberOfComments!
+                                    .toString(),
+                            onPressed: () {
+                              commentSheet(
+                                context,
+                                widget.momentsModelList[index].id!,
+                              );
+                            },
+                          )
+                        : SizedBox.shrink(),
+
+                    // ATTACHMENT WIDGET
+                    // Row(
+                    //   children: [
+                    //     getAttachmentWidget(
+                    //         widget.momentsModelList[index].attachment!),
+                    //     SizedBox(width: 5),
+                    //   ],
+                    // ),
+                  ],
+                ),
               ),
             ),
             Positioned.directional(
               textDirection: Directionality.of(context),
               start: 12.0,
               bottom: 20.0,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 6),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      getCircularUserAvatar(
-                          widget.momentsModelList[index].avatar!),
-                      SizedBox(width: 8),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${widget.momentsModelList[index].ownerName!}',
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 6),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, Routes.USER_PROFILE,
+                                arguments: {
+                                  "searchedUserName":
+                                      widget.momentsModelList[index].owner,
+                                });
+                          },
+                          child: getCircularUserAvatar(
+                              widget.momentsModelList[index].avatar!),
+                        ),
+                        SizedBox(width: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, Routes.USER_PROFILE,
+                                      arguments: {
+                                        "searchedUserName": widget
+                                            .momentsModelList[index].owner,
+                                      });
+                                },
+                                child: Text(
+                                  '${widget.momentsModelList[index].ownerName!}',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 10.0,
+                                        color: blackFont,
+                                        offset: Offset(0.0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                '${getGetMomentDetailDateTime(widget.momentsModelList[index].createdAt!)}',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w400,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 10.0,
+                                      offset: Offset(0.0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: widget.momentsModelList[index].text != null
+                          ? ReadMoreText(
+                              messageDecoderWithEmoji(
+                                  widget.momentsModelList[index].text!)!,
+                              trimLines: 2,
+                              colorClickableText: Colors.pink,
+                              trimMode: TrimMode.Line,
+                              trimCollapsedText: 'more',
+                              trimExpandedText: 'less',
                               style: TextStyle(
+                                fontSize: 14,
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w400,
                                 shadows: [
                                   Shadow(
                                     blurRadius: 10.0,
@@ -376,86 +438,46 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                   ),
                                 ],
                               ),
-                            ),
-                            Text(
-                              '${getGetMomentDetailDateTime(widget.momentsModelList[index].createdAt!)}',
-                              style: TextStyle(
+                              moreStyle: TextStyle(
+                                fontSize: 14,
                                 color: Colors.white70,
                                 fontWeight: FontWeight.w400,
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 10.0,
-                                    offset: Offset(0.0, 0),
-                                  ),
-                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 6),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: ReadMoreText(
-                      messageDecoderWithEmoji(
-                          widget.momentsModelList[index].text!)!,
-                      trimLines: 2,
-                      colorClickableText: Colors.pink,
-                      trimMode: TrimMode.Line,
-                      trimCollapsedText: 'more',
-                      trimExpandedText: 'less',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            color: blackFont,
-                            offset: Offset(0.0, 0),
-                          ),
-                        ],
-                      ),
-                      moreStyle: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      lessStyle: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w400,
-                      ),
+                              lessStyle: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white70,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      // Text(
+                      //   // messageDecoderWithEmoji(
+                      //   //     widget.momentsModelList[index].text!)!,
+                      //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam a erat ex. Mauris mattis....',
+                      //   maxLines: 8,
+                      //   overflow: TextOverflow.ellipsis,
+                      //   style: TextStyle(
+                      //     fontSize: 18,
+                      //     color: Colors.white,
+                      //     fontWeight: FontWeight.w600,
+                      //     shadows: [
+                      //       Shadow(
+                      //         blurRadius: 10.0,
+                      //         color: blackFont,
+                      //         offset: Offset(0.0, 0),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ),
-                    // Text(
-                    //   // messageDecoderWithEmoji(
-                    //   //     widget.momentsModelList[index].text!)!,
-                    //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam a erat ex. Mauris mattis....',
-                    //   maxLines: 8,
-                    //   overflow: TextOverflow.ellipsis,
-                    //   style: TextStyle(
-                    //     fontSize: 18,
-                    //     color: Colors.white,
-                    //     fontWeight: FontWeight.w600,
-                    //     shadows: [
-                    //       Shadow(
-                    //         blurRadius: 10.0,
-                    //         color: blackFont,
-                    //         offset: Offset(0.0, 0),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                  ),
-                  SizedBox(
-                    width: 300,
-                    child: getTags(index),
-                  ),
-                  SizedBox(height: 9),
-                  getPayMeBtn(index),
-                ],
+                    SizedBox(
+                      width: 300,
+                      child: getTags(index),
+                    ),
+                    SizedBox(height: 9),
+                    getPayMeBtn(index),
+                  ],
+                ),
               ),
             ),
             // Positioned.directional(
@@ -758,12 +780,18 @@ class _RenderMediaState extends State<RenderMedia> {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
         fit: BoxFit.cover,
+        // memCacheWidth: 75,
+        // memCacheHeight: 75,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
       );
     }
     if (widget.momentsModel.mediaType == "image") {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.media!,
         fit: BoxFit.fill,
+        // memCacheWidth: 75,
+        // memCacheHeight: 75,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
         placeholder: (context, _) {
           return Container(color: Colors.grey);
         },
@@ -771,7 +799,9 @@ class _RenderMediaState extends State<RenderMedia> {
     } else if (widget.momentsModel.mediaType == "video") {
       return VideoDisplay(momentsModel: widget.momentsModel);
     } else {
-      return Image.asset('assets/images/app_logo.png');
+      return Image.asset(
+        'assets/images/moment_placeholder_image.png',
+      );
     }
   }
 }
@@ -790,16 +820,15 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
   @override
   void initState() {
-    super.initState();
     _controller =
         CachedVideoPlayerController.network(widget.momentsModel.media!)
           ..initialize().then((value) {
             _controller.play();
-            setState(() {
-              initialized = true;
-              _controller.setLooping(true);
-            });
+            initialized = true;
+            _controller.setLooping(true);
+            setState(() {});
           });
+    super.initState();
   }
 
   @override
@@ -818,34 +847,30 @@ class _VideoDisplayState extends State<VideoDisplay> {
         ),
       );
     }
-    return widget.momentsModel.mediaPoster != null
-        ? Container(
-            color: greyBorderColor,
-            child: Center(
-              child: Stack(
-                children: [
-                  CachedNetworkImage(
+    return Container(
+      color: greyBorderColor,
+      child: Center(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            widget.momentsModel.mediaPoster != null
+                ? CachedNetworkImage(
                     imageUrl: widget.momentsModel.mediaPoster!,
                     fit: BoxFit.cover,
+                    memCacheHeight:
+                        (MediaQuery.of(context).size.height * 0.3).toInt(),
                     placeholder: (context, _) {
                       return Container(color: Colors.grey);
                     },
+                  )
+                : Image.asset(
+                    'assets/images/moment_placeholder_image.png',
                   ),
-                  Center(child: CircularProgressIndicator()),
-                ],
-              ),
-            ),
-          )
-        : Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                'assets/images/moment_placeholder_image.png',
-                fit: BoxFit.cover,
-              ),
-              Center(child: CircularProgressIndicator()),
-            ],
-          );
+            Center(child: CircularProgressIndicator()),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -918,6 +943,18 @@ class _CommentListWidgetState extends State<CommentListWidget> {
           isCommentsLoading = false;
         });
       }
+    }).catchError((e) {
+      basePaginationModel = BasePaginationModel(
+        count: 0,
+        next: '',
+        result: [],
+        previous: '',
+      );
+      if (mounted) {
+        setState(() {
+          isCommentsLoading = false;
+        });
+      }
     });
   }
 
@@ -927,8 +964,9 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       backgroundColor: Colors.transparent,
       bottomSheet: isCommentsLoading
           ? SizedBox.shrink()
-          : SizedBox(
+          : Container(
               height: 100,
+              color: Colors.transparent,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
@@ -998,7 +1036,6 @@ class _CommentListWidgetState extends State<CommentListWidget> {
             child: ListView.builder(
               shrinkWrap: true,
               controller: _scrollController,
-              padding: const EdgeInsets.only(bottom: 60.0),
               itemCount: comments.length + 1,
               itemBuilder: (context, index) {
                 if (index == comments.length) {
@@ -1009,28 +1046,6 @@ class _CommentListWidgetState extends State<CommentListWidget> {
               },
             ),
           ),
-          isCommentsLoading
-              ? SizedBox.shrink()
-              : Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        right: 16.0, left: 16.0, bottom: 10),
-                    child: Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          // showCommentTextFieldBottomSheet();
-                        },
-                        child: IgnorePointer(
-                          child: CustomizedTextFormField(
-                            // controller: commentCtrl,
-                            hintText: 'Comment...',
-                            // maxLength: 250,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
         ],
       ),
     );
@@ -1045,59 +1060,46 @@ class _CommentListWidgetState extends State<CommentListWidget> {
           thickness: 1,
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               getCircularUserAvatar(commentModel.authorAvatar!),
-              SizedBox(width: 10),
-              Text(
-                truncateString(
-                    lengthToTruncateAt: 13,
-                    str: commentModel.authorUsername!,
-                    showEllipsis: false),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(' • '),
-              Padding(
-                padding: const EdgeInsets.only(top: 1.0),
-                child: Text(
-                  getGetMomentDetailDateTime(commentModel.createdAt!),
-                  textAlign: TextAlign.end,
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
+              SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          truncateString(
+                              lengthToTruncateAt: 13,
+                              str: commentModel.authorUsername!,
+                              showEllipsis: false),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(' • '),
+                        Text(
+                          getGetMomentDetailDateTime(commentModel.createdAt!),
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      messageDecoderWithEmoji(commentModel.comment!)!,
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 48),
-          child: Text(
-            messageDecoderWithEmoji(commentModel.comment!)!,
-          ),
-        ),
-        // ListTile(
-        //   leading: getCircularUserAvatar(commentModel.authorAvatar!),
-        //   title: Text(
-        //     commentModel.authorUsername!,
-        //     style: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //     ),
-        //   ),
-        //   subtitle: Text(
-        //     commentModel.comment!,
-        //   ),
-        //   trailing: Text(
-        //     getGetMomentDetailDateTime(commentModel.createdAt!),
-        //     style: TextStyle(
-        //       fontSize: 12,
-        //     ),
-        //   ),
-        // ),
       ],
     );
   }
