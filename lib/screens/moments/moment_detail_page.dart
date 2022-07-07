@@ -61,7 +61,6 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     _verticalScrollPageViewCtrl =
         PageController(initialPage: widget.indexOfMoment);
     getMomentsModelListLength();
-    debugPrint('ID --> ${widget.momentsModelList[widget.indexOfMoment]}');
   }
 
   getMomentsModelListLength() {
@@ -196,7 +195,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
-        debugPrint('ID ---> ${widget.momentsModelList[index].attachment}');
+        debugPrint('ID ---> ${widget.momentsModelList[index].id}');
         debugPrint(
             'ENABLE LIKE ---> ${widget.momentsModelList[index].enableLikes}');
         return Stack(
@@ -205,9 +204,12 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
             RenderMedia(momentsModel: widget.momentsModelList[index]),
             Align(
               alignment: Alignment.topCenter,
-              child: MomentDetailDashes(
-                  currentPageViewIndex: index,
-                  lengthOfMoment: widget.momentsModelList.length),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 6.0),
+                child: MomentDetailDashes(
+                    currentPageViewIndex: index,
+                    lengthOfMoment: widget.momentsModelList.length),
+              ),
             ),
             Positioned.directional(
               textDirection: Directionality.of(context),

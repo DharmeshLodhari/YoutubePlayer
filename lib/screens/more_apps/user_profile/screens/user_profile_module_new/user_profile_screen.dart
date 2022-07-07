@@ -104,12 +104,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Future<void> getSearchedUser() async {
+    late CustomerProfile user;
     searchedUserName = arguments['searchedUserName'];
     isLoading = true;
     if (mounted) setState(() {});
 
-    CustomerProfile user =
-        await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
+    try {
+      user = await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
+    } catch (e) {
+      Navigator.pop(context);
+      showToast(message: 'User not found');
+    }
+
     searchedUser = user;
     debugPrint("searchUserName===>${searchedUser!.nickName}");
 
@@ -407,7 +413,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     myMomentsLoading = true;
     if (mounted) setState(() {});
     MomentsService()
-        .getMomentsWithOwnerName(owner: userBloc.user.userName!)
+        .getMomentsWithOwnerName(owner: searchedUser!.userName!)
         .then((momentsModelList) {
       myMomentsLoading = false;
       if (mounted) setState(() {});
@@ -426,7 +432,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }).catchError((e) {
       myMomentsLoading = false;
       if (mounted) setState(() {});
-      showToast(message: 'ERROR -> $e');
+      showToast(message: 'There is no moment for this user');
     });
   }
 
