@@ -436,6 +436,25 @@ class _MomentsScreenState extends State<MomentsScreen> {
       children: [
         Row(
           children: [
+            // CircleAvatar(
+            //   radius: 15,
+            //   backgroundColor: navyBlue,
+            //   child: Image.asset(
+            //     'assets/images/my_moment_connections_icons.png',
+            //     color: Colors.white,
+            //     width: 40,
+            //   ),
+            // ),
+            CircleAvatar(
+              radius: 10,
+              backgroundColor: navyBlue,
+              child: Icon(
+                Icons.group,
+                color: Colors.white,
+                size: 14,
+              ),
+            ),
+            SizedBox(width: 6),
             Text(
               "My Connections",
               style: TextStyle(
@@ -484,13 +503,23 @@ class _MomentsScreenState extends State<MomentsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Explore",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: blackFont,
-            fontSize: 16,
-          ),
+        Row(
+          children: [
+            Icon(
+              Icons.explore,
+              color: navyBlue,
+              size: 24,
+            ),
+            SizedBox(width: 6),
+            Text(
+              "Explore",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: blackFont,
+                fontSize: 16,
+              ),
+            ),
+          ],
         ),
         SizedBox(height: 12),
         isExploreMomentsLoading
