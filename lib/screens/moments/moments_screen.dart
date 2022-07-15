@@ -928,7 +928,7 @@ Widget _getMediaRenderer(
       child: CachedNetworkImage(
         imageUrl: momentModel.mediaPoster!,
         fit: BoxFit.fill,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.5).toInt(),
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
       ),
     );
   }
@@ -942,7 +942,7 @@ Widget _getMediaRenderer(
       child: CachedNetworkImage(
         imageUrl: momentModel.media!,
         fit: BoxFit.cover,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.5).toInt(),
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
       ),
     );
   }

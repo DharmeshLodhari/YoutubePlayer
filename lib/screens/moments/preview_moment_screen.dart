@@ -103,7 +103,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(
                   height: 200,
@@ -489,7 +489,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         child: Image.file(
           File(widget.filePath),
           fit: BoxFit.cover,
-          cacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
+          cacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
         ),
       );
     }

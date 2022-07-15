@@ -314,7 +314,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                           onPageChanged: (pageViewIndex) {},
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 32.0),
+                          padding: const EdgeInsets.only(top: 34.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -420,7 +420,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
             Align(
               alignment: Alignment.topCenter,
               child: Padding(
-                padding: const EdgeInsets.only(top: 6.0),
+                padding: const EdgeInsets.only(top: 8.0),
                 child: MomentDetailDashes(
                     currentPageViewIndex: index,
                     lengthOfMoment: widget.momentsModelList.length),
@@ -941,7 +941,7 @@ class _RenderMediaState extends State<RenderMedia> {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
         fit: BoxFit.fitWidth,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.5).toInt(),
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
       );
     }
 
@@ -949,7 +949,7 @@ class _RenderMediaState extends State<RenderMedia> {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.media!,
         fit: BoxFit.fitWidth,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.5).toInt(),
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
         placeholder: (context, _) {
           return Container(color: Colors.grey);
         },
@@ -1033,7 +1033,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
                     imageUrl: widget.momentsModel.mediaPoster!,
                     fit: BoxFit.cover,
                     memCacheHeight:
-                        (MediaQuery.of(context).size.height * 0.3).toInt(),
+                        (MediaQuery.of(context).size.height * 0.8).toInt(),
                     placeholder: (context, _) {
                       return Container(color: Colors.grey);
                     },

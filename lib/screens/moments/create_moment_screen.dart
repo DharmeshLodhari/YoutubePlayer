@@ -31,7 +31,12 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
   @override
   void initState() {
     super.initState();
-    cameraController = CameraController(cameras[0], ResolutionPreset.max);
+    _initCameraController(newCameraDescription: cameras[0]);
+  }
+
+  _initCameraController({required CameraDescription newCameraDescription}) {
+    cameraController =
+        CameraController(newCameraDescription, ResolutionPreset.max);
     cameraController.initialize().then((_) {
       cameraController.setFlashMode(FlashMode.off);
       if (!mounted) {
@@ -230,6 +235,21 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
               ],
             ),
           ),
+          !mediaCaptured()
+              ? Positioned(
+                  right: 15,
+                  top: 50,
+                  child: InkWell(
+                    onTap: () {
+                      _toggleCameraLens();
+                    },
+                    child: Icon(
+                      Icons.flip_camera_android_outlined,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              : SizedBox.shrink()
         ],
       ),
     );
@@ -269,12 +289,7 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
         debugPrint('PICTURE TAKEN :: $file');
 
         if (file != null) {
-          String? croppedImagePath = await ImageCrop().cropImage(file.path);
-          if (croppedImagePath != null) {
-            return XFile(croppedImagePath);
-          } else {
-            return null;
-          }
+          return file;
         } else {
           return null;
         }
@@ -406,5 +421,24 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
 
   bool mediaCaptured() {
     return imagePath != null || videoPath != null;
+  }
+
+  void _toggleCameraLens() async {
+    // get current lens direction (front / rear)
+    final lensDirection = cameraController.description.lensDirection;
+    List<CameraDescription> _availableCameras = await availableCameras();
+    CameraDescription? newDescription;
+    if (lensDirection == CameraLensDirection.front) {
+      newDescription = _availableCameras.firstWhere((description) =>
+          description.lensDirection == CameraLensDirection.back);
+    } else {
+      newDescription = _availableCameras.firstWhere((description) =>
+          description.lensDirection == CameraLensDirection.front);
+    }
+
+    if (newDescription != null) {
+      debugPrint('NEW DESC :: $newDescription');
+    }
+    _initCameraController(newCameraDescription: newDescription);
   }
 }
