@@ -64,13 +64,7 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
     if (!cameraController.value.isInitialized) {
       return Scaffold(
         body: Center(
-          child: Text(
-            'Camera has not been initialized',
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: CircularProgressIndicator(),
         ),
       );
     }
@@ -273,8 +267,6 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
 
         final XFile? file = await cameraController.takePicture();
         debugPrint('PICTURE TAKEN :: $file');
-
-
 
         if (file != null) {
           String? croppedImagePath = await ImageCrop().cropImage(file.path);

@@ -55,10 +55,10 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
   }
 
   getAppConfigurationModelFromLocalStorage() async {
-    bool con = await storage.containsKey(key: appConfigurationKey);
-    String? str = await storage.read(key: appConfigurationKey);
-
-    appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    var str = await getStorage.read(appFeaturesKey);
+    if(str != null){
+      appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    }
   }
 
   _onChanged(String value) {

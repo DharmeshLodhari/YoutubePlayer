@@ -1,4 +1,6 @@
 // This model is to show the moments on the moment's homepage.
+import 'package:equatable/equatable.dart';
+
 class UserMomentModel {
   String? id;
   String? mediaType;
@@ -70,6 +72,7 @@ class ExploreMomentsModel {
 }
 
 class MomentsModel {
+  int views;
   bool? payMe;
   String? id;
   int? likes;
@@ -90,13 +93,19 @@ class MomentsModel {
   List<dynamic>? tags;
   int? numberOfComments;
   Map<String, dynamic>? attachment;
+  String? payMeLabel;
+  String? payMeButtonColor;
 
   MomentsModel({
     this.id,
+    this.views = 0,
     this.payMe = true,
     this.tags,
+    this.mediaPoster,
     this.enableLikes = false,
     this.enableCommenting = false,
+    this.payMeButtonColor,
+    this.payMeLabel,
     this.likes,
     this.dislikes,
     this.attachment,
@@ -113,56 +122,86 @@ class MomentsModel {
     this.isPublic,
   });
 
-  MomentsModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    payMe = json['enable_payme'];
-    tags = json['tags'];
-    enableLikes = json['enable_like'];
-    enableCommenting = json['enable_commenting'];
-    likes = json['likes'];
-    dislikes = json['dislikes'];
-    mediaType = json['media_type'];
-    attachment = json['attachment'] ?? {};
-    numberOfComments = json['number_of_comments'];
-    avatar = json['avatar'];
-    ownerName = json['owner_name'];
-    media = json['media'];
-    mediaPoster = json['media_poster'];
-    gif = json['gif'];
-    text = json['text'];
-    owner = json['owner'];
-    createdAt = json['created_at'];
-    expireAt = json['expire_at'];
-    isPublic = json['is_public'];
+  factory MomentsModel.fromJson(Map<String, dynamic> json) {
+    return MomentsModel(
+      id: json['id'],
+      views: json['views'],
+      payMeLabel: json['pay_me_label'],
+      payMeButtonColor: json['payme_button_color'],
+      payMe: json['enable_payme'],
+      tags: json['tags'],
+      enableLikes: json['enable_like'],
+      enableCommenting: json['enable_commenting'],
+      likes: json['likes'],
+      dislikes: json['dislikes'],
+      mediaType: json['media_type'],
+      attachment: json['attachment'] ?? {},
+      numberOfComments: json['number_of_comments'],
+      avatar: json['avatar'],
+      ownerName: json['owner_name'],
+      media: json['media'],
+      mediaPoster: json['media_poster'],
+      gif: json['gif'],
+      text: json['text'],
+      owner: json['owner'],
+      createdAt: json['created_at'],
+      expireAt: json['expire_at'],
+      isPublic: json['is_public'],
+    );
   }
 }
 
-class SearchMomentModel {
+class SearchMomentModel extends Equatable {
   String? id;
+  String? text;
+  String? media;
   String? owner;
   String? avatar;
   String? createdAt;
   String? mediaType;
   String? ownerName;
   List<String>? tags;
+  String? mediaPoster;
 
-  SearchMomentModel(
-      {this.id,
-      this.owner,
-      this.createdAt,
-      this.tags,
-      this.mediaType,
-      this.avatar,
-      this.ownerName});
+  @override
+  List<Object?> get props => [
+        id,
+        text,
+        media,
+        owner,
+        avatar,
+        createdAt,
+        mediaType,
+        ownerName,
+        tags,
+        mediaPoster
+      ];
+
+  SearchMomentModel({
+    this.id,
+    this.tags,
+    this.text,
+    this.owner,
+    this.media,
+    this.avatar,
+    this.mediaType,
+    this.createdAt,
+    this.ownerName,
+    this.mediaPoster,
+  });
 
   SearchMomentModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    text = json['text'];
+    media = json['media'];
     owner = json['owner'];
-    createdAt = json['created_at'];
-    tags = json['tags'].cast<String>();
-    mediaType = json['media_type'];
     avatar = json['avatar'];
+    mediaType = json['media_type'];
+    createdAt = json['created_at'];
+    mediaType = json['media_type'];
     ownerName = json['owner_name'];
+    mediaPoster = json['media_poster'];
+    tags = json['tags'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {

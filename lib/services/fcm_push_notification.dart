@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
@@ -25,7 +24,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 bool isDialogueOpen = false;
 
@@ -137,11 +135,11 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
 
       if (action == "/transaction") {
         data['data'] = {"type": "transaction"};
-      } else if (action == "/request-payment") {
+      } else if (action == Routes.REQUEST_PAYMENT) {
         data['data'] = {"type": "request-payment"};
       } else if (action == "/connection-request") {
         data['data'] = {"type": "connection-request"};
-      } else if (action == "/friends-dashboard") {
+      } else if (action == Routes.FRIENDS_DASHBOARD) {
         data['data'] = {"type": "friends-dashboard"};
       } else if (action.toString().contains("/detail_message/")) {
         data['data'] = {"type": "detail_message"};
@@ -343,20 +341,21 @@ class PushNotificationService {
               await UserAuth().fetchContactProfile(recipientUsername);
 
           if (chatConversation == null) {
-            Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+            Navigator.of(context)
+                .popUntil(ModalRoute.withName(Routes.DASHBOARD));
             return;
           }
-          Navigator.of(context).popUntil(ModalRoute.withName('/dashboard'));
+          Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
           Navigator.pushNamed(context, '/chat-screen',
               arguments: {"searchedUser": chatConversation});
         }
       } else if (payload.toString().contains("orders-list")) {
-        Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        Navigator.of(context!).popUntil(ModalRoute.withName(Routes.DASHBOARD));
         Navigator.of(context).pushNamed('/orders-list');
       } else if (payload.toString().contains("order-detail-page")) {
         Order order = Order.fromJson(notification["data"]);
 
-        Navigator.of(context!).pushNamed('/order-detail-page', arguments: {
+        Navigator.of(context!).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
           'order': order,
         });
       }

@@ -85,9 +85,9 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   getAppConfigurationModelFromLocalStorage() async {
-    String? str = await storage.read(key: appConfigurationKey);
-    if (str != null) {
-      appConfigurationModel = AppConfigurationModel.deserialize(str);
+    var str = await getStorage.read(appFeaturesKey);
+    if(str != null){
+      appConfigurationModel = AppConfigurationModel.deserialize(str!);
     }
   }
 

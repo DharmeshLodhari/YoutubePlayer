@@ -70,12 +70,10 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   getAppConfigurationModelFromLocalStorage() async {
-    debugPrint('getAppConfigurationModelFromLocalStorage');
-    bool con = await storage.containsKey(key: appConfigurationKey);
-    debugPrint('CON :: $con');
-
-    String? str = await storage.read(key: appConfigurationKey);
-    appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    var str = await getStorage.read(appFeaturesKey);
+    if(str != null){
+      appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    }
   }
 
   @override

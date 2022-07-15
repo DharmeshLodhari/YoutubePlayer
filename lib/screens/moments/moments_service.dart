@@ -47,11 +47,11 @@ class MomentsService extends AuthService {
 
       return result;
     } else {
-      return Future.error(response.body);
+      return Future.error('Something went wrong');
     }
   }
 
-  Future getContactMoments(String? next, String? previous) async {
+  Future getContactMoments({String? next, String? previous}) async {
     var url = "";
     if (next == null) {
       return null;
@@ -78,7 +78,7 @@ class MomentsService extends AuthService {
       List<MomentsModel> momentsList = [];
       List jsonResult = jsonData['results'];
 
-      debugPrint('MOMENT LIS -> $jsonResult');
+      debugPrint('MOMENT LIST -> $jsonResult');
 
       jsonResult.forEach((json) {
         momentsList.add(MomentsModel.fromJson(json));
@@ -91,18 +91,16 @@ class MomentsService extends AuthService {
         "results": momentsList
       };
 
-      momentsList.forEach((element) {
-        debugPrint('M MEDIA POSTER -> ${element.mediaPoster}');
-      });
-
       return result;
     } else {
-      return Future.error(response.body);
+      return Future.error('Something went wrong');
     }
   }
 
   Future<List<MomentsModel>> getMomentsWithOwnerName(
       {required String owner}) async {
+    debugPrint(' OWNER ::: ${owner}');
+
     String url = AppConfig.baseUrl + "/api/v1/social/moments/user/$owner/";
 
     final headers = await getAuthHeaders();
@@ -115,7 +113,7 @@ class MomentsService extends AuthService {
 
       return jsonData.map((e) => MomentsModel.fromJson(e)).toList();
     } else {
-      return Future.error(response.body);
+      return Future.error('Something went wrong');
     }
   }
 
@@ -132,7 +130,7 @@ class MomentsService extends AuthService {
 
       return [MomentsModel.fromJson(jsonData)];
     } else {
-      return Future.error(response.body);
+      return Future.error('Something went wrong');
     }
   }
 
@@ -160,7 +158,7 @@ class MomentsService extends AuthService {
         results.map((e) => CommentModel.fromJson(e)).toList(),
       );
     } else {
-      return Future.error(response.body);
+      return Future.error('Something went wrong');
     }
   }
 
@@ -180,11 +178,8 @@ class MomentsService extends AuthService {
     debugPrint('ADD COMMENTS MOMENTS ::: ${response.body}');
     if (response.statusCode == 200) {
       return true;
-      // List jsonData = jsonDecode(response.body)['moments'];
-
-      // return jsonData.map((e) => MomentsModel.fromJson(e)).toList();
     } else {
-      return Future.error(response.body);
+      return Future.error('Something went wrong');
     }
   }
 
@@ -201,15 +196,19 @@ class MomentsService extends AuthService {
 
     request.files.add(mediaMultipartFile);
 
-    if (createMomentModel.text != null) {
-      request.fields["text"] = createMomentModel.text!;
-    }
+    request.fields["text"] = createMomentModel.text!;
     if (createMomentModel.url != null && createMomentModel.url!.isNotEmpty) {
       request.fields["url"] = createMomentModel.url!;
     }
     request.fields["isPublic"] = jsonEncode(createMomentModel.isPublic);
 
     request.fields["tags"] = jsonEncode(createMomentModel.userTags);
+    request.fields["pay_me_label"] = createMomentModel.payMeLabel;
+    if (createMomentModel.payMeButtonColor != null) {
+      request.fields["payme_button_color"] =
+          createMomentModel.payMeButtonColor!;
+    }
+
     request.fields["enable_payme"] = jsonEncode(createMomentModel.enablePayMe);
     request.fields["enable_like"] = jsonEncode(createMomentModel.enableLike);
     request.fields["enable_commenting"] =
@@ -258,6 +257,32 @@ class MomentsService extends AuthService {
           MomentsModel.fromJson(jsonDecode(response.body));
 
       return momentsModel;
+    } else {
+      if (response.statusCode != 500) {
+        var jsonData = jsonDecode(response.body);
+        debugPrint(
+            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        return Future.error(jsonData is Map
+            ? jsonData["error"]
+            : jsonData is List
+                ? jsonData[0]
+                : 'Something went wrong');
+      }
+      return Future.error("Server Error");
+    }
+  }
+
+  Future<bool> updateMomentView(String momentId) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/social/moments/update-moment-view/$momentId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "UPDATE MOMENT VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      return true;
     } else {
       if (response.statusCode != 500) {
         var jsonData = jsonDecode(response.body);
@@ -326,7 +351,7 @@ class MomentsService extends AuthService {
       url = getSecureUrl(url: nextPage);
     } else {
       url = AppConfig.baseUrl +
-          "/api/v1/social/moments/search/?q=$searchText&page_size=4";
+          "/api/v1/social/moments/search/?q=$searchText&page_size=10";
     }
     Map<String, String> headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -344,7 +369,7 @@ class MomentsService extends AuthService {
         results.map((e) => SearchMomentModel.fromJson(e)).toList(),
       );
     } else {
-      return Future.error(response.body);
+      return Future.error('Something went wrong');
     }
   }
 }

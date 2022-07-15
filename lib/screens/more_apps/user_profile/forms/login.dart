@@ -27,6 +27,8 @@ import 'package:pinput/pin_put/pin_put.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../constant.dart';
+import '../../../../main.dart';
 import '../../../../routes/route_constants.dart';
 
 class UserLogin extends StatefulWidget {
@@ -57,12 +59,14 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   void initState() {
+
     _selectedDialogCountry = CountryPickerUtils.getCountryByIsoCode('NG');
     getSharedPreference();
     phoneNumberController = TextEditingController();
     passwordController = TextEditingController();
     super.initState();
   }
+
 
   Future<void> getSharedPreference() async {
     _sharedPreferences = await SharedPreferences.getInstance();

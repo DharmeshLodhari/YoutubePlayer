@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:animated_fractionally_sized_box/animated_fractionally_sized_box.dart';
+import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -29,17 +30,22 @@ import 'moments_service.dart';
 import 'widgets/custom_button.dart';
 
 class MomentsDetailsScreen extends StatefulWidget {
-  /*'indexOfMoment'
+  String? nextPageUrl;
+
+  /* 'indexOfMoment'
   * This is the index of the moment that was clicked from 'moments_screen'.
   * When the user comes to this page, the moment that will be shown at first is the
   * moment the user clicked (through this index).*/
-  final int indexOfMoment;
-  final List<List<MomentsModel>> momentsModelList;
+  int indexOfMoment;
+  final List<String> listOfConnectionNames;
+  List<List<MomentsModel>>? momentsModelList;
 
-  const MomentsDetailsScreen({
+  MomentsDetailsScreen({
     Key? key,
+    this.nextPageUrl,
+    this.listOfConnectionNames = const [],
     required this.indexOfMoment,
-    required this.momentsModelList,
+    this.momentsModelList,
   }) : super(key: key);
 
   @override
@@ -47,104 +53,308 @@ class MomentsDetailsScreen extends StatefulWidget {
 }
 
 class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
-  /*This maintains the position of the moment in the vertical scroll direction.*/
-  late int _verticalScrollIndex;
-  /*This variable is used to display how many more moments the user
-  is left to see (minus 1) for a single moment*/
-  int currentSingleMomentListPosition = 0;
+  bool loadingMoments = false;
+  /* This variable is to show a loading indicator when the user has gotten to the end
+  *  of the list and there are more moments to load through widget.nextPageUrl*/
+  bool nextPageUrlLoading = false;
+  /*This holds the number of previous and next moments to load when the user
+  * comes to this page*/
+  int numberOfMomentsToLoad = 2;
   late PageController _verticalScrollPageViewCtrl;
 
   @override
   void initState() {
     super.initState();
-    _verticalScrollIndex = widget.indexOfMoment;
+
+    // If moment list is null, initialize it to an empty list.
+    if (widget.momentsModelList == null) {
+      widget.momentsModelList = [];
+    }
     _verticalScrollPageViewCtrl =
-        PageController(initialPage: widget.indexOfMoment);
-    getMomentsModelListLength();
+        PageController(initialPage: getInitialPageIndex());
+    debugPrint(widget.listOfConnectionNames.toString());
+    if (widget.listOfConnectionNames.isNotEmpty) {
+      getListOfMomentsModelList();
+    }
   }
 
-  getMomentsModelListLength() {
-    currentSingleMomentListPosition =
-        widget.momentsModelList[widget.indexOfMoment].length;
+  // To get the initial page that the pageview will show when the user gets this screen and
+  // the previous and next two moments(if there is) have been loaded.
+  int getInitialPageIndex() {
+    if (widget.momentsModelList != null &&
+        widget.momentsModelList!.isNotEmpty) {
+      return widget.indexOfMoment;
+    } else {
+      if (widget.indexOfMoment > 2) {
+        return 2;
+      } else {
+        return widget.indexOfMoment;
+      }
+    }
+  }
+
+  // To know where to start looping from while trying to get the moment with owner's name.
+  // Ideally we should get the previous two and the next two moments of what the user clicked on from the previous page.
+  int getLoopStartingPoint({
+    required List<String> mList,
+    // If we are loading the nextPageUrl, we do not neec to load the previous moments only the next ones;
+    bool loadingNextPageUrl = false,
+  }) {
+    if (!loadingNextPageUrl) {
+      if (mList.indices
+          .contains(widget.indexOfMoment - numberOfMomentsToLoad)) {
+        return widget.indexOfMoment - numberOfMomentsToLoad;
+      } else if (mList.indices.contains(widget.indexOfMoment - 1)) {
+        return widget.indexOfMoment - 1;
+      } else {
+        return widget.indexOfMoment;
+      }
+    } else {
+      return widget.indexOfMoment;
+    }
+  }
+
+  int getLoopEndingPoint({required List<String> mList}) {
+    // To check if the list 'mList' contains a particular index.
+    if (mList.indices.contains(widget.indexOfMoment + numberOfMomentsToLoad)) {
+      return widget.indexOfMoment + numberOfMomentsToLoad;
+    } else if (mList.indices.contains(widget.indexOfMoment + 1)) {
+      return widget.indexOfMoment + 1;
+    } else {
+      return widget.indexOfMoment;
+    }
+  }
+
+  Future<List<String>?> getNextPageListOfConnectionNames(
+      {required String nextPageUrl}) async {
+    Map<String, dynamic>? result = await MomentsService().getContactMoments(
+      next: widget.nextPageUrl,
+    );
+
+    if (result == null) {
+      return null;
+    }
+    widget.nextPageUrl = result['next'];
+    var resultList = result['results'] as List<MomentsModel>;
+
+    return resultList.map((e) => e.owner!).toList();
+  }
+
+  void getListOfMomentsModelList({bool loadingNextPageUrl = false}) async {
+    showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: true);
+
+    try {
+      int startIndex = getLoopStartingPoint(
+          mList: widget.listOfConnectionNames,
+          loadingNextPageUrl: loadingNextPageUrl);
+
+      int endIndex = getLoopEndingPoint(mList: widget.listOfConnectionNames);
+
+      for (int i = startIndex; i <= endIndex; i++) {
+        debugPrint('STARTING LOOP POINT -> $startIndex');
+
+        List<MomentsModel> momentsModelList = await MomentsService()
+            .getMomentsWithOwnerName(owner: widget.listOfConnectionNames[i]);
+        widget.momentsModelList!.add(momentsModelList);
+      }
+      debugPrint('NEW MOMENTS LIST -> ${widget.momentsModelList![0][1].text}');
+      debugPrint('NEW MOMENTS LIST -> ${widget.momentsModelList![0][1].views}');
+      showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: false);
+    } catch (e) {
+      debugPrint('ERROR FETCHING MOMENT WITH OWNER NAME :: $e');
+      showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: false);
+
+      NavigationUtil.pop(context);
+      showToast(message: 'Could not load your moments, try again.');
+    }
+  }
+
+  showLoadingIndicator({required bool loadingNextPageUrl, required bool show}) {
+    if (loadingNextPageUrl) {
+      setState(() {
+        nextPageUrlLoading = show;
+      });
+    } else {
+      setState(() {
+        loadingMoments = show;
+      });
+    }
+  }
+
+  void getNextOrPreviousListOfMomentsWithConnectionNames(
+      {required int verticalScrollIndex, required bool getNextList}) async {
+    // The 'index' is the index of the moment in the vertical scroll pageview
+
+    int count = getNextList ? 1 : 4;
+
+    do {
+      int nextIndex = widget.listOfConnectionNames.indexOf(widget
+              .momentsModelList![verticalScrollIndex][0]
+              .owner!) + // We can use position 0 here so we can just get the owner's name(we can also use 1 or 2 or whatever cos it is still that  particular user's moment)
+          count;
+      int previousIndex = widget.listOfConnectionNames.indexOf(
+              widget.momentsModelList![verticalScrollIndex][0].owner!) -
+          count;
+
+      // Whether previous or next index depending on if the user has gotten to the top or end of the vertical list respectively.
+      int indexToWorkWith = getNextList ? nextIndex : previousIndex;
+
+      if (widget.listOfConnectionNames.indices.contains(indexToWorkWith)) {
+        try {
+          List<MomentsModel> momentsModelList = await MomentsService()
+              .getMomentsWithOwnerName(
+                  owner: widget.listOfConnectionNames[indexToWorkWith]);
+          if (getNextList) {
+            widget.momentsModelList!.add(momentsModelList);
+          } else {
+            debugPrint('INSERT MOMENTS LIST');
+
+            widget.momentsModelList!.insert(0, momentsModelList);
+          }
+          debugPrint('LENGTH --> ${widget.momentsModelList!.length}');
+
+          setState(() {});
+        } catch (e) {
+          debugPrint('ERROR FETCHING MOMENT WITH OWNER NAME :: $e');
+
+          NavigationUtil.pop(context);
+          showToast(message: 'Could not load your moments, try again.');
+        }
+      }
+      if (getNextList) {
+        count++;
+      } else {
+        count--;
+      }
+    } while (getNextList ? count <= 4 : count >= 0);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (loadingMoments) {
+      return Scaffold(
+        body: Center(
+          child: CircularLoadingIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Align(
         alignment: Alignment.topLeft,
-        child: PageView.builder(
-          // This allows us to scroll vertically to move to the next user's moments.
-          itemCount: widget.momentsModelList.length,
-          controller: _verticalScrollPageViewCtrl,
-          scrollDirection: Axis.vertical,
-          onPageChanged: (verticalScrollIndex) {
-            _verticalScrollIndex = verticalScrollIndex;
-            setState(() {
-              currentSingleMomentListPosition =
-                  widget.momentsModelList[verticalScrollIndex].length;
-            });
-          },
-          itemBuilder: (context, index) {
-            return SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Stack(
-                children: [
-                  MediaRendererPageView(
-                    momentsModelList: widget.momentsModelList[index],
-                    onPageChanged: (pageViewIndex) {
-                      setState(() {
-                        currentSingleMomentListPosition = widget
-                                .momentsModelList[_verticalScrollIndex].length -
-                            pageViewIndex;
-                      });
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 32.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: CircleAvatar(
-                            backgroundColor: navyBlue,
-                            child: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+        // This allows us to scroll vertically to move to the next or previous user's moments.
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                itemCount: widget.momentsModelList!.length,
+                controller: _verticalScrollPageViewCtrl,
+                scrollDirection: Axis.vertical,
+                onPageChanged: (verticalScrollIndex) async {
+                  // To check if the pageview has gotten to the top of the list.
+                  debugPrint(
+                      'CONNECTION NAMES -> ${widget.listOfConnectionNames}');
 
-                        // CircleAvatar(
-                        //   child: Text(
-                        //     '$currentSingleMomentListPosition',
-                        //     style: TextStyle(color: Colors.white),
-                        //   ),
-                        // ),
+                  if (verticalScrollIndex == 0) {
+                    if (widget
+                            .momentsModelList![verticalScrollIndex][0].owner !=
+                        widget.listOfConnectionNames[0]) {
+                      debugPrint(
+                          'VERTICAL SCROLL INDEX -> $verticalScrollIndex');
+
+                      getNextOrPreviousListOfMomentsWithConnectionNames(
+                          verticalScrollIndex: verticalScrollIndex,
+                          getNextList: false);
+                    }
+                  }
+
+                  // To check if the pageview has gotten to the end of the list.
+                  else if (verticalScrollIndex + 1 ==
+                      widget.momentsModelList!.length) {
+                    debugPrint('VERTICAL SCROLL INDEX REACHED');
+                    debugPrint(
+                        'VERTICAL SCROLL INDEX REACHED -> ${widget.momentsModelList![verticalScrollIndex][0].owner}');
+                    debugPrint(
+                        'VERTICAL SCROLL INDEX NAME -> ${widget.listOfConnectionNames.last}');
+
+                    // This is to check if the owner of the last moment that's showing is the same as the last name
+                    // in widget.listOfConnectionNames (this helps us to know whether to load the next moments using the
+                    // names that are left in widget.listOfConnectionNames or using the url(endpoint) in widget.nextPageUrl).
+                    if (widget
+                            .momentsModelList![verticalScrollIndex][0].owner !=
+                        widget.listOfConnectionNames.last) {
+                      getNextOrPreviousListOfMomentsWithConnectionNames(
+                          verticalScrollIndex: verticalScrollIndex,
+                          getNextList: true);
+                    } else {
+                      if (widget.nextPageUrl != null) {
+                        List<String>? newListOfConnectionNames =
+                            await getNextPageListOfConnectionNames(
+                                nextPageUrl: widget.nextPageUrl!);
+
+                        widget.indexOfMoment =
+                            widget.listOfConnectionNames.length;
+
+                        widget.listOfConnectionNames
+                            .addAll(newListOfConnectionNames!);
+
+                        getListOfMomentsModelList(loadingNextPageUrl: true);
+                      }
+                    }
+                  }
+                },
+                itemBuilder: (context, index) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Stack(
+                      children: [
+                        MediaRendererPageView(
+                          momentsModelList: widget.momentsModelList![index],
+                          onPageChanged: (pageViewIndex) {},
+                        ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.only(top: 32.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              InkWell(
-                                onTap: () async {
-                                  NavigationUtil.push(context,
-                                      screen: CreateMomentScreen());
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
                                 },
-                                child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: navyBlue,
-                                  ),
+                                icon: CircleAvatar(
+                                  backgroundColor: navyBlue,
                                   child: const Icon(
-                                    Icons.camera_alt_rounded,
+                                    Icons.arrow_back,
                                     color: Colors.white,
                                   ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                      onTap: () async {
+                                        NavigationUtil.push(context,
+                                            screen: CreateMomentScreen());
+                                      },
+                                      child: Container(
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: navyBlue,
+                                        ),
+                                        child: const Icon(
+                                          Icons.camera_alt_rounded,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -152,11 +362,18 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            );
-          },
+            ),
+            Visibility(
+              visible: nextPageUrlLoading,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: CircularLoadingIndicator(),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -184,9 +401,10 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     _pageCtrl = PageController();
   }
 
-  // _pageCtrl!.nextPage(
-  // duration: Duration(milliseconds: 800),
-  // curve: Curves.decelerate);
+  Color disabledMomentIconColor() {
+    return Colors.white38;
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageView.builder(
@@ -195,9 +413,6 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
-        debugPrint('ID ---> ${widget.momentsModelList[index].id}');
-        debugPrint(
-            'ENABLE LIKE ---> ${widget.momentsModelList[index].enableLikes}');
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -214,75 +429,95 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
             Positioned.directional(
               textDirection: Directionality.of(context),
               end: -10.0,
-              top: MediaQuery.of(context).size.height * 0.3,
+              bottom: MediaQuery.of(context).size.height * 0.25,
+              // top: MediaQuery.of(context).size.height * 0.5,
               child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.only(right: 24.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     isMyMoment(index)
-                        ? CustomButton(
-                            Icon(
-                              Icons.delete,
-                              color: mateRed,
-                              size: 28,
-                            ),
-                            '',
+                        ? CustomMomentDetailButton(
+                            icon:
+                                SvgPicture.asset('assets/images/three_dot.svg'),
+                            text: '',
                             onPressed: () {
-                              showDialogBox(
+                              androidBottomSheet(
                                 context: context,
-                                actionOneTextColor: white,
-                                actionOneBgColor: mateRed,
-                                actionTwoTextColor: blackFont,
-                                actionTwoBgColor: greyBorderColor,
-                                title: AppLocalization.of(context)!.delete,
-                                actionTwoText:
-                                    AppLocalization.of(context)!.cancel,
-                                actionOneText:
-                                    AppLocalization.of(context)!.delete,
-                                description:
-                                    'Are you sure you want to delete this moment?',
-                                roundedBackgroundIcon: RoundedBackgroundIcon(
-                                  enableMargin: false,
-                                  width: 90,
-                                  height: 90,
-                                  image: Image.asset(
-                                      'assets/images/delete_dialog_icon.png'),
-                                ),
-                                leftButtonOnPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (dialogLoadingContext) =>
-                                          LoadingIndicator());
-                                  MomentsService()
-                                      .deleteMoment(
-                                          widget.momentsModelList[index].id!)
-                                      .then(
-                                    (value) {
-                                      Navigator.pop(
-                                          context); // Dismiss loading indicator
-                                      Navigator.pop(context);
-                                    },
-                                  ).catchError((e) {
+                                child: bottomSheetItem(
+                                  title: 'Delete',
+                                  iconData: Icons.delete,
+                                  onTap: () {
                                     Navigator.pop(context);
-                                    showToast(message: e.toString());
-                                  });
-                                },
+
+                                    showDialogBox(
+                                      context: context,
+                                      actionOneTextColor: white,
+                                      actionOneBgColor: mateRed,
+                                      actionTwoTextColor: blackFont,
+                                      actionTwoBgColor: greyBorderColor,
+                                      title:
+                                          AppLocalization.of(context)!.delete,
+                                      actionTwoText:
+                                          AppLocalization.of(context)!.cancel,
+                                      actionOneText:
+                                          AppLocalization.of(context)!.delete,
+                                      description:
+                                          'Are you sure you want to delete this moment?',
+                                      roundedBackgroundIcon:
+                                          RoundedBackgroundIcon(
+                                        enableMargin: false,
+                                        width: 90,
+                                        height: 90,
+                                        image: Image.asset(
+                                            'assets/images/delete_dialog_icon.png'),
+                                      ),
+                                      leftButtonOnPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (dialogLoadingContext) =>
+                                                LoadingIndicator());
+                                        MomentsService()
+                                            .deleteMoment(widget
+                                                .momentsModelList[index].id!)
+                                            .then(
+                                          (value) {
+                                            Navigator.pop(
+                                                context); // Dismiss loading indicator
+                                            Navigator.pop(context);
+                                          },
+                                        ).catchError((e) {
+                                          Navigator.pop(context);
+                                          showToast(message: e.toString());
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
                               );
                             },
                           )
                         : SizedBox.shrink(),
 
-                    widget.momentsModelList[index].enableLikes != null &&
-                            widget.momentsModelList[index].enableLikes!
-                        ? CustomButton(
-                            Icon(Icons.thumb_up, color: Colors.white),
-                            int.parse(widget.momentsModelList[index].likes
-                                        .toString()) <
-                                    1
-                                ? ''
-                                : widget.momentsModelList[index].likes
-                                    .toString(),
-                            onPressed: () {
+                    CustomMomentDetailButton(
+                      icon: Icon(
+                        Icons.thumb_up,
+                        color: likeEnabled(index)
+                            ? Colors.white
+                            : disabledMomentIconColor(),
+                      ),
+                      text: likeEnabled(index)
+                          ? int.parse(widget.momentsModelList[index].likes
+                                      .toString()) <
+                                  1
+                              ? ''
+                              : getFormattedViewCount(
+                                  noOfViews:
+                                      widget.momentsModelList[index].likes!,
+                                  addViewText: false)
+                          : '',
+                      onPressed: likeEnabled(index)
+                          ? () {
                               MomentsService()
                                   .likeMoment(
                                       widget.momentsModelList[index].id!)
@@ -290,20 +525,28 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                 widget.momentsModelList[index] = value;
                                 if (mounted) setState(() {});
                               });
-                            },
-                          )
-                        : SizedBox.shrink(),
-                    widget.momentsModelList[index].enableLikes != null &&
-                            widget.momentsModelList[index].enableLikes!
-                        ? CustomButton(
-                            Icon(Icons.thumb_down, color: Colors.white),
-                            int.parse(widget.momentsModelList[index].dislikes
-                                        .toString()) <
-                                    1
-                                ? ''
-                                : widget.momentsModelList[index].dislikes
-                                    .toString(),
-                            onPressed: () {
+                            }
+                          : null,
+                    ),
+
+                    CustomMomentDetailButton(
+                      icon: Icon(Icons.thumb_down,
+                          color: likeEnabled(index)
+                              ? Colors.white
+                              : disabledMomentIconColor()),
+                      text: likeEnabled(index)
+                          ? int.parse(widget.momentsModelList[index].dislikes
+                                      .toString()) <
+                                  1
+                              ? ''
+                              : getFormattedViewCount(
+                                  noOfViews:
+                                      widget.momentsModelList[index].dislikes!,
+                                  addViewText: false,
+                                )
+                          : '',
+                      onPressed: likeEnabled(index)
+                          ? () {
                               MomentsService()
                                   .dislikeMoment(
                                       widget.momentsModelList[index].id!)
@@ -311,31 +554,51 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                 widget.momentsModelList[index] = value;
                                 if (mounted) setState(() {});
                               });
-                            },
-                          )
-                        : SizedBox.shrink(),
-                    widget.momentsModelList[index].enableCommenting != null &&
-                            widget.momentsModelList[index].enableCommenting!
-                        ? CustomButton(
-                            Icon(Icons.messenger, color: Colors.white),
-                            widget.momentsModelList[index].numberOfComments! < 1
-                                ? ''
-                                : widget
-                                    .momentsModelList[index].numberOfComments!
-                                    .toString(),
-                            onPressed: () {
+                            }
+                          : null,
+                    ),
+
+                    CustomMomentDetailButton(
+                      icon: Icon(Icons.messenger,
+                          color: commentingEnabled(index)
+                              ? Colors.white
+                              : disabledMomentIconColor()),
+                      text: commentingEnabled(index)
+                          ? widget.momentsModelList[index].numberOfComments! < 1
+                              ? ''
+                              : getFormattedViewCount(
+                                  noOfViews: widget.momentsModelList[index]
+                                      .numberOfComments!,
+                                  addViewText: false,
+                                )
+                          : '',
+                      onPressed: commentingEnabled(index)
+                          ? () {
                               commentSheet(
                                 context,
                                 widget.momentsModelList[index].id!,
                               );
-                            },
-                          )
-                        : SizedBox.shrink(),
+                            }
+                          : null,
+                    ),
+
+                    CustomMomentDetailButton(
+                      icon: Icon(
+                        Icons.visibility_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      text: getFormattedViewCount(
+                        noOfViews: widget.momentsModelList[index].views,
+                        addViewText: false,
+                      ),
+                      onPressed: null,
+                    ),
 
                     // ATTACHMENT WIDGET
                     // Row(
                     //   children: [
-                    //     getAttachmentWidget(
+                    //     getWhichAttachmentWidgetToShow(
                     //         widget.momentsModelList[index].attachment!),
                     //     SizedBox(width: 5),
                     //   ],
@@ -365,8 +628,14 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                       widget.momentsModelList[index].owner,
                                 });
                           },
-                          child: getCircularUserAvatar(
-                              widget.momentsModelList[index].avatar!),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 6.0),
+                            child: getCircularUserAvatar(
+                              widget.momentsModelList[index].avatar!,
+                              width: 35,
+                              height: 35,
+                            ),
+                          ),
                         ),
                         SizedBox(width: 8),
                         Padding(
@@ -452,25 +721,6 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                               ),
                             )
                           : SizedBox.shrink(),
-                      // Text(
-                      //   // messageDecoderWithEmoji(
-                      //   //     widget.momentsModelList[index].text!)!,
-                      //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam a erat ex. Mauris mattis....',
-                      //   maxLines: 8,
-                      //   overflow: TextOverflow.ellipsis,
-                      //   style: TextStyle(
-                      //     fontSize: 18,
-                      //     color: Colors.white,
-                      //     fontWeight: FontWeight.w600,
-                      //     shadows: [
-                      //       Shadow(
-                      //         blurRadius: 10.0,
-                      //         color: blackFont,
-                      //         offset: Offset(0.0, 0),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                     ),
                     SizedBox(
                       width: 300,
@@ -482,80 +732,10 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                 ),
               ),
             ),
-            // Positioned.directional(
-            //   textDirection: Directionality.of(context),
-            //   start: 12.0,
-            //   bottom: 72.0,
-            //   child: RichText(
-            //     text: TextSpan(
-            //       children: [
-            //         TextSpan(
-            //           text:
-            //               '${getDateTime(widget.momentsModelList[index].createdAt!)}\n',
-            //           style: TextStyle(
-            //             fontWeight: FontWeight.bold,
-            //             shadows: [
-            //               Shadow(
-            //                 blurRadius: 10.0,
-            //                 offset: Offset(0.0, 0),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //         WidgetSpan(
-            //           child: Padding(
-            //             padding: const EdgeInsets.only(top: 18.0),
-            //             child: getCircularUserAvatar(
-            //                 widget.momentsModelList[index].avatar!),
-            //           ),
-            //         ),
-            //         TextSpan(
-            //           text:
-            //               '${widget.momentsModelList[index].ownerName!}\n\n',
-            //           style: TextStyle(
-            //             fontWeight: FontWeight.bold,
-            //             shadows: [
-            //               Shadow(
-            //                 blurRadius: 10.0,
-            //                 color: blackFont,
-            //                 offset: Offset(0.0, 0),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //         // TextSpan(
-            //         //   text: '${widget.momentsModelList[index].text!}\n\n',
-            //         //   style: TextStyle(
-            //         //     fontWeight: FontWeight.bold,
-            //         //     shadows: [
-            //         //       Shadow(
-            //         //         blurRadius: 10.0,
-            //         //         color: blackFont,
-            //         //         offset: Offset(0.0, 0),
-            //         //       ),
-            //         //     ],
-            //         //   ),
-            //         //   children: getTags(index),
-            //         // ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
           ],
         );
       },
     );
-  }
-
-  //
-  MomentState getMomentState({required int pageViewIndex}) {
-    if (widget.momentsModelList
-            .indexOf(widget.momentsModelList[pageViewIndex]) ==
-        pageViewIndex) {
-      return MomentState.ACTIVE;
-    } else {
-      return MomentState.INACTIVE;
-    }
   }
 
   Widget getTags(int index) {
@@ -592,124 +772,79 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     }
   }
 
-  Widget getAttachmentWidget(Map<String, dynamic> attachment) {
+  Widget getWhichAttachmentWidgetToShow(Map<String, dynamic> attachment) {
     if (attachment.containsKey('url')) {
-      return InkWell(
-        onTap: () {
-          _launchUrl(attachment['url']);
-        },
-        child: Container(
-          width: 70,
-          margin: EdgeInsets.only(right: 10),
-          padding: EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.link),
-              SizedBox(width: 5),
-              Text(
-                'Link',
-                style: TextStyle(color: Colors.blue),
-              ),
-            ],
-          ),
-        ),
-      );
+      return attachmentWidget(
+          onTap: () {
+            _launchUrl(attachment['url']);
+          },
+          iconData: Icons.link,
+          title: 'Link');
     }
+
     if (attachment.containsKey('product')) {
-      return InkWell(
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            Routes.PRODUCT,
-            // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
-            arguments: {"productId": attachment['product']},
-          );
-        },
-        child: Container(
-          width: 80,
-          margin: EdgeInsets.only(right: 10),
-          padding: EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            'BUY NOW',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: navyBlue),
-          ),
-        ),
-      );
+      return attachmentWidget(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              Routes.PRODUCT,
+              // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+              arguments: {"productId": attachment['product']},
+            );
+          },
+          iconData: Icons.inventory_2_rounded,
+          title: 'Product');
     }
+
     if (attachment.containsKey('service')) {
-      return InkWell(
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            Routes.SERVICE_DETAIL,
-            // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
-            arguments: {"serviceId": attachment['service']},
-          );
-        },
-        child: Container(
-          width: 70,
-          margin: EdgeInsets.only(right: 10),
-          padding: EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            'PAY NOW',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.blue),
-          ),
-        ),
-      );
+      return attachmentWidget(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              Routes.SERVICE_DETAIL,
+              // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+              arguments: {"serviceId": attachment['service']},
+            );
+          },
+          iconData: Icons.build_rounded,
+          title: 'Service');
     }
+
     if (attachment.containsKey('blog')) {
-      return InkWell(
-        onTap: () {
-          NavigationUtil.push(
-            context,
-            screen: PostDetailPage(
-              // postId: '303d5c1b-5539-4b63-a448-c0d3e9687d61',
-              postId: attachment['blog'],
-              postType: PostType.blog,
-            ),
-          );
-        },
-        child: Container(
-          width: 70,
-          margin: EdgeInsets.only(right: 10),
-          padding: EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            'Read',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.blue),
-          ),
-        ),
-      );
+      return attachmentWidget(
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: PostDetailPage(
+                // postId: '303d5c1b-5539-4b63-a448-c0d3e9687d61',
+                postId: attachment['blog'],
+                postType: PostType.blog,
+              ),
+            );
+          },
+          iconData: Icons.book_rounded,
+          title: 'Blog');
     } else {
       return Container();
     }
   }
 
-  _launchUrl(String url) async {
+  void _launchUrl(String url) async {
     if (!await launchUrl(Uri.parse(url))) throw 'Could not launch $url';
   }
 
   bool isMyMoment(int index) {
     return getUserName(context) == widget.momentsModelList[index].owner;
+  }
+
+  bool likeEnabled(int index) {
+    return widget.momentsModelList[index].enableLikes != null &&
+        widget.momentsModelList[index].enableLikes!;
+  }
+
+  bool commentingEnabled(int index) {
+    return widget.momentsModelList[index].enableCommenting != null &&
+        widget.momentsModelList[index].enableCommenting!;
   }
 
   Widget getPayMeBtn(int index) {
@@ -722,14 +857,23 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                   decoration: BoxDecoration(
-                      color: navyBlue, borderRadius: BorderRadius.circular(10)),
+                      color: HexColor(widget
+                                  .momentsModelList[index].payMeButtonColor !=
+                              null
+                          ? '#${widget.momentsModelList[index].payMeButtonColor}'
+                          : '#3F61DB'),
+                      borderRadius: BorderRadius.circular(10)),
                   child: Row(
                     children: [
                       Image.asset(
                         'assets/images/slydo_icon_white.png',
                         width: 30,
                         height: 30,
-                        color: Colors.white,
+                        color: widget.momentsModelList[index].payMeButtonColor
+                                    ?.toLowerCase() ==
+                                '#ffffff'
+                            ? navyBlue
+                            : Colors.white,
                       ),
                       SizedBox(width: 4),
                       InkWell(
@@ -750,10 +894,17 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                           );
                         },
                         child: Text(
-                          'Pay me',
+                          messageDecoderWithEmoji(
+                              widget.momentsModelList[index].payMeLabel ??
+                                  'Pay Me')!,
                           style: TextStyle(
                             fontSize: 18,
-                            color: Colors.white,
+                            color: widget.momentsModelList[index]
+                                        .payMeButtonColor
+                                        ?.toLowerCase() ==
+                                    '#ffffff'
+                                ? navyBlue
+                                : Colors.white,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -777,23 +928,28 @@ class RenderMedia extends StatefulWidget {
 
 class _RenderMediaState extends State<RenderMedia> {
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(seconds: 2), () {
+      MomentsService().updateMomentView(widget.momentsModel.id!);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (widget.momentsModel.gif != null) {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
-        fit: BoxFit.cover,
-        // memCacheWidth: 75,
-        // memCacheHeight: 75,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
+        fit: BoxFit.fitWidth,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.5).toInt(),
       );
     }
+
     if (widget.momentsModel.mediaType == "image") {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.media!,
-        fit: BoxFit.fill,
-        // memCacheWidth: 75,
-        // memCacheHeight: 75,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
+        fit: BoxFit.fitWidth,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.5).toInt(),
         placeholder: (context, _) {
           return Container(color: Colors.grey);
         },
@@ -801,8 +957,11 @@ class _RenderMediaState extends State<RenderMedia> {
     } else if (widget.momentsModel.mediaType == "video") {
       return VideoDisplay(momentsModel: widget.momentsModel);
     } else {
-      return Image.asset(
-        'assets/images/moment_placeholder_image.png',
+      return Container(
+        decoration: BoxDecoration(
+          color: Color(0XFFdcdcdc).withOpacity(0.5),
+          borderRadius: BorderRadius.circular(10),
+        ),
       );
     }
   }
@@ -842,10 +1001,24 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   Widget build(BuildContext context) {
     if (initialized) {
-      return AspectRatio(
-        aspectRatio: 16 / 9,
-        child: CachedVideoPlayer(
-          _controller,
+      return FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: _controller.value.size.width,
+          height: _controller.value.size.height,
+          child: AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: GestureDetector(
+              onLongPressStart: (longPressStartDetails) {
+                debugPrint('Details :: $longPressStartDetails');
+                _controller.pause();
+              },
+              onLongPressUp: () {
+                _controller.play();
+              },
+              child: CachedVideoPlayer(_controller),
+            ),
+          ),
         ),
       );
     }
@@ -865,8 +1038,11 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       return Container(color: Colors.grey);
                     },
                   )
-                : Image.asset(
-                    'assets/images/moment_placeholder_image.png',
+                : Container(
+                    decoration: BoxDecoration(
+                      color: Color(0XFFdcdcdc).withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
             Center(child: CircularProgressIndicator()),
           ],
@@ -902,6 +1078,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
   String? nextUrl;
   BasePaginationModel<List<CommentModel>>? basePaginationModel;
   List<CommentModel> comments = [];
+  List<CommentModel> tempComments = [];
+
   bool isCommentsLoading = false;
   TextEditingController commentCtrl = TextEditingController();
   ScrollController _scrollController = ScrollController();
@@ -936,10 +1114,20 @@ class _CommentListWidgetState extends State<CommentListWidget> {
     MomentsService()
         .getMomentComments(nextUrl: nextUrl, momentID: widget.momentID)
         .then((value) {
+      tempComments.addAll(value.result);
+
+      tempComments.forEach((element) {
+        if (!(comments.contains(element))) {
+          comments.add(element);
+        }
+      });
+
+      debugPrint('HIIJABR --> ${comments[3].comment}');
+      debugPrint('HIIJABR SECOND--> ${comments[4].comment}');
+
       basePaginationModel = value;
       nextUrl = basePaginationModel!.next;
 
-      comments.addAll(basePaginationModel!.result);
       if (mounted) {
         setState(() {
           isCommentsLoading = false;
@@ -977,6 +1165,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                       child: CustomizedTextFormField(
                         controller: commentCtrl,
                         hintText: 'Comment...',
+                        maxLength: 250,
                       ),
                     ),
                     SizedBox(width: 5),
@@ -1154,6 +1343,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
   }
 }
 
+//The dashes at the top of the moment's page (similar to Whatsapp's)
 class MomentDetailDashes extends StatefulWidget {
   final int currentPageViewIndex;
   final int lengthOfMoment;
@@ -1216,7 +1406,6 @@ class _MomentDetailDashesState extends State<MomentDetailDashes> {
                 : Colors.white.withOpacity(0.5),
             borderRadius: BorderRadius.circular(10),
           ),
-          // child: currentWidget(momentState),
         ),
       );
 
@@ -1224,42 +1413,35 @@ class _MomentDetailDashesState extends State<MomentDetailDashes> {
     }
     return widgets;
   }
-
-  Widget currentWidget(MomentState momentState) {
-    switch (momentState) {
-      case MomentState.ACTIVE:
-        {
-          return AnimatedFractionallySizedBox(
-            duration: Duration(seconds: 1),
-            alignment: Alignment.centerLeft,
-            widthFactor: widthFactor,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        }
-      case MomentState.INACTIVE:
-        {
-          return SizedBox.shrink();
-        }
-      case MomentState.COMPLETED:
-        {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          );
-        }
-    }
-  }
 }
 
-enum MomentState { ACTIVE, INACTIVE, COMPLETED }
 String getGetMomentDetailDateTime(String dateTime) {
   return toTimeAgoLabel(dateTime: DateTime.parse(dateTime));
-  return DateFormat.yMd().add_jm().format(DateTime.parse(dateTime));
+}
+
+extension ListExtensions on List {
+  Range get indices => Range.fromLength(this.length);
+}
+
+class Range extends Iterable<int> {
+  const Range(this.start, this.end) : assert(start <= end);
+  const Range.fromLength(int length) : this(0, length - 1);
+
+  final int start;
+  final int end;
+
+  int get length => end - start + 1;
+
+  @override
+  Iterator<int> get iterator =>
+      Iterable.generate(length, (i) => start + i).iterator;
+
+  @override
+  bool contains(Object? index) {
+    if (index == null || index is! int) return false;
+    return index >= start && index <= end;
+  }
+
+  @override
+  String toString() => '[$start, $end]';
 }

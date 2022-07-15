@@ -592,7 +592,7 @@ class _SearchModuleState extends State<SearchModule> {
                 filterQuality: FilterQuality.high,
               ),
             ),
-          )),
+          ),),
     );
   }
 

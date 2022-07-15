@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
-import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +24,7 @@ class CustomizedTextFormField extends StatefulWidget {
   bool hasLabel;
   bool hasBorder;
   TextStyle? textStyle;
-  BuildCounterWidget? buildCounterWidget;
+  // BuildCounterWidget? buildCounterWidget;
   bool isNumberOnlyInput;
   Function? validator;
   Function? onChanged;
@@ -73,7 +70,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.onTap,
     this.onFieldSubmitted,
     this.controller,
-    this.buildCounterWidget,
+    // this.buildCounterWidget,
     this.showLabelOrPassword = true,
     this.isNumberOnlyInput = false,
     this.keyboardType = TextInputType.text,
@@ -158,12 +155,12 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                   color: blackFont,
                   fontWeight: FontWeight.w600,
                   letterSpacing: widget.isPassword ? 2 : 0),
-          buildCounter: (BuildContext context,
-                  {int? currentLength, int? maxLength, bool? isFocused}) =>
-              widget.buildCounterWidget != null
-                  ? widget.buildCounterWidget!(
-                      currentLength, maxLength, isFocused)
-                  : null,
+          // buildCounter: (BuildContext context,
+          //         {int? currentLength, int? maxLength, bool? isFocused}) =>
+          //     widget.buildCounterWidget != null
+          //         ? widget.buildCounterWidget!(
+          //             currentLength, maxLength, isFocused)
+          //         : null,
           cursorWidth: 1.5,
           enabled: widget.enabled,
           textCapitalization: widget.textCapitalization,

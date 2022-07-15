@@ -19,7 +19,6 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatMessageAction.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
@@ -81,7 +80,6 @@ import '../../../../../data/database_helper.dart';
 import '../../../../../main.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../services/app_config_bloc.dart';
-import '../models/document_file_in_chat_download_model.dart';
 import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
@@ -231,7 +229,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   GroupedItemScrollController? messageListController;
   ItemPositionsListener? messageListPositionListener;
   bool isUserNudging = false;
-  late AppConfigurationModel? appConfigurationModel;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
@@ -276,8 +274,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   getAppConfigurationModelFromLocalStorage() async {
-    String? str = await storage.read(key: appConfigurationKey);
-    appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    var str = await getStorage.read(appFeaturesKey);
+    if (str != null) {
+      appConfigurationModel = AppConfigurationModel.deserialize(str!);
+    }
   }
 
   void checkNetworkConnectivity() async {
@@ -2177,6 +2177,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
+        debugPrint(
+            'LOCATION S -> ${appConfigurationModel?.enableLocationSharing}');
         if (appConfigurationModel?.enableLocationSharing == true) {
           showMoreAction = false;
           if (mounted) setState(() {});

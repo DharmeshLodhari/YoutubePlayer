@@ -29,9 +29,11 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../constant.dart';
 import 'home.dart';
 import 'moments/moments_screen.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
@@ -68,6 +70,8 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
+
+
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       ShareManager().initializeShareManager();
     });
@@ -98,6 +102,7 @@ class _DashboardState extends State<Dashboard> {
     MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
   }
+
 
   void fetchConnections() async {
     ConnectionListBloc connectionListBloc = Provider.of<ConnectionListBloc>(
@@ -402,7 +407,8 @@ class _DashboardState extends State<Dashboard> {
               child: QRCodeView(arguments: {'isRequest': false}),
               wantKeepAlive: false,
             ),
-            KeepAlivePage(child: MomentsScreen(),
+            KeepAlivePage(
+              child: MomentsScreen(),
               wantKeepAlive: false,
             ),
             KeepAlivePage(child: ConnectionDashboard()),

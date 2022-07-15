@@ -189,11 +189,15 @@ getUserName(BuildContext context) {
   return Provider.of<UserBloc>(context, listen: false).user.userName;
 }
 
-Widget getCircularUserAvatar(String imgUrl,
-    {Color borderColor = Colors.black}) {
+Widget getCircularUserAvatar(
+  String imgUrl, {
+  Color borderColor = Colors.black,
+  double width = 30,
+  double height = 30,
+}) {
   return Container(
-    width: 30,
-    height: 30,
+    width: width,
+    height: height,
     padding: EdgeInsets.all(6),
     decoration: BoxDecoration(
       border: Border.all(color: borderColor, width: 2),
@@ -208,19 +212,40 @@ Widget getCircularUserAvatar(String imgUrl,
   );
 }
 
+String getFormattedViewCount(
+    {required int noOfViews, bool addViewText = true}) {
+  if (noOfViews == 1 || noOfViews == 0) {
+    return '1${addViewText ? ' view' : ''}';
+  }
+
+  if (noOfViews < 1000) {
+    return '$noOfViews ${addViewText ? 'views' : ''}';
+  } else if (noOfViews >= 1000 && noOfViews < 10000) {
+    return '${(noOfViews / 1000).floor()}K${addViewText ? ' views' : ''}';
+  } else if (noOfViews >= 10000 && noOfViews < 1000000) {
+    return '${(noOfViews / 1000).floor()}K${addViewText ? ' views' : ''}';
+  } else if (noOfViews >= 1000000 && noOfViews < 1000000000) {
+    return '${(noOfViews / 1000000).floor()}M${addViewText ? ' views' : ''}';
+  } else if (noOfViews >= 1000000000 && noOfViews < 1000000000000) {
+    return '${(noOfViews / 1000000000).floor()}B${addViewText ? ' views' : ''}';
+  } else {
+    return '${(noOfViews / 1000000000000).floor()}T${addViewText ? ' views' : ''}';
+  }
+}
+
 Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
-  final imageInUnit8List = await VideoThumbnail.thumbnailData(
+  final videoInUnit8List = await VideoThumbnail.thumbnailData(
     video: videoPath,
     quality: 85,
+    timeMs: 5,
   );
 
-  if (imageInUnit8List != null) {
+  if (videoInUnit8List != null) {
     final tempDir = await getTemporaryDirectory();
     String uniqueId = Uuid().v4();
-    File file = await File('${tempDir.path}/$uniqueId.png').create();
-    debugPrint('FILE THUMBNAIL :: $file');
+    File file = await File('${tempDir.path}/$uniqueId.jpg').create();
     //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
-    file.writeAsBytesSync(imageInUnit8List);
+    file.writeAsBytesSync(videoInUnit8List);
     return file.path;
   }
   return null;
@@ -1015,6 +1040,9 @@ Future<bool> checkStoragePermission() async {
 String toTimeAgoLabel({required DateTime dateTime}) {
   final now = DateTime.now();
   final durationSinceNow = now.difference(dateTime);
+  debugPrint('Now --> $now');
+  debugPrint('DateTime --> $dateTime');
+  debugPrint('DurationSincenow --> $durationSinceNow');
 
   final inDays = durationSinceNow.inDays;
   if (inDays >= 1) {
@@ -1031,6 +1059,8 @@ String toTimeAgoLabel({required DateTime dateTime}) {
   }
 
   final inMinutes = durationSinceNow.inMinutes;
+  debugPrint('IN MINUTES --> $inMinutes');
+
   if (inMinutes >= 2) {
     return inHours >= 2
         ? '$inMinutes minutes ago'

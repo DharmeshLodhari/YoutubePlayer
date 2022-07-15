@@ -20,8 +20,8 @@ class AppConfigurationBloc extends ChangeNotifier {
   }
 }
 
-class AppConfigurationService extends AuthService {
-  Future<AppConfigurationModel?> getAppConfigurations() async {
+class AppFeaturesService extends AuthService {
+  Future<AppConfigurationModel?> getAppFeatures() async {
     String url = AppConfig.baseUrl + "/api/v1/user/app-settings";
 
     var headers = getNonAuthHeader();

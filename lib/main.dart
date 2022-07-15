@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -37,74 +36,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
-import 'package:workmanager/workmanager.dart';
 
+import 'constant.dart';
 import 'locale/app_localization.dart';
 
 late List<CameraDescription> cameras;
-late AppConfigurationModel? appConfigModel;
-
-final FlutterSecureStorage storage = FlutterSecureStorage();
-
-void callbackDispatcher() {
-  // Workmanager().executeTask((task, inputData) {
-  //   try {
-  //     debugPrint("WorkManager started message synchronization");
-  //     ChatMessageSynchronizer().syncMessages(fetchFresh: true);
-  //   } catch (e) {
-  //     debugPrint("WorkManager exception caught: $e");
-  //   }
-  //   return Future.value(true);
-  // });
-
-  AppConfig();
-
-  Workmanager().executeTask((task, inputData) async {
-    await AppConfigurationService().getAppConfigurations().then(
-      (value) async {
-        debugPrint('APP CONFIGS ::: $value');
-
-        storage.write(
-            key: appConfigurationKey,
-            value: AppConfigurationModel.serialize(value!));
-
-        String? str = await storage.read(key: appConfigurationKey);
-        debugPrint('STORAGE -> $str');
-
-        if (str != null) {
-          AppConfigModel().appConfigurationModel =
-              AppConfigurationModel.deserialize(str);
-          // _appConfigurationModel = AppConfigurationModel.deserialize(str);
-        }
-        debugPrint(
-            'APP CONFIG STORAGE -> ${AppConfigModel().appConfigurationModel}');
-      },
-    );
-    return Future.value(true);
-  });
-}
-
-class AppConfigModel {
-  static final AppConfigModel _singleton = AppConfigModel.createInstance();
-  AppConfigModel.createInstance();
-  factory AppConfigModel() {
-    return _singleton;
-  }
-  AppConfigurationModel? appConfigurationModel;
-}
+final getStorage = GetStorage(appFeaturesKey);
 
 void main() async {
-  debugPrint('MAIN RUNNING');
-
+  await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
 
   AppConfig();
 
-  initializeBackgroundService();
+  getAppFeaturesFromServer();
   await FlutterDownloader.initialize();
 
   await LocalNotificationService().init();
@@ -142,38 +91,37 @@ void main() async {
   });
 }
 
-void initializeBackgroundService() async {
-  debugPrint('INITIALIZING BACKGROUND SERVICE');
+void getAppFeaturesFromServer() async {
+  /*Calling the endpoint here so that it will run
+  * when the app opens, after that Timer.periodic
+  * takes care of when it would run next (which is
+  * after every 15 minutes)*/
 
-  try {
-    await AppConfigurationService().getAppConfigurations().then(
-      (value) async {
-        debugPrint('WRITING APP CONFIG TO STORAGE');
+  await AppFeaturesService().getAppFeatures().then(
+    (value) async {
+      debugPrint('APP FEATURES ::: $value');
 
-        storage.write(
-            key: appConfigurationKey,
-            value: AppConfigurationModel.serialize(value!));
+      await getStorage.write(
+        appFeaturesKey,
+        AppConfigurationModel.serialize(value!),
+      );
+    },
+  );
 
-        String? str = await storage.read(key: appConfigurationKey);
-        debugPrint('STORAGE 2 -> $str');
+  Timer.periodic(
+    const Duration(minutes: 15),
+    (timer) async {
+      await AppFeaturesService().getAppFeatures().then(
+        (value) async {
+          debugPrint('APP FEATURE AFTER 15 MINUTES ::: $value');
 
-        if (str != null) {
-          AppConfigModel().appConfigurationModel =
-              AppConfigurationModel.deserialize(str);
-          // _appConfigurationModel = AppConfigurationModel.deserialize(str);
-        }
-        debugPrint(
-            'APP CONFIG STORAGE 2 -> ${AppConfigModel().appConfigurationModel}');
-      },
-    );
-  } catch (e) {
-    debugPrint('APP CONFIG ERROR :: ${e.toString()}');
-  }
-
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
-  Workmanager().registerPeriodicTask(
-    "appConfigPeriodicTask",
-    "appConfigPeriodicTaskName",
+          await getStorage.write(
+            appFeaturesKey,
+            AppConfigurationModel.serialize(value!),
+          );
+        },
+      );
+    },
   );
 }
 
@@ -192,7 +140,6 @@ class _MyAppState extends State<MyApp> {
     /*WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ShareManager().initializeShareManager();
     });*/
-
     super.initState();
   }
 

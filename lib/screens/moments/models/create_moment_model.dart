@@ -8,9 +8,14 @@ class CreateMomentModel {
   bool enableCommenting;
   String? mediaPoster;
   List<String>? userTags;
+  String payMeLabel;
+  String? payMeButtonColor;
 
   CreateMomentModel({
+
     this.url,
+    this.payMeButtonColor,
+    this.payMeLabel = 'Pay Me',
     this.enableLike = false,
     this.enableCommenting = false,
     this.enablePayMe = false,

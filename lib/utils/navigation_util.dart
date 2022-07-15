@@ -21,4 +21,8 @@ class NavigationUtil {
   static Future pushNamed(BuildContext context, {required String routeName}) {
     return Navigator.of(context).pushNamed(routeName);
   }
+
+  static pop(BuildContext context) {
+     Navigator.of(context).pop();
+  }
 }

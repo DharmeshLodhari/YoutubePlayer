@@ -1,3 +1,5 @@
+import 'package:equatable/equatable.dart';
+
 class BasePaginationModel<T> {
   int count;
   String? next;
@@ -20,7 +22,7 @@ class BasePaginationModel<T> {
   }
 }
 
-class CommentModel {
+class CommentModel extends Equatable {
   String? id;
   String? authorAvatar;
   String? comment;
@@ -29,9 +31,25 @@ class CommentModel {
   int? replyCount;
   String? createdAt;
   bool? isApproved;
-  Null? replyTo;
-  Null? socialLikes;
-  Null? socialDislikes;
+  String? replyTo;
+  int? socialLikes;
+  int? socialDislikes;
+
+  @override
+  List<Object?> get props => [
+    id,
+    authorAvatar,
+    comment,
+    authorUsername,
+    isReply,
+    replyCount,
+    createdAt,
+    isApproved,
+    replyTo,
+    socialLikes,
+    socialDislikes,
+  ];
+
 
   CommentModel(
       {this.id,
@@ -45,6 +63,8 @@ class CommentModel {
       this.replyTo,
       this.socialLikes,
       this.socialDislikes});
+
+
 
   CommentModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

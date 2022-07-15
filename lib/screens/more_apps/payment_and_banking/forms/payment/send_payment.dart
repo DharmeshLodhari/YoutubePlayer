@@ -754,6 +754,8 @@ class _SendPaymentState extends State<SendPayment> {
 
   Widget getReferenceField() {
     return CustomizedTextFormField(
+      maxLines: 5,
+      maxLength: 255,
       labelText: AppLocalization.of(context)!.reference,
       textCapitalization: TextCapitalization.sentences,
       controller: _referenceController,

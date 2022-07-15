@@ -7,6 +7,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:video_player/video_player.dart';
@@ -50,18 +51,34 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   List<String> attachmentItemList = [];
 
   // Thumbnail that would be generated from the video the user captured.
-  String? generatedThumbnail;
+  String? generatedVideoThumbnail;
   VideoPlayerController? videoPlayerController;
-  // final TextEditingController momentTextCtrl = TextEditingController();
+  final TextEditingController payMeCtrl = TextEditingController(text: 'Pay me');
   final TextEditingController urlTextCtrl = TextEditingController();
 
-  String? momentTitle;
+  String momentTitle = '';
   bool isVideoLoading = false;
 
   ChewieController? _chewieController;
 
+  Color pickedColor = navyBlue;
+
+  late FocusNode focusNode;
+  String payMeLabel = 'Pay Me';
+  void changeColor(Color color) {
+    pickedColor = color;
+    debugPrint('PICKED COLOR ::: $pickedColor');
+  }
+
   @override
   void initState() {
+    debugPrint('file path -> ${widget.filePath}');
+    payMeCtrl.addListener(() {
+      setState(() {
+        payMeLabel = payMeCtrl.text;
+      });
+    });
+    focusNode = FocusNode();
     super.initState();
     fileExtension = widget.filePath.split('.').last;
     /*If the media to be previewed is a video, generate a thumbnail from it (the video)*/
@@ -69,7 +86,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       setUpVideoPlayer();
       generateThumbNailFromVideo(videoPath: widget.filePath).then((thumbnail) {
         if (thumbnail != null) {
-          generatedThumbnail = thumbnail;
+          generatedVideoThumbnail = thumbnail;
+          debugPrint('file path gen -> ${generatedVideoThumbnail}');
         }
       });
     }
@@ -77,7 +95,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('SET STATE CALLED');
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       appBar: appBar(),
@@ -86,15 +103,16 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 250,
-                  width: 400,
+                  height: 200,
                   child: mediaRenderer(fileType: fileExtension),
                 ),
                 SizedBox(height: 20),
                 TextFormField(
-                  maxLength: 99,
+                  maxLength: 255,
+                  maxLines: 5,
                   decoration: InputDecoration(
                     hintText: 'Enter caption...',
                     border: InputBorder.none,
@@ -140,7 +158,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     momentTitle = value;
                   },
                 ),
-                SizedBox(height: 10),
                 previewMomentSwitchOptions(
                   title: 'Make Moment Public',
                   description:
@@ -154,6 +171,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     },
                   ),
                 ),
+                SizedBox(height: 30),
+
                 previewMomentSwitchOptions(
                   title: 'Enable likes',
                   description: 'Enable this to allow others like your post',
@@ -166,6 +185,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     },
                   ),
                 ),
+                SizedBox(height: 30),
+
                 previewMomentSwitchOptions(
                   title: 'Enable Commenting',
                   description:
@@ -179,44 +200,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     },
                   ),
                 ),
-                previewMomentSwitchOptions(
-                  title: 'Enable Pay Me',
-                  description:
-                  'Enable this to allow others to pay you when you post your moment',
-                  switchBtn: Switch(
-                    value: enablePayMe,
-                    onChanged: (value) {
-                      setState(() {
-                        enablePayMe = value;
-                      });
-                    },
-                  ),
-                ),
-                // SizedBox(height: 15),
-                // dropDownPickItemWidget(
-                //   label: 'Pick attachment',
-                //   selectedItem: pickedAttachmentType,
-                //   onTap: () => pickAttachmentWidget(),
-                // ),
-                SizedBox(height: 8),
-                attachmentItemLoading
-                    ? Center(child: CircularLoadingIndicator())
-                    : Visibility(
-                        visible: attachmentItemList.isNotEmpty,
-                        child: dropDownPickItemWidget(
-                          label: 'Attachment Item',
-                          selectedItem: attachmentItemName,
-                          onTap: () => pickAttachmentItemWidget(),
-                        ),
-                      ),
-                Visibility(
-                  visible: showUrlTextField,
-                  child: CustomizedTextFormField(
-                    hintText: 'Enter Url',
-                    controller: urlTextCtrl,
-                  ),
-                ),
-                SizedBox(height: 15),
+                SizedBox(height: 30),
+
                 TextFieldTags(
                   initialTags: userTags,
                   tagsStyler: textFieldTagStyler,
@@ -238,9 +223,153 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                     userTags.removeWhere((tag) => tag.isEmpty);
                   },
                 ),
+
+                previewMomentSwitchOptions(
+                  title: 'Enable Payment',
+                  description:
+                      'Enable this to allow other users to support your work by making a donation.',
+                  switchBtn: Switch(
+                    value: enablePayMe,
+                    onChanged: (value) {
+                      setState(() {
+                        enablePayMe = value;
+                      });
+                    },
+                  ),
+                ),
+                // SizedBox(height: 15),
+                // dropDownPickItemWidget(
+                //   label: 'Pick attachment',
+                //   selectedItem: pickedAttachmentType,
+                //   onTap: () => pickAttachmentWidget(),
+                // ),
+
+                attachmentItemLoading
+                    ? Center(child: CircularLoadingIndicator())
+                    : Visibility(
+                        visible: attachmentItemList.isNotEmpty,
+                        child: dropDownPickItemWidget(
+                          label: 'Attachment Item',
+                          selectedItem: attachmentItemName,
+                          onTap: () => pickAttachmentItemWidget(),
+                        ),
+                      ),
+                Visibility(
+                  visible: showUrlTextField,
+                  child: CustomizedTextFormField(
+                    hintText: 'Enter Url',
+                    controller: urlTextCtrl,
+                  ),
+                ),
+                Focus(
+                  focusNode: focusNode,
+                  child: Visibility(
+                    visible: enablePayMe,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SizedBox(height: 12),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              Text('Button Preview'),
+                              SizedBox(height: 6),
+                              payMeBtn(),
+                            ],
+                          ),
+                        ),
+                        CustomizedTextFormField(
+                          controller: payMeCtrl,
+                          maxLength: 15,
+                          hintText: 'Enter pay me label...',
+                        ),
+                        SizedBox(height: 8),
+                        Text('Pick button color', textAlign: TextAlign.left),
+                        SizedBox(height: 2),
+                        Text(
+                          'Pick a color to display as your payment button color',
+                          style: TextStyle(
+                            color: blackFont.withOpacity(0.5),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        InkWell(
+                          onTap: () async {
+                            //This is to dismiss the keyboard first, wait for 200 milliseconds
+                            // for the keyboard to be fully dismissed before showing the dialog.
+                            //To avoid overflow errors on the dialog.
+                            focusNode.unfocus();
+                            await Future.delayed(Duration(milliseconds: 200));
+                            bool? _pickedColor = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Pick your color'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ColorPicker(
+                                      onColorChanged: changeColor,
+                                      pickerColor: pickedColor,
+                                    ),
+                                    CurvedButton(
+                                      text: 'Select',
+                                      onPressed: () {
+                                        Navigator.pop(context, true);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                            if (_pickedColor != null && _pickedColor == true) {
+                              // Calling setState here so that ONLY if they click the select button
+                              // in the dialog should the color of the container change.
+
+                              setState(() {});
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                'assets/images/color_picker_image.png',
+                                width: 40,
+                                height: 40,
+                              ),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: Text(
+                                    '#${pickedColor.value.toRadixString(16)}'
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: blackFont,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 80),
                 CurvedButton(
-                  text: 'Post',
+                  text: 'Submit',
                   onPressed: () {
+                    if (enablePayMe && payMeCtrl.text.isEmpty) {
+                      showToast(message: 'Payment label cannot be empty');
+                      return;
+                    }
                     showDialogBox(
                       context: context,
                       actionOneTextColor: blackFont,
@@ -266,11 +395,39 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                       },
                     );
                   },
-                )
+                ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget payMeBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      decoration: BoxDecoration(
+          color: HexColor('#${pickedColor.value.toRadixString(16)}'),
+          borderRadius: BorderRadius.circular(10)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/images/slydo_icon_white.png',
+            width: 30,
+            height: 30,
+          ),
+          SizedBox(width: 4),
+          Text(
+            payMeLabel,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          )
+        ],
       ),
     );
   }
@@ -280,29 +437,26 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     required String description,
     required Switch switchBtn,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(title),
-              switchBtn,
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(title),
+            SizedBox(height: 30, child: switchBtn),
+          ],
+        ),
+        Text(
+          description,
+          style: TextStyle(
+            color: blackFont.withOpacity(0.5),
           ),
-          Text(
-            description,
-            style: TextStyle(
-              color: blackFont.withOpacity(0.5),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  appBar() {
+  AppBar appBar() {
     return AppBar(
       elevation: 0,
       titleSpacing: 0,
@@ -412,10 +566,12 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         enablePayMe: enablePayMe,
         isPublic: isPublic,
         userTags: newUserTags,
-        mediaPoster: generatedThumbnail,
+        mediaPoster: generatedVideoThumbnail,
         filePath: widget.filePath,
         text: momentTitle,
         url: urlTextCtrl.text,
+        payMeLabel: payMeCtrl.text.isEmpty ? 'Pay Me' : payMeCtrl.text,
+        payMeButtonColor: '${pickedColor.value.toRadixString(16)}',
       ),
     )
         .then((momentPosted) {
@@ -557,7 +713,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         attachmentItemLoading = true;
       });
     }
-    debugPrint('RESULT ::: $result');
     if (result != null) {
       List resultList = result['results'] as List;
       itemAttachmentList =
@@ -611,7 +766,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         attachmentItemLoading = true;
       });
     }
-    debugPrint('RESULT ::: $result');
     if (result != null) {
       List resultList = result['results'] as List;
       itemAttachmentList =
