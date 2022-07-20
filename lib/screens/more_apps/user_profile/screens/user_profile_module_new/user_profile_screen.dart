@@ -30,8 +30,8 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../../../../utils/navigation_util.dart';
-import '../../../../moments/moment_detail_page.dart';
-import '../../../../moments/moments_service.dart';
+import '../../../../moments/screens/moment_detail_page.dart';
+import '../../../../moments/screens/moments_service.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {

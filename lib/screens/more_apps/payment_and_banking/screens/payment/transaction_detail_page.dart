@@ -1,6 +1,5 @@
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -277,7 +276,7 @@ class _TransactionDetailState extends State<TransactionDetail> {
           transactionOrKycDetailTile(
             SlydoAppIcon.note,
             AppLocalization.of(context)!.description,
-            transaction!.description ?? '---',
+            messageDecoderWithEmoji(transaction!.description) ?? '---',
           ),
         ],
       ),

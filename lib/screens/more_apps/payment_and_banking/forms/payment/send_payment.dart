@@ -42,7 +42,7 @@ class SendPayment extends StatefulWidget {
 class _SendPaymentState extends State<SendPayment> {
   TextEditingController _recipientController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
-  TextEditingController _referenceController = TextEditingController();
+  late TextEditingController _referenceController;
   FocusNode _recipientFocus = FocusNode();
   late http.Response response;
 
@@ -87,6 +87,13 @@ class _SendPaymentState extends State<SendPayment> {
 
   @override
   void initState() {
+    String? defaultReferenceText =
+        widget.arguments['defaultReferenceText'] != null
+            ? widget.arguments['defaultReferenceText']
+            : null;
+    _referenceController = TextEditingController(text: defaultReferenceText);
+    reference = _referenceController.text;
+
     isFromProfile = widget.arguments != null
         ? widget.arguments['isFromProfile'] != null
             ? widget.arguments['isFromProfile']

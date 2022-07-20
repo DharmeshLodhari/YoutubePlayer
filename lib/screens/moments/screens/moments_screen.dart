@@ -1,7 +1,7 @@
-import 'package:Slydo/screens/moments/create_moment_screen.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
-import 'package:Slydo/screens/moments/moment_detail_page.dart';
-import 'package:Slydo/screens/moments/moments_service.dart';
+import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail_page.dart';
+import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -15,13 +15,13 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../constant.dart';
-import '../../data/state_notifier.dart';
-import '../../locale/app_localization.dart';
-import '../../services/app_config_bloc.dart';
-import '../../utils/slydo_app_icon_icons.dart';
-import '../../utils/util.dart';
-import '../more_apps/user_profile/models/user.dart';
+import '../../../constant.dart';
+import '../../../data/state_notifier.dart';
+import '../../../locale/app_localization.dart';
+import '../../../services/app_config_bloc.dart';
+import '../../../utils/slydo_app_icon_icons.dart';
+import '../../../utils/util.dart';
+import '../../more_apps/user_profile/models/user.dart';
 import 'moment_search_screen.dart';
 
 class MomentsScreen extends StatefulWidget {

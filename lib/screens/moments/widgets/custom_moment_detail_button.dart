@@ -21,13 +21,16 @@ class CustomMomentDetailButton extends StatelessWidget {
         child: Column(
           children: [
             Container(
+              padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
+                color: Colors.white54,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 10,
+                    offset: Offset(0.0, 0),
+                    color: Colors.black.withOpacity(0.6),
                   )
                 ],
+                borderRadius: BorderRadius.circular(40),
               ),
               child: icon,
             ),

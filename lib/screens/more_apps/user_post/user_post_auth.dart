@@ -12,14 +12,19 @@ import '../../../utils/util.dart';
 class UserPostAuth extends AuthService {
   // Fetch User Posts Details
   Future<Map<String, dynamic>?> listUserPosts(
-      {String? next = "", required String? userName}) async {
+      {String? next = "", String? pageSize, required String? userName}) async {
     var url = "";
     if (next == null) {
       return null;
     }
 
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/social/posts/user/$userName/";
+      if (pageSize != null) {
+        url = AppConfig.baseUrl +
+            "/api/v1/social/posts/user/$userName/?page_size=$pageSize";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/social/posts/user/$userName/";
+      }
     } else {
       url = getSecureUrl(url: next);
     }

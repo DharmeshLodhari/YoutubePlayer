@@ -6,9 +6,9 @@ import 'package:Slydo/services/auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
-import '../../data/environment.dart';
-import '../../utils/util.dart';
-import 'models/comment_model.dart';
+import '../../../data/environment.dart';
+import '../../../utils/util.dart';
+import '../models/comment_model.dart';
 
 class MomentsService extends AuthService {
   Future getExploreMoments(String? next, String? previous) async {
@@ -197,13 +197,19 @@ class MomentsService extends AuthService {
     request.files.add(mediaMultipartFile);
 
     request.fields["text"] = createMomentModel.text!;
-    if (createMomentModel.url != null && createMomentModel.url!.isNotEmpty) {
-      request.fields["url"] = createMomentModel.url!;
+    // if (createMomentModel.url != null && createMomentModel.url!.isNotEmpty) {
+    //   request.fields["url"] = createMomentModel.url!;
+    // }
+    if (createMomentModel.attachmentMap != null) {
+      request.fields["attachment"] =
+          jsonEncode(createMomentModel.attachmentMap!);
     }
     request.fields["isPublic"] = jsonEncode(createMomentModel.isPublic);
 
     request.fields["tags"] = jsonEncode(createMomentModel.userTags);
-    request.fields["pay_me_label"] = createMomentModel.payMeLabel;
+    if (createMomentModel.payMeLabel != null) {
+      request.fields["pay_me_label"] = createMomentModel.payMeLabel!;
+    }
     if (createMomentModel.payMeButtonColor != null) {
       request.fields["payme_button_color"] =
           createMomentModel.payMeButtonColor!;

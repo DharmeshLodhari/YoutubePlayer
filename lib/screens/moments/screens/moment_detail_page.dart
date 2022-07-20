@@ -9,25 +9,25 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../data/state_notifier.dart';
-import '../../locale/app_localization.dart';
-import '../../routes/route_constants.dart';
-import '../../utils/enums.dart';
-import '../../utils/navigation_util.dart';
-import '../../utils/slydo_app_icon_icons.dart';
-import '../../utils/util.dart';
-import '../../widget/LoadingIndicator.dart';
-import '../../widget/customized_textform_field.dart';
-import '../../widget/dialog.dart';
-import '../../widget/read_more_widget.dart';
-import '../../widget/rounded_background_icon.dart';
-import '../more_apps/user_profile/user_auth.dart';
-import '../post_detail_page.dart';
+import '../../../data/state_notifier.dart';
+import '../../../locale/app_localization.dart';
+import '../../../routes/route_constants.dart';
+import '../../../utils/enums.dart';
+import '../../../utils/navigation_util.dart';
+import '../../../utils/slydo_app_icon_icons.dart';
+import '../../../utils/util.dart';
+import '../../../widget/LoadingIndicator.dart';
+import '../../../widget/customized_textform_field.dart';
+import '../../../widget/dialog.dart';
+import '../../../widget/read_more_widget.dart';
+import '../../../widget/rounded_background_icon.dart';
+import '../../more_apps/user_profile/user_auth.dart';
+import '../../post_detail_page.dart';
+import '../models/comment_model.dart';
+import '../models/moments_model.dart';
+import '../widgets/custom_moment_detail_button.dart';
 import 'create_moment_screen.dart';
-import 'models/comment_model.dart';
-import 'models/moments_model.dart';
 import 'moments_service.dart';
-import 'widgets/custom_button.dart';
 
 class MomentsDetailsScreen extends StatefulWidget {
   String? nextPageUrl;
@@ -151,17 +151,13 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       int endIndex = getLoopEndingPoint(mList: widget.listOfConnectionNames);
 
       for (int i = startIndex; i <= endIndex; i++) {
-        debugPrint('STARTING LOOP POINT -> $startIndex');
-
         List<MomentsModel> momentsModelList = await MomentsService()
             .getMomentsWithOwnerName(owner: widget.listOfConnectionNames[i]);
         widget.momentsModelList!.add(momentsModelList);
       }
-      debugPrint('NEW MOMENTS LIST -> ${widget.momentsModelList![0][1].text}');
-      debugPrint('NEW MOMENTS LIST -> ${widget.momentsModelList![0][1].views}');
+
       showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: false);
     } catch (e) {
-      debugPrint('ERROR FETCHING MOMENT WITH OWNER NAME :: $e');
       showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: false);
 
       NavigationUtil.pop(context);
@@ -253,16 +249,11 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                 scrollDirection: Axis.vertical,
                 onPageChanged: (verticalScrollIndex) async {
                   // To check if the pageview has gotten to the top of the list.
-                  debugPrint(
-                      'CONNECTION NAMES -> ${widget.listOfConnectionNames}');
 
                   if (verticalScrollIndex == 0) {
                     if (widget
                             .momentsModelList![verticalScrollIndex][0].owner !=
                         widget.listOfConnectionNames[0]) {
-                      debugPrint(
-                          'VERTICAL SCROLL INDEX -> $verticalScrollIndex');
-
                       getNextOrPreviousListOfMomentsWithConnectionNames(
                           verticalScrollIndex: verticalScrollIndex,
                           getNextList: false);
@@ -272,12 +263,6 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                   // To check if the pageview has gotten to the end of the list.
                   else if (verticalScrollIndex + 1 ==
                       widget.momentsModelList!.length) {
-                    debugPrint('VERTICAL SCROLL INDEX REACHED');
-                    debugPrint(
-                        'VERTICAL SCROLL INDEX REACHED -> ${widget.momentsModelList![verticalScrollIndex][0].owner}');
-                    debugPrint(
-                        'VERTICAL SCROLL INDEX NAME -> ${widget.listOfConnectionNames.last}');
-
                     // This is to check if the owner of the last moment that's showing is the same as the last name
                     // in widget.listOfConnectionNames (this helps us to know whether to load the next moments using the
                     // names that are left in widget.listOfConnectionNames or using the url(endpoint) in widget.nextPageUrl).
@@ -413,6 +398,8 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
+        debugPrint(
+            'ATTACHMENT ::: ${widget.momentsModelList[index].attachment!}');
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -426,190 +413,223 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                     lengthOfMoment: widget.momentsModelList.length),
               ),
             ),
-            Positioned.directional(
-              textDirection: Directionality.of(context),
-              end: -10.0,
-              bottom: MediaQuery.of(context).size.height * 0.25,
-              // top: MediaQuery.of(context).size.height * 0.5,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    isMyMoment(index)
-                        ? CustomMomentDetailButton(
-                            icon:
-                                SvgPicture.asset('assets/images/three_dot.svg'),
-                            text: '',
-                            onPressed: () {
-                              androidBottomSheet(
-                                context: context,
-                                child: bottomSheetItem(
-                                  title: 'Delete',
-                                  iconData: Icons.delete,
-                                  onTap: () {
-                                    Navigator.pop(context);
-
-                                    showDialogBox(
-                                      context: context,
-                                      actionOneTextColor: white,
-                                      actionOneBgColor: mateRed,
-                                      actionTwoTextColor: blackFont,
-                                      actionTwoBgColor: greyBorderColor,
-                                      title:
-                                          AppLocalization.of(context)!.delete,
-                                      actionTwoText:
-                                          AppLocalization.of(context)!.cancel,
-                                      actionOneText:
-                                          AppLocalization.of(context)!.delete,
-                                      description:
-                                          'Are you sure you want to delete this moment?',
-                                      roundedBackgroundIcon:
-                                          RoundedBackgroundIcon(
-                                        enableMargin: false,
-                                        width: 90,
-                                        height: 90,
-                                        image: Image.asset(
-                                            'assets/images/delete_dialog_icon.png'),
-                                      ),
-                                      leftButtonOnPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (dialogLoadingContext) =>
-                                                LoadingIndicator());
-                                        MomentsService()
-                                            .deleteMoment(widget
-                                                .momentsModelList[index].id!)
-                                            .then(
-                                          (value) {
-                                            Navigator.pop(
-                                                context); // Dismiss loading indicator
-                                            Navigator.pop(context);
-                                          },
-                                        ).catchError((e) {
-                                          Navigator.pop(context);
-                                          showToast(message: e.toString());
-                                        });
-                                      },
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                          )
-                        : SizedBox.shrink(),
-
-                    CustomMomentDetailButton(
-                      icon: Icon(
-                        Icons.thumb_up,
-                        color: likeEnabled(index)
-                            ? Colors.white
-                            : disabledMomentIconColor(),
-                      ),
-                      text: likeEnabled(index)
-                          ? int.parse(widget.momentsModelList[index].likes
-                                      .toString()) <
-                                  1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews:
-                                      widget.momentsModelList[index].likes!,
-                                  addViewText: false)
-                          : '',
-                      onPressed: likeEnabled(index)
-                          ? () {
-                              MomentsService()
-                                  .likeMoment(
-                                      widget.momentsModelList[index].id!)
-                                  .then((value) {
-                                widget.momentsModelList[index] = value;
-                                if (mounted) setState(() {});
-                              });
-                            }
-                          : null,
-                    ),
-
-                    CustomMomentDetailButton(
-                      icon: Icon(Icons.thumb_down,
-                          color: likeEnabled(index)
-                              ? Colors.white
-                              : disabledMomentIconColor()),
-                      text: likeEnabled(index)
-                          ? int.parse(widget.momentsModelList[index].dislikes
-                                      .toString()) <
-                                  1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews:
-                                      widget.momentsModelList[index].dislikes!,
-                                  addViewText: false,
-                                )
-                          : '',
-                      onPressed: likeEnabled(index)
-                          ? () {
-                              MomentsService()
-                                  .dislikeMoment(
-                                      widget.momentsModelList[index].id!)
-                                  .then((value) {
-                                widget.momentsModelList[index] = value;
-                                if (mounted) setState(() {});
-                              });
-                            }
-                          : null,
-                    ),
-
-                    CustomMomentDetailButton(
-                      icon: Icon(Icons.messenger,
-                          color: commentingEnabled(index)
-                              ? Colors.white
-                              : disabledMomentIconColor()),
-                      text: commentingEnabled(index)
-                          ? widget.momentsModelList[index].numberOfComments! < 1
-                              ? ''
-                              : getFormattedViewCount(
-                                  noOfViews: widget.momentsModelList[index]
-                                      .numberOfComments!,
-                                  addViewText: false,
-                                )
-                          : '',
-                      onPressed: commentingEnabled(index)
-                          ? () {
-                              commentSheet(
-                                context,
-                                widget.momentsModelList[index].id!,
-                              );
-                            }
-                          : null,
-                    ),
-
-                    CustomMomentDetailButton(
-                      icon: Icon(
-                        Icons.visibility_rounded,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                      text: getFormattedViewCount(
-                        noOfViews: widget.momentsModelList[index].views,
-                        addViewText: false,
-                      ),
-                      onPressed: null,
-                    ),
-
-                    // ATTACHMENT WIDGET
-                    // Row(
-                    //   children: [
-                    //     getWhichAttachmentWidgetToShow(
-                    //         widget.momentsModelList[index].attachment!),
-                    //     SizedBox(width: 5),
-                    //   ],
-                    // ),
-                  ],
+            Positioned(
+              top: 0,
+              bottom: 0,
+              child: InkWell(
+                onTap: () {
+                  _pageCtrl!.previousPage(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn);
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              bottom: 0,
+              child: InkWell(
+                onTap: () {
+                  _pageCtrl!.nextPage(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn);
+                },
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
                 ),
               ),
             ),
             Positioned.directional(
               textDirection: Directionality.of(context),
-              start: 12.0,
+              end: -10.0,
+              bottom: MediaQuery.of(context).size.height * 0.04,
+              // top: MediaQuery.of(context).size.height * 0.5,
+              child: Column(
+                children: [
+                  // ATTACHMENT WIDGET
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: getWhichAttachmentWidgetToShow(
+                      widget.momentsModelList[index].attachment!,
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 16),
+                      isMyMoment(index)
+                          ? CustomMomentDetailButton(
+                              icon: SvgPicture.asset(
+                                  'assets/images/three_dot.svg'),
+                              text: '',
+                              onPressed: () {
+                                androidBottomSheet(
+                                  context: context,
+                                  child: bottomSheetItem(
+                                    title: 'Delete',
+                                    iconData: Icons.delete,
+                                    onTap: () {
+                                      Navigator.pop(context);
+
+                                      showDialogBox(
+                                        context: context,
+                                        actionOneTextColor: white,
+                                        actionOneBgColor: mateRed,
+                                        actionTwoTextColor: blackFont,
+                                        actionTwoBgColor: greyBorderColor,
+                                        title: AppLocalization.of(context)!
+                                            .delete,
+                                        actionTwoText:
+                                            AppLocalization.of(context)!
+                                                .cancel,
+                                        actionOneText:
+                                            AppLocalization.of(context)!
+                                                .delete,
+                                        description:
+                                            'Are you sure you want to delete this moment?',
+                                        roundedBackgroundIcon:
+                                            RoundedBackgroundIcon(
+                                          enableMargin: false,
+                                          width: 90,
+                                          height: 90,
+                                          image: Image.asset(
+                                              'assets/images/delete_dialog_icon.png'),
+                                        ),
+                                        leftButtonOnPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder:
+                                                  (dialogLoadingContext) =>
+                                                      LoadingIndicator());
+                                          MomentsService()
+                                              .deleteMoment(widget
+                                                  .momentsModelList[index]
+                                                  .id!)
+                                              .then(
+                                            (value) {
+                                              Navigator.pop(
+                                                  context); // Dismiss loading indicator
+                                              Navigator.pop(context);
+                                              showToast(
+                                                  message: 'Moment deleted');
+                                            },
+                                          ).catchError((e) {
+                                            Navigator.pop(context);
+                                            showToast(message: e.toString());
+                                          });
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            )
+                          : SizedBox.shrink(),
+                      CustomMomentDetailButton(
+                        icon: Icon(
+                          Icons.thumb_up,
+                          color: likeEnabled(index)
+                              ? Colors.white
+                              : disabledMomentIconColor(),
+                        ),
+                        text: likeEnabled(index)
+                            ? int.parse(widget.momentsModelList[index].likes
+                                        .toString()) <
+                                    1
+                                ? ''
+                                : getFormattedViewCount(
+                                    noOfViews:
+                                        widget.momentsModelList[index].likes!,
+                                    addViewText: false)
+                            : '',
+                        onPressed: likeEnabled(index)
+                            ? () {
+                                MomentsService()
+                                    .likeMoment(
+                                        widget.momentsModelList[index].id!)
+                                    .then((value) {
+                                  widget.momentsModelList[index] = value;
+                                  if (mounted) setState(() {});
+                                });
+                              }
+                            : null,
+                      ),
+                      CustomMomentDetailButton(
+                        icon: Icon(Icons.thumb_down,
+                            color: likeEnabled(index)
+                                ? Colors.white
+                                : disabledMomentIconColor()),
+                        text: likeEnabled(index)
+                            ? int.parse(widget
+                                        .momentsModelList[index].dislikes
+                                        .toString()) <
+                                    1
+                                ? ''
+                                : getFormattedViewCount(
+                                    noOfViews: widget
+                                        .momentsModelList[index].dislikes!,
+                                    addViewText: false,
+                                  )
+                            : '',
+                        onPressed: likeEnabled(index)
+                            ? () {
+                                MomentsService()
+                                    .dislikeMoment(
+                                        widget.momentsModelList[index].id!)
+                                    .then((value) {
+                                  widget.momentsModelList[index] = value;
+                                  if (mounted) setState(() {});
+                                });
+                              }
+                            : null,
+                      ),
+                      CustomMomentDetailButton(
+                        icon: Icon(Icons.messenger,
+                            color: commentingEnabled(index)
+                                ? Colors.white
+                                : disabledMomentIconColor()),
+                        text: commentingEnabled(index)
+                            ? widget.momentsModelList[index]
+                                        .numberOfComments! <
+                                    1
+                                ? ''
+                                : getFormattedViewCount(
+                                    noOfViews: widget.momentsModelList[index]
+                                        .numberOfComments!,
+                                    addViewText: false,
+                                  )
+                            : '',
+                        onPressed: commentingEnabled(index)
+                            ? () {
+                                commentSheet(
+                                  context,
+                                  widget.momentsModelList[index].id!,
+                                );
+                              }
+                            : null,
+                      ),
+                      CustomMomentDetailButton(
+                        icon: Icon(
+                          Icons.visibility_rounded,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        text: getFormattedViewCount(
+                          noOfViews: widget.momentsModelList[index].views,
+                          addViewText: false,
+                        ),
+                        onPressed: null,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              left: 12.0,
               bottom: 20.0,
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0),
@@ -691,7 +711,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                       child: widget.momentsModelList[index].text != null
                           ? ReadMoreText(
                               messageDecoderWithEmoji(
-                                  widget.momentsModelList[index].text!)!,
+                                  widget.momentsModelList[index].text)!,
                               trimLines: 2,
                               colorClickableText: Colors.pink,
                               trimMode: TrimMode.Line,
@@ -850,50 +870,50 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   Widget getPayMeBtn(int index) {
     return getUserName(context) != widget.momentsModelList[index].owner
         ? widget.momentsModelList[index].payMe!
-            ? PhysicalModel(
-                color: Colors.transparent,
-                elevation: 20,
-                shadowColor: Colors.black.withOpacity(0.7),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                  decoration: BoxDecoration(
-                      color: HexColor(widget
-                                  .momentsModelList[index].payMeButtonColor !=
-                              null
-                          ? '#${widget.momentsModelList[index].payMeButtonColor}'
-                          : '#3F61DB'),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/slydo_icon_white.png',
-                        width: 30,
-                        height: 30,
-                        color: widget.momentsModelList[index].payMeButtonColor
-                                    ?.toLowerCase() ==
-                                '#ffffff'
-                            ? navyBlue
-                            : Colors.white,
-                      ),
-                      SizedBox(width: 4),
-                      InkWell(
-                        onTap: () async {
-                          var customerProfileBloc =
-                              Provider.of<CustomerProfileBloc>(context,
-                                  listen: false);
-                          customerProfileBloc.customer = await UserAuth()
-                              .fetchCustomerProfile(
-                                  widget.momentsModelList[index].owner);
+            ? InkWell(
+                onTap: () async {
+                  var customerProfileBloc =
+                      Provider.of<CustomerProfileBloc>(context, listen: false);
+                  customerProfileBloc.customer = await UserAuth()
+                      .fetchCustomerProfile(
+                          widget.momentsModelList[index].owner);
 
-                          await Navigator.of(context).pushNamed(
-                            Routes.SEND_PAYMENT,
-                            arguments: <String, dynamic>{
-                              'isFromProfile': false,
-                              'isFromChat': false,
-                            },
-                          );
-                        },
-                        child: Text(
+                  await Navigator.of(context).pushNamed(
+                    Routes.SEND_PAYMENT,
+                    arguments: <String, dynamic>{
+                      'isFromProfile': false,
+                      'isFromChat': false,
+                      'defaultReferenceText': 'Payment from moment'
+                    },
+                  );
+                },
+                child: PhysicalModel(
+                  color: Colors.transparent,
+                  elevation: 20,
+                  shadowColor: Colors.black.withOpacity(0.7),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    decoration: BoxDecoration(
+                        color: HexColor(widget
+                                    .momentsModelList[index].payMeButtonColor !=
+                                null
+                            ? '#${widget.momentsModelList[index].payMeButtonColor}'
+                            : '#3F61DB'),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/slydo_icon_white.png',
+                          width: 30,
+                          height: 30,
+                          color: widget.momentsModelList[index].payMeButtonColor
+                                      ?.toLowerCase() ==
+                                  '#ffffff'
+                              ? navyBlue
+                              : Colors.white,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
                           messageDecoderWithEmoji(
                               widget.momentsModelList[index].payMeLabel ??
                                   'Pay Me')!,
@@ -907,9 +927,9 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                 : Colors.white,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               )
@@ -977,6 +997,7 @@ class VideoDisplay extends StatefulWidget {
 
 class _VideoDisplayState extends State<VideoDisplay> {
   bool initialized = false;
+  bool showMediaIcon = false;
   late CachedVideoPlayerController _controller;
 
   @override
@@ -1008,15 +1029,40 @@ class _VideoDisplayState extends State<VideoDisplay> {
           height: _controller.value.size.height,
           child: AspectRatio(
             aspectRatio: _controller.value.aspectRatio,
-            child: GestureDetector(
-              onLongPressStart: (longPressStartDetails) {
-                debugPrint('Details :: $longPressStartDetails');
-                _controller.pause();
+            child: InkWell(
+              onTap: () {
+                if (_controller.value.isPlaying) {
+                  _controller.pause();
+                  showMediaIconFor2Seconds();
+                } else {
+                  _controller.play();
+                  showMediaIconFor2Seconds();
+                }
               },
-              onLongPressUp: () {
-                _controller.play();
-              },
-              child: CachedVideoPlayer(_controller),
+              child: Stack(
+                children: [
+                  CachedVideoPlayer(_controller),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Visibility(
+                      visible: showMediaIcon,
+                      child: RoundedBackgroundIcon(
+                        width: 60,
+                        height: 80,
+                        borderRadius: 50,
+                        icon: Icon(
+                          !_controller.value.isPlaying
+                              ? Icons.pause
+                              : Icons.play_arrow_rounded,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        backgroundColor: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1049,6 +1095,16 @@ class _VideoDisplayState extends State<VideoDisplay> {
         ),
       ),
     );
+  }
+
+  showMediaIconFor2Seconds() {
+    setState(() => showMediaIcon = true);
+    Future.delayed(Duration(seconds: 2), () {
+      if (mounted)
+        setState(() {
+          showMediaIcon = false;
+        });
+    });
   }
 }
 

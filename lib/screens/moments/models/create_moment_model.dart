@@ -8,12 +8,13 @@ class CreateMomentModel {
   bool enableCommenting;
   String? mediaPoster;
   List<String>? userTags;
-  String payMeLabel;
+  String? payMeLabel;
   String? payMeButtonColor;
+  Map<String, String>? attachmentMap;
 
   CreateMomentModel({
-
     this.url,
+    this.attachmentMap,
     this.payMeButtonColor,
     this.payMeLabel = 'Pay Me',
     this.enableLike = false,

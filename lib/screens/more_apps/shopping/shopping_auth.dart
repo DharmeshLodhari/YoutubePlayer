@@ -159,6 +159,7 @@ class ShoppingAuthService extends AuthService {
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous,
       {required String? userName}) async {
+    debugPrint('CALLING PRODUCT');
     var url = "";
     if (next == null) {
       return null;
@@ -171,6 +172,8 @@ class ShoppingAuthService extends AuthService {
     debugPrint(url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING PRODUCT ---> ${response.body}');
 
     if (response.statusCode == 200) {
       List<Product> productList = [];

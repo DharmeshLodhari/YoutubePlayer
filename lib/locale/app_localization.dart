@@ -1604,6 +1604,13 @@ class AppLocalization {
     );
   }
 
+  String get emptyList {
+    return Intl.message(
+      "Empty List",
+      name: "emptyList",
+    );
+  }
+
   String get invoiceEmpty {
     return Intl.message(
       "Invoice empty",

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Slydo/screens/moments/preview_moment_screen.dart';
+import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../main.dart';
-import '../../widget/image_crop.dart';
+import '../../../main.dart';
+import '../../../widget/image_crop.dart';
 
 class CreateMomentScreen extends StatefulWidget {
   const CreateMomentScreen({Key? key}) : super(key: key);
@@ -69,13 +69,18 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
     if (!cameraController.value.isInitialized) {
       return Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child: Text(
+            'Camera permissions have not been granted yet',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
         ),
       );
     }
 
     double wt = MediaQuery.of(context).size.width;
-    double ht = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -167,7 +172,9 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
                           : () {
                               timer?.cancel();
                               videoTimer = 30;
-                              stopVideoRecording();
+                              if (cameraController.value.isRecordingVideo) {
+                                stopVideoRecording();
+                              }
                             },
                       onTap: mediaCaptured()
                           ? null
@@ -327,6 +334,8 @@ class _CreateMomentScreenState extends State<CreateMomentScreen> {
 
   Widget showCapturedMedia() {
     if (videoPath != null) {
+      debugPrint('VIDEO SIZE -> ::: ${File(videoPath!).lengthSync()}');
+
       setUpVideoPlayer();
       return Stack(
         children: [
