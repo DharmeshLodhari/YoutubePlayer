@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -14,8 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-import 'package:workmanager/workmanager.dart';
 
+import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
 import '../utils/navigation_util.dart';
@@ -36,7 +37,6 @@ class _HomeState extends State<Home> {
   bool hasMessage = true;
   late BasketBloc basketBloc;
   late AppLocalization appLocalization;
-  late AppConfigurationBloc appConfigurationBloc;
 
   @override
   void initState() {
@@ -70,7 +70,6 @@ class _HomeState extends State<Home> {
     basketBloc = Provider.of<BasketBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     socketProvider = Provider.of<MainSocketProvider>(context);
-    appConfigurationBloc = Provider.of<AppConfigurationBloc>(context);
 
     return Scaffold(
       key: _scaffoldHomeKey,
@@ -398,6 +397,21 @@ class _HomeState extends State<Home> {
                     maxLines: 1,
                     style: TextStyle(fontSize: 14),
                   ),
+                  trailing: InkWell(
+                    key: tutorialScanQrCodeKey,
+                    onTap: () {
+                      NavigationUtil.push(context,
+                          screen: QRCodeView(arguments: {'isRequest': false}));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Icon(
+                        SlydoAppIcon.qr_code,
+                        size: 16,
+                        color: blackFont,
+                      ),
+                    ),
+                  ),
                   onTap: () {
                     Navigator.pushNamed(context, Routes.USER_PROFILE,
                         arguments: {
@@ -526,10 +540,17 @@ class _HomeState extends State<Home> {
             ],
           ),
           onTap: () {
-            Navigator.of(context)
-                .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
-              'isFromProfile': true,
-            });
+            if (getIt<AppConfigurationBloc>()
+                    .appConfigurationModel
+                    ?.enablePayment ==
+                true) {
+              Navigator.of(context)
+                  .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
+                'isFromProfile': true,
+              });
+            } else {
+              showToast(message: 'Coming soon');
+            }
           }),
     );
   }
@@ -570,8 +591,15 @@ class _HomeState extends State<Home> {
             ],
           ),
           onTap: () {
-            Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-                arguments: <String, bool>{'isFromProfile': true});
+            if (getIt<AppConfigurationBloc>()
+                    .appConfigurationModel
+                    ?.enablePayment ==
+                true) {
+              Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+                  arguments: <String, bool>{'isFromProfile': true});
+            } else {
+              showToast(message: 'Coming soon');
+            }
           }),
     );
   }

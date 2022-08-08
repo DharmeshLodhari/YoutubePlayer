@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -12,7 +10,9 @@ import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../data/currency.dart';
+import '../locator.dart';
 import '../routes/route_constants.dart';
+import '../services/app_config_bloc.dart';
 import '../utils/util.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/customized_passcode_sheet/bottomsheet_passcode.dart';
@@ -39,6 +39,7 @@ class _QRCodeViewState extends State<QRCodeView> {
   bool? isRequest = false;
   late CustomerProfileBloc customerProfileBloc;
   late UserBloc userBloc;
+  AppConfigurationModel? appConfigurationModel;
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var qrText = "";
@@ -47,6 +48,8 @@ class _QRCodeViewState extends State<QRCodeView> {
 
   @override
   void initState() {
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
     canShowDialogBox = true;
     isRequest = arguments != null
         ? arguments['isRequest'] != null
@@ -197,28 +200,33 @@ class _QRCodeViewState extends State<QRCodeView> {
               _dashboardBloc.index = 0;
             },
             rightButtonOnPressed: () {
-              BottomSheetPassCode(
-                  context: context,
-                  isValidCallback: () async {
-                    showDialog(
-                        context: context,
-                        builder: (dialogLoadingContext) => LoadingIndicator());
+              if (appConfigurationModel?.enablePayment == true) {
+                BottomSheetPassCode(
+                    context: context,
+                    isValidCallback: () async {
+                      showDialog(
+                          context: context,
+                          builder: (dialogLoadingContext) =>
+                              LoadingIndicator());
 
-                    bool isPaid = await ShoppingAuthService()
-                        .payForShoppingCart(cartId: shoppingCartModel.id);
-                    if (isPaid) {
+                      bool isPaid = await ShoppingAuthService()
+                          .payForShoppingCart(cartId: shoppingCartModel.id);
+                      if (isPaid) {
+                        Navigator.pop(context);
+                        _dashboardBloc.index = 0;
+                        Navigator.pushNamed(context, Routes.ORDERS_LIST);
+                        showToast(message: 'Paid successfully');
+                      } else {
+                        Navigator.pop(context);
+                        showToast(message: 'Something went wrong');
+                      }
+                    },
+                    cancelCallBack: () {
                       Navigator.pop(context);
-                      _dashboardBloc.index = 0;
-                      Navigator.pushNamed(context, '/orders-list');
-                      showToast(message: 'Paid successfully');
-                    } else {
-                      Navigator.pop(context);
-                      showToast(message: 'Something went wrong');
-                    }
-                  },
-                  cancelCallBack: () {
-                    Navigator.pop(context);
-                  });
+                    });
+              } else {
+                showToast(message: 'Coming soon');
+              }
             },
             content: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -413,20 +421,24 @@ class _QRCodeViewState extends State<QRCodeView> {
 
       _dashboardBloc.index = 0;
 
-      if (isRequest!) {
-        Navigator.of(context).pushNamed(
-          Routes.REQUEST_PAYMENT,
-          arguments: {
-            'isRequest': true,
-          },
-        );
+      if (appConfigurationModel?.enablePayment == true) {
+        if (isRequest!) {
+          Navigator.of(context).pushNamed(
+            Routes.REQUEST_PAYMENT,
+            arguments: {
+              'isRequest': true,
+            },
+          );
+        } else {
+          Navigator.of(context).pushNamed(
+            Routes.SEND_PAYMENT,
+            arguments: {
+              'isFromProfile': false,
+            },
+          );
+        }
       } else {
-        Navigator.of(context).pushNamed(
-          Routes.SEND_PAYMENT,
-          arguments: {
-            'isFromProfile': false,
-          },
-        );
+        showToast(message: 'Payment coming soon');
       }
     }
   }

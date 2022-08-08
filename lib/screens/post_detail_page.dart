@@ -210,7 +210,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
             return PostDetailPageScaffoldBody(
               postID: widget.postType == PostType.blog ? userPost!.id! : '',
               postType: widget.postType,
-              authorUserName: userPost!.authorUsername,
+              authorUsername: userPost!.authorUsername,
               tags: widget.postType == PostType.blog
                   ? userPost!.tags == null
                       ? []
@@ -533,7 +533,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
   final PostType postType;
   final String? postImageUrl;
   final String posterImageUrl;
-  final String? authorUserName;
+  final String? authorUsername;
   final String shortDescription;
   final Widget postFullDescription;
   final ChewieController? chewieMainController;
@@ -550,7 +550,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
     required this.createdAt,
     required this.authorName,
     required this.postImageUrl,
-    required this.authorUserName,
+    required this.authorUsername,
     required this.posterImageUrl,
     this.newsListRelatedPostItems,
     required this.shortDescription,
@@ -670,7 +670,7 @@ class _PostDetailPageScaffoldBodyState
       leading: InkWell(
         onTap: () {
           Navigator.pushNamed(context, Routes.USER_PROFILE,
-              arguments: {"searchedUserName": widget.authorUserName});
+              arguments: {"searchedUserName": widget.authorUsername});
         },
         child: SizedBox(
           width: 40,
@@ -693,7 +693,7 @@ class _PostDetailPageScaffoldBodyState
               InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": widget.authorUserName});
+                      arguments: {"searchedUserName": widget.authorUsername});
                 },
                 child: Text(
                   widget.authorName.length <= 7

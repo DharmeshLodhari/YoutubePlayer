@@ -13,9 +13,7 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
-import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/fcm_push_notification.dart';
 import 'package:Slydo/services/list_refresher.dart';
@@ -32,11 +30,13 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../services/app_tutorial_controller.dart';
 import 'home.dart';
 import 'moments/screens/moments_screen.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
+import 'super_store/super_store.dart';
 
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
@@ -346,9 +346,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    appLocalization = AppLocalization.of(context)!;
     _dashboardBloc = Provider.of<DashboardBloc>(context);
     mainSocketProvider = Provider.of<MainSocketProvider>(context);
-    appLocalization = AppLocalization.of(context)!;
     initializeListener();
 
     if (_currentIndex != 0) {
@@ -399,12 +399,12 @@ class _DashboardState extends State<Dashboard> {
               wantKeepAlive: false,
             ),
             KeepAlivePage(
-              child: QRCodeView(arguments: {'isRequest': false}),
+              child: SuperStore(),
               wantKeepAlive: false,
             ),
             KeepAlivePage(
               child: MomentsScreen(),
-              wantKeepAlive: false,
+              wantKeepAlive: true,
             ),
             KeepAlivePage(child: ConnectionDashboard()),
             KeepAlivePage(
@@ -444,17 +444,19 @@ class _DashboardState extends State<Dashboard> {
           ),
 
           bottomNavigationBarItem(
-            key: tutorialScanQrCodeKey,
-            iconData: SlydoAppIcon.qr_code,
-            title: AppLocalization.of(context)!.qrCode,
+            iconSize: 20,
+            key: tutorialSuperStoreKey,
+            iconData: Icons.shopping_bag,
+            title: AppLocalization.of(context)!.store,
           ),
           bottomNavigationBarItem(
-            iconSize: 22,
+            iconSize: 20,
             iconData: Icons.play_circle_filled,
             title: AppLocalization.of(context)!.moments,
           ),
           bottomNavigationBarItem(
             isChatIcon: true,
+            key: tutorialChatMessageKey,
             iconData: SlydoAppIcon.text_message,
             title: AppLocalization.of(context)!.chat,
           ),
@@ -466,6 +468,7 @@ class _DashboardState extends State<Dashboard> {
 
           BottomNavigationBarItem(
             icon: Container(
+              key: tutorialExploreKey,
               height: 50,
               child: Icon(
                 Icons.explore,

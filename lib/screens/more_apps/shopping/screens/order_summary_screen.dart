@@ -102,6 +102,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               SizedBox(height: 40),
               Builder(builder: (context) {
                 return CurvedButton(
+                  isPaymentBtn: true,
+
                   text: 'Complete Order',
                   onPressed: onCompleteOrder,
                 );

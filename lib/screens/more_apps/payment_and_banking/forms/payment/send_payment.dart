@@ -130,9 +130,19 @@ class _SendPaymentState extends State<SendPayment> {
           }
         }
       });
-    fetchCategory();
+    getRecipientProfileAndGetCategory();
     getBankAccountDetail();
     super.initState();
+  }
+
+  getRecipientProfileAndGetCategory() async {
+    if (widget.arguments['recipient'] != null) {
+      Provider.of<CustomerProfileBloc>(context, listen: false).customer =
+          await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
+      fetchCategory();
+    } else {
+      fetchCategory();
+    }
   }
 
   void getBankAccountDetail() async {

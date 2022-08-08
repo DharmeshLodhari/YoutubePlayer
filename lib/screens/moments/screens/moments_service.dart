@@ -98,10 +98,10 @@ class MomentsService extends AuthService {
   }
 
   Future<List<MomentsModel>> getMomentsWithOwnerName(
-      {required String owner}) async {
-    debugPrint(' OWNER ::: ${owner}');
+      {required String ownerName}) async {
+    debugPrint('MOMENT OWNER NAME ::: ${ownerName}');
 
-    String url = AppConfig.baseUrl + "/api/v1/social/moments/user/$owner/";
+    String url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";
 
     final headers = await getAuthHeaders();
 
@@ -113,7 +113,7 @@ class MomentsService extends AuthService {
 
       return jsonData.map((e) => MomentsModel.fromJson(e)).toList();
     } else {
-      return Future.error('Something went wrong');
+      return Future.error(jsonDecode(response.body)['error']);
     }
   }
 

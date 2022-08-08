@@ -26,8 +26,7 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../../constant.dart';
-import '../../../../../main.dart';
+import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../user_auth.dart';
 
@@ -55,7 +54,6 @@ class _ConnectionListState extends State<ConnectionList> {
   TextEditingController? searchChatConversation;
   bool isUserIsSearching = false;
   List<ChatConversation> searchedChatConnection = [];
-  late AppConfigurationBloc appConfigurationBloc;
 
   RefreshBlocForConnectionDashboard? _refreshBloc;
   RefreshController _refreshController =
@@ -69,7 +67,9 @@ class _ConnectionListState extends State<ConnectionList> {
     setupSearchChatConnection();
 
     super.initState();
-    getAppConfigurationModelFromLocalStorage();
+
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -82,13 +82,6 @@ class _ConnectionListState extends State<ConnectionList> {
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
     );
     super.initState();
-  }
-
-  getAppConfigurationModelFromLocalStorage() async {
-    var str = await getStorage.read(appFeaturesKey);
-    if(str != null){
-      appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    }
   }
 
   void setupSearchChatConnection() {
@@ -136,8 +129,6 @@ class _ConnectionListState extends State<ConnectionList> {
   Widget build(BuildContext context) {
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
-
-    appConfigurationBloc = Provider.of<AppConfigurationBloc>(context);
     _connectionListBloc = Provider.of<ConnectionListBloc>(context);
 
     return Scaffold(
@@ -325,7 +316,7 @@ class _ConnectionListState extends State<ConnectionList> {
   //   }
   // }
 
-  /// If appConfigurationModel?.groupChatWorks is false (i.e, we want to disable the groupChat feature),
+  /// If appConfigurationModel.groupChatWorks is false (i.e, we want to disable the groupChat feature),
   /// remove groupChat conversations from the list of connections.
   int getConnectionListItemCount() {
     int itemCount = 0;

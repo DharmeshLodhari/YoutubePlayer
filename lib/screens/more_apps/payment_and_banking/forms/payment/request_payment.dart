@@ -18,7 +18,6 @@ import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -105,9 +104,19 @@ class _RequestPaymentState extends State<RequestPayment> {
           }
         }
       });
-    fetchCategory();
 
+    getRecipientProfileAndGetCategory();
     super.initState();
+  }
+
+  getRecipientProfileAndGetCategory() async {
+    if (widget.arguments['recipient'] != null) {
+      Provider.of<CustomerProfileBloc>(context, listen: false).customer =
+          await UserAuth().fetchCustomerProfile(widget.arguments['recipient']);
+      fetchCategory();
+    } else {
+      fetchCategory();
+    }
   }
 
   void initializeDisplayCard() async {

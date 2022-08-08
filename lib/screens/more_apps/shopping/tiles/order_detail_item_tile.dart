@@ -1,4 +1,5 @@
 import 'package:Slydo/data/currency.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -51,7 +52,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
                   trailing: getTrailing(),
                   subtitle: getSubtitle(context),
                   onTap: () {
-                    Navigator.pushNamed(context, "/product",
+                    Navigator.pushNamed(context, Routes.PRODUCT,
                         arguments: {"product": product});
                   },
                 ),

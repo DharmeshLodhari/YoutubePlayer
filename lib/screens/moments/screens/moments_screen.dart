@@ -8,16 +8,15 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../constant.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
+import '../../../locator.dart';
 import '../../../services/app_config_bloc.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
@@ -65,8 +64,11 @@ class _MomentsScreenState extends State<MomentsScreen> {
   @override
   void initState() {
     super.initState();
-    debugPrint('MOMENT INIT STATE');
-    getAppConfigurationModelFromLocalStorage();
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+    if (appConfigurationModel?.enableMoment == true) {
+      getConnectionMoments();
+      getExploreMoments();
+    }
 
     _myConnectionsScrollController.addListener(() {
       if (_myConnectionsScrollController.position.pixels ==
@@ -124,42 +126,6 @@ class _MomentsScreenState extends State<MomentsScreen> {
     if (mounted) setState(() {});
     getConnectionMoments();
     getExploreMoments();
-  }
-
-  getAppConfigurationModelFromLocalStorage() async {
-    final getStorage = GetStorage(appFeaturesKey);
-
-    var str = await getStorage.read(appFeaturesKey);
-    debugPrint('GETTING APP FEATURES STR -> $str');
-
-    if (str == null) {
-      await AppFeaturesService().getAppFeatures().then(
-        (value) async {
-          debugPrint('APP MOMENT FEATURES ::: $value');
-
-          await getStorage.write(
-            appFeaturesKey,
-            AppConfigurationModel.serialize(value!),
-          );
-
-          debugPrint(
-              'APP FEATURES VALUE ::: ${getStorage.read(appFeaturesKey)}');
-          appConfigurationModel = value;
-        },
-      );
-
-      if (appConfigurationModel?.enableMoment == true) {
-        getConnectionMoments();
-        getExploreMoments();
-      } else {
-        // enableMoment is false, change the view to reflect that.
-        setState(() {});
-      }
-    } else {
-      appConfigurationModel = AppConfigurationModel.deserialize(str!);
-      getConnectionMoments();
-      getExploreMoments();
-    }
   }
 
   getConnectionMoments() async {
@@ -225,6 +191,12 @@ class _MomentsScreenState extends State<MomentsScreen> {
         debugPrint('EXPLORE MOM :: $exploreMomentsList');
 
         if (mounted) setState(() {});
+
+        debugPrint(
+            ' MOMENT LOADING --> ${!isContactMomentsLoading && !isExploreMomentsLoading}');
+
+        debugPrint(
+            ' MOMENT EMPTY ${contactMomentsList.isEmpty && exploreMomentsList.isEmpty}');
 
         if (isFirstTimeExplore &&
             nextExploreMoments != null &&
@@ -317,10 +289,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             Text('We experienced a fault. Please restart app to view moments.'),
       );
     }
-    if (appConfigurationModel == null) {
-      return Center(child: CircularLoadingIndicator());
-    }
-    if (appConfigurationModel!.enableMoment == false) {
+    if (appConfigurationModel?.enableMoment == false) {
       return comingSoonWidget();
     }
 
@@ -383,7 +352,22 @@ class _MomentsScreenState extends State<MomentsScreen> {
                       },
                     ),
                   )
-                : SizedBox.shrink()
+                : SizedBox.shrink(),
+            Visibility(
+              visible: !isContactMomentsLoading &&
+                  !isExploreMomentsLoading &&
+                  contactMomentsList.isEmpty &&
+                  exploreMomentsList.isEmpty,
+              child: Center(
+                child: Column(
+                  children: [
+                    Lottie.asset('assets/lottie/no_moment_lottie.json'),
+                    SizedBox(height: 20),
+                    Text('Create a moment with the camera icon at the top.'),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -587,7 +571,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
     myMomentsLoading = true;
     if (mounted) setState(() {});
     MomentsService()
-        .getMomentsWithOwnerName(owner: userBloc.user.userName!)
+        .getMomentsWithOwnerName(ownerName: userBloc.user.userName!)
         .then((momentsModelList) {
       myMomentsLoading = false;
       if (mounted) setState(() {});
@@ -636,13 +620,13 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
 
   Future getListOfMomentsModelList(String owner) async {
     List<MomentsModel> momentsModelList =
-        await MomentsService().getMomentsWithOwnerName(owner: owner);
+        await MomentsService().getMomentsWithOwnerName(ownerName: owner);
     listOfMomentsModelList.add(momentsModelList);
   }
 
   Future getLengthOfOwnerMoments(String owner) async {
     List<MomentsModel> momentsModelList =
-        await MomentsService().getMomentsWithOwnerName(owner: owner);
+        await MomentsService().getMomentsWithOwnerName(ownerName: owner);
     lengthOfOwnerMoments = momentsModelList.length;
   }
 

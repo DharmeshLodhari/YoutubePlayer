@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -29,6 +30,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../locale/app_localization.dart';
+import '../../../../../locator.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
@@ -77,9 +79,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool showProductTab = false;
   bool showServiceTab = false;
   bool myMomentsLoading = false;
-
+  AppConfigurationModel? appConfigurationModel;
   @override
   void initState() {
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
     initializeVariables();
 
     super.initState();
@@ -88,6 +91,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   void initializeVariables() async {
     await getSearchedUser();
     currentIndex = arguments['index'] ?? 0;
+    debugPrint('CURRENT INDEX -> $currentIndex');
     selectedIndexStream.sink.add(currentIndex);
     pageController = PageController(initialPage: currentIndex);
     if (mounted) setState(() {});
@@ -156,12 +160,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Future<bool> getIsShowProduct() async {
+    debugPrint('IS SHOW PRODUCT <-->');
+
     Map<String, dynamic>? data;
     try {
       data = await ShoppingAuthService()
           .listOfProduct("", "", userName: searchedUser?.userName);
     } catch (error) {}
     if (data != null) {
+      debugPrint('IS SHOW PRODUCT ---> $data');
       int count = data["count"] ?? 0;
       if (count > 0) return true;
     }
@@ -365,7 +372,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         InkWell(
                           onTap: myMomentsLoading
                               ? null
-                              : () {
+                              : () async {
                                   getCurrentUserMoment();
                                 },
                           child: Container(
@@ -413,7 +420,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     myMomentsLoading = true;
     if (mounted) setState(() {});
     MomentsService()
-        .getMomentsWithOwnerName(owner: searchedUser!.userName!)
+        .getMomentsWithOwnerName(ownerName: searchedUser!.userName!)
         .then((momentsModelList) {
       myMomentsLoading = false;
       if (mounted) setState(() {});
@@ -427,12 +434,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ),
         );
       } else {
-        showToast(message: 'You do not have any moment.');
+        if (searchedUser!.userName! != getLoggedInUserName(context)) {
+          showToast(
+              message: '${searchedUser!.userName!} does not have any moment.');
+        } else {
+          showToast(message: 'You do not have any moment.');
+        }
       }
     }).catchError((e) {
       myMomentsLoading = false;
       if (mounted) setState(() {});
-      showToast(message: 'There is no moment for this user');
+      showToast(message: e.toString());
     });
   }
 
@@ -1003,14 +1015,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             title: "Send",
             iconData: SlydoAppIcon.send,
             onTap: () {
-              UserAuth()
-                  .fetchCustomerProfile(searchedUserName)
-                  .then((fetchedUser) {
-                customerProfileBloc.customer = fetchedUser;
-                Navigator.pop(context);
-                Navigator.of(context).pushNamed('/send-payment',
-                    arguments: <String, bool>{'isFromProfile': false});
-              });
+              if (appConfigurationModel?.enablePayment == true) {
+                UserAuth()
+                    .fetchCustomerProfile(searchedUserName)
+                    .then((fetchedUser) {
+                  customerProfileBloc.customer = fetchedUser;
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed('/send-payment',
+                      arguments: <String, bool>{'isFromProfile': false});
+                });
+              } else {
+                showToast(message: 'Coming soon');
+              }
             },
           ),
           bottomSheetItem(
@@ -1018,17 +1034,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               iconData: SlydoAppIcon.receive,
               isLast: true,
               onTap: () {
-                UserAuth()
-                    .fetchCustomerProfile(searchedUserName)
-                    .then((fetchedUser) {
-                  customerProfileBloc.customer = fetchedUser;
-                  Navigator.pop(context);
-                  Navigator.of(context).pushNamed('/request-payment',
-                      arguments: <String, bool>{
-                        'isFromProfile': false,
-                        'isRequest': true
-                      });
-                });
+                debugPrint('${appConfigurationModel?.enablePayment}');
+                if (appConfigurationModel?.enablePayment == true) {
+                  UserAuth()
+                      .fetchCustomerProfile(searchedUserName)
+                      .then((fetchedUser) {
+                    customerProfileBloc.customer = fetchedUser;
+                    Navigator.pop(context);
+                    Navigator.of(context).pushNamed('/request-payment',
+                        arguments: <String, bool>{
+                          'isFromProfile': false,
+                          'isRequest': true
+                        });
+                  });
+                } else {
+                  showToast(message: 'Coming soon');
+                }
               }),
         ],
       );

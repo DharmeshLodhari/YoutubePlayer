@@ -3,7 +3,6 @@ import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/util.dart';
@@ -27,10 +26,12 @@ class PostTile extends StatefulWidget {
   UserPost? post;
   bool? isNavigable;
   Function onDeleteBlog;
+  final bool showAuthorDetails;
 
   PostTile(
       {Key? key,
       this.post,
+      this.showAuthorDetails = true,
       required this.onDeleteBlog,
       this.isNavigable = true})
       : super(key: key);
@@ -54,17 +55,18 @@ class _PostTileState extends State<PostTile> {
       _mainVideoController = VideoPlayerController.network(widget.post!.video!);
 
       _chewieMainController = ChewieController(
-          videoPlayerController: _mainVideoController!,
-          aspectRatio: 16 / 9,
-          allowFullScreen: false,
-          systemOverlaysAfterFullScreen: SystemUiOverlay.values,
-          autoInitialize: true,
-          materialProgressColors: ChewieProgressColors(
-            backgroundColor: Colors.transparent,
-            handleColor: Colors.transparent,
-            bufferedColor: Colors.transparent,
-            playedColor: Colors.transparent,
-          ));
+        videoPlayerController: _mainVideoController!,
+        aspectRatio: 16 / 9,
+        allowFullScreen: false,
+        systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+        autoInitialize: true,
+        materialProgressColors: ChewieProgressColors(
+          backgroundColor: Colors.transparent,
+          handleColor: Colors.transparent,
+          bufferedColor: Colors.transparent,
+          playedColor: Colors.transparent,
+        ),
+      );
     }
   }
 
@@ -124,9 +126,12 @@ class _PostTileState extends State<PostTile> {
                         topRight: Radius.circular(10),
                       ),
                       child: widget.post?.video != null
-                          ? Chewie(
-                              posterUrl: widget.post?.image,
-                              controller: _chewieMainController!,
+                          ? SizedBox(
+                              height: 150,
+                              child: Chewie(
+                                posterUrl: widget.post?.image,
+                                controller: _chewieMainController!,
+                              ),
                             )
                           : CachedNetworkImage(
                               height: 150,
@@ -197,7 +202,9 @@ class _PostTileState extends State<PostTile> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4),
+                      widget.post!.enableLike!
+                          ? _buildLikeUnLikeReportTile()
+                          : SizedBox.shrink(),
                       Text(
                         messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
@@ -208,12 +215,56 @@ class _PostTileState extends State<PostTile> {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      widget.post!.enableLike!
-                          ? _buildLikeUnLikeReportTile()
-                          : SizedBox.shrink()
+                      SizedBox(height: 6),
+                      widget.showAuthorDetails
+                          ? InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, Routes.USER_PROFILE, arguments: {
+                                  "searchedUserName":
+                                      widget.post!.authorUsername
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: widget.post!.authorAvatar!,
+                                        errorWidget: imageErrorWidget,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      '${widget.post!.authorName}',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 12,
+                                        color: blackFont,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: CustomChip(
+                                      text: widget.post!.readTime == 0
+                                          ? '1 min read'
+                                          : '${widget.post!.readTime} min read',
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 8),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : SizedBox.shrink(),
                     ],
                   ),
                 ),

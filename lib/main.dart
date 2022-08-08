@@ -5,6 +5,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/routes/route_generator.dart';
+import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/contract_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
@@ -42,6 +43,7 @@ import 'package:sizer/sizer.dart';
 
 import 'constant.dart';
 import 'locale/app_localization.dart';
+import 'locator.dart';
 
 late List<CameraDescription> cameras;
 final getStorage = GetStorage(appFeaturesKey);
@@ -50,7 +52,7 @@ void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
   cameras = await availableCameras();
-
+  locatorSetup();
   AppConfig();
 
   getAppFeaturesFromServer();
@@ -101,10 +103,9 @@ void getAppFeaturesFromServer() async {
     (value) async {
       debugPrint('APP FEATURES ::: $value');
 
-      await getStorage.write(
-        appFeaturesKey,
-        AppConfigurationModel.serialize(value!),
-      );
+      getIt<AppConfigurationBloc>().appConfigurationModel = value;
+      debugPrint(
+          'GET IT --> ${getIt<AppConfigurationBloc>().appConfigurationModel}');
     },
   );
 
@@ -115,10 +116,9 @@ void getAppFeaturesFromServer() async {
         (value) async {
           debugPrint('APP FEATURE AFTER 15 MINUTES ::: $value');
 
-          await getStorage.write(
-            appFeaturesKey,
-            AppConfigurationModel.serialize(value!),
-          );
+          getIt<AppConfigurationBloc>().appConfigurationModel = value;
+          debugPrint(
+              'GET IT AFTER 15 MINUTES --> ${getIt<AppConfigurationBloc>().appConfigurationModel}');
         },
       );
     },
@@ -299,8 +299,7 @@ List<ChangeNotifierProvider> providersList = [
   ),
   ChangeNotifierProvider<CheckoutScreenBloc>.value(
     value: CheckoutScreenBloc(),
-  ),
-  ChangeNotifierProvider<AppConfigurationBloc>.value(
-    value: AppConfigurationBloc(),
+  ), ChangeNotifierProvider<MomentsBloc>.value(
+    value: MomentsBloc(),
   ),
 ];

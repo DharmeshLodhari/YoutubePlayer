@@ -17,18 +17,31 @@ import 'models/store.dart';
 class ShoppingAuthService extends AuthService {
   // List Products
   Future<List<ShoppingProduct>?> getProductList(String next, String previous,
-      {String userName = "black"}) async {
+      {String userName = "black",
+      bool todaysDeal = false,
+      bool otherDeals = false}) async {
     var url = "";
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/products/by-seller/$userName/";
+      if (todaysDeal == true) {
+        url = AppConfig.baseUrl + "/api/v1/products/?today_deals=true";
+      } else if (otherDeals == true) {
+        url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/products/by-seller/$userName/";
+      }
     } else {
       url = getSecureUrl(url: next);
     }
+
+    debugPrint('STORE URL ---> $url');
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+    debugPrint('STORE URL BODY ---> ${response.body}');
 
-    var jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
       List<ShoppingProduct> products = [];
       for (var item in jsonData["results"]) {
         products.add(ShoppingProduct.fromJson(item));
@@ -36,6 +49,7 @@ class ShoppingAuthService extends AuthService {
       return products;
     }
 
+    var jsonData = json.decode(response.body);
     return Future.error("$jsonData");
   }
 
@@ -67,6 +81,8 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    debugPrint('SEARCH BODY ---> ${response.body}');
+
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
@@ -80,6 +96,35 @@ class ShoppingAuthService extends AuthService {
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
+    }
+  }
+
+  Future<Map<String, dynamic>?> searchShoppingProductsInSuperStore(
+      String searchedText, String? next, String? previous) async {
+    String url = AppConfig.baseUrl + "/api/v1/products/?search=" + searchedText;
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('SEARCH BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      return null;
     }
   }
 
@@ -153,19 +198,26 @@ class ShoppingAuthService extends AuthService {
     product.currency = item["currency"];
     product.rating = formatRating(item['rating'] ?? 0.0);
     product.canRate = item["can_rate"] ?? false;
+    product.enableInSuperStore = item["enable_in_superstore"] ?? false;
+
     return product;
   }
 
   // List Products
   Future<Map<String, dynamic>?> listOfProduct(String? next, String? previous,
-      {required String? userName}) async {
+      {String? userName, bool otherDeals = false}) async {
     debugPrint('CALLING PRODUCT');
     var url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName! + "/";
+      if (otherDeals == true) {
+        url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
+      } else {
+        url =
+            AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName! + "/";
+      }
     } else {
       url = getSecureUrl(url: next);
     }
@@ -173,7 +225,7 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    debugPrint('CALLING PRODUCT ---> ${response.body}');
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
 
     if (response.statusCode == 200) {
       List<Product> productList = [];
@@ -192,16 +244,9 @@ class ShoppingAuthService extends AuthService {
 
       return result;
     } else if (response.statusCode == 500) {
-      throw "Server Error";
+      return null;
     } else {
-      List<Product> productList = [];
-      Map<String, dynamic> result = {
-        "count": 0,
-        "next": "test",
-        "previous": "test",
-        "results": productList
-      };
-      return result;
+      return null;
     }
   }
 
@@ -214,6 +259,7 @@ class ShoppingAuthService extends AuthService {
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
     Map<dynamic, dynamic> _data = product.toMap();
+    debugPrint('DATA ---> $_data');
     _data["available_from"] = dateToString(product.availableFrom!);
     _data["image_count"] = product.localImages!.length;
 
@@ -286,7 +332,7 @@ class ShoppingAuthService extends AuthService {
 
     // Add multipart to request
     request.files.addAll(newList);
-
+    debugPrint('UPDATE PRODUCT FIELDS -> ${_data}');
     headers.forEach((k, v) => request.headers[k] = v);
 
     var response = await request.send();
@@ -296,6 +342,8 @@ class ShoppingAuthService extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
+    debugPrint('UPDATE PRODUCT RESPONSE -> ${responseBody}');
+
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -895,10 +943,9 @@ class ShoppingAuthService extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl +
-          "/api/v1/products/by-seller/" +
-          filterOptions!.searchedUser!.userName! +
-          "/?";
+      String userName =
+          filterOptions!.userName ?? filterOptions.searchedUser!.userName!;
+      url = AppConfig.baseUrl + "/api/v1/products/by-seller/" + userName + "/?";
 
       if (filterOptions.category != "All categories") {
         url = url + "category=${filterOptions.category}";
@@ -913,7 +960,7 @@ class ShoppingAuthService extends AuthService {
         url = url + "&price__lte=${filterOptions.maxAmount}";
       }
 
-      debugPrint('SEARCH URL ---> $url');
+      debugPrint('SEARCH FILTER URL ---> $url');
       url = Uri.encodeFull(url);
     } else {
       url = getSecureUrl(url: next);
@@ -921,6 +968,80 @@ class ShoppingAuthService extends AuthService {
     debugPrint(url);
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<Product> productList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        Product product = createProduct(item);
+        productList.add(product);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": productList
+      };
+      debugPrint("result:- $result");
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      List<Product> productList = [];
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": productList
+      };
+      return result;
+    }
+  }
+
+  Future<Map<String, dynamic>?> searchUsersProductsInSuperStore(
+      String? next, String? previous,
+      {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    debugPrint('SORT BY Search -> ${filterOptions.sortBy}');
+
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/products/?search=${filterOptions.searchedText}";
+
+      if (filterOptions.minPrice != null) {
+        url = url + "&min_price=${filterOptions.minPrice}";
+      }
+      if (filterOptions.maxPrice != null) {
+        url = url + "&max_price=${filterOptions.maxPrice}";
+      }
+      if (filterOptions.rating != null) {
+        url = url + "&rating=${filterOptions.rating}";
+      }
+      if (filterOptions.categories.isNotEmpty) {
+        url = url + "&categories=${filterOptions.categories.join(',')}";
+      }
+      if (filterOptions.sortBy != null) {
+        url = url + "&sort_by=${filterOptions.sortBy}";
+      }
+
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint('SEARCH FILTER URL ---> $url');
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
 
     if (response.statusCode == 200) {
       List<Product> productList = [];
@@ -979,6 +1100,9 @@ class ShoppingAuthService extends AuthService {
     var url = AppConfig.baseUrl + "/api/v1/products/choices/";
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
     if (response.statusCode == 200) {
       var jsonData = jsonDecode(response.body);
 
@@ -993,7 +1117,7 @@ class ShoppingAuthService extends AuthService {
       return categories;
     } else {
       debugPrint(
-          "URL: $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
       return Future.value(<ProductCategory>[]);
     }
   }

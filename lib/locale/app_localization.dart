@@ -977,6 +977,34 @@ class AppLocalization {
     );
   }
 
+  String get store {
+    return Intl.message(
+      "Store",
+      name: "store",
+    );
+  }
+
+  String get enableInSuperStore {
+    return Intl.message(
+      "Enable in Super Store",
+      name: "enableInSuperStore",
+    );
+  }
+
+  String get superStore {
+    return Intl.message(
+      "Super Store",
+      name: "superStore",
+    );
+  }
+
+  String get slydoBlogs {
+    return Intl.message(
+      "Slydo Blogs",
+      name: "slydoBlog",
+    );
+  }
+
   String get transactions {
     return Intl.message(
       "Transactions",
@@ -1568,6 +1596,13 @@ class AppLocalization {
     );
   }
 
+  String get state {
+    return Intl.message(
+      "State",
+      name: "state",
+    );
+  }
+
   String get accountType {
     return Intl.message(
       "Account Type",
@@ -1734,7 +1769,7 @@ class AppLocalization {
 
   String get productAddedSuccessfully {
     return Intl.message(
-      "Product Added Succesfully",
+      "Product Added Successfully",
       name: "productAddedSuccessfully",
     );
   }
@@ -2191,13 +2226,6 @@ class AppLocalization {
     );
   }
 
-  String get state {
-    return Intl.message(
-      "State",
-      name: "state",
-    );
-  }
-
   String get invalidState {
     return Intl.message(
       "Invalid State",
@@ -2519,6 +2547,21 @@ class AppLocalization {
     );
   }
 
+  String get highestPrice {
+    return Intl.message(
+      "Highest price",
+      name: "highestPrice",
+    );
+  }
+
+
+  String get lowestPrice {
+    return Intl.message(
+      "Lowest price",
+      name: "lowestPrice",
+    );
+  }
+
   String get seeAll {
     return Intl.message(
       "See all",
@@ -2627,10 +2670,24 @@ class AppLocalization {
     );
   }
 
+  String get blogs {
+    return Intl.message(
+      "Blogs",
+      name: "blogs",
+    );
+  }
+
+  String get ask {
+    return Intl.message(
+      "Ask",
+      name: "ask",
+    );
+  }
+
   String get deletePost {
     return Intl.message(
       "Delete Post",
-      name: "deleteBlog",
+      name: "deletePost",
     );
   }
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Slydo/constant.dart';
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
@@ -16,26 +15,26 @@ import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/customized_passcode_sheet/bottomsheet_passcode.dart';
-import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/passcodePopup.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/user_dashboard_item_tile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
-import '../main.dart';
+import '../locator.dart';
 import '../routes/route_constants.dart';
+import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 // ignore: must_be_immutable
@@ -65,15 +64,9 @@ class _UserDashboardState extends State<UserDashboard> {
   void initState() {
     getAccountBalance();
     getLanguage();
-    getAppConfigurationModelFromLocalStorage();
-    super.initState();
-  }
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-  getAppConfigurationModelFromLocalStorage() async {
-    var str = await getStorage.read(appFeaturesKey);
-    if(str != null){
-      appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    }
+    super.initState();
   }
 
   @override
@@ -164,20 +157,46 @@ class _UserDashboardState extends State<UserDashboard> {
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Platform.isIOS ? Container() : flexibleSpace(),
           appBar(),
           flexibleSpace(flex: 5),
           accountBalanceCard(),
-          flexibleSpace(flex: 2),
-          firstRowOfUserDashboardItem(),
-          flexibleSpace(flex: 1),
-          secondRowOfUserDashboardItem(),
-          flexibleSpace(flex: 1),
-          thirdRowOfUserDashboardItem(),
-          flexibleSpace(flex: 4),
-          appVersionDataUI(),
-          flexibleSpace(flex: 3),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.55,
+            child: ListView(
+              children: [
+                firstRowOfUserDashboardItem(),
+                SizedBox(height: 12),
+                secondRowOfUserDashboardItem(),
+                SizedBox(height: 12),
+                thirdRowOfUserDashboardItem(),
+                SizedBox(height: 12),
+                Text(
+                  'More apps',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                SizedBox(height: 12),
+                firstRowOfMoreApps(),
+                SizedBox(height: 12),
+                appVersionDataUI(),
+                SizedBox(height: 12),
+              ],
+            ),
+          ),
+          // SizedBox(
+          //   height: MediaQuery.of(context).size.width * 0.8,
+          //   child: ListView(
+          //     children: [
+          //
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
@@ -410,10 +429,7 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#3F61DB"),
           ),
         ),
-        SizedBox(
-          width: 12,
-        ),
-
+        SizedBox(width: 12),
         Expanded(
           child: UserDashboardItemTile(
             iconWidget: Center(
@@ -481,9 +497,25 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#5218E9"),
           ),
         ),
-
         SizedBox(width: 12),
+        Expanded(
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.more,
+            title: AppLocalization.of(context)!.more,
+            onTap: () {
+              Navigator.pushNamed(context, Routes.MORE_APPS);
+            },
+            iconColor: HexColor("#374677"),
+          ),
+        ),
+        Expanded(child: Container()),
+      ],
+    );
+  }
 
+  Widget firstRowOfMoreApps() {
+    return Row(
+      children: [
         Expanded(
           child: UserDashboardItemTile(
             icon: SlydoAppIcon.utility,
@@ -498,21 +530,38 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#FFAB00"),
           ),
         ),
-
         SizedBox(width: 12),
-
-        // Expanded(
-        //   child: UserDashboardItemTile(
-        //     icon: SlydoAppIcon.more,
-        //     title: AppLocalization.of(context)!.more,
-        //     onTap: () {
-        //       Navigator.pushNamed(context, Routes.MORE_APPS);
-        //     },
-        //     iconColor: HexColor("#374677"),
-        //   ),
-        // ),
-        // SizedBox(width: 12),
-        Expanded(child: Container()),
+        Expanded(
+          child: UserDashboardItemTile(
+            icon: SlydoAppIcon.news_moreapps,
+            title: AppLocalization.of(context)!.blogs,
+            onTap: () {
+              NavigationUtil.push(
+                context,
+                screen: SuperBlog(),
+              );
+            },
+            iconColor: HexColor("#374677"),
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: UserDashboardItemTile(
+            iconWidget: Icon(
+              Icons.question_answer_rounded,
+              size: 22,
+            ),
+            title: AppLocalization.of(context)!.ask,
+            onTap: () {
+              // NavigationUtil.push(
+              //   context,
+              //   screen: SuperBlog(),
+              // );
+            },
+            iconColor: HexColor("#374677"),
+          ),
+        ),
+        SizedBox(width: 12),
       ],
     );
   }

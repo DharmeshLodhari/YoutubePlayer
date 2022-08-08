@@ -1,4 +1,5 @@
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
@@ -64,9 +65,9 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/card
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/credit_card_option_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/payout_transactions.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/wallet_options_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/upgrade_account.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/virtual_account_detail.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/wallet_options_selection.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/request_payments_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_detail_page.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/payment/transaction_graph.dart';
@@ -95,7 +96,6 @@ import 'package:Slydo/screens/more_apps/shopping/screens/print_qrcode.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/product_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/product_and_service/service_detail_page.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/search_product.dart';
-import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/specific_category_product_list.dart';
 import 'package:Slydo/screens/more_apps/taxi/arriving_driver.dart';
 import 'package:Slydo/screens/more_apps/taxi/cancle_booking.dart';
@@ -126,8 +126,8 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/utility/cable/forms/select_plan_and_decoder_number.dart';
@@ -146,9 +146,10 @@ import 'package:Slydo/widget/video_recorder.dart';
 import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:Slydo/screens/blog/create_or_edit_post.dart';
+
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
+import '../screens/super_store/super_store.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -231,7 +232,7 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
-      case Routes.REGISTER:
+      case Routes.SIGN_UP:
         return PageTransition(
           child: SignUp(
             arguments: settings.arguments,
@@ -1287,9 +1288,9 @@ class RouteGenerator {
 
       /// Shopping
 
-      case Routes.SHOPPING:
+      case Routes.SUPER_STORE:
         return PageTransition(
-          child: ShoppingDashboard(),
+          child: SuperStore(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,

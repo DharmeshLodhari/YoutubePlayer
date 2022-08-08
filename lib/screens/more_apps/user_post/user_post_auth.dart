@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/more_apps/super_blog/super_blog.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,49 @@ import 'package:http/http.dart' as http;
 import '../../../utils/util.dart';
 
 class UserPostAuth extends AuthService {
-  // Fetch User Posts Details
+  Future<Map<String, dynamic>?> listAllPosts(
+      {String? next = "",
+      String? titleToSearch,
+      required SlydoBlogsMenu slydoBlogsMenu}) async {
+    String slydoBlogsMenuString = slydoBlogsMenu.name.toLowerCase();
+
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+
+    if (next == "") {
+      if (titleToSearch != null) {
+        url = AppConfig.baseUrl +
+            "/api/v1/social/posts/public/?search=$titleToSearch";
+      } else {
+        if (slydoBlogsMenuString == "all") {
+          url = AppConfig.baseUrl + "/api/v1/social/posts/public/";
+        } else {
+          url =
+              AppConfig.baseUrl + "/api/v1/social/posts/$slydoBlogsMenuString";
+        }
+      }
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "ALL POST URL $url STATUS CODE:- ${response.statusCode} LIST USER POST BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+      return jsonData;
+    }
+    debugPrint(
+        "URL $url STATUS CODE:- ${response.statusCode}  BODY:- ${response.body}");
+    return Future.error("${response.body}");
+  }
+
   Future<Map<String, dynamic>?> listUserPosts(
       {String? next = "", String? pageSize, required String? userName}) async {
     var url = "";

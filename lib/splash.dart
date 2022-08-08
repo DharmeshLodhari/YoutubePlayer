@@ -57,7 +57,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   bool? isUserFound;
   Timer? timer;
-  late AppConfigurationBloc appConfiguration;
 
   @override
   void initState() {
@@ -208,22 +207,12 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  // Future initializeAppConfiguration() async {
-  //   debugPrint('APP CONFIGU');
-  //   AppConfigurationService().getAppConfigurations().then((appConfig) {
-  //     if (appConfig != null) {
-  //       appConfiguration.appConfigurationModel = appConfig;
-  //     }
-  //   }).catchError((e) {
-  //     showToast(message: 'Error: ${e.toString()}');
-  //   });
-  // }
+
 
   @override
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/app_logo.png"), context);
     basketBloc = Provider.of<BasketBloc>(context);
-    appConfiguration = Provider.of<AppConfigurationBloc>(context);
 
     return WillPopScope(
       onWillPop: () async => Future.value(false),
@@ -381,7 +370,6 @@ class _SplashScreenState extends State<SplashScreen>
             setState(() {});
 
             await initializeShoppingCart();
-            // await initializeAppConfiguration();
 
             setState(() {});
 

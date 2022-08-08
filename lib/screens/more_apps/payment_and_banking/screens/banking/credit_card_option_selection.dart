@@ -4,10 +4,8 @@ import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
-import '../../../../../constant.dart';
-import '../../../../../main.dart';
+import '../../../../../locator.dart';
 
 class CreditCardOptionSelection extends StatefulWidget {
   CreditCardOptionSelection({Key? key}) : super(key: key);
@@ -18,19 +16,13 @@ class CreditCardOptionSelection extends StatefulWidget {
 }
 
 class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
-  late AppConfigurationModel? appConfigurationModel;
+   AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
     super.initState();
-    getAppConfigurationModelFromLocalStorage();
-  }
 
-  getAppConfigurationModelFromLocalStorage() async {
-    var str = await getStorage.read(appFeaturesKey);
-    if(str != null){
-      appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    }
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
   }
 
   Widget build(BuildContext context) {
@@ -79,8 +71,7 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
                   image: SvgPicture.asset('assets/images/top_up_icon.svg'),
                   iconColor: HexColor("#3F61DB"),
                   onTap: () {
-                    if (appConfigurationModel
-                            ?.enableWalletTopupWithCreditCard ==
+                    if (appConfigurationModel?.enableWalletTopupWithCreditCard ==
                         true) {
                       Navigator.of(context)
                           .pushNamed(Routes.CARD_PAYMENT_PAGE, arguments: true);

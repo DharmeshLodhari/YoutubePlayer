@@ -60,6 +60,7 @@ class _EditProductState extends State<EditProduct> {
   List<ProductCategory>? productCategories;
   bool isLoading = false;
   bool isAPILoading = false;
+  bool productEnableInSuperStore = false;
 
   //text editing controllers for the edit fields
   TextEditingController productTitleController = TextEditingController();
@@ -126,6 +127,7 @@ class _EditProductState extends State<EditProduct> {
           productShortDescription = currentProduct.shortDescription;
           productIsAvailable = currentProduct.isAvailable;
           productAvailableFrom = currentProduct.availableFrom;
+          productEnableInSuperStore = currentProduct.enableInSuperStore!;
 
           // assigning the dropdown from currentProduct
           print('CURRENT PRODUCT CATEGORIES :::: ${productCategories}');
@@ -240,14 +242,16 @@ class _EditProductState extends State<EditProduct> {
                       SizedBox(height: 10),
                       getProductConditionField(),
                       SizedBox(height: 16),
-                      getIsAvailableField(),
-                      SizedBox(height: 16),
                       getAvailableFromField(),
                       SizedBox(height: 10),
                       getProductShortDescription(),
                       SizedBox(height: 10),
                       getProductDescription(),
                       SizedBox(height: 10),
+                      getIsAvailableField(),
+                      SizedBox(height: 16),
+                      getEnableInSuperStoreField(),
+                      SizedBox(height: 16),
                       getSubmitButton(),
                       SizedBox(height: 20),
                     ],
@@ -902,6 +906,7 @@ class _EditProductState extends State<EditProduct> {
           currentProduct.availableFrom = productAvailableFrom;
           currentProduct.shortDescription = productShortDescription;
           currentProduct.manufacturer = productManufacturer;
+          currentProduct.enableInSuperStore = productEnableInSuperStore;
 
           await _auth.editProduct(currentProduct).then((value) {
             showToast(
@@ -936,7 +941,18 @@ class _EditProductState extends State<EditProduct> {
         setState(() {});
       },
       isChecked: productIsAvailable,
-      title: "Available",
+      title: "Is product available now?",
+    );
+  }
+
+  Widget getEnableInSuperStoreField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        productEnableInSuperStore = !productEnableInSuperStore;
+        setState(() {});
+      },
+      isChecked: productEnableInSuperStore,
+      title: AppLocalization.of(context)!.enableInSuperStore,
     );
   }
 
