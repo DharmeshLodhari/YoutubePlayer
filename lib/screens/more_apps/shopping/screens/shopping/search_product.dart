@@ -6,6 +6,7 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/noItemInList.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/util.dart';
@@ -262,7 +263,7 @@ class _SearchProductState extends State<SearchProduct> {
     return Container(
       child: Column(
         children: [
-          showSortByBox ? sortByBox() : SizedBox.shrink(),
+          showSortByBox ? sortByDropDown() : SizedBox.shrink(),
           SizedBox(height: 6),
           searchBox(),
           SizedBox(height: 12),
@@ -300,21 +301,23 @@ class _SearchProductState extends State<SearchProduct> {
     );
   }
 
-  Widget sortByBox() {
+  Widget sortByDropDown() {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0),
           decoration: BoxDecoration(
             border: Border.all(color: dividerColor),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: DropdownButton(
-            iconSize: 34,
+          child: DropdownButton2(
             isExpanded: true,
             underline: SizedBox.shrink(),
+            dropdownDecoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+            ),
             value: sortByMenuItemValue,
             items: sortByMenuItems.map((String item) {
               return DropdownMenuItem(
@@ -334,7 +337,6 @@ class _SearchProductState extends State<SearchProduct> {
               String firstWord = newValue!.split(' ')[0];
               String secondWord = newValue.split(' ')[1];
               sortBy = "$firstWord-$secondWord".toLowerCase();
-              debugPrint('SORT BY -> $sortBy');
 
               setState(() {
                 sortByMenuItemValue = newValue;
@@ -437,8 +439,8 @@ class _SearchProductState extends State<SearchProduct> {
 
   void showFilterProductSheet() {
     showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
         isScrollControlled: true,
+        backgroundColor: Colors.transparent,
         context: context,
         enableDrag: true,
         builder: (BuildContext context) {
@@ -470,12 +472,13 @@ class _SearchProductState extends State<SearchProduct> {
                     getPikedCategoryNames(),
                     SizedBox(height: 20),
                     getProductRatingSelection(bottomSheetSetState),
+                    SizedBox(height: 24),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: getPriceRange(bottomSheetSetState),
+                    ),
                     SizedBox(height: 20),
-                    getPriceSelection(bottomSheetSetState),
-                    SizedBox(height: 20),
-
-                    // getStateDropDownField(bottomSheetSetState),
-
                     SizedBox(height: 50),
                     Row(
                       children: [
@@ -584,7 +587,7 @@ class _SearchProductState extends State<SearchProduct> {
                     itemBuilder: (context, index) {
                       ProductCategory category = productCategories![index];
                       return CheckboxListTile(
-                        value: categoryCheckMark[category.name],
+                        value: categoryCheckMark[category.name] ?? false,
                         onChanged: (isChecked) {
                           changeState(() {
                             categoryCheckMark[category.name] = isChecked!;
@@ -666,7 +669,6 @@ class _SearchProductState extends State<SearchProduct> {
                 CurvedButton(
                   text: 'Pick',
                   onPressed: () {
-                    debugPrint('PICKED CAT ---> $pickedCategoryList');
                     Navigator.pop(context);
                     bottomSheetSetState(() {});
                   },
@@ -856,7 +858,7 @@ class _SearchProductState extends State<SearchProduct> {
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
+  Widget getPriceRange(bottomSheetSetState) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -904,9 +906,11 @@ class _SearchProductState extends State<SearchProduct> {
       onPressed: () {
         Navigator.pop(context);
         pickedCategoryList.clear();
+        categoryCheckMark.clear();
         selectedRating = null;
         minAmount = null;
         maxAmount = null;
+        _refreshList();
       },
       text: "Clear All",
       textColor: Colors.white,
