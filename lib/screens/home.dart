@@ -527,10 +527,11 @@ class _HomeState extends State<Home> {
           ),
           onTap: () {
             Navigator.of(context)
-                .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
+                .pushNamed(Routes.ASK_SCREEN, arguments: <String, bool>{
               'isFromProfile': true,
             });
-          }),
+          },
+      ),
     );
   }
 

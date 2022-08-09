@@ -147,6 +147,7 @@ import 'package:Slydo/widget/webview_slydo/custom_webview.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
+import '../screens/ask/ask_screen.dart';
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
 
@@ -1419,6 +1420,14 @@ class RouteGenerator {
       case Routes.WEB_VIEW:
         return PageTransition(
           child: CustomWebView(webUrl: settings.arguments as String),
+          type: PageTransitionType.bottomToTop,
+          curve: Curves.ease,
+          settings: settings,
+        );
+
+      case Routes.ASK_SCREEN:
+        return PageTransition(
+          child: AskScreen(),
           type: PageTransitionType.bottomToTop,
           curve: Curves.ease,
           settings: settings,
