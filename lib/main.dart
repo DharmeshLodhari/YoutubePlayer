@@ -5,6 +5,7 @@ import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/routes/route_generator.dart';
+import 'package:Slydo/screens/ask/ask_viewmodel.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/contract_bloc.dart';
@@ -301,5 +302,8 @@ List<ChangeNotifierProvider> providersList = [
     value: CheckoutScreenBloc(),
   ), ChangeNotifierProvider<MomentsBloc>.value(
     value: MomentsBloc(),
+  ),
+  ChangeNotifierProvider<AskViewModel>.value(
+    value: AskViewModel(),
   ),
 ];

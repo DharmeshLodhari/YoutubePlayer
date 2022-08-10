@@ -5,6 +5,7 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/ask/ask_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
@@ -553,10 +554,10 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: AppLocalization.of(context)!.ask,
             onTap: () {
-              // NavigationUtil.push(
-              //   context,
-              //   screen: SuperBlog(),
-              // );
+              NavigationUtil.push(
+                context,
+                screen: AskScreen(),
+              );
             },
             iconColor: HexColor("#374677"),
           ),

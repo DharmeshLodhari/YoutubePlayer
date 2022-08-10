@@ -40,7 +40,7 @@ class _AskScreenState extends State<AskScreen> {
             ),
           ),
           body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, ),
+            padding: EdgeInsets.symmetric(horizontal: 26, ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
