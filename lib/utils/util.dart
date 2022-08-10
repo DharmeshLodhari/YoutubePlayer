@@ -185,7 +185,7 @@ Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
       filterQuality: FilterQuality.high,
     );
 
-getUserName(BuildContext context) {
+getLoggedInUserName(BuildContext context) {
   return Provider.of<UserBloc>(context, listen: false).user.userName;
 }
 
@@ -326,11 +326,16 @@ BoxDecoration decorateBox(
 }
 
 void androidBottomSheet(
-    {required BuildContext context, required Widget child}) {
+    {required BuildContext context,
+    required Widget child,
+    bool enableDrag = true,
+    bool isDismissible = true}) {
   showModalBottomSheet<void>(
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     context: context,
+    enableDrag: enableDrag,
+    isDismissible: isDismissible,
     builder: (BuildContext context) {
       return Card(
         shape: RoundedRectangleBorder(
@@ -915,7 +920,7 @@ Widget getClickableRatingBar(
   );
 }
 
-Widget getRating({required int? numberOfRating}) {
+Widget getRating({required int? numberOfRating, double starSize = 11}) {
   List<Widget> widgets = [];
 
   for (int i = 1; i < 6; i++) {
@@ -925,7 +930,7 @@ Widget getRating({required int? numberOfRating}) {
         child: Icon(
           SlydoAppIcon.star,
           color: getRatingColor(numberOfRating, i),
-          size: 11,
+          size: starSize,
         ),
       ),
     );

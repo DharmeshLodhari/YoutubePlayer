@@ -6,7 +6,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../data/state_notifier.dart';
 import '../../../../locale/app_localization.dart';
+import '../../../../locator.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/enums.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
@@ -40,9 +42,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   SlidableController? _slideController;
   ScrollController _scrollController = ScrollController();
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
     _slideController = SlidableController(
       onSlideAnimationChanged: handleSlideAnimationChanged,
       onSlideIsOpenChanged: handleSlideIsOpenChanged,
@@ -431,16 +435,20 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _payInvoice(InvoiceModel invoice) {
-    BusinessAuth().payInvoice(invoiceId: invoice.id!).then(
-      (value) {
-        showToast(message: "Invoice Paid");
-        Provider.of<InvoiceBloc>(context).getInvoiceList();
-      },
-    ).catchError(
-      (e) {
-        showToast(message: "Something went wrong, please try again.");
-      },
-    );
+    if (appConfigurationModel?.enablePayment == true) {
+      BusinessAuth().payInvoice(invoiceId: invoice.id!).then(
+        (value) {
+          showToast(message: "Invoice Paid");
+          Provider.of<InvoiceBloc>(context).getInvoiceList();
+        },
+      ).catchError(
+        (e) {
+          showToast(message: "Something went wrong, please try again.");
+        },
+      );
+    } else {
+      showToast(message: 'Payment is coming soon.');
+    }
   }
 
   void deleteInvoice(InvoiceModel invoice) {

@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 class ImageCrop {
-  Future<String?> cropImage(String filePath) async {
+  Future<String?> cropImage(String filePath,
+      {bool isProfilePicture = false}) async {
     debugPrint("Selected image ==> $filePath");
 
     CroppedFile? croppedImage = await ImageCropper().cropImage(
       sourcePath: filePath,
+      cropStyle: isProfilePicture ? CropStyle.circle : CropStyle.rectangle,
       aspectRatioPresets: Platform.isAndroid
           ? [
               CropAspectRatioPreset.square,

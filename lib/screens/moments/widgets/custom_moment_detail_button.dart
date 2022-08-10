@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class CustomMomentDetailButton extends StatelessWidget {
-  final Widget icon;
   final String text;
+  final bool iconEnabled;
+  final IconData iconData;
   final Function()? onPressed;
 
   const CustomMomentDetailButton(
       {Key? key,
-      required this.icon,
+      required this.iconData,
+      required this.iconEnabled,
       required this.text,
       required this.onPressed})
       : super(key: key);
@@ -21,20 +23,25 @@ class CustomMomentDetailButton extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.white54,
+                shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
                     offset: Offset(0.0, 0),
                     color: Colors.black.withOpacity(0.6),
-                  )
+                  ),
                 ],
-                borderRadius: BorderRadius.circular(40),
+                // borderRadius: BorderRadius.circular(40),
               ),
-              child: icon,
+              child: Icon(
+                iconData,
+                size: 20,
+                color: iconEnabled ? Colors.white : Colors.white38,
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 4),
             Text(
               text,
               textAlign: TextAlign.center,
@@ -49,6 +56,7 @@ class CustomMomentDetailButton extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 6),
           ],
         ),
       ),

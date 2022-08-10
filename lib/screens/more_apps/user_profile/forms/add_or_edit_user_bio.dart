@@ -531,7 +531,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           await ImagePicker().pickImage(source: imageSource, imageQuality: 70);
       if (file != null) {
         /// for cropping the image
-        String? croppedImage = await ImageCrop().cropImage(file.path);
+        String? croppedImage =
+            await ImageCrop().cropImage(file.path, isProfilePicture: true);
         if (croppedImage == null) {
           return;
         }

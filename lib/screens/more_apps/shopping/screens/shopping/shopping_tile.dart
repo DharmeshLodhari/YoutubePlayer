@@ -7,6 +7,8 @@ import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../data/currency.dart';
+import '../../models/store.dart';
 import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -144,9 +146,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                     errorWidget: productAndServiceErrorWidget,
                   ),
                 ),
-                SizedBox(
-                  width: 16,
-                ),
+                SizedBox(width: 16),
                 Expanded(
                   child: Container(
                     height: 60,
@@ -163,9 +163,7 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(
-                          height: 2,
-                        ),
+                        SizedBox(height: 2),
                         Text(
                           widget.product!.seller!,
                           style: TextStyle(
@@ -174,23 +172,24 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                             color: blackFont,
                           ),
                         ),
-                        SizedBox(
-                          height: 4,
-                        ),
+                        SizedBox(height: 4),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              SlydoAppIcon.naira,
-                              color: navyBlue,
-                              size: 10,
+                            Text(
+                              worldCurrencies[widget.product!.currency!]!,
+                              style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  color: navyBlue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14),
                             ),
                             Text(
-                              widget.product!.price.toString(),
+                              moneyDisplayNormalizer(widget.product!.price!),
                               style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
                                 color: navyBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
                               ),
                             ),
                           ],
@@ -199,24 +198,151 @@ class _ShoppingTileWithHeartState extends State<ShoppingTileWithHeart> {
                     ),
                   ),
                 ),
-                Container(
-                  height: 60,
-                  child: Center(
-                    child: IconButton(
-                      icon: Icon(
-                        isChange
-                            ? SlydoAppIcon.heart_empty
-                            : SlydoAppIcon.heart_1,
-                        color: isChange ? blackFont : navyBlue,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        isChange = !isChange;
-                        setState(() {});
-                      },
+                getCircularUserAvatar(widget.product!.sellerAvatar!),
+                // Container(
+                //   height: 60,
+                //   child: Center(
+                //     child: IconButton(
+                //       icon: Icon(
+                //         isChange
+                //             ? SlydoAppIcon.heart_empty
+                //             : SlydoAppIcon.heart_1,
+                //         color: isChange ? blackFont : navyBlue,
+                //         size: 20,
+                //       ),
+                //       onPressed: () {
+                //         isChange = !isChange;
+                //         setState(() {});
+                //       },
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ShoppingTileWithHeartWithProduct extends StatefulWidget {
+  final Product? product;
+
+  const ShoppingTileWithHeartWithProduct({Key? key, this.product})
+      : super(key: key);
+  @override
+  _ShoppingTileWithHeartWithProductState createState() =>
+      _ShoppingTileWithHeartWithProductState();
+}
+
+class _ShoppingTileWithHeartWithProductState
+    extends State<ShoppingTileWithHeartWithProduct> {
+  bool isChange = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        ShoppingAuthService().getProduct(widget.product!.id!).then((value) {
+          Navigator.pushNamed(context, '/product',
+              arguments: {"product": value});
+        });
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          child: Container(
+            padding: EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.product!.cover!,
+                    fit: BoxFit.fill,
+                    height: 60,
+                    width: 60,
+                    errorWidget: productAndServiceErrorWidget,
+                    memCacheHeight: (MediaQuery.of(context).size.height * 0.6).toInt(),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Container(
+                    height: 60,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.product!.name!,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: blackFont,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          widget.product!.seller!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: blackFont,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              worldCurrencies[widget.product!.currency!]!,
+                              style: TextStyle(
+                                  fontFamily: "Roboto",
+                                  color: navyBlue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14),
+                            ),
+                            Text(
+                              moneyDisplayNormalizer(
+                                  int.parse(widget.product!.price!)),
+                              style: TextStyle(
+                                color: navyBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                )
+                ),
+                getCircularUserAvatar(widget.product!.sellerAvatar!),
+                // Container(
+                //   height: 60,
+                //   child: Center(
+                //     child: IconButton(
+                //       icon: Icon(
+                //         isChange
+                //             ? SlydoAppIcon.heart_empty
+                //             : SlydoAppIcon.heart_1,
+                //         color: isChange ? blackFont : navyBlue,
+                //         size: 20,
+                //       ),
+                //       onPressed: () {
+                //         isChange = !isChange;
+                //         setState(() {});
+                //       },
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

@@ -241,9 +241,7 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
               height: 16,
             ),
             getDiscountDealList(),
-            SizedBox(
-              height: 10,
-            ),
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -371,6 +369,9 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                             height: double.infinity,
                             width: double.infinity,
                             errorWidget: productAndServiceErrorWidget,
+                            memCacheHeight:
+                                (MediaQuery.of(context).size.height * 0.6)
+                                    .toInt(),
                           ),
                         )),
                       ),
@@ -486,6 +487,8 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                     width: 130,
                     fit: BoxFit.fill,
                     errorWidget: productAndServiceErrorWidget,
+                    memCacheHeight:
+                        (MediaQuery.of(context).size.height * 0.6).toInt(),
                   ),
                 ),
               ],
@@ -628,7 +631,12 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                                               fit: BoxFit.fill,
                                               errorWidget:
                                                   productAndServiceErrorWidget,
-                                              filterQuality: FilterQuality.high,
+                                              memCacheHeight:
+                                                  (MediaQuery.of(context)
+                                                              .size
+                                                              .height *
+                                                          0.6)
+                                                      .toInt(),
                                             ),
                                             onTap: () {
                                               ShoppingAuthService()
@@ -781,6 +789,8 @@ class _ShoppingExploreScreenState extends State<ShoppingExploreScreen> {
                 imageUrl: product.cover!,
                 fit: BoxFit.fill,
                 errorWidget: productAndServiceErrorWidget,
+                memCacheHeight:
+                    (MediaQuery.of(context).size.height * 0.6).toInt(),
               ),
             ),
             Align(

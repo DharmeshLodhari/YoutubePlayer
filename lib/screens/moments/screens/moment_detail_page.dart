@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
+import '../../../locator.dart';
 import '../../../routes/route_constants.dart';
 import '../../../utils/enums.dart';
 import '../../../utils/navigation_util.dart';
@@ -21,10 +21,10 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/dialog.dart';
 import '../../../widget/read_more_widget.dart';
 import '../../../widget/rounded_background_icon.dart';
-import '../../more_apps/user_profile/user_auth.dart';
 import '../../post_detail_page.dart';
 import '../models/comment_model.dart';
 import '../models/moments_model.dart';
+import '../moments_bloc.dart';
 import '../widgets/custom_moment_detail_button.dart';
 import 'create_moment_screen.dart';
 import 'moments_service.dart';
@@ -54,12 +54,15 @@ class MomentsDetailsScreen extends StatefulWidget {
 
 class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   bool loadingMoments = false;
+
   /* This variable is to show a loading indicator when the user has gotten to the end
   *  of the list and there are more moments to load through widget.nextPageUrl*/
   bool nextPageUrlLoading = false;
+
   /*This holds the number of previous and next moments to load when the user
   * comes to this page*/
   int numberOfMomentsToLoad = 2;
+  int currentVerticalPageIndex = 0;
   late PageController _verticalScrollPageViewCtrl;
 
   @override
@@ -72,7 +75,6 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
     }
     _verticalScrollPageViewCtrl =
         PageController(initialPage: getInitialPageIndex());
-    debugPrint(widget.listOfConnectionNames.toString());
     if (widget.listOfConnectionNames.isNotEmpty) {
       getListOfMomentsModelList();
     }
@@ -152,7 +154,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
       for (int i = startIndex; i <= endIndex; i++) {
         List<MomentsModel> momentsModelList = await MomentsService()
-            .getMomentsWithOwnerName(owner: widget.listOfConnectionNames[i]);
+            .getMomentsWithOwnerName(
+                ownerName: widget.listOfConnectionNames[i]);
         widget.momentsModelList!.add(momentsModelList);
       }
 
@@ -199,7 +202,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
         try {
           List<MomentsModel> momentsModelList = await MomentsService()
               .getMomentsWithOwnerName(
-                  owner: widget.listOfConnectionNames[indexToWorkWith]);
+                  ownerName: widget.listOfConnectionNames[indexToWorkWith]);
           if (getNextList) {
             widget.momentsModelList!.add(momentsModelList);
           } else {
@@ -235,6 +238,14 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       );
     }
 
+    _onEndScroll(ScrollMetrics metrics) {
+      print("Scroll End -------------> ${_verticalScrollPageViewCtrl.page}");
+      print("Scroll End ------------->");
+      if (currentVerticalPageIndex < -1) {
+        NavigationUtil.pop(context);
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Align(
@@ -243,112 +254,124 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
         child: Column(
           children: [
             Expanded(
-              child: PageView.builder(
-                itemCount: widget.momentsModelList!.length,
-                controller: _verticalScrollPageViewCtrl,
-                scrollDirection: Axis.vertical,
-                onPageChanged: (verticalScrollIndex) async {
-                  // To check if the pageview has gotten to the top of the list.
-
-                  if (verticalScrollIndex == 0) {
-                    if (widget
-                            .momentsModelList![verticalScrollIndex][0].owner !=
-                        widget.listOfConnectionNames[0]) {
-                      getNextOrPreviousListOfMomentsWithConnectionNames(
-                          verticalScrollIndex: verticalScrollIndex,
-                          getNextList: false);
-                    }
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  if (scrollNotification is ScrollEndNotification) {
+                    _onEndScroll(scrollNotification.metrics);
                   }
+                  return true;
+                },
+                child: PageView.builder(
+                  itemCount: widget.momentsModelList!.length,
+                  controller: _verticalScrollPageViewCtrl,
+                  scrollDirection: Axis.vertical,
+                  onPageChanged: (verticalScrollIndex) async {
+                    // To check if the pageview has gotten to the top of the list.
 
-                  // To check if the pageview has gotten to the end of the list.
-                  else if (verticalScrollIndex + 1 ==
-                      widget.momentsModelList!.length) {
-                    // This is to check if the owner of the last moment that's showing is the same as the last name
-                    // in widget.listOfConnectionNames (this helps us to know whether to load the next moments using the
-                    // names that are left in widget.listOfConnectionNames or using the url(endpoint) in widget.nextPageUrl).
-                    if (widget
-                            .momentsModelList![verticalScrollIndex][0].owner !=
-                        widget.listOfConnectionNames.last) {
-                      getNextOrPreviousListOfMomentsWithConnectionNames(
-                          verticalScrollIndex: verticalScrollIndex,
-                          getNextList: true);
-                    } else {
-                      if (widget.nextPageUrl != null) {
-                        List<String>? newListOfConnectionNames =
-                            await getNextPageListOfConnectionNames(
-                                nextPageUrl: widget.nextPageUrl!);
+                    currentVerticalPageIndex -= 1;
+                    print(
+                        "Scroll End -------------> ${currentVerticalPageIndex}");
 
-                        widget.indexOfMoment =
-                            widget.listOfConnectionNames.length;
-
-                        widget.listOfConnectionNames
-                            .addAll(newListOfConnectionNames!);
-
-                        getListOfMomentsModelList(loadingNextPageUrl: true);
+                    if (verticalScrollIndex == 0) {
+                      if (widget.momentsModelList![verticalScrollIndex][0]
+                              .owner !=
+                          widget.listOfConnectionNames[0]) {
+                        getNextOrPreviousListOfMomentsWithConnectionNames(
+                            verticalScrollIndex: verticalScrollIndex,
+                            getNextList: false);
                       }
                     }
-                  }
-                },
-                itemBuilder: (context, index) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: Stack(
-                      children: [
-                        MediaRendererPageView(
-                          momentsModelList: widget.momentsModelList![index],
-                          onPageChanged: (pageViewIndex) {},
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 34.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: CircleAvatar(
-                                  backgroundColor: navyBlue,
-                                  child: const Icon(
-                                    Icons.arrow_back,
-                                    color: Colors.white,
+
+                    // To check if the pageview has gotten to the end of the list.
+                    else if (verticalScrollIndex + 1 ==
+                        widget.momentsModelList!.length) {
+                      // This is to check if the owner of the last moment that's showing is the same as the last name
+                      // in widget.listOfConnectionNames (this helps us to know whether to load the next moments using the
+                      // names that are left in widget.listOfConnectionNames or using the url(endpoint) in widget.nextPageUrl).
+                      if (widget.momentsModelList![verticalScrollIndex][0]
+                              .owner !=
+                          widget.listOfConnectionNames.last) {
+                        getNextOrPreviousListOfMomentsWithConnectionNames(
+                            verticalScrollIndex: verticalScrollIndex,
+                            getNextList: true);
+                      } else {
+                        if (widget.nextPageUrl != null) {
+                          List<String>? newListOfConnectionNames =
+                              await getNextPageListOfConnectionNames(
+                                  nextPageUrl: widget.nextPageUrl!);
+
+                          widget.indexOfMoment =
+                              widget.listOfConnectionNames.length;
+
+                          widget.listOfConnectionNames
+                              .addAll(newListOfConnectionNames!);
+
+                          getListOfMomentsModelList(loadingNextPageUrl: true);
+                        }
+                      }
+                    }
+                  },
+                  itemBuilder: (context, index) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: Stack(
+                        children: [
+                          MediaRendererPageView(
+                            momentsModelList: widget.momentsModelList![index],
+                            onPageChanged: (pageViewIndex) {},
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 34.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  icon: CircleAvatar(
+                                    backgroundColor: navyBlue,
+                                    child: const Icon(
+                                      Icons.arrow_back,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () async {
-                                        NavigationUtil.push(context,
-                                            screen: CreateMomentScreen());
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: navyBlue,
-                                        ),
-                                        child: const Icon(
-                                          Icons.camera_alt_rounded,
-                                          color: Colors.white,
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      InkWell(
+                                        onTap: () async {
+                                          NavigationUtil.push(context,
+                                              screen: CreateMomentScreen());
+                                        },
+                                        child: Container(
+                                          height: 40,
+                                          width: 40,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: navyBlue,
+                                          ),
+                                          child: const Icon(
+                                            Icons.camera_alt_rounded,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             Visibility(
@@ -384,22 +407,22 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   void initState() {
     super.initState();
     _pageCtrl = PageController();
-  }
+    Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
+        widget.momentsModelList.map((e) => e.numberOfComments!).toList();
 
-  Color disabledMomentIconColor() {
-    return Colors.white38;
+    debugPrint(
+        'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
   }
 
   @override
   Widget build(BuildContext context) {
+    //PageView to scroll horizontally to view a single user's list of moments.
     return PageView.builder(
       controller: _pageCtrl,
       onPageChanged: widget.onPageChanged,
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
-        debugPrint(
-            'ATTACHMENT ::: ${widget.momentsModelList[index].attachment!}');
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -444,26 +467,18 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
             ),
             Positioned.directional(
               textDirection: Directionality.of(context),
-              end: -10.0,
+              end: 15.0,
               bottom: MediaQuery.of(context).size.height * 0.04,
-              // top: MediaQuery.of(context).size.height * 0.5,
               child: Column(
                 children: [
-                  // ATTACHMENT WIDGET
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: getWhichAttachmentWidgetToShow(
-                      widget.momentsModelList[index].attachment!,
-                    ),
-                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       SizedBox(height: 16),
                       isMyMoment(index)
                           ? CustomMomentDetailButton(
-                              icon: SvgPicture.asset(
-                                  'assets/images/three_dot.svg'),
+                              iconEnabled: true,
+                              iconData: Icons.more_horiz_outlined,
                               text: '',
                               onPressed: () {
                                 androidBottomSheet(
@@ -480,14 +495,12 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                         actionOneBgColor: mateRed,
                                         actionTwoTextColor: blackFont,
                                         actionTwoBgColor: greyBorderColor,
-                                        title: AppLocalization.of(context)!
-                                            .delete,
+                                        title:
+                                            AppLocalization.of(context)!.delete,
                                         actionTwoText:
-                                            AppLocalization.of(context)!
-                                                .cancel,
+                                            AppLocalization.of(context)!.cancel,
                                         actionOneText:
-                                            AppLocalization.of(context)!
-                                                .delete,
+                                            AppLocalization.of(context)!.delete,
                                         description:
                                             'Are you sure you want to delete this moment?',
                                         roundedBackgroundIcon:
@@ -501,13 +514,11 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                         leftButtonOnPressed: () {
                                           showDialog(
                                               context: context,
-                                              builder:
-                                                  (dialogLoadingContext) =>
-                                                      LoadingIndicator());
+                                              builder: (dialogLoadingContext) =>
+                                                  LoadingIndicator());
                                           MomentsService()
                                               .deleteMoment(widget
-                                                  .momentsModelList[index]
-                                                  .id!)
+                                                  .momentsModelList[index].id!)
                                               .then(
                                             (value) {
                                               Navigator.pop(
@@ -529,12 +540,8 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                             )
                           : SizedBox.shrink(),
                       CustomMomentDetailButton(
-                        icon: Icon(
-                          Icons.thumb_up,
-                          color: likeEnabled(index)
-                              ? Colors.white
-                              : disabledMomentIconColor(),
-                        ),
+                        iconEnabled: likeEnabled(index),
+                        iconData: Icons.thumb_up,
                         text: likeEnabled(index)
                             ? int.parse(widget.momentsModelList[index].likes
                                         .toString()) <
@@ -558,13 +565,10 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                             : null,
                       ),
                       CustomMomentDetailButton(
-                        icon: Icon(Icons.thumb_down,
-                            color: likeEnabled(index)
-                                ? Colors.white
-                                : disabledMomentIconColor()),
+                        iconEnabled: likeEnabled(index),
+                        iconData: Icons.thumb_down,
                         text: likeEnabled(index)
-                            ? int.parse(widget
-                                        .momentsModelList[index].dislikes
+                            ? int.parse(widget.momentsModelList[index].dislikes
                                         .toString()) <
                                     1
                                 ? ''
@@ -587,18 +591,16 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                             : null,
                       ),
                       CustomMomentDetailButton(
-                        icon: Icon(Icons.messenger,
-                            color: commentingEnabled(index)
-                                ? Colors.white
-                                : disabledMomentIconColor()),
+                        iconEnabled: commentingEnabled(index),
+                        iconData: Icons.messenger,
                         text: commentingEnabled(index)
-                            ? widget.momentsModelList[index]
-                                        .numberOfComments! <
+                            ? Provider.of<MomentsBloc>(context)
+                                        .numberOfComments[index] <
                                     1
                                 ? ''
                                 : getFormattedViewCount(
-                                    noOfViews: widget.momentsModelList[index]
-                                        .numberOfComments!,
+                                    noOfViews: Provider.of<MomentsBloc>(context)
+                                        .numberOfComments[index],
                                     addViewText: false,
                                   )
                             : '',
@@ -607,16 +609,14 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                 commentSheet(
                                   context,
                                   widget.momentsModelList[index].id!,
+                                  index: index,
                                 );
                               }
                             : null,
                       ),
                       CustomMomentDetailButton(
-                        icon: Icon(
-                          Icons.visibility_rounded,
-                          color: Colors.white,
-                          size: 28,
-                        ),
+                        iconEnabled: true,
+                        iconData: Icons.visibility_rounded,
                         text: getFormattedViewCount(
                           noOfViews: widget.momentsModelList[index].views,
                           addViewText: false,
@@ -747,7 +747,17 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                       child: getTags(index),
                     ),
                     SizedBox(height: 9),
-                    getPayMeBtn(index),
+                    Row(
+                      children: [
+                        getPayMeBtn(index),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: getWhichAttachmentWidgetToShow(
+                            widget.momentsModelList[index].attachment!,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -795,11 +805,12 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   Widget getWhichAttachmentWidgetToShow(Map<String, dynamic> attachment) {
     if (attachment.containsKey('url')) {
       return attachmentWidget(
-          onTap: () {
-            _launchUrl(attachment['url']);
-          },
-          iconData: Icons.link,
-          title: 'Link');
+        onTap: () {
+          _launchUrl(attachment['url'].toString().split('-')[0]);
+        },
+        iconData: Icons.link,
+        title: attachment['url'].toString().split('-')[1],
+      );
     }
 
     if (attachment.containsKey('product')) {
@@ -812,7 +823,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
               arguments: {"productId": attachment['product']},
             );
           },
-          iconData: Icons.inventory_2_rounded,
+          iconData: Icons.shopping_cart_rounded,
           title: 'Product');
     }
 
@@ -826,24 +837,25 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
               arguments: {"serviceId": attachment['service']},
             );
           },
-          iconData: Icons.build_rounded,
+          iconData: Icons.handyman_rounded,
           title: 'Service');
     }
 
     if (attachment.containsKey('blog')) {
       return attachmentWidget(
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: PostDetailPage(
-                // postId: '303d5c1b-5539-4b63-a448-c0d3e9687d61',
-                postId: attachment['blog'],
-                postType: PostType.blog,
-              ),
-            );
-          },
-          iconData: Icons.book_rounded,
-          title: 'Blog');
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: PostDetailPage(
+              // postId: '303d5c1b-5539-4b63-a448-c0d3e9687d61',
+              postId: attachment['blog'],
+              postType: PostType.blog,
+            ),
+          );
+        },
+        iconData: Icons.receipt_long_rounded,
+        title: 'Blog',
+      );
     } else {
       return Container();
     }
@@ -854,7 +866,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   }
 
   bool isMyMoment(int index) {
-    return getUserName(context) == widget.momentsModelList[index].owner;
+    return getLoggedInUserName(context) == widget.momentsModelList[index].owner;
   }
 
   bool likeEnabled(int index) {
@@ -868,72 +880,79 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   }
 
   Widget getPayMeBtn(int index) {
-    return getUserName(context) != widget.momentsModelList[index].owner
-        ? widget.momentsModelList[index].payMe!
-            ? InkWell(
-                onTap: () async {
-                  var customerProfileBloc =
-                      Provider.of<CustomerProfileBloc>(context, listen: false);
-                  customerProfileBloc.customer = await UserAuth()
-                      .fetchCustomerProfile(
-                          widget.momentsModelList[index].owner);
-
-                  await Navigator.of(context).pushNamed(
-                    Routes.SEND_PAYMENT,
-                    arguments: <String, dynamic>{
-                      'isFromProfile': false,
-                      'isFromChat': false,
-                      'defaultReferenceText': 'Payment from moment'
-                    },
-                  );
-                },
-                child: PhysicalModel(
-                  color: Colors.transparent,
-                  elevation: 20,
-                  shadowColor: Colors.black.withOpacity(0.7),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                    decoration: BoxDecoration(
-                        color: HexColor(widget
-                                    .momentsModelList[index].payMeButtonColor !=
-                                null
-                            ? '#${widget.momentsModelList[index].payMeButtonColor}'
-                            : '#3F61DB'),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/slydo_icon_white.png',
-                          width: 30,
-                          height: 30,
-                          color: widget.momentsModelList[index].payMeButtonColor
-                                      ?.toLowerCase() ==
-                                  '#ffffff'
-                              ? navyBlue
-                              : Colors.white,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          messageDecoderWithEmoji(
-                              widget.momentsModelList[index].payMeLabel ??
-                                  'Pay Me')!,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: widget.momentsModelList[index]
-                                        .payMeButtonColor
-                                        ?.toLowerCase() ==
-                                    '#ffffff'
-                                ? navyBlue
-                                : Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      ],
+    return widget.momentsModelList[index].payMe!
+        ? InkWell(
+            onTap: getLoggedInUserName(context) !=
+                    widget.momentsModelList[index].owner
+                ? () async {
+                    if (getIt<AppConfigurationBloc>()
+                            .appConfigurationModel
+                            ?.enablePayment ==
+                        true) {
+                      Navigator.of(context).pushNamed(
+                        Routes.SEND_PAYMENT,
+                        arguments: <String, dynamic>{
+                          'recipient': widget.momentsModelList[index].owner,
+                          'isFromProfile': false,
+                          'isFromChat': false,
+                          'defaultReferenceText':
+                              'Payment from  "${truncateString(
+                            str: widget.momentsModelList[index].text!,
+                            lengthToTruncateAt: 8,
+                          )}\" moment'
+                        },
+                      );
+                    } else {
+                      showToast(message: 'Payment coming soon');
+                    }
+                  }
+                : () {
+                    showToast(message: 'You cannot pay yourself');
+                  },
+            child: PhysicalModel(
+              color: Colors.transparent,
+              elevation: 20,
+              shadowColor: Colors.black.withOpacity(0.7),
+              child: Container(
+                margin: EdgeInsets.only(right: 12),
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                    color: HexColor(widget
+                                .momentsModelList[index].payMeButtonColor !=
+                            null
+                        ? '#${widget.momentsModelList[index].payMeButtonColor}'
+                        : '#3F61DB'),
+                    borderRadius: BorderRadius.circular(6)),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/slydo_icon_white.png',
+                      width: 30,
+                      height: 20,
+                      color: widget.momentsModelList[index].payMeButtonColor
+                                  ?.toLowerCase() ==
+                              '#ffffff'
+                          ? navyBlue
+                          : Colors.white,
                     ),
-                  ),
+                    Text(
+                      messageDecoderWithEmoji(
+                          widget.momentsModelList[index].payMeLabel ??
+                              'Pay Me')!,
+                      style: TextStyle(
+                        color: widget.momentsModelList[index].payMeButtonColor
+                                    ?.toLowerCase() ==
+                                '#ffffff'
+                            ? navyBlue
+                            : Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  ],
                 ),
-              )
-            : SizedBox.shrink()
+              ),
+            ),
+          )
         : SizedBox.shrink();
   }
 }
@@ -1108,7 +1127,8 @@ class _VideoDisplayState extends State<VideoDisplay> {
   }
 }
 
-void commentSheet(BuildContext context, String momentID) async {
+void commentSheet(BuildContext context, String momentID,
+    {required int index}) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -1117,14 +1137,18 @@ void commentSheet(BuildContext context, String momentID) async {
         borderSide: BorderSide.none),
     builder: (context) => SizedBox(
       height: MediaQuery.of(context).size.height * 0.8,
-      child: CommentListWidget(momentID: momentID),
+      child: CommentListWidget(momentID: momentID, index: index),
     ),
   );
 }
 
 class CommentListWidget extends StatefulWidget {
+  final int
+      index; // This is the index of the moment in the (horizontal) moment list.
   final String momentID;
-  const CommentListWidget({Key? key, required this.momentID}) : super(key: key);
+  const CommentListWidget(
+      {Key? key, required this.index, required this.momentID})
+      : super(key: key);
 
   @override
   _CommentListWidgetState createState() => _CommentListWidgetState();
@@ -1132,6 +1156,7 @@ class CommentListWidget extends StatefulWidget {
 
 class _CommentListWidgetState extends State<CommentListWidget> {
   String? nextUrl;
+  bool addingComment = false;
   BasePaginationModel<List<CommentModel>>? basePaginationModel;
   List<CommentModel> comments = [];
   List<CommentModel> tempComments = [];
@@ -1178,17 +1203,24 @@ class _CommentListWidgetState extends State<CommentListWidget> {
         }
       });
 
-      debugPrint('HIIJABR --> ${comments[3].comment}');
-      debugPrint('HIIJABR SECOND--> ${comments[4].comment}');
-
       basePaginationModel = value;
       nextUrl = basePaginationModel!.next;
+      Provider.of<MomentsBloc>(context, listen: false)
+          .numberOfComments[widget.index] = basePaginationModel!.count;
+
+      Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
+          Provider.of<MomentsBloc>(context, listen: false).numberOfComments;
+
+      debugPrint('BASE COUNT --> ${basePaginationModel!.count}');
+      debugPrint(
+          'PROVIDER NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
 
       if (mounted) {
         setState(() {
           isCommentsLoading = false;
         });
       }
+      debugPrint('COMMENTS ADDED -> ${comments[0].comment}');
     }).catchError((e) {
       basePaginationModel = BasePaginationModel(
         count: 0,
@@ -1226,25 +1258,31 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                     ),
                     SizedBox(width: 5),
                     InkWell(
-                      onTap: () {
-                        MomentsService().addCommentToMoment(
-                            momentID: widget.momentID,
-                            data: {
-                              'comment': commentCtrl.text,
-                              'author_username': getUserName(context),
-                            }).then((value) {
-                          commentCtrl.clear();
-                          comments.clear();
-                          getListOfComments();
-                        }).catchError((e) {
-                          showToast(message: 'Something went wrong');
-                        });
-                      },
+                      onTap: addingComment
+                          ? null
+                          : () {
+                              setState(() => addingComment = true);
+                              MomentsService().addCommentToMoment(
+                                  momentID: widget.momentID,
+                                  data: {
+                                    'comment': commentCtrl.text,
+                                    'author_username':
+                                        getLoggedInUserName(context),
+                                  }).then((value) {
+                                commentCtrl.clear();
+                                comments.clear();
+                                nextUrl = null;
+                                getListOfComments();
+                                setState(() => addingComment = false);
+                              }).catchError((e) {
+                                showToast(message: 'Something went wrong');
+                              });
+                            },
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 4.0),
                         child: Icon(
                           SlydoAppIcon.send_message_2,
-                          color: navyBlue,
+                          color: addingComment ? greyBorderColor : navyBlue,
                           size: 26,
                         ),
                       ),

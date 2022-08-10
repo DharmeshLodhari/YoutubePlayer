@@ -3,11 +3,9 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/curved_btn.dart';
-import 'package:Slydo/widget/customized_dropdown_field.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -161,7 +159,7 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
   Widget getReferenceButton() {
     return CurvedButton(
       // onPressed: onSubmit,
-      onPressed: isAccountExist ? onSubmit : null,
+      onPressed: isAccountExist ? onSubmit : () {},
       backgroundColor: navyBlue,
       textColor: Colors.white,
       text: "TOP UP",

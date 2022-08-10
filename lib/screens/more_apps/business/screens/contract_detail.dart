@@ -252,7 +252,7 @@ class _ContractDetailState extends State<ContractDetail> {
 
   Widget getDescriptionWidget() {
     return Text(
-      "${contract.note}",
+      messageDecoderWithEmoji(contract.note)!,
       maxLines: 1,
     );
   }
@@ -377,7 +377,7 @@ class _ContractDetailState extends State<ContractDetail> {
           detailTile(
             SlydoAppIcon.note_filled,
             AppLocalization.of(context)!.note,
-            contract.note ?? '---',
+            messageDecoderWithEmoji(contract.note) ?? '---',
           ),
           detailTile(
             SlydoAppIcon.date,

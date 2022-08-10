@@ -25,9 +25,11 @@ class Product {
   List<dynamic>? pictureMap;
   double? rating;
   bool? canRate;
+  bool? enableInSuperStore;
   Product(
       {this.id,
       this.name,
+      this.enableInSuperStore,
       this.description,
       this.shortDescription,
       this.price,
@@ -59,31 +61,78 @@ class Product {
       "manufacturer": this.manufacturer,
       "is_available": this.isAvailable,
       "available_from": this.availableFrom,
+      "enable_in_superstore": this.enableInSuperStore,
     };
   }
 
-  Product.fromJson(object) {
-    id = object["id"].toString();
-    this.name = object["name"] ?? "";
-    this.description = object["description"] ?? "";
-    this.shortDescription = object["short_description"] ?? "";
-    this.price = object["price"].toString();
-    this.localImages = object["localImages"] ?? [];
-    this.serverImages = getProductImages(object["pictures"]);
-    this.cover = object["cover"] ?? "";
-    this.seller = object["seller"] ?? "";
-    this.sellerAvatar = object["seller_avatar"] ?? "";
-    this.sellerFullName = object["seller_fullname"] ?? "";
-    this.qrCode = object["qr_code"] ?? "";
-    this.condition = object["condition"] ?? "";
-    this.category = object["category"] ?? "";
-    this.manufacturer = object["manufacturer"] ?? "";
-    this.isAvailable = object["is_available"] ?? false;
-    this.availableFrom = getProductDateTime(object["available_from"]);
-    this.currency = object["currency"] ?? "";
-    this.pictureMap = object["pictureMap"] ?? [];
-    rating = formatRating(object['rating'] ?? 0.0);
-    canRate = object["can_rate"] ?? false;
+  factory Product.fromJson(object) {
+    List<String> getProductImages(List? data) {
+      List<String> images = [];
+
+      if (data != null) {
+        for (int i = 0; i < data.length; i++) {
+          if (data[i].containsKey("file")) {
+            images.add(data[i]["file"].toString());
+          }
+        }
+      }
+      return images;
+    }
+
+    DateTime getProductDateTime(var date) {
+      if (date != null) {
+        DateTime dateTime = DateTime.parse(date);
+        return dateTime;
+      }
+      return DateTime.now();
+    }
+
+    return Product(
+      id: object["id"].toString(),
+      name: object["name"] ?? "",
+      description: object["description"] ?? "",
+      shortDescription: object["short_description"] ?? "",
+      price: object["price"].toString(),
+      enableInSuperStore: object["enable_in_superstore"] ?? false,
+      localImages: object["localImages"] ?? [],
+      serverImages: getProductImages(object["pictures"]),
+      cover: object["cover"] ?? "",
+      seller: object["seller"] ?? "",
+      sellerAvatar: object["seller_avatar"] ?? "",
+      sellerFullName: object["seller_fullname"] ?? "",
+      qrCode: object["qr_code"] ?? "",
+      condition: object["condition"] ?? "",
+      category: object["category"] ?? "",
+      manufacturer: object["manufacturer"] ?? "",
+      isAvailable: object["is_available"] ?? false,
+      availableFrom: getProductDateTime(object["available_from"]),
+      currency: object["currency"] ?? "",
+      pictureMap: object["pictureMap"] ?? [],
+      rating: formatRating(object['rating'] ?? 0.0),
+      canRate: object["can_rate"] ?? false,
+    );
+    // id = object["id"].toString();
+    // this.name = object["name"] ?? "";
+    // this.description = object["description"] ?? "";
+    // this.shortDescription = object["short_description"] ?? "";
+    // this.price = object["price"].toString();
+    // this.enableInSuperStore = object["enable_in_superstore"]?? false;
+    // this.localImages = object["localImages"] ?? [];
+    // this.serverImages = getProductImages(object["pictures"]);
+    // this.cover = object["cover"] ?? "";
+    // this.seller = object["seller"] ?? "";
+    // this.sellerAvatar = object["seller_avatar"] ?? "";
+    // this.sellerFullName = object["seller_fullname"] ?? "";
+    // this.qrCode = object["qr_code"] ?? "";
+    // this.condition = object["condition"] ?? "";
+    // this.category = object["category"] ?? "";
+    // this.manufacturer = object["manufacturer"] ?? "";
+    // this.isAvailable = object["is_available"] ?? false;
+    // this.availableFrom = getProductDateTime(object["available_from"]);
+    // this.currency = object["currency"] ?? "";
+    // this.pictureMap = object["pictureMap"] ?? [];
+    // rating = formatRating(object['rating'] ?? 0.0);
+    // canRate = object["can_rate"] ?? false;
   }
 
   String? getMerchantUserName() {

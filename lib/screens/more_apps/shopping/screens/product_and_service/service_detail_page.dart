@@ -115,7 +115,15 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         serviceIsLoading = false;
         if (mounted) setState(() {});
       }
+    }).catchError((e) {
+      if (mounted)
+        setState(() {
+          serviceIsLoading = false;
+        });
+      Navigator.pop(context);
+      showToast(message: e.toString());
     });
+    ;
   }
 
   Future canReviewService() async {
@@ -233,7 +241,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        shareItemBtn(),
+        menuBtn(),
         isValidCustomer
             ? SizedBox(
                 width: 8,
@@ -247,17 +255,40 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     );
   }
 
-  Widget shareItemBtn() {
+  void showUserProfileActionsSheet() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: generateBottomSheetItem(),
+                ),
+              ));
+        });
+  }
+
+  Widget menuBtn() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.share,
+        SlydoAppIcon.menu,
         size: 16,
         color: blackFont,
       ),
       onTap: () {
-        selectShareOptionBottomSheet();
+        showUserProfileActionsSheet();
       },
       backgroundColor: iconBtnGrey,
       enableMargin: true,
@@ -304,11 +335,33 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     list.add(
       bottomSheetItem(
         title: "Share in Chat",
-        isLast: true,
         iconData: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
+        },
+      ),
+    );
+    list.add(
+      bottomSheetItem(
+        title: "Edit",
+        isLast: true,
+        iconData: SlydoAppIcon.edit,
+        onTap: () async {
+          var result = await Navigator.of(context).pushNamed(
+            '/edit-service',
+            arguments: {
+              "serviceId": serviceId,
+            },
+          );
+
+          if (result != null) {
+            if (result is String) {
+              if (result == "delete_item" || result == "update_item") {
+                // _onProductRefresh();
+              }
+            }
+          }
         },
       ),
     );
@@ -1159,6 +1212,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   Widget _buildPayButtonWidget() {
     return Expanded(
       child: CurvedButton(
+        isPaymentBtn: true,
         backgroundColor: service!.isAvailable! ? navyBlue : greyBorderColor,
         textColor: Colors.white,
         text: "PAY NOW",

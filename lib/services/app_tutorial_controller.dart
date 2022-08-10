@@ -11,10 +11,11 @@ GlobalKey tutorialQrCodeKey = GlobalKey();
 GlobalKey tutorialRequestPaymentListKey = GlobalKey();
 GlobalKey tutorialSearchItemsKey = GlobalKey();
 GlobalKey tutorialShoppingCartKey = GlobalKey();
-GlobalKey tutorialProfileKey = GlobalKey();
+GlobalKey tutorialExploreKey = GlobalKey();
 GlobalKey tutorialScanQrCodeKey = GlobalKey();
 GlobalKey tutorialChatMessageKey = GlobalKey();
 GlobalKey tutorialMessageKey = GlobalKey();
+GlobalKey tutorialSuperStoreKey = GlobalKey();
 
 GlobalKey keyButton3 = GlobalKey();
 GlobalKey keyButton4 = GlobalKey();
@@ -332,148 +333,194 @@ class AppTutorialController {
     );
   }
 
-  TargetFocus _getProfileTutorial() {
+  TargetFocus _getExploreTutorial() {
     return TargetFocus(
-        identify: "Target 9",
-        keyTarget: tutorialProfileKey,
-        shape: ShapeLightFocus.RRect,
-        alignSkip: Alignment.bottomLeft,
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.top,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Explore",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to explore more functionalities in the app.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
+      identify: "Target 9",
+      keyTarget: tutorialExploreKey,
+      shape: ShapeLightFocus.RRect,
+      alignSkip: Alignment.bottomLeft,
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Explore",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
                 ),
-              ))
-        ]);
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to explore more functionalities in the app.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   TargetFocus _getScanQrCodeTutorial() {
     return TargetFocus(
-        identify: "Target 10",
-        keyTarget: tutorialScanQrCodeKey,
-        shape: ShapeLightFocus.RRect,
+      identify: "Target 10",
+      keyTarget: tutorialScanQrCodeKey,
+      shape: ShapeLightFocus.RRect,
 
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.left,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "QR Code Scanner",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to scan slydo QR codes.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.left,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "QR Code Scanner",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
                 ),
-              ))
-        ]);
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to scan slydo QR codes.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   TargetFocus _getChatMessagesTutorial() {
     return TargetFocus(
-        identify: "Target 11",
-        keyTarget: tutorialChatMessageKey,
-        shape: ShapeLightFocus.RRect,
+      identify: "Target 11",
+      keyTarget: tutorialChatMessageKey,
+      shape: ShapeLightFocus.RRect,
 
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.left,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Chat",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to chat with friends and family.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Chat",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
                 ),
-              ))
-        ]);
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to chat with friends and family.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   TargetFocus _getMessagesTutorial() {
     return TargetFocus(
-        identify: "Target 12",
-        keyTarget: tutorialMessageKey,
-        shape: ShapeLightFocus.RRect,
+      identify: "Target 12",
+      keyTarget: tutorialMessageKey,
+      shape: ShapeLightFocus.RRect,
 
-        // color: navyBlue,
-        contents: [
-          TargetContent(
-              align: ContentAlign.left,
-              child: Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Inbox",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 20.0),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Text(
-                        "Click here to send and read direct messages.",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    nextButton()
-                  ],
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.left,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Inbox",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
                 ),
-              ))
-        ]);
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to send and read direct messages.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  TargetFocus _getSuperStoreTutorial() {
+    return TargetFocus(
+      identify: "Target 13",
+      keyTarget: tutorialSuperStoreKey,
+      shape: ShapeLightFocus.RRect,
+
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Product",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to explore multiple products",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   void _fillTargets() {
@@ -481,12 +528,13 @@ class AppTutorialController {
     _targets.add(_getSendPaymentTutorial());
     _targets.add(_getRequestPaymentTutorial());
     _targets.add(_getQrCodeTutorial());
+    _targets.add(_getScanQrCodeTutorial());
     // _targets.add(_getPaymentRequestListTutorial());
     _targets.add(_getSearchItemTutorial());
     _targets.add(_getShoppingCartTutorial());
-    _targets.add(_getProfileTutorial());
-    _targets.add(_getScanQrCodeTutorial());
-    _targets.add(_getChatMessagesTutorial());
     _targets.add(_getMessagesTutorial());
+    _targets.add(_getExploreTutorial());
+    _targets.add(_getChatMessagesTutorial());
+    _targets.add(_getSuperStoreTutorial());
   }
 }

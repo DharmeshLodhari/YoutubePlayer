@@ -8,12 +8,13 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserPostList extends StatefulWidget {
   CustomerProfile? user;
-  UserPostList({@required this.user, Key? key}) : super(key: key);
+  final String? titleToSearch;
+  UserPostList({@required this.user, this.titleToSearch, Key? key})
+      : super(key: key);
   @override
   _UserPostListState createState() => _UserPostListState();
 }
@@ -34,6 +35,7 @@ class _UserPostListState extends State<UserPostList> {
 
   @override
   void initState() {
+    debugPrint('CUSTOMER PROFILE ---> ${widget.user!.toJson()}');
     this.getPostList();
     _postScrollController.addListener(() {
       if (_postScrollController.position.pixels ==
@@ -172,6 +174,7 @@ class _UserPostListState extends State<UserPostList> {
                   padding: const EdgeInsets.only(bottom: 16),
                   child: PostTile(
                     post: postList[index],
+                    showAuthorDetails: false,
                     onDeleteBlog: () {
                       debugPrint('DELETED FROM DETAILS PAGE');
                       _onPostRefresh();

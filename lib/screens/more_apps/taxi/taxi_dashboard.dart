@@ -82,7 +82,7 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
               ? Center(
                   child: CircularLoadingIndicator(),
                 )
-              : ScaffoldBody(userCurrentLocation: userCurrentLocation),
+              : _ScaffoldBody(userCurrentLocation: userCurrentLocation),
         ),
       ),
     );
@@ -120,15 +120,15 @@ class _TaxiDashboardState extends State<TaxiDashboard> {
   }
 }
 
-class ScaffoldBody extends StatefulWidget {
-  ScaffoldBody({this.userCurrentLocation});
+class _ScaffoldBody extends StatefulWidget {
+  _ScaffoldBody({this.userCurrentLocation});
   final LatLng? userCurrentLocation;
 
   @override
-  _ScaffoldBodyState createState() => _ScaffoldBodyState();
+  __ScaffoldBodyState createState() => __ScaffoldBodyState();
 }
 
-class _ScaffoldBodyState extends State<ScaffoldBody> {
+class __ScaffoldBodyState extends State<_ScaffoldBody> {
   double _initialSheetChildSize = 0.3;
   double _initialSheetChildSizeAfterDestination = 0.25;
   double _dragScrollSheetExtent = 0;

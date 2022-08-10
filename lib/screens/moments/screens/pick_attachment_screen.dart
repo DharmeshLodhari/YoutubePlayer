@@ -173,7 +173,7 @@ class _PickAttachmentScreenState extends State<PickAttachmentScreen> {
         },
       ),
       title: Text(
-        'Pick a ${widget.attachmentType.name}',
+        'Select a ${widget.attachmentType.name}',
         style: TextStyle(
           color: blackFont,
           fontSize: 18,

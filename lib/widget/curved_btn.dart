@@ -3,24 +3,29 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../locator.dart';
+import '../services/app_config_bloc.dart';
+
 // ignore: must_be_immutable
 class CurvedButton extends StatelessWidget {
   double? width;
   String? text;
   Color? backgroundColor;
   Color? textColor;
-  Function? onPressed;
+  Function onPressed;
   double height;
   double borderRadius;
   bool isLoading;
+  bool isPaymentBtn;
 
   CurvedButton(
       {this.text,
       this.width,
       this.textColor,
       this.backgroundColor,
-      this.onPressed,
+      required this.onPressed,
       this.height = 42,
+      this.isPaymentBtn = false,
       this.borderRadius = 7,
       this.isLoading = false});
 
@@ -36,7 +41,7 @@ class CurvedButton extends StatelessWidget {
       text = "Button";
     }
     return Container(
-      width: width ?? 100.0.w,
+      width: width ?? 100.w,
       height: height,
       child: MaterialButton(
         elevation: 0,
@@ -60,10 +65,27 @@ class CurvedButton extends StatelessWidget {
                     fontWeight: FontWeight.w600),
               ),
         color: backgroundColor,
-        onPressed: onPressed as void Function()?,
+        onPressed: () {
+          onBtnPressed();
+        },
         disabledColor: darkGrey.withOpacity(0.5),
       ),
     );
+  }
+
+  onBtnPressed() {
+    if (isPaymentBtn) {
+      if (getIt<AppConfigurationBloc>().appConfigurationModel?.enablePayment ==
+          false) {
+        showToast(message: 'Payment Coming soon');
+        return;
+      } else {
+        onPressed();
+        return;
+      }
+    } else {
+      onPressed();
+    }
   }
 }
 

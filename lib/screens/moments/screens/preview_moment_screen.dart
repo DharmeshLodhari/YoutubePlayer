@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../locale/app_localization.dart';
@@ -56,6 +57,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   VideoPlayerController? videoPlayerController;
   final TextEditingController payMeCtrl = TextEditingController(text: 'Pay me');
   final TextEditingController urlTextCtrl = TextEditingController();
+  final TextEditingController titleOfLinkCtrl = TextEditingController();
   final TextEditingController pickedAttachmentTFCtrl = TextEditingController();
 
   String momentTitle = '';
@@ -108,7 +110,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
           mediaRenderer(fileType: fileExtension),
           DraggableScrollableSheet(
               minChildSize: 0.2,
-              maxChildSize: 0.6,
+              maxChildSize: 1,
               initialChildSize: 0.2,
               builder: (context, scrollController) {
                 return SingleChildScrollView(
@@ -123,6 +125,18 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              width: 80,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: greyBorderColor,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10),
                           TextFormField(
                             maxLength: 255,
                             maxLines: 5,
@@ -247,7 +261,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                               },
                             ),
                           ),
-                          SizedBox(height: 15),
+                          SizedBox(height: 20),
                           dropDownPickItemWidget(
                             label: 'Pick attachment',
                             selectedItem: pickedAttachmentType,
@@ -260,21 +274,20 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                               controller: pickedAttachmentTFCtrl,
                             ),
                           ),
-                          // attachmentItemLoading
-                          //     ? Center(child: CircularLoadingIndicator())
-                          //     : Visibility(
-                          //         visible: attachmentItemList.isNotEmpty,
-                          //         child: dropDownPickItemWidget(
-                          //           label: 'Attachment Item',
-                          //           selectedItem: attachmentItemName,
-                          //           onTap: () => pickAttachmentItemWidget(),
-                          //         ),
-                          //       ),
                           Visibility(
                             visible: showUrlTextField,
-                            child: CustomizedTextFormField(
-                              hintText: 'Enter Url',
-                              controller: urlTextCtrl,
+                            child: Column(
+                              children: [
+                                CustomizedTextFormField(
+                                  hintText: 'Enter Url',
+                                  controller: urlTextCtrl,
+                                ),
+                                CustomizedTextFormField(
+                                  hintText: 'Enter a title for your url',
+                                  controller: titleOfLinkCtrl,
+                                  maxLength: 15,
+                                ),
+                              ],
                             ),
                           ),
                           Focus(
@@ -385,14 +398,17 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                           SizedBox(height: 80),
                           CurvedButton(
                             text: 'Submit',
-                            onPressed: () {
+                            onPressed: () async {
                               if (enablePayMe && payMeCtrl.text.isEmpty) {
                                 showToast(
                                     message: 'Payment label cannot be empty');
                                 return;
                               }
+
                               if (pickedAttachmentType == 'Url' &&
-                                  urlTextCtrl.text.isEmpty) {
+                                  (urlTextCtrl.text.isEmpty ||
+                                      (!await canLaunchUrl(
+                                          Uri.parse(urlTextCtrl.text))))) {
                                 showToast(message: 'Please enter a valid url');
                                 return;
                               }
@@ -896,6 +912,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (dialogLoadingContext) => LoadingIndicator());
 
     MomentsService()
@@ -936,7 +953,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   Map<String, String>? getAttachmentMap() {
     if (pickedAttachmentType == 'Url' && urlTextCtrl.text.isNotEmpty) {
-      return {'url': urlTextCtrl.text};
+      return titleOfLinkCtrl.text.isNotEmpty
+          ? {'url': '${urlTextCtrl.text}-${titleOfLinkCtrl.text}'}
+          : {'url': '${urlTextCtrl.text}-Link'};
     }
     if (pickedAttachmentType == 'Product' &&
         pickedAttachmentTFCtrl.text.isNotEmpty) {
@@ -1154,33 +1173,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     }
   }
 
-  // getUserBlogPost() async {
-  //   UserBloc userBloc = Provider.of<UserBloc>(context);
-  //
-  //   if (mounted) {
-  //     setState(() {
-  //       attachmentLoading = true;
-  //     });
-  //   }
-  //   Map<String, dynamic>? result =
-  //   await UserPostAuth().listUserPosts(userName: userBloc.user.userName);
-  //   if (mounted) {
-  //     setState(() {
-  //       attachmentLoading = true;
-  //     });
-  //   }
-  //   if (result != null) {
-  //     List resultList = result['results'] as List;
-  //     itemAttachmentList =
-  //         resultList.map((e) => AttachmentItemModel.fromJson(e)).toList();
-  //   } else {
-  //     if (mounted) {
-  //       setState(() {
-  //         attachmentItemLoading = false;
-  //       });
-  //     }
-  //   }
-  // }
+
 
 }
 

@@ -2,9 +2,6 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../services/app_config_bloc.dart';
 
 class WalletOptionsSelection extends StatefulWidget {
   @override
@@ -16,11 +13,9 @@ class _WalletOptionsSelectionState extends State<WalletOptionsSelection> {
       new GlobalKey<ScaffoldState>();
 
   late AppLocalization appLocalization;
-  late AppConfigurationBloc appConfiguration;
 
   Widget build(BuildContext context) {
     appLocalization = AppLocalization.of(context)!;
-    appConfiguration = Provider.of<AppConfigurationBloc>(context);
 
     return Scaffold(
       key: _scaffoldTopUpOptionSelectionKey,

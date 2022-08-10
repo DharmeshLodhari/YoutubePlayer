@@ -11,7 +11,7 @@ class Routes {
   static const String NEW_REGISTRATION = "/new-registration";
   static const String VERIFY_RESET_DEVICE_OTP = "/verify-reset-device-otp";
   static const String VERIFY_RESET_PASSWORD_OTP = "/verify-reset-password-otp";
-  static const String REGISTER = "/register";
+  static const String SIGN_UP = "/register";
   static const String ADD_DOCUMENT = "/add-document";
   static const String HOME = "/home";
   static const String ACCOUNTS = "/accounts";
@@ -141,7 +141,7 @@ class Routes {
   static const String SEARCH_TRAIN = "/search-train";
   static const String FLIGHT = "/flight";
   static const String SEARCH_FLIGHT = "/search-flight";
-  static const String SHOPPING = "/shopping";
+  static const String SUPER_STORE = "/shopping";
   static const String SHOPPING_CATEGORY = "/shopping-category";
   static const String SEARCH_PRODUCT = "/search-product";
   static const String REVIEWS = "/reviews";
@@ -155,7 +155,5 @@ class Routes {
   static const String EDIT_REVIEW = "/edit-review";
   static const String WALLET_OPTIONS_SELECTION = "/wallet-options-selection";
   static const String WEB_VIEW = "/web-view";
-
-
-  static const String ASK_SCREEN = "/ask-screen";
+  static const String SUPER_BLOG = "/super-blog";
 }

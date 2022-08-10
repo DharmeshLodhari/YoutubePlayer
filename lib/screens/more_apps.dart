@@ -25,15 +25,6 @@ class _MoreAppsState extends State<MoreApps> {
   void initializeDashBoardItem() {
     dashboardItems.addAll([
       UserDashboardItemTile(
-        icon: SlydoAppIcon.utility,
-        title: "Utility",
-        onTap: () {
-          Navigator.pushNamed(context, Routes.UTILITY_DASHBOARD);
-        },
-        iconColor: HexColor("#FFAB00"),
-        height: GRID_ITEM_HEIGHT,
-      ),
-      UserDashboardItemTile(
         icon: SlydoAppIcon.movies_moreapps,
         title: "Movies",
         onTap: () {
@@ -125,7 +116,7 @@ class _MoreAppsState extends State<MoreApps> {
         icon: SlydoAppIcon.shopping_category,
         title: "Shopping",
         onTap: () {
-          Navigator.of(context).pushNamed(Routes.SHOPPING);
+          Navigator.of(context).pushNamed(Routes.SUPER_STORE);
         },
         iconColor: HexColor("#5218E9"),
         height: GRID_ITEM_HEIGHT,

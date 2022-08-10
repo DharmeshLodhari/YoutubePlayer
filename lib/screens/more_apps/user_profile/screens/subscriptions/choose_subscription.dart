@@ -3,18 +3,16 @@ import 'dart:async';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/subscription_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/subscription_model.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../constant.dart';
 import '../../../../../data/currency.dart';
 import '../../../../../data/state_notifier.dart';
 import '../../../../../locale/app_localization.dart';
-import '../../../../../main.dart';
+import '../../../../../locator.dart';
 import '../../../../../services/app_config_bloc.dart';
 import '../../../../../services/auth.dart';
 import '../../../../../widget/LoadingIndicator.dart';
@@ -50,15 +48,9 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
 
   @override
   void initState() {
-    getAppConfigurationModelFromLocalStorage();
-    super.initState();
-  }
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-  getAppConfigurationModelFromLocalStorage() async {
-    var str = await getStorage.read(appFeaturesKey);
-    if(str != null){
-      appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    }
+    super.initState();
   }
 
   _onChanged(String value) {
@@ -158,7 +150,8 @@ class _ChooseSubscriptionState extends State<ChooseSubscription> {
                                   id: _id,
                                   isVisible: true,
                                   freeSubscription:
-                                      appConfigurationModel!.freeSubscription,
+                                      appConfigurationModel?.freeSubscription ??
+                                          false,
                                   currency: subscriptionsModel.currency,
                                   subscriptionId: subscriptionsModel.id,
                                   amount: subscriptionsModel.price.toString(),

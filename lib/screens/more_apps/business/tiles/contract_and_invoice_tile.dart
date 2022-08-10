@@ -3,16 +3,12 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/business/models/Contract.dart';
 import 'package:Slydo/screens/more_apps/business/models/Invoice.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../bloc/invoice_bloc.dart';
-import '../business_auth.dart';
 
 // ignore: must_be_immutable
 class ContractTile extends StatefulWidget {
@@ -209,7 +205,9 @@ class _ContractTileState extends State<ContractTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          widget.contract.note == null ? '---' : widget.contract.note!,
+          widget.contract.note == null
+              ? '---'
+              : messageDecoderWithEmoji(widget.contract.note!)!,
           style: TextStyle(color: darkGrey, fontSize: 12),
           maxLines: 1,
         ),

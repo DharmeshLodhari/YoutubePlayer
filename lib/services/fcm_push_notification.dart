@@ -125,6 +125,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
             .handleAcknowledgementMessage(messageData: messageData);
       }
     }
+
     // Here is the push notification.
     else {
       data['notification'] = notification;

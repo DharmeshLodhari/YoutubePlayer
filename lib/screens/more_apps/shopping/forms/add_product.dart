@@ -16,6 +16,7 @@ import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
 import '../shopping_auth.dart';
 
 class AddProduct extends StatefulWidget {
@@ -44,6 +45,7 @@ class _AddProductState extends State<AddProduct> {
   String productPrice = "";
   String productManufacturer = "";
   bool productIsAvailable = false;
+  bool productEnableInSuperStore = false;
   DateTime productAvailableFrom = DateTime.now();
   List<ProductCategory>? productCategories;
   List<ProductCategory>?
@@ -135,9 +137,8 @@ class _AddProductState extends State<AddProduct> {
                     children: <Widget>[
                       SizedBox(height: 10),
                       addImages(),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
+
                       addTitleField(),
                       SizedBox(
                         height: 10,
@@ -152,14 +153,16 @@ class _AddProductState extends State<AddProduct> {
                       SizedBox(height: 10),
                       getProductConditionField(),
                       SizedBox(height: 16),
-                      getIsAvailableField(),
-                      SizedBox(height: 16),
                       getAvailableFromField(),
                       SizedBox(height: 10),
                       getProductShortDescription(),
                       SizedBox(height: 10),
                       getProductDescription(),
                       SizedBox(height: 40),
+                      getIsAvailableField(),
+                      SizedBox(height: 16),
+                      getEnableInSuperStoreField(),
+                      SizedBox(height: 16),
                       getSubmitButton(),
                       SizedBox(height: 40),
                     ],
@@ -785,6 +788,7 @@ class _AddProductState extends State<AddProduct> {
           product.isAvailable = productIsAvailable;
           product.manufacturer = productManufacturer;
           product.availableFrom = productAvailableFrom;
+          product.enableInSuperStore = productEnableInSuperStore;
 
           await _auth.addProduct(product).then((value) {
             Navigator.pop(context);
@@ -819,7 +823,19 @@ class _AddProductState extends State<AddProduct> {
         setState(() {});
       },
       isChecked: productIsAvailable,
-      title: "Available",
+      title: "Is product available now?",
+    );
+  }
+
+  Widget getEnableInSuperStoreField() {
+    return CustomizedCheckBoxField(
+      onTap: () {
+        productEnableInSuperStore = !productEnableInSuperStore;
+        setState(() {});
+      },
+      isChecked: productEnableInSuperStore,
+      title: AppLocalization.of(context)!.enableInSuperStore,
+
     );
   }
 

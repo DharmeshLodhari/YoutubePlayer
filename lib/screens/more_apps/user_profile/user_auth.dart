@@ -103,6 +103,8 @@ class UserAuth extends AuthService {
             "Please upload smaller image, This image is too large.");
       }
       var responseBody = await response.stream.bytesToString();
+      debugPrint('UPDATE PICS ---> ${responseBody}');
+
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(responseBody);
 
@@ -112,6 +114,11 @@ class UserAuth extends AuthService {
           avatar: jsonData["avatar"],
           qrCode: jsonData["qr_code"],
         );
+        debugPrint('UPDATE PICS 1 ---> ${jsonData["full_name"]}');
+        debugPrint('UPDATE PICS 2  ---> ${jsonData["username"]}');
+        debugPrint('UPDATE PICS 3 ---> ${jsonData["avatar"]}');
+        debugPrint('UPDATE PICS 4 ---> ${jsonData["qr_code"]}');
+
         return customerProfile;
       } else {
         return Future.error(
@@ -220,6 +227,8 @@ class UserAuth extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPost(url,
         body: _data, headers: headers as Map<String, dynamic>?);
+
+    debugPrint('REGISTER PHONE NUMBER RESPONSE ::: ${response.body}');
 
     if (response.statusCode == 200) {
       return true;

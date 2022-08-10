@@ -1,14 +1,19 @@
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/movies/custom_slider_thumb_circle_for_range_slider.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/ShoppingProduct.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
+import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../../utils/util.dart';
+import '../../../../../widget/customized_dropdown_field.dart';
+import '../../../../../widget/rounded_background_icon.dart';
+import '../../../user_profile/models/search_user_item_with_filter.dart';
+import '../../models/store.dart';
 
 class SearchProduct extends StatefulWidget {
   @override
@@ -16,23 +21,23 @@ class SearchProduct extends StatefulWidget {
 }
 
 class _SearchProductState extends State<SearchProduct> {
-  List<String> movieCategoryList = ["Comedy", "Fantasy", "Sci-fi", "Action"];
-  List<String> movieYearList = [
-    "2001",
-    "2002",
-    "2003",
-    "2004",
-    "2005",
-    "2006",
-    "2007"
+  List<String> stateList = [
+    "Lagos",
+    "Ogun",
+  ];
+  List<String> stateListCopy = [
+    "Lagos",
+    "Ogun",
   ];
 
-  String? selectedMovieCategory;
-  String? selectedMovieYear;
-  int? selectedRating;
-  RangeValues selectedPriceValue = RangeValues(5, 56);
+  String? selectedRating;
 
-  List<ShoppingProduct> products = [];
+  List<String> sortByMenuItems = [
+    'Best match',
+    'Highest price',
+    'Lowest price'
+  ];
+  List<Product> products = [];
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
 
@@ -46,11 +51,21 @@ class _SearchProductState extends State<SearchProduct> {
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
+  ProductCategory? pressedCategory;
+  ProductCategory? selectedProductCategory;
+  List<ProductCategory>? productCategories;
+  List<ProductCategory>? productCategoriesCopy;
+  String productCategory = "";
+  int? minAmount;
+  int? maxAmount;
+  String? sortBy;
+  String? sortByMenuItemValue = 'Best match';
 
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
+    getCategories();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
@@ -62,14 +77,9 @@ class _SearchProductState extends State<SearchProduct> {
     });
 
     searchController.addListener(() {
-      if (searchController.text.length >= 5) {
+      if (searchController.text.length >= 3) {
         setState(() {
-          count = 0;
-          next = "";
-          previous = "";
-          products.clear();
-          noItemInList = false;
-          getList();
+          _refreshList();
         });
       }
       if (products.isNotEmpty || searchController.text.length != 0) {
@@ -89,6 +99,15 @@ class _SearchProductState extends State<SearchProduct> {
     super.initState();
   }
 
+  _refreshList() {
+    count = 0;
+    next = "";
+    previous = "";
+    products.clear();
+    noItemInList = false;
+    getList();
+  }
+
   void getList() async {
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -96,8 +115,30 @@ class _SearchProductState extends State<SearchProduct> {
           isLoading = true;
           setState(() {});
         }
-        Map<String, dynamic>? result = await ShoppingAuthService()
-            .searchShoppingProducts(searchController.text, next, previous);
+
+        Map<String, dynamic>? result =
+            await ShoppingAuthService().searchUsersProductsInSuperStore(
+          next,
+          previous,
+          filterOptions: SearchItemWithFilterModelForSuperStore(
+            sortBy: sortBy,
+            searchedText: searchController.text,
+            minPrice: minAmount,
+            maxPrice: maxAmount,
+            rating: selectedRating != null
+                ? (int.parse(selectedRating!) + 1).toString()
+                : null,
+            categories: pickedCategoryList,
+          ),
+        );
+
+        // Map<String, dynamic>? result =
+        //     await ShoppingAuthService().searchShoppingProductsInSuperStore(
+        //   searchController.text,
+        //   next,
+        //   previous,
+        // );
+
         if (result == null) {
           isLoading = false;
           return;
@@ -106,15 +147,18 @@ class _SearchProductState extends State<SearchProduct> {
         next = result['next'];
         previous = result['previous'];
         List? tempList = result['results'];
+        debugPrint('TEMP LIST --> $tempList');
         if (mounted) {
           isLoading = false;
           try {
             tempList!.forEach((result) {
-              products.add(ShoppingProduct.fromJson(result));
+              products.add(result);
             });
-          } catch (e) {}
+          } catch (e) {
+            debugPrint("error adding products $e");
+          }
           setState(() {});
-          debugPrint("$products");
+          debugPrint("ALL $products");
         }
       }
       if (products.isEmpty) {
@@ -123,13 +167,40 @@ class _SearchProductState extends State<SearchProduct> {
           setState(() {});
         }
       } else if (next == null && products.length > 6) {
-        _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
+        _scaffoldSearchKey.currentState!.showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+            duration: Duration(milliseconds: 500),
+          ),
+        );
       }
     }
+  }
+
+  List<String> pickedStateList = [];
+  List<String> pickedCategoryList = [];
+  Map<String, bool> categoryCheckMark = {};
+  Map<String, bool> stateCheckMark = {"Lagos": false, "Ogun": false};
+
+  void getCategories() async {
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    try {
+      productCategories = await ShoppingAuthService().getProductCategories();
+      productCategoriesCopy = productCategories;
+
+      productCategoriesCopy!.forEach((element) {
+        categoryCheckMark[element.name] = false;
+      });
+    } catch (e) {
+      productCategories = [];
+      productCategoriesCopy = [];
+    }
+
+    isLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -142,6 +213,7 @@ class _SearchProductState extends State<SearchProduct> {
     );
   }
 
+  bool showSortByBox = false;
   Widget appBar() {
     return AppBar(
       elevation: 0,
@@ -164,28 +236,26 @@ class _SearchProductState extends State<SearchProduct> {
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
       ),
       actions: <Widget>[
-        filterMovieBtn(),
-        SizedBox(
-          width: 16,
-        ),
+        products.isNotEmpty
+            ? RoundedBackgroundIcon(
+                height: 34,
+                width: 34,
+                icon: Icon(
+                  SlydoAppIcon.filter,
+                  size: 16,
+                  color: blackFont,
+                ),
+                onTap: () {
+                  setState(() {
+                    showSortByBox = !showSortByBox;
+                  });
+                },
+                backgroundColor: iconBtnGrey,
+                enableMargin: true,
+              )
+            : SizedBox.shrink(),
+        SizedBox(width: 16),
       ],
-    );
-  }
-
-  Widget filterMovieBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        SlydoAppIcon.filter,
-        size: 16,
-        color: blackFont,
-      ),
-      onTap: () {
-        showFilterMovieSheet();
-      },
-      backgroundColor: iconBtnGrey,
-      enableMargin: true,
     );
   }
 
@@ -193,13 +263,11 @@ class _SearchProductState extends State<SearchProduct> {
     return Container(
       child: Column(
         children: [
-          SizedBox(
-            height: 6,
-          ),
+          showSortByBox ? sortByDropDown() : SizedBox.shrink(),
+          SizedBox(height: 6),
           searchBox(),
-          SizedBox(
-            height: 12,
-          ),
+          SizedBox(height: 12),
+          isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
           isSearchIsEmpty
               ? Expanded(
                   child: NoItemInList(
@@ -215,22 +283,68 @@ class _SearchProductState extends State<SearchProduct> {
                       ),
                     )
                   : Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
+                      child: ListView(
                           children: products
                               .map(
                                 (product) => Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 16),
-                                    child: ShoppingTileWithHeart(
-                                      product: product,
-                                    )),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
+                                  child: ShoppingTileWithHeartWithProduct(
+                                    product: product,
+                                  ),
+                                ),
                               )
-                              .toList(),
-                        ),
-                      ),
+                              .toList()),
                     ),
         ],
+      ),
+    );
+  }
+
+  Widget sortByDropDown() {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: dividerColor),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: DropdownButton2(
+            isExpanded: true,
+            underline: SizedBox.shrink(),
+            dropdownDecoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            value: sortByMenuItemValue,
+            items: sortByMenuItems.map((String item) {
+              return DropdownMenuItem(
+                value: item,
+                child: Text(item),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              if (newValue == 'Best match') {
+                sortBy = null;
+                setState(() {
+                  sortByMenuItemValue = newValue;
+                });
+                _refreshList();
+                return;
+              }
+              String firstWord = newValue!.split(' ')[0];
+              String secondWord = newValue.split(' ')[1];
+              sortBy = "$firstWord-$secondWord".toLowerCase();
+
+              setState(() {
+                sortByMenuItemValue = newValue;
+              });
+              _refreshList();
+            },
+          ),
+        ),
       ),
     );
   }
@@ -274,13 +388,15 @@ class _SearchProductState extends State<SearchProduct> {
             ),
             suffixIcon: IconButton(
               icon: Icon(
-                SlydoAppIcon.search,
-                color: darkGrey,
-                size: 14,
+                Icons.filter_alt_rounded,
+                color: navyBlue,
+                size: 20,
               ),
-              onPressed: () {},
+              onPressed: () {
+                showFilterProductSheet();
+              },
             ),
-            hintText: "Search",
+            hintText: "Search name, manufacturer, categories",
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
@@ -321,306 +437,352 @@ class _SearchProductState extends State<SearchProduct> {
     );
   }
 
-  void showFilterMovieSheet() {
+  void showFilterProductSheet() {
     showModalBottomSheet<void>(
-        backgroundColor: Colors.transparent,
         isScrollControlled: true,
+        backgroundColor: Colors.transparent,
         context: context,
+        enableDrag: true,
         builder: (BuildContext context) {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
                     ),
-                    color: Colors.white,
-                    margin: EdgeInsets.zero,
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            "Filter",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: blackFont),
-                          ),
-                          SizedBox(
-                            height: 40,
-                          ),
-                          getMovieCategoryDropDown(bottomSheetSetState),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          getMovieYearDropDown(bottomSheetSetState),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          getMovieRatingSelection(bottomSheetSetState),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          getPriceSelection(bottomSheetSetState),
-                          SizedBox(
-                            height: 50,
-                          ),
-                          getFilerSubmitButton(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                        ],
-                      ),
-                    )),
+                    SizedBox(height: 40),
+                    getCategoryField(bottomSheetSetState),
+                    SizedBox(height: 8),
+                    getPikedCategoryNames(),
+                    SizedBox(height: 20),
+                    getProductRatingSelection(bottomSheetSetState),
+                    SizedBox(height: 24),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: getPriceRange(bottomSheetSetState),
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(height: 50),
+                    Row(
+                      children: [
+                        Expanded(child: getClearAllBtn()),
+                        SizedBox(width: 20),
+                        Expanded(child: getFilterSubmitBtn()),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
           );
         });
   }
 
-  Widget getMovieCategoryDropDown(StateSetter bottomSheetSetState) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          AppLocalization.of(context)!.category,
-          style: TextStyle(color: blackFont, fontSize: 14),
+  Widget getCategoryField(StateSetter bottomSheetSetState) {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.category,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        SizedBox(
-          height: 6,
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
         ),
-        Card(
-          elevation: 0,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
-          borderOnForeground: true,
-          child: ListTile(
-            dense: true,
-            title: Text(
-              selectedMovieCategory != null ? selectedMovieCategory! : "",
-              softWrap: false,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            trailing: Icon(
-              Icons.keyboard_arrow_down,
-              color: darkGrey,
-            ),
-            onTap: () {
-              selectCategory(bottomSheetSetState);
-            },
-          ),
-        ),
-      ],
+        onTap: () {
+          categoryAndroidSheet(bottomSheetSetState);
+        },
+      ),
     );
   }
 
-  void selectCategory(StateSetter bottomSheetSetState) async {
-    final pressedCategory = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: movieCategoryList.map<Widget>((category) {
-                          if (selectedMovieCategory == category) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  category,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, category);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              category,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, category);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
+  Widget getPikedCategoryNames() {
+    return SizedBox(
+      height: pickedCategoryList.isEmpty ? 0 : 60,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: pickedCategoryList
+            .map(
+              (e) => Container(
+                margin: EdgeInsets.all(6),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: greyBorderColor,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  e,
+                  style: TextStyle(color: blackFont),
                 ),
               ),
-            ));
-    if (pressedCategory != null) {
-      selectedMovieCategory = pressedCategory;
-      bottomSheetSetState(() {});
-    }
-  }
-
-  Widget getMovieYearDropDown(StateSetter bottomSheetSetState) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          "Year",
-          style: TextStyle(color: blackFont, fontSize: 14),
-        ),
-        SizedBox(
-          height: 6,
-        ),
-        Card(
-          elevation: 0,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: greyBorderColor)),
-          margin: EdgeInsets.all(0),
-          borderOnForeground: true,
-          child: ListTile(
-            dense: true,
-            title: Text(
-              selectedMovieYear != null ? selectedMovieYear! : "",
-              softWrap: false,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            trailing: Icon(
-              Icons.keyboard_arrow_down,
-              color: darkGrey,
-            ),
-            onTap: () {
-              selectYear(bottomSheetSetState);
-            },
-          ),
-        ),
-      ],
+            )
+            .toList(),
+      ),
     );
   }
 
-  void selectYear(StateSetter bottomSheetSetState) async {
-    final pressedMovieYear = await showDialog<String>(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) => AlertDialog(
-              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              contentPadding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              content: Container(
-                width: MediaQuery.of(context).size.width - 40,
-                child: Card(
-                  elevation: 2,
-                  shadowColor: Colors.transparent,
-                  margin: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: movieYearList.map<Widget>((year) {
-                          if (selectedMovieYear == year) {
-                            return Container(
-                              color: selectedListItemBackgroundBlue,
-                              child: ListTile(
-                                dense: true,
-                                title: Text(
-                                  year,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                      color: navyBlue,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Icon(
-                                  SlydoAppIcon.checked,
-                                  color: navyBlue,
-                                  size: 12,
-                                ),
-                                onTap: () {
-                                  Navigator.pop(context, year);
-                                },
-                              ),
-                            );
-                          }
-                          return ListTile(
-                            title: Text(
-                              year,
-                              softWrap: false,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                  color: blackFont,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            dense: true,
-                            onTap: () {
-                              Navigator.pop(context, year);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
+  void categoryAndroidSheet(StateSetter bottomSheetSetState) {
+    productCategories = productCategoriesCopy;
+    androidBottomSheet(
+      context: context,
+      enableDrag: false,
+      isDismissible: false,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      productCategories = productCategoriesCopy!
+                          .where((element) => element.name
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      productCategories = productCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                InkWell(
+                  onTap: () {},
+                  child: Text(
+                    '',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: Colors.red),
                   ),
                 ),
-              ),
-            ));
-    if (pressedMovieYear != null) {
-      selectedMovieYear = pressedMovieYear;
-      bottomSheetSetState(() {});
-    }
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: productCategories!.length,
+                    itemBuilder: (context, index) {
+                      ProductCategory category = productCategories![index];
+                      return CheckboxListTile(
+                        value: categoryCheckMark[category.name] ?? false,
+                        onChanged: (isChecked) {
+                          changeState(() {
+                            categoryCheckMark[category.name] = isChecked!;
+                          });
+                          if (pickedCategoryList.contains(category.name)) {
+                            pickedCategoryList.remove(category.name);
+                          } else {
+                            pickedCategoryList.add(category.name);
+                          }
+                        },
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      );
+
+                      if (selectedProductCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedCategory = category;
+                              Navigator.pop(context);
+                              if (pressedCategory != null) {
+                                selectedProductCategory = pressedCategory;
+                                productCategory = selectedProductCategory!.name;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+
+                      return ListTile(
+                        title: Text(
+                          category.name,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedCategory = category;
+                          Navigator.pop(context);
+                          if (pressedCategory != null) {
+                            selectedProductCategory = pressedCategory;
+                            productCategory = selectedProductCategory!.name;
+                            // setState(() {});
+                            bottomSheetSetState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+                CurvedButton(
+                  text: 'Pick',
+                  onPressed: () {
+                    Navigator.pop(context);
+                    bottomSheetSetState(() {});
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  Widget getMovieRatingSelection(StateSetter bottomSheetSetState) {
+  Widget getStateDropDownField(StateSetter bottomSheetSetState) {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.state,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          stateBottomSheet(bottomSheetSetState);
+        },
+      ),
+    );
+  }
+
+  void stateBottomSheet(StateSetter bottomSheetSetState) {
+    stateList = stateListCopy;
+    androidBottomSheet(
+      context: context,
+      enableDrag: false,
+      isDismissible: false,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search state',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      stateList = ['Ogun'];
+                      changeState(() {});
+                    } else {
+                      stateList = stateListCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                InkWell(
+                  onTap: () {},
+                  child: Text(
+                    '',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: stateList.length,
+                    itemBuilder: (context, index) {
+                      return CheckboxListTile(
+                        value: stateCheckMark[stateList[index]],
+                        onChanged: (isChecked) {
+                          changeState(() {
+                            stateCheckMark[stateList[index]] = isChecked!;
+                          });
+                          if (pickedStateList.contains(stateList[index])) {
+                            pickedStateList.remove(stateList[index]);
+                          } else {
+                            pickedStateList.add(stateList[index]);
+                          }
+                        },
+                        title: Text(
+                          stateList[index],
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                CurvedButton(
+                  text: 'Pick',
+                  onPressed: () {
+                    debugPrint('PICKED CAT ---> $pickedStateList');
+                    Navigator.pop(context);
+                    bottomSheetSetState(() {});
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget getProductRatingSelection(StateSetter bottomSheetSetState) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -629,19 +791,17 @@ class _SearchProductState extends State<SearchProduct> {
           style: TextStyle(
               color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        SizedBox(
-          height: 16,
-        ),
+        SizedBox(height: 16),
         Row(
           children: List.generate(5, (index) {
             if (selectedRating != null) {
               return Expanded(
                 child: Row(
                   children: [
-                    movieRatingButton(
+                    productRatingButton(
                       bottomSheetSetState,
-                      isSelected: selectedRating == index,
                       index: index,
+                      isSelected: int.parse(selectedRating!) == index,
                     ),
                   ],
                 ),
@@ -650,7 +810,7 @@ class _SearchProductState extends State<SearchProduct> {
             return Expanded(
               child: Row(
                 children: [
-                  movieRatingButton(
+                  productRatingButton(
                     bottomSheetSetState,
                     index: index,
                   ),
@@ -663,7 +823,7 @@ class _SearchProductState extends State<SearchProduct> {
     );
   }
 
-  Widget movieRatingButton(StateSetter bottomSheetSetState,
+  Widget productRatingButton(StateSetter bottomSheetSetState,
       {bool isSelected = false, required int index}) {
     return GestureDetector(
       child: Container(
@@ -682,9 +842,7 @@ class _SearchProductState extends State<SearchProduct> {
                   fontSize: 14,
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(
-              width: 2,
-            ),
+            SizedBox(width: 2),
             Icon(
               SlydoAppIcon.star,
               size: 10,
@@ -694,53 +852,79 @@ class _SearchProductState extends State<SearchProduct> {
         ),
       ),
       onTap: () {
-        selectedRating = index;
+        selectedRating = index.toString();
         bottomSheetSetState(() {});
       },
     );
   }
 
-  Widget getPriceSelection(bottomSheetSetState) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(
-        "Price",
-        style: TextStyle(
-            color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
-      ),
-      SizedBox(
-        height: 16,
-      ),
-      SliderTheme(
-        data: SliderTheme.of(context).copyWith(
-          trackHeight: 1,
-          rangeThumbShape: CustomRangeThumbShapeForMovie(
-              selectedPriceValue.start.toInt(), selectedPriceValue.end.toInt()),
-          overlayShape: RoundSliderOverlayShape(overlayRadius: 12.0),
-          minThumbSeparation: 30,
+  Widget getPriceRange(bottomSheetSetState) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Price Range",
+          style: TextStyle(
+              color: blackFont, fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        child: RangeSlider(
-          activeColor: navyBlue,
-          inactiveColor: dividerColor,
-          onChanged: (RangeValues rangeValue) {
-            selectedPriceValue = rangeValue;
-            bottomSheetSetState(() {});
-          },
-          min: 0,
-          max: 100,
-          values: selectedPriceValue,
+        SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: CustomizedTextFormField(
+                labelText: 'From',
+                initialValue:
+                    minAmount == null ? '' : (minAmount! ~/ 100).toString(),
+                onChanged: (value) {
+                  minAmount = int.parse(value) * 100;
+                },
+                isNumberOnlyInput: true,
+              ),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: CustomizedTextFormField(
+                labelText: 'To',
+                initialValue:
+                    maxAmount == null ? '' : (maxAmount! ~/ 100).toString(),
+                onChanged: (value) {
+                  maxAmount = int.parse(value) * 100;
+                },
+                isNumberOnlyInput: true,
+              ),
+            ),
+          ],
         ),
-      )
-    ]);
+        SizedBox(height: 12),
+      ],
+    );
   }
 
-  Widget getFilerSubmitButton() {
+  Widget getClearAllBtn() {
+    return CurvedButton(
+      backgroundColor: Colors.grey,
+      onPressed: () {
+        Navigator.pop(context);
+        pickedCategoryList.clear();
+        categoryCheckMark.clear();
+        selectedRating = null;
+        minAmount = null;
+        maxAmount = null;
+        _refreshList();
+      },
+      text: "Clear All",
+      textColor: Colors.white,
+    );
+  }
+
+  Widget getFilterSubmitBtn() {
     return CurvedButton(
       backgroundColor: navyBlue,
       onPressed: () {
         Navigator.pop(context);
-        getList();
+        _refreshList();
       },
-      text: "Submit",
+      text: "Apply",
       textColor: Colors.white,
     );
   }

@@ -75,9 +75,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../../constant.dart';
 import '../../../../../data/database_helper.dart';
-import '../../../../../main.dart';
+import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../services/app_config_bloc.dart';
 import '../tiles/document_file_tile_for_chat.dart';
@@ -263,7 +262,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         getProductOrServiceList();
       }
     });
-    getAppConfigurationModelFromLocalStorage();
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     super.initState();
 
@@ -271,13 +270,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     /// on this screen by this method
     // lib/screens/more_apps/messaging/chat/screens/chat_screen.dart:294
     WidgetsBinding.instance!.addObserver(this);
-  }
-
-  getAppConfigurationModelFromLocalStorage() async {
-    var str = await getStorage.read(appFeaturesKey);
-    if (str != null) {
-      appConfigurationModel = AppConfigurationModel.deserialize(str!);
-    }
   }
 
   void checkNetworkConnectivity() async {
@@ -1927,43 +1919,43 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void requestMoneyBtnPressed() async {
-    showMoreAction = false;
-    if (mounted) setState(() {});
+    if (appConfigurationModel?.enablePayment == true) {
+      showMoreAction = false;
+      if (mounted) setState(() {});
 
-    String? selectedUser;
+      String? selectedUser;
 
-    if (chatConversation!.isGroupConversation!) {
-      if (groupDetail!.participants.isEmpty) {
-        getGroupDetailFromServer();
+      if (chatConversation!.isGroupConversation!) {
+        if (groupDetail!.participants.isEmpty) {
+          getGroupDetailFromServer();
+        }
+
+        CustomerProfile? user = await selectRecipientForAction();
+
+        if (user == null) {
+          return;
+        }
+
+        selectedUser = user.userName;
+      } else {
+        selectedUser = chatConversation!.userName;
       }
 
-      CustomerProfile? user = await selectRecipientForAction();
-
-      if (user == null) {
-        return;
+      if (selectedUser != null) {
+        stopShakeDetector();
+        await Navigator.of(context).pushNamed(
+          Routes.REQUEST_PAYMENT,
+          arguments: <String, dynamic>{
+            'recipient': selectedUser,
+            'isFromProfile': false,
+            'isFromChat': true,
+            'conversationId': chatConversation!.conversationId
+          },
+        );
+        setupShakeDetector();
       }
-
-      selectedUser = user.userName;
     } else {
-      selectedUser = chatConversation!.userName;
-    }
-
-    if (selectedUser != null) {
-      var customerProfileBloc =
-          Provider.of<CustomerProfileBloc>(context, listen: false);
-      customerProfileBloc.customer =
-          await UserAuth().fetchCustomerProfile(selectedUser);
-
-      stopShakeDetector();
-      await Navigator.of(context).pushNamed(
-        Routes.REQUEST_PAYMENT,
-        arguments: <String, dynamic>{
-          'isFromProfile': false,
-          'isFromChat': true,
-          'conversationId': chatConversation!.conversationId
-        },
-      );
-      setupShakeDetector();
+      showToast(message: 'Coming soon');
     }
   }
 
@@ -2057,40 +2049,40 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   }
 
   void sendMoneyBtnPressed() async {
-    showMoreAction = false;
-    if (mounted) setState(() {});
+    if (appConfigurationModel?.enablePayment == true) {
+      showMoreAction = false;
+      if (mounted) setState(() {});
 
-    String? selectedUser;
+      String? selectedUser;
 
-    if (chatConversation!.isGroupConversation!) {
-      if (groupDetail!.participants.isEmpty) {
-        getGroupDetailFromServer();
+      if (chatConversation!.isGroupConversation!) {
+        if (groupDetail!.participants.isEmpty) {
+          getGroupDetailFromServer();
+        }
+
+        CustomerProfile? user = await selectRecipientForAction();
+
+        if (user == null) return;
+        selectedUser = user.userName;
+      } else {
+        selectedUser = chatConversation!.userName;
       }
 
-      CustomerProfile? user = await selectRecipientForAction();
-
-      if (user == null) return;
-      selectedUser = user.userName;
+      if (selectedUser != null) {
+        stopShakeDetector();
+        await Navigator.of(context).pushNamed(
+          Routes.SEND_PAYMENT,
+          arguments: <String, dynamic>{
+            'recipient': selectedUser,
+            'isFromProfile': false,
+            'isFromChat': true,
+            'conversationId': chatConversation!.conversationId
+          },
+        );
+        setupShakeDetector();
+      }
     } else {
-      selectedUser = chatConversation!.userName;
-    }
-
-    if (selectedUser != null) {
-      var customerProfileBloc =
-          Provider.of<CustomerProfileBloc>(context, listen: false);
-      customerProfileBloc.customer =
-          await UserAuth().fetchCustomerProfile(selectedUser);
-
-      stopShakeDetector();
-      await Navigator.of(context).pushNamed(
-        Routes.SEND_PAYMENT,
-        arguments: <String, dynamic>{
-          'isFromProfile': false,
-          'isFromChat': true,
-          'conversationId': chatConversation!.conversationId
-        },
-      );
-      setupShakeDetector();
+      showToast(message: 'Coming soon');
     }
   }
 

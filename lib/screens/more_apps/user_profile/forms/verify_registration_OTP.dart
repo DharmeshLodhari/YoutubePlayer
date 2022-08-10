@@ -216,8 +216,6 @@ class _VerifyRegistrationOTPScreenState
   }
 
   void verifyOTP() {
-    print('VERIFY CARD OTP');
-
     if (_verifyOtpFormKey.currentState!.validate()) {
       String enteredOTP = otpController!.text.trim();
       String passwordToken = "false";
@@ -228,7 +226,7 @@ class _VerifyRegistrationOTPScreenState
           .then((verified) {
         Navigator.pop(context);
 
-        Navigator.of(context).popAndPushNamed(Routes.REGISTER, arguments: {
+        Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
           'phoneNumber': phoneNumber,
         });
       }).catchError((e) {

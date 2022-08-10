@@ -45,6 +45,7 @@ class CustomizedTextFormField extends StatefulWidget {
   FocusNode? focusNode;
   EdgeInsets contentPadding;
   bool showLabelOrPassword;
+  String? initialValue;
   TextCapitalization textCapitalization;
 
   Future<bool>? Function()? verifyInputFromServerFunc;
@@ -54,6 +55,7 @@ class CustomizedTextFormField extends StatefulWidget {
   Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
 
   CustomizedTextFormField({
+    this.initialValue,
     this.autoFocus = false,
     this.helperText,
     this.verifyInputFromServerFunc,
@@ -145,6 +147,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
               )
             : SizedBox.shrink(),
         TextFormField(
+          initialValue: widget.initialValue,
           autofocus: widget.autoFocus,
           onFieldSubmitted: widget.onFieldSubmitted,
           textInputAction: widget.textInputAction,
