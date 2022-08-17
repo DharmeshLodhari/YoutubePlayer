@@ -307,11 +307,11 @@ class BasketBloc extends ChangeNotifier {
 }
 
 class AddressBloc extends ChangeNotifier {
-  Address? _address;
+  ShippingAddress? _address;
 
-  Address? get address => _address;
+  ShippingAddress? get address => _address;
 
-  set address(Address? value) {
+  set address(ShippingAddress? value) {
     _address = value;
     notifyListeners();
   }

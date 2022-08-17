@@ -1,0 +1,126 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../data/state_notifier.dart';
+import '../../../../utils/colors.dart';
+import '../../../../widget/LoadingIndicator.dart';
+import '../models/UserAbout.dart';
+import '../user_auth.dart';
+
+class PickStateWidget extends StatefulWidget {
+  bool disable;
+  String?
+      initialStateValue; // If we pass this value, it won't the state from the userbloc.
+  Function(int? stateId, String? pickedStateValue) afterOnChanged;
+  PickStateWidget(
+      {Key? key,
+      this.disable = false,
+      this.initialStateValue,
+      required this.afterOnChanged})
+      : super(key: key);
+
+  @override
+  State<PickStateWidget> createState() => _PickStateWidgetState();
+}
+
+class _PickStateWidgetState extends State<PickStateWidget> {
+  int? stateId;
+  List<String> states = [];
+  String? pickedStateValue;
+  UserAbout? userBioDetail;
+  bool isStateLoading = false;
+  Map<int, String> statesMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    userBioDetail = Provider.of<UserBloc>(context, listen: false).userAbout;
+    if (userBioDetail?.userAddress?.state != null) {
+      stateId = userBioDetail!.userAddress!.state;
+    }
+
+    getStates();
+  }
+
+  getStates({String? state}) {
+    isStateLoading = true;
+    if (mounted) setState(() {});
+    UserAuth().getStates().then((value) {
+      value.forEach((element) {
+        states.add(element.name!);
+        statesMap[element.id!] = element.name!;
+      });
+
+      pickedStateValue = widget.initialStateValue ?? statesMap[stateId];
+
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((e) {
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        isStateLoading
+            ? CircularLoadingIndicator()
+            : Expanded(child: addStateDropdown()),
+        SizedBox(width: 12),
+      ],
+    );
+  }
+
+  Widget addStateDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'State',
+          style: TextStyle(color: darkGrey, fontSize: 14),
+        ),
+        SizedBox(height: 8),
+        Container(
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: dividerColor),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: IgnorePointer(
+            ignoring: widget.disable,
+            child: DropdownButton2(
+                isExpanded: true,
+                value: pickedStateValue,
+                underline: SizedBox.shrink(),
+                dropdownDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: blackFont,
+                  fontWeight: FontWeight.w600,
+                ),
+                items: states.map((String item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  pickedStateValue = value;
+                  int id = statesMap.keys
+                      .firstWhere((element) => statesMap[element] == value);
+                  stateId = id;
+                  if (mounted) setState(() {});
+                  widget.afterOnChanged(stateId, pickedStateValue);
+                }),
+          ),
+        ),
+      ],
+    );
+  }
+}

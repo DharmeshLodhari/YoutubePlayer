@@ -6,6 +6,7 @@ import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -240,8 +241,9 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
     _onEndScroll(ScrollMetrics metrics) {
       print("Scroll End -------------> ${_verticalScrollPageViewCtrl.page}");
-      print("Scroll End ------------->");
       if (currentVerticalPageIndex < -1) {
+        print("Scroll End -------------> POP");
+
         NavigationUtil.pop(context);
       }
     }
@@ -254,124 +256,114 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
         child: Column(
           children: [
             Expanded(
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  if (scrollNotification is ScrollEndNotification) {
-                    _onEndScroll(scrollNotification.metrics);
+              child: PageView.builder(
+                itemCount: widget.momentsModelList!.length,
+                controller: _verticalScrollPageViewCtrl,
+                scrollDirection: Axis.vertical,
+                onPageChanged: (verticalScrollIndex) async {
+                  // To check if the pageview has gotten to the top of the list.
+
+                  currentVerticalPageIndex -= 1;
+
+                  if (verticalScrollIndex == 0) {
+                    if (widget
+                            .momentsModelList![verticalScrollIndex][0].owner !=
+                        widget.listOfConnectionNames[0]) {
+                      getNextOrPreviousListOfMomentsWithConnectionNames(
+                          verticalScrollIndex: verticalScrollIndex,
+                          getNextList: false);
+                    }
                   }
-                  return true;
+
+                  // To check if the pageview has gotten to the end of the list.
+                  else if (verticalScrollIndex + 1 ==
+                      widget.momentsModelList!.length) {
+                    // This is to check if the owner of the last moment that's showing is the same as the last name
+                    // in widget.listOfConnectionNames (this helps us to know whether to load the next moments using the
+                    // names that are left in widget.listOfConnectionNames or using the url(endpoint) in widget.nextPageUrl).
+                    if (widget
+                            .momentsModelList![verticalScrollIndex][0].owner !=
+                        widget.listOfConnectionNames.last) {
+                      getNextOrPreviousListOfMomentsWithConnectionNames(
+                          verticalScrollIndex: verticalScrollIndex,
+                          getNextList: true);
+                    } else {
+                      if (widget.nextPageUrl != null) {
+                        List<String>? newListOfConnectionNames =
+                            await getNextPageListOfConnectionNames(
+                                nextPageUrl: widget.nextPageUrl!);
+
+                        widget.indexOfMoment =
+                            widget.listOfConnectionNames.length;
+
+                        widget.listOfConnectionNames
+                            .addAll(newListOfConnectionNames!);
+
+                        getListOfMomentsModelList(loadingNextPageUrl: true);
+                      }
+                    }
+                  }
                 },
-                child: PageView.builder(
-                  itemCount: widget.momentsModelList!.length,
-                  controller: _verticalScrollPageViewCtrl,
-                  scrollDirection: Axis.vertical,
-                  onPageChanged: (verticalScrollIndex) async {
-                    // To check if the pageview has gotten to the top of the list.
-
-                    currentVerticalPageIndex -= 1;
-                    print(
-                        "Scroll End -------------> ${currentVerticalPageIndex}");
-
-                    if (verticalScrollIndex == 0) {
-                      if (widget.momentsModelList![verticalScrollIndex][0]
-                              .owner !=
-                          widget.listOfConnectionNames[0]) {
-                        getNextOrPreviousListOfMomentsWithConnectionNames(
-                            verticalScrollIndex: verticalScrollIndex,
-                            getNextList: false);
-                      }
-                    }
-
-                    // To check if the pageview has gotten to the end of the list.
-                    else if (verticalScrollIndex + 1 ==
-                        widget.momentsModelList!.length) {
-                      // This is to check if the owner of the last moment that's showing is the same as the last name
-                      // in widget.listOfConnectionNames (this helps us to know whether to load the next moments using the
-                      // names that are left in widget.listOfConnectionNames or using the url(endpoint) in widget.nextPageUrl).
-                      if (widget.momentsModelList![verticalScrollIndex][0]
-                              .owner !=
-                          widget.listOfConnectionNames.last) {
-                        getNextOrPreviousListOfMomentsWithConnectionNames(
-                            verticalScrollIndex: verticalScrollIndex,
-                            getNextList: true);
-                      } else {
-                        if (widget.nextPageUrl != null) {
-                          List<String>? newListOfConnectionNames =
-                              await getNextPageListOfConnectionNames(
-                                  nextPageUrl: widget.nextPageUrl!);
-
-                          widget.indexOfMoment =
-                              widget.listOfConnectionNames.length;
-
-                          widget.listOfConnectionNames
-                              .addAll(newListOfConnectionNames!);
-
-                          getListOfMomentsModelList(loadingNextPageUrl: true);
-                        }
-                      }
-                    }
-                  },
-                  itemBuilder: (context, index) {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      child: Stack(
-                        children: [
-                          MediaRendererPageView(
-                            momentsModelList: widget.momentsModelList![index],
-                            onPageChanged: (pageViewIndex) {},
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 34.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  icon: CircleAvatar(
-                                    backgroundColor: navyBlue,
-                                    child: const Icon(
-                                      Icons.arrow_back,
-                                      color: Colors.white,
-                                    ),
+                itemBuilder: (context, index) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: Stack(
+                      children: [
+                        MediaRendererPageView(
+                          momentsModelList: widget.momentsModelList![index],
+                          onPageChanged: (pageViewIndex) {},
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 34.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                icon: CircleAvatar(
+                                  backgroundColor: navyBlue,
+                                  child: const Icon(
+                                    Icons.arrow_back,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      InkWell(
-                                        onTap: () async {
-                                          NavigationUtil.push(context,
-                                              screen: CreateMomentScreen());
-                                        },
-                                        child: Container(
-                                          height: 40,
-                                          width: 40,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: navyBlue,
-                                          ),
-                                          child: const Icon(
-                                            Icons.camera_alt_rounded,
-                                            color: Colors.white,
-                                          ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    InkWell(
+                                      onTap: () async {
+                                        NavigationUtil.push(context,
+                                            screen: CreateMediaMomentScreen());
+                                      },
+                                      child: Container(
+                                        height: 40,
+                                        width: 40,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: navyBlue,
+                                        ),
+                                        child: const Icon(
+                                          Icons.camera_alt_rounded,
+                                          color: Colors.white,
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
             Visibility(
@@ -985,6 +977,11 @@ class _RenderMediaState extends State<RenderMedia> {
     }
 
     if (widget.momentsModel.mediaType == "image") {
+      return PhotoView(
+        //To be able to zoom the iamge.
+        imageProvider: NetworkImage(widget.momentsModel.media!),
+      );
+
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.media!,
         fit: BoxFit.fitWidth,
@@ -1021,6 +1018,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
   @override
   void initState() {
+    debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!}');
     _controller =
         CachedVideoPlayerController.network(widget.momentsModel.media!)
           ..initialize().then((value) {
@@ -1109,7 +1107,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-            Center(child: CircularProgressIndicator()),
+            Center(child: CircularLoadingIndicator()),
           ],
         ),
       ),

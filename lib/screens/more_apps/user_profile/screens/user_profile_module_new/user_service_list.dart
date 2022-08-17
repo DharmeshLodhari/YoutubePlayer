@@ -12,7 +12,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // ignore: must_be_immutable
@@ -221,13 +220,23 @@ class _UserServiceListState extends State<UserServiceList> {
                           child: CachedNetworkImage(
                             width: double.infinity,
                             imageUrl: serviceList[index].serverImages![0]!,
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                             filterQuality: FilterQuality.high,
                             errorWidget: productAndServiceBigErrorWidget,
                           ),
-                          onTap: () {
-                            Navigator.pushNamed(context, '/service-detail',
+                          onTap: () async {
+                            var result = await Navigator.pushNamed(
+                                context, '/service-detail',
                                 arguments: {"service": serviceList[index]});
+
+                            if (result != null) {
+                              if (result is String) {
+                                if (result == "delete_item" ||
+                                    result == "update_item") {
+                                  _onServiceRefresh();
+                                }
+                              }
+                            }
                           },
                         ),
                         widget.isOwner

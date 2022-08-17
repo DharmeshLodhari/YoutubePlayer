@@ -16,6 +16,7 @@ import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import 'models/UserAbout.dart';
+import 'models/states_model.dart';
 
 class UserAuth extends AuthService {
   // Fetch user profile
@@ -365,7 +366,7 @@ class UserAuth extends AuthService {
     }
   }
 
-  Future<Address> fetchUserAddress({String? customerName}) async {
+  Future<ShippingAddress> fetchUserAddress({String? customerName}) async {
     String url = "";
     if (customerName != null) {
       url = AppConfig.baseUrl + "/api/v1/user/shipping-address/$customerName/";
@@ -376,15 +377,18 @@ class UserAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
     var jsonData = jsonDecode(response.body);
 
+    debugPrint('USER ADDRESS -> $url');
+    debugPrint('USER ADDRESS -> $jsonData');
+
     if (response.statusCode == 200) {
       debugPrint('USER ADDRESS ::: $jsonData');
-      return Address.fromJson(jsonData);
+      return ShippingAddress.fromJson(jsonData);
     }
-    return Address(
+    return ShippingAddress(
         addressLineOne: "",
         addressLineTwo: "",
         city: "",
-        state: "",
+        userState: UserState(),
         country: "",
         countryIsoCode: "NG");
   }
@@ -407,7 +411,11 @@ class UserAuth extends AuthService {
       {UserAbout? userAbout, String? nickName}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/about/";
 
+    debugPrint("Files send:-  before Headers");
+
     var headers = await getAuthHeaders();
+
+    debugPrint("Files send:-  Headers");
 
     var responseBody;
     var response;
@@ -421,6 +429,7 @@ class UserAuth extends AuthService {
       });
 
       request.fields['nickname'] = nickName!;
+      debugPrint("Files send:- d ${request.files}");
 
       //create multipart using filepath, string or bytes
       var multipartFile =
@@ -458,6 +467,20 @@ class UserAuth extends AuthService {
       return UserAbout.fromJson(jsonDecode(responseBody));
     }
     return Future.error("$responseBody");
+  }
+
+  Future<List<StatesModel>> getStates() async {
+    String? url = AppConfig.baseUrl + "/api/v1/user/states";
+
+    var headers = await getAuthHeaders();
+
+    http.Response response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List responseBody = jsonDecode(response.body);
+      return responseBody.map((e) => StatesModel.fromJson(e)).toList();
+    }
+    return Future.error("Something went wrong");
   }
 
   Future<bool> updateSimpleUserDetail({String? nickName}) async {

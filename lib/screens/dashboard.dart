@@ -388,29 +388,18 @@ class _DashboardState extends State<Dashboard> {
         key: myGlobals.scaffoldKey,
         backgroundColor: whiteBackground,
         body: PageView(
+          physics: NeverScrollableScrollPhysics(),
           controller: _dashboardBloc.pageController,
           onPageChanged: (index) {
             _dashboardBloc.index = index;
             FocusScope.of(context).unfocus();
           },
           children: <Widget>[
-            KeepAlivePage(
-              child: Home(),
-              wantKeepAlive: false,
-            ),
-            KeepAlivePage(
-              child: SuperStore(),
-              wantKeepAlive: false,
-            ),
-            KeepAlivePage(
-              child: MomentsScreen(),
-              wantKeepAlive: true,
-            ),
+            KeepAlivePage(child: Home(), wantKeepAlive: false),
+            KeepAlivePage(child: SuperStore(), wantKeepAlive: true),
+            KeepAlivePage(child: MomentsScreen(), wantKeepAlive: true),
             KeepAlivePage(child: ConnectionDashboard()),
-            KeepAlivePage(
-              child: UserDashboard(),
-              wantKeepAlive: false,
-            ),
+            KeepAlivePage(child: UserDashboard(), wantKeepAlive: false),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),

@@ -11,7 +11,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../data/currency.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/util.dart';
-import '../../widget/LoadingIndicator.dart';
 import '../more_apps/shopping/models/ShoppingProduct.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
@@ -26,13 +25,15 @@ class SuperStore extends StatefulWidget {
 class _SuperStoreState extends State<SuperStore> {
   bool todaysDealsEmpty = false;
   bool isTodayDealLoading = false;
-  List<ShoppingProduct> todaysDeal = [];
+  List<ShoppingProduct> todaysDealList = [];
 
   List<Product> productList = [];
   bool isProductLoading = false;
   bool noProductInList = false;
   int? productCount = 0;
+  String? todayDealNext = "";
   String? productNext = "";
+  String? todayDealPrevious = "";
   String? productPrevious = "";
 
   final GlobalKey<ScaffoldState> _productScaffoldKey =
@@ -41,6 +42,7 @@ class _SuperStoreState extends State<SuperStore> {
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
+  ScrollController _todayDealScrollController = new ScrollController();
   ScrollController _productScrollController = new ScrollController();
 
   AppBar appBar() {
@@ -74,6 +76,13 @@ class _SuperStoreState extends State<SuperStore> {
         getProductList();
       }
     });
+    _todayDealScrollController.addListener(() {
+      if (_todayDealScrollController.position.pixels ==
+              _todayDealScrollController.position.maxScrollExtent &&
+          _todayDealScrollController.position.pixels != 0) {
+        getTodaysDealProducts();
+      }
+    });
   }
 
   void getProductList() async {
@@ -83,8 +92,7 @@ class _SuperStoreState extends State<SuperStore> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await ShoppingAuthService()
-            .listOfProduct(productNext, productPrevious,
-                otherDeals: true);
+            .listOfProduct(productNext, productPrevious, otherDeals: true);
 
         if (result == null) {
           noProductInList = true;
@@ -125,28 +133,42 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   void getTodaysDealProducts() async {
-    isTodayDealLoading = true;
-    todaysDeal.clear();
-    if (mounted) setState(() {});
-
-    ShoppingAuthService().getProductList("", "", todaysDeal: true).then(
-      (value) {
-        isTodayDealLoading = false;
-
-        todaysDeal = value!;
-
-        if (todaysDeal.isEmpty) {
-          todaysDealsEmpty = true;
-        }
+    if (!isTodayDealLoading) {
+      if (todayDealNext != null && !isTodayDealLoading) {
+        isTodayDealLoading = true;
         if (mounted) setState(() {});
 
-        debugPrint('TODAYS DEAL ---> $todaysDeal');
-      },
-    ).catchError((e) {
-      todaysDealsEmpty = true;
-      isTodayDealLoading = false;
-      if (mounted) setState(() {});
-    });
+        Map<String, dynamic>? result = await ShoppingAuthService()
+            .getProductListForSuperStore(todayDealNext, todayDealPrevious,
+                todaysDeal: true);
+
+        if (result == null) {
+          todaysDealsEmpty = true;
+          isTodayDealLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        todayDealNext = result['next'];
+        todayDealPrevious = result['previous'];
+        var tempList = result['results'];
+
+        todaysDealsEmpty = false;
+        isTodayDealLoading = false;
+        todaysDealList.addAll(tempList);
+
+        if (mounted) setState(() {});
+      }
+      if (todaysDealList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            todaysDealsEmpty = true;
+          });
+        }
+      }
+    }
   }
 
   void _onRefresh() async {
@@ -171,7 +193,12 @@ class _SuperStoreState extends State<SuperStore> {
     productPrevious = "";
     isProductLoading = false;
     productList = [];
-    if (mounted) setState(() {});
+
+    todayDealNext = "";
+    todayDealPrevious = "";
+    isTodayDealLoading = false;
+    todaysDealList = [];
+
     getProductList();
     getTodaysDealProducts();
   }
@@ -199,8 +226,6 @@ class _SuperStoreState extends State<SuperStore> {
                 const SizedBox(height: 22),
                 todaysDealsEmpty ? SizedBox.shrink() : getTodaysDealList(),
                 const SizedBox(height: 38),
-                // Image.asset('assets/images/super_store_ad.png'),
-
                 superStoreProducts(),
                 const SizedBox(height: 16),
                 isProductLoading
@@ -212,15 +237,17 @@ class _SuperStoreState extends State<SuperStore> {
                           physics: NeverScrollableScrollPhysics(),
                           gridDelegate:
                               SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisExtent: 250,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 15,
                             maxCrossAxisExtent: 200,
-                            mainAxisExtent: 300,
                           ),
                           itemCount: 2,
                           itemBuilder: (context, index) {
                             return Card(
                               color: Colors.grey,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             );
                           },
@@ -230,7 +257,7 @@ class _SuperStoreState extends State<SuperStore> {
                 Visibility(
                   visible: !isProductLoading &&
                       !isTodayDealLoading &&
-                      todaysDeal.isEmpty &&
+                      todaysDealList.isEmpty &&
                       productList.isEmpty,
                   child: Center(
                     child: Column(
@@ -264,9 +291,9 @@ class _SuperStoreState extends State<SuperStore> {
                   : Text(
                       "Other deals",
                       style: TextStyle(
-                        fontWeight: FontWeight.w700,
                         fontSize: 18,
                         color: blackFont,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
               noProductInList ? SizedBox.shrink() : SizedBox(height: 16),
@@ -291,74 +318,97 @@ class _SuperStoreState extends State<SuperStore> {
   }
 
   Widget getTodaysDealList() {
-    return isTodayDealLoading
-        ? Container(
-            height: 140,
-            child: Center(
-              child: CircularLoadingIndicator(),
-            ),
-          )
-        : Column(
-            children: [
-              todaysDealsEmpty
-                  ? SizedBox.shrink()
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Row(
-                          children: [
-                            Text(
-                              "Today's deal",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 18,
-                                color: blackFont,
-                              ),
-                            ),
-                            Icon(
-                              Icons.bolt_rounded,
-                              color: mateRed,
-                            ),
-                          ],
+    return Column(
+      children: [
+        todaysDealsEmpty
+            ? SizedBox.shrink()
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Text(
+                        "Today's deal",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                          color: blackFont,
                         ),
-                        GestureDetector(
-                          child: Row(
-                            children: [
-                              Text(
-                                "See all",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: navyBlue),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(Icons.arrow_forward_ios_sharp,
-                                  size: 14, color: navyBlue),
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushNamed("/shopping-category");
-                          },
-                        ),
-                      ],
-                    ),
-              Container(
-                height: 150,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: todaysDeal
-                      .map(
-                        (product) => productPoster(product: product),
-                      )
-                      .toList(),
-                ),
+                      ),
+                      Icon(
+                        Icons.bolt_rounded,
+                        color: mateRed,
+                      ),
+                    ],
+                  ),
+                  // GestureDetector(
+                  //   child: Row(
+                  //     children: [
+                  //       Text(
+                  //         "See all",
+                  //         style: TextStyle(
+                  //             fontWeight: FontWeight.w600,
+                  //             fontSize: 14,
+                  //             color: navyBlue),
+                  //       ),
+                  //       SizedBox(width: 8),
+                  //       Icon(Icons.arrow_forward_ios_sharp,
+                  //           size: 14, color: navyBlue),
+                  //     ],
+                  //   ),
+                  //   onTap: () {
+                  //     Navigator.of(context).pushNamed("/shopping-category");
+                  //   },
+                  // ),
+                ],
               ),
-            ],
-          );
+        Container(
+          height: 240,
+          child: ListView.builder(
+            padding: EdgeInsets.only(bottom: 6),
+            scrollDirection: Axis.horizontal,
+            controller: _todayDealScrollController,
+            itemCount: todaysDealList.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == todaysDealList.length) {
+                return isTodayDealLoading
+                    ? Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: 3,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                width: 160,
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink();
+
+                return buildIndicator(isLoading: isTodayDealLoading);
+              } else {
+                return todaysDealWidget(product: todaysDealList[index]);
+              }
+            },
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget productPoster({required ShoppingProduct product}) {
+  Widget todaysDealWidget({required ShoppingProduct product}) {
     return GestureDetector(
       onTap: () {
         ShoppingAuthService().getProduct(product.id!).then((value) {
@@ -366,36 +416,78 @@ class _SuperStoreState extends State<SuperStore> {
               arguments: {"product": value});
         });
       },
-      child: Container(
-        height: 130,
-        width: 200,
-        margin: EdgeInsets.only(top: 20),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
-                imageUrl: product.cover!,
-                fit: BoxFit.fitWidth,
-                errorWidget: productAndServiceErrorWidget,
-                memCacheHeight:
-                    (MediaQuery.of(context).size.height * 0.6).toInt(),
+      child: SizedBox(
+        width: 160,
+        child: Card(
+          elevation: 12,
+          color: Colors.white,
+          shadowColor: lightGrey.withOpacity(0.4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: EdgeInsets.only(top: 20, right: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: product.cover!,
+                      errorWidget: productAndServiceErrorWidget,
+                      memCacheHeight:
+                          (MediaQuery.of(context).size.height * 0.6).toInt(),
+                    ),
+                  ),
+                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                product.name!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: Colors.white),
-                maxLines: 2,
+              SizedBox(height: 10),
+              Padding(
+                padding: EdgeInsets.only(left: 10, bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      product.name!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: blackFont,
+                      ),
+                      maxLines: 2,
+                    ),
+                    SizedBox(height: 5),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        text: worldCurrencies[product.currency!]!,
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: blackFont,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: truncateString(
+                              str: moneyDisplayNormalizer(
+                                  int.parse(product.price.toString())),
+                              lengthToTruncateAt: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -511,19 +603,21 @@ class SuperStoreSingleCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
-                  ),
-                  child: CachedNetworkImage(
-                    height: 170,
-                    width: double.infinity,
-                    errorWidget: productAndServiceBigErrorWidget,
-                    imageUrl: product.serverImages![0]!,
-                    fit: BoxFit.cover,
-                    memCacheHeight:
-                        (MediaQuery.of(context).size.height * 0.6).toInt(),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    child: CachedNetworkImage(
+                      height: 150,
+                      width: double.infinity,
+                      errorWidget: productAndServiceBigErrorWidget,
+                      imageUrl: product.serverImages![0]!,
+                      memCacheHeight:
+                          (MediaQuery.of(context).size.height * 0.6).toInt(),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 6),

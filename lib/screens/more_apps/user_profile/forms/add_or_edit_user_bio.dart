@@ -5,6 +5,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/OpeningHour.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -14,14 +15,13 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../utils/colors.dart';
 import '../../messaging/chat/screens/chat_screen_group_messages.dart';
 import '../user_auth.dart';
+import '../widgets/pick_state_widget.dart';
 
 // ignore: must_be_immutable
 class AddOrEditUserBioScreen extends StatefulWidget {
@@ -30,11 +30,16 @@ class AddOrEditUserBioScreen extends StatefulWidget {
 }
 
 class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
+  int? pickedStateId;
+  String? pickedStateValue;
+
   final GlobalKey<FormState> _businessBioKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _userDetailKey = GlobalKey<FormState>();
 
   TextEditingController? bioController;
-  TextEditingController? addressController;
+  TextEditingController? cityController;
+  TextEditingController? addressLine1Controller;
+  TextEditingController? addressLine2Controller;
   TextEditingController? contactNumberController;
   late TextEditingController _fullNameController;
   late TextEditingController _userNameController;
@@ -92,25 +97,22 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       "day": "Sunday",
       "starting_hour": "10:00 AM",
       "closing_hour": "6:00 PM"
-    }
+    },
   ];
 
   late UserBloc userBloc;
-
   UserAbout? userBioDetail;
-
   bool? isSearchedUserAboutLoading;
-
   bool isLoading = false;
-
   bool isUserIsSimpleUser = false;
-
   bool isUserAvatarLoading = false;
 
   @override
   void initState() {
     bioController = TextEditingController();
-    addressController = TextEditingController();
+    cityController = TextEditingController();
+    addressLine1Controller = TextEditingController();
+    addressLine2Controller = TextEditingController();
     contactNumberController = TextEditingController();
     _userNameController = TextEditingController();
     _nicknameController = TextEditingController();
@@ -119,12 +121,32 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       userBioDetail = userBloc.userAbout;
       bioController!.text = userBioDetail!.bio;
-      addressController!.text = userBioDetail!.address;
-      contactNumberController!.text = userBioDetail!.contact;
-      debugPrint("userBloc.nickName= ${userBloc.user.nickName}");
-      _nicknameController!.text = userBloc.user.nickName!;
-      _userNameController.text = userBloc.user.userName!;
-      _fullNameController.text = userBloc.user.fullName!;
+      if (userBioDetail?.userAddress?.addressLine1 != null) {
+        addressLine1Controller!.text =
+            userBioDetail!.userAddress!.addressLine1!;
+      }
+
+      if (userBioDetail?.userAddress?.addressLine2 != null) {
+        addressLine2Controller!.text =
+            userBioDetail!.userAddress!.addressLine2!;
+      }
+      if (userBioDetail?.userAddress?.city != null) {
+        cityController!.text = userBioDetail!.userAddress!.city!;
+      }
+
+      if (userBioDetail?.contact != null) {
+        contactNumberController!.text = userBioDetail!.contact;
+      }
+      if (userBloc.user.nickName != null) {
+        _nicknameController!.text = userBloc.user.nickName!;
+      }
+      if (userBloc.user.userName != null) {
+        _userNameController.text = userBloc.user.userName!;
+      }
+      if (userBloc.user.fullName != null) {
+        _fullNameController.text = userBloc.user.fullName!;
+      }
+
       if (userBioDetail!.openingHours.isNotEmpty) {
         addUserAddedOpeningHour();
       }
@@ -214,17 +236,22 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         children: <Widget>[
           SizedBox(height: 20),
           addBioField(),
-          SizedBox(
-            height: 20,
-          ),
-          addAddressField(),
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
           addContactNumberField(),
-          SizedBox(
-            height: 20,
+          SizedBox(height: 20),
+          addAddressLine1Field(),
+          SizedBox(height: 20),
+          addAddressLine2Field(),
+          SizedBox(height: 20),
+          PickStateWidget(
+            afterOnChanged: (stateId, stateValue) {
+              pickedStateId = stateId;
+              pickedStateValue = stateValue;
+            },
           ),
+          SizedBox(height: 20),
+          cityField(),
+          SizedBox(height: 20),
           addOpeningHour(),
         ],
       ),
@@ -568,18 +595,45 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     }
   }
 
-  Widget addAddressField() {
+  Widget addAddressLine1Field() {
     return CustomizedTextFormField(
-      controller: addressController,
-      labelText: "Office Address",
-      maxLines: 3,
-      hintText: "This address will be publicly available.",
+      controller: addressLine1Controller,
+      labelText: "Address Line 1",
       validator: (val) {
         if (val.isNotEmpty) {
           return null;
         }
         return "Invalid Address";
       },
+      hintText: "This address will be publicly available.",
+    );
+  }
+
+  Widget addAddressLine2Field() {
+    return CustomizedTextFormField(
+      controller: addressLine2Controller,
+      labelText: "Address Line 2",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Invalid Address";
+      },
+      hintText: "This address will be publicly available.",
+    );
+  }
+
+  Widget cityField() {
+    return CustomizedTextFormField(
+      controller: cityController,
+      labelText: "City",
+      validator: (val) {
+        if (val.isNotEmpty) {
+          return null;
+        }
+        return "Invalid City";
+      },
+      hintText: "Enter your city",
     );
   }
 
@@ -652,13 +706,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(child: getOpeningHourDay(element: element)),
-          SizedBox(
-            width: 10,
-          ),
+          SizedBox(width: 10),
           getOpeningHourStartingTime(element: element),
-          SizedBox(
-            width: 10,
-          ),
+          SizedBox(width: 10),
           getOpeningHourClosingTime(element: element)
         ],
       ),
@@ -952,11 +1002,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   void updateUserDetail() async {
     if (_userDetailKey.currentState?.validate() ?? false) {
       showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => Center(
-                child: CircularLoadingIndicator(),
-              ));
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: CircularLoadingIndicator(),
+        ),
+      );
 
       String nickName = _nicknameController!.text.trim();
       await UserAuth().updateSimpleUserDetail(nickName: nickName).then((value) {
@@ -984,11 +1035,35 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       addDataToUserAboutObject();
 
       showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => Center(
-                child: CircularLoadingIndicator(),
-              ));
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: CircularLoadingIndicator(),
+        ),
+      );
+      userBioDetail!.userAddress = UserAddress(
+        // UserState(
+        //   id: userBloc.userAbout?.userAddress?.state,
+        //   // name: userBloc.userAbout?.userAddress?.state?.name,
+        //
+        //   // country: Country(
+        //   //   name: userBloc.userAbout?.userAddress?.state?.country?.name,
+        //   //   id: userBloc.userAbout?.userAddress?.state?.country?.id,
+        //   //   isoCode: userBloc.userAbout?.userAddress?.state?.country?.isoCode,
+        //   // ),
+        //
+        // ),
+
+        state: pickedStateId,
+        id: userBloc.userAbout?.userAddress?.id,
+        city: userBloc.userAbout?.userAddress?.city,
+        postCode: userBloc.userAbout?.userAddress?.postCode,
+        addressLine1: userBloc.userAbout?.userAddress?.addressLine1,
+        addressLine2: userBloc.userAbout?.userAddress?.addressLine2,
+      );
+
+      debugPrint("userbiondetail 1 -> ${userBioDetail?.toJson()}");
+      debugPrint("userbiondetail 2 -> ${userBioDetail?.userAddress?.toJson()}");
 
       String nickName = _nicknameController!.text.trim();
       await UserAuth()
@@ -1007,17 +1082,20 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         showToast(
           message: "Bio updated successfully!!",
         );
-      }).catchError((error) {
-        Navigator.pop(context);
-        debugPrint(error.toString());
-        showToast(message: error.toString());
+      }).catchError((e) {
+        NavigationUtil.pop(context);
+        showToast(message: e.toString());
       });
     }
   }
 
   void addDataToUserAboutObject() {
     userBioDetail!.bio = bioController!.text.trim();
-    userBioDetail!.address = addressController!.text.trim();
+    userBioDetail!.userAddress!.addressLine1 =
+        addressLine1Controller!.text.trim();
+    userBioDetail!.userAddress!.addressLine2 =
+        addressLine2Controller!.text.trim();
+    userBioDetail!.userAddress!.city = cityController!.text.trim();
     userBioDetail!.contact = contactNumberController!.text.trim();
 
     addOpeningHoursToUserAboutObject();
@@ -1039,6 +1117,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           userBioDetail!.openingHours.add(openingHour);
         }
       }
+    });
+
+    userBioDetail!.openingHours.forEach((element) {
+      debugPrint('OPENING HOURS ---> ${element.toJson()}');
     });
   }
 
@@ -1078,14 +1160,16 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           }),
     );
 
-    list.add(bottomSheetItem(
-      title: "Remove $imageName",
-      isLast: true,
-      iconData: SlydoAppIcon.delete,
-      onTap: () {
-        Navigator.pop(context, "remove");
-      },
-    ));
+    list.add(
+      bottomSheetItem(
+        title: "Remove $imageName",
+        isLast: true,
+        iconData: SlydoAppIcon.delete,
+        onTap: () {
+          Navigator.pop(context, "remove");
+        },
+      ),
+    );
 
     return list;
   }

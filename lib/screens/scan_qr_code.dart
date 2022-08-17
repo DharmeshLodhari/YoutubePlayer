@@ -142,11 +142,11 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
       if (scanData != null) {
-        if (scanData.code.startsWith(AppConfig.baseUrl) ||
-            scanData.code.startsWith(AppConfig.baseUrl) ||
-            scanData.code.startsWith(AppConfig.merchantUrl) ||
-            scanData.code.startsWith(AppConfig.localHost)) {
-          var scanDataList = scanData.code.split('/');
+        if (scanData.code!.startsWith(AppConfig.baseUrl) ||
+            scanData.code!.startsWith(AppConfig.baseUrl) ||
+            scanData.code!.startsWith(AppConfig.merchantUrl) ||
+            scanData.code!.startsWith(AppConfig.localHost)) {
+          var scanDataList = scanData.code!.split('/');
 
           scanDataList.removeWhere((value) => value == "");
           if (canShowDialogBox) {

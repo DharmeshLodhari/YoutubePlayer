@@ -172,18 +172,30 @@ class _UserDashboardState extends State<UserDashboard> {
                 secondRowOfUserDashboardItem(),
                 SizedBox(height: 12),
                 thirdRowOfUserDashboardItem(),
-                SizedBox(height: 12),
-                Text(
-                  'More apps',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
+                SizedBox(height: 34),
+                Row(
+                  children: [
+                    SizedBox(width: 12),
+                    Icon(
+                      SlydoAppIcon.more,
+                      size: 16,
+                      color: navyBlue,
+                    ),
+                    SizedBox(width: 12),
+                    Text(
+                      'More Apps',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: navyBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: 16),
                 firstRowOfMoreApps(),
-                SizedBox(height: 12),
+                SizedBox(height: 70),
                 appVersionDataUI(),
                 SizedBox(height: 12),
               ],
@@ -497,17 +509,19 @@ class _UserDashboardState extends State<UserDashboard> {
             iconColor: HexColor("#5218E9"),
           ),
         ),
+        // SizedBox(width: 12),
+        // Expanded(
+        //   child: UserDashboardItemTile(
+        //     icon: SlydoAppIcon.more,
+        //     title: AppLocalization.of(context)!.more,
+        //     onTap: () {
+        //       Navigator.pushNamed(context, Routes.MORE_APPS);
+        //     },
+        //     iconColor: HexColor("#374677"),
+        //   ),
+        // ),
+        Expanded(child: Container()),
         SizedBox(width: 12),
-        Expanded(
-          child: UserDashboardItemTile(
-            icon: SlydoAppIcon.more,
-            title: AppLocalization.of(context)!.more,
-            onTap: () {
-              Navigator.pushNamed(context, Routes.MORE_APPS);
-            },
-            iconColor: HexColor("#374677"),
-          ),
-        ),
         Expanded(child: Container()),
       ],
     );
@@ -610,23 +624,26 @@ class _UserDashboardState extends State<UserDashboard> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(AppLocalization.of(context)!.madeInNigeria,
-              style: TextStyle(
-                  color: navyBlue,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  shadows: [
-                    Shadow(
-                      color: boxShadow,
-                      blurRadius: 3,
-                      offset: Offset(1, 1),
-                    ),
-                    Shadow(
-                      color: boxShadow,
-                      blurRadius: 3,
-                      offset: Offset(1, 1),
-                    )
-                  ])),
+          Text(
+            AppLocalization.of(context)!.madeInNigeria,
+            style: TextStyle(
+              color: navyBlue,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              // shadows: [
+              //   Shadow(
+              //     color: boxShadow,
+              //     blurRadius: 3,
+              //     offset: Offset(1, 1),
+              //   ),
+              //   Shadow(
+              //     color: boxShadow,
+              //     blurRadius: 3,
+              //     offset: Offset(1, 1),
+              //   )
+              // ],
+            ),
+          ),
         ],
       ),
     );

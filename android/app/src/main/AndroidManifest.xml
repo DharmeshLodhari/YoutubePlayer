@@ -23,8 +23,9 @@
         android:name=".Application"
         android:label="Slydo"
         android:icon="@mipmap/launcher_icon"
-        android:hardwareAccelerated="false"
-        android:largeHeap="true">
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask"

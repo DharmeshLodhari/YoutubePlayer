@@ -128,6 +128,33 @@ class UserPostAuth extends AuthService {
     }
   }
 
+  Future<bool> updatePostView({required String postId}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/social/post/update-post-view/$postId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "UPDATE POST VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      if (response.statusCode != 500) {
+        var jsonData = jsonDecode(response.body);
+        debugPrint(
+            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        return Future.error(jsonData is Map
+            ? jsonData["error"]
+            : jsonData is List
+            ? jsonData[0]
+            : jsonData);
+      }
+      return Future.error("Server Error");
+    }
+  }
+
+
   Future<dynamic> uploadPickedMediaForPostBody(
       {required String mediaFile}) async {
     var url =

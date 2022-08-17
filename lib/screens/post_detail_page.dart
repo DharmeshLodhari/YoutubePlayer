@@ -74,10 +74,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.initState();
     debugPrint('POST ID ---> ${widget.postId}');
     getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
-    // if (widget.postType == PostType.blog) {
-    // } else {
-    //   getNewsResultAndInitializeVideoController();
-    // }
+    Future.delayed(Duration(seconds: 5), () {
+      UserPostAuth().updatePostView(postId: widget.postId!);
+    });
   }
 
   getBlogDetailsAndInitializeVideoController({required UserPost userPost}) {

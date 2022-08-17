@@ -121,8 +121,6 @@ class _AddBvnNumberState extends State<AddBvnNumber> {
               buildDobField(),
               getGenderField(),
               buildGetIdType(),
-              getDOBField(),
-              getGenderField(),
               buildBusinessRegistrationLicense(),
               getVerificationWarning(),
               SizedBox(height: 16),

@@ -14,6 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../services/secure_storage.dart';
+import '../../../../utils/cache_manager.dart';
+
 // ignore: must_be_immutable
 class SignUp extends StatefulWidget {
   var arguments;
@@ -670,11 +673,18 @@ class _SignUpState extends State<SignUp> {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       bool isRegistered;
-      await UserAuth().userRegistration(data).then((value) {
+      await UserAuth().userRegistration(data).then((value) async {
         isRegistered = value;
         if (isRegistered) {
+          // Clear cache and other datas. We do this in case the user registers
+          // with a phone that another user was previously logged in with.
+          // We clear the previous user's data.
+          CacheManager().deleteCache();
+          await SecureStorage().clear();
+
           Navigator.pop(context);
           Navigator.of(context).popAndPushNamed(Routes.LOGIN);
+          showToast(message: 'Successfully registered');
         }
       }).catchError((error) {
         Navigator.pop(context);

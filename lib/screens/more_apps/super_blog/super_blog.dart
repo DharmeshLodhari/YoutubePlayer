@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../locale/app_localization.dart';
+import '../../../routes/route_constants.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
@@ -189,28 +190,41 @@ class _SuperBlogState extends State<SuperBlog> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed(Routes.CREATE_BLOG);
+        },
+        backgroundColor: navyBlue,
+        child: Icon(
+          Icons.add,
+          size: 30,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             searchBox(),
             SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                pageViewTabItem(
-                    pageNum: 0,
-                    title: 'All',
-                    slydoBlogsMenu: SlydoBlogsMenu.All),
-                pageViewTabItem(
-                    pageNum: 1,
-                    title: 'Latest',
-                    slydoBlogsMenu: SlydoBlogsMenu.Latest),
-                pageViewTabItem(
-                    pageNum: 2,
-                    title: 'Trending',
-                    slydoBlogsMenu: SlydoBlogsMenu.Trending),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  pageViewTabItem(
+                      pageNum: 0,
+                      title: 'All',
+                      slydoBlogsMenu: SlydoBlogsMenu.All),
+                  pageViewTabItem(
+                      pageNum: 1,
+                      title: 'Latest',
+                      slydoBlogsMenu: SlydoBlogsMenu.Latest),
+                  pageViewTabItem(
+                      pageNum: 2,
+                      title: 'Trending',
+                      slydoBlogsMenu: SlydoBlogsMenu.Trending),
+                ],
+              ),
             ),
             Expanded(
               child: PageView(

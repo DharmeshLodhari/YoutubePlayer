@@ -422,6 +422,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     MomentsService()
         .getMomentsWithOwnerName(ownerName: searchedUser!.userName!)
         .then((momentsModelList) {
+      debugPrint('MY MOMENTS -> ${momentsModelList.isNotEmpty}');
+
       myMomentsLoading = false;
       if (mounted) setState(() {});
       if (momentsModelList.isNotEmpty) {

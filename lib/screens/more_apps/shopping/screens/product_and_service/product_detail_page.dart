@@ -329,6 +329,33 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   List<Widget> generateBottomSheetItem() {
     List<Widget> list = [];
 
+    if (!isValidCustomer) {
+      list.add(
+        bottomSheetItem(
+          title: "Edit",
+          iconData: SlydoAppIcon.edit,
+          onTap: () async {
+            Navigator.pop(context);
+            var result = await Navigator.of(context).pushNamed(
+              '/edit-product',
+              arguments: {
+                "productId": productId,
+              },
+            );
+
+            if (result != null) {
+              if (result is String) {
+                if (result == "delete_item" || result == "update_item") {
+                  //To refresh the product list page
+                  Navigator.pop(context, 'update_item');
+                }
+              }
+            }
+          },
+        ),
+      );
+    }
+
     list.add(bottomSheetItem(
       title: "Share",
       iconData: SlydoAppIcon.share,
@@ -342,34 +369,12 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     list.add(
       bottomSheetItem(
+        isLast: true,
         title: "Share in Chat",
         iconData: SlydoAppIcon.text_message,
         onTap: () async {
           Navigator.pop(context);
           sendItemToUsersInChat();
-        },
-      ),
-    );
-    list.add(
-      bottomSheetItem(
-        title: "Edit",
-        isLast: true,
-        iconData: SlydoAppIcon.edit,
-        onTap: () async {
-          var result = await Navigator.of(context).pushNamed(
-            '/edit-product',
-            arguments: {
-              "productId": productId,
-            },
-          );
-
-          if (result != null) {
-            if (result is String) {
-              if (result == "delete_item" || result == "update_item") {
-                // _onProductRefresh();
-              }
-            }
-          }
         },
       ),
     );
@@ -793,7 +798,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   placeholder: (context, url) =>
                                       Center(child: CircularLoadingIndicator()),
                                   imageUrl: imgList?[0] ?? "",
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                   height: double.infinity,
                                   width: double.infinity,
                                   errorWidget: productAndServiceBigErrorWidget,

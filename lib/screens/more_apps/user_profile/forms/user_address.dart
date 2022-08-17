@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../../../../locale/app_localization.dart';
 import '../../shopping/screens/order_summary_screen.dart';
 import '../user_auth.dart';
+import '../widgets/pick_state_widget.dart';
 
 class UserAddress extends StatefulWidget {
   String? customerName;
@@ -31,13 +32,14 @@ class _UserAddressState extends State<UserAddress> {
   TextEditingController addressLineOneController = TextEditingController();
   TextEditingController addressLineTwoController = TextEditingController();
   TextEditingController cityController = TextEditingController();
-  TextEditingController stateController = TextEditingController();
   TextEditingController deliveryNoteController = TextEditingController();
 
   Country selectedCountry = CountryPickerUtils.getCountryByIsoCode('NG');
 
   late AddressBloc addressBloc;
   bool isLoading = false;
+  int? pickedStateId;
+  String? pickedStateValue;
 
   @override
   void initState() {
@@ -52,12 +54,23 @@ class _UserAddressState extends State<UserAddress> {
 
       addressLineOneController.text = addressBloc.address!.addressLineOne!;
       addressLineTwoController.text = addressBloc.address!.addressLineTwo!;
+      pickedStateId = addressBloc.address!.userState?.id;
+      pickedStateValue = addressBloc.address!.userState?.name;
       cityController.text = addressBloc.address!.city!;
-      stateController.text = addressBloc.address!.state!;
       selectedCountry = CountryPickerUtils.getCountryByIsoCode(
           addressBloc.address!.countryIsoCode);
+      debugPrint('STATE ID::: $pickedStateId');
+
       if (mounted) setState(() {});
     });
+
+    //     .catchError((e) {
+    //   debugPrint('ERROR WHILE FETCHING USER ADDRESS ::: $e');
+    //
+    //   isLoading = false;
+    //
+    //   if (mounted) setState(() {});
+    // });
     super.initState();
   }
 
@@ -137,9 +150,16 @@ class _UserAddressState extends State<UserAddress> {
                     flexibleSpace(),
                     getAddressLineTwo(),
                     flexibleSpace(),
-                    getCity(),
+                    PickStateWidget(
+                      initialStateValue: pickedStateValue,
+                      afterOnChanged: (stateId, stateValue) {
+                        pickedStateId = stateId;
+                        pickedStateValue = stateValue;
+                      },
+                      disable: widget.customerName != null,
+                    ),
                     flexibleSpace(),
-                    getState(),
+                    getCity(),
                     flexibleSpace(),
                     getCountryDropdown(),
                     flexibleSpace(),
@@ -214,15 +234,15 @@ class _UserAddressState extends State<UserAddress> {
     );
   }
 
-  Widget getState() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.state,
-      controller: stateController,
-      enabled: widget.customerName == null,
-      validator: (val) =>
-          val.length == 0 ? AppLocalization.of(context)!.invalidState : null,
-    );
-  }
+  // Widget getState() {
+  //   return CustomizedTextFormField(
+  //     labelText: AppLocalization.of(context)!.state,
+  //     controller: stateController,
+  //     enabled: widget.customerName == null,
+  //     validator: (val) =>
+  //         val.length == 0 ? AppLocalization.of(context)!.invalidState : null,
+  //   );
+  // }
 
   Widget getCountryDropdown() {
     return Column(
@@ -312,9 +332,9 @@ class _UserAddressState extends State<UserAddress> {
   }
 
   void goToOrderSummaryPage() {
-    Address address = Address(
+    ShippingAddress address = ShippingAddress(
       city: cityController.text,
-      state: stateController.text,
+      stateName: pickedStateValue,
       country: selectedCountry.name,
       countryIsoCode: selectedCountry.isoCode,
       shippingNote: deliveryNoteController.text,
@@ -331,17 +351,24 @@ class _UserAddressState extends State<UserAddress> {
     if (_formKey.currentState!.validate()) {
       Map data = {
         "city": cityController.text,
-        "state": stateController.text,
+        "state": pickedStateId,
         "country": selectedCountry.name,
         "iso_code": selectedCountry.isoCode,
         "address_line_1": addressLineOneController.text,
         "address_line_2": addressLineTwoController.text,
       };
+
+      showDialog(context: context, builder: (context) => LoadingIndicator());
+
       UserAuth().addUserAddress(data).then((value) {
         showToast(
             message:
                 AppLocalization.of(context)!.addressAddedSuccessFully + " !!!");
         Navigator.pop(context);
+        Navigator.pop(context);
+      }).catchError((e) {
+        Navigator.pop(context);
+        showToast(message: e.toString());
       });
     }
   }
@@ -351,7 +378,6 @@ class _UserAddressState extends State<UserAddress> {
     addressLineOneController.dispose();
     addressLineTwoController.dispose();
     cityController.dispose();
-    stateController.dispose();
     super.dispose();
   }
 }

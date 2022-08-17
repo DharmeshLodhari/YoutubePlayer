@@ -9,11 +9,14 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../locale/app_localization.dart';
+import '../../../locator.dart';
+import '../../../services/app_config_bloc.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../utils/video_player_controller/chewie_player.dart';
@@ -21,7 +24,6 @@ import '../../../utils/video_player_controller/chewie_progress_colors.dart';
 import '../../../widget/LoadingIndicator.dart';
 import '../../../widget/dialog.dart';
 import '../../../widget/rounded_background_icon.dart';
-import '../../more_apps/shopping/shopping_auth.dart';
 import '../models/attachment_item_model.dart';
 import '../models/create_moment_model.dart';
 import 'moments_service.dart';
@@ -63,13 +65,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   String momentTitle = '';
   bool isVideoLoading = false;
   Map<String, String>? attachmentMap;
-
   ChewieController? _chewieController;
-
   Color pickedColor = navyBlue;
-
   AttachmentItemModel? attachmentItemModel;
-
   late FocusNode focusNode;
   String payMeLabel = 'Pay Me';
   void changeColor(Color color) {
@@ -77,9 +75,17 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     debugPrint('PICKED COLOR ::: $pickedColor');
   }
 
+  AppConfigurationModel? appConfigurationModel;
+
   @override
   void initState() {
-    debugPrint('file path -> ${widget.filePath}');
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
+    if (Provider.of<UserBloc>(context, listen: false).user.type == 'User') {
+      attachmentList = ['Blog', 'Url', 'None'];
+    } else {
+      attachmentList = ['Blog', 'Product', 'Service', 'Url', 'None'];
+    }
     payMeCtrl.addListener(() {
       setState(() {
         payMeLabel = payMeCtrl.text;
@@ -102,6 +108,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       appBar: appBar(),
       body: Stack(
@@ -248,19 +255,21 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                               userTags.removeWhere((tag) => tag.isEmpty);
                             },
                           ),
-                          previewMomentSwitchOptions(
-                            title: 'Enable Payment',
-                            description:
-                                'Enable this to allow other users to support your work by making a donation.',
-                            switchBtn: Switch(
-                              value: enablePayMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  enablePayMe = value;
-                                });
-                              },
-                            ),
-                          ),
+                          appConfigurationModel?.enablePayment == true
+                              ? previewMomentSwitchOptions(
+                                  title: 'Enable Payment',
+                                  description:
+                                      'Enable this to allow other users to support your work by making a donation.',
+                                  switchBtn: Switch(
+                                    value: enablePayMe,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        enablePayMe = value;
+                                      });
+                                    },
+                                  ),
+                                )
+                              : SizedBox.shrink(),
                           SizedBox(height: 20),
                           dropDownPickItemWidget(
                             label: 'Pick attachment',
@@ -1119,62 +1128,6 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       if (mounted) setState(() {});
     }
   }
-
-  getUsersProduct() async {
-    if (mounted) {
-      setState(() {
-        attachmentItemLoading = true;
-      });
-    }
-    Map<String, dynamic>? result = await ShoppingAuthService()
-        .listOfProduct("", "", userName: userBloc.user.userName);
-    if (mounted) {
-      setState(() {
-        attachmentItemLoading = true;
-      });
-    }
-    debugPrint('RESULT ::: $result');
-    if (result != null) {
-      List resultList = result['results'] as List;
-      itemAttachmentList =
-          resultList.map((e) => AttachmentItemModel.fromJson(e)).toList();
-    } else {
-      if (mounted) {
-        setState(() {
-          attachmentItemLoading = false;
-        });
-      }
-    }
-  }
-
-  getUsersService() async {
-    if (mounted) {
-      setState(() {
-        attachmentItemLoading = true;
-      });
-    }
-    Map<String, dynamic>? result = await ShoppingAuthService()
-        .listServicesByProvider("", "", userName: userBloc.user.userName);
-    if (mounted) {
-      setState(() {
-        attachmentItemLoading = true;
-      });
-    }
-    if (result != null) {
-      List resultList = result['results'] as List;
-      itemAttachmentList =
-          resultList.map((e) => AttachmentItemModel.fromJson(e)).toList();
-    } else {
-      if (mounted) {
-        setState(() {
-          attachmentItemLoading = false;
-        });
-      }
-    }
-  }
-
-
-
 }
 
 enum AttachmentType { Blog, Product, Service }

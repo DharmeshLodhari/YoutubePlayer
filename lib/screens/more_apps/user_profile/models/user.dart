@@ -3,37 +3,43 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/util.dart';
 
-class Address {
+class ShippingAddress {
   String? addressLineOne;
   String? addressLineTwo;
   String? city;
-  String? state;
+  UserState? userState;
   String? country;
   String? countryIsoCode;
   String? shippingNote;
+  String? postCode;
+  String? stateName;
 
-  Address(
+  ShippingAddress(
       {this.addressLineOne,
       this.addressLineTwo,
       this.city,
-      this.state,
+      this.stateName,
+      this.postCode,
+      this.userState,
       this.country,
       this.shippingNote,
       this.countryIsoCode});
 
-  Address.fromJson(var object) {
+  ShippingAddress.fromJson(var object) {
     this.addressLineOne = object['address_line_1'] ?? "";
     this.addressLineTwo = object['address_line_2'] ?? "";
     this.city = object['city'] ?? "";
-    this.state = object['state'] ?? "";
+    this.userState =
+        object['state'] != null ? UserState.fromJson(object['state']) : null;
     this.country = object['country'] ?? "";
     this.countryIsoCode = object['country_iso_code'] ?? "NG";
+    this.postCode = object['post_code'];
   }
 
   Map<String, dynamic> toJson() {
     return {
       'city': city,
-      'state': state,
+      'state': userState,
       'country': country,
       'shipping_note': shippingNote,
       'address_line_1': addressLineOne,
