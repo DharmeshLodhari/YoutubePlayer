@@ -5,7 +5,6 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/ask/ask_screen.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
@@ -35,6 +34,7 @@ import 'package:sizer/sizer.dart';
 
 import '../locator.dart';
 import '../routes/route_constants.dart';
+import 'more_apps/ask/ask_start_screen.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
@@ -186,7 +186,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 firstRowOfMoreApps(),
                 SizedBox(height: 12),
                 appVersionDataUI(),
-                SizedBox(height: 12),
+                SizedBox(height: 32),
               ],
             ),
           ),
@@ -556,7 +556,7 @@ class _UserDashboardState extends State<UserDashboard> {
             onTap: () {
               NavigationUtil.push(
                 context,
-                screen: AskScreen(),
+                screen: AskStartScreen(),
               );
             },
             iconColor: HexColor("#374677"),
