@@ -550,7 +550,7 @@ class _HomeState extends State<Home> {
                 'isFromProfile': true,
               });
             } else {
-              showToast(message: 'Coming soon');
+              showToast(message: 'Payment not available at the moment');
             }
           }),
     );
@@ -599,7 +599,7 @@ class _HomeState extends State<Home> {
               Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
                   arguments: <String, bool>{'isFromProfile': true});
             } else {
-              showToast(message: 'Coming soon');
+              showToast(message: 'Payment not available at the moment');
             }
           }),
     );

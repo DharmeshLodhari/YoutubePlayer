@@ -74,13 +74,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.initState();
     debugPrint('POST ID ---> ${widget.postId}');
     getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
-    Future.delayed(Duration(seconds: 5), () {
-      UserPostAuth().updatePostView(postId: widget.postId!);
+    Future.delayed(Duration(seconds: 1), () {
+      UserPostAuth().updateBlogView(postId: widget.postId!);
     });
   }
 
   getBlogDetailsAndInitializeVideoController({required UserPost userPost}) {
-    if (userPost.video != null) {
+    if (userPost.video != null && userPost.video!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(userPost.video!);
 
       _chewieMainController = ChewieController(
@@ -126,7 +126,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
     newsDetailItem = await NewsAuthService().getNewsDetail();
 
-    if (newsDetailItem.video != null) {
+    if (newsDetailItem.video != null && newsDetailItem.video!.isNotEmpty) {
       _mainVideoController =
           VideoPlayerController.network(newsDetailItem.video!);
       _chewieMainController = ChewieController(
@@ -207,6 +207,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               getBlogDetailsAndInitializeVideoController(userPost: userPost!);
             }
             return PostDetailPageScaffoldBody(
+              views: userPost?.views,
               postID: widget.postType == PostType.blog ? userPost!.id! : '',
               postType: widget.postType,
               authorUsername: userPost!.authorUsername,
@@ -521,6 +522,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 }
 
 class PostDetailPageScaffoldBody extends StatefulWidget {
+  final int? views;
   final int readTime;
   final String postID;
   final bool isLoading;
@@ -540,6 +542,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
   const PostDetailPageScaffoldBody({
     Key? key,
     required this.tags,
+    required this.views,
     required this.postID,
     required this.postType,
     required this.subTitle,
@@ -572,10 +575,9 @@ class _PostDetailPageScaffoldBodyState
           )
         : SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  height: 6,
-                ),
+                SizedBox(height: 6),
                 widget.chewieMainController != null
                     ? videoPlayer()
                     : postImage(),
@@ -603,9 +605,31 @@ class _PostDetailPageScaffoldBodyState
                       //   height: 20,
                       // ),
                       newsFullDescription(),
-                      SizedBox(
-                        height: 20,
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.visibility_rounded,
+                            color: blackFont.withOpacity(0.8),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            getFormattedViewCount(
+                              noOfViews:
+                                  widget.views != null ? widget.views! : 1,
+                              addViewText: false,
+                            ),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: blackFont.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
                       ),
+                      SizedBox(height: 20),
+
                       Divider(
                         thickness: 1,
                         color: dividerColor,
@@ -613,7 +637,7 @@ class _PostDetailPageScaffoldBodyState
                       SizedBox(
                         height: 20,
                       ),
-                      newsChips(),
+                      blogChips(),
                       SizedBox(
                         height: 20,
                       ),
@@ -763,7 +787,7 @@ class _PostDetailPageScaffoldBodyState
     return widget.postFullDescription;
   }
 
-  Widget newsChips() {
+  Widget blogChips() {
     return Wrap(
         spacing: 8,
         runSpacing: 8,

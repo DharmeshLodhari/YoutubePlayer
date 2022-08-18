@@ -113,7 +113,9 @@ class _EditProductState extends State<EditProduct> {
           productPriceController.text =
               moneyNormalizer(int.parse(currentProduct.price!)).toString();
 
-          productManufacturerController.text = currentProduct.manufacturer!;
+          if (currentProduct.manufacturer != null) {
+            productManufacturerController.text = currentProduct.manufacturer!;
+          }
           productShortDescriptionController.text =
               currentProduct.shortDescription!;
 
@@ -153,9 +155,10 @@ class _EditProductState extends State<EditProduct> {
           });
         });
       }
-    }).catchError((error) {
-      showToast(message: error.toString());
     });
+    //     .catchError((error) {
+    //   showToast(message: error.toString());
+    // });
   }
 
   @override

@@ -81,7 +81,7 @@ class _MaterialControlsState extends State<MaterialControls> {
                         width: double.infinity,
                         child: widget.posterUrl!.startsWith('http')
                             ? CachedNetworkImage(
-                                fit: BoxFit.fill,
+                                fit: BoxFit.cover,
                                 imageUrl: widget.posterUrl!,
                               )
                             : Image.file(

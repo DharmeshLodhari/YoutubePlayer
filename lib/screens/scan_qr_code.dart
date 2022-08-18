@@ -225,7 +225,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                       Navigator.pop(context);
                     });
               } else {
-                showToast(message: 'Coming soon');
+                showToast(message: 'Payment not available at the moment');
               }
             },
             content: Padding(
@@ -438,7 +438,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           );
         }
       } else {
-        showToast(message: 'Payment coming soon');
+        showToast(message: 'Payment not available at the moment');
       }
     }
   }

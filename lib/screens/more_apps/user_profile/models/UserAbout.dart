@@ -31,10 +31,12 @@ class UserAbout {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 
-    data['address'] = this.userAddress;
+    data['address'] = this.userAddress?.toJson();
     data['bio'] = this.bio;
     data['contact'] = this.contact;
-    if (!this.wallpaper.contains("https") && this.wallpaper != "") {
+    if (!this.wallpaper.contains("https") &&
+        !this.wallpaper.contains("http") &&
+        this.wallpaper != "") {
       data['wallpaper'] = this.wallpaper;
     }
 
@@ -74,12 +76,10 @@ class UserAddress {
     return UserAddress();
   }
 
-  // _InternalLinkedHashMap<String, dynamic>
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['state'] = this.state!;
+    data['state'] = this.state;
     data['address_line_1'] = this.addressLine1;
     data['address_line_2'] = this.addressLine2;
     data['city'] = this.city;

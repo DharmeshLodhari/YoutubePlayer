@@ -1010,7 +1010,7 @@ class _SearchModuleState extends State<SearchModule> {
                 },
               );
             } else {
-              showToast(message: 'Coming soon');
+              showToast(message: 'Payment not available at the moment');
             }
           },
           title: AppLocalization.of(context)!.request,
@@ -1029,7 +1029,7 @@ class _SearchModuleState extends State<SearchModule> {
                 'isFromProfile': false,
               });
             } else {
-              showToast(message: 'Coming soon');
+              showToast(message: 'Payment not available at the moment');
             }
           },
           title: AppLocalization.of(context)!.send,

@@ -25,7 +25,7 @@ class CustomMomentDetailButton extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.white54,
+                color: Colors.white38,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(

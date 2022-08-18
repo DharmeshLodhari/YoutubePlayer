@@ -420,7 +420,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     myMomentsLoading = true;
     if (mounted) setState(() {});
     MomentsService()
-        .getMomentsWithOwnerName(ownerName: searchedUser!.userName!)
+        .getMomentsWithOwnerName(ownerName: searchedUser!.userName!, fromUserProfile: true)
         .then((momentsModelList) {
       debugPrint('MY MOMENTS -> ${momentsModelList.isNotEmpty}');
 
@@ -701,7 +701,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       index++;
 
       tabs.add(
-        getTabUI(title: "Posts", tabIndex: index),
+        getTabUI(title: "Blogs", tabIndex: index),
       );
     } else {
       int index = 0;
@@ -726,7 +726,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         index++;
       }
       tabs.add(
-        getTabUI(title: "Posts", tabIndex: index),
+        getTabUI(title: "Blogs", tabIndex: index),
       );
       index++;
       tabs.add(
@@ -1027,7 +1027,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       arguments: <String, bool>{'isFromProfile': false});
                 });
               } else {
-                showToast(message: 'Coming soon');
+                showToast(message: 'Payment not available at the moment');
               }
             },
           ),
@@ -1036,7 +1036,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               iconData: SlydoAppIcon.receive,
               isLast: true,
               onTap: () {
-                debugPrint('${appConfigurationModel?.enablePayment}');
                 if (appConfigurationModel?.enablePayment == true) {
                   UserAuth()
                       .fetchCustomerProfile(searchedUserName)
@@ -1050,7 +1049,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         });
                   });
                 } else {
-                  showToast(message: 'Coming soon');
+                  showToast(message: 'Payment not available at the moment');
                 }
               }),
         ],

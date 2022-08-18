@@ -239,15 +239,6 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
       );
     }
 
-    _onEndScroll(ScrollMetrics metrics) {
-      print("Scroll End -------------> ${_verticalScrollPageViewCtrl.page}");
-      if (currentVerticalPageIndex < -1) {
-        print("Scroll End -------------> POP");
-
-        NavigationUtil.pop(context);
-      }
-    }
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Align(
@@ -895,7 +886,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                         },
                       );
                     } else {
-                      showToast(message: 'Payment coming soon');
+                      showToast(message: 'Payment not available at the moment');
                     }
                   }
                 : () {
@@ -1026,6 +1017,9 @@ class _VideoDisplayState extends State<VideoDisplay> {
             initialized = true;
             _controller.setLooping(true);
             setState(() {});
+          }).catchError((e) {
+            Navigator.pop(context);
+            showToast(message: 'Unable to display moment');
           });
     super.initState();
   }

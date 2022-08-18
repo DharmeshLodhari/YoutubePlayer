@@ -36,8 +36,16 @@ class _PickStateWidgetState extends State<PickStateWidget> {
   void initState() {
     super.initState();
     userBioDetail = Provider.of<UserBloc>(context, listen: false).userAbout;
-    if (userBioDetail?.userAddress?.state != null) {
-      stateId = userBioDetail!.userAddress!.state;
+
+    if (widget.initialStateValue == null) {
+      if (userBioDetail?.userAddress?.state != null) {
+        dynamic state = userBioDetail!.userAddress!.state;
+        if (state is Map) {
+          stateId = state['id'];
+        } else {
+          stateId = state;
+        }
+      }
     }
 
     getStates();

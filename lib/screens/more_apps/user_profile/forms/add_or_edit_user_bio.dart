@@ -243,14 +243,14 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           SizedBox(height: 20),
           addAddressLine2Field(),
           SizedBox(height: 20),
+          cityField(),
+          SizedBox(height: 20),
           PickStateWidget(
             afterOnChanged: (stateId, stateValue) {
               pickedStateId = stateId;
               pickedStateValue = stateValue;
             },
           ),
-          SizedBox(height: 20),
-          cityField(),
           SizedBox(height: 20),
           addOpeningHour(),
         ],
@@ -416,6 +416,14 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   Widget getProfileCover() {
+    debugPrint('USER ABOUT --> ${userBloc.userAbout == null}');
+    debugPrint('USER ABOUT --> ${userBloc.userAbout!.wallpaper == ""}');
+    debugPrint(
+        'USER ABOUT --> ${!userBloc.userAbout!.wallpaper.contains("http")}');
+    debugPrint(
+        'USER ABOUT --> ${!userBloc.userAbout!.wallpaper.contains("https")}');
+
+    debugPrint('MY WALL -> ${userBloc.userAbout!.wallpaper}');
     return Container(
       height: 206,
       child: userBloc.userAbout == null
@@ -425,7 +433,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               fit: BoxFit.cover,
             )
           : userBloc.userAbout!.wallpaper == "" ||
-                  !userBloc.userAbout!.wallpaper.contains("http")
+                  (!userBloc.userAbout!.wallpaper.contains("http") &&
+                      !userBloc.userAbout!.wallpaper.contains("https"))
               ? Image.asset(
                   "assets/images/home_screen_background.png",
                   width: double.infinity,
@@ -494,7 +503,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                       ),
                     ),
                   ),
-                  onTap: selectAvatarAction,
+                  onTap: selectProfilePictureAction,
                 ),
               )
             ],
@@ -504,10 +513,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     );
   }
 
-  void selectAvatarAction() async {
+  void selectProfilePictureAction() async {
     String? result = await selectImageAction(imageName: "avatar");
     if (result != null) {
       if (result == "update") {
+        debugPrint('UPDATE ---> ');
+
         updateProfilePicture();
       } else if (result == "remove") {
         isUserAvatarLoading = true;
@@ -527,31 +538,31 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
   void updateProfilePicture() async {
     final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              title: Text(
-                AppLocalization.of(context)!.selectTheImageSource,
-                style: TextStyle(fontSize: 18, color: blackFont),
-              ),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text(
-                    AppLocalization.of(context)!.camera,
-                    style: TextStyle(fontSize: 16, color: blackFont),
-                  ),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text(
-                    "Gallery",
-                    style: TextStyle(fontSize: 16, color: blackFont),
-                  ),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        title: Text(
+          AppLocalization.of(context)!.selectTheImageSource,
+          style: TextStyle(fontSize: 18, color: blackFont),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            child: Text(
+              AppLocalization.of(context)!.camera,
+              style: TextStyle(fontSize: 16, color: blackFont),
+            ),
+            onPressed: () => Navigator.pop(context, ImageSource.camera),
+          ),
+          MaterialButton(
+            child: Text(
+              "Gallery",
+              style: TextStyle(fontSize: 16, color: blackFont),
+            ),
+            onPressed: () => Navigator.pop(context, ImageSource.gallery),
+          )
+        ],
+      ),
+    );
 
     if (imageSource != null) {
       final file =
@@ -564,28 +575,27 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           return;
         }
 
+        debugPrint('CROPPED IMAGE UPDATE ---> $croppedImage');
+
         try {
           isUserAvatarLoading = true;
           if (mounted) setState(() {});
 
           // Upload Image new image
-          CustomerProfile customerProfile = await UserAuth()
-              .updateUserAvatar(File(croppedImage))
-              .catchError((error) {});
+          CustomerProfile customerProfile =
+              await UserAuth().updateUserAvatar(File(croppedImage));
 
           isUserAvatarLoading = false;
           if (mounted) setState(() {});
 
-          if (customerProfile != null) {
-            debugPrint("==> ${customerProfile.avatar}");
+          debugPrint("==> ${customerProfile.avatar}");
 
-            // userBloc.updateProfileAvatar(customerProfile.avatar);
+          userBloc.updateProfileAvatar(customerProfile.avatar);
 
-            broadcastUserAvatarUpdate(
-              context: context,
-              avatar: customerProfile.avatar!,
-            );
-          }
+          broadcastUserAvatarUpdate(
+            context: context,
+            avatar: customerProfile.avatar!,
+          );
         } catch (err) {
           isUserAvatarLoading = false;
           if (mounted) setState(() {});
@@ -614,10 +624,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       controller: addressLine2Controller,
       labelText: "Address Line 2",
       validator: (val) {
-        if (val.isNotEmpty) {
-          return null;
-        }
-        return "Invalid Address";
+        return null;
       },
       hintText: "This address will be publicly available.",
     );
@@ -965,16 +972,16 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
         await UserAuth()
             .addOrUpdateUserBio(userAbout: userAbout, nickName: nickName)
-            .catchError((error) {
+            .then((newUserAbout) {
+          userBloc.userAbout = newUserAbout;
+
+          isSearchedUserAboutLoading = false;
+          if (mounted) setState(() {});
+        }).catchError((error) {
           isSearchedUserAboutLoading = false;
           if (mounted) setState(() {});
 
           showToast(message: error.toString());
-
-          isSearchedUserAboutLoading = false;
-          if (mounted) setState(() {});
-        }).then((newUserAbout) {
-          userBloc.userAbout = newUserAbout;
 
           isSearchedUserAboutLoading = false;
           if (mounted) setState(() {});

@@ -51,7 +51,7 @@ class _PostTileState extends State<PostTile> {
   void initState() {
     super.initState();
 
-    if (widget.post?.video != null) {
+    if (widget.post?.video != null && widget.post!.video!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(widget.post!.video!);
 
       _chewieMainController = ChewieController(
@@ -82,7 +82,7 @@ class _PostTileState extends State<PostTile> {
 
   @override
   void dispose() {
-    if (widget.post?.video != null) {
+    if (widget.post?.video != null && widget.post!.video!.isNotEmpty) {
       _mainVideoController!.dispose();
       _chewieMainController!.dispose();
     }
@@ -125,7 +125,8 @@ class _PostTileState extends State<PostTile> {
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),
                       ),
-                      child: widget.post?.video != null
+                      child: widget.post?.video != null &&
+                              widget.post!.video!.isNotEmpty
                           ? SizedBox(
                               height: 150,
                               child: Chewie(
@@ -141,6 +142,50 @@ class _PostTileState extends State<PostTile> {
                               imageUrl: widget.post?.image ?? "",
                             ),
                     ),
+                    Positioned(
+                      top: 8,
+                      right: 10,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(boxShadow: [
+                              BoxShadow(
+                                blurRadius: 20.0,
+                                color: blackFont.withOpacity(0.3),
+                                offset: Offset(0.0, 0),
+                              ),
+                            ]),
+                            child: Icon(
+                              Icons.visibility_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            getFormattedViewCount(
+                              noOfViews: widget.post?.views != null
+                                  ? widget.post!.views!
+                                  : 1,
+                              addViewText: false,
+                            ),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10.0,
+                                  color: blackFont,
+                                  offset: Offset(0.0, 0),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                     // Positioned(
                     //   right: 0,
                     //   top: -5,

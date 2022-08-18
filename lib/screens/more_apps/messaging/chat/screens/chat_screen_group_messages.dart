@@ -1964,7 +1964,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         setupShakeDetector();
       }
     } else {
-      showToast(message: 'Coming soon');
+      showToast(message: 'Payment not available at the moment');
     }
   }
 
@@ -2091,7 +2091,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         setupShakeDetector();
       }
     } else {
-      showToast(message: 'Coming soon');
+      showToast(message: 'Payment not available at the moment');
     }
   }
 

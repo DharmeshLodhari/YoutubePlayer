@@ -226,6 +226,7 @@ class _SuperBlogState extends State<SuperBlog> {
                 ],
               ),
             ),
+            SizedBox(height: 8),
             Expanded(
               child: PageView(
                 onPageChanged: (currentPage) {
@@ -259,8 +260,7 @@ class _SuperBlogState extends State<SuperBlog> {
                           onRefresh: _onPostRefresh,
                           child: ListView.builder(
                             physics: ClampingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 32),
+                            padding: EdgeInsets.symmetric(horizontal: 16),
                             controller: _postScrollController,
                             itemCount: postList.length + 1,
                             itemBuilder: (BuildContext context, int index) {
