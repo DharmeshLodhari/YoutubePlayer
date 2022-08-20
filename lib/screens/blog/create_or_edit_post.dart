@@ -127,7 +127,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     isPublished = widget.userPost!.isPublished!;
     publishedDateTime = widget.userPost!.publishedDate;
     userTags = List<String>.from(widget.userPost!.tags!);
-    enableCommenting = widget.userPost!.enableCommenting!;
+    // enableCommenting = widget.userPost!.enableCommenting!;
     blogTitleCtrl = TextEditingController(text: widget.userPost!.title);
 
     try {
@@ -582,6 +582,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                         fit: BoxFit.fill,
                         width: 200,
                         height: 200,
+                        errorWidget: imageErrorWidget,
+
                       ),
                     )
                   : Image.file(
@@ -825,12 +827,13 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
             BlogSettingsTitles(
               title: 'Enable Comments',
               addElevation: false,
+              isEnabled: false,
               description: 'Everyone will be able to comment on your post',
               isSwitched: enableCommenting,
               icon: Icon(Icons.message_rounded, color: blackFont),
               onChanged: (commentingEnabled) {
-                enableCommenting = commentingEnabled;
-                setState(() => enableCommenting = commentingEnabled);
+                // enableCommenting = commentingEnabled;
+                // setState(() => enableCommenting = commentingEnabled);
               },
             ),
             BlogSettingsTitles(

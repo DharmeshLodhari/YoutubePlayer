@@ -20,7 +20,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -456,10 +455,6 @@ Widget getChatSettingTitle() {
 }
 
 Widget buildIndicator({required bool isLoading}) {
-
-
-
-
   return new Padding(
     padding: const EdgeInsets.all(8.0),
     child: new Center(
@@ -829,6 +824,7 @@ double formatRating(double rating) {
 }
 
 class BlogSettingsTitles extends StatefulWidget {
+  final bool isEnabled;
   final Function()? onTap;
   bool? isSwitched;
   final Widget icon;
@@ -839,7 +835,8 @@ class BlogSettingsTitles extends StatefulWidget {
   final Widget? trailingWidget;
   final Function(bool isSwitched)? onChanged;
   BlogSettingsTitles(
-      {required this.icon,
+      {this.isEnabled = true,
+      required this.icon,
       required this.title,
       this.onChanged,
       this.onTap,
@@ -875,7 +872,7 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
             Text(
               widget.title,
               style: TextStyle(
-                color: blackFont,
+                color: widget.isEnabled ? blackFont : greyBorderColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),
@@ -885,7 +882,7 @@ class _BlogSettingsTitlesState extends State<BlogSettingsTitles> {
             Text(
               widget.description,
               style: TextStyle(
-                color: Colors.grey,
+                color: widget.isEnabled ? Colors.grey : greyBorderColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),

@@ -959,6 +959,8 @@ class _RenderMediaState extends State<RenderMedia> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('GLAD IMAGE MEDIATYPE -> ${widget.momentsModel.id}');
+    debugPrint('GLAD IMAGE -> ${widget.momentsModel.media!}');
     if (widget.momentsModel.gif != null) {
       return CachedNetworkImage(
         imageUrl: widget.momentsModel.gif!,
@@ -969,7 +971,7 @@ class _RenderMediaState extends State<RenderMedia> {
 
     if (widget.momentsModel.mediaType == "image") {
       return PhotoView(
-        //To be able to zoom the iamge.
+        //To be able to zoom the image.
         imageProvider: NetworkImage(widget.momentsModel.media!),
       );
 
