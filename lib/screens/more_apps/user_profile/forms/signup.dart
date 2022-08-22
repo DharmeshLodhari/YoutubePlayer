@@ -333,7 +333,6 @@ class _SignUpState extends State<SignUp> {
   }
 
   String? userNameValidator(String username) {
-    // alphanumeric and -_.
     RegExp validCharacters = RegExp(r'^[a-zA-Z 0-9\.\+\-\_]*$');
 
     // RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');

@@ -246,7 +246,7 @@ class TopicTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height ?? 50,
+      height: height,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(11),
         border: Border.all(

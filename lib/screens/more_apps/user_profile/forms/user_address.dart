@@ -62,15 +62,13 @@ class _UserAddressState extends State<UserAddress> {
       debugPrint('STATE ID::: $pickedStateId');
 
       if (mounted) setState(() {});
-    });
+    }).catchError((e) {
+      debugPrint('ERROR WHILE FETCHING USER ADDRESS ::: $e');
 
-    //     .catchError((e) {
-    //   debugPrint('ERROR WHILE FETCHING USER ADDRESS ::: $e');
-    //
-    //   isLoading = false;
-    //
-    //   if (mounted) setState(() {});
-    // });
+      isLoading = false;
+
+      if (mounted) setState(() {});
+    });
     super.initState();
   }
 
