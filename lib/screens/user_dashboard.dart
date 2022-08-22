@@ -34,6 +34,7 @@ import 'package:sizer/sizer.dart';
 
 import '../locator.dart';
 import '../routes/route_constants.dart';
+import 'more_apps/ask/ask_start_screen.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
@@ -197,7 +198,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 firstRowOfMoreApps(),
                 SizedBox(height: 70),
                 appVersionDataUI(),
-                SizedBox(height: 12),
+                SizedBox(height: 32),
               ],
             ),
           ),
@@ -567,10 +568,10 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: AppLocalization.of(context)!.ask,
             onTap: () {
-              // NavigationUtil.push(
-              //   context,
-              //   screen: SuperBlog(),
-              // );
+              NavigationUtil.push(
+                context,
+                screen: AskStartScreen(),
+              );
             },
             iconColor: HexColor("#374677"),
           ),
