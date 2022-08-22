@@ -51,7 +51,7 @@ class _PostTileState extends State<PostTile> {
   void initState() {
     super.initState();
 
-    if (widget.post?.video != null) {
+    if (widget.post?.video != null && widget.post!.video!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(widget.post!.video!);
 
       _chewieMainController = ChewieController(
@@ -82,7 +82,7 @@ class _PostTileState extends State<PostTile> {
 
   @override
   void dispose() {
-    if (widget.post?.video != null) {
+    if (widget.post?.video != null && widget.post!.video!.isNotEmpty) {
       _mainVideoController!.dispose();
       _chewieMainController!.dispose();
     }
@@ -125,7 +125,8 @@ class _PostTileState extends State<PostTile> {
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),
                       ),
-                      child: widget.post?.video != null
+                      child: widget.post?.video != null &&
+                              widget.post!.video!.isNotEmpty
                           ? SizedBox(
                               height: 150,
                               child: Chewie(
@@ -141,23 +142,56 @@ class _PostTileState extends State<PostTile> {
                               imageUrl: widget.post?.image ?? "",
                             ),
                     ),
-                    // Positioned(
-                    //   right: 0,
-                    //   top: -5,
-                    //   child: IconButton(
-                    //     icon: Icon(
-                    //       isSelected
-                    //           ? SlydoAppIcon.heart_1
-                    //           : SlydoAppIcon.heart_empty,
-                    //       color: Colors.white,
-                    //       size: 20,
-                    //     ),
-                    //     onPressed: () {
-                    //       isSelected = !isSelected;
-                    //       setState(() {});
-                    //     },
-                    //   ),
-                    // ),
+                    widget.showAuthorDetails
+                        ? Positioned(
+                            left: 10,
+                            bottom: 10,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, Routes.USER_PROFILE, arguments: {
+                                  "searchedUserName":
+                                      widget.post!.authorUsername
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: widget.post!.authorAvatar!,
+                                        errorWidget: imageErrorWidget,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    truncateString(
+                                        str: widget.post!.authorName!,
+                                        lengthToTruncateAt: 35),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 2.0,
+                                          color: blackFont,
+                                          offset: Offset(0.0, 0),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
                     widget.post!.isPublished!
                         ? SizedBox.shrink()
                         : Positioned(
@@ -176,7 +210,7 @@ class _PostTileState extends State<PostTile> {
                 Container(
                   padding: EdgeInsets.only(left: 15, top: 16, bottom: 16),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -185,9 +219,10 @@ class _PostTileState extends State<PostTile> {
                             child: Text(
                               messageDecoderWithEmoji(widget.post?.title) ?? "",
                               style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: blackFont),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: blackFont,
+                              ),
                               maxLines: 2,
                               softWrap: true,
                               overflow: TextOverflow.clip,
@@ -202,69 +237,59 @@ class _PostTileState extends State<PostTile> {
                           ),
                         ],
                       ),
-                      widget.post!.enableLike!
-                          ? _buildLikeUnLikeReportTile()
-                          : SizedBox.shrink(),
+                      SizedBox(height: 8),
                       Text(
                         messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: darkGrey),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: darkGrey,
+                        ),
                         maxLines: 3,
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 6),
-                      widget.showAuthorDetails
-                          ? InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, Routes.USER_PROFILE, arguments: {
-                                  "searchedUserName":
-                                      widget.post!.authorUsername
-                                });
-                              },
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: CachedNetworkImage(
-                                        fit: BoxFit.cover,
-                                        imageUrl: widget.post!.authorAvatar!,
-                                        errorWidget: imageErrorWidget,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      '${widget.post!.authorName}',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 12,
-                                        color: blackFont,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: CustomChip(
-                                      text: widget.post!.readTime == 0
-                                          ? '1 min read'
-                                          : '${widget.post!.readTime} min read',
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 5, horizontal: 8),
-                                    ),
-                                  ),
-                                ],
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.visibility_rounded,
+                                size: 16,
+                                color: blackFont,
                               ),
-                            )
-                          : SizedBox.shrink(),
+                              SizedBox(width: 6),
+                              Text(
+                                getFormattedViewCount(
+                                  noOfViews: widget.post?.views != null
+                                      ? widget.post!.views!
+                                      : 1,
+                                  addViewText: false,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: blackFont,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(width: 16),
+                          _buildLikeUnLikeReportTile(),
+                          Spacer(),
+                          CustomChip(
+                            color: greyBorderColor,
+                            textColor: blackFont,
+                            text: widget.post!.readTime == 0
+                                ? '1 min read'
+                                : '${widget.post!.readTime} min read',
+                            padding: EdgeInsets.all(4),
+                          ),
+                          SizedBox(width: 8),
+                        ],
+                      )
                     ],
                   ),
                 ),
@@ -383,16 +408,19 @@ class _PostTileState extends State<PostTile> {
   }
 
   Widget _buildLikeUnLikeReportTile() {
+    if (!widget.post!.enableLike!) {
+      return SizedBox.shrink();
+    }
+
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              _buildReviewLike(),
-              SizedBox(width: 8),
-              _buildPostUnLike(),
-            ],
-          ),
+        Row(
+          children: [
+            _buildReviewLike(),
+            SizedBox(width: 16),
+            _buildPostUnLike(),
+          ],
         ),
 
         // Expanded(child: Container())
@@ -408,7 +436,6 @@ class _PostTileState extends State<PostTile> {
           ? () => showToast(message: 'You cannot like your post')
           : likeUnlikePost,
       child: Container(
-        padding: EdgeInsets.all(12),
         child: Row(
           children: [
             Icon(
@@ -420,10 +447,12 @@ class _PostTileState extends State<PostTile> {
             ),
             SizedBox(width: 4),
             Text(
-              widget.post?.likes.toString() ?? "",
+              widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
+
+
               style: TextStyle(
                 color: blackFont,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
                 fontSize: 14,
               ),
             ),
@@ -470,10 +499,9 @@ class _PostTileState extends State<PostTile> {
   Widget _buildPostUnLike() {
     return GestureDetector(
       onTap: isAuthor
-          ? () => showToast(message: 'You cannot unlike your post')
+          ? () => showToast(message: 'You cannot dislike your post')
           : dislikeUnlikePost,
       child: Container(
-        padding: EdgeInsets.all(12),
         child: Row(
           children: [
             Icon(
@@ -485,10 +513,11 @@ class _PostTileState extends State<PostTile> {
             ),
             SizedBox(width: 4),
             Text(
-              widget.post?.dislikes.toString() ?? "",
+              widget.post?.dislikes != null ? widget.post!.dislikes!.toString() : '0',
+
               style: TextStyle(
                 color: blackFont,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
                 fontSize: 14,
               ),
             ),

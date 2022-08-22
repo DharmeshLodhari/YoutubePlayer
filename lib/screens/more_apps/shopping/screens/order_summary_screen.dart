@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/screens/more_apps/taxi/taxi_dashboard.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../user_profile/models/user.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
-  final Address address;
+  final ShippingAddress address;
   const OrderSummaryScreen({Key? key, required this.address}) : super(key: key);
 
   @override
@@ -75,8 +74,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               widget.address.city != null
                   ? addressRow(title: 'City', subTitle: widget.address.city!)
                   : SizedBox.shrink(),
-              widget.address.state != null
-                  ? addressRow(title: 'State', subTitle: widget.address.state!)
+              widget.address.userState != null
+                  ? addressRow(
+                      title: 'State', subTitle: widget.address.stateName!)
                   : SizedBox.shrink(),
               Divider(color: blackFont, thickness: 0.5),
               SizedBox(height: 10),
@@ -103,7 +103,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               Builder(builder: (context) {
                 return CurvedButton(
                   isPaymentBtn: true,
-
                   text: 'Complete Order',
                   onPressed: onCompleteOrder,
                 );

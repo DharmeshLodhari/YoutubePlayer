@@ -16,7 +16,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
+import '../../../../../services/app_config_bloc.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../search_user.dart';
 import '../../../user_profile/models/user.dart';
@@ -58,10 +60,12 @@ class _TransactionListState extends State<TransactionList> {
   int selectedMenuItemIndex = 0;
   bool isPopMenuOpen = false;
   bool isFirstTime = true;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
     // secureScreen();
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
     getList();
 
     super.initState();
@@ -516,12 +520,16 @@ class _TransactionListState extends State<TransactionList> {
           backgroundColor: naturalGreen,
           icon: SlydoAppIcon.send,
           onTap: () async {
-            customerProfileBloc.customer =
-                await UserAuth().fetchCustomerProfile(transaction.payee);
-            Navigator.of(context)
-                .pushNamed('/send-payment', arguments: <String, bool>{
-              'isFromProfile': false,
-            });
+            if (appConfigurationModel?.enablePayment == true) {
+              customerProfileBloc.customer =
+                  await UserAuth().fetchCustomerProfile(transaction.payee);
+              Navigator.of(context)
+                  .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+                'isFromProfile': false,
+              });
+            } else {
+              showToast(message: 'Payment not available at the moment');
+            }
           },
           title: AppLocalization.of(context)!.send,
           slideController: _slideController),
@@ -542,15 +550,19 @@ class _TransactionListState extends State<TransactionList> {
           backgroundColor: navyBlue,
           icon: SlydoAppIcon.receive,
           onTap: () async {
-            customerProfileBloc.customer =
-                await UserAuth().fetchCustomerProfile(transaction.payee);
-            Navigator.of(context).pushNamed(
-              '/request-payment',
-              arguments: <String, bool>{
-                'isFromProfile': false,
-                'isRequest': true
-              },
-            );
+            if (appConfigurationModel?.enablePayment == true) {
+              customerProfileBloc.customer =
+                  await UserAuth().fetchCustomerProfile(transaction.payee);
+              Navigator.of(context).pushNamed(
+                Routes.REQUEST_PAYMENT,
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': true
+                },
+              );
+            } else {
+              showToast(message: 'Payment is not currently available');
+            }
           },
           title: AppLocalization.of(context)!.request,
           slideController: _slideController),

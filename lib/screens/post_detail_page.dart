@@ -74,14 +74,13 @@ class _PostDetailPageState extends State<PostDetailPage> {
     super.initState();
     debugPrint('POST ID ---> ${widget.postId}');
     getPostFuture = UserPostAuth().getSinglePost(postID: widget.postId!);
-    // if (widget.postType == PostType.blog) {
-    // } else {
-    //   getNewsResultAndInitializeVideoController();
-    // }
+    Future.delayed(Duration(seconds: 3), () {
+      UserPostAuth().updateBlogView(postId: widget.postId!);
+    });
   }
 
   getBlogDetailsAndInitializeVideoController({required UserPost userPost}) {
-    if (userPost.video != null) {
+    if (userPost.video != null && userPost.video!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(userPost.video!);
 
       _chewieMainController = ChewieController(
@@ -127,7 +126,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
     newsDetailItem = await NewsAuthService().getNewsDetail();
 
-    if (newsDetailItem.video != null) {
+    if (newsDetailItem.video != null && newsDetailItem.video!.isNotEmpty) {
       _mainVideoController =
           VideoPlayerController.network(newsDetailItem.video!);
       _chewieMainController = ChewieController(
@@ -208,6 +207,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
               getBlogDetailsAndInitializeVideoController(userPost: userPost!);
             }
             return PostDetailPageScaffoldBody(
+              userPost: userPost!,
+              views: userPost?.views,
               postID: widget.postType == PostType.blog ? userPost!.id! : '',
               postType: widget.postType,
               authorUsername: userPost!.authorUsername,
@@ -278,6 +279,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Widget getPostFullText() {
     if (widget.postType == PostType.blog) {
       if (blogBodyTextJson != null) {
+        debugPrint('FLUTTER QUIL -> $blogBodyTextJson');
         return flutterQuill.QuillEditor.basic(
           controller: _quillController,
           readOnly: true,
@@ -522,6 +524,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
 }
 
 class PostDetailPageScaffoldBody extends StatefulWidget {
+  final int? views;
+  UserPost userPost;
   final int readTime;
   final String postID;
   final bool isLoading;
@@ -538,10 +542,12 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
   final Widget postFullDescription;
   final ChewieController? chewieMainController;
   final List<NewsListItem>? newsListRelatedPostItems;
-  const PostDetailPageScaffoldBody({
+  PostDetailPageScaffoldBody({
     Key? key,
     required this.tags,
+    required this.views,
     required this.postID,
+    required this.userPost,
     required this.postType,
     required this.subTitle,
     required this.readTime,
@@ -565,18 +571,20 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
 
 class _PostDetailPageScaffoldBodyState
     extends State<PostDetailPageScaffoldBody> {
+  late User user;
   @override
   Widget build(BuildContext context) {
+    debugPrint('WIDGET POST --> ${widget.userPost.toJson()}');
+    user = Provider.of<UserBloc>(context).user;
     return widget.isLoading
         ? Center(
             child: CircularLoadingIndicator(),
           )
         : SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  height: 6,
-                ),
+                SizedBox(height: 6),
                 widget.chewieMainController != null
                     ? videoPlayer()
                     : postImage(),
@@ -596,17 +604,36 @@ class _PostDetailPageScaffoldBodyState
                       widget.postType == PostType.blog
                           ? SizedBox.shrink()
                           : newsShortDescription(),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      // newsSubTitle(),
-                      // SizedBox(
-                      //   height: 20,
-                      // ),
+                      SizedBox(height: 20),
                       newsFullDescription(),
-                      SizedBox(
-                        height: 20,
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.visibility_rounded,
+                            size: 16,
+                            color: blackFont.withOpacity(0.8),
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            getFormattedViewCount(
+                              noOfViews:
+                                  widget.views != null ? widget.views! : 1,
+                              addViewText: false,
+                            ),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: blackFont.withOpacity(0.8),
+                            ),
+                          ),
+                          _buildLikeUnLikeReportTile(),
+                          SizedBox(width: 16),
+                          _commentWidget(),
+                        ],
                       ),
+                      SizedBox(height: 20),
                       Divider(
                         thickness: 1,
                         color: dividerColor,
@@ -614,7 +641,7 @@ class _PostDetailPageScaffoldBodyState
                       SizedBox(
                         height: 20,
                       ),
-                      newsChips(),
+                      blogChips(),
                       SizedBox(
                         height: 20,
                       ),
@@ -630,6 +657,156 @@ class _PostDetailPageScaffoldBodyState
           );
   }
 
+  _commentWidget() {
+    if (!widget.userPost.enableCommenting!) {
+      return SizedBox.shrink();
+    }
+    return Row(
+      children: [
+        Icon(
+          Icons.chat,
+          size: 16,
+          color: blackFont.withOpacity(0.8),
+        ),
+        SizedBox(width: 4),
+        Text(
+          getFormattedViewCount(
+            noOfViews: widget.views != null ? widget.views! : 1,
+            addViewText: false,
+          ),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: blackFont.withOpacity(0.8),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLikeUnLikeReportTile() {
+    if (!widget.userPost.enableLike!) {
+      return SizedBox.shrink();
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(width: 16),
+        Row(
+          children: [
+            _buildReviewLike(),
+            SizedBox(width: 16),
+            _buildPostUnLike(),
+          ],
+        ),
+
+        // Expanded(child: Container())
+
+        // _buildReviewReport(),
+      ],
+    );
+  }
+
+  Widget _buildReviewLike() {
+    return GestureDetector(
+      onTap: user.userName == widget.userPost.authorUsername
+          ? () => showToast(message: 'You cannot like your post')
+          : likeUnlikePost,
+      child: Container(
+        child: Row(
+          children: [
+            Icon(
+              widget.userPost.userLiked == true
+                  ? Icons.thumb_up_alt_rounded
+                  : Icons.thumb_up_alt_outlined,
+              size: 16,
+              color: widget.userPost.userLiked == true ? navyBlue : blackFont,
+            ),
+            SizedBox(width: 4),
+            Text(
+              widget.userPost.likes != null
+                  ? widget.userPost.likes!.toString()
+                  : '0',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostUnLike() {
+    return GestureDetector(
+      onTap: user.userName == widget.userPost.authorUsername
+          ? () => showToast(message: 'You cannot dislike your post')
+          : dislikeUnlikePost,
+      child: Container(
+        child: Row(
+          children: [
+            Icon(
+              widget.userPost.userDisLiked == true
+                  ? Icons.thumb_down_alt_rounded
+                  : Icons.thumb_down_alt_outlined,
+              size: 16,
+              color:
+                  widget.userPost.userDisLiked! == true ? mateRed : blackFont,
+            ),
+            SizedBox(width: 4),
+            Text(
+              widget.userPost.dislikes != null
+                  ? widget.userPost.dislikes!.toString()
+                  : '0',
+              style: TextStyle(
+                color: blackFont,
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void likeUnlikePost() async {
+    await UserPostAuth().likeUserPost(widget.userPost).then((value) {
+      widget.userPost = value;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      debugPrint("Error:- $error");
+      showToast(message: "$error");
+    });
+    // await UserReviewAuth()
+    //     .unlikeUserReview(widget.review!)
+    //     .then((value) {})
+    //     .catchError((error) {
+    //   debugPrint("Error:- $error");
+    //   showToast(message: "$error");
+    // });
+  }
+
+  void dislikeUnlikePost() async {
+    await UserPostAuth().dislikeUserPost(widget.userPost).then((value) {
+      widget.userPost = value;
+      if (mounted) setState(() {});
+    }).catchError((error) {
+      debugPrint("Error:- $error");
+      showToast(message: "$error");
+    });
+    // await UserReviewAuth()
+    //     .unlikeUserReview(widget.review!)
+    //     .then((value) {})
+    //     .catchError((error) {
+    //   debugPrint("Error:- $error");
+    //   showToast(message: "$error");
+    // });
+  }
+
   Widget postImage() {
     return Container(
       child: CachedNetworkImage(
@@ -637,6 +814,7 @@ class _PostDetailPageScaffoldBodyState
         fit: BoxFit.cover,
         width: double.infinity,
         height: 220,
+        errorWidget: imageErrorWidget,
       ),
     );
   }
@@ -764,7 +942,7 @@ class _PostDetailPageScaffoldBodyState
     return widget.postFullDescription;
   }
 
-  Widget newsChips() {
+  Widget blogChips() {
     return Wrap(
         spacing: 8,
         runSpacing: 8,

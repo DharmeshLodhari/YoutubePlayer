@@ -251,12 +251,32 @@ class _MomentsScreenState extends State<MomentsScreen> {
   Widget addMomentsBtn() {
     return InkWell(
       onTap: () async {
-        var momentCreated =
-            await NavigationUtil.push(context, screen: CreateMomentScreen());
-
-        if (momentCreated == true) {
-          _refreshPage();
-        }
+        NavigationUtil.push(context, screen: CreateMediaMomentScreen());
+        // androidBottomSheet(
+        //   context: context,
+        //   child: Column(
+        //     mainAxisSize: MainAxisSize.min,
+        //
+        //     children: [
+        //       bottomSheetItem(
+        //         title: 'Text',
+        //         icon: Icon(Icons.title_rounded),
+        //         onTap: () {
+        //           NavigationUtil.push(context,
+        //               screen: CreateTextMomentScreen());
+        //         },
+        //       ),
+        //       bottomSheetItem(
+        //         title: 'Media',
+        //         icon: Icon(Icons.perm_media_rounded),
+        //         onTap: () {
+        //           NavigationUtil.push(context,
+        //               screen: CreateMediaMomentScreen());
+        //         },
+        //       ),
+        //     ],
+        //   ),
+        // );
       },
       child: Icon(
         Icons.camera_alt_rounded,

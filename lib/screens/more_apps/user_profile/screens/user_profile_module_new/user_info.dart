@@ -6,11 +6,15 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/read_more_widget.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/UserAbout.dart';
+import '../../user_auth.dart';
 
 // ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
@@ -285,7 +289,8 @@ class _UserInfoState extends State<UserInfo> {
       ]);
     }
 
-    if (widget.user!.userAbout!.address.isNotEmpty) {
+    if (widget.user?.userAbout?.userAddress?.addressLine1 != null &&
+        widget.user!.userAbout!.userAddress!.addressLine1!.isNotEmpty) {
       list.addAll([
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -301,12 +306,7 @@ class _UserInfoState extends State<UserInfo> {
               ),
             ),
             SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                widget.user!.userAbout!.address,
-                // textAlign: TextAlign.justify,
-              ),
-            )
+            GetFullAddressWidget(user: widget.user!),
           ],
         ),
         SizedBox(
@@ -341,3 +341,80 @@ class _UserInfoState extends State<UserInfo> {
     return list;
   }
 }
+
+class GetFullAddressWidget extends StatefulWidget {
+  final CustomerProfile? user;
+
+  const GetFullAddressWidget({Key? key, required this.user}) : super(key: key);
+
+  @override
+  _GetFullAddressWidgetState createState() => _GetFullAddressWidgetState();
+}
+
+class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
+  int? stateId;
+  String? stateName;
+  bool isStateLoading = true;
+  Map<int, String> statesMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    UserAbout? userAbout =
+        Provider.of<UserBloc>(context, listen: false).userAbout;
+
+    if (userAbout?.userAddress?.state != null) {
+      stateId = userAbout!.userAddress!.state;
+    }
+
+    UserAuth().getStates().then((value) {
+      value.forEach((element) {
+        statesMap[element.id!] = element.name!;
+      });
+
+      stateName = statesMap[stateId];
+
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((e) {
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  String getFullAddress() {
+    UserAddress? userAddress = widget.user!.userAbout!.userAddress;
+    List<String> addresses = [];
+
+    if (userAddress?.addressLine1 != null) {
+      addresses.add(userAddress!.addressLine1!);
+    }
+    if (userAddress?.addressLine2 != null) {
+      addresses.add(userAddress!.addressLine2!);
+    }
+    if (userAddress?.city != null) {
+      addresses.add(userAddress!.city!);
+    }
+    if (stateName != null) {
+      addresses.add(stateName!);
+    }
+
+    return addresses.join(', ');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return isStateLoading
+        ? SizedBox(width: 20, height: 20, child: CircularLoadingIndicator())
+        : Expanded(
+            child: Text(
+              getFullAddress(),
+              // textAlign: TextAlign.justify,
+            ),
+          );
+  }
+}
+
+// Do full address.
+// Check video in moment (why use http).
+// Moment closes for explore moment.

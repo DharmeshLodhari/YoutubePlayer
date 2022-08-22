@@ -142,11 +142,11 @@ class _QRCodeViewState extends State<QRCodeView> {
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
       if (scanData != null) {
-        if (scanData.code.startsWith(AppConfig.baseUrl) ||
-            scanData.code.startsWith(AppConfig.baseUrl) ||
-            scanData.code.startsWith(AppConfig.merchantUrl) ||
-            scanData.code.startsWith(AppConfig.localHost)) {
-          var scanDataList = scanData.code.split('/');
+        if (scanData.code!.startsWith(AppConfig.baseUrl) ||
+            scanData.code!.startsWith(AppConfig.baseUrl) ||
+            scanData.code!.startsWith(AppConfig.merchantUrl) ||
+            scanData.code!.startsWith(AppConfig.localHost)) {
+          var scanDataList = scanData.code!.split('/');
 
           scanDataList.removeWhere((value) => value == "");
           if (canShowDialogBox) {
@@ -225,7 +225,7 @@ class _QRCodeViewState extends State<QRCodeView> {
                       Navigator.pop(context);
                     });
               } else {
-                showToast(message: 'Coming soon');
+                showToast(message: 'Payment not available at the moment');
               }
             },
             content: Padding(
@@ -438,7 +438,7 @@ class _QRCodeViewState extends State<QRCodeView> {
           );
         }
       } else {
-        showToast(message: 'Payment coming soon');
+        showToast(message: 'Payment not available at the moment');
       }
     }
   }

@@ -15,6 +15,55 @@ import 'package:intl/intl.dart';
 import 'models/store.dart';
 
 class ShoppingAuthService extends AuthService {
+  Future<Map<String, dynamic>?> getProductListForSuperStore(
+      String? next, String? previous,
+      {String userName = "black",
+      bool todaysDeal = false,
+      bool otherDeals = false}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      if (todaysDeal == true) {
+        url = AppConfig.baseUrl + "/api/v1/products/?today_deals=true";
+      } else if (otherDeals == true) {
+        url = AppConfig.baseUrl + "/api/v1/products/?other_deals=true";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/products/by-seller/$userName/";
+      }
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint('STORE URL ---> $url');
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint('STORE URL BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      List<ShoppingProduct> shoppingProducts = [];
+      for (var item in jsonData["results"]) {
+        shoppingProducts.add(ShoppingProduct.fromJson(item));
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": shoppingProducts
+      };
+
+      return result;
+    }
+
+    var jsonData = json.decode(response.body);
+    return Future.error("$jsonData");
+  }
+
   // List Products
   Future<List<ShoppingProduct>?> getProductList(String next, String previous,
       {String userName = "black",

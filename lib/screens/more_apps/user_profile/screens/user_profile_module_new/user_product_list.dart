@@ -205,15 +205,24 @@ class _UserProductListState extends State<UserProductList> {
                           width: double.infinity,
                           errorWidget: productAndServiceBigErrorWidget,
                           imageUrl: getDisplayImage(index, productList)!,
-                          fit: BoxFit.fill,
+                          fit: BoxFit.cover,
                           filterQuality: FilterQuality.high,
                         ),
-                        onTap: () {
-                          Navigator.pushNamed(
+                        onTap: () async {
+                          var result = await Navigator.pushNamed(
                             context,
                             Routes.PRODUCT,
                             arguments: {"product": productList[index]},
                           );
+
+                          if (result != null) {
+                            if (result is String) {
+                              if (result == "delete_item" ||
+                                  result == "update_item") {
+                                _onProductRefresh();
+                              }
+                            }
+                          }
                         },
                       ),
                       widget.isOwner

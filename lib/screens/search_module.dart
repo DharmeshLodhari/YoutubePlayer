@@ -16,7 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../locator.dart';
 import '../routes/route_constants.dart';
+import '../services/app_config_bloc.dart';
 import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
@@ -68,9 +70,12 @@ class _SearchModuleState extends State<SearchModule> {
 
   bool usingOutsideOfDashboard = false;
   List<String> userConnectionNames = [];
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
     getUserConnectionNames();
 
     if (widget.arguments != null) {
@@ -570,29 +575,30 @@ class _SearchModuleState extends State<SearchModule> {
             .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
       },
       child: Container(
-          height: 48,
-          width: 48,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                25,
-              ),
-              border: Border.all(color: borderColor, width: 2)),
-          child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: user.avatar == "" ? defaultImage : user.avatar!,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              errorWidget: imageErrorWidget,
-              height: double.infinity,
-              filterQuality: FilterQuality.high,
-              placeholder: (context, _) => CachedNetworkImage(
-                imageUrl: defaultImage,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.fitWidth,
-                filterQuality: FilterQuality.high,
-              ),
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
             ),
-          ),),
+            border: Border.all(color: borderColor, width: 2)),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: user.avatar == "" ? defaultImage : user.avatar!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+            height: double.infinity,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, _) => CachedNetworkImage(
+              imageUrl: defaultImage,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fitWidth,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -987,34 +993,44 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   List<Widget> listActionSlideActions(CustomerProfile user) {
-    bool isCurrentUser = user.userName != userBloc!.user.userName;
+    bool isNotCurrentUser = user.userName != userBloc!.user.userName;
     return [
-      if (isCurrentUser)
+      if (isNotCurrentUser)
         SlideActionButton(
           icon: Icons.payments_rounded,
           onTap: () async {
-            customerProfileBloc.customer =
-                await UserAuth().fetchCustomerProfile(user.userName);
-            Navigator.of(context)
-                .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
-              'isFromProfile': false,
-              'isRequest': true,
-            });
+            if (appConfigurationModel?.enablePayment == true) {
+              customerProfileBloc.customer =
+                  await UserAuth().fetchCustomerProfile(user.userName);
+              Navigator.of(context).pushNamed(
+                Routes.REQUEST_PAYMENT,
+                arguments: <String, bool>{
+                  'isFromProfile': false,
+                  'isRequest': true,
+                },
+              );
+            } else {
+              showToast(message: 'Payment not available at the moment');
+            }
           },
           title: AppLocalization.of(context)!.request,
           backgroundColor: navyBlue,
           slideController: slidableController,
         ),
-      if (isCurrentUser)
+      if (isNotCurrentUser)
         SlideActionButton(
           icon: Icons.payments_rounded,
           onTap: () async {
-            customerProfileBloc.customer =
-                await UserAuth().fetchCustomerProfile(user.userName);
-            Navigator.of(context)
-                .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
-              'isFromProfile': false,
-            });
+            if (appConfigurationModel?.enablePayment == true) {
+              customerProfileBloc.customer =
+                  await UserAuth().fetchCustomerProfile(user.userName);
+              Navigator.of(context)
+                  .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+                'isFromProfile': false,
+              });
+            } else {
+              showToast(message: 'Payment not available at the moment');
+            }
           },
           title: AppLocalization.of(context)!.send,
           backgroundColor: naturalGreen,

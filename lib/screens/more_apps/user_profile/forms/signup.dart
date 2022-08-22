@@ -14,6 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../services/secure_storage.dart';
+import '../../../../utils/cache_manager.dart';
+
 // ignore: must_be_immutable
 class SignUp extends StatefulWidget {
   var arguments;
@@ -77,12 +80,15 @@ class _SignUpState extends State<SignUp> {
         if (FocusScope.of(context).hasFocus) {
           FocusScope.of(context).unfocus();
         }
-        if (isOfficialInfoSet) {
-          triggerInfoChange();
-          return Future.value(false);
+
+        if (isOfficialInfoSet == false) {
+          Navigator.pop(context);
+        } else {
+          isOfficialInfoSet = false;
+          if (mounted) setState(() {});
         }
 
-        return Future.value(true);
+        return Future.value(false);
       },
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -95,11 +101,12 @@ class _SignUpState extends State<SignUp> {
               color: navyBlue,
             ),
             onPressed: () {
-              if (isOfficialInfoSet) {
-                triggerInfoChange();
-                return;
+              if (isOfficialInfoSet == false) {
+                Navigator.pop(context);
+              } else {
+                isOfficialInfoSet = false;
+                if (mounted) setState(() {});
               }
-              Navigator.pop(context);
             },
           ),
         ),
@@ -129,17 +136,11 @@ class _SignUpState extends State<SignUp> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               nameInstructionNote(),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: 20),
                               firstNameField(),
-                              SizedBox(
-                                height: 10,
-                              ),
+                              SizedBox(height: 10),
                               lastNameField(),
-                              SizedBox(
-                                height: 10,
-                              ),
+                              SizedBox(height: 10),
                               getDOBField(),
                               if (isValidAge != null && !isValidAge!)
                                 Column(
@@ -328,14 +329,13 @@ class _SignUpState extends State<SignUp> {
       labelText: "Username",
       keyboardType: TextInputType.text,
       validator: userNameValidator,
-      helperText: 'You have to add a number',
     );
   }
 
   String? userNameValidator(String username) {
     // alphanumeric and -_.
-    RegExp validCharacters =
-        RegExp(r'^[a-z]([._-](?![._-])|[a-z]){3,18}[a-z]$');
+    RegExp validCharacters = RegExp(r'^[a-zA-Z 0-9\.\+\-\_]*$');
+
     // RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');
 
     if (!validCharacters.hasMatch(username)) {
@@ -484,8 +484,12 @@ class _SignUpState extends State<SignUp> {
 
   void triggerInfoChange() {
     if (_officialDetailFormKey.currentState!.validate() && validateDOB()) {
-      isOfficialInfoSet = !isOfficialInfoSet;
-      if (mounted) setState(() {});
+      if (gender != null) {
+        isOfficialInfoSet = !isOfficialInfoSet;
+        if (mounted) setState(() {});
+      } else {
+        showToast(message: 'Pick a gender');
+      }
     }
   }
 
@@ -563,7 +567,6 @@ class _SignUpState extends State<SignUp> {
 
   void selectGenderField() async {
     final pressedGender = await showDialog<String>(
-        barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
               insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
@@ -670,11 +673,18 @@ class _SignUpState extends State<SignUp> {
       showDialog(context: context, builder: (context) => LoadingIndicator());
 
       bool isRegistered;
-      await UserAuth().userRegistration(data).then((value) {
+      await UserAuth().userRegistration(data).then((value) async {
         isRegistered = value;
         if (isRegistered) {
+          // Clear cache and other datas. We do this in case the user registers
+          // with a phone that another user was previously logged in with.
+          // We clear the previous user's data.
+          CacheManager().deleteCache();
+          await SecureStorage().clear();
+
           Navigator.pop(context);
           Navigator.of(context).popAndPushNamed(Routes.LOGIN);
+          showToast(message: 'Successfully registered');
         }
       }).catchError((error) {
         Navigator.pop(context);

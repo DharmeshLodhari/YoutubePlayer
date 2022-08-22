@@ -8,7 +8,6 @@ import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +19,7 @@ import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
 import '../utils/navigation_util.dart';
+import '../widget/LoadingIndicator.dart';
 import '../widget/rounded_background_icon.dart';
 
 class Home extends StatefulWidget {
@@ -425,20 +425,21 @@ class _HomeState extends State<Home> {
                   height: 1,
                 ),
                 Container(
-                    key: tutorialQrCodeKey,
-                    padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-                    child: CachedNetworkImage(
-                      height: MediaQuery.of(context).size.width / 1.7,
-                      width: MediaQuery.of(context).size.width / 1.7,
-                      imageUrl: userBloc.user.qrCode!,
-                      colorBlendMode: BlendMode.darken,
-                      fit: BoxFit.fill,
-                      errorWidget: imageErrorWidget,
-                      filterQuality: FilterQuality.high,
-                      placeholder: (context, url) => Center(
-                        child: CircularLoadingIndicator(),
-                      ),
-                    )),
+                  key: tutorialQrCodeKey,
+                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+                  child: CachedNetworkImage(
+                    height: MediaQuery.of(context).size.width / 1.7,
+                    width: MediaQuery.of(context).size.width / 1.7,
+                    imageUrl: userBloc.user.qrCode!,
+                    colorBlendMode: BlendMode.darken,
+                    fit: BoxFit.fill,
+                    errorWidget: imageErrorWidget,
+                    filterQuality: FilterQuality.high,
+                    placeholder: (context, url) => Center(
+                      child: CircularLoadingIndicator(),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -549,7 +550,7 @@ class _HomeState extends State<Home> {
                 'isFromProfile': true,
               });
             } else {
-              showToast(message: 'Coming soon');
+              showToast(message: 'Payment not available at the moment');
             }
           }),
     );
@@ -598,7 +599,7 @@ class _HomeState extends State<Home> {
               Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
                   arguments: <String, bool>{'isFromProfile': true});
             } else {
-              showToast(message: 'Coming soon');
+              showToast(message: 'Payment not available at the moment');
             }
           }),
     );

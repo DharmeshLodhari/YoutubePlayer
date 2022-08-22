@@ -447,7 +447,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         },
       );
     } else {
-      showToast(message: 'Payment is coming soon.');
+      showToast(message: 'Payment not available at the moment');
     }
   }
 

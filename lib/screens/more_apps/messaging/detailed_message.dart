@@ -344,7 +344,7 @@ class _DetailedMessageState extends State<DetailedMessage> {
       child: RichText(
         textAlign: TextAlign.left,
         text: TextSpan(
-          text: message.body,
+          text: messageDecoderWithEmoji(message.body),
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),

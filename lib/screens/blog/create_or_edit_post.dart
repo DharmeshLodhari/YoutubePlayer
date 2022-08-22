@@ -30,10 +30,10 @@ class CreateorEditPostScreen extends StatefulWidget {
   const CreateorEditPostScreen({Key? key, this.userPost}) : super(key: key);
 
   @override
-  State<CreateorEditPostScreen> createState() => _CreateorEditPostScreenState();
+  State<CreateorEditPostScreen> createState() => _CreateOrEditPostScreenState();
 }
 
-class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
+class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   String? blogId;
   String? _imagePath;
   String? _videoPath;
@@ -99,7 +99,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
     _imagePath = widget.userPost!.image;
     _videoPath = widget.userPost!.video;
 
-    if (_videoPath != null) {
+    if (_videoPath != null && _videoPath!.isNotEmpty) {
       _mainVideoController = VideoPlayerController.network(_videoPath!);
 
       videoFromServerChewieMainController = ChewieController(
@@ -127,7 +127,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
     isPublished = widget.userPost!.isPublished!;
     publishedDateTime = widget.userPost!.publishedDate;
     userTags = List<String>.from(widget.userPost!.tags!);
-    enableCommenting = widget.userPost!.enableCommenting!;
+    // enableCommenting = widget.userPost!.enableCommenting!;
     blogTitleCtrl = TextEditingController(text: widget.userPost!.title);
 
     try {
@@ -206,8 +206,10 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
             SizedBox(height: 5),
             Visibility(
                 visible: headerMediaIsVisible,
-                child:
-                    _videoPath != null ? getHeaderVideo() : getHeaderImage()),
+                child: _videoPath != null && _videoPath!.isNotEmpty
+                    ? getHeaderVideo()
+                    : getHeaderImage()),
+            SizedBox(height: 8),
             CustomizedTextFormField(
               hintText: 'Title',
               hasBorder: false,
@@ -244,7 +246,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                           ),
                         ),
                       ),
-                      _imagePath != null
+                      _imagePath != null && _imagePath!.isNotEmpty
                           ? InkWell(
                               onTap: () {
                                 _pickBlogImage();
@@ -260,7 +262,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                               ),
                             )
                           : SizedBox.shrink(),
-                      _videoPath != null
+                      _videoPath != null && _videoPath!.isNotEmpty
                           ? InkWell(
                               onTap: () {
                                 _pickBlogVideo();
@@ -442,7 +444,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   File? getVideoFileToUpload() {
-    if (_videoPath != null) {
+    if (_videoPath != null && _videoPath!.isNotEmpty) {
       if (_videoPath!.startsWith('http')) {
         return null;
       } else {
@@ -454,7 +456,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   File? getImageFileToUpload() {
-    if (_imagePath != null) {
+    if (_imagePath != null && _imagePath!.isNotEmpty) {
       if (_imagePath!.startsWith('http')) {
         return null;
       } else {
@@ -480,21 +482,22 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
     var userBloc = Provider.of<UserBloc>(context, listen: false);
     UserPostAuth()
         .createOrUpdateBlogPost(
-            blogId: blogId,
-            tags: newUserTags,
-            isPublic: isPublic,
-            isPublished: isPublished,
-            enableLikes: enableLikes,
-            title: blogTitleCtrl.text,
-            isUpdating: _userUpdatingPost,
-            blogImage: getImageFileToUpload(),
-            blogVideo: getVideoFileToUpload(),
-            enableCommenting: enableCommenting,
-            inLineMediaIds: blogPostInlineMediaIds,
-            authorUserName: userBloc.user.userName!,
-            publishedDate: publishedDateTime.toString(),
-            blogPostBody: jsonEncode(
-                _quillBodyTextController.document.toDelta().toJson()))
+      blogId: blogId,
+      tags: newUserTags,
+      isPublic: isPublic,
+      isPublished: isPublished,
+      enableLikes: enableLikes,
+      title: blogTitleCtrl.text,
+      isUpdating: _userUpdatingPost,
+      blogImage: getImageFileToUpload(),
+      blogVideo: getVideoFileToUpload(),
+      enableCommenting: enableCommenting,
+      inLineMediaIds: blogPostInlineMediaIds,
+      authorUserName: userBloc.user.userName!,
+      publishedDate: publishedDateTime.toString(),
+      blogPostBody:
+          jsonEncode(_quillBodyTextController.document.toDelta().toJson()),
+    )
         .then(
       (posted) {
         Navigator.pop(context); // To dismiss loading indicator.
@@ -514,8 +517,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
         Navigator.pop(context);
         if (error.toString().contains('must make a unique set')) {
           showToast(
-              message:
-                  'You already have a similar post with the same title or tagline.');
+              message: 'You already have a similar post with the same title.');
         } else {
           showToast(message: error.toString());
         }
@@ -565,7 +567,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   }
 
   Widget getHeaderImage() {
-    if (_imagePath != null) {
+    if (_imagePath != null && _imagePath!.isNotEmpty) {
       return Stack(
         children: [
           SizedBox(
@@ -580,6 +582,8 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
                         fit: BoxFit.fill,
                         width: 200,
                         height: 200,
+                        errorWidget: imageErrorWidget,
+
                       ),
                     )
                   : Image.file(
@@ -630,6 +634,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
 
   bool showSubmitButton() {
     return _imagePath != null &&
+        _imagePath!.isNotEmpty &&
         blogTitleCtrl.text.isNotEmpty &&
         _quillBodyTextController.document.toPlainText().length > 10;
   }
@@ -637,7 +642,7 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
   Widget getHeaderVideo() {
     bool videoFromServer = _videoPath!.startsWith('http');
 
-    if (_videoPath != null) {
+    if (_videoPath != null && _videoPath!.isNotEmpty) {
       if (!videoFromServer) {
         var mainVideoController = VideoPlayerController.file(File(_videoPath!));
 
@@ -822,12 +827,13 @@ class _CreateorEditPostScreenState extends State<CreateorEditPostScreen> {
             BlogSettingsTitles(
               title: 'Enable Comments',
               addElevation: false,
+              isEnabled: false,
               description: 'Everyone will be able to comment on your post',
               isSwitched: enableCommenting,
               icon: Icon(Icons.message_rounded, color: blackFont),
               onChanged: (commentingEnabled) {
-                enableCommenting = commentingEnabled;
-                setState(() => enableCommenting = commentingEnabled);
+                // enableCommenting = commentingEnabled;
+                // setState(() => enableCommenting = commentingEnabled);
               },
             ),
             BlogSettingsTitles(

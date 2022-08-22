@@ -98,10 +98,19 @@ class MomentsService extends AuthService {
   }
 
   Future<List<MomentsModel>> getMomentsWithOwnerName(
-      {required String ownerName}) async {
+      {required String ownerName,
+        bool fromUserProfile = false, // This is true when we click on the moment's button from a user's profile.
+
+      }) async {
     debugPrint('MOMENT OWNER NAME ::: ${ownerName}');
 
-    String url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";
+    late String url;
+
+    if (fromUserProfile) {
+      url = AppConfig.baseUrl + "/api/v1/social/moments/public/$ownerName/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";
+    }
 
     final headers = await getAuthHeaders();
 

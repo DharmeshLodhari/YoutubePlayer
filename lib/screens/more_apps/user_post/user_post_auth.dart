@@ -128,6 +128,32 @@ class UserPostAuth extends AuthService {
     }
   }
 
+  Future<bool> updateBlogView({required String postId}) async {
+    var url =
+        AppConfig.baseUrl + "/api/v1/social/post/update-post-views/$postId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "UPDATE POST VIEW URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      if (response.statusCode != 500) {
+        var jsonData = jsonDecode(response.body);
+        debugPrint(
+            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        return Future.error(jsonData is Map
+            ? jsonData["error"]
+            : jsonData is List
+                ? jsonData[0]
+                : jsonData);
+      }
+      return Future.error("Server Error");
+    }
+  }
+
   Future<dynamic> uploadPickedMediaForPostBody(
       {required String mediaFile}) async {
     var url =
@@ -161,7 +187,7 @@ class UserPostAuth extends AuthService {
     if (response.statusCode == 201 || response.statusCode == 200) {
       print('MEDIA RESPONSE SUCCESS ::: ${responseBody}');
       return responseBodyDecoded;
-      // return true;
+
     } else {
       return Future.error(
           "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");
@@ -196,7 +222,7 @@ class UserPostAuth extends AuthService {
     var request =
         http.MultipartRequest(isUpdating ? "PATCH" : "POST", Uri.parse(url));
 
-    if (blogImage != null) {
+    if (blogImage != null && blogImage.path.isNotEmpty) {
       blogImagePath = blogImage.path;
       imageMultipartFile =
           await http.MultipartFile.fromPath("image", blogImagePath);
@@ -204,7 +230,7 @@ class UserPostAuth extends AuthService {
       request.files.add(imageMultipartFile);
     }
 
-    if (blogVideo != null) {
+    if (blogVideo != null && blogVideo.path.isNotEmpty) {
       blogVideoPath = blogVideo.path;
       videoMultipartFile =
           await http.MultipartFile.fromPath("video", blogVideoPath);
@@ -234,7 +260,7 @@ class UserPostAuth extends AuthService {
     }
     var responseBody = await response.stream.bytesToString();
     debugPrint(
-        "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+        "URL FOR POSTING BLOG $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
 
     if (response.statusCode == 201 || response.statusCode == 200) {
       return true;

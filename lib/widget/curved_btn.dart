@@ -77,7 +77,7 @@ class CurvedButton extends StatelessWidget {
     if (isPaymentBtn) {
       if (getIt<AppConfigurationBloc>().appConfigurationModel?.enablePayment ==
           false) {
-        showToast(message: 'Payment Coming soon');
+        showToast(message: 'Payment not available at the moment');
         return;
       } else {
         onPressed();

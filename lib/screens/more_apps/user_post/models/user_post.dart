@@ -25,6 +25,7 @@ class UserPost {
     this.video,
     this.title,
     this.likes,
+    this.views,
     this.userLiked,
     this.userDisLiked,
     this.viewers,
@@ -51,6 +52,7 @@ class UserPost {
     image = json['image'];
     video = json['video'];
     likes = json['likes'];
+    views = json['views'];
     userLiked = json['user_liked'];
     userDisLiked = json['user_disliked'];
     viewers = json['viewers'];
@@ -76,6 +78,7 @@ class UserPost {
 
   String? id;
   int? likes;
+  int? views;
   String? text;
   String? title;
   int? dislikes;

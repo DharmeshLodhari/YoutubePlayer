@@ -238,6 +238,8 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                           Expanded(
                                                             child: CurvedButton(
                                                                 height: 36,
+                                                                isPaymentBtn:
+                                                                    true,
                                                                 textColor:
                                                                     Colors
                                                                         .white,
@@ -580,12 +582,14 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                           Expanded(
                                                             child: CurvedButton(
                                                                 height: 36,
+                                                                isPaymentBtn:
+                                                                    false,
                                                                 textColor:
                                                                     Colors
                                                                         .white,
                                                                 backgroundColor:
                                                                     navyBlue,
-                                                                text: "BUY NOW",
+                                                                text: "PAY NOW",
                                                                 borderRadius:
                                                                     10,
                                                                 onPressed:

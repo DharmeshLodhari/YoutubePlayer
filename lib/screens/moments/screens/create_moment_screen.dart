@@ -12,14 +12,15 @@ import 'package:video_player/video_player.dart';
 import '../../../main.dart';
 import '../../../widget/image_crop.dart';
 
-class CreateMomentScreen extends StatefulWidget {
-  const CreateMomentScreen({Key? key}) : super(key: key);
+class CreateMediaMomentScreen extends StatefulWidget {
+  const CreateMediaMomentScreen({Key? key}) : super(key: key);
 
   @override
-  _CreateMomentScreenState createState() => _CreateMomentScreenState();
+  _CreateMediaMomentScreenState createState() =>
+      _CreateMediaMomentScreenState();
 }
 
-class _CreateMomentScreenState extends State<CreateMomentScreen> {
+class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   Timer? timer;
   String? videoPath;
   String? imagePath;

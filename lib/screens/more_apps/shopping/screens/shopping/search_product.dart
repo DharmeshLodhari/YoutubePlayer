@@ -60,7 +60,6 @@ class _SearchProductState extends State<SearchProduct> {
   int? maxAmount;
   String? sortBy;
   String? sortByMenuItemValue = 'Best match';
-
   TextEditingController searchController = TextEditingController();
 
   @override

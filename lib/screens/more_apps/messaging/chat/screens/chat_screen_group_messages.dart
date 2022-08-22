@@ -1288,12 +1288,21 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       right: false,
       child: WillPopScope(
         onWillPop: () async {
-          disposeAudioPlayers();
-          mainSocketProvider!.removeStreamSubscription(streamSubscription);
-          mainSocketProvider!.currentConversationId = null;
-          mainSocketProvider!.isChatOnScreen = false;
+          if(showMoreAction){
+            setState(() {
+              showMoreAction = false;
+            });
+            return Future.value(false);
 
-          return Future.value(true);
+          }else{
+            disposeAudioPlayers();
+            mainSocketProvider!.removeStreamSubscription(streamSubscription);
+            mainSocketProvider!.currentConversationId = null;
+            mainSocketProvider!.isChatOnScreen = false;
+
+            return Future.value(true);
+          }
+
         },
         child: Platform.isAndroid
             ? mainStack()
@@ -1955,7 +1964,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         setupShakeDetector();
       }
     } else {
-      showToast(message: 'Coming soon');
+      showToast(message: 'Payment not available at the moment');
     }
   }
 
@@ -2082,7 +2091,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         setupShakeDetector();
       }
     } else {
-      showToast(message: 'Coming soon');
+      showToast(message: 'Payment not available at the moment');
     }
   }
 

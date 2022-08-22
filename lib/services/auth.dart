@@ -498,6 +498,7 @@ class AuthService {
     }
 
     return Future.error("$timeOutErrorMessage");
+
   }
 
   Future<void> wasTokenBlackListed(var response) async {
