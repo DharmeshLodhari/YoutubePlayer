@@ -137,11 +137,11 @@ class _VerifyRegistrationOTPScreenState
                 style: TextStyle(fontSize: 14, color: darkGrey),
               ),
               Text(
-                " 30 ",
+                " 5 ",
                 style: TextStyle(fontSize: 14, color: Colors.red),
               ),
               Text(
-                "seconds.",
+                "minutes.",
                 style: TextStyle(fontSize: 14, color: darkGrey),
               ),
             ],

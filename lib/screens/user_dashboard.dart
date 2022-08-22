@@ -551,10 +551,14 @@ class _UserDashboardState extends State<UserDashboard> {
             icon: SlydoAppIcon.news_moreapps,
             title: AppLocalization.of(context)!.blogs,
             onTap: () {
-              NavigationUtil.push(
-                context,
-                screen: SuperBlog(),
-              );
+              if (appConfigurationModel?.enableAsk == true) {
+                NavigationUtil.push(
+                  context,
+                  screen: SuperBlog(),
+                );
+              } else {
+                showToast(message: 'Feature not available at the moment');
+              }
             },
             iconColor: HexColor("#374677"),
           ),
@@ -568,10 +572,15 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: AppLocalization.of(context)!.ask,
             onTap: () {
-              NavigationUtil.push(
-                context,
-                screen: AskStartScreen(),
-              );
+
+              if (appConfigurationModel?.enableAsk == true) {
+                NavigationUtil.push(
+                  context,
+                  screen: AskStartScreen(),
+                );
+              } else {
+                showToast(message: 'Feature not available at the moment');
+              }
             },
             iconColor: HexColor("#374677"),
           ),

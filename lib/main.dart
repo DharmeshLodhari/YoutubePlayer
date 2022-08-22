@@ -1,3 +1,4 @@
+
 import 'dart:async';
 
 import 'package:Slydo/data/environment.dart';
@@ -300,7 +301,8 @@ List<ChangeNotifierProvider> providersList = [
   ),
   ChangeNotifierProvider<CheckoutScreenBloc>.value(
     value: CheckoutScreenBloc(),
-  ), ChangeNotifierProvider<MomentsBloc>.value(
+  ),
+  ChangeNotifierProvider<MomentsBloc>.value(
     value: MomentsBloc(),
   ),
   ChangeNotifierProvider<AskViewModel>.value(

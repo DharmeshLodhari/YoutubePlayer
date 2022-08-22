@@ -1,12 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/subscription_model.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class SubscriptionsAuth extends AuthService {
   Future<List<SubscriptionsModel>> getSubscriptionList(

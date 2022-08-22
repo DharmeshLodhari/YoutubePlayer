@@ -386,20 +386,22 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
     UserAddress? userAddress = widget.user!.userAbout!.userAddress;
     List<String> addresses = [];
 
-    if (userAddress?.addressLine1 != null) {
-      addresses.add(userAddress!.addressLine1!);
+    if (userAddress?.addressLine1 != null &&
+        userAddress!.addressLine1!.isNotEmpty) {
+      addresses.add(userAddress.addressLine1!);
     }
-    if (userAddress?.addressLine2 != null) {
-      addresses.add(userAddress!.addressLine2!);
+    if (userAddress?.addressLine2 != null &&
+        userAddress!.addressLine2!.isNotEmpty) {
+      addresses.add(userAddress.addressLine2!);
     }
-    if (userAddress?.city != null) {
-      addresses.add(userAddress!.city!);
+    if (userAddress?.city != null && userAddress!.city!.isNotEmpty) {
+      addresses.add(userAddress.city!);
     }
-    if (stateName != null) {
+    if (stateName != null && stateName!.isNotEmpty) {
       addresses.add(stateName!);
     }
 
-    return addresses.join(', ');
+    return addresses.join(', ').replaceAll('.', '');
   }
 
   @override
@@ -414,7 +416,3 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
           );
   }
 }
-
-// Do full address.
-// Check video in moment (why use http).
-// Moment closes for explore moment.
