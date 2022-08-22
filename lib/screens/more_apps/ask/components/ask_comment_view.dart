@@ -10,99 +10,122 @@ class AskCommentView extends StatelessWidget {
   String? totalLikes;
   String? totalReplies;
   String? totalDislikes;
+  bool? isASubReply;
+  bool? hasReplies;
 
   AskCommentView({
     this.replyViews,
     this.totalLikes,
     this.totalDislikes,
-    this.totalReplies});
+    this.hasReplies = false,
+    this.isASubReply,
+    this.totalReplies
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Column(children: [
-        Row(children: [
-          Icon(Icons.account_circle, color: navyBlueLight,),
-          SizedBox(width: 10,),
-          Text(
-            'Black Enterprise',
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(width: 10,),
-          Text(
-            '4 mins',
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],),
-        Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: Expanded(
-                child: Container(
-                  width: 2,
-                    decoration: BoxDecoration(
-                      color: blackFont.withOpacity(0.2),
-                    )
-                ),
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Column(children: [
+          Row(children: [
+            Icon(Icons.account_circle, color: navyBlueLight,),
+            SizedBox(width: 10,),
+            Text(
+              'Black Enterprise',
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 7,),
-                Row(children: [
-                  Text(
-                    'Replying to Tamara enterprise',
-                    style: TextStyle(
-                      color: eyeGrey,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],),
-                SizedBox(height: 10,),
-                Container(
-                  width: MediaQuery.of(context).size.width - 80,
-                  child: Text(
-                    'Vitamin C helps in controlling fever, halts the infection from '
-                        'spreading',
-                    maxLines: 30,
-                    style: TextStyle(
-                      color: blackFont,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
+            SizedBox(width: 10,),
+            Text(
+              '4 mins',
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],),
+          Row(
+            children: [
+              if(hasReplies!)...[Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Expanded(
+                  child: Container(
+                    width: 2,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        color: blackFont.withOpacity(0.2),
+                      )
                   ),
                 ),
-                SizedBox(height: 15,),
-                Container(
-                  width: MediaQuery.of(context).size.width - 80,
-                  child: Column(
-                    children: [
-                      TopicActions(
-                        totalDislikes: totalDislikes,
-                        totalLikes: totalLikes,
-                        totalReply: totalReplies,
+              )],
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 7,),
+                  Row(children: [
+                    Text(
+                      'Replying to Tamara enterprise',
+                      style: TextStyle(
+                        color: eyeGrey,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
                       ),
-                    ],
+                    ),
+                  ],),
+                  SizedBox(height: 10,),
+                  Container(
+                    width: MediaQuery.of(context).size.width - 80,
+                    child: Text(
+                      'Vitamin C helps in controlling fever, halts the infection from '
+                          'spreading',
+                      maxLines: 30,
+                      style: TextStyle(
+                        color: blackFont,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15,),
+                  Container(
+                    width: MediaQuery.of(context).size.width - 80,
+                    child: Column(
+                      children: [
+                        TopicActions(
+                          totalDislikes: totalDislikes,
+                          totalLikes: totalLikes,
+                          totalReply: totalReplies,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                ],
+              ),
+            ],
+          ),
+          if(hasReplies!)...[
+            replyViews!,
+            Row(
+              children: [
+                Text(
+                  'view more',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 10,),
               ],
             ),
-          ],
-        ),
-      ],),
+          ]
+        ],),
+      ),
     );
   }
 }

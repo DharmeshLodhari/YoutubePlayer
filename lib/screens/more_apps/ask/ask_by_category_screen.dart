@@ -41,77 +41,79 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                   context,
                   screen: AddTopicScreen(),
                 );
-
               },
             ),
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              title: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        model.newlySelectedCategory!,
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w700,
-                          color: blackFont,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        '12k Member   267 Topics',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: blackFont.withOpacity(0.7),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                Row(
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(80.0),
+              child: AppBar(
+                backgroundColor: model.categoryColors[model.categoryList.indexOf(model.newlySelectedCategory!)].withOpacity(0.8),
+                title: Row(
                   children: [
-                    Icon(
-                      Icons.search_rounded,
-                      color: blackFont,
-                      size: 26,
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: navyBlue,
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        child: Text(
-                          'Join',
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          model.newlySelectedCategory!,
                           style: TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w700,
                             color: white,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          '12k Member   267 Topics',
+                          style: TextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
+                            color: white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                actions: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.search_rounded,
+                        color: white,
+                        size: 26,
+                      ),
+                      SizedBox(width: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: white,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          child: Text(
+                            'Add',
+                            style: TextStyle(
+                              color: blackFont,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 17),
-                  ],
+                      SizedBox(width: 17),
+                    ],
+                  ),
+                ],
+                elevation: 0,
+                leading: IconButton(
+                  icon: Icon(
+                    Icons.keyboard_arrow_left,
+                    color: white,
+                    size: 26,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                 ),
-              ],
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.keyboard_arrow_left,
-                  color: navyBlue,
-                  size: 26,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
               ),
             ),
             body: Container(

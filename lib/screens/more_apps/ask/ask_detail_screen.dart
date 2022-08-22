@@ -9,7 +9,7 @@ class AskDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
@@ -41,7 +41,7 @@ class AskDetailScreen extends StatelessWidget {
               AskPosts(
                 openComments: true,
                 commentsOnPosts: Container(
-                  height: 330 * 2,
+                  height: 330 * 3.1,
                   child: ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.symmetric(horizontal: 2, vertical: 18),
@@ -51,6 +51,13 @@ class AskDetailScreen extends StatelessWidget {
                         totalLikes: '3',
                         totalDislikes: '6',
                         totalReplies: '13',
+                        hasReplies: true,
+                        replyViews: AskCommentView(
+                          totalLikes: '3',
+                          totalDislikes: '6',
+                          totalReplies: '13',
+                          isASubReply: true,
+                        ),
                       );
                     }
                   ),

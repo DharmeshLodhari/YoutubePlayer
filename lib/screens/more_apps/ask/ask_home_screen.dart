@@ -7,6 +7,7 @@ import '../../../utils/navigation_util.dart';
 import 'add_topic_screen.dart';
 import 'ask_by_category_screen.dart';
 import 'ask_detail_screen.dart';
+import 'ask_settings_screen.dart';
 import 'ask_viewmodel.dart';
 import 'components/ask_category_pick.dart';
 import 'components/ask_options.dart';
@@ -91,10 +92,18 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                       size: 26,
                     ),
                     SizedBox(width: 10),
-                    Icon(
-                      Icons.settings,
-                      color: blackFont,
-                      size: 26,
+                    GestureDetector(
+                      onTap: () {
+                        NavigationUtil.push(
+                          context,
+                          screen: AskSettingsScreen(),
+                        );
+                      },
+                      child: Icon(
+                        Icons.settings,
+                        color: blackFont,
+                        size: 26,
+                      ),
                     ),
                     SizedBox(width: 17),
                   ],

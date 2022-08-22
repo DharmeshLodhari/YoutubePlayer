@@ -68,13 +68,14 @@ class _AskStartScreenState extends State<AskStartScreen> {
                   children: model.categoryList.map((e) => GestureDetector(
                     onTap: () {
                       model.onSelectCategory(c: e);
+                      print(model.categoryList.indexOf(e));
                     },
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Colors.white,
+                          color: model.categoryColors[model.categoryList.indexOf(e)].withOpacity(0.1),
                           border: Border.all(
-                              color: model.selectedCategoryList.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.3)
+                              color: model.selectedCategoryList.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1)
                           ),
                       ),
                       height: 40,

@@ -1,13 +1,30 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 
+import '../../../utils/util.dart';
 import '../../../widget/curved_btn.dart';
+import 'ask_viewmodel.dart';
 
-class AddTopicScreen extends StatelessWidget {
+class AddTopicScreen extends StatefulWidget {
 
+  @override
+  State<AddTopicScreen> createState() => _AddTopicScreenState();
+}
+
+class _AddTopicScreenState extends State<AddTopicScreen> {
   final topicTitleController = TextEditingController();
+
   final topicTextController = TextEditingController();
+  late FocusNode textFieldTagFocusNode;
+
+  @override
+  void initState(){
+    textFieldTagFocusNode = FocusNode();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,127 +56,157 @@ class AddTopicScreen extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          child: Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Column(children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Topic/Questions',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: blackFont,
-                    ),
-                  ),
-                  SizedBox(height: 7,),
-                  TopicTextField(
-                    controller: topicTextController,
-                  ),
-                ],
-              ),
-              SizedBox(height: 20,),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Text',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: blackFont,
-                    ),
-                  ),
-                  SizedBox(height: 7,),
-                  TopicTextField(
-                    controller: topicTitleController,
-                  ),
-                ],
-              ),
-              SizedBox(height: 40,),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(11),
-                    border: Border.all(
-                      color: navyBlueLight.withOpacity(0.3),
-                      width: 2,
-                    ),
-                  ),
-                  child: Column(children: [
-                    Text(
-                      'Import Image',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont,
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: navyBlue.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                        child: Text(
-                          'Choose file',
-                          style: TextStyle(
-                            color: navyBlue,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
+      body: Consumer<AskViewModel>(
+          builder: (context, model, child) {
+          return SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Column(children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Topic/Questions',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: blackFont,
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10,),
-                    Text(
-                      'Image should not be more than 2mb',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: blackFont.withOpacity(0.3),
+                      SizedBox(height: 7,),
+                      TopicTextField(
+                        controller: topicTextController,
                       ),
-                    ),
-                    SizedBox(height: 10,)
-                  ],),
-                ),
-              ),
-              Expanded(child: SizedBox(height: 10,)),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context)
-                            .size
-                            .width - 60),
-                    child: CurvedButton(
-                      height: 56,
-                      textColor: Colors.white,
-                      backgroundColor: navyBlue,
-                      text: "Submit",
-                      onPressed: () async {
-
+                    ],
+                  ),
+                  SizedBox(height: 20,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Text',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: blackFont,
+                        ),
+                      ),
+                      SizedBox(height: 7,),
+                      TopicTextField(
+                        height: 140,
+                        controller: topicTitleController,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20,),
+                  Focus(
+                    focusNode: textFieldTagFocusNode,
+                    child: TextFieldTags(
+                      initialTags: model.userTags,
+                      tagsStyler: textFieldTagStyler,
+                      validator: (value) {
+                        return null;
+                      },
+                      textFieldStyler: textFieldStyler,
+                      onTag: (tag) {
+                        setState(() {
+                          model.userTags.add(tag);
+                          model.userTags = model.userTags.toSet().toList();
+                        });
+                        model.userTags.removeWhere((tag) => tag.isEmpty);
+                      },
+                      onDelete: (tag) {
+                        setState(() {
+                          model.userTags.remove(tag);
+                        });
+                        model.userTags.removeWhere((tag) => tag.isEmpty);
                       },
                     ),
                   ),
-                ],
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(11),
+                        border: Border.all(
+                          color: navyBlueLight.withOpacity(0.3),
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(children: [
+                        Text(
+                          'Import Image',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: blackFont,
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: navyBlue.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                            child: Text(
+                              'Choose file',
+                              style: TextStyle(
+                                color: navyBlue,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Text(
+                          'Image should not be more than 2mb',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: blackFont.withOpacity(0.3),
+                          ),
+                        ),
+                        SizedBox(height: 10,)
+                      ],),
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Expanded(child: SizedBox(height: 10,)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(horizontal: 24),
+                        constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context)
+                                .size
+                                .width - 60),
+                        child: CurvedButton(
+                          height: 56,
+                          textColor: Colors.white,
+                          backgroundColor: navyBlue,
+                          text: "Submit",
+                          onPressed: () async {
+
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 170,)
+                ],),
               ),
-              SizedBox(height: 170,)
-            ],),
-          ),
-        ),
+            ),
+          );
+        }
       ),
     );
   }
@@ -167,11 +214,11 @@ class AddTopicScreen extends StatelessWidget {
 
 class TopicTextField extends StatelessWidget {
   final TextEditingController controller;
-
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
   final bool readOnly;
   final Widget leading;
+  final double height;
   final Function()? function;
   final String? hint;
   final VoidCallback? onTap;
@@ -183,6 +230,7 @@ class TopicTextField extends StatelessWidget {
     required this.controller,
     this.hint,
     this.validator,
+    this.height = 60,
     this.function,
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
@@ -198,6 +246,7 @@ class TopicTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: height ?? 50,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(11),
         border: Border.all(
