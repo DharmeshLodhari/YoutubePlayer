@@ -944,7 +944,7 @@ Color getRatingColor(int? numberOfRating, int i) {
   return numberOfRating != null
       ? numberOfRating >= i
           ? starYellow
-          : greyBorderColor
+          : greyBorderColor.withOpacity(0.8)
       : Colors.grey;
 }
 

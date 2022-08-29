@@ -1,17 +1,15 @@
 import 'package:Slydo/screens/more_apps/utility/models/provider_product_model.dart';
-import 'package:Slydo/utils/util.dart';
-import 'package:flutter/services.dart';
-
-import 'models/provider_model.dart';
-
 import 'package:Slydo/screens/more_apps/utility/utility_auth.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../widget/LoadingIndicator.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_textform_field.dart';
+import 'models/provider_model.dart';
 
 class UtilityPaymentScreen extends StatefulWidget {
   final ProviderModel providerModel;
@@ -367,7 +365,7 @@ class _UtilityPaymentScreenState extends State<UtilityPaymentScreen> {
             },
             verifyInputFromServerFunc: () => verifyReferenceNumber(),
             extraFunctionWhenInputWasVerifiedFromServerSuccessfully: () {},
-            extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully: () {},
+            extraFunctionWhenInputWasNotVerifiedFromServer: () {},
           ),
           SizedBox(height: 20),
         ],

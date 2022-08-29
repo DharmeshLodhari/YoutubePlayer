@@ -17,7 +17,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
-import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -30,6 +29,7 @@ import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../routes/route_constants.dart';
+import '../../../../../widget/item_display_card.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../shopping_auth.dart';
 
@@ -1181,16 +1181,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ],
             ),
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => displayProduct(
-                context: context,
+              itemBuilder: (context, index) => DisplayProduct(
                 product: sellersOtherItems[index],
               ),
             ),

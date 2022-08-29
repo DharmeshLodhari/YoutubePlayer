@@ -543,7 +543,12 @@ class ShoppingAuthService extends AuthService {
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
-          "imagefile_$i", service.localImages![i].path);
+        "imagefile_$i",
+        service.localImages![i].path,
+      );
+
+      debugPrint('DATA FOR SERVICE -> $_data');
+      debugPrint('DATA FOR SERVICE FIELDS -> ${request.fields}');
 
       // Add multipart to newList
       newList.add(multipartFile);

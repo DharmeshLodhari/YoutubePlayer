@@ -195,9 +195,9 @@ class _UserInfoState extends State<UserInfo> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: popularProductItem.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => displayProduct(
-                context: context,
+              itemBuilder: (context, index) => DisplayProduct(
                 product: popularProductItem[index],
+                giveRightPadding: true,
               ),
             ),
           ),
@@ -248,9 +248,9 @@ class _UserInfoState extends State<UserInfo> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: popularServiceItem.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => displayService(
-                context: context,
+              itemBuilder: (context, index) => DisplayService(
                 service: popularServiceItem[index],
+                giveRightPadding: true,
               ),
             ),
           ),
