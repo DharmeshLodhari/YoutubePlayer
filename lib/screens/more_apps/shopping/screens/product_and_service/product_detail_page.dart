@@ -798,7 +798,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   placeholder: (context, url) =>
                                       Center(child: CircularLoadingIndicator()),
                                   imageUrl: imgList?[0] ?? "",
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   height: double.infinity,
                                   width: double.infinity,
                                   errorWidget: productAndServiceBigErrorWidget,
@@ -838,7 +838,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                                         child:
                                                             CircularLoadingIndicator()),
                                                 imageUrl: item!,
-                                                fit: BoxFit.fill,
+                                                fit: BoxFit.contain,
                                                 height: double.infinity,
                                                 width: double.infinity,
                                                 errorWidget:

@@ -2974,10 +2974,18 @@ class AppLocalization {
 
   String get myContacts {
     return Intl.message(
-      "My Contacts",
+      "Contacts",
       name: "myContacts",
     );
   }
+
+  String get chatChannels {
+    return Intl.message(
+      "Channels",
+      name: "chatChannels",
+    );
+  }
+
 
   String get addContact {
     return Intl.message(

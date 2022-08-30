@@ -1,5 +1,6 @@
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/blog/create_or_edit_post.dart';
+import 'package:Slydo/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
@@ -126,7 +127,6 @@ import 'package:Slydo/screens/more_apps/user_profile/forms/user_address.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_registration_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_device_OTP.dart';
 import 'package:Slydo/screens/more_apps/user_profile/forms/verify_reset_password_OTP.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/connection_module/connections_dashboard.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/subscriptions/choose_subscription.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/search_users_product_and_service.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart';

@@ -16,6 +16,7 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +41,12 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   AddGroupModel groupModel = AddGroupModel();
 
+  final TextEditingController _amountController = TextEditingController();
+
+  bool? makeGroupPaid = false;
+  bool? makeGroupPublic = false;
+  bool? limitGroupMembers = false;
+
   @protected
   void initState() {
     groupNameController = TextEditingController();
@@ -60,7 +67,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
       key: _scaffoldSetNameAndProfileKey,
       backgroundColor: Colors.white,
       appBar: getAppBar() as PreferredSizeWidget?,
-      body: getScaffoldBody(),
+      body: SingleChildScrollView(child: getScaffoldBody()),
       floatingActionButton: getFloatingActionBtn(),
     );
   }
@@ -111,7 +118,103 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         children: [
           getGroupNameAndProfile(),
           getGroupDescription(),
-          Expanded(child: _buildConnectionsList()),
+          Container(
+            height: (160 * selectedConnectionList.length).toDouble(),
+              child: _buildConnectionsList()
+          ),
+          Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Column(children: [
+
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Create paid group chat',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Switch(
+                    onChanged: (bool value) {
+                      setState(() {
+                        makeGroupPaid = value;
+                      });
+                    },
+                    value: makeGroupPaid!,
+                  ),
+                  SizedBox(width: 10,)
+                ],
+              ),
+              SizedBox(height: 10,),
+              CustomizedTextFormField(
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+                keyboardType: TextInputType.phone,
+                controller: _amountController,
+                isAmountField: true,
+                labelText: AppLocalization.of(context)!.amount,
+                onChanged: (value) {
+
+                },
+                validator: (val) {
+                  try {
+                    double userAmount =
+                    double.parse(val.replaceAll(',', ''));
+                    if (userAmount > amountLimit) {
+                      return 'You cannot fund more than $amountLimit';
+                    }
+                  } catch (e) {
+                    return AppLocalization.of(context)!.invalidAmount;
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10,),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Make public',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Switch(
+                    onChanged: (bool value) {
+                      setState(() {
+                        makeGroupPublic = value;
+                      });
+                    },
+                    value: makeGroupPublic!,
+                  ),
+                  SizedBox(width: 10,)
+                ],
+              ),
+              SizedBox(height: 10,),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Limit group members',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Switch(
+                    onChanged: (bool value) {
+                      setState(() {
+                        limitGroupMembers = value;
+                      });
+                    },
+                    value: limitGroupMembers!,
+                  ),
+                  SizedBox(width: 10,)
+                ],
+              ),
+
+              SizedBox(height: 30,),
+
+            ],),
+          ),
         ],
       ),
     );

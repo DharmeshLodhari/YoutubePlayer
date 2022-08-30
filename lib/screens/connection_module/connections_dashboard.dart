@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../utils/slydo_app_icon_icons.dart';
 import 'block_list.dart';
+import 'channels.dart';
 import 'connection_request_list.dart';
 import 'connections_list.dart';
 
@@ -50,7 +51,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
           return true;
         },
         child: DefaultTabController(
-          length: 3,
+          length: 4,
           child: Scaffold(
             backgroundColor: Colors.white,
             appBar: appBar() as PreferredSizeWidget?,
@@ -90,6 +91,8 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
       return AppLocalization.of(context)!.requests;
     } else if (currentIndex == 2) {
       return AppLocalization.of(context)!.blocked;
+    } else if (currentIndex == 3) {
+      return AppLocalization.of(context)!.chatChannels;
     }
     return "";
   }
@@ -168,6 +171,27 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
               ),
             ),
           ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 3
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                appLocalization.chatChannels,
+                style: TextStyle(
+                  color: currentIndex == 3 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                  currentIndex == 3 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -228,6 +252,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         ConnectionList(),
         ConnectionRequestList(),
         BlockedList(),
+        Channels()
       ],
     );
   }
