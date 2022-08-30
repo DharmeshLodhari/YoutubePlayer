@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -16,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../data/currency.dart';
+import '../../../../routes/route_constants.dart';
 import '../../../../services/secure_storage.dart';
 import '../../../../utils/cache_manager.dart';
 import '../screens/subscriptions/subscription_auth.dart';
@@ -36,13 +36,14 @@ class _SignUpState extends State<SignUp> {
   String? accountType;
   int? subscriptionsId;
   String? industryType;
+  bool showDOB = false;
   bool isPersonalAccount = false;
   bool accountTypeChosen = false;
 
   _SignUpState({required this.arguments});
 
-  final _registrationFormKey = GlobalKey<FormState>();
-  final _officialDetailFormKey = GlobalKey<FormState>();
+  final _bankDetailsFormKey = GlobalKey<FormState>();
+  final _personalDetailFormKey = GlobalKey<FormState>();
 
   String? phoneNumber = '';
   String password = '';
@@ -52,7 +53,6 @@ class _SignUpState extends State<SignUp> {
   late TextEditingController _lastNameController;
   late TextEditingController _businessOrNickNameController;
   late TextEditingController _userNameController;
-  late TextEditingController _phoneNumberController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
 
@@ -71,11 +71,9 @@ class _SignUpState extends State<SignUp> {
   bool? inputVerified;
   @override
   void initState() {
-    phoneNumber = '8146748942';
-    // phoneNumber = arguments['phoneNumber'];
+    phoneNumber = arguments['phoneNumber'];
 
-    _phoneNumberController = TextEditingController();
-    _phoneNumberController.text = phoneNumber!;
+    debugPrint('Phone number -> $phoneNumber');
     _bvnController = TextEditingController();
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
@@ -93,13 +91,16 @@ class _SignUpState extends State<SignUp> {
 
     _userNameController.addListener(() {
       if (_userNameController.text.isNotEmpty) {
+        debugPrint('USER NAME CTRL');
         Future.delayed(Duration(seconds: 2), () {
-          _verifyUserName();
+          if (_userNameController.text.length >= 4) {
+            _verifyUserName();
+          }
         });
       } else {
         setState(() {
           showButton = false;
-          inputVerified = null;
+          inputVerified = false;
           verifyingUsername = false;
         });
       }
@@ -158,18 +159,14 @@ class _SignUpState extends State<SignUp> {
                   ),
                   registerTitle(),
                   SizedBox(height: 40),
-                  // phoneNumberField(),
-                  // SizedBox(
-                  //   height: 20,
-                  // ),
                   !basicAccountInfo
                       ? Form(
-                          key: _officialDetailFormKey,
+                          key: _personalDetailFormKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                'Pick your account type',
+                                'Account type',
                                 style: TextStyle(color: darkGrey, fontSize: 14),
                               ),
                               SizedBox(height: 6),
@@ -184,8 +181,12 @@ class _SignUpState extends State<SignUp> {
                                 child: DropdownButton2(
                                   isExpanded: true,
                                   value: accountType,
+                                  dropdownDecoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  hint: Text('Select an account type'),
                                   underline: SizedBox.shrink(),
-                                  items: ['Personal', 'Developer', 'Business']
+                                  items: ['Personal', 'Business', 'Developer']
                                       .map((String item) {
                                     return DropdownMenuItem(
                                       value: item,
@@ -214,16 +215,16 @@ class _SignUpState extends State<SignUp> {
                           ),
                         )
                       : Form(
-                          key: _registrationFormKey,
+                          key: _bankDetailsFormKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               nameInstructionNote(),
                               SizedBox(height: 20),
                               firstNameField(),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                               lastNameField(),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                               getDOBField(),
                               if (isValidAge != null && !isValidAge!)
                                 Column(
@@ -239,11 +240,9 @@ class _SignUpState extends State<SignUp> {
                                 )
                               else
                                 Container(),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: 20),
                               getGenderField(),
-                              SizedBox(height: 40),
+                              SizedBox(height: 20),
                               bvnField(),
                               SizedBox(height: 40),
                               registerBtn(),
@@ -268,8 +267,24 @@ class _SignUpState extends State<SignUp> {
         nickNameField(),
         SizedBox(height: 20),
         userNameField(),
-        SizedBox(height: 10),
-        Text('Username should not exceed 15 characters'),
+        // Text(
+        //   'username should not exceed 15 characters',
+        //   style: TextStyle(
+        //     fontSize: 12,
+        //   ),
+        // ),
+        // Text(
+        //   'username should not less than 4 characters',
+        //   style: TextStyle(
+        //     fontSize: 12,
+        //   ),
+        // ),
+        // Text(
+        //   'replace spaces with dots',
+        //   style: TextStyle(
+        //     fontSize: 12,
+        //   ),
+        // ),
         SizedBox(height: 20),
         passwordField(),
         SizedBox(height: 10),
@@ -286,9 +301,7 @@ class _SignUpState extends State<SignUp> {
           height: 40,
         ),
         nextBtn(),
-        SizedBox(
-          height: 40,
-        ),
+        SizedBox(height: 40),
       ],
     );
   }
@@ -298,11 +311,6 @@ class _SignUpState extends State<SignUp> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 20),
-        // ChooseYourPlanWidget(
-        //     accountType: accountType,
-        //     onChanged: (subscriptionModel) {
-        //       subscriptionsId = subscriptionModel.id;
-        //     }),
         chooseYourPlanWidget(),
         SizedBox(height: 20),
         Text(
@@ -321,9 +329,7 @@ class _SignUpState extends State<SignUp> {
         passwordField(),
         SizedBox(height: 10),
         passwordInstruction(),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20),
         confirmPasswordField(),
         SizedBox(
           height: 20,
@@ -341,29 +347,56 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget industryDropdown() {
-    return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 14.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: dividerColor),
-        borderRadius: BorderRadius.circular(10),
+    return DropdownButtonFormField2(
+      isExpanded: true,
+      value: industryType,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
       ),
-      child: DropdownButton2(
-        isExpanded: true,
-        value: industryType,
-        underline: SizedBox.shrink(),
-        items: industryList.map((String item) {
-          return DropdownMenuItem(
-            value: item,
-            child: Text(item),
-          );
-        }).toList(),
-        onChanged: (String? value) {
-          setState(() {
-            industryType = value!;
-          });
-        },
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 16),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: greyBorderColor,
+            width: 1.0,
+          ),
+        ),
       ),
+      items: industryList.map((String item) {
+        return DropdownMenuItem(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+      onChanged: (String? value) {
+        setState(() {
+          industryType = value!;
+        });
+      },
+      validator: (String? value) {
+        if (value != null && value.isNotEmpty) {
+          return null;
+        } else {
+          return 'Pick an industry';
+        }
+      },
     );
   }
 
@@ -396,17 +429,6 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget phoneNumberField() {
-    return CustomizedTextFormField(
-      controller: _phoneNumberController,
-      labelColor: darkGrey,
-      labelText: "Phone number",
-      hintText: "08023000000",
-      keyboardType: TextInputType.phone,
-      isReadOnly: true,
-    );
-  }
-
   Widget nameInstructionNote() {
     return Container(
       child: Text(
@@ -421,7 +443,8 @@ class _SignUpState extends State<SignUp> {
     return CustomizedTextFormField(
       controller: _firstNameController,
       labelColor: darkGrey,
-      labelText: isPersonalAccount ? "First name" : 'Business Owner First name',
+      labelText:
+          isPersonalAccount ? "First name" : 'Business Owner\'s First name',
       keyboardType: TextInputType.name,
       validator: fullNameValidator,
     );
@@ -431,7 +454,7 @@ class _SignUpState extends State<SignUp> {
     return CustomizedTextFormField(
       controller: _lastNameController,
       labelColor: darkGrey,
-      labelText: isPersonalAccount ? "Surname" : 'Business Owner Surname',
+      labelText: isPersonalAccount ? "Surname" : 'Business Owner\'s Surname',
       keyboardType: TextInputType.name,
       validator: fullNameValidator,
     );
@@ -558,7 +581,12 @@ class _SignUpState extends State<SignUp> {
     if (!validCharacters.hasMatch(username)) {
       return "Username is not valid";
     }
-
+    if (username.isEmpty) {
+      return 'Username cannot be empty';
+    }
+    if (username.length < 4) {
+      return 'Username cannot be less than 4 characters';
+    }
     return checkSlydoName(username);
   }
 
@@ -581,10 +609,6 @@ class _SignUpState extends State<SignUp> {
   }
 
   String? nickNameValidator(String nickName) {
-    if (_businessOrNickNameController.text.trim() ==
-        _userNameController.text.trim()) {
-      return "Nickname and Username should not be same";
-    }
     return checkSlydoName(nickName);
   }
 
@@ -638,17 +662,20 @@ class _SignUpState extends State<SignUp> {
               DateTime.now().year, DateTime.now().month, DateTime.now().day),
         ).then((value) {
           dob = DateTime(value!.year, value.month, value.day);
+          showDOB = true;
           setState(() {});
           validateDOB();
         }).catchError((error) {});
       },
       child: CustomizedDropDownField(
-        title: isPersonalAccount ? "Birthdate" : 'Business Owner Birthdate',
+        title: isPersonalAccount ? "Birthdate" : 'Business Owner\'s Birthdate',
         child: Container(
           child: ListTile(
             dense: true,
             title: Text(
-              formatDate(dob),
+              /*This is so that when the user
+             * comes to this page before picking a date, the field will be empty*/
+              showDOB == true ? formatDate(dob) : '',
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w600,
@@ -713,16 +740,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   void triggerInfoChange() {
-    basicAccountInfo = !basicAccountInfo;
-    if (mounted) setState(() {});
-    // if (_officialDetailFormKey.currentState!.validate() && validateDOB()) {
-    //   if (gender != null) {
-    //     basicAccountInfo = !basicAccountInfo;
-    //     if (mounted) setState(() {});
-    //   } else {
-    //     showToast(message: 'Pick a gender');
-    //   }
-    // }
+    if (_personalDetailFormKey.currentState!.validate()) {
+      basicAccountInfo = !basicAccountInfo;
+      if (mounted) setState(() {});
+    }
   }
 
   bool validateDOB() {
@@ -778,7 +799,7 @@ class _SignUpState extends State<SignUp> {
 
   Widget getGenderField() {
     return CustomizedDropDownField(
-      title: isPersonalAccount ? "Gender" : 'Business Owner Gender',
+      title: isPersonalAccount ? "Gender" : 'Business Owner\'s Gender',
       child: ListTile(
         dense: true,
         title: Text(
@@ -871,8 +892,13 @@ class _SignUpState extends State<SignUp> {
     if (FocusScope.of(context).hasFocus) {
       FocusScope.of(context).unfocus();
     }
-    if (_registrationFormKey.currentState!.validate()) {
-      phoneNumber = _phoneNumberController.text.trim();
+
+    if (gender == null) {
+      showToast(message: 'Please pick a gender');
+      return;
+    }
+
+    if (_bankDetailsFormKey.currentState!.validate()) {
       password = _passwordController.text.trim();
 
       DateFormat dateFormat = DateFormat('yyyy-MM-dd');
@@ -887,26 +913,35 @@ class _SignUpState extends State<SignUp> {
 
       String firstName = _firstNameController.text.trim();
       String lastName = _lastNameController.text.trim();
+      String userName =
+          _userNameController.text.replaceAll(' ', '.').toLowerCase().trim();
+      String businessOrNickName = _businessOrNickNameController.text
+          .replaceAll(' ', '.')
+          .toLowerCase()
+          .trim();
 
       Map<String, dynamic> data = {
-        "phone_number": _phoneNumberController.text.trim(),
+        "phone_number": phoneNumber,
         "firstname": firstName,
         "lastname": lastName,
         "full_name": "$firstName $lastName",
         "dob": dateFormat.format(dob),
         "gender": selectedGender,
-        "username": _userNameController.text.trim(),
-        "nickname": _businessOrNickNameController.text.trim(),
+        "username": userName,
+        "bvn": _bvnController.text,
+        "nickname": businessOrNickName,
         "password1": _passwordController.text.trim(),
         "password2": _confirmPasswordController.text.trim(),
-        "profile": {
-          'id': subscriptionsId,
-          "bvn": _bvnController.text,
-          "account_type": accountType,
-          'industry_type': industryType,
-          "business_name": _businessOrNickNameController,
-        },
       };
+
+      if (accountType != 'Personal') {
+        data['profile'] = {
+          'id': subscriptionsId,
+          'industry': industryType,
+          "account_type": accountType,
+          "business_name": businessOrNickName,
+        };
+      }
       debugPrint("DATA SENT:- $data");
 
       showDialog(context: context, builder: (context) => LoadingIndicator());
@@ -941,7 +976,6 @@ class _SignUpState extends State<SignUp> {
     _lastNameController.clear();
     _businessOrNickNameController.clear();
     _userNameController.clear();
-    _phoneNumberController.clear();
     _passwordController.clear();
     _confirmPasswordController.clear();
 
@@ -965,62 +999,91 @@ class _SignUpState extends State<SignUp> {
   Widget chooseYourPlanDropdown() {
     return IgnorePointer(
       ignoring: subscriptionsModelList == null,
-      child: Container(
-        height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 14.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: dividerColor),
-          borderRadius: BorderRadius.circular(10),
+      child: DropdownButtonFormField2(
+        isExpanded: true,
+        value: subscriptionsModel,
+        style: TextStyle(
+          fontSize: 16,
+          color: blackFont,
+          fontWeight: FontWeight.w600,
         ),
-        child: DropdownButton2(
-          isExpanded: true,
-          value: subscriptionsModel,
-          underline: SizedBox.shrink(),
-          items: subscriptionsModelList == null
-              ? [
-                  DropdownMenuItem(
-                    value: SubscriptionsModel(
-                      accountType: '',
-                      currency: '',
-                      price: 0,
-                      id: 0,
-                      subscriptionType: '',
-                    ),
-                    child: Text(''),
-                  )
-                ]
-              : subscriptionsModelList!.map((SubscriptionsModel item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Row(
-                      children: [
-                        Text(
-                          worldCurrencies[item.currency]!,
-                          style: TextStyle(
-                            fontFamily: "Roboto",
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Text(
-                          '${moneyDisplayNormalizer(int.parse(item.price.toString()))} (${item.subscriptionType}) plan',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xff030F36),
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-          onChanged: (SubscriptionsModel? value) {
-            setState(() {
-              subscriptionsModel = value;
-            });
-            subscriptionsId = subscriptionsModel!.id;
-          },
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: greyBorderColor,
+              width: 1.0,
+            ),
+          ),
         ),
+        items: subscriptionsModelList == null
+            ? [
+                DropdownMenuItem(
+                  value: SubscriptionsModel(
+                    accountType: '',
+                    currency: '',
+                    price: 0,
+                    id: 0,
+                    subscriptionType: '',
+                  ),
+                  child: Text(''),
+                )
+              ]
+            : subscriptionsModelList!.map((SubscriptionsModel item) {
+                return DropdownMenuItem(
+                  value: item,
+                  child: Row(
+                    children: [
+                      Text(
+                        '(FREE) ',
+                        style: TextStyle(
+                          color: navyBlue,
+                        ),
+                      ),
+                      Text(
+                        worldCurrencies[item.currency]!,
+                        style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                      Text(
+                        '${moneyDisplayNormalizer(int.parse(item.price.toString()))} (${item.subscriptionType}) plan',
+                        style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+        onChanged: (SubscriptionsModel? value) {
+          setState(() {
+            subscriptionsModel = value;
+          });
+          subscriptionsId = subscriptionsModel!.id;
+        },
+        validator: (SubscriptionsModel? value) {
+          if (value != null && value.subscriptionType.isNotEmpty) {
+            return null;
+          } else {
+            return 'Choose a plan';
+          }
+        },
       ),
     );
   }
@@ -1043,115 +1106,14 @@ class _SignUpState extends State<SignUp> {
   }
 }
 
-class ChooseYourPlanWidget extends StatefulWidget {
-  final String? accountType;
-  final Function(SubscriptionsModel) onChanged;
-  const ChooseYourPlanWidget(
-      {Key? key, required this.onChanged, required this.accountType})
-      : super(key: key);
-
-  @override
-  _ChooseYourPlanWidgetState createState() => _ChooseYourPlanWidgetState();
-}
-
-class _ChooseYourPlanWidgetState extends State<ChooseYourPlanWidget> {
-  String? planType;
-  SubscriptionsModel? subscriptionsModel;
-  List<SubscriptionsModel>? subscriptionsModelList = [];
-
-  @override
-  void initState() {
-    getSubscriptionList();
-    super.initState();
-  }
-
-  getSubscriptionList() async {
-    if (widget.accountType != null) {
-      List<SubscriptionsModel> _subscriptionsModelList =
-          await SubscriptionsAuth()
-              .getSubscriptionList(accountType: widget.accountType!);
-      subscriptionsModelList = _subscriptionsModelList;
-
-      debugPrint('LIST -> ${subscriptionsModelList}');
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Choose your plan',
-          style: TextStyle(color: darkGrey, fontSize: 14),
-        ),
-        SizedBox(height: 10),
-        chooseYourPlanDropdown(),
-      ],
-    );
-  }
-
-  Widget chooseYourPlanDropdown() {
-    return IgnorePointer(
-      ignoring: subscriptionsModelList == null,
-      child: Container(
-        height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 14.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: dividerColor),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: DropdownButton2(
-          isExpanded: true,
-          value: subscriptionsModel,
-          underline: SizedBox.shrink(),
-          items: subscriptionsModelList!.map((SubscriptionsModel item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Row(
-                children: [
-                  Text(
-                    worldCurrencies[item.currency]!,
-                    style: TextStyle(
-                      fontFamily: "Roboto",
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    '${moneyDisplayNormalizer(int.parse(item.price.toString()))} (${item.subscriptionType}) plan',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xff030F36),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
-          onChanged: (SubscriptionsModel? value) {
-            setState(() {
-              subscriptionsModel = value;
-            });
-            widget.onChanged(value!);
-          },
-        ),
-      ),
-    );
-  }
-}
-
 List<String> industryList = [
   'Manufacturing',
   'Technology',
-  'Production',
   'Trade',
   'Finance',
-  'Small business',
   'Marketing',
-  'Science',
+  'Bio-tech',
+  'Pharmaceutical',
   'Research',
   'Food Industry',
   'Investment',
@@ -1162,10 +1124,9 @@ List<String> industryList = [
   'Construction',
   'Entertainment',
   'Hospitality',
-  'Media',
+  'Media / News',
   'E-commerce',
   'Transport',
-  'Cryptocurrency',
   'Bank',
   'Education',
   'Insurance',
@@ -1173,4 +1134,60 @@ List<String> industryList = [
   'Mining',
   'Regulation',
   'Fashion',
+  'Bank',
+  'Bar',
+  'Book Store',
+  'Concert Venue',
+  'Food / Grocery',
+  'Hotel',
+  'Local Business',
+  'Movie Theatre',
+  'Museum/Art Gallery',
+  'Outdoor Gear/Sporting Goods',
+  'Real Estate',
+  'Restaurant / Cafe',
+  'School',
+  'Shopping / Retail',
+  'Spas/Beauty/Personal',
+  'Care',
+  'Automobiles and Parts',
+  'Church',
+  'Company',
+  'Computers/Technology',
+  'Consulting/Business Services',
+  'Cause',
+  'Food/Beverages',
+  'Health/Beauty',
+  'Insurance Company',
+  'Internet/Software',
+  'Legal/Law',
+  'Non-Profit Organization',
+  'Retail and Consumer Merchandise',
+  'Media/News/Publishing',
+  'Travel/Leisure',
+  'Aerospace ',
+  'Agriculture ',
+  'Automotive ',
+  'Cargo & Freight ',
+  'Chemical ',
+  'College & University',
+  'Community Organization',
+  'Community Services',
+  'Computer ',
+  'Consulting Agency',
+  'Education',
+  'Elementary School',
+  'Energy ',
+  'Finance ',
+  'Food & Beverage ',
+  'Government Organization',
+  'Health/Beauty',
+  'High School',
+  ' Internet ',
+  'Labor Union',
+  'Non-Profit Organization',
+  'Political Organization',
+  'Telecommunication',
+  '   Tobacco',
+  'Miscellaneous',
 ];

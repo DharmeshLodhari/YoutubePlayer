@@ -2178,8 +2178,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        debugPrint(
-            'LOCATION S -> ${appConfigurationModel?.enableLocationSharing}');
+
         if (appConfigurationModel?.enableLocationSharing == true) {
           showMoreAction = false;
           if (mounted) setState(() {});
@@ -2338,7 +2337,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
         backgroundColor: navyBlue.withOpacity(0.08),
         onTap: () async {
-          if (appConfigurationModel?.enableMagicEnvelope == true) {
+          if (appConfigurationModel?.enablePayment == true && appConfigurationModel?.enableMagicEnvelope == true) {
             showMoreAction = false;
 
             if (mounted) setState(() {});
@@ -2377,7 +2376,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (appConfigurationModel?.enableMagicEnvelope == true) {
+        if (appConfigurationModel?.enablePayment == true && appConfigurationModel?.enableEmptyEnvelope == true) {
           showMoreAction = false;
 
           if (mounted) setState(() {});

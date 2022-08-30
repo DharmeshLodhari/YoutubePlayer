@@ -565,7 +565,10 @@ String formatTime(String date) {
   return time;
 }
 
-String formatDate(DateTime dateTime) {
+String formatDate(DateTime? dateTime) {
+  if (dateTime == null) {
+    return '';
+  }
   String date =
       "${dateTime.day} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
 

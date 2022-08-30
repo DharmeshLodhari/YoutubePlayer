@@ -3,7 +3,6 @@ import 'package:Slydo/screens/blog/create_or_edit_post.dart';
 import 'package:Slydo/screens/dashboard.dart';
 import 'package:Slydo/screens/explore.dart';
 import 'package:Slydo/screens/home.dart';
-import 'package:Slydo/screens/index.dart';
 import 'package:Slydo/screens/more_apps.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard.dart';
 import 'package:Slydo/screens/more_apps/bus/search_bus.dart';
@@ -139,6 +138,7 @@ import 'package:Slydo/screens/more_apps/utility/utility_dashboard.dart';
 import 'package:Slydo/screens/more_apps/utility/utility_history.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/screens/search_module.dart';
+import 'package:Slydo/screens/startup_screen.dart';
 import 'package:Slydo/screens/user_dashboard.dart';
 import 'package:Slydo/splash.dart';
 import 'package:Slydo/widget/photo_viewer.dart';
@@ -178,7 +178,7 @@ class RouteGenerator {
         );
       case Routes.INDEX:
         return PageTransition(
-          child: Index(
+          child: StartupScreen(
             arguments: settings.arguments,
           ),
           type: PageTransitionType.bottomToTop,
@@ -204,7 +204,7 @@ class RouteGenerator {
           settings: settings,
         );
 
-      case Routes.NEW_REGISTRATION:
+      case Routes.REGISTRATION:
         return PageTransition(
           child: Registration(),
           type: PageTransitionType.bottomToTop,

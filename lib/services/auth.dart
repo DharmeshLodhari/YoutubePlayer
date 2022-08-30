@@ -8,7 +8,6 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/services/logout_helper.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
 import 'package:Slydo/utils/country_picker/utils.dart';
@@ -19,6 +18,7 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../main.dart';
 import 'device_info.dart';
 
 class AuthService {
@@ -315,7 +315,6 @@ class AuthService {
       }
     });
 
-
     return jwt!;
   }
 
@@ -366,6 +365,7 @@ class AuthService {
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
+      "App-Version": appVersion
     };
     return headers;
   }
@@ -457,7 +457,10 @@ class AuthService {
       "TransactionId": transactionId,
       "DeviceType": Platform.isAndroid ? "Android" : "IOS",
       "User-Agent": "Slydo-Mobile",
+      "App-Version": appVersion,
     };
+    debugPrint('APP VERSION -> $appVersion}');
+
     return headers;
   }
 
@@ -498,7 +501,6 @@ class AuthService {
     }
 
     return Future.error("$timeOutErrorMessage");
-
   }
 
   Future<void> wasTokenBlackListed(var response) async {

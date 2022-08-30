@@ -932,7 +932,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       title: AppLocalization.of(context)!.cashOut,
                       iconData: SlydoAppIcon.payout,
                       onTap: () {
-                        if (appConfigurationModel?.enableCashout == false) {
+                        if (appConfigurationModel?.enablePayment == true && appConfigurationModel?.enableCashout == true) {
                           BottomSheetPassCode(
                               context: context,
                               isValidCallback: () {

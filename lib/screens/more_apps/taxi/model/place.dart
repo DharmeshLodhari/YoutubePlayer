@@ -33,7 +33,4 @@ Map<String, dynamic> map = {
     }
   ],
   "status": "OK"
-}.;
-
-
-
+};

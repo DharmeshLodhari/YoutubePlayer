@@ -82,10 +82,17 @@ class _UserLoginState extends State<UserLogin> {
       passwordFromPref = secureUser.password;
 
       //setting fetched userdata into screen
-      phoneNumberController!.text = phoneNumberFromPref!;
-      passwordController!.text = passwordFromPref!;
-      phoneNumber =
-          "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromPref!;
+      if (phoneNumberFromPref != null) {
+        phoneNumberController!.text = phoneNumberFromPref!;
+      }
+      if (passwordFromPref != null) {
+        passwordController!.text = passwordFromPref!;
+      }
+      if (phoneNumberFromPref != null) {
+        phoneNumber =
+            "+" + _selectedDialogCountry.phoneCode! + phoneNumberFromPref!;
+      }
+
       password = passwordFromPref;
     }
     if (mounted) setState(() {});

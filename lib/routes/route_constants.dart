@@ -8,7 +8,7 @@ class Routes {
   static const String INDEX = "/index";
   static const String DASHBOARD = "/dashboard";
   static const String SEARCH_MODULE = "/search-module";
-  static const String NEW_REGISTRATION = "/new-registration";
+  static const String REGISTRATION = "/registration";
   static const String VERIFY_RESET_DEVICE_OTP = "/verify-reset-device-otp";
   static const String VERIFY_RESET_PASSWORD_OTP = "/verify-reset-password-otp";
   static const String SIGN_UP = "/register";
