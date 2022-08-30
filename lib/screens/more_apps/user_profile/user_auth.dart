@@ -36,15 +36,16 @@ class UserAuth extends AuthService {
     };
     var response = await httpGet(url, headers: headers);
 
+    debugPrint(
+        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      debugPrint("FETCH USER PROFILE RESPONSE BODY:- ${response.body}");
 
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
-      debugPrint(
-          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
       return Future.error("ERROR:- ${response.body}");
     }
   }

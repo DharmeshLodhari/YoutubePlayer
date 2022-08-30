@@ -51,7 +51,6 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
       MaskedTextController(mask: '000');
 
   bool? cardNumberVerified;
-  bool verifyingCardNumber = false;
   FocusNode cvvFocusNode = FocusNode();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -263,7 +262,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                         }
                       });
                     },
-                    extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully:
+                    extraFunctionWhenInputWasNotVerifiedFromServer:
                         () {
                       setState(() {
                         showButton = false;

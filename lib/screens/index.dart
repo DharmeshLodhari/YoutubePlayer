@@ -131,8 +131,9 @@ class _IndexState extends State<Index> {
                       CurvedButton(
                         backgroundColor: Color.fromARGB(38, 255, 255, 255),
                         onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(Routes.NEW_REGISTRATION);
+                          // Navigator.of(context)
+                          //     .pushNamed(Routes.NEW_REGISTRATION);
+                          Navigator.of(context).pushNamed(Routes.SIGN_UP);
                         },
                         text: "Register",
                         textColor: Colors.white,

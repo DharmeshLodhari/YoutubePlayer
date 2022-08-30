@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../data/state_notifier.dart';
 import '../../../../utils/colors.dart';
-import '../../../../widget/LoadingIndicator.dart';
 import '../models/UserAbout.dart';
 import '../user_auth.dart';
 
@@ -29,7 +28,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
   List<String> states = [];
   String? pickedStateValue;
   UserAbout? userBioDetail;
-  bool isStateLoading = false;
+  bool disableDropDown = false; // Disable dropdown when it's loading.
   Map<int, String> statesMap = {};
 
   @override
@@ -52,7 +51,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
   }
 
   getStates({String? state}) {
-    isStateLoading = true;
+    disableDropDown = true;
     if (mounted) setState(() {});
     UserAuth().getStates().then((value) {
       value.forEach((element) {
@@ -62,10 +61,10 @@ class _PickStateWidgetState extends State<PickStateWidget> {
 
       pickedStateValue = widget.initialStateValue ?? statesMap[stateId];
 
-      isStateLoading = false;
+      disableDropDown = false;
       if (mounted) setState(() {});
     }).catchError((e) {
-      isStateLoading = false;
+      disableDropDown = false;
       if (mounted) setState(() {});
     });
   }
@@ -74,9 +73,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        isStateLoading
-            ? CircularLoadingIndicator()
-            : Expanded(child: addStateDropdown()),
+        Expanded(child: addStateDropdown()),
         SizedBox(width: 12),
       ],
     );
@@ -99,7 +96,7 @@ class _PickStateWidgetState extends State<PickStateWidget> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: IgnorePointer(
-            ignoring: widget.disable,
+            ignoring: disableDropDown == true ? true : widget.disable,
             child: DropdownButton2(
                 isExpanded: true,
                 value: pickedStateValue,

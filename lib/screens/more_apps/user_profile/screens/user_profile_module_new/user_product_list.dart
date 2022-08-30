@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../routes/route_constants.dart';
+import '../../../../../widget/item_display_card.dart';
 
 // ignore: must_be_immutable
 class UserProductList extends StatefulWidget {
@@ -159,6 +160,20 @@ class _UserProductListState extends State<UserProductList> {
               if (index == productList.length) {
                 return _buildProductIndicator();
               } else {
+                return CustomBoxShadow(
+                  child: SizedBox(
+                    height: 250,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      child: DisplayProduct(
+                        product: productList[index],
+                        onProductRefresh: () {
+                          _onProductRefresh();
+                        },
+                      ),
+                    ),
+                  ),
+                );
                 return productTile(index);
               }
             },
@@ -184,6 +199,18 @@ class _UserProductListState extends State<UserProductList> {
   }
 
   Widget productTile(int index) {
+    return CustomBoxShadow(
+      child: SizedBox(
+        height: 250,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: DisplayProduct(
+            product: productList[index],
+          ),
+        ),
+      ),
+    );
+
     return CustomBoxShadow(
       child: SizedBox(
         height: 300,
@@ -284,6 +311,12 @@ class _UserProductListState extends State<UserProductList> {
                             )
                           : Container(),
                       getOutOfStockTag(index),
+                      Positioned(
+                        right: 10,
+                        bottom: 10,
+                        child: getRating(
+                            numberOfRating: productList[index].rating?.toInt()),
+                      ),
                     ],
                   ),
                 ),
@@ -305,47 +338,28 @@ class _UserProductListState extends State<UserProductList> {
                           overflow: TextOverflow.fade,
                         ),
                       ),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: worldCurrencies[
-                                    productList[index].currency!],
-                                style: TextStyle(
-                                    fontFamily: "Roboto",
-                                    color: navyBlue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14)),
-                            TextSpan(
-                                text: moneyDisplayNormalizer(int.parse(
-                                    productList[index].price.toString())),
-                                style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ))
-                          ],
-                        ),
-                      ),
                     ],
                   ),
-                  subtitle: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(
-                                  productList[index].shortDescription) ??
-                              "",
-                          maxLines: 1,
-                          style: TextStyle(fontSize: 14, color: darkGrey),
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                      getRating(
-                          numberOfRating: productList[index].rating?.toInt()),
-                    ],
+                  subtitle: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                            text: worldCurrencies[productList[index].currency!],
+                            style: TextStyle(
+                                fontFamily: "Roboto",
+                                color: navyBlue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14)),
+                        TextSpan(
+                            text: moneyDisplayNormalizer(
+                                int.parse(productList[index].price.toString())),
+                            style: TextStyle(
+                              color: navyBlue,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ))
+                      ],
+                    ),
                   ),
                 ),
               ],

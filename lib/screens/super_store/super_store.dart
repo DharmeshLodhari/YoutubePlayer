@@ -11,6 +11,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../data/currency.dart';
 import '../../routes/route_constants.dart';
 import '../../utils/util.dart';
+import '../../widget/item_display_card.dart';
 import '../more_apps/shopping/models/ShoppingProduct.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
@@ -210,7 +211,7 @@ class _SuperStoreState extends State<SuperStore> {
       appBar: appBar(),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -301,8 +302,8 @@ class _SuperStoreState extends State<SuperStore> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisExtent: 270,
-                  mainAxisSpacing: 16,
+                  mainAxisSpacing: 8,
+                  mainAxisExtent: 230,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),
@@ -399,6 +400,19 @@ class _SuperStoreState extends State<SuperStore> {
 
                 return buildIndicator(isLoading: isTodayDealLoading);
               } else {
+                // return displayProduct(
+                //   context: context,
+                //   product: Product(
+                //     id: todaysDealList[index].id,
+                //     name: todaysDealList[index].name,
+                //     price: todaysDealList[index].price.toString(),
+                //     description: todaysDealList[index].description,
+                //     serverImages: todaysDealList[index]!
+                //         .images!
+                //         .map((e) => e.path)
+                //         .toList(),
+                //   ),
+                // );
                 return todaysDealWidget(product: todaysDealList[index]);
               }
             },
@@ -575,14 +589,13 @@ class _SuperStoreState extends State<SuperStore> {
 }
 
 class SuperStoreSingleCard extends StatelessWidget {
-  final bool dealsOfTheDay;
   final Product product;
-  const SuperStoreSingleCard(
-      {Key? key, required this.product, this.dealsOfTheDay = false})
+  const SuperStoreSingleCard({Key? key, required this.product})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return DisplayProduct(product: product, giveRightPadding: false);
     return Stack(
       children: [
         InkWell(

@@ -69,9 +69,7 @@ class _RegistrationState extends State<Registration> {
                     selectCountryField(),
                     SizedBox(height: 12),
                     phoneNumberField(),
-                    SizedBox(
-                      height: 40,
-                    ),
+                    SizedBox(height: 40),
                     continueBtn(),
                     SizedBox(
                       height: 20,
@@ -146,7 +144,7 @@ class _RegistrationState extends State<Registration> {
           });
         }
       },
-      extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully: () {
+      extraFunctionWhenInputWasNotVerifiedFromServer: () {
         setState(() {
           showButton = false;
           showToast(message: 'Phone number already exists');

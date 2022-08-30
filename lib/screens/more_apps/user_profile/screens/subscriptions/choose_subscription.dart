@@ -503,7 +503,8 @@ class SubscriptionTile extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 20,
                                 color: Color(0xff030F36),
-                                fontWeight: FontWeight.w700),
+                                fontWeight: FontWeight.w700,
+                                decoration: TextDecoration.lineThrough),
                           ),
                         ],
                       ),

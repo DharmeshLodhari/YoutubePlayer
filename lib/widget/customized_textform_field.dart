@@ -52,7 +52,7 @@ class CustomizedTextFormField extends StatefulWidget {
   bool? Function(String val)?
       whenToVerifyInputFromServer; //If this is true, verifyInputFromServerFunc will be executed
   Function? extraFunctionWhenInputWasVerifiedFromServerSuccessfully;
-  Function? extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully;
+  Function? extraFunctionWhenInputWasNotVerifiedFromServer;
 
   CustomizedTextFormField({
     this.initialValue,
@@ -61,7 +61,7 @@ class CustomizedTextFormField extends StatefulWidget {
     this.verifyInputFromServerFunc,
     this.whenToVerifyInputFromServer,
     this.extraFunctionWhenInputWasVerifiedFromServerSuccessfully,
-    this.extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully,
+    this.extraFunctionWhenInputWasNotVerifiedFromServer,
     this.suffixIcon,
     this.hasBorder = true,
     this.hasLabel = true,
@@ -328,7 +328,7 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
         inputVerified = false;
         verifyingInput = false;
       });
-      widget.extraFunctionWhenInputWasNotVerifiedFromServerSuccessfully!();
+      widget.extraFunctionWhenInputWasNotVerifiedFromServer!();
     }
   }
 

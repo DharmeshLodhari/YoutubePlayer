@@ -2547,6 +2547,13 @@ class AppLocalization {
     );
   }
 
+  String get print {
+    return Intl.message(
+      "Print",
+      name: "print",
+    );
+  }
+
   String get highestPrice {
     return Intl.message(
       "Highest price",
