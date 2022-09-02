@@ -67,12 +67,16 @@ class User {
   String conversationId;
   UserStatus status;
   double? rating;
+  String? bio;
+  String? chatWallpaper;
   UserAbout? userAbout;
 
   // Pass in as named parameter in constructor
   User({
+    this.bio = "",
     this.uuid = "",
     this.url = "",
+    this.chatWallpaper = "",
     this.phoneNumber = "",
     this.fullName = "",
     this.userName = "",
@@ -90,7 +94,9 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+    UserAbout userAbout = UserAbout.fromJson(json["profile"]);
+
+    User user = User(
       nickName: json['nickname'] ?? "",
       type: json['account_type'],
       avatar: json['avatar'],
@@ -101,11 +107,17 @@ class User {
       phoneNumber: json['phone_number'],
       qrCode: json['qr_code'],
       url: json['url'],
-      rating: formatRating(json['rating']),
+      bio: json['bio'] ?? '',
       userAbout: UserAbout.fromJson(json["profile"]),
+      chatWallpaper: json['chat_wallpaper'],
+      rating: formatRating(json['rating']),
       userName: json['username'],
       uuid: json['uuid'],
     );
+    // userAbout.bio = user.bio == null ? '' : user.bio!;
+    // user.userAbout = userAbout;
+
+    return user;
   }
 
   Map<String, dynamic> toJson() {
@@ -167,6 +179,8 @@ class CustomerProfile {
   String? type;
   String? conversationId;
   String uuid;
+  String? bio;
+  String? chatWallpaper;
   String defaultCurrency;
   bool isVerified;
   UserAbout? userAbout;
@@ -176,6 +190,8 @@ class CustomerProfile {
   // Pass in as named parameter in constructor
   CustomerProfile(
       {this.fullName = "",
+      this.bio = "",
+      this.chatWallpaper = "",
       this.userName = "",
       this.avatar = "",
       this.userAbout,
@@ -193,6 +209,8 @@ class CustomerProfile {
     CustomerProfile profile = CustomerProfile(
         fullName: json['full_name'] ?? json['name'] ?? "",
         userName: json['username'] ?? "",
+        bio: json['bio'] ?? "",
+        chatWallpaper: json['chat_wallpaper'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
         nickName: json['nickname'] ?? json['name'] ?? "",

@@ -199,6 +199,18 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  int getProductOrServiceQuantityInCart(String id) {
+    int quantity = 0;
+
+    items.forEach((element) {
+      if (element["item"].id == id) {
+        quantity = element['qty'] as int;
+      }
+    });
+
+    return quantity;
+  }
+
   int getSubTotalPriceByMerchant({required String merchantUserName}) {
     int subTotal = 0;
     items.forEach((element) {
@@ -240,7 +252,7 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void removeMerchantName(var item) {
-    // var merchantUserName = item is Product ? item.seller : item.provider;
+
     var merchantFullName =
         item is Product ? item.sellerFullName : item.providerFullName;
 

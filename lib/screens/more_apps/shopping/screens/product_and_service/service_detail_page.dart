@@ -509,7 +509,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             });
             Map data = {
               "type": type,
-              "id": mapData["item"].subscriptionId,
+              "id": mapData["item"].id,
               "qty": mapData["qty"],
             };
             debugPrint("Data From Service Page : $data");
@@ -1193,16 +1193,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ],
             ),
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => displayService(
-                context: context,
+              itemBuilder: (context, index) => DisplayService(
                 service: sellersOtherItems[index],
               ),
             ),

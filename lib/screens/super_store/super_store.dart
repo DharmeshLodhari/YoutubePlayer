@@ -1,17 +1,22 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../data/currency.dart';
+import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
+import '../../utils/navigation_util.dart';
 import '../../utils/util.dart';
 import '../../widget/item_display_card.dart';
+import '../../widget/rounded_background_icon.dart';
 import '../more_apps/shopping/models/ShoppingProduct.dart';
 import '../more_apps/shopping/models/store.dart';
 import '../more_apps/shopping/shopping_auth.dart';
@@ -36,6 +41,7 @@ class _SuperStoreState extends State<SuperStore> {
   String? productNext = "";
   String? todayDealPrevious = "";
   String? productPrevious = "";
+  late BasketBloc basketBloc;
 
   final GlobalKey<ScaffoldState> _productScaffoldKey =
       new GlobalKey<ScaffoldState>();
@@ -61,6 +67,10 @@ class _SuperStoreState extends State<SuperStore> {
           fontWeight: FontWeight.w700,
         ),
       ),
+      actions: [
+        _cartBtn(),
+        SizedBox(width: 12),
+      ],
     );
   }
 
@@ -206,6 +216,8 @@ class _SuperStoreState extends State<SuperStore> {
 
   @override
   Widget build(BuildContext context) {
+    basketBloc = Provider.of<BasketBloc>(context);
+
     return Scaffold(
       backgroundColor: lightGrey,
       appBar: appBar(),
@@ -303,7 +315,7 @@ class _SuperStoreState extends State<SuperStore> {
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8,
-                  mainAxisExtent: 230,
+                  mainAxisExtent: 180,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),
@@ -364,7 +376,7 @@ class _SuperStoreState extends State<SuperStore> {
                 ],
               ),
         Container(
-          height: 240,
+          height: 180,
           child: ListView.builder(
             padding: EdgeInsets.only(bottom: 6),
             scrollDirection: Axis.horizontal,
@@ -397,23 +409,21 @@ class _SuperStoreState extends State<SuperStore> {
                         ),
                       )
                     : SizedBox.shrink();
-
-                return buildIndicator(isLoading: isTodayDealLoading);
               } else {
-                // return displayProduct(
-                //   context: context,
-                //   product: Product(
-                //     id: todaysDealList[index].id,
-                //     name: todaysDealList[index].name,
-                //     price: todaysDealList[index].price.toString(),
-                //     description: todaysDealList[index].description,
-                //     serverImages: todaysDealList[index]!
-                //         .images!
-                //         .map((e) => e.path)
-                //         .toList(),
-                //   ),
-                // );
-                return todaysDealWidget(product: todaysDealList[index]);
+                ShoppingProduct shoppingProduct = todaysDealList[index];
+                return DisplayProduct(
+                  giveRightPadding: true,
+                  product: Product(
+                    id: shoppingProduct.id,
+                    name: shoppingProduct.name,
+                    price: shoppingProduct.price.toString(),
+                    currency: shoppingProduct.currency,
+                    cover: shoppingProduct.cover,
+                    isAvailable: shoppingProduct.isAvailable,
+                    seller: shoppingProduct.seller,
+                    sellerFullName: shoppingProduct.sellerFullname,
+                  ),
+                );
               }
             },
           ),
@@ -585,6 +595,56 @@ class _SuperStoreState extends State<SuperStore> {
         ),
       ),
     );
+  }
+
+  Widget _cartBtn() {
+    return RoundedBackgroundIcon(
+      height: 34,
+      width: 34,
+      icon: Badge(
+        badgeColor: naturalGreen,
+        animationType: BadgeAnimationType.slide,
+        badgeContent: getBadgeContent(),
+        padding: basketBloc.items.length == 0
+            ? EdgeInsets.all(0)
+            : EdgeInsets.only(
+                left: getBadgeCount().length == 1 ? 6 : 8,
+                right: 6,
+                top: 4,
+                bottom: 4),
+        position:
+            BadgePosition(end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
+        child: Icon(
+          SlydoAppIcon.cart,
+          size: 16,
+          color: blackFont,
+        ),
+      ),
+      onTap: () {
+        NavigationUtil.pushNamed(context, routeName: Routes.SHOPPING_CART);
+      },
+      backgroundColor: blackFont.withOpacity(0.1),
+      enableMargin: true,
+    );
+  }
+
+  Widget? getBadgeContent() {
+    if (basketBloc.items.length == 0) {
+      return null;
+    }
+    return Text(
+      getBadgeCount(),
+      style: TextStyle(
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  String getBadgeCount() {
+    int totalItem = 0;
+    basketBloc.items.forEach((element) {
+      totalItem = totalItem + element['qty'] as int;
+    });
+    return totalItem > 99 ? '99+' : totalItem.toString();
   }
 }
 

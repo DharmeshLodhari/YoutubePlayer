@@ -940,7 +940,9 @@ Widget getRating({required int? numberOfRating, double starSize = 11}) {
       ),
     );
   }
-  return Row(children: widgets);
+  return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: widgets,);
 }
 
 Color getRatingColor(int? numberOfRating, int i) {

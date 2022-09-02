@@ -120,7 +120,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       userBioDetail = userBloc.userAbout;
-      bioController!.text = userBioDetail!.bio;
+      bioController!.text = userBloc.user.bio!;
       if (userBioDetail?.userAddress?.addressLine1 != null) {
         addressLine1Controller!.text =
             userBioDetail!.userAddress!.addressLine1!;
@@ -269,6 +269,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         children: [
           SizedBox(height: 20),
           nickNameField(),
+          SizedBox(height: 20),
+          addBioField(),
         ],
       ),
     );
@@ -648,6 +650,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return CustomizedTextFormField(
       controller: bioController,
       maxLines: 5,
+      maxLength: 200,
       textCapitalization: TextCapitalization.sentences,
       labelText: "Bio",
     );
@@ -1017,16 +1020,18 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       );
 
       String nickName = _nicknameController!.text.trim();
-      await UserAuth().updateSimpleUserDetail(nickName: nickName).then((value) {
+      String bio = bioController!.text.trim();
+      await UserAuth()
+          .updateSimpleUserDetail(nickName: nickName, bio: bio)
+          .then((value) async {
         if (value == true) {
           UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
           userBloc.updateNickName = nickName;
+          userBloc.user.bio = bio;
         }
 
-        DashboardBloc dashboardBloc =
-            Provider.of<DashboardBloc>(context, listen: false);
-        dashboardBloc.index = 0;
-        Navigator.of(context).popUntil(ModalRoute.withName("/dashboard"));
+        Navigator.pop(context);
+        Navigator.pop(context);
 
         showToast(message: "Bio updated successfully!!");
       }).catchError((error) {
@@ -1049,18 +1054,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         ),
       );
       userBioDetail!.userAddress = UserAddress(
-        // UserState(
-        //   id: userBloc.userAbout?.userAddress?.state,
-        //   // name: userBloc.userAbout?.userAddress?.state?.name,
-        //
-        //   // country: Country(
-        //   //   name: userBloc.userAbout?.userAddress?.state?.country?.name,
-        //   //   id: userBloc.userAbout?.userAddress?.state?.country?.id,
-        //   //   isoCode: userBloc.userAbout?.userAddress?.state?.country?.isoCode,
-        //   // ),
-        //
-        // ),
-
         state: pickedStateId,
         id: userBloc.userAbout?.userAddress?.id,
         city: userBloc.userAbout?.userAddress?.city,
@@ -1068,9 +1061,6 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         addressLine1: userBloc.userAbout?.userAddress?.addressLine1,
         addressLine2: userBloc.userAbout?.userAddress?.addressLine2,
       );
-
-      debugPrint("userbiondetail 1 -> ${userBioDetail?.toJson()}");
-      debugPrint("userbiondetail 2 -> ${userBioDetail?.userAddress?.toJson()}");
 
       String nickName = _nicknameController!.text.trim();
       await UserAuth()
@@ -1080,6 +1070,9 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
             .authenticate(userBloc.user.phoneNumber, userBloc.user.password)
             .then((user) {
           userBloc.user = user;
+
+          debugPrint(
+              'USER ADDRESS P -> ${userBloc.user.userAbout?.userAddress?.addressLine1}');
         });
 
         Navigator.pop(context);

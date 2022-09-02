@@ -433,7 +433,7 @@ class _MixCartItemState extends State<MixCartItem> {
 
     debugPrint("Data send From Remove Button : $data");
     basketBloc.removeItemFromCart(basketBloc.items[index]["item"]);
-    await ShoppingAuthService().removeItemToShoppingCart(data);
+    await ShoppingAuthService().removeItemFromShoppingCart(data);
   }
 
   List<Widget> listActionSlideActions(int index) {

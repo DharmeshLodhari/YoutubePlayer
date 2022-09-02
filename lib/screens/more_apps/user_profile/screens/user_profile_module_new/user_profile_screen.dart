@@ -34,12 +34,12 @@ import '../../../../../locator.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
+import '../../models/UserAbout.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
   final arguments;
-  User? user;
-  UserProfileScreen({required this.arguments, this.user});
+  UserProfileScreen({required this.arguments});
 
   @override
   _UserProfileScreenState createState() =>
@@ -47,8 +47,9 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   var arguments;
+  late UserBloc userBloc;
 
   bool isLoading = true;
 
@@ -64,7 +65,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   // this variable will responsible for is the user is owner of the products and add
   // edit button on the product if user is owner
   bool isOwner = false;
-  late UserBloc userBloc;
   double? top;
 
   // pageview controller
@@ -80,11 +80,40 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool showServiceTab = false;
   bool myMomentsLoading = false;
   AppConfigurationModel? appConfigurationModel;
+  // final GlobalKey _flexibleSpaceBarKey = GlobalKey();
+  // Size? sizeFlexibleSpaceBar;
+  // bool _visible = true;
+
+  // getSizeAndPosition() {
+  //   debugPrint('CARD BOX 0 --> ${_flexibleSpaceBarKey.currentContext}');
+  //
+  //   RenderBox? _cardBox =
+  //       _flexibleSpaceBarKey.currentContext!.findRenderObject() as RenderBox?;
+  //   sizeFlexibleSpaceBar = _cardBox!.size;
+  //
+  //   debugPrint('CARD BOX 1 --> $_cardBox');
+  //   debugPrint('CARD BOX 2 --> $sizeFlexibleSpaceBar');
+  // }
+
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
     initializeVariables();
 
+    // WidgetsBinding.instance!.addPostFrameCallback((_) => getSizeAndPosition());
+    // Future.delayed(Duration(microseconds: 1)).then((value) {
+    //   setState(() {
+    //     _visible = false;
+    //   });
+    // });
+    // Future.delayed(Duration(seconds: 2)).then((value) {
+    //   debugPrint('CARD BOXES --> ${_flexibleSpaceBarKey.currentContext}');
+    //
+    //   getSizeAndPosition();
+    //   setState(() {
+    //     _visible = false;
+    //   });
+    // });
     super.initState();
   }
 
@@ -121,7 +150,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
 
     searchedUser = user;
-    debugPrint("searchUserName===>${searchedUser!.nickName}");
 
     if (searchedUser!.type!.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
@@ -220,8 +248,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             controller: _scrollController,
             headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
               return <Widget>[
+                // Visibility(
+                //   visible: _visible,
+                //   key: _flexibleSpaceBarKey,
+                //   child: getBgWidgetForAppBar(),
+                // ),
                 getAppbar(context),
-                getUserBio(),
+                // getUserBio(),
                 SliverPersistentHeader(
                   key: UniqueKey(),
                   floating: true,
@@ -260,7 +293,71 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     setState(() {});
   }
 
+  double getBgHeightOfAppBar(String text, bool hasAddress) {
+    int len = text.length;
+    debugPrint('GET HEIGHT LEN -> $len');
+    debugPrint('GET HEIGHT ADDRESS -> $hasAddress');
+
+    double? height;
+
+    if (len == 0) {
+      if (hasAddress) {
+        height = 320;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 320;
+      }
+      height = 300;
+      debugPrint('GET HEIGHT -> $height');
+
+      return 300;
+    }
+
+    if (len <= 50) {
+      if (hasAddress) {
+        height = 400;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 400;
+      }
+      height = 320;
+      debugPrint('GET HEIGHT -> $height');
+
+      return 320;
+    } else if (len <= 100) {
+      if (hasAddress) {
+        height = 420;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 420;
+      }
+      height = 400;
+      return 400;
+    } else if (len <= 200) {
+      if (hasAddress) {
+        height = 450;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 450;
+      }
+      height = 380;
+      debugPrint('GET HEIGHT -> $height');
+
+      return 380;
+    }
+
+    if (height == null) {
+      height = 450;
+      debugPrint('GET HEIGHT -> $height');
+    }
+    return height;
+  }
+
   Widget getAppbar(BuildContext context) {
+    bool hasAddress =
+        searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
+            searchedUser!.userAbout!.userAddress!.addressLine1!.isNotEmpty;
+
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
       sliver: SliverSafeArea(
@@ -268,9 +365,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         bottom: false,
         sliver: SliverAppBar(
           forceElevated: false,
-          expandedHeight: 240,
           elevation: 0,
           stretch: true,
+          expandedHeight: getBgHeightOfAppBar(
+            searchedUser?.bio == null ? '' : searchedUser!.bio!,
+            hasAddress,
+          ),
           shadowColor: Colors.transparent,
           pinned: true,
           floating: true,
@@ -299,7 +399,26 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     overflow: TextOverflow.ellipsis,
                   ),
                 )
-              : Container(),
+              : Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.topCenter,
+                  children: <Widget>[
+                    SizedBox.expand(
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).padding.top),
+                        height: 30,
+                        color: Colors.white,
+                      ),
+                    ),
+
+                    /// Banner image
+                    getProfileCover(),
+
+                    /// UserModel avatar, message icon, profile edit
+                    getProfilePhoto(),
+                  ],
+                ),
           titleSpacing: 0,
           backgroundColor: navyBlue,
           flexibleSpace: FlexibleSpaceBar(
@@ -307,31 +426,32 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               StretchMode.zoomBackground,
               StretchMode.blurBackground
             ],
-            background: isLoading
-                ? SizedBox.shrink()
-                : Stack(
-                    alignment: Alignment.topCenter,
-                    children: <Widget>[
-                      SizedBox.expand(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top),
-                          height: 30,
-                          color: Colors.white,
-                        ),
-                      ),
-                      // Container(height: 50, color: Colors.black),
-
-                      /// Banner image
-                      getProfileCover(),
-
-                      /// UserModel avatar, message icon, profile edit
-                      getProfilePhoto(),
-                    ],
-                  ),
+            background: isLoading ? SizedBox.shrink() : getBgWidgetForAppBar(),
           ),
         ),
       ),
+    );
+  }
+
+  Widget getBgWidgetForAppBar() {
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.topCenter,
+      children: <Widget>[
+        SizedBox.expand(
+          child: Container(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+            height: 30,
+            color: Colors.white,
+          ),
+        ),
+
+        /// Banner image
+        getProfileCover(),
+
+        /// UserModel avatar, message icon, profile edit
+        getProfilePhoto(),
+      ],
     );
   }
 
@@ -347,18 +467,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // SizedBox(
-                        //   height: 16,
-                        // ),
-                        // Text(
-                        //   truncateString(
-                        //       str: searchedUser!.displayName()!,
-                        //       lengthToTruncateAt: 53),
-                        //   style: TextStyle(
-                        //       fontSize: 18,
-                        //       fontWeight: FontWeight.w700,
-                        //       color: blackFont),
-                        // ),
+                        SizedBox(height: 16),
+                        Text(
+                          truncateString(
+                              str: searchedUser!.displayName()!,
+                              lengthToTruncateAt: 53),
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: blackFont),
+                        ),
                         Text(
                           '@${searchedUser!.userName!}',
                           style: TextStyle(
@@ -366,9 +484,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               color: darkGrey,
                               fontWeight: FontWeight.w400),
                         ),
-                        SizedBox(
-                          height: 8,
-                        ),
+                        SizedBox(height: 8),
                         InkWell(
                           onTap: myMomentsLoading
                               ? null
@@ -420,7 +536,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     myMomentsLoading = true;
     if (mounted) setState(() {});
     MomentsService()
-        .getMomentsWithOwnerName(ownerName: searchedUser!.userName!, fromUserProfile: true)
+        .getMomentsWithOwnerName(
+            ownerName: searchedUser!.userName!, fromUserProfile: true)
         .then((momentsModelList) {
       debugPrint('MY MOMENTS -> ${momentsModelList.isNotEmpty}');
 
@@ -452,7 +569,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget getProfileCover() {
     return Container(
-      height: 206,
+      height: 200,
       child: isLoading
           ? Center(
               child: CircularProgressIndicator(
@@ -501,57 +618,205 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget getProfilePhoto() {
     Color borderColor = getUserTypeColor(user: searchedUser!);
-    return Container(
-      padding: EdgeInsets.only(bottom: 16),
-      alignment: Alignment.bottomLeft,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Positioned(
+      top: 170,
+      left: 20,
+      right: 0,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            decoration: BoxDecoration(
-                border: Border.all(color: borderColor, width: 3),
-                shape: BoxShape.circle),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                    arguments: searchedUser!.avatar);
-              },
-              child: searchedUser?.type?.toLowerCase() != "user" &&
-                      searchedUser?.rating != 0.0
-                  ? Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        getUserProfilePic(),
-                        Positioned.fill(
-                          bottom: -14,
-                          left: 0,
-                          right: 0,
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(60),
-                                border: Border.all(
-                                  color: dividerColor,
+          Row(
+            children: [
+              AnimatedContainer(
+                width: 96,
+                duration: Duration(milliseconds: 500),
+                decoration: BoxDecoration(
+                    border: Border.all(color: borderColor, width: 3),
+                    shape: BoxShape.circle),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                        arguments: searchedUser!.avatar);
+                  },
+                  child: searchedUser?.type?.toLowerCase() != "user" &&
+                          searchedUser?.rating != 0.0
+                      ? Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            getUserProfilePic(),
+                            Positioned.fill(
+                              bottom: -20,
+                              left: 0,
+                              right: 0,
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(60),
+                                    border: Border.all(
+                                      color: dividerColor,
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 5),
+                                  child: getRating(
+                                      numberOfRating:
+                                          searchedUser?.rating.toInt()),
                                 ),
                               ),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 5),
-                              child: getRating(
-                                  numberOfRating: searchedUser?.rating.toInt()),
+                            )
+                          ],
+                        )
+                      : getUserProfilePic(),
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width - 116,
+                padding: const EdgeInsets.only(top: 40.0, left: 10, right: 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      truncateString(
+                          str: searchedUser!.displayName()!,
+                          lengthToTruncateAt: 53),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '@${searchedUser!.userName!}',
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              color: darkGrey,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        InkWell(
+                          onTap: myMomentsLoading
+                              ? null
+                              : () async {
+                                  getCurrentUserMoment();
+                                },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                border:
+                                    Border.all(color: naturalGreen, width: 2)),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                myMomentsLoading
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularLoadingIndicator(),
+                                      )
+                                    : Icon(
+                                        Icons.play_circle_fill,
+                                        color: Colors.black,
+                                        size: 20,
+                                      ),
+                                SizedBox(width: 6),
+                                Text(
+                                  'Moments',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        )
+                        ),
                       ],
-                    )
-                  : getUserProfilePic(),
-            ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+          SizedBox(height: 20),
+          getUserBioStringWidget(),
+          SizedBox(height: 8),
+          displayUserAddress(),
+          SizedBox(height: 8),
+          getContact(),
         ],
       ),
     );
+  }
+
+  Widget getUserBioStringWidget() {
+    debugPrint('BIO -> ${searchedUser!.bio!}');
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.only(right: 10),
+      child: Text(
+        searchedUser?.bio == null
+            ? ''
+            : messageDecoderWithEmoji(searchedUser!.bio!)!,
+        textAlign: TextAlign.left,
+        style: TextStyle(fontSize: 14),
+      ),
+    );
+  }
+
+  Widget getContact() {
+    if (searchedUser?.userAbout?.contact != null &&
+        searchedUser!.userAbout!.contact.isNotEmpty) {
+      return Row(
+        children: [
+          RoundedBackgroundIcon(
+            height: 32,
+            width: 32,
+            backgroundColor: iconBtnGrey,
+            icon: Icon(
+              Icons.call,
+              color: blackFont,
+              size: 18,
+            ),
+          ),
+          SizedBox(width: 12),
+          Expanded(child: Text(searchedUser!.userAbout!.contact)),
+        ],
+      );
+    }
+    return SizedBox.shrink();
+  }
+
+  Widget displayUserAddress() {
+    debugPrint(
+        'USER ADDRESS -> ${searchedUser?.userAbout?.userAddress?.addressLine1}');
+    return searchedUser?.userAbout?.userAddress?.addressLine1 != null &&
+            searchedUser!.userAbout!.userAddress!.addressLine1!.isNotEmpty
+        ? Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              RoundedBackgroundIcon(
+                height: 32,
+                width: 32,
+                backgroundColor: iconBtnGrey,
+                icon: Icon(
+                  SlydoAppIcon.location,
+                  color: blackFont,
+                  size: 14,
+                ),
+              ),
+              SizedBox(width: 12),
+              GetFullAddressWidget(userAbout: searchedUser!.userAbout!)
+            ],
+          )
+        : SizedBox.shrink();
   }
 
   Widget getUserProfilePic() {
@@ -919,14 +1184,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 '/add-edit-user-bio',
                 arguments: {"searchedUser": searchedUser});
 
-            if (result != null) {
-              if (result is Map) {
-                searchedUser!.userAbout = result["userAbout"];
-                searchedUser!.avatar = result["user_avatar"];
-              }
-
-              if (mounted) setState(() {});
-            }
+            getSearchedUser();
+            // if (result != null) {
+            //   if (result is Map) {
+            //     searchedUser!.userAbout = result["userAbout"];
+            //     searchedUser!.avatar = result["user_avatar"];
+            //
+            //     debugPrint('SEARCHED USER -> ${result["userAbout"]} ');
+            //     debugPrint('SEARCHED USER -> ${searchedUser!.userAbout!.bio} ');
+            //   }
+            //
+            //   if (mounted) setState(() {});
+            // }
           },
         ),
       );
@@ -1120,6 +1389,81 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     debugPrint("Data To be send:- $data");
 
     await sendDataToSocket(data);
+  }
+}
+
+class GetFullAddressWidget extends StatefulWidget {
+  final UserAbout userAbout;
+  const GetFullAddressWidget({Key? key, required this.userAbout})
+      : super(key: key);
+
+  @override
+  _GetFullAddressWidgetState createState() => _GetFullAddressWidgetState();
+}
+
+class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
+  int? stateId;
+  String? stateName;
+  bool isStateLoading = true;
+  Map<int, String> statesMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    UserAbout? userAbout =
+        Provider.of<UserBloc>(context, listen: false).userAbout;
+
+    if (userAbout?.userAddress?.state != null) {
+      stateId = userAbout!.userAddress!.state;
+    }
+
+    UserAuth().getStates().then((value) {
+      value.forEach((element) {
+        statesMap[element.id!] = element.name!;
+      });
+
+      stateName = statesMap[stateId];
+
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    }).catchError((e) {
+      isStateLoading = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  String getFullAddress() {
+    UserAddress? userAddress = widget.userAbout.userAddress;
+    List<String> addresses = [];
+
+    if (userAddress?.addressLine1 != null &&
+        userAddress!.addressLine1!.isNotEmpty) {
+      addresses.add(userAddress.addressLine1!);
+    }
+    if (userAddress?.addressLine2 != null &&
+        userAddress!.addressLine2!.isNotEmpty) {
+      addresses.add(userAddress.addressLine2!);
+    }
+    if (userAddress?.city != null && userAddress!.city!.isNotEmpty) {
+      addresses.add(userAddress.city!);
+    }
+    if (stateName != null && stateName!.isNotEmpty) {
+      addresses.add(stateName!);
+    }
+
+    return addresses.join(', ').replaceAll('.', '');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return isStateLoading
+        ? SizedBox(width: 20, height: 20, child: CircularLoadingIndicator())
+        : Expanded(
+            child: Text(
+              getFullAddress(),
+              // textAlign: TextAlign.justify,
+            ),
+          );
   }
 }
 

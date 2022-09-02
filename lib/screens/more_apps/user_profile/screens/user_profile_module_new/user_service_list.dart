@@ -10,6 +10,7 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class UserServiceList extends StatefulWidget {
@@ -80,19 +81,82 @@ class _UserServiceListState extends State<UserServiceList> {
         color: lightGrey,
         padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
         child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _servicesRefreshController,
-            onRefresh: _onServiceRefresh,
-            child: _buildServiceList()),
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _servicesRefreshController,
+          onRefresh: _onServiceRefresh,
+          child: ListView(
+            children: [
+              _buildServiceList(),
+              isServiceLoading
+                  ? Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisExtent: 180,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildServiceList() {
+    if (serviceList.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    if (noServiceInList) {
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.noProducts,
+      );
+    }
+
+    return serviceNext == "" && isServiceLoading
+        ? SizedBox.shrink()
+        : GridView.builder(
+            shrinkWrap: true,
+            controller: _serviceScrollController,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              mainAxisSpacing: 8,
+              mainAxisExtent: 180,
+              crossAxisSpacing: 15,
+              maxCrossAxisExtent: 200,
+            ),
+            itemCount: serviceList.length,
+            itemBuilder: (context, index) {
+              return DisplayService(
+                service: serviceList[index],
+                onServiceRefresh: () {
+                  _onServiceRefresh();
+                },
+              );
+            },
+          );
+
     return noServiceInList
         ? NoItemInList(
             msg: AppLocalization.of(context)!.noServices,

@@ -45,7 +45,6 @@ class UserAuth extends AuthService {
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
-
       return Future.error("ERROR:- ${response.body}");
     }
   }
@@ -493,10 +492,10 @@ class UserAuth extends AuthService {
     return Future.error("Something went wrong");
   }
 
-  Future<bool> updateSimpleUserDetail({String? nickName}) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/update-customer-nickname/";
+  Future<bool> updateSimpleUserDetail({String? nickName, String? bio}) async {
+    var url = AppConfig.baseUrl + "/api/v1/user/update-customer/";
     debugPrint("URL:- $url");
-    var data = {"nickname": nickName};
+    var data = {"nickname": nickName, "bio": bio};
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
@@ -505,7 +504,7 @@ class UserAuth extends AuthService {
     if (response.statusCode == 200) {
       return true;
     }
-    return false;
+    return Future.error('Something went wrong.');
   }
 
   Future<bool> deleteImageCover() async {

@@ -44,6 +44,7 @@ class ShoppingAuthService extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      debugPrint('SHOPPPING AUTH ---> ${jsonData["results"]}');
 
       List<ShoppingProduct> shoppingProducts = [];
       for (var item in jsonData["results"]) {
@@ -823,7 +824,7 @@ class ShoppingAuthService extends AuthService {
     return false;
   }
 
-  Future<bool> removeItemToShoppingCart(Map data) async {
+  Future<bool> removeItemFromShoppingCart(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/shopping-cart/remove-item/";
     var _data = jsonEncode(data);
     var headers = await getAuthHeaders();
