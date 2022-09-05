@@ -54,81 +54,83 @@ class _DisplayProductState extends State<DisplayProduct> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         shadowColor: boxShadow,
         child: GestureDetector(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Expanded(
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: CachedNetworkImage(
-                        imageUrl: widget.product.cover!,
-                        fit: BoxFit.fitHeight,
-                        width: double.infinity,
-                        errorWidget: productAndServiceBigErrorWidget,
-                      ),
-                    ),
-                    Positioned(
-                      right: 10,
-                      bottom: 10,
-                      child: getRating(
-                          numberOfRating: widget.product.rating?.toInt()),
-                    ),
-                    getMenuIcon(),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      truncateString(
-                        str: widget.product.name!,
-                        lengthToTruncateAt: 16,
-                        showEllipsis: false,
-                      ),
-                      style: TextStyle(
-                        color: blackFont,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          worldCurrencies[widget.product.currency!]!,
-                          style: TextStyle(
-                            fontFamily: "Roboto",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: navyBlue,
-                          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.product.cover!,
+                          fit: BoxFit.fitHeight,
+                          width: double.infinity,
+                          errorWidget: productAndServiceBigErrorWidget,
                         ),
-                        Text(
-                          moneyDisplayNormalizer(
-                              int.parse(widget.product.price!)),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: navyBlue,
-                          ),
-                        ),
-                        Spacer(),
-                        getFavouriteIcon(),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                  ],
+                      ),
+                      Positioned(
+                        right: 10,
+                        bottom: 10,
+                        child: getRating(
+                            numberOfRating: widget.product.rating?.toInt()),
+                      ),
+                      getMenuIcon(),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        truncateString(
+                          str: widget.product.name!,
+                          lengthToTruncateAt: 16,
+                          showEllipsis: false,
+                        ),
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[widget.product.currency!]!,
+                            style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: navyBlue,
+                            ),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(
+                                int.parse(widget.product.price!)),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: navyBlue,
+                            ),
+                          ),
+                          Spacer(),
+                          getFavouriteIcon(),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           onTap: () {
             if (showAddToCartButton == false) {
@@ -443,6 +445,7 @@ class _DisplayServiceState extends State<DisplayService> {
       child: GestureDetector(
         child: Container(
           width: MediaQuery.of(context).size.width - 220,
+          margin: const EdgeInsets.symmetric(vertical: 12.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -516,7 +519,6 @@ class _DisplayServiceState extends State<DisplayService> {
                   ],
                 ),
               ),
-              SizedBox(height: 8),
             ],
           ),
         ),
