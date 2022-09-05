@@ -69,6 +69,11 @@ class _SignUpState extends State<SignUp> {
 
   bool verifyingUsername = false;
   bool? inputVerified;
+
+  RegExp dotReg = RegExp(r'\.$');
+  RegExp spaceReg = RegExp(r' $');
+  RegExp multipleDotReg = RegExp(r'\.{2,}');
+
   @override
   void initState() {
     phoneNumber = arguments['phoneNumber'];
@@ -83,10 +88,20 @@ class _SignUpState extends State<SignUp> {
     _confirmPasswordController = TextEditingController();
 
     _businessOrNickNameController.addListener(() {
-      String formattedUsername =
-          _businessOrNickNameController.text.replaceAll(' ', '.').toLowerCase();
+      String name = _businessOrNickNameController.text;
 
-      _userNameController.text = formattedUsername;
+      if (!dotReg.hasMatch(name) &&
+          !spaceReg.hasMatch(name) &&
+          (_userNameController.text.length <= 14 || name.length <= 14)) {
+        String formattedUsername = _businessOrNickNameController.text
+            .replaceAll(' ', '.')
+            .replaceAll(multipleDotReg, '.')
+            .toLowerCase();
+
+        if (formattedUsername.length <= 15) {
+          _userNameController.text = formattedUsername;
+        }
+      }
     });
 
     _userNameController.addListener(() {
@@ -564,6 +579,7 @@ class _SignUpState extends State<SignUp> {
         inputVerified = false;
         showButton = false;
       });
+      showToast(message: 'Username not available');
     } else {
       setState(() {
         verifyingUsername = false;
@@ -580,6 +596,9 @@ class _SignUpState extends State<SignUp> {
 
     if (!validCharacters.hasMatch(username)) {
       return "Username is not valid";
+    }
+    if (dotReg.hasMatch(username)) {
+      return 'Username cannot end with a period';
     }
     if (username.isEmpty) {
       return 'Username cannot be empty';
@@ -656,6 +675,7 @@ class _SignUpState extends State<SignUp> {
         showDatePicker(
           builder: customThemeBuilder,
           context: context,
+          initialEntryMode: DatePickerEntryMode.calendarOnly,
           initialDate: DateTime(dob.year, dob.month, dob.day),
           firstDate: DateTime(1920, 0, 1),
           lastDate: DateTime(
@@ -913,12 +933,12 @@ class _SignUpState extends State<SignUp> {
 
       String firstName = _firstNameController.text.trim();
       String lastName = _lastNameController.text.trim();
-      String userName =
-          _userNameController.text.replaceAll(' ', '.').toLowerCase().trim();
-      String businessOrNickName = _businessOrNickNameController.text
+      String userName = _userNameController.text
           .replaceAll(' ', '.')
+          .replaceAll(multipleDotReg, '.')
           .toLowerCase()
           .trim();
+      String businessOrNickName = _businessOrNickNameController.text.trim();
 
       Map<String, dynamic> data = {
         "phone_number": phoneNumber,

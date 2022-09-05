@@ -312,7 +312,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
   }
 
   String? userNameValidator(String username) {
-    // alphanumeric and -_.
+    // alphanumeric,-, and _.
     RegExp validCharacters =
         RegExp(r'^[a-z0-9]([._-](?![._-])|[a-z0-9]){3,18}[a-z0-9]$');
 
