@@ -344,6 +344,12 @@ class MessageAuth extends AuthService {
 
     request.fields["is_group_conversation"] = jsonEncode(true);
 
+    //PAID GROUP OPTIONS
+    request.fields["group_subscription_currency"] = 'NGN';
+    request.fields["group_subscription_fee"] = (30 * 100).toString();  ///TODO: USER FUNCTION FOR CONVERTING NAIRA TO KOBO
+    request.fields["group_max_allowed_users"] = 50.toString();
+    request.fields["is_public_group"] = 'true';
+
     if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
@@ -444,6 +450,28 @@ class MessageAuth extends AuthService {
       Map<String, dynamic> jsonData = json.decode(response.body);
       GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
       return groupDetailModel;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  // Get status of the user you are chatting with
+  Future<dynamic> fetchChannels() async {
+
+    var url = AppConfig.baseUrl +
+        "/api/v1/chat/conversation/channels/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(response.body);
+      // GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
+      debugPrint(jsonData.toString());
+      return 'channels';
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
@@ -977,4 +1005,59 @@ class MessageAuth extends AuthService {
       return [];
     }
   }
+
+
+  Future<Map<String, dynamic>?> getChatWallpapers(String? next, String? previous,
+      {String? filter}) async {
+
+    await Future.delayed(Duration(seconds: 1));
+
+    var url = "";
+
+    // if (next == null) {
+    //   return null;
+    // }
+    // if (next == "") {
+    //   if (filter == null) {
+    //     url = AppConfig.baseUrl + "/api/v1/messaging/list/all";
+    //   } else {
+    //     url = AppConfig.baseUrl + "/api/v1/messaging/list/" + filter + "/";
+    //   }
+    // } else {
+    //   url = getSecureUrl(url: next);
+    // }
+
+    //var headers = await getAuthHeaders();
+    //
+     //var response = await httpGet(url, headers: headers);
+    //
+    // debugPrint('MESSAGE URL ::: ${response.statusCode}');
+    // debugPrint('MESSAGE ::: ${response.body}');
+
+    if (true) {
+      var jsonData = {'count' : 0, 'next' : '', 'previous': '', 'results' : [
+            'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+            'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+            'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+      ]};
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData['results']
+      };
+      return result;
+    }
+    // else if (response.statusCode == 500) {
+    //   throw "Server Error";
+    // } else {
+    //   debugPrint(
+    //       "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+    //   return Future.error("ERROR:- ${response.body}");
+    // }
+  }
+
+
+
 }

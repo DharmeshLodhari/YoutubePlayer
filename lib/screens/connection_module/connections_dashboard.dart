@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/settings/chat_connection_settings.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../utils/slydo_app_icon_icons.dart';
 import 'block_list.dart';
 import 'channels.dart';
 import 'connection_request_list.dart';
@@ -212,19 +213,43 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   }
 
   Widget createGroupBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        Icons.group_add,
-        size: 20,
-        color: blackFont,
-      ),
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
-      },
-      backgroundColor: lightGrey,
-      enableMargin: true,
+    return Row(
+      children: [
+        RoundedBackgroundIcon(
+          height: 34,
+          width: 34,
+          icon: Icon(
+            Icons.settings,
+            size: 20,
+            color: blackFont,
+          ),
+          onTap: () {
+
+            NavigationUtil.push(
+                context,
+                screen: ChatConnectionSettings()
+            );
+
+          },
+          backgroundColor: lightGrey,
+          enableMargin: true,
+        ),
+        SizedBox(width: 10,),
+        RoundedBackgroundIcon(
+          height: 34,
+          width: 34,
+          icon: Icon(
+            Icons.group_add,
+            size: 20,
+            color: blackFont,
+          ),
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
+          },
+          backgroundColor: lightGrey,
+          enableMargin: true,
+        ),
+      ],
     );
   }
 

@@ -490,6 +490,12 @@ class AppLocalization {
     );
   }
 
+
+  ///Create paid group chat
+  ///Make public
+  ///Limit group members
+  ///Max. number of users
+
   String get kycDetails {
     return Intl.message(
       "KYC Details",

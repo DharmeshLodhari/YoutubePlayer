@@ -9,6 +9,7 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -77,12 +78,15 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         ? null
         : FloatingActionButton(
             backgroundColor: navyBlue,
-            onPressed: createGroup,
+            onPressed: () => createGroup(onCallBack: (){
+              NavigationUtil.pop(context);
+              NavigationUtil.pop(context);
+            }),
             child: Icon(
               Icons.arrow_forward_rounded,
               size: 28,
             ),
-          );
+    );
   }
 
   Widget getAppBar() {
@@ -145,31 +149,33 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                   SizedBox(width: 10,)
                 ],
               ),
-              SizedBox(height: 10,),
-              CustomizedTextFormField(
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly
-                ],
-                keyboardType: TextInputType.phone,
-                controller: _amountController,
-                isAmountField: true,
-                labelText: AppLocalization.of(context)!.amount,
-                onChanged: (value) {
+              if(makeGroupPaid!) ... [
+                SizedBox(height: 10,),
+                CustomizedTextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                  keyboardType: TextInputType.phone,
+                  controller: _amountController,
+                  isAmountField: true,
+                  labelText: AppLocalization.of(context)!.amount,
+                  onChanged: (value) {
 
-                },
-                validator: (val) {
-                  try {
-                    double userAmount =
-                    double.parse(val.replaceAll(',', ''));
-                    if (userAmount > amountLimit) {
-                      return 'You cannot fund more than $amountLimit';
+                  },
+                  validator: (val) {
+                    try {
+                      double userAmount =
+                      double.parse(val.replaceAll(',', ''));
+                      if (userAmount > amountLimit) {
+                        return 'You cannot fund more than $amountLimit';
+                      }
+                    } catch (e) {
+                      return AppLocalization.of(context)!.invalidAmount;
                     }
-                  } catch (e) {
-                    return AppLocalization.of(context)!.invalidAmount;
-                  }
-                  return null;
-                },
-              ),
+                    return null;
+                  },
+                ),
+              ],
               SizedBox(height: 10,),
               Row(
                 children: [
@@ -211,6 +217,25 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
                 ],
               ),
 
+              if(limitGroupMembers!) ... [
+                SizedBox(height: 10,),
+                CustomizedTextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                  keyboardType: TextInputType.number,
+                  controller: _amountController,
+                  isAmountField: false,
+                  labelText: 'Max. number of users',
+                  onChanged: (value) {
+
+                  },
+                  validator: (val) {
+
+                    return null;
+                  },
+                ),
+              ],
               SizedBox(height: 30,),
 
             ],),
@@ -394,7 +419,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     );
   }
 
-  void createGroup() async {
+  void createGroup({Function? onCallBack}) async {
     groupModel.users = selectedConnectionList;
     groupModel.groupName = groupNameController!.text.trim();
     groupModel.groupDescription = groupDescriptionController!.text.trim();
@@ -416,7 +441,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           Provider.of<ConnectionListBloc>(context, listen: false);
       connectionListBloc.addConnectionUser(chatConversation: value);
 
-      Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+      //Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+      onCallBack!();
     }).catchError((error) {
       debugPrint("ERROR While creating Group :- $error");
       showToast(message: "$error");

@@ -3,13 +3,11 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/connection_module/chat_connection_settings.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/logout_helper.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/BottomSheetItemWithCheck.dart';
@@ -104,7 +102,6 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getChatSettingTitle(),
                 getIncomingSoundTile(),
                 getOutGoingSoundTile(),
                 getCurrencyTile(),
@@ -176,37 +173,6 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
           height: 20,
         ),
       ],
-    );
-  }
-
-  Widget getChatSettingTitle() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: ListTile(
-          title: Text(
-            "Chat settings",
-            maxLines: 1,
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-            overflow: TextOverflow.fade,
-            softWrap: false,
-          ),
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: ChatConnectionSettings(),
-            );
-          },
-        ),
-      ),
     );
   }
 

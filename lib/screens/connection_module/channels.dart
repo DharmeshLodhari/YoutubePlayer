@@ -1,9 +1,28 @@
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Channels extends StatelessWidget {
+class Channels extends StatefulWidget {
+  @override
+  State<Channels> createState() => _ChannelsState();
+}
+
+class _ChannelsState extends State<Channels> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    loadAllChannels();
+
+  }
+
+  Future<void> loadAllChannels() async {
+    await MessageAuth().fetchChannels();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -18,7 +37,6 @@ class Channels extends StatelessWidget {
       ],),
     );
   }
-
 
   Widget channelViewList(){
     return Card(
@@ -58,5 +76,4 @@ class Channels extends StatelessWidget {
       ),
     );
   }
-
 }
