@@ -8,7 +8,6 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../utils/slydo_app_icon_icons.dart';
 import 'block_list.dart';
 import 'connection_request_list.dart';
 import 'connections_list.dart';
@@ -116,7 +115,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     : Colors.white,
               ),
               child: Text(
-                appLocalization.myContacts,
+                appLocalization.contacts,
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,

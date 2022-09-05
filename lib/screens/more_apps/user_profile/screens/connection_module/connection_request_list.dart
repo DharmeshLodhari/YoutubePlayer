@@ -18,7 +18,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../routes/route_constants.dart';
-import '../../../../../widget/search_text_field.dart';
 import '../../user_auth.dart';
 
 class ConnectionRequestList extends StatefulWidget {
@@ -107,10 +106,12 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     );
   }
 
+  String noConnectionRequestMsg =
+      "You have no connection request\nPull down to refresh";
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "You Have No Connection Request",
+            msg: noConnectionRequestMsg,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(

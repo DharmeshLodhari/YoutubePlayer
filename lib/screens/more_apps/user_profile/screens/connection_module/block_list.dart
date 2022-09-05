@@ -16,7 +16,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../routes/route_constants.dart';
-import '../../../../../widget/search_text_field.dart';
 import '../../user_auth.dart';
 
 class BlockedList extends StatefulWidget {
@@ -98,10 +97,11 @@ class _BlockedListState extends State<BlockedList> {
     );
   }
 
+  String noBlockedListMsg = "No Blocked Users\nPull down to refresh";
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "No Blocked Users",
+            msg: noBlockedListMsg,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(

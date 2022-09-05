@@ -389,9 +389,11 @@ class _SearchModuleState extends State<SearchModule> {
                       return _buildIndicator();
                     } else {
                       try {
+                        debugPrint(' SHOW RESULT ->');
+
                         return results[index];
                       } catch (error) {
-                        debugPrint(error.toString());
+                        debugPrint('ERROR RESULT -> ${error.toString()}');
                       }
                     }
                     return _buildIndicator();
@@ -449,7 +451,10 @@ class _SearchModuleState extends State<SearchModule> {
             tempList!.forEach((result) {
               results.add(getResultTile(result));
             });
-          } catch (e) {}
+            debugPrint('FINAL RESULT-> ${results}');
+          } catch (e) {
+            debugPrint('CANNOT SHOW SEARCH RESULT -> ${e.toString()}');
+          }
 
           setState(() {});
         }
@@ -476,6 +481,7 @@ class _SearchModuleState extends State<SearchModule> {
   Widget getResultTile(var result) {
     switch (selectedMenuItemIndex) {
       case 0:
+        debugPrint('RESULT OKAY->');
         return getUserTile(result);
 
       case 1:
@@ -517,8 +523,12 @@ class _SearchModuleState extends State<SearchModule> {
         userName: object["username"],
         type: object['type'] ?? 'user');
 
-    if (user.userName.toString().toLowerCase() == "slydo" ||
-        user.userName.toString().toLowerCase() == "slydo_envelope") {
+    // if (user.userName.toString().toLowerCase() == "slydo" ||
+    //     user.userName.toString().toLowerCase() == "slydo_envelope") {
+    //   return Container();
+    // }
+
+    if (user.userName.toString().toLowerCase() == "slydo_envelope") {
       return Container();
     }
 
@@ -987,8 +997,12 @@ class _SearchModuleState extends State<SearchModule> {
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(searchCard, user),
-      actions: listActionSlideActions(user),
-      secondaryActions: listSecondaryActions(user),
+      actions: user.userName.toString().toLowerCase() == "slydo"
+          ? []
+          : listActionSlideActions(user),
+      secondaryActions: user.userName.toString().toLowerCase() == "slydo"
+          ? []
+          : listSecondaryActions(user),
     );
   }
 

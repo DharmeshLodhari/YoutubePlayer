@@ -120,7 +120,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
 
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       userBioDetail = userBloc.userAbout;
-      bioController!.text = userBloc.user.bio!;
+      bioController!.text = messageDecoderWithEmoji(userBloc.user.bio!)!;
       if (userBioDetail?.userAddress?.addressLine1 != null) {
         addressLine1Controller!.text =
             userBioDetail!.userAddress!.addressLine1!;
@@ -138,7 +138,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         contactNumberController!.text = userBioDetail!.contact;
       }
       if (userBloc.user.nickName != null) {
-        _nicknameController!.text = userBloc.user.nickName!;
+        _nicknameController!.text =
+            messageDecoderWithEmoji(userBloc.user.nickName!)!;
       }
       if (userBloc.user.userName != null) {
         _userNameController.text = userBloc.user.userName!;
@@ -1033,7 +1034,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         Navigator.pop(context);
         Navigator.pop(context);
 
-        showToast(message: "Bio updated successfully!!");
+        showToast(message: "Bio updated successfully");
       }).catchError((error) {
         Navigator.pop(context);
         debugPrint(error.toString());

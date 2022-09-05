@@ -331,10 +331,11 @@ class _ConnectionListState extends State<ConnectionList> {
     return itemCount;
   }
 
+  String noContactMsg = "No contact found\nPull down to refresh";
   Widget _buildConnectionsList() {
     try {
       return _connectionListBloc.connectionUsers.length == 0
-          ? NoItemInList(msg: "No contact found !!", isResult: true)
+          ? NoItemInList(msg: noContactMsg, isResult: true)
           : ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
@@ -359,7 +360,7 @@ class _ConnectionListState extends State<ConnectionList> {
       debugPrint("ERROR=>:- $error");
       return _connectionListBloc.connectionUsers.length == 0
           ? NoItemInList(
-              msg: "No contact found !!",
+              msg: noContactMsg,
               isResult: true,
             )
           : ListView.builder(

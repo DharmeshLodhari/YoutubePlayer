@@ -191,7 +191,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
             Expanded(
                 child: SizedBox(
               width: 10,
-            )),
+            ),),
             Expanded(
               child: MaterialButton(
                 height: 40,

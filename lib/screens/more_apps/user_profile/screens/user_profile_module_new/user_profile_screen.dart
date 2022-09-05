@@ -23,6 +23,7 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
@@ -218,6 +219,66 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return false;
   }
 
+  double getBgHeightOfAppBar(String text, bool hasAddress) {
+    int len = text.length;
+    debugPrint('GET HEIGHT LEN -> $len');
+    debugPrint('GET HEIGHT ADDRESS -> $hasAddress');
+
+    double? height;
+
+    if (len == 0) {
+      if (hasAddress) {
+        height = 320;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 320;
+      }
+      height = 300;
+      debugPrint('GET HEIGHT -> $height');
+
+      return 300;
+    }
+
+    if (len <= 50) {
+      if (hasAddress) {
+        height = 360;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 360;
+      }
+      height = 320;
+      debugPrint('GET HEIGHT -> $height');
+
+      return 320;
+    } else if (len <= 100) {
+      if (hasAddress) {
+        height = 420;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 420;
+      }
+      height = 340;
+      return 340;
+    } else if (len <= 200) {
+      if (hasAddress) {
+        height = 480;
+        debugPrint('GET HEIGHT -> $height');
+
+        return 480;
+      }
+      height = 420;
+      debugPrint('GET HEIGHT -> $height');
+
+      return 420;
+    }
+
+    if (height == null) {
+      height = 450;
+      debugPrint('GET HEIGHT -> $height');
+    }
+    return height;
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -236,6 +297,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       isOwner = true;
     }
 
+    // searchedUser?.bio =
+    //     'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m';
     return WillPopScope(
       onWillPop: () async {
         return await Future.value(true);
@@ -293,66 +356,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     setState(() {});
   }
 
-  double getBgHeightOfAppBar(String text, bool hasAddress) {
-    int len = text.length;
-    debugPrint('GET HEIGHT LEN -> $len');
-    debugPrint('GET HEIGHT ADDRESS -> $hasAddress');
-
-    double? height;
-
-    if (len == 0) {
-      if (hasAddress) {
-        height = 320;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 320;
-      }
-      height = 300;
-      debugPrint('GET HEIGHT -> $height');
-
-      return 300;
-    }
-
-    if (len <= 50) {
-      if (hasAddress) {
-        height = 400;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 400;
-      }
-      height = 320;
-      debugPrint('GET HEIGHT -> $height');
-
-      return 320;
-    } else if (len <= 100) {
-      if (hasAddress) {
-        height = 420;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 420;
-      }
-      height = 400;
-      return 400;
-    } else if (len <= 200) {
-      if (hasAddress) {
-        height = 450;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 450;
-      }
-      height = 380;
-      debugPrint('GET HEIGHT -> $height');
-
-      return 380;
-    }
-
-    if (height == null) {
-      height = 450;
-      debugPrint('GET HEIGHT -> $height');
-    }
-    return height;
-  }
-
   Widget getAppbar(BuildContext context) {
     bool hasAddress =
         searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
@@ -367,8 +370,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           forceElevated: false,
           elevation: 0,
           stretch: true,
+          automaticallyImplyLeading: false,
           expandedHeight: getBgHeightOfAppBar(
-            searchedUser?.bio == null ? '' : searchedUser!.bio!,
+            searchedUser?.bio == null
+                ? ''
+                : messageDecoderWithEmoji(searchedUser?.bio)!,
             hasAddress,
           ),
           shadowColor: Colors.transparent,
@@ -467,7 +473,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(height: 16),
                         Text(
                           truncateString(
                               str: searchedUser!.displayName()!,
@@ -484,48 +489,47 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               color: darkGrey,
                               fontWeight: FontWeight.w400),
                         ),
-                        SizedBox(height: 8),
-                        InkWell(
-                          onTap: myMomentsLoading
-                              ? null
-                              : () async {
-                                  getCurrentUserMoment();
-                                },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(vertical: 8),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                border:
-                                    Border.all(color: naturalGreen, width: 2)),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                myMomentsLoading
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularLoadingIndicator(),
-                                      )
-                                    : Icon(
-                                        Icons.play_circle_fill,
-                                        color: Colors.black,
-                                        size: 20,
-                                      ),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Moments',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        // InkWell(
+                        //   onTap: myMomentsLoading
+                        //       ? null
+                        //       : () async {
+                        //           getCurrentUserMoment();
+                        //         },
+                        //   child: Container(
+                        //     margin: EdgeInsets.symmetric(vertical: 8),
+                        //     padding: EdgeInsets.symmetric(
+                        //         horizontal: 8, vertical: 4),
+                        //     decoration: BoxDecoration(
+                        //         borderRadius: BorderRadius.circular(50),
+                        //         border:
+                        //             Border.all(color: naturalGreen, width: 2)),
+                        //     child: Row(
+                        //       mainAxisSize: MainAxisSize.min,
+                        //       children: [
+                        //         myMomentsLoading
+                        //             ? SizedBox(
+                        //                 width: 20,
+                        //                 height: 20,
+                        //                 child: CircularLoadingIndicator(),
+                        //               )
+                        //             : Icon(
+                        //                 Icons.play_circle_fill,
+                        //                 color: Colors.black,
+                        //                 size: 20,
+                        //               ),
+                        //         SizedBox(width: 6),
+                        //         Text(
+                        //           'Moments',
+                        //           style: TextStyle(
+                        //             fontSize: 14,
+                        //             color: Colors.black,
+                        //             fontWeight: FontWeight.w600,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
             ),
@@ -588,7 +592,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 )
               : searchedUser!.userAbout!.wallpaper == ""
                   ? Image.asset(
-                      "assets/images/home_screen_background.png",
+                      "assets/images/default_user_wallpaper.png",
                       width: double.infinity,
                       fit: BoxFit.cover,
                     )
@@ -671,76 +675,77 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       : getUserProfilePic(),
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width - 116,
-                padding: const EdgeInsets.only(top: 40.0, left: 10, right: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      truncateString(
-                          str: searchedUser!.displayName()!,
-                          lengthToTruncateAt: 53),
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: blackFont),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '@${searchedUser!.userName!}',
-                          style: TextStyle(
-                              fontSize: 14.0,
-                              color: darkGrey,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        InkWell(
-                          onTap: myMomentsLoading
-                              ? null
-                              : () async {
-                                  getCurrentUserMoment();
-                                },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(vertical: 8),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                border:
-                                    Border.all(color: naturalGreen, width: 2)),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                myMomentsLoading
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularLoadingIndicator(),
-                                      )
-                                    : Icon(
-                                        Icons.play_circle_fill,
-                                        color: Colors.black,
-                                        size: 20,
-                                      ),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Moments',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width - 116,
+                  padding:
+                      const EdgeInsets.only(top: 40.0, left: 10, right: 10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InkWell(
+                        onTap: myMomentsLoading
+                            ? null
+                            : () async {
+                                getCurrentUserMoment();
+                              },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              border:
+                                  Border.all(color: naturalGreen, width: 2)),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              myMomentsLoading
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularLoadingIndicator(),
+                                    )
+                                  : Icon(
+                                      Icons.play_circle_fill,
+                                      color: Colors.black,
+                                      size: 20,
+                                    ),
+                              SizedBox(width: 6),
+                              Text(
+                                'Moments',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0),
+                        child: Text(
+                          searchedUser!.displayName()!,
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: blackFont),
+                        ),
+                      ),
+                      Text(
+                        '@${searchedUser!.userName!}',
+                        style: TextStyle(
+                            fontSize: 14.0,
+                            color: darkGrey,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -757,18 +762,27 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getUserBioStringWidget() {
-    debugPrint('BIO -> ${searchedUser!.bio!}');
+    print(searchedUser?.bio);
     return Container(
+      margin: EdgeInsets.only(right: 4),
       width: MediaQuery.of(context).size.width,
-      margin: EdgeInsets.only(right: 10),
-      child: Text(
-        searchedUser?.bio == null
+      child: Linkify(
+        onOpen: _onOpen,
+        text: searchedUser?.bio == null
             ? ''
             : messageDecoderWithEmoji(searchedUser!.bio!)!,
         textAlign: TextAlign.left,
-        style: TextStyle(fontSize: 14),
+        style: TextStyle(fontSize: 16),
       ),
     );
+  }
+
+  _onOpen(LinkableElement link) async {
+    if (await canLaunchUrl(Uri.parse(link.url))) {
+      await launchUrl(Uri.parse(link.url));
+    } else {
+      throw 'Could not launch $link';
+    }
   }
 
   Widget getContact() {
@@ -966,7 +980,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       index++;
 
       tabs.add(
-        getTabUI(title: "Blogs", tabIndex: index),
+        getTabUI(title: "Posts", tabIndex: index),
       );
     } else {
       int index = 0;
@@ -991,7 +1005,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         index++;
       }
       tabs.add(
-        getTabUI(title: "Blogs", tabIndex: index),
+        getTabUI(title: "Posts", tabIndex: index),
       );
       index++;
       tabs.add(
@@ -1211,7 +1225,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             String termsAndConditionUrl =
                 "https://slydo.co/store/terms-and-conditions/${searchedUser?.userName}/";
             try {
-              if (!await launch(termsAndConditionUrl))
+              if (!await launchUrl(Uri.parse(termsAndConditionUrl)))
                 throw 'Could not launch $termsAndConditionUrl';
             } catch (error) {
               debugPrint("Error:- $error");

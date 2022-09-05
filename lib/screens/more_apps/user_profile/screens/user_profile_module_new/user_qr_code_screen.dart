@@ -9,7 +9,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -188,16 +187,17 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         child: Column(
           children: <Widget>[
             Container(
-                padding:
-                    EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
-                child: CachedNetworkImage(
-                  imageUrl: widget.user!.qrCode!,
-                  colorBlendMode: BlendMode.darken,
-                  errorWidget: imageErrorWidget,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => CircularLoadingIndicator(),
-                )),
+              padding:
+                  EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
+              child: CachedNetworkImage(
+                imageUrl: widget.user!.qrCode!,
+                colorBlendMode: BlendMode.darken,
+                errorWidget: imageErrorWidget,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+                placeholder: (context, url) => CircularLoadingIndicator(),
+              ),
+            ),
             displayUserType(),
             SizedBox(
               height: 12,
@@ -209,7 +209,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                     thickness: 1,
                   )
                 : Container(),
-            userBloc.user.userName != widget.user!.userName
+            userBloc.user.userName != widget.user!.userName &&
+                    widget.user?.userName?.toLowerCase() != 'slydo'
                 ? Container(
                     height: 45,
                     child: Row(
