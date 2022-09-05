@@ -123,7 +123,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                             ),
                           ),
                           Spacer(),
-                          getFavouriteIcon(),
+                          // getFavouriteIcon(),
                         ],
                       ),
                     ],
