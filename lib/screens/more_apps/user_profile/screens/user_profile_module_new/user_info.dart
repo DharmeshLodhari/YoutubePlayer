@@ -6,7 +6,6 @@ import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/item_display_card.dart';
-import 'package:Slydo/widget/read_more_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

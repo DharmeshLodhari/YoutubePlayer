@@ -190,25 +190,28 @@ class _UserProductListState extends State<UserProductList> {
 
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
-        : GridView.builder(
-            shrinkWrap: true,
-            controller: _productScrollController,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisSpacing: 8,
-              mainAxisExtent: 180,
-              crossAxisSpacing: 15,
-              maxCrossAxisExtent: 200,
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              controller: _productScrollController,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                mainAxisSpacing: 8,
+                mainAxisExtent: 180,
+                crossAxisSpacing: 15,
+                maxCrossAxisExtent: 200,
+              ),
+              itemCount: productList.length,
+              itemBuilder: (context, index) {
+                return DisplayProduct(
+                  product: productList[index],
+                  onProductRefresh: () {
+                    _onProductRefresh();
+                  },
+                );
+              },
             ),
-            itemCount: productList.length,
-            itemBuilder: (context, index) {
-              return DisplayProduct(
-                product: productList[index],
-                onProductRefresh: () {
-                  _onProductRefresh();
-                },
-              );
-            },
           );
 
     ListView.builder(

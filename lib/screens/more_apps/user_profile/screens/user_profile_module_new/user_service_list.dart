@@ -136,25 +136,28 @@ class _UserServiceListState extends State<UserServiceList> {
 
     return serviceNext == "" && isServiceLoading
         ? SizedBox.shrink()
-        : GridView.builder(
-            shrinkWrap: true,
-            controller: _serviceScrollController,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisSpacing: 8,
-              mainAxisExtent: 180,
-              crossAxisSpacing: 15,
-              maxCrossAxisExtent: 200,
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              controller: _serviceScrollController,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                mainAxisSpacing: 8,
+                mainAxisExtent: 180,
+                crossAxisSpacing: 15,
+                maxCrossAxisExtent: 200,
+              ),
+              itemCount: serviceList.length,
+              itemBuilder: (context, index) {
+                return DisplayService(
+                  service: serviceList[index],
+                  onServiceRefresh: () {
+                    _onServiceRefresh();
+                  },
+                );
+              },
             ),
-            itemCount: serviceList.length,
-            itemBuilder: (context, index) {
-              return DisplayService(
-                service: serviceList[index],
-                onServiceRefresh: () {
-                  _onServiceRefresh();
-                },
-              );
-            },
           );
 
     return noServiceInList

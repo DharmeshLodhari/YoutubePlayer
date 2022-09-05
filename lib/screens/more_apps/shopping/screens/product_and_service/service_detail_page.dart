@@ -838,7 +838,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl: service!.providerAvatar!,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitHeight,
+
                         errorWidget: imageErrorWidget,
                         filterQuality: FilterQuality.high,
                       ),
@@ -893,7 +894,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                             placeholder: (context, url) =>
                                 Center(child: CircularLoadingIndicator()),
                             imageUrl: imgList![0]!,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fitHeight,
                             height: double.infinity,
                             width: double.infinity,
                             errorWidget: productAndServiceBigErrorWidget,
@@ -938,7 +939,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                                             imageUrl: item!,
                                             errorWidget:
                                                 productAndServiceBigErrorWidget,
-                                            fit: BoxFit.fill,
+                                            fit: BoxFit.fitHeight,
                                             height: double.infinity,
                                             width: double.infinity,
                                           ),

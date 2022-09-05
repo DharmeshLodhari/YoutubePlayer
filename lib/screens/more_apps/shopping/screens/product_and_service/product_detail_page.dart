@@ -798,7 +798,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   placeholder: (context, url) =>
                                       Center(child: CircularLoadingIndicator()),
                                   imageUrl: imgList?[0] ?? "",
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.fitHeight,
                                   height: double.infinity,
                                   width: double.infinity,
                                   errorWidget: productAndServiceBigErrorWidget,
@@ -838,7 +838,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                                         child:
                                                             CircularLoadingIndicator()),
                                                 imageUrl: item!,
-                                                fit: BoxFit.fill,
+                                                fit: BoxFit.fitHeight,
+
                                                 height: double.infinity,
                                                 width: double.infinity,
                                                 errorWidget:
@@ -1111,7 +1112,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl: product!.sellerAvatar!,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitHeight,
+
+
                         errorWidget: imageErrorWidget,
                         filterQuality: FilterQuality.high,
                       ),
