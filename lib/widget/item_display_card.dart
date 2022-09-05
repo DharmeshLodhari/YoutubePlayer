@@ -67,7 +67,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                       clipBehavior: Clip.antiAliasWithSaveLayer,
                       child: CachedNetworkImage(
                         imageUrl: widget.product.cover!,
-                        fit: BoxFit.fitWidth,
+                        fit: BoxFit.fitHeight,
                         width: double.infinity,
                         errorWidget: productAndServiceBigErrorWidget,
                       ),
@@ -124,6 +124,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                         getFavouriteIcon(),
                       ],
                     ),
+                    SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -464,7 +465,6 @@ class _DisplayServiceState extends State<DisplayService> {
                       right: 10,
                       bottom: 10,
                       child: getRating(
-                        starSize: 22,
                         numberOfRating: widget.service.rating?.toInt(),
                       ),
                     ),
@@ -516,6 +516,7 @@ class _DisplayServiceState extends State<DisplayService> {
                   ],
                 ),
               ),
+              SizedBox(height: 8),
             ],
           ),
         ),

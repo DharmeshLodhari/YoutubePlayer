@@ -1187,8 +1187,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => DisplayProduct(
-                product: sellersOtherItems[index],
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: DisplayProduct(
+                  product: sellersOtherItems[index],
+                ),
               ),
             ),
           )

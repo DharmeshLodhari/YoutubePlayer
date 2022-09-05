@@ -430,7 +430,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           flexibleSpace: FlexibleSpaceBar(
             stretchModes: <StretchMode>[
               StretchMode.zoomBackground,
-              StretchMode.blurBackground
+              StretchMode.blurBackground,
             ],
             background: isLoading ? SizedBox.shrink() : getBgWidgetForAppBar(),
           ),
