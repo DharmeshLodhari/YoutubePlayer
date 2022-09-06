@@ -717,27 +717,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            searchedUser!.displayName()!,
-                            maxLines: 2,
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: blackFont),
+                      RichText(
+                        maxLines: 2,
+                        text: TextSpan(
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: blackFont),
+                          text: truncateString(
+                            str: searchedUser!.displayName()!,
+                            lengthToTruncateAt: 46,
                           ),
-                          userBloc.user.isVerified != null &&
-                                  userBloc.user.isVerified == true
-                              ? Icon(
-                                  Icons.verified_rounded,
-                                  color: navyBlue,
-                                  size: 18,
-                                )
-                              : SizedBox.shrink(),
-                        ],
+                          children: [
+                            TextSpan(text: ' '),
+                            WidgetSpan(
+                              child: getVerifiedIcon(),
+                            ),
+                          ],
+                        ),
                       ),
                       Text(
                         '@${searchedUser!.userName!}',
@@ -804,6 +801,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ],
       ),
     );
+  }
+
+  Widget getVerifiedIcon() {
+    return userBloc.user.isVerified != null && userBloc.user.isVerified == true
+        ? Icon(
+            Icons.verified_rounded,
+            color: navyBlue,
+            size: 18,
+          )
+        : SizedBox.shrink();
   }
 
   Widget getUserBioStringWidget() {

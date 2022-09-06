@@ -425,21 +425,23 @@ class _HomeState extends State<Home> {
                   ),
                   title: Row(
                     mainAxisSize: MainAxisSize.min,
-
                     children: [
                       Text(
-                        userBloc.user.displayName()!.length <= 22
-                            ? userBloc.user.displayName()!
-                            : '${userBloc.user.displayName()!.substring(0, 23)}...',
+                        truncateString(
+                          str: userBloc.user.displayName()!,
+                          lengthToTruncateAt: 20,
+                        ),
                         maxLines: 1,
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 16),
                       ),
-                      userBloc.user.isVerified != null && userBloc.user.isVerified == true
+                      userBloc.user.isVerified != null &&
+                              userBloc.user.isVerified == true
                           ? Icon(
-                        Icons.verified_rounded,
-                        color: navyBlue,
-                        size: 18,
-                      )
+                              Icons.verified_rounded,
+                              color: navyBlue,
+                              size: 18,
+                            )
                           : SizedBox.shrink(),
                     ],
                   ),
