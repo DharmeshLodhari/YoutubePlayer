@@ -379,8 +379,11 @@ class _HomeState extends State<Home> {
                       EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
                   leading: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                          arguments: userBloc.user.avatar);
+                      // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                      //     arguments: userBloc.user.avatar);
+
+                      Navigator.of(context).pushNamed('/add-edit-user-bio',
+                          arguments: {"searchedUser": userBloc.user.userAbout});
                     },
                     child: Stack(
                       children: [
@@ -412,12 +415,6 @@ class _HomeState extends State<Home> {
                               color: blackFont,
                               size: 12,
                             ),
-                            onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed('/add-edit-user-bio', arguments: {
-                                "searchedUser": userBloc.user.userAbout
-                              });
-                            },
                           ),
                         ),
                       ],
