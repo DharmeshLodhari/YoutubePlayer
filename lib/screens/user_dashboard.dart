@@ -551,7 +551,7 @@ class _UserDashboardState extends State<UserDashboard> {
             icon: SlydoAppIcon.news_moreapps,
             title: AppLocalization.of(context)!.blogs,
             onTap: () {
-              if (appConfigurationModel?.enableBlog == true) {
+              if (appConfigurationModel?.enableSuperBlog == true) {
                 NavigationUtil.push(
                   context,
                   screen: SuperBlog(),

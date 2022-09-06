@@ -2,6 +2,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:flutter/foundation.dart';
 
 class ShippingAddress {
   String? addressLineOne;
@@ -68,6 +69,7 @@ class User {
   UserStatus status;
   double? rating;
   String? bio;
+  String? wallpaper;
   String? chatWallpaper;
   UserAbout? userAbout;
 
@@ -76,6 +78,7 @@ class User {
     this.bio = "",
     this.uuid = "",
     this.url = "",
+    this.wallpaper = "",
     this.chatWallpaper = "",
     this.phoneNumber = "",
     this.fullName = "",
@@ -96,6 +99,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     UserAbout userAbout = UserAbout.fromJson(json["profile"]);
 
+    debugPrint('IS-VERIFIED --> ${json['is_verified']}');
     User user = User(
       nickName: json['nickname'] ?? "",
       type: json['account_type'],
@@ -110,6 +114,7 @@ class User {
       bio: json['bio'] ?? '',
       userAbout: UserAbout.fromJson(json["profile"]),
       chatWallpaper: json['chat_wallpaper'],
+      wallpaper: json['wallpaper'],
       rating: formatRating(json['rating']),
       userName: json['username'],
       uuid: json['uuid'],

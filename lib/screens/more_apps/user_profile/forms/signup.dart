@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/utils/cache_manager.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -17,7 +18,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../data/currency.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../services/secure_storage.dart';
-import '../../../../utils/cache_manager.dart';
 import '../screens/subscriptions/subscription_auth.dart';
 import '../screens/subscriptions/subscription_model.dart';
 
@@ -72,7 +72,10 @@ class _SignUpState extends State<SignUp> {
 
   RegExp dotReg = RegExp(r'\.$');
   RegExp spaceReg = RegExp(r' $');
+  RegExp asteriskReg = RegExp(r'\*');
   RegExp multipleDotReg = RegExp(r'\.{2,}');
+
+  int maxUsernameLength = 30;
 
   @override
   void initState() {
@@ -91,14 +94,16 @@ class _SignUpState extends State<SignUp> {
       String name = _businessOrNickNameController.text;
 
       if (!dotReg.hasMatch(name) &&
+          !asteriskReg.hasMatch(name) &&
           !spaceReg.hasMatch(name) &&
-          (_userNameController.text.length <= 14 || name.length <= 14)) {
+          (_userNameController.text.length <= maxUsernameLength - 1 ||
+              name.length <= maxUsernameLength - 1)) {
         String formattedUsername = _businessOrNickNameController.text
             .replaceAll(' ', '.')
             .replaceAll(multipleDotReg, '.')
             .toLowerCase();
 
-        if (formattedUsername.length <= 15) {
+        if (formattedUsername.length <= maxUsernameLength) {
           _userNameController.text = formattedUsername;
         }
       }
@@ -528,7 +533,7 @@ class _SignUpState extends State<SignUp> {
     return CustomizedTextFormField(
       controller: _userNameController,
       labelColor: darkGrey,
-      maxLength: 15,
+      maxLength: maxUsernameLength,
       labelText: isPersonalAccount ? "Username" : 'Business Username',
       keyboardType: TextInputType.text,
       validator: userNameValidator,
@@ -598,7 +603,10 @@ class _SignUpState extends State<SignUp> {
       return "Username is not valid";
     }
     if (dotReg.hasMatch(username)) {
-      return 'Username cannot end with a period';
+      return 'Username cannot end with a period (.)';
+    }
+    if (asteriskReg.hasMatch(username)) {
+      return 'Username cannot contain an asterisk (*)';
     }
     if (username.isEmpty) {
       return 'Username cannot be empty';
@@ -931,14 +939,15 @@ class _SignUpState extends State<SignUp> {
         selectedGender = "F";
       }
 
-      String firstName = _firstNameController.text.trim();
-      String lastName = _lastNameController.text.trim();
+      String firstName = _firstNameController.text.toTitleCase().trim();
+      String lastName = _lastNameController.text.toTitleCase().trim();
       String userName = _userNameController.text
           .replaceAll(' ', '.')
           .replaceAll(multipleDotReg, '.')
           .toLowerCase()
           .trim();
-      String businessOrNickName = _businessOrNickNameController.text.trim();
+      String businessOrNickName =
+          _businessOrNickNameController.text.toTitleCase().trim();
 
       Map<String, dynamic> data = {
         "phone_number": phoneNumber,
@@ -1127,86 +1136,90 @@ class _SignUpState extends State<SignUp> {
 }
 
 List<String> industryList = [
-  'Manufacturing',
-  'Technology',
-  'Trade',
-  'Marketing',
-  'Bio-tech',
-  'Pharmaceutical',
-  'Research',
-  'Food Industry',
-  'Investment',
+  'Aerospace',
   'Agriculture',
-  'Startup',
-  'Law',
-  'Communication',
-  'Construction',
-  'Entertainment',
-  'Hospitality',
-  'Media / News',
-  'E-commerce',
-  'Transport',
-  'Bank',
-  'Education',
-  'Insurance',
-  'Retail',
-  'Mining',
-  'Regulation',
-  'Fashion',
-  'Bank',
-  'Bar',
-  'Book Store',
-  'Concert Venue',
-  'Food / Grocery',
-  'Hotel',
-  'Local Business',
-  'Movie Theatre',
-  'Museum/Art Gallery',
-  'Outdoor Gear/Sporting Goods',
-  'Real Estate',
-  'Restaurant / Cafe',
-  'School',
-  'Shopping / Retail',
-  'Spas/Beauty/Personal',
-  'Care',
+  'Architect',
   'Automobiles and Parts',
-  'Church',
-  'Company',
-  'Computers/Technology',
-  'Consulting/Business Services',
+  'Automotive',
+  'Banking',
+  'Bar',
+  'Bio-tech',
+  'Book Store',
+  'Care',
+  'Cargo & Freight',
+  'Carpenter',
   'Cause',
-  'Food/Beverages',
-  'Health/Beauty',
-  'Insurance Company',
-  'Internet/Software',
-  'Legal/Law',
-  'Non-Profit Organization',
-  'Retail and Consumer Merchandise',
-  'Media/News/Publishing',
-  'Travel/Leisure',
-  'Aerospace ',
-  'Agriculture ',
-  'Automotive ',
-  'Cargo & Freight ',
-  'Chemical ',
+  'Chemical',
   'College & University',
+  'Communication',
   'Community Organization',
   'Community Services',
-  'Computer ',
+  'Company',
+  'Computer',
+  'Computers/Technology',
+  'Concert Venue',
+  'Construction',
   'Consulting Agency',
+  'Consulting/Business Services',
+  'Day care',
+  'Dealership',
+  'E-commerce',
   'Education',
+  'Electrician',
   'Elementary School',
   'Energy',
+  'Entertainment',
+  'Fashion',
   'Finance',
-  'Food & Beverage ',
+  'Fitness',
+  'Food & Beverage',
+  'Food/Grocery',
+  'Food Industry',
+  'Food/Beverages',
   'Government Organization',
   'Health/Beauty',
   'High School',
-  'Internet ',
+  'Hospitality',
+  'Hotel',
+  'Insurance',
+  'Insurance Company',
+  'Interior Decoration',
+  'Internet',
+  'Internet/Software',
+  'Investment',
   'Labor Union',
+  'Legal/Law',
+  'Local Business',
+  'Manufacturing',
+  'Marketing',
+  'Mechanic',
+  'Media/News',
+  'Media/News/Publishing',
+  'Mining',
+  'Miscellaneous',
+  'Movie Theatre',
+  'Museum/Art Gallery',
   'Non-Profit Organization',
+  'Outdoor Gear/Sporting Goods',
+  'Painter',
+  'Pharmaceutical',
+  'Plumbing',
   'Political Organization',
+  'Real Estate',
+  'Regulation',
+  'Religion',
+  'Research',
+  'Restaurant/Cafe',
+  'Retail',
+  'Retail and Consumer Merchandise',
+  'School',
+  'Shopping/Retail',
+  'Spas/Beauty/Personal',
+  'Startup',
+  'Technology',
   'Telecommunication',
   'Tobacco',
-  'Miscellaneous',
+  'Trade',
+  'Transport',
+  'Travel/Leisure'
 ];

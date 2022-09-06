@@ -73,6 +73,7 @@ class UserBloc extends ChangeNotifier {
   }
 
   void removeProfileCover() {
+    _user.wallpaper = "";
     _user.userAbout!.wallpaper = "";
     notifyListeners();
   }

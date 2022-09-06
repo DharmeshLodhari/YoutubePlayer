@@ -37,6 +37,7 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   String? blogId;
   String? _imagePath;
   String? _videoPath;
+  int maxVideoFileSize = 90;
   bool showMoreOptions = false;
   late FocusNode titleFocusNode;
   bool _userUpdatingPost = false;
@@ -555,13 +556,23 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   _pickBlogVideo({Function(String video)? videoPickedCallBack}) async {
     String? videoPath = await getFile(context, fileType: MediaType.video);
 
-    if (videoPickedCallBack != null && videoPath != null) {
-      videoPickedCallBack(videoPath);
-    } else {
-      if (videoPath != null) {
-        setState(() {
-          _videoPath = videoPath;
-        });
+    if (videoPath != null) {
+      int sizeInBytes = File(videoPath).lengthSync();
+
+      int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
+
+      debugPrint('SIZE IN MB --> $sizeInMb');
+
+      if (sizeInMb <= maxVideoFileSize) {
+        if (videoPickedCallBack != null) {
+          videoPickedCallBack(videoPath);
+        } else {
+          setState(() {
+            _videoPath = videoPath;
+          });
+        }
+      } else {
+        showToast(message: 'File is too large');
       }
     }
   }
@@ -583,7 +594,6 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
                         width: 200,
                         height: 200,
                         errorWidget: imageErrorWidget,
-
                       ),
                     )
                   : Image.file(

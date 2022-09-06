@@ -89,7 +89,7 @@ Future<String?> getFile(BuildContext context,
     } else {
       final file = await ImagePicker().pickVideo(source: fileSource);
       if (file != null) {
-        return file.path;
+        videoPath = file.path;
       }
     }
   }
@@ -941,8 +941,9 @@ Widget getRating({required int? numberOfRating, double starSize = 11}) {
     );
   }
   return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: widgets,);
+    mainAxisSize: MainAxisSize.min,
+    children: widgets,
+  );
 }
 
 Color getRatingColor(int? numberOfRating, int i) {
@@ -2069,4 +2070,9 @@ List<String> getLgs({required String? state}) {
   }
 
   return lgs;
+}
+
+extension StringCasingExtension on String {
+  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
 }

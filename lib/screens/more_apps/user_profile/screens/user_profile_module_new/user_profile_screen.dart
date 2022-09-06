@@ -8,7 +8,6 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_info.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_qr_code_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
@@ -159,7 +158,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     int tabCount = 2;
 
     if (searchedUser?.type?.toLowerCase() != "user") {
-      tabCount = 5;
+      tabCount = 4;
       showProductTab = await getIsShowProduct();
       showServiceTab = await getIsShowService();
 
@@ -241,10 +240,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (len <= 50) {
       if (hasAddress) {
-        height = 360;
+        height = 350;
         debugPrint('GET HEIGHT -> $height');
 
-        return 360;
+        return 350;
       }
       height = 320;
       debugPrint('GET HEIGHT -> $height');
@@ -590,34 +589,68 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     backgroundColor: Colors.transparent,
                   ),
                 )
-              : searchedUser!.userAbout!.wallpaper == ""
-                  ? Image.asset(
-                      "assets/images/default_user_wallpaper.png",
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    )
-                  : GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushNamed("/photo-viewer",
-                            arguments: searchedUser!.userAbout!.wallpaper);
-                      },
-                      child: Container(
-                        color: navyBlue,
-                        child: CachedNetworkImage(
-                          width: double.infinity,
-                          height: double.infinity,
-                          errorWidget: wallpaperErrorWidget,
-                          imageUrl: searchedUser!.userAbout!.wallpaper,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              Center(child: CircularLoadingIndicator()),
-                          color: blackFont.withOpacity(0.4),
-                          colorBlendMode: BlendMode.darken,
-                          filterQuality: FilterQuality.high,
-                        ),
-                      ),
-                    ),
+              : getWallpaper(),
     );
+  }
+
+  Widget getWallpaper() {
+    if (userBloc.user.type!.toLowerCase() == "user") {
+      return userBloc.user.wallpaper == ""
+          ? Image.asset(
+              "assets/images/default_user_wallpaper.png",
+              width: double.infinity,
+              fit: BoxFit.cover,
+            )
+          : GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: userBloc.user.wallpaper);
+              },
+              child: Container(
+                color: navyBlue,
+                child: CachedNetworkImage(
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorWidget: wallpaperErrorWidget,
+                  imageUrl: userBloc.user.wallpaper!,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  color: blackFont.withOpacity(0.4),
+                  colorBlendMode: BlendMode.darken,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+            );
+    } else {
+      return searchedUser!.userAbout!.wallpaper == ""
+          ? Image.asset(
+              "assets/images/default_user_wallpaper.png",
+              width: double.infinity,
+              fit: BoxFit.cover,
+            )
+          : GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: searchedUser!.userAbout!.wallpaper);
+              },
+              child: Container(
+                color: navyBlue,
+                child: CachedNetworkImage(
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorWidget: wallpaperErrorWidget,
+                  imageUrl: searchedUser!.userAbout!.wallpaper,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  color: blackFont.withOpacity(0.4),
+                  colorBlendMode: BlendMode.darken,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+            );
+    }
   }
 
   Widget getProfilePhoto() {
@@ -684,6 +717,36 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            searchedUser!.displayName()!,
+                            maxLines: 2,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: blackFont),
+                          ),
+                          userBloc.user.isVerified != null &&
+                                  userBloc.user.isVerified == true
+                              ? Icon(
+                                  Icons.verified_rounded,
+                                  color: navyBlue,
+                                  size: 18,
+                                )
+                              : SizedBox.shrink(),
+                        ],
+                      ),
+                      Text(
+                        '@${searchedUser!.userName!}',
+                        style: TextStyle(
+                            fontSize: 14.0,
+                            color: darkGrey,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      SizedBox(height: 4),
                       InkWell(
                         onTap: myMomentsLoading
                             ? null
@@ -725,24 +788,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             ],
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2.0),
-                        child: Text(
-                          searchedUser!.displayName()!,
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                        ),
-                      ),
-                      Text(
-                        '@${searchedUser!.userName!}',
-                        style: TextStyle(
-                            fontSize: 14.0,
-                            color: darkGrey,
-                            fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
@@ -786,6 +831,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getContact() {
+    debugPrint('CONTACT -> ${searchedUser?.userAbout?.contact}');
     if (searchedUser?.userAbout?.contact != null &&
         searchedUser!.userAbout!.contact.isNotEmpty) {
       return Row(
@@ -988,10 +1034,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         getTabUI(title: "QR code", tabIndex: index),
       );
       index++;
-      tabs.add(
-        getTabUI(title: "Info", tabIndex: index),
-      );
-      index++;
+      // tabs.add(
+      //   getTabUI(title: "Info", tabIndex: index),
+      // );
+      // index++;
       if (showProductTab) {
         tabs.add(
           getTabUI(title: "Products", tabIndex: index),
@@ -1051,11 +1097,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           child: UserQRCodeScreen(user: searchedUser),
         ),
       );
-      list.add(
-        KeepAlivePage(
-          child: UserInfo(user: searchedUser, changeIndex: changeIndex),
-        ),
-      );
+      // list.add(
+      //   KeepAlivePage(
+      //     child: UserInfo(user: searchedUser, changeIndex: changeIndex),
+      //   ),
+      // );
       if (showProductTab) {
         list.add(
           KeepAlivePage(
@@ -1190,7 +1236,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       list.add(
         bottomSheetItem(
-          title: "Edit bio",
+          title: "Edit Profile",
           iconData: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context);

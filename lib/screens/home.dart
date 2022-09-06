@@ -97,15 +97,27 @@ class _HomeState extends State<Home> {
   }
 
   Widget _backgroundScreen() {
-    if (userBloc.user.userAbout == null ||
-        userBloc.user.userAbout!.wallpaper == "") {
-      return Container(
-        child: Image.asset(
-          "assets/images/home_screen_background.png",
-          frameBuilder: imageFrameBuilder,
-          fit: BoxFit.cover,
-        ),
-      );
+    if (userBloc.user.type!.toLowerCase() == 'user') {
+      if (userBloc.user.wallpaper == null || userBloc.user.wallpaper == "") {
+        return Container(
+          child: Image.asset(
+            "assets/images/home_screen_background.png",
+            frameBuilder: imageFrameBuilder,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
+    } else {
+      if (userBloc.user.userAbout == null ||
+          userBloc.user.userAbout!.wallpaper == "") {
+        return Container(
+          child: Image.asset(
+            "assets/images/home_screen_background.png",
+            frameBuilder: imageFrameBuilder,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
     }
 
     return ClipRRect(
@@ -116,7 +128,9 @@ class _HomeState extends State<Home> {
         width: 100.0.w,
         height: 33.0.h,
         child: CachedNetworkImage(
-          imageUrl: userBloc.user.userAbout!.wallpaper,
+          imageUrl: userBloc.user.type == 'User'
+              ? userBloc.user.wallpaper!
+              : userBloc.user.userAbout!.wallpaper,
           fit: BoxFit.cover,
           color: blackFont.withOpacity(0.4),
           colorBlendMode: BlendMode.darken,
@@ -368,29 +382,66 @@ class _HomeState extends State<Home> {
                       Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
                           arguments: userBloc.user.avatar);
                     },
-                    child: Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            25,
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 48,
+                          width: 48,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                25,
+                              ),
+                              border: Border.all(color: borderColor, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: userBloc.user.avatar!,
+                              fit: BoxFit.fill,
+                              errorWidget: imageErrorWidget,
+                            ),
                           ),
-                          border: Border.all(color: borderColor, width: 2)),
-                      child: ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: userBloc.user.avatar!,
-                          fit: BoxFit.fill,
-                          errorWidget: imageErrorWidget,
                         ),
-                      ),
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: RoundedBackgroundIcon(
+                            height: 22,
+                            width: 22,
+                            backgroundColor: greyBorderColor.withOpacity(0.7),
+                            icon: Icon(
+                              SlydoAppIcon.edit,
+                              color: blackFont,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed('/add-edit-user-bio', arguments: {
+                                "searchedUser": userBloc.user.userAbout
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  title: Text(
-                    userBloc.user.displayName()!.length <= 22
-                        ? userBloc.user.displayName()!
-                        : '${userBloc.user.displayName()!.substring(0, 23)}...',
-                    maxLines: 1,
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  title: Row(
+                    mainAxisSize: MainAxisSize.min,
+
+                    children: [
+                      Text(
+                        userBloc.user.displayName()!.length <= 22
+                            ? userBloc.user.displayName()!
+                            : '${userBloc.user.displayName()!.substring(0, 23)}...',
+                        maxLines: 1,
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                      ),
+                      userBloc.user.isVerified != null && userBloc.user.isVerified == true
+                          ? Icon(
+                        Icons.verified_rounded,
+                        color: navyBlue,
+                        size: 18,
+                      )
+                          : SizedBox.shrink(),
+                    ],
                   ),
                   subtitle: Text(
                     userBloc.user.userName!,
@@ -426,6 +477,7 @@ class _HomeState extends State<Home> {
                 ),
                 Container(
                   key: tutorialQrCodeKey,
+                  alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
                   child: CachedNetworkImage(
                     height: MediaQuery.of(context).size.width / 1.7,

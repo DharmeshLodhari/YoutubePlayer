@@ -492,24 +492,72 @@ class UserAuth extends AuthService {
     return Future.error("Something went wrong");
   }
 
-  Future<bool> updateSimpleUserDetail({String? nickName, String? bio}) async {
+  Future<Map<String, dynamic>> updateSimpleUserDetail(
+      {String? nickName, String? bio, String? wallpaper}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/update-customer/";
     debugPrint("URL:- $url");
-    var data = {"nickname": nickName, "bio": bio};
+    debugPrint("URL WALLPAPER:- $wallpaper");
+
+    var response;
+    var responseBody;
     var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data);
-    debugPrint(
-        "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    if (wallpaper != null) {
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
+      Map<String, dynamic> data = {"nickname": nickName, "bio": bio};
+
+      data.forEach((key, value) {
+        request.fields[key] = value;
+      });
+
+      //create multipart using filepath, string or bytes
+      var multipartFile =
+          await http.MultipartFile.fromPath("wallpaper", wallpaper);
+
+      //add multipart to request
+      request.files.add(multipartFile);
+
+      headers.forEach((k, v) => request.headers[k] = v);
+
+      debugPrint("Files send:- ${request.files}");
+      debugPrint("Data Send:- ${request.fields}");
+
+      response = await request.send();
+
+      responseBody = await response.stream.bytesToString();
+
+      debugPrint(
+          "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+    } else {
+      var data = {"nickname": nickName, "bio": bio};
+      var headers = await getAuthHeaders();
+      var _data = jsonEncode(data);
+      response = await httpPatch(url, headers: headers, body: _data);
+
+      debugPrint(
+          "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+    }
+
     if (response.statusCode == 200) {
-      return true;
+      dynamic responseData = jsonDecode(responseBody);
+      return {
+        "nickname": responseData['nickname'],
+        "bio": responseData['bio'],
+        "chat_wallpaper": responseData['chat_wallpaper'],
+        "wallpaper": responseData['wallpaper'],
+      };
     }
     return Future.error('Something went wrong.');
   }
 
-  Future<bool> deleteImageCover() async {
+  Future<bool> deleteImageCover({bool isUserNormalUser = false}) async {
     var headers = await getAuthHeaders();
-    var url = AppConfig.baseUrl + "/api/v1/user/about/";
+    late var url;
+
+    if (isUserNormalUser) {
+      url = AppConfig.baseUrl + "/api/v1/user/about/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/user/update-customer/";
+    }
 
     var response = await httpDelete(url, headers: headers);
 

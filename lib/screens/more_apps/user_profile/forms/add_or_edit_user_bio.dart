@@ -268,10 +268,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       key: _userDetailKey,
       child: Column(
         children: [
+          addBioField(),
           SizedBox(height: 20),
           nickNameField(),
           SizedBox(height: 20),
-          addBioField(),
         ],
       ),
     );
@@ -327,7 +327,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return CustomizedTextFormField(
       controller: _nicknameController,
       labelColor: darkGrey,
-      labelText: "Nick name",
+      labelText: "Nick name (optional)",
       keyboardType: TextInputType.name,
       validator: nickNameValidator,
     );
@@ -363,14 +363,12 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               });
             },
           ),
-          actions: isUserIsSimpleUser
-              ? null
-              : [
-                  editProfileCoverIcon(),
-                  SizedBox(
-                    width: 16,
-                  )
-                ],
+          actions: [
+            editProfileCoverIcon(),
+            SizedBox(
+              width: 16,
+            )
+          ],
           title: Container(
             child: Text(
               userBloc.user.displayName()!,
@@ -427,9 +425,45 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         'USER ABOUT --> ${!userBloc.userAbout!.wallpaper.contains("https")}');
 
     debugPrint('MY WALL -> ${userBloc.userAbout!.wallpaper}');
-    return Container(
-      height: 206,
-      child: userBloc.userAbout == null
+    return Container(height: 206, child: getProfileWallpaper());
+  }
+
+  Widget getProfileWallpaper() {
+    if (isUserIsSimpleUser) {
+      if (userBloc.user.wallpaper == null ||
+          userBloc.user.wallpaper == "" ||
+          (!userBloc.user.wallpaper!.contains("http") &&
+              !userBloc.user.wallpaper!.contains("https"))) {
+        debugPrint('WALLPAPER IM-> ${userBloc.user.wallpaper}');
+        debugPrint('WALLPAPER null-> ${userBloc.user.wallpaper == null}');
+        debugPrint('WALLPAPER emp-> ${userBloc.userAbout!.wallpaper == ""}');
+        debugPrint(
+            'WALLPAPER no http-> ${!userBloc.userAbout!.wallpaper.contains("http")}');
+        debugPrint(
+            'WALLPAPER no https -> ${!userBloc.userAbout!.wallpaper.contains("https")}');
+
+        return Image.asset(
+          "assets/images/home_screen_background.png",
+          width: double.infinity,
+          fit: BoxFit.cover,
+        );
+      } else {
+        debugPrint('WALLPAPER C -> ${userBloc.user.wallpaper}');
+
+        return CachedNetworkImage(
+          width: double.infinity,
+          height: double.infinity,
+          imageUrl: userBloc.user.wallpaper!,
+          fit: BoxFit.cover,
+          placeholder: (context, url) =>
+              Center(child: CircularLoadingIndicator()),
+          color: blackFont.withOpacity(0.4),
+          colorBlendMode: BlendMode.darken,
+          filterQuality: FilterQuality.high,
+        );
+      }
+    } else {
+      return userBloc.userAbout == null
           ? Image.asset(
               "assets/images/home_screen_background.png",
               width: double.infinity,
@@ -453,8 +487,8 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
                   color: blackFont.withOpacity(0.4),
                   colorBlendMode: BlendMode.darken,
                   filterQuality: FilterQuality.high,
-                ),
-    );
+                );
+    }
   }
 
   Widget getProfilePhoto() {
@@ -653,7 +687,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       maxLines: 5,
       maxLength: 200,
       textCapitalization: TextCapitalization.sentences,
-      labelText: "Bio",
+      labelText: "Bio (optional)",
     );
   }
 
@@ -918,7 +952,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       if (result == "update") {
         pickImage();
       } else if (result == "remove") {
-        bool result = await UserAuth().deleteImageCover();
+        bool result = await UserAuth().deleteImageCover(isUserNormalUser: true);
         if (result) {
           userBloc.removeProfileCover();
         }
@@ -964,32 +998,34 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           return;
         }
 
-        isSearchedUserAboutLoading = true;
-        if (mounted) setState(() {});
-
-        UserBloc tempUserBloc = Provider.of<UserBloc>(context, listen: false);
-
-        UserAbout userAbout = tempUserBloc.userAbout!;
-
-        userAbout.wallpaper = croppedImage;
-        String nickName = _nicknameController!.text.trim();
-
-        await UserAuth()
-            .addOrUpdateUserBio(userAbout: userAbout, nickName: nickName)
-            .then((newUserAbout) {
-          userBloc.userAbout = newUserAbout;
-
-          isSearchedUserAboutLoading = false;
+        if (isUserIsSimpleUser) {
+          updateUserDetail(wallpaper: croppedImage);
+        } else {
+          isSearchedUserAboutLoading = true;
           if (mounted) setState(() {});
-        }).catchError((error) {
-          isSearchedUserAboutLoading = false;
-          if (mounted) setState(() {});
+          String nickName = _nicknameController!.text.trim();
 
-          showToast(message: error.toString());
+          UserBloc tempUserBloc = Provider.of<UserBloc>(context, listen: false);
 
-          isSearchedUserAboutLoading = false;
-          if (mounted) setState(() {});
-        });
+          UserAbout userAbout = tempUserBloc.userAbout!;
+          userAbout.wallpaper = croppedImage;
+          await UserAuth()
+              .addOrUpdateUserBio(userAbout: userAbout, nickName: nickName)
+              .then((newUserAbout) {
+            userBloc.userAbout = newUserAbout;
+
+            isSearchedUserAboutLoading = false;
+            if (mounted) setState(() {});
+          }).catchError((error) {
+            isSearchedUserAboutLoading = false;
+            if (mounted) setState(() {});
+
+            showToast(message: error.toString());
+
+            isSearchedUserAboutLoading = false;
+            if (mounted) setState(() {});
+          });
+        }
       }
     }
   }
@@ -1010,7 +1046,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     );
   }
 
-  void updateUserDetail() async {
+  void updateUserDetail({String? wallpaper}) async {
     if (_userDetailKey.currentState?.validate() ?? false) {
       showDialog(
         context: context,
@@ -1023,18 +1059,24 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       String nickName = _nicknameController!.text.trim();
       String bio = bioController!.text.trim();
       await UserAuth()
-          .updateSimpleUserDetail(nickName: nickName, bio: bio)
+          .updateSimpleUserDetail(
+              nickName: nickName, bio: bio, wallpaper: wallpaper)
           .then((value) async {
-        if (value == true) {
-          UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-          userBloc.updateNickName = nickName;
-          userBloc.user.bio = bio;
+        UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+        userBloc.updateNickName = value['nickname'];
+        userBloc.user.bio = value['bio'];
+        userBloc.user.wallpaper = value['wallpaper'];
+
+        if (wallpaper == null) {
+          Navigator.pop(context);
+          Navigator.pop(context);
+
+          showToast(message: "Bio updated successfully");
+        } else {
+          Navigator.pop(context);
+          if (mounted) setState(() {});
+          showToast(message: 'Wallpaper updated successfully');
         }
-
-        Navigator.pop(context);
-        Navigator.pop(context);
-
-        showToast(message: "Bio updated successfully");
       }).catchError((error) {
         Navigator.pop(context);
         debugPrint(error.toString());

@@ -1288,13 +1288,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       right: false,
       child: WillPopScope(
         onWillPop: () async {
-          if(showMoreAction){
+          if (showMoreAction) {
             setState(() {
               showMoreAction = false;
             });
             return Future.value(false);
-
-          }else{
+          } else {
             disposeAudioPlayers();
             mainSocketProvider!.removeStreamSubscription(streamSubscription);
             mainSocketProvider!.currentConversationId = null;
@@ -1302,7 +1301,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
             return Future.value(true);
           }
-
         },
         child: Platform.isAndroid
             ? mainStack()
@@ -1364,16 +1362,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    getUserFullName(),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+                  Row(
+              mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        getUserFullName(),
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                        maxLines: 1,
+                      ),
+                      userBloc != null &&
+                              userBloc!.user.isVerified != null &&
+                              userBloc!.user.isVerified == true
+                          ? Icon(
+                              Icons.verified_rounded,
+                              color: navyBlue,
+                              size: 18,
+                            )
+                          : SizedBox.shrink(),
+                    ],
                   ),
                   Text(
                     chatConversation != null
@@ -2178,7 +2190,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-
         if (appConfigurationModel?.enableLocationSharing == true) {
           showMoreAction = false;
           if (mounted) setState(() {});
@@ -2337,7 +2348,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
         backgroundColor: navyBlue.withOpacity(0.08),
         onTap: () async {
-          if (appConfigurationModel?.enablePayment == true && appConfigurationModel?.enableMagicEnvelope == true) {
+          if (appConfigurationModel?.enablePayment == true &&
+              appConfigurationModel?.enableMagicEnvelope == true) {
             showMoreAction = false;
 
             if (mounted) setState(() {});
@@ -2376,7 +2388,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (appConfigurationModel?.enablePayment == true && appConfigurationModel?.enableEmptyEnvelope == true) {
+        if (appConfigurationModel?.enablePayment == true &&
+            appConfigurationModel?.enableEmptyEnvelope == true) {
           showMoreAction = false;
 
           if (mounted) setState(() {});
