@@ -182,6 +182,7 @@ class CustomerProfile {
   String? qrCode;
   String? nickName;
   String? type;
+  String? wallpaper;
   String? conversationId;
   String uuid;
   String? bio;
@@ -196,6 +197,7 @@ class CustomerProfile {
   CustomerProfile(
       {this.fullName = "",
       this.bio = "",
+      this.wallpaper = "",
       this.chatWallpaper = "",
       this.userName = "",
       this.avatar = "",
@@ -216,6 +218,7 @@ class CustomerProfile {
         userName: json['username'] ?? "",
         bio: json['bio'] ?? "",
         chatWallpaper: json['chat_wallpaper'] ?? "",
+        wallpaper: json['wallpaper'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
         nickName: json['nickname'] ?? json['name'] ?? "",

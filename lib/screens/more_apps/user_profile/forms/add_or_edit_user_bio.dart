@@ -1034,7 +1034,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
     return CurvedButton(
       onPressed: () async {
         FocusScope.of(context).unfocus();
-        if (userBloc.user.type == "User") {
+        if (userBloc.user.type!.toLowerCase() == "user") {
           updateUserDetail();
         } else {
           updateBio();
@@ -1077,11 +1077,13 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
           if (mounted) setState(() {});
           showToast(message: 'Wallpaper updated successfully');
         }
-      }).catchError((error) {
-        Navigator.pop(context);
-        debugPrint(error.toString());
-        showToast(message: error.toString());
       });
+
+      // .catchError((error) {
+      // Navigator.pop(context);
+      // debugPrint(error.toString());
+      // showToast(message: error.toString());
+      // });
     }
   }
 

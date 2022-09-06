@@ -533,6 +533,7 @@ class UserAuth extends AuthService {
       var _data = jsonEncode(data);
       response = await httpPatch(url, headers: headers, body: _data);
 
+      responseBody = response.body;
       debugPrint(
           "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     }

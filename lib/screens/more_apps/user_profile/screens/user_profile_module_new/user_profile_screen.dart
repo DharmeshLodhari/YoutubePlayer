@@ -594,8 +594,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getWallpaper() {
-    if (userBloc.user.type!.toLowerCase() == "user") {
-      return userBloc.user.wallpaper == ""
+    if (searchedUser!.type!.toLowerCase() == "user") {
+      return searchedUser!.wallpaper == "" || searchedUser!.wallpaper == null
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
               width: double.infinity,
@@ -604,7 +604,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           : GestureDetector(
               onTap: () {
                 Navigator.of(context).pushNamed("/photo-viewer",
-                    arguments: userBloc.user.wallpaper);
+                    arguments: searchedUser!.wallpaper);
               },
               child: Container(
                 color: navyBlue,
@@ -612,7 +612,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   width: double.infinity,
                   height: double.infinity,
                   errorWidget: wallpaperErrorWidget,
-                  imageUrl: userBloc.user.wallpaper!,
+                  imageUrl: searchedUser!.wallpaper!,
                   fit: BoxFit.cover,
                   placeholder: (context, url) =>
                       Center(child: CircularLoadingIndicator()),
