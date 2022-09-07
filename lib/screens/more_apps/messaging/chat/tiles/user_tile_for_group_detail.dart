@@ -68,16 +68,9 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
         decoration: decorateBox(),
         child: ListTile(
           dense: true,
-          title: Text(
-            widget.user!.displayName()!,
-            maxLines: 1,
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-            overflow: TextOverflow.fade,
-            softWrap: false,
+          title: userNameWithVerifiedIcon(
+            name: widget.user!.fullName!,
+            isVerified: widget.user!.isVerified!,
           ),
           subtitle: getSubtitle(context),
           leading: avatarImage,

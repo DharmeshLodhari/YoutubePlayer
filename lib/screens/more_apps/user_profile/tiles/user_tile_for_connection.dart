@@ -109,6 +109,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
           )),
     );
 
+    debugPrint('VERI -> ${widget.user?.isVerified}');
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -118,29 +119,9 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         decoration: decorateBox(),
         child: ListTile(
           dense: true,
-          title: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                widget.user!.fullName!,
-                maxLines: 1,
-                style: TextStyle(
-                  color: blackFont,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                ),
-                overflow: TextOverflow.fade,
-                softWrap: false,
-              ),
-              userBloc.user.isVerified != null &&
-                      userBloc.user.isVerified == true
-                  ? Icon(
-                      Icons.verified_rounded,
-                      color: navyBlue,
-                      size: 18,
-                    )
-                  : SizedBox.shrink(),
-            ],
+          title: userNameWithVerifiedIcon(
+            name: widget.user!.fullName!,
+            isVerified: widget.user?.isVerified,
           ),
           subtitle: getSubtitle(context),
           leading: avatarImage,

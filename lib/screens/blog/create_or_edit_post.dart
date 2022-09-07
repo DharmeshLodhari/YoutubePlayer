@@ -37,7 +37,6 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   String? blogId;
   String? _imagePath;
   String? _videoPath;
-  int maxVideoFileSize = 90;
   bool showMoreOptions = false;
   late FocusNode titleFocusNode;
   bool _userUpdatingPost = false;

@@ -164,6 +164,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
         isLoading = false;
         connectionRequestList.addAll(tempList);
+        Provider.of<ConnectionRequestListBloc>(context, listen: false)
+            .setHasConnectionRequests = connectionRequestList.isNotEmpty;
 
         if (mounted) setState(() {});
       }

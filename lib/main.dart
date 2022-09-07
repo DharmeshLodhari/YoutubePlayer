@@ -314,4 +314,7 @@ List<ChangeNotifierProvider> providersList = [
   ChangeNotifierProvider<AskViewModel>.value(
     value: AskViewModel(),
   ),
+  ChangeNotifierProvider<ConnectionRequestListBloc>.value(
+    value: ConnectionRequestListBloc(),
+  ),
 ];

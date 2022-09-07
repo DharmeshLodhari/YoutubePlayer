@@ -253,7 +253,6 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void removeMerchantName(var item) {
-
     var merchantFullName =
         item is Product ? item.sellerFullName : item.providerFullName;
 
@@ -537,6 +536,7 @@ class ConnectionListBloc extends ChangeNotifier {
 
     _connectionUsers.clear();
     _connectionUsers = await _getConnectionUsers();
+    debugPrint('CONNECTION USERS --> ${_connectionUsers[0].isVerified}');
     notifyListeners();
     return Future.value();
   }
@@ -594,5 +594,16 @@ class ConnectionListBloc extends ChangeNotifier {
     _connectionUsers = await _getConnectionUsers();
     notifyListeners();
     return;
+  }
+}
+
+class ConnectionRequestListBloc extends ChangeNotifier {
+  bool _hasConnectionRequests = false;
+
+  bool get hasConnectionRequests => _hasConnectionRequests;
+
+  set setHasConnectionRequests(bool hasRequests) {
+    _hasConnectionRequests = hasRequests;
+    notifyListeners();
   }
 }

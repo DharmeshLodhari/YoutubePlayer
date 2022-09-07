@@ -1,12 +1,18 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'block_list.dart';
 import 'connection_request_list.dart';
@@ -26,14 +32,33 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   var filterValue = "Contacts";
   late AppLocalization appLocalization;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
     if (widget.arguments != null) {
       currentIndex = widget.arguments["index"] ?? 0;
     }
 
+    getConnectionRequest();
+
     super.initState();
+  }
+
+  getConnectionRequest() async {
+    Map<String, dynamic>? result =
+        await UserAuth().listContactRequests('', '').catchError((error) {
+      debugPrint("ERROR:- $error");
+      //  return;
+    });
+
+    if (result == null) return;
+    List connectionRequest = result['results'] as List;
+
+    Provider.of<ConnectionRequestListBloc>(context, listen: false)
+        .setHasConnectionRequests = connectionRequest.isNotEmpty;
   }
 
   @override
@@ -135,14 +160,40 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     ? navyBlue.withOpacity(0.1)
                     : Colors.white,
               ),
-              child: Text(
-                appLocalization.requests,
-                style: TextStyle(
-                  color: currentIndex == 1 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    appLocalization.requests,
+                    style: TextStyle(
+                      color: currentIndex == 1 ? navyBlue : blackFont,
+                      fontSize: 14,
+                      fontWeight:
+                          currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                  Provider.of<ConnectionRequestListBloc>(context)
+                          .hasConnectionRequests
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Padding(
+                            padding: const EdgeInsets.only(),
+                            child: Badge(
+                              padding: EdgeInsets.all(2),
+                              badgeColor: naturalGreen,
+                              animationType: BadgeAnimationType.slide,
+                              badgeContent: Text(
+                                '++',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.white),
+                              ),
+                              position: BadgePosition(end: 0, top: 0),
+                            ),
+                          ),
+                        )
+                      : SizedBox.shrink()
+                ],
               ),
             ),
           ),
@@ -187,20 +238,25 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   }
 
   Widget createGroupBtn() {
-    return RoundedBackgroundIcon(
-      height: 34,
-      width: 34,
-      icon: Icon(
-        Icons.group_add,
-        size: 20,
-        color: blackFont,
-      ),
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
-      },
-      backgroundColor: lightGrey,
-      enableMargin: true,
-    );
+    if (appConfigurationModel != null &&
+        appConfigurationModel!.enableGroupChat == true) {
+      return RoundedBackgroundIcon(
+        height: 34,
+        width: 34,
+        icon: Icon(
+          Icons.group_add,
+          size: 20,
+          color: blackFont,
+        ),
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
+        },
+        backgroundColor: lightGrey,
+        enableMargin: true,
+      );
+    }
+
+    return SizedBox.shrink();
   }
 
   Widget synchronizeContactBtn() {

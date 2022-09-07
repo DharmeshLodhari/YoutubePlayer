@@ -188,7 +188,7 @@ class CustomerProfile {
   String? bio;
   String? chatWallpaper;
   String defaultCurrency;
-  bool isVerified;
+  bool? isVerified;
   UserAbout? userAbout;
   UserStatus status;
   double rating;

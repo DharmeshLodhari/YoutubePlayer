@@ -1362,30 +1362,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-              mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        getUserFullName(),
-                        style: TextStyle(
-                          color: blackFont,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        overflow: TextOverflow.fade,
-                        softWrap: false,
-                        maxLines: 1,
-                      ),
-                      userBloc != null &&
-                              userBloc!.user.isVerified != null &&
-                              userBloc!.user.isVerified == true
-                          ? Icon(
-                              Icons.verified_rounded,
-                              color: navyBlue,
-                              size: 18,
-                            )
-                          : SizedBox.shrink(),
-                    ],
+                  userNameWithVerifiedIcon(
+                    name: getUserFullName(),
+                    isVerified: chatConversation?.isVerified,
                   ),
                   Text(
                     chatConversation != null
@@ -2678,6 +2657,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (pickedMedia != null) {
       File file = File(pickedMedia.files.single.path!);
       String mediaType = getFileType(pickedMedia);
+
+      // int sizeInBytes = file.lengthSync();
+      //
+      // int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
+      //
+      // if (sizeInMb > maxVideoFileSize) {
+      //   showToast(message: 'File is too large');
+      //   return;
+      // }
+
       if (mediaType == "") {
         setupShakeDetector();
         return;

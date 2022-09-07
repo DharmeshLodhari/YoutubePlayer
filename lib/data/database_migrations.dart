@@ -81,7 +81,7 @@ final initialDBSchema = [
     ''',
   // Create the userConnections table
   '''CREATE TABLE $USER_CONNECTION_TABLE (
-      "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+      "id" INTEGER PRIMARY KEY AUTOINCREMENT,
       "conversation_id" TEXT UNIQUE,
       "full_name" TEXT,
       "username" TEXT,
@@ -197,4 +197,8 @@ final initialDBSchema = [
 ];
 
 ///Add List Of Migration query's when app is in production
-List<String> dbMigrations = [];
+List<String> dbMigrations = [
+  ''' 
+ALTER TABLE $USER_CONNECTION_TABLE ADD is_verified INTEGER
+'''
+];

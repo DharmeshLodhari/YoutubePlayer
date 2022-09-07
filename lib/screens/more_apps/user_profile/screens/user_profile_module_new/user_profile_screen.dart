@@ -218,63 +218,54 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return false;
   }
 
-  double getBgHeightOfAppBar(String text, bool hasAddress) {
-    int len = text.length;
-    debugPrint('GET HEIGHT LEN -> $len');
-    debugPrint('GET HEIGHT ADDRESS -> $hasAddress');
+  double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
+    int bioLength = bio.length;
+    debugPrint('GET BIO LEN -> $bioLength');
+    debugPrint('GET ADDRESS -> $hasAddress');
+    debugPrint('GET CONTACT -> $hasContact');
 
     double? height;
 
-    if (len == 0) {
-      if (hasAddress) {
+    if (bioLength == 0) {
+      if (hasAddress && hasContact) {
+        height = 340;
+      } else if (hasAddress || hasContact) {
         height = 320;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 320;
+      } else {
+        height = 300;
       }
-      height = 300;
-      debugPrint('GET HEIGHT -> $height');
-
-      return 300;
-    }
-
-    if (len <= 50) {
-      if (hasAddress) {
-        height = 350;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 350;
+    } else if (bioLength <= 50) {
+      if (hasAddress && hasContact) {
+        height = 400; //400
+      } else if (hasAddress || hasContact) {
+        height = 360;
+      } else {
+        height = 320;
       }
-      height = 320;
-      debugPrint('GET HEIGHT -> $height');
-
-      return 320;
-    } else if (len <= 100) {
-      if (hasAddress) {
-        height = 420;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 420;
+    } else if (bioLength <= 100) {
+      if (hasAddress && hasContact) {
+        height = 420; //420
+      } else if (hasAddress || hasContact) {
+        height = 380;
+      } else {
+        height = 340;
       }
-      height = 340;
-      return 340;
-    } else if (len <= 200) {
-      if (hasAddress) {
+    } else if (bioLength <= 200) {
+      if (hasAddress && hasContact) {
         height = 480;
-        debugPrint('GET HEIGHT -> $height');
-
-        return 480;
+      } else if (hasAddress || hasContact) {
+        height = 440;
+      } else {
+        height = 400;
       }
-      height = 420;
-      debugPrint('GET HEIGHT -> $height');
-
-      return 420;
     }
+
+    debugPrint('GET HEIGHT -> $height');
 
     if (height == null) {
-      height = 450;
-      debugPrint('GET HEIGHT -> $height');
+      height = 300;
     }
+
     return height;
   }
 
@@ -359,6 +350,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     bool hasAddress =
         searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
             searchedUser!.userAbout!.userAddress!.addressLine1!.isNotEmpty;
+    bool hasContact = searchedUser?.userAbout?.contact != null &&
+        searchedUser!.userAbout!.contact.isNotEmpty;
 
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -375,6 +368,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 ? ''
                 : messageDecoderWithEmoji(searchedUser?.bio)!,
             hasAddress,
+            hasContact,
           ),
           shadowColor: Colors.transparent,
           pinned: true,
@@ -717,24 +711,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      RichText(
-                        maxLines: 2,
-                        text: TextSpan(
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                          text: truncateString(
-                            str: searchedUser!.displayName()!,
-                            lengthToTruncateAt: 46,
-                          ),
-                          children: [
-                            TextSpan(text: ' '),
-                            WidgetSpan(
-                              child: getVerifiedIcon(),
-                            ),
-                          ],
-                        ),
+                      userNameWithVerifiedIcon(
+                        name: searchedUser!.displayName()!,
+                        isVerified: searchedUser!.isVerified,
                       ),
                       Text(
                         '@${searchedUser!.userName!}',
@@ -801,16 +780,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ],
       ),
     );
-  }
-
-  Widget getVerifiedIcon() {
-    return userBloc.user.isVerified != null && userBloc.user.isVerified == true
-        ? Icon(
-            Icons.verified_rounded,
-            color: navyBlue,
-            size: 18,
-          )
-        : SizedBox.shrink();
   }
 
   Widget getUserBioStringWidget() {

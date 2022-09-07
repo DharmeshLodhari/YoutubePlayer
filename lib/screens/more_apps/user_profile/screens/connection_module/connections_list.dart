@@ -62,6 +62,8 @@ class _ConnectionListState extends State<ConnectionList> {
 
   @protected
   void initState() {
+    getList();
+
     fetchConnectionListFromDbIfAvailable();
 
     setupSearchChatConnection();
@@ -74,7 +76,7 @@ class _ConnectionListState extends State<ConnectionList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        // getList();
+        getList();
       }
     });
     _slideController = SlidableController(
@@ -397,12 +399,14 @@ class _ConnectionListState extends State<ConnectionList> {
 
         List tempList = result['results'];
 
-        // debugPrint("List:- $tempList");
+        debugPrint("List:- $tempList");
 
         List<ChatConversation> users = [];
 
         tempList.forEach(
             (element) => users.add(ChatConversation.fromJson(element)));
+
+        debugPrint('CONNECTION USERS 0 --> ${users[0].isVerified}');
 
         // connectionsList.addAll(users);
 
@@ -536,9 +540,9 @@ class _ConnectionListState extends State<ConnectionList> {
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
 
-        // if (connectionsList.length <= 9) {
-        //   getList();
-        // }
+        if (connectionsList.length <= 9) {
+          getList();
+        }
         setState(() {});
       } else {
         _showSnackBar(context, AppLocalization.of(context)!.error);

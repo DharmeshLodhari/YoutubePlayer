@@ -31,9 +31,13 @@ import '../screens/more_apps/payment_and_banking/models/transactions.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
+import 'common.dart';
 
 export 'colors.dart';
 export 'common.dart';
+
+
+int maxVideoFileSize = 90; // Maximum amount of MB that we accept for video files.
 
 int amountLimit =
     10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
@@ -778,6 +782,38 @@ String? validateSlydoName(String userInput) {
   } else {
     return 'Passed';
   }
+}
+
+Widget userNameWithVerifiedIcon({required String name, required bool? isVerified}){
+  return RichText(
+    maxLines: 1,
+    text: TextSpan(
+      style: TextStyle(
+        color: blackFont,
+        fontWeight: FontWeight.bold,
+        fontSize: 15,
+      ),
+      text: messageDecoderWithEmoji(
+        truncateString(
+          str:
+          name,
+          lengthToTruncateAt: 25,
+        ),
+      )!,
+      children: [
+        TextSpan(text: ' '),
+        WidgetSpan(
+          child: isVerified != null && isVerified == true
+              ? Icon(
+            Icons.verified_rounded,
+            color: navyBlue,
+            size: 18,
+          )
+              : SizedBox.shrink(),
+        ),
+      ],
+    ),
+  );
 }
 
 String truncateString(

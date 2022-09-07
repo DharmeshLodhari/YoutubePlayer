@@ -437,12 +437,13 @@ class _SearchModuleState extends State<SearchModule> {
           return;
         }
 
-        debugPrint('RESULT ::: $result');
-
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List? tempList = result['results'];
+
+        debugPrint('RESULT ::: $tempList');
+
         if (mounted) {
           isLoading = false;
           results.clear();
@@ -517,11 +518,13 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getUserTile(var object) {
     CustomerProfile user = CustomerProfile(
-        avatar: object["avatar"],
-        fullName: object["full_name"],
-        qrCode: object["qr_code"],
-        userName: object["username"],
-        type: object['type'] ?? 'user');
+      avatar: object["avatar"],
+      fullName: object["full_name"],
+      qrCode: object["qr_code"],
+      userName: object["username"],
+      type: object['type'] ?? 'user',
+      isVerified: object['is_verified'] ?? false,
+    );
 
     // if (user.userName.toString().toLowerCase() == "slydo" ||
     //     user.userName.toString().toLowerCase() == "slydo_envelope") {
@@ -551,29 +554,9 @@ class _SearchModuleState extends State<SearchModule> {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
-                  title: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        user.displayName()!.length <= 35
-                            ? user.displayName()!
-                            : '${user.displayName()!.substring(0, 36)}...',
-                        maxLines: 1,
-                        style: TextStyle(
-                            color: blackFont,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14),
-                      ),
-                      userBloc != null &&
-                              userBloc!.user.isVerified != null &&
-                              userBloc!.user.isVerified == true
-                          ? Icon(
-                              Icons.verified_rounded,
-                              color: navyBlue,
-                              size: 18,
-                            )
-                          : SizedBox.shrink(),
-                    ],
+                  title: userNameWithVerifiedIcon(
+                    name: user.fullName!,
+                    isVerified: user.isVerified,
                   ),
                   subtitle: Text(
                     user.userName!,
