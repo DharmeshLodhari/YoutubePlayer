@@ -1,6 +1,7 @@
 name: Slydo
 description: The slydo application.
-version: 1.0.9+00
+version: 1.0.9+28
+
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
