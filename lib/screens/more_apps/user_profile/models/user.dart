@@ -175,6 +175,8 @@ class User {
   }
 }
 
+
+
 class CustomerProfile {
   String? fullName;
   String? userName;
@@ -192,6 +194,10 @@ class CustomerProfile {
   UserAbout? userAbout;
   UserStatus status;
   double rating;
+  bool? isFollowing;
+  String? dateJoined;
+
+
 
   // Pass in as named parameter in constructor
   CustomerProfile(
@@ -209,6 +215,8 @@ class CustomerProfile {
       this.defaultCurrency = "NGN",
       this.isVerified = false,
       this.uuid = "",
+        this.dateJoined = '',
+        this.isFollowing = false,
       this.status = UserStatus.UNKNOWN,
       this.rating = 0.0});
 
@@ -217,6 +225,8 @@ class CustomerProfile {
         fullName: json['full_name'] ?? json['name'] ?? "",
         userName: json['username'] ?? "",
         bio: json['bio'] ?? "",
+        dateJoined: json['date_joined'] ?? "",
+        isFollowing: json['is_following'] ?? false,
         chatWallpaper: json['chat_wallpaper'] ?? "",
         wallpaper: json['wallpaper'] ?? "",
         avatar: json['avatar'] ?? "",

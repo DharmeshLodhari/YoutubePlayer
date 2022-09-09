@@ -13,7 +13,6 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/follow_and_unfollow_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_qr_code_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -23,10 +22,12 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
@@ -89,6 +90,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   AppConfigurationModel? appConfigurationModel;
 
   bool isInRequestList = false;
+  bool isLoadingFollowingAction = false;
 
   @override
   void initState() {
@@ -131,12 +133,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     _scrollController?.dispose();
   }
 
-  Future<void> getSearchedUser() async {
+  Future<void> getSearchedUser({bool load = true}) async {
     late CustomerProfile user;
     searchedUserName = arguments['searchedUserName'];
 
-    isLoading = true;
-    if (mounted) setState(() {});
+    if (load) {
+      isLoading = true;
+      if (mounted) setState(() {});
+    }
 
     try {
       user = await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
@@ -147,11 +151,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     searchedUser = user;
 
-    debugPrint("is In Request Lis");
-
     checkCurrentUserIsInRequestList();
 
-    int tabCount = 2;
+    int tabCount = 1;
 
     showPostsTab = await getIsShowPost();
 
@@ -162,7 +164,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         tabCount++;
       }
     } else {
-      tabCount = 4;
+      tabCount = 3;
       showProductTab = await getIsShowProduct();
       showServiceTab = await getIsShowService();
 
@@ -253,35 +255,35 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (bioLength == 0) {
       if (hasAddress && hasContact) {
-        height = 340;
+        height = 360;
       } else if (hasAddress || hasContact) {
-        height = 320;
+        height = 340;
       } else {
-        height = 300;
+        height = 320;
       }
     } else if (bioLength <= 50) {
       if (hasAddress && hasContact) {
-        height = 400; //400
-      } else if (hasAddress || hasContact) {
-        height = 360;
-      } else {
-        height = 400; //320
-      }
-    } else if (bioLength <= 100) {
-      if (hasAddress && hasContact) {
-        height = 420; //420
+        height = 400;
       } else if (hasAddress || hasContact) {
         height = 380;
       } else {
-        height = 340;
+        height = 420;
+      }
+    } else if (bioLength <= 100) {
+      if (hasAddress && hasContact) {
+        height = 440;
+      } else if (hasAddress || hasContact) {
+        height = 400;
+      } else {
+        height = 360;
       }
     } else if (bioLength <= 200) {
       if (hasAddress && hasContact) {
-        height = 480;
+        height = 500;
       } else if (hasAddress || hasContact) {
-        height = 440;
+        height = 460;
       } else {
-        height = 400;
+        height = 420;
       }
     }
 
@@ -306,9 +308,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
             if (value == true) {
               isInRequestList = true;
-            }else{
+            } else {
               isInRequestList = false;
-
             }
           });
         }
@@ -791,7 +792,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
-          getFollowUnFollowWidget(),
+          // getFollowUnFollowWidget(),
           // Row(
           //   children: [
           //     Expanded(
@@ -821,25 +822,78 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getFollowUnFollowBtn() {
-    return InkWell(
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-            color: blackFont,
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: greyBorderColor, width: 2)),
-        child: Text(
-          'Following',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
+    if (isLoadingFollowingAction) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 14),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularLoadingIndicator(),
+        ),
+      );
+    }
+
+    if (searchedUser!.userName == userBloc.user.userName) {
+      return SizedBox.shrink();
+    }
+    if (searchedUser!.isFollowing != null &&
+        searchedUser!.isFollowing == true) {
+      return InkWell(
+        onTap: () {
+          isLoadingFollowingAction = true;
+          if (mounted) setState(() {});
+          UserAuth()
+              .followOrUnfollowUser(searchedUser!.userName!,
+                  shouldFollow: false)
+              .then((value) async {
+            if (value == true) {
+              await getSearchedUser(load: false);
+            }
+            isLoadingFollowingAction = false;
+            if (mounted) setState(() {});
+          }).catchError((e) {
+            isLoadingFollowingAction = false;
+            if (mounted) setState(() {});
+            showToast(message: e.toString());
+          });
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+              color: blackFont,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: greyBorderColor, width: 2)),
+          child: Text(
+            'Following',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
+
     return InkWell(
+      onTap: () {
+        isLoadingFollowingAction = true;
+        if (mounted) setState(() {});
+        UserAuth()
+            .followOrUnfollowUser(searchedUser!.userName!, shouldFollow: true)
+            .then((value) async {
+          if (value == true) {
+            await getSearchedUser(load: false);
+          }
+          isLoadingFollowingAction = false;
+          if (mounted) setState(() {});
+        }).catchError((e) {
+          isLoadingFollowingAction = true;
+          if (mounted) setState(() {});
+          showToast(message: e.toString());
+        });
+      },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -866,12 +920,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         Row(
           children: [
             Icon(Icons.calendar_month_rounded, size: 16),
-            SizedBox(width: 5),
-            Text('Joined September 2009'),
+            SizedBox(width: 12),
+            Text('${getDate(searchedUser!.dateJoined!)}'),
           ],
         ),
       ],
     );
+  }
+
+  String getDate(String date) {
+    if (date.isEmpty) {
+      return '';
+    }
+    DateTime dateTime = DateTime.parse(date).toLocal();
+
+    String month = DateFormat("MMMM").format(dateTime);
+    String year = DateFormat("y").format(dateTime);
+
+    return 'Joined $month $year';
   }
 
   Widget getFollowUnFollowWidget() {
@@ -931,15 +997,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         searchedUser!.userAbout!.contact.isNotEmpty) {
       return Row(
         children: [
-          RoundedBackgroundIcon(
-            height: 32,
-            width: 32,
-            backgroundColor: iconBtnGrey,
-            icon: Icon(
-              Icons.call,
-              color: blackFont,
-              size: 18,
-            ),
+          Icon(
+            Icons.call,
+            color: blackFont,
+            size: 14,
           ),
           SizedBox(width: 12),
           Expanded(child: Text(searchedUser!.userAbout!.contact)),
@@ -955,15 +1016,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ? Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              RoundedBackgroundIcon(
-                height: 32,
-                width: 32,
-                backgroundColor: iconBtnGrey,
-                icon: Icon(
-                  SlydoAppIcon.location,
-                  color: blackFont,
-                  size: 14,
-                ),
+              Icon(
+                SlydoAppIcon.location,
+                color: blackFont,
+                size: 12,
               ),
               SizedBox(width: 12),
               GetFullAddressWidget(userAbout: searchedUser!.userAbout!)
@@ -1057,7 +1113,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ? SlydoAppIcon.cancel_connection_request
               : SlydoAppIcon.send_connection_request,
           size: 16,
-          color: blackFont,
+          color: isInRequestList ? mateRed : blackFont,
         ),
         onTap: () {
           if (isInRequestList) {
@@ -1248,19 +1304,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         index++;
       }
 
-      tabs.add(
-        getTabUI(title: "QR code", tabIndex: index),
-      );
+      // tabs.add(
+      //   getTabUI(title: "QR code", tabIndex: index),
+      // );
     } else {
       int index = 0;
       tabs.add(
         getTabUI(title: "Moments", tabIndex: index),
       );
       index++;
-      tabs.add(
-        getTabUI(title: "QR code", tabIndex: index),
-      );
-      index++;
+      // tabs.add(
+      //   getTabUI(title: "QR code", tabIndex: index),
+      // );
+      // index++;
       // tabs.add(
       //   getTabUI(title: "Info", tabIndex: index),
       // );
@@ -1322,22 +1378,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ),
         );
       }
-      list.add(
-        KeepAlivePage(
-          child: UserQRCodeScreen(user: searchedUser),
-        ),
-      );
+      // list.add(
+      //   KeepAlivePage(
+      //     child: UserQRCodeScreen(user: searchedUser),
+      //   ),
+      // );
     } else {
       list.add(
         KeepAlivePage(
           child: MomentsTab(searchedUser: searchedUser!),
         ),
       );
-      list.add(
-        KeepAlivePage(
-          child: UserQRCodeScreen(user: searchedUser),
-        ),
-      );
+      // list.add(
+      //   KeepAlivePage(
+      //     child: UserQRCodeScreen(user: searchedUser),
+      //   ),
+      // );
       // list.add(
       //   KeepAlivePage(
       //     child: UserInfo(user: searchedUser, changeIndex: changeIndex),
@@ -1831,10 +1887,10 @@ class _MomentsTabState extends State<MomentsTab> {
   void initState() {
     super.initState();
 
-    getExploreMoments();
+    getSearchedUserMoments();
   }
 
-  getExploreMoments() async {
+  getSearchedUserMoments() async {
     if (!isMyMomentsLoading) {
       if (myMomentsNext != null && !isMyMomentsLoading) {
         if (mounted) {
@@ -1853,7 +1909,7 @@ class _MomentsTabState extends State<MomentsTab> {
 
             if (isFirstTime && myMomentsNext != null && myMomentsNext != "") {
               isFirstTime = false;
-              getExploreMoments();
+              getSearchedUserMoments();
             }
           },
         ).catchError(
@@ -1916,7 +1972,9 @@ class _MomentsTabState extends State<MomentsTab> {
 
   Widget myMomentsListWidget() {
     if (myMomentsList.isEmpty) {
-      return SizedBox.shrink();
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.noMoments,
+      );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

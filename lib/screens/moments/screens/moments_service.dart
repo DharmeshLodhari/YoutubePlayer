@@ -106,7 +106,7 @@ class MomentsService extends AuthService {
 
     late String url;
 
-    if (fromUserProfile) {
+    if (fromUserProfile == true) {
       url = AppConfig.baseUrl + "/api/v1/social/moments/public/$ownerName/";
     } else {
       url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";

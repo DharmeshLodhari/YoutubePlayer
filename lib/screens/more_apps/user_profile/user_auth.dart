@@ -733,6 +733,34 @@ class UserAuth extends AuthService {
     return false;
   }
 
+  Future<bool> followOrUnfollowUser(String userName,
+      {required bool shouldFollow}) async {
+    late var url;
+    var response;
+
+    var data = {"followee": userName};
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+
+    if (shouldFollow == true) {
+      url = AppConfig.baseUrl + "/api/v1/user/follow/";
+      response = await httpPost(url, headers: headers, body: _data);
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/user/follow/unfollow/";
+      response = await httpPatch(url, headers: headers, body: _data);
+    }
+
+    debugPrint("FOLLOWEE data :- $url");
+    debugPrint("FOLLOWEE data :- $data");
+    debugPrint("FOLLOWEE response :- ${response.statusCode}");
+    debugPrint("FOLLOWEE response :- ${response.body}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    }
+    return Future.error('Something went wrong, please try again.');
+  }
+
   // Block Contact
   Future<Map<String, dynamic>?> listBlockUsers(
       String? next, String? previous) async {

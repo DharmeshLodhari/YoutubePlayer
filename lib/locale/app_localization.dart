@@ -977,6 +977,13 @@ class AppLocalization {
     );
   }
 
+  String get noMoments {
+    return Intl.message(
+      "No Moments",
+      name: "noMoments",
+    );
+  }
+
   String get store {
     return Intl.message(
       "Store",
