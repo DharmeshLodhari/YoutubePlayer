@@ -279,11 +279,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       }
     } else if (bioLength <= 200) {
       if (hasAddress && hasContact) {
-        height = 500;
+        height = 440;
       } else if (hasAddress || hasContact) {
         height = 460;
       } else {
-        height = 420;
+        height = 410;
       }
     }
 
