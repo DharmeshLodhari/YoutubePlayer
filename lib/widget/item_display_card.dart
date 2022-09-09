@@ -44,16 +44,43 @@ class _DisplayProductState extends State<DisplayProduct> {
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
 
-    return SizedBox(
-      width: 180,
-      child: Card(
-        color: Colors.white,
-        margin: EdgeInsets.only(
-            right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        shadowColor: boxShadow,
-        child: GestureDetector(
+    return GestureDetector(
+      onTap: () {
+        if (showAddToCartButton == false) {
+          showAddToCartButton = true;
+          if (mounted) setState(() {});
+          return;
+        }
+
+        Product currentProduct = Product();
+        currentProduct.name = widget.product.name;
+        currentProduct.id = widget.product.id;
+        currentProduct.shortDescription = widget.product.shortDescription;
+        currentProduct.description = "";
+        currentProduct.condition = widget.product.condition;
+        currentProduct.currency = widget.product.currency;
+        currentProduct.price = widget.product.price;
+        currentProduct.availableFrom =
+            widget.product.availableFrom ?? DateTime.now();
+        currentProduct.isAvailable = widget.product.isAvailable;
+        currentProduct.qrCode = widget.product.qrCode;
+        currentProduct.seller = widget.product.seller;
+        currentProduct.manufacturer = widget.product.manufacturer;
+        currentProduct.serverImages = widget.product.serverImages;
+        currentProduct.rating = widget.product.rating;
+        Navigator.pushNamed(context, '/product',
+            arguments: {"product": currentProduct});
+      },
+      child: SizedBox(
+        width: 180,
+        child: Card(
+          color: Colors.white,
+          margin: EdgeInsets.only(
+              right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shadowColor: boxShadow,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Column(
@@ -132,32 +159,6 @@ class _DisplayProductState extends State<DisplayProduct> {
               ],
             ),
           ),
-          onTap: () {
-            if (showAddToCartButton == false) {
-              showAddToCartButton = true;
-              if (mounted) setState(() {});
-              return;
-            }
-
-            Product currentProduct = Product();
-            currentProduct.name = widget.product.name;
-            currentProduct.id = widget.product.id;
-            currentProduct.shortDescription = widget.product.shortDescription;
-            currentProduct.description = "";
-            currentProduct.condition = widget.product.condition;
-            currentProduct.currency = widget.product.currency;
-            currentProduct.price = widget.product.price;
-            currentProduct.availableFrom =
-                widget.product.availableFrom ?? DateTime.now();
-            currentProduct.isAvailable = widget.product.isAvailable;
-            currentProduct.qrCode = widget.product.qrCode;
-            currentProduct.seller = widget.product.seller;
-            currentProduct.manufacturer = widget.product.manufacturer;
-            currentProduct.serverImages = widget.product.serverImages;
-            currentProduct.rating = widget.product.rating;
-            Navigator.pushNamed(context, '/product',
-                arguments: {"product": currentProduct});
-          },
         ),
       ),
     );
@@ -435,14 +436,39 @@ class _DisplayServiceState extends State<DisplayService> {
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
 
-    return Card(
-      color: Colors.white,
-      margin: EdgeInsets.only(
-          right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      shadowColor: boxShadow,
-      child: GestureDetector(
+    return GestureDetector(
+      onTap: () {
+        if (showAddToCartButton == false) {
+          showAddToCartButton = true;
+          if (mounted) setState(() {});
+          return;
+        }
+
+        Service currentService = Service();
+        currentService.name = widget.service.name;
+        currentService.id = widget.service.id;
+        currentService.shortDescription = widget.service.shortDescription;
+        currentService.currency = widget.service.currency;
+        currentService.price = widget.service.price;
+        currentService.isAvailable = widget.service.isAvailable;
+        currentService.qrCode = widget.service.qrCode;
+        currentService.provider = widget.service.provider;
+        currentService.serverImages = widget.service.serverImages;
+        currentService.currency = widget.service.currency;
+        currentService.description = widget.service.description;
+        currentService.availableFrom = DateTime.now();
+        currentService.rating = currentService.rating;
+
+        Navigator.pushNamed(context, '/service-detail',
+            arguments: {"service": currentService});
+      },
+      child: Card(
+        color: Colors.white,
+        margin: EdgeInsets.only(
+            right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadow,
         child: Container(
           width: MediaQuery.of(context).size.width - 220,
           margin: const EdgeInsets.symmetric(vertical: 12.0),
@@ -522,31 +548,6 @@ class _DisplayServiceState extends State<DisplayService> {
             ],
           ),
         ),
-        onTap: () {
-          if (showAddToCartButton == false) {
-            showAddToCartButton = true;
-            if (mounted) setState(() {});
-            return;
-          }
-
-          Service currentService = Service();
-          currentService.name = widget.service.name;
-          currentService.id = widget.service.id;
-          currentService.shortDescription = widget.service.shortDescription;
-          currentService.currency = widget.service.currency;
-          currentService.price = widget.service.price;
-          currentService.isAvailable = widget.service.isAvailable;
-          currentService.qrCode = widget.service.qrCode;
-          currentService.provider = widget.service.provider;
-          currentService.serverImages = widget.service.serverImages;
-          currentService.currency = widget.service.currency;
-          currentService.description = widget.service.description;
-          currentService.availableFrom = DateTime.now();
-          currentService.rating = currentService.rating;
-
-          Navigator.pushNamed(context, '/service-detail',
-              arguments: {"service": currentService});
-        },
       ),
     );
   }

@@ -25,6 +25,7 @@ import 'package:Slydo/widget/keep_alive_page.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:intl/intl.dart';
@@ -273,7 +274,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       if (hasAddress && hasContact) {
         height = 440;
       } else if (hasAddress || hasContact) {
-        height = 400;
+        height = 420;
       } else {
         height = 360;
       }
@@ -1288,6 +1289,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
+  Widget tabViews() {
+    return PageView(
+      controller: pageController,
+      children: getTabViewLayout(),
+      onPageChanged: (int index) {
+        _tabController!.index = index;
+        currentIndex = index;
+        if (mounted) setState(() {});
+      },
+    );
+  }
+
   List<Widget> getTabs() {
     List<Widget> tabs = [];
 
@@ -1350,18 +1363,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return tabs;
   }
 
-  Widget tabViews() {
-    return PageView(
-      controller: pageController,
-      children: getTabViewLayout(),
-      onPageChanged: (int index) {
-        _tabController!.index = index;
-        currentIndex = index;
-        if (mounted) setState(() {});
-      },
-    );
-  }
-
   List<Widget> getTabViewLayout() {
     List<Widget> list = [];
 
@@ -1399,13 +1400,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       //     child: UserInfo(user: searchedUser, changeIndex: changeIndex),
       //   ),
       // );
-      if (showPostsTab) {
-        list.add(
-          KeepAlivePage(
-            child: UserPostList(user: searchedUser),
-          ),
-        );
-      }
 
       if (showProductTab) {
         list.add(
@@ -1424,6 +1418,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               user: searchedUser,
               isOwner: isOwner,
             ),
+          ),
+        );
+      }
+
+      if (showPostsTab) {
+        list.add(
+          KeepAlivePage(
+            child: UserPostList(user: searchedUser),
           ),
         );
       }
@@ -1875,7 +1877,6 @@ class _MomentsTabState extends State<MomentsTab> {
   bool isFirstTime = true;
   String? myMomentsNext = "";
   int? myMomentsCount = 0;
-  bool myMomentsLoading = false;
   bool isMyMomentsLoading = false;
   List<MomentsModel> myMomentsList = [];
   ScrollController _myMomentsScrollController = ScrollController();
@@ -1917,11 +1918,38 @@ class _MomentsTabState extends State<MomentsTab> {
             isMyMomentsLoading = false;
 
             if (mounted) setState(() {});
+            showToast(message: 'Moment not found');
             debugPrint('ERROR GETTING MY MOMENTS -> $error');
           },
         );
       }
     }
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        _refreshPage();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  _refreshPage() {
+    isFirstTime = true;
+    myMomentsNext = "";
+    myMomentsCount = 0;
+    isMyMomentsLoading = false;
+    myMomentsList = [];
+    if (mounted) setState(() {});
+    getSearchedUserMoments();
   }
 
   @override
@@ -1935,12 +1963,11 @@ class _MomentsTabState extends State<MomentsTab> {
           waterDropColor: navyBlue,
         ),
         controller: _refreshController,
-        onRefresh: () {},
+        onRefresh: _onRefresh,
         child: ListView(
           controller: _myMomentsScrollController,
           children: [
             SizedBox(height: 16),
-            myMomentsListWidget(),
             isMyMomentsLoading
                 ? Shimmer.fromColors(
                     baseColor: Colors.white,
@@ -1964,6 +1991,7 @@ class _MomentsTabState extends State<MomentsTab> {
                     ),
                   )
                 : SizedBox.shrink(),
+            myMomentsListWidget(),
           ],
         ),
       ),
@@ -1999,7 +2027,7 @@ class _MomentsTabState extends State<MomentsTab> {
                           (e) => ExploreMomentsModel(
                               owner: e.owner,
                               avatar: e.avatar,
-                              moments: myMomentsList,
+                              moments: [myMomentsList[index]],
                               ownerName: e.ownerName),
                         )
                         .toList(),

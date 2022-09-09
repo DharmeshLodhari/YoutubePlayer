@@ -109,7 +109,6 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
           )),
     );
 
-    debugPrint('VERI -> ${widget.user?.isVerified}');
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
