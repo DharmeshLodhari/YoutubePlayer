@@ -2561,7 +2561,6 @@ class AppLocalization {
     );
   }
 
-
   String get lowestPrice {
     return Intl.message(
       "Lowest price",
@@ -2954,6 +2953,20 @@ class AppLocalization {
     return Intl.message(
       "is Blocked",
       name: "isBlocked",
+    );
+  }
+
+  String get following {
+    return Intl.message(
+      "Following",
+      name: "following",
+    );
+  }
+
+  String get followers {
+    return Intl.message(
+      "Followers",
+      name: "followers",
     );
   }
 

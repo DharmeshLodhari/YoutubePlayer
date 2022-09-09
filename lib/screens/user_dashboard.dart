@@ -124,15 +124,27 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Widget backgroundScreen() {
-    if (userBloc.user.userAbout == null ||
-        userBloc.user.userAbout!.wallpaper == "") {
-      return Container(
-        child: Image.asset(
-          "assets/images/home_screen_background.png",
-          frameBuilder: imageFrameBuilder,
-          fit: BoxFit.cover,
-        ),
-      );
+    if (userBloc.user.type!.toLowerCase() == 'user') {
+      if (userBloc.user.wallpaper == null || userBloc.user.wallpaper == "") {
+        return Container(
+          child: Image.asset(
+            "assets/images/home_screen_background.png",
+            frameBuilder: imageFrameBuilder,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
+    } else {
+      if (userBloc.user.userAbout == null ||
+          userBloc.user.userAbout!.wallpaper == "") {
+        return Container(
+          child: Image.asset(
+            "assets/images/home_screen_background.png",
+            frameBuilder: imageFrameBuilder,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
     }
 
     return ClipRRect(
@@ -143,7 +155,9 @@ class _UserDashboardState extends State<UserDashboard> {
         width: 100.0.w,
         height: 33.0.h,
         child: CachedNetworkImage(
-          imageUrl: userBloc.user.userAbout!.wallpaper,
+          imageUrl: userBloc.user.type == 'User'
+              ? userBloc.user.wallpaper!
+              : userBloc.user.userAbout!.wallpaper,
           fit: BoxFit.cover,
           color: blackFont.withOpacity(0.4),
           colorBlendMode: BlendMode.darken,
@@ -572,7 +586,6 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: AppLocalization.of(context)!.ask,
             onTap: () {
-
               if (appConfigurationModel?.enableAsk == true) {
                 NavigationUtil.push(
                   context,
@@ -932,7 +945,8 @@ class _UserDashboardState extends State<UserDashboard> {
                       title: AppLocalization.of(context)!.cashOut,
                       iconData: SlydoAppIcon.payout,
                       onTap: () {
-                        if (appConfigurationModel?.enablePayment == true && appConfigurationModel?.enableCashout == true) {
+                        if (appConfigurationModel?.enablePayment == true &&
+                            appConfigurationModel?.enableCashout == true) {
                           BottomSheetPassCode(
                               context: context,
                               isValidCallback: () {

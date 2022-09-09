@@ -36,8 +36,8 @@ import 'common.dart';
 export 'colors.dart';
 export 'common.dart';
 
-
-int maxVideoFileSize = 90; // Maximum amount of MB that we accept for video files.
+int maxVideoFileSize =
+    90; // Maximum amount of MB that we accept for video files.
 
 int amountLimit =
     10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
@@ -784,7 +784,11 @@ String? validateSlydoName(String userInput) {
   }
 }
 
-Widget userNameWithVerifiedIcon({required String name, required bool? isVerified}){
+Widget userNameWithVerifiedIcon({
+  required String name,
+  required bool? isVerified,
+  int lengthToTruncateAt = 25,
+}) {
   return RichText(
     maxLines: 1,
     text: TextSpan(
@@ -793,22 +797,19 @@ Widget userNameWithVerifiedIcon({required String name, required bool? isVerified
         fontWeight: FontWeight.bold,
         fontSize: 15,
       ),
-      text: messageDecoderWithEmoji(
-        truncateString(
-          str:
-          name,
-          lengthToTruncateAt: 25,
-        ),
-      )!,
+      text: truncateString(
+        str: messageDecoderWithEmoji(name)!,
+        lengthToTruncateAt: lengthToTruncateAt,
+      ),
       children: [
         TextSpan(text: ' '),
         WidgetSpan(
           child: isVerified != null && isVerified == true
               ? Icon(
-            Icons.verified_rounded,
-            color: navyBlue,
-            size: 18,
-          )
+                  Icons.verified_rounded,
+                  color: navyBlue,
+                  size: 18,
+                )
               : SizedBox.shrink(),
         ),
       ],
@@ -2109,6 +2110,10 @@ List<String> getLgs({required String? state}) {
 }
 
 extension StringCasingExtension on String {
-  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }

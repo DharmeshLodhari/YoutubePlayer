@@ -268,7 +268,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().rejectContactRequest(user);
+      bool done = await UserAuth().cancelOrRejectContactRequest(user);
       done = true;
       if (done) {
         _showSnackBar(

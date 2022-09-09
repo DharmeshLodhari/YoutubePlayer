@@ -1630,6 +1630,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       return false;
     }
 
+    if (chatConversation!.userName!.toLowerCase() == 'slydo') {
+      return true;
+    }
+
     if (!chatConversation!.isGroupConversation!) {
       return false;
     }
@@ -1739,20 +1743,29 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget getMutedOrBlockedParticipantMessage() {
     return Container(
-        color: isUserMuted ? lightGrey : mateRed.withOpacity(0.1),
-        constraints: BoxConstraints(minHeight: 54),
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Center(
-          child: Text(
-              isUserMuted
-                  ? "You are muted by the admin, Please contact admin to continue conversation in this group."
-                  : "You are blocked by the admin, Please contact admin to continue conversation in this group.",
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isUserMuted ? blackFont : mateRed),
-              textAlign: TextAlign.center),
-        ));
+      color: isUserMuted ? lightGrey : mateRed.withOpacity(0.1),
+      constraints: BoxConstraints(minHeight: 54),
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Center(
+        child: Text(getMutedOrBlockedMessage(),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isUserMuted ? blackFont : mateRed),
+            textAlign: TextAlign.center),
+      ),
+    );
+  }
+
+  String getMutedOrBlockedMessage() {
+    if (isUserMuted) {
+      return "You are muted by the admin, Please contact admin to continue conversation in this group.";
+    } else {
+      if (chatConversation!.userName!.toLowerCase() == 'slydo') {
+        return 'You cannot chat with Slydo';
+      }
+      return "You are blocked by the admin, Please contact admin to continue conversation in this group.";
+    }
   }
 
   Widget getAudioCancelBtn() {

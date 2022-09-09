@@ -446,6 +446,10 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
+    if (user.userName!.toLowerCase() == 'slydo') {
+      return [];
+    }
+
     if (user.isGroupConversation!) {
       return [];
     }
@@ -469,6 +473,10 @@ class _ConnectionListState extends State<ConnectionList> {
       ChatConversation chatConversation, int index) {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
+    if (chatConversation.userName!.toLowerCase() == 'slydo') {
+      return [];
+    }
+
     if (chatConversation.isGroupConversation!) {
       if (userBloc.user.userName == chatConversation.owner) {
         return [];
@@ -486,6 +494,7 @@ class _ConnectionListState extends State<ConnectionList> {
         ),
       ];
     }
+
     CustomerProfile customerProfile =
         CustomerProfile.fromChatConversation(chatConversation);
 

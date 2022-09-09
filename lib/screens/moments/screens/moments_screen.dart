@@ -732,7 +732,8 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                     children: [
                       Text(
                         truncateString(
-                          str: widget.userMomentModel.ownerName!,
+                          str: messageDecoderWithEmoji(
+                              widget.userMomentModel.ownerName!)!,
                           lengthToTruncateAt: 14,
                         ),
                         style: TextStyle(
@@ -799,9 +800,13 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
 class ExploreMomentsCard extends StatelessWidget {
   // This index is the position of the 'ExploreMomentsCard' in the list 0f explore moments.
   final int index;
+  final bool showProfileAvatar;
   final List<ExploreMomentsModel> exploreMomentsModelList;
   const ExploreMomentsCard(
-      {Key? key, required this.index, required this.exploreMomentsModelList})
+      {Key? key,
+      this.showProfileAvatar = true,
+      required this.index,
+      required this.exploreMomentsModelList})
       : super(key: key);
 
   @override
@@ -829,17 +834,19 @@ class ExploreMomentsCard extends StatelessWidget {
               momentModel: exploreMomentsModelList[index].moments!.first,
               context: context,
             ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 4.0),
-                child: SizedBox(
-                  width: 25,
-                  child: getCircularUserAvatar(
-                      exploreMomentsModelList[index].avatar!),
-                ),
-              ),
-            ),
+            showProfileAvatar
+                ? Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: SizedBox(
+                        width: 25,
+                        child: getCircularUserAvatar(
+                            exploreMomentsModelList[index].avatar!),
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -851,7 +858,8 @@ class ExploreMomentsCard extends StatelessWidget {
                   children: [
                     Text(
                       truncateString(
-                        str: exploreMomentsModelList[index].ownerName!,
+                        str: messageDecoderWithEmoji(
+                            exploreMomentsModelList[index].ownerName!)!,
                         lengthToTruncateAt: 20,
                       ),
                       style: TextStyle(

@@ -2,11 +2,15 @@ import 'dart:convert';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/screens/moments_screen.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
+import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/follow_and_unfollow_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_qr_code_screen.dart';
@@ -24,8 +28,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share/share.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
@@ -77,23 +83,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isUserIsSimpleUser = false;
   bool showProductTab = false;
+  bool showPostsTab = false;
   bool showServiceTab = false;
   bool myMomentsLoading = false;
   AppConfigurationModel? appConfigurationModel;
-  // final GlobalKey _flexibleSpaceBarKey = GlobalKey();
-  // Size? sizeFlexibleSpaceBar;
-  // bool _visible = true;
 
-  // getSizeAndPosition() {
-  //   debugPrint('CARD BOX 0 --> ${_flexibleSpaceBarKey.currentContext}');
-  //
-  //   RenderBox? _cardBox =
-  //       _flexibleSpaceBarKey.currentContext!.findRenderObject() as RenderBox?;
-  //   sizeFlexibleSpaceBar = _cardBox!.size;
-  //
-  //   debugPrint('CARD BOX 1 --> $_cardBox');
-  //   debugPrint('CARD BOX 2 --> $sizeFlexibleSpaceBar');
-  // }
+  bool isInRequestList = false;
 
   @override
   void initState() {
@@ -139,6 +134,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Future<void> getSearchedUser() async {
     late CustomerProfile user;
     searchedUserName = arguments['searchedUserName'];
+
     isLoading = true;
     if (mounted) setState(() {});
 
@@ -151,13 +147,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     searchedUser = user;
 
-    if (searchedUser!.type!.toLowerCase() == "user") {
-      isUserIsSimpleUser = true;
-    }
+    debugPrint("is In Request Lis");
+
+    checkCurrentUserIsInRequestList();
 
     int tabCount = 2;
 
-    if (searchedUser?.type?.toLowerCase() != "user") {
+    showPostsTab = await getIsShowPost();
+
+    if (searchedUser!.type!.toLowerCase() == "user") {
+      isUserIsSimpleUser = true;
+
+      if (showPostsTab) {
+        tabCount++;
+      }
+    } else {
       tabCount = 4;
       showProductTab = await getIsShowProduct();
       showServiceTab = await getIsShowService();
@@ -166,6 +170,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         tabCount++;
       }
       if (showServiceTab) {
+        tabCount++;
+      }
+
+      if (showPostsTab) {
         tabCount++;
       }
     }
@@ -218,6 +226,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return false;
   }
 
+  Future<bool> getIsShowPost() async {
+    debugPrint('IS SHOW POST <-->');
+
+    Map<String, dynamic>? data;
+    try {
+      data = await UserPostAuth()
+          .listUserPosts(next: '', userName: searchedUser!.userName);
+    } catch (error) {}
+    if (data != null) {
+      debugPrint('IS SHOW POST ---> $data');
+      int count = data["count"] ?? 0;
+      if (count > 0) return true;
+    }
+
+    return false;
+  }
+
   double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     int bioLength = bio.length;
     debugPrint('GET BIO LEN -> $bioLength');
@@ -240,7 +265,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       } else if (hasAddress || hasContact) {
         height = 360;
       } else {
-        height = 320;
+        height = 400; //320
       }
     } else if (bioLength <= 100) {
       if (hasAddress && hasContact) {
@@ -269,6 +294,28 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return height;
   }
 
+  void checkCurrentUserIsInRequestList() async {
+    UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    debugPrint("is In Request List -");
+
+    if (_userBloc.user.userName != searchedUser!.userName) {
+      UserAuth().checkInRequest(searchedUser!.userName).then((value) {
+        if (mounted) {
+          setState(() {
+            debugPrint("is In Request List : $isInRequestList");
+
+            if (value == true) {
+              isInRequestList = true;
+            }else{
+              isInRequestList = false;
+
+            }
+          });
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -287,8 +334,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       isOwner = true;
     }
 
-    // searchedUser?.bio =
-    //     'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean m';
     return WillPopScope(
       onWillPop: () async {
         return await Future.value(true);
@@ -301,13 +346,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             controller: _scrollController,
             headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
               return <Widget>[
-                // Visibility(
-                //   visible: _visible,
-                //   key: _flexibleSpaceBarKey,
-                //   child: getBgWidgetForAppBar(),
-                // ),
                 getAppbar(context),
-                // getUserBio(),
                 SliverPersistentHeader(
                   key: UniqueKey(),
                   floating: true,
@@ -415,7 +454,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     getProfileCover(),
 
                     /// UserModel avatar, message icon, profile edit
-                    getProfilePhoto(),
+                    getUserDetails(),
                   ],
                 ),
           titleSpacing: 0,
@@ -449,7 +488,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         getProfileCover(),
 
         /// UserModel avatar, message icon, profile edit
-        getProfilePhoto(),
+        getUserDetails(),
       ],
     );
   }
@@ -647,10 +686,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
   }
 
-  Widget getProfilePhoto() {
+  Widget getUserDetails() {
     Color borderColor = getUserTypeColor(user: searchedUser!);
     return Positioned(
-      top: 170,
+      top: 160,
       left: 20,
       right: 0,
       child: Column(
@@ -709,60 +748,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       const EdgeInsets.only(top: 40.0, left: 10, right: 10),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      userNameWithVerifiedIcon(
-                        name: searchedUser!.displayName()!,
-                        isVerified: searchedUser!.isVerified,
-                      ),
-                      Text(
-                        '@${searchedUser!.userName!}',
-                        style: TextStyle(
-                            fontSize: 14.0,
-                            color: darkGrey,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      SizedBox(height: 4),
-                      InkWell(
-                        onTap: myMomentsLoading
-                            ? null
-                            : () async {
-                                getCurrentUserMoment();
-                              },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border:
-                                  Border.all(color: naturalGreen, width: 2)),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              myMomentsLoading
-                                  ? SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularLoadingIndicator(),
-                                    )
-                                  : Icon(
-                                      Icons.play_circle_fill,
-                                      color: Colors.black,
-                                      size: 20,
-                                    ),
-                              SizedBox(width: 6),
-                              Text(
-                                'Moments',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            getActionOnUsersBtn(),
+                            getFollowUnFollowBtn(),
+                          ],
                         ),
                       ),
                     ],
@@ -771,12 +766,136 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ),
             ],
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: userNameWithVerifiedIcon(
+              name: searchedUser!.displayName()!,
+              isVerified: searchedUser!.isVerified,
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '@${searchedUser!.userName!}',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  fontSize: 14.0, color: darkGrey, fontWeight: FontWeight.w400),
+            ),
+          ),
+          SizedBox(height: 12),
           getUserBioStringWidget(),
           SizedBox(height: 8),
           displayUserAddress(),
           SizedBox(height: 8),
           getContact(),
+          getJoinedDate(),
+          SizedBox(height: 12),
+          getFollowUnFollowWidget(),
+          // Row(
+          //   children: [
+          //     Expanded(
+          //       child: SizedBox(
+          //         width: 20,
+          //         height: 20,
+          //         child: CurvedButton(
+          //           onPressed: () {},
+          //         ),
+          //       ),
+          //     ),
+          //     SizedBox(width: 20),
+          //     Expanded(
+          //       child: SizedBox(
+          //         width: 20,
+          //         height: 20,
+          //         child: CurvedButton(
+          //           onPressed: () {},
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
+        ],
+      ),
+    );
+  }
+
+  Widget getFollowUnFollowBtn() {
+    return InkWell(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+            color: blackFont,
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: greyBorderColor, width: 2)),
+        child: Text(
+          'Following',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+    return InkWell(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: greyBorderColor, width: 2)),
+        child: Text(
+          'Follow',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getJoinedDate() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(Icons.calendar_month_rounded, size: 16),
+            SizedBox(width: 5),
+            Text('Joined September 2009'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget getFollowUnFollowWidget() {
+    return InkWell(
+      onTap: () {
+        NavigationUtil.push(context, screen: FollowAndUnFollowScreen());
+      },
+      child: Row(
+        children: [
+          Text(
+            '10.8K ',
+            style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Following',
+          ),
+          SizedBox(width: 30),
+          Text(
+            '100K ',
+            style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Followers',
+          ),
         ],
       ),
     );
@@ -831,8 +950,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget displayUserAddress() {
-    debugPrint(
-        'USER ADDRESS -> ${searchedUser?.userAbout?.userAddress?.addressLine1}');
     return searchedUser?.userAbout?.userAddress?.addressLine1 != null &&
             searchedUser!.userAbout!.userAddress!.addressLine1!.isNotEmpty
         ? Row(
@@ -856,13 +973,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getUserProfilePic() {
+    return CircleAvatar(
+      radius: 35,
+      backgroundImage: CachedNetworkImageProvider(
+        searchedUser!.avatar!,
+        // fit: BoxFit.fill,
+        // filterQuality: FilterQuality.high,
+        // imageUrl: searchedUser!.avatar!,
+        // errorWidget: imageErrorWidget,
+      ),
+    );
     return ClipRRect(
       borderRadius: BorderRadius.circular(50),
       child: Container(
         color: Colors.white,
         child: CachedNetworkImage(
-          height: 88,
-          width: 88,
+          height: 60,
+          width: 40,
           fit: BoxFit.fill,
           filterQuality: FilterQuality.high,
           imageUrl: searchedUser!.avatar!,
@@ -874,12 +1001,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   List<Widget> actionButtons() {
     return [
-      getChatIcon(),
+      getQRCodeIcon(),
       getSearchIcon(),
       menuIcon(),
-      SizedBox(
-        width: 16,
-      ),
+      SizedBox(width: 16),
     ];
   }
 
@@ -896,6 +1021,96 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         : Container();
   }
 
+  Widget getQRCodeIcon() {
+    return Row(
+      children: [
+        qrCodeIcon(),
+        SizedBox(
+          width: 8,
+        ),
+      ],
+    );
+  }
+
+  Widget getAddConnectionBtn() {
+    return Row(
+      children: [
+        getAddConnectionIcon(),
+        SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget getAddConnectionIcon() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: greyBorderColor,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: RoundedBackgroundIcon(
+        height: 34,
+        width: 34,
+        icon: Icon(
+          isInRequestList
+              ? SlydoAppIcon.cancel_connection_request
+              : SlydoAppIcon.send_connection_request,
+          size: 16,
+          color: blackFont,
+        ),
+        onTap: () {
+          if (isInRequestList) {
+            UserAuth()
+                .cancelOrRejectContactRequest(searchedUser!)
+                .then((value) {
+              if (value) {
+                showToast(message: "Connection request Canceled");
+              } else {
+                showToast(
+                    message: "Connection request Canceled unsuccessfully");
+              }
+              getSearchedUser();
+            });
+          } else {
+            UserAuth().makeContactRequest(searchedUser!).then((value) {
+              if (value) {
+                showToast(message: "Connection Request Sent !!");
+              } else {
+                showToast(message: "Request Not Sent.. ");
+              }
+              getSearchedUser();
+            });
+          }
+        },
+        backgroundColor: lightGrey.withOpacity(0.1),
+        enableMargin: false,
+      ),
+    );
+  }
+
+  Widget getActionOnUsersBtn() {
+    if (searchedUser!.userName != userBloc.user.userName) {
+      if (searchedUser!.conversationId != "") {
+        return Row(
+          children: [
+            chatIcon(),
+            SizedBox(width: 8),
+          ],
+        );
+      } else {
+        return Row(
+          children: [
+            getAddConnectionBtn(),
+            SizedBox(width: 8),
+          ],
+        );
+      }
+    }
+
+    return SizedBox.shrink();
+  }
+
   Widget getSearchIcon() {
     return searchedUser!.type!.toLowerCase() != "user"
         ? Row(
@@ -909,21 +1124,47 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         : Container();
   }
 
-  Widget chatIcon() {
+  Widget qrCodeIcon() {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
       icon: Icon(
-        SlydoAppIcon.text_message,
+        SlydoAppIcon.qr_code,
         size: 16,
         color: Colors.white,
       ),
       onTap: () {
-        Navigator.pushNamed(context, '/chat-screen',
-            arguments: {"recipientUserName": searchedUser!.userName});
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: searchedUser!.qrCode);
       },
       backgroundColor: lightGrey.withOpacity(0.1),
       enableMargin: false,
+    );
+  }
+
+  Widget chatIcon() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: greyBorderColor,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: RoundedBackgroundIcon(
+        height: 34,
+        width: 34,
+        icon: Icon(
+          SlydoAppIcon.text_message,
+          size: 16,
+          color: blackFont,
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, '/chat-screen',
+              arguments: {"recipientUserName": searchedUser!.userName});
+        },
+        backgroundColor: lightGrey.withOpacity(0.1),
+        enableMargin: false,
+      ),
     );
   }
 
@@ -997,15 +1238,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     if (searchedUser?.type?.toLowerCase() == "user") {
       int index = 0;
       tabs.add(
-        getTabUI(title: "QR code", tabIndex: index),
+        getTabUI(title: "Moments", tabIndex: index),
       );
       index++;
+      if (showPostsTab) {
+        tabs.add(
+          getTabUI(title: "Posts", tabIndex: index),
+        );
+        index++;
+      }
 
       tabs.add(
-        getTabUI(title: "Posts", tabIndex: index),
+        getTabUI(title: "QR code", tabIndex: index),
       );
     } else {
       int index = 0;
+      tabs.add(
+        getTabUI(title: "Moments", tabIndex: index),
+      );
+      index++;
       tabs.add(
         getTabUI(title: "QR code", tabIndex: index),
       );
@@ -1026,10 +1277,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
         index++;
       }
-      tabs.add(
-        getTabUI(title: "Posts", tabIndex: index),
-      );
-      index++;
+      if (showPostsTab) {
+        tabs.add(
+          getTabUI(title: "Posts", tabIndex: index),
+        );
+        index++;
+      }
       tabs.add(
         getTabUI(title: "Reviews", tabIndex: index),
       );
@@ -1059,15 +1312,27 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     if (searchedUser!.type!.toLowerCase() == "user") {
       list.add(
         KeepAlivePage(
+          child: MomentsTab(searchedUser: searchedUser!),
+        ),
+      );
+      if (showPostsTab) {
+        list.add(
+          KeepAlivePage(
+            child: UserPostList(user: searchedUser),
+          ),
+        );
+      }
+      list.add(
+        KeepAlivePage(
           child: UserQRCodeScreen(user: searchedUser),
         ),
       );
+    } else {
       list.add(
         KeepAlivePage(
-          child: UserPostList(user: searchedUser),
+          child: MomentsTab(searchedUser: searchedUser!),
         ),
       );
-    } else {
       list.add(
         KeepAlivePage(
           child: UserQRCodeScreen(user: searchedUser),
@@ -1078,6 +1343,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       //     child: UserInfo(user: searchedUser, changeIndex: changeIndex),
       //   ),
       // );
+      if (showPostsTab) {
+        list.add(
+          KeepAlivePage(
+            child: UserPostList(user: searchedUser),
+          ),
+        );
+      }
+
       if (showProductTab) {
         list.add(
           KeepAlivePage(
@@ -1098,11 +1371,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ),
         );
       }
-      list.add(
-        KeepAlivePage(
-          child: UserPostList(user: searchedUser),
-        ),
-      );
+
       list.add(
         KeepAlivePage(
           child: Center(child: UserReviewList(user: searchedUser)),
@@ -1535,5 +1804,151 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
     return false;
+  }
+}
+
+class MomentsTab extends StatefulWidget {
+  final CustomerProfile searchedUser;
+  const MomentsTab({Key? key, required this.searchedUser}) : super(key: key);
+
+  @override
+  _MomentsTabState createState() => _MomentsTabState();
+}
+
+class _MomentsTabState extends State<MomentsTab> {
+  bool isFirstTime = true;
+  String? myMomentsNext = "";
+  int? myMomentsCount = 0;
+  bool myMomentsLoading = false;
+  bool isMyMomentsLoading = false;
+  List<MomentsModel> myMomentsList = [];
+  ScrollController _myMomentsScrollController = ScrollController();
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  @override
+  void initState() {
+    super.initState();
+
+    getExploreMoments();
+  }
+
+  getExploreMoments() async {
+    if (!isMyMomentsLoading) {
+      if (myMomentsNext != null && !isMyMomentsLoading) {
+        if (mounted) {
+          setState(() {
+            isMyMomentsLoading = true;
+          });
+        }
+        await MomentsService()
+            .getMomentsWithOwnerName(ownerName: widget.searchedUser.userName!)
+            .then(
+          (myMomentsModelList) {
+            isMyMomentsLoading = false;
+            myMomentsList.addAll(myMomentsModelList);
+
+            if (mounted) setState(() {});
+
+            if (isFirstTime && myMomentsNext != null && myMomentsNext != "") {
+              isFirstTime = false;
+              getExploreMoments();
+            }
+          },
+        ).catchError(
+          (error) {
+            isMyMomentsLoading = false;
+
+            if (mounted) setState(() {});
+            debugPrint('ERROR GETTING MY MOMENTS -> $error');
+          },
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _refreshController,
+        onRefresh: () {},
+        child: ListView(
+          controller: _myMomentsScrollController,
+          children: [
+            SizedBox(height: 16),
+            myMomentsListWidget(),
+            isMyMomentsLoading
+                ? Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        mainAxisExtent: 300,
+                      ),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget myMomentsListWidget() {
+    if (myMomentsList.isEmpty) {
+      return SizedBox.shrink();
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        myMomentsNext == "" && isMyMomentsLoading
+            ? SizedBox.shrink()
+            : GridView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  mainAxisExtent: 300,
+                  maxCrossAxisExtent: 200,
+                ),
+                itemCount: myMomentsList.length,
+                itemBuilder: (context, index) {
+                  return ExploreMomentsCard(
+                    index: index,
+                    showProfileAvatar: false,
+                    exploreMomentsModelList: myMomentsList
+                        .map(
+                          (e) => ExploreMomentsModel(
+                              owner: e.owner,
+                              avatar: e.avatar,
+                              moments: myMomentsList,
+                              ownerName: e.ownerName),
+                        )
+                        .toList(),
+                  );
+                },
+              ),
+      ],
+    );
   }
 }

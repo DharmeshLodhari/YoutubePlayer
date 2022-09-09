@@ -207,11 +207,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
           if (getNextList) {
             widget.momentsModelList!.add(momentsModelList);
           } else {
-            debugPrint('INSERT MOMENTS LIST');
-
             widget.momentsModelList!.insert(0, momentsModelList);
           }
-          debugPrint('LENGTH --> ${widget.momentsModelList!.length}');
 
           setState(() {});
         } catch (e) {
@@ -406,6 +403,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
+        // var _index = 1;
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -625,11 +623,14 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                       children: [
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(context, Routes.USER_PROFILE,
-                                arguments: {
-                                  "searchedUserName":
-                                      widget.momentsModelList[index].owner,
-                                });
+                            Navigator.pushNamed(
+                              context,
+                              Routes.USER_PROFILE,
+                              arguments: {
+                                "searchedUserName":
+                                    widget.momentsModelList[index].owner,
+                              },
+                            );
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
@@ -649,14 +650,17 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                               InkWell(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, Routes.USER_PROFILE,
-                                      arguments: {
-                                        "searchedUserName": widget
-                                            .momentsModelList[index].owner,
-                                      });
+                                    context,
+                                    Routes.USER_PROFILE,
+                                    arguments: {
+                                      "searchedUserName":
+                                          widget.momentsModelList[index].owner,
+                                    },
+                                  );
                                 },
                                 child: Text(
-                                  '${widget.momentsModelList[index].ownerName!}',
+                                  messageDecoderWithEmoji(
+                                      '${widget.momentsModelList[index].ownerName!}')!,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -1354,7 +1358,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                         Text(
                           truncateString(
                               lengthToTruncateAt: 13,
-                              str: commentModel.authorUsername!,
+                              str: messageDecoderWithEmoji(
+                                  commentModel.authorUsername!)!,
                               showEllipsis: false),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,

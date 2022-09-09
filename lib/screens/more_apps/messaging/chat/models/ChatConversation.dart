@@ -139,7 +139,7 @@ class ChatConversation {
     data['blocked_participants'] = jsonEncode(this.blockedParticipants);
     data['muted_participants'] = jsonEncode(this.mutedParticipants);
     data['participants'] = jsonEncode(this.participants);
-    data['is_verified'] = this.isVerified! ? 1 : 0;
+    data['is_verified'] = this.isVerified != null && this.isVerified! == true ? 1 : 0;
 
     return data;
   }

@@ -64,17 +64,16 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   void checkCurrentUserIsInRequestList() async {
     if (userBloc.user.userName != widget.user!.userName) {
-      UserAuth()
-        ..checkInRequest(widget.user!.userName).then((value) {
-          if (mounted) {
-            setState(() {
-              if (value) {
-                isInRequestList = true;
-                debugPrint("is In Request List : $isInRequestList");
-              }
-            });
-          }
-        });
+      UserAuth().checkInRequest(widget.user!.userName).then((value) {
+        if (mounted) {
+          setState(() {
+            if (value) {
+              isInRequestList = true;
+              debugPrint("is In Request List : $isInRequestList");
+            }
+          });
+        }
+      });
     }
   }
 
@@ -350,9 +349,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -379,9 +376,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -449,7 +444,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       };
     } else if (isInRequestList) {
       return () {
-        UserAuth().rejectContactRequest(widget.user!).then((value) {
+        UserAuth().cancelOrRejectContactRequest(widget.user!).then((value) {
           if (value) {
             showToast(message: "Connection request Canceled");
           } else {

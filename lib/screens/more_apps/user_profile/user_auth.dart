@@ -709,6 +709,9 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+    debugPrint("is In Request List-->${response.body}");
+    debugPrint("is In Request List-->${response.statusCode}");
+
     if (response.statusCode == 200) {
       return true;
     }
@@ -825,7 +828,7 @@ class UserAuth extends AuthService {
     return false;
   }
 
-  Future<bool> rejectContactRequest(CustomerProfile user) async {
+  Future<bool> cancelOrRejectContactRequest(CustomerProfile user) async {
     var url =
         AppConfig.baseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
     var data = {"user": user.userName};

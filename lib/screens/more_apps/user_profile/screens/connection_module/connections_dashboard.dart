@@ -109,7 +109,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   // ignore: missing_return
   String getTitle() {
     if (currentIndex == 0) {
-      return "Contacts";
+      return AppLocalization.of(context)!.contacts;
     } else if (currentIndex == 1) {
       return AppLocalization.of(context)!.requests;
     } else if (currentIndex == 2) {
