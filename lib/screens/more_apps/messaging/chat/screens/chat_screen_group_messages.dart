@@ -1363,7 +1363,9 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   userNameWithVerifiedIcon(
-                    name: getUserFullName(),
+                    name: chatConversation?.fullName != null
+                        ? chatConversation!.fullName!
+                        : '',
                     isVerified: chatConversation?.isVerified,
                   ),
                   Text(

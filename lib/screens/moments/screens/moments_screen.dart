@@ -730,13 +730,10 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        truncateString(
-                          str: messageDecoderWithEmoji(
-                              widget.userMomentModel.ownerName!)!,
-                          lengthToTruncateAt: 14,
-                        ),
-                        style: TextStyle(
+                      userNameWithVerifiedIcon(
+                        name: widget.userMomentModel.ownerName!,
+                        isVerified: false,
+                        textStyle: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -770,13 +767,6 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                   ),
                 ),
               ),
-              // Align(
-              //   alignment: Alignment.topRight,
-              //   child: momentListLengthWidget(
-              //     lengthOfOwnerMoments,
-              //     fontSize: 12,
-              //   ),
-              // ),
               Align(
                 alignment: Alignment.center,
                 child: isConnectionsMomentLoading
@@ -800,11 +790,14 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
 class ExploreMomentsCard extends StatelessWidget {
   // This index is the position of the 'ExploreMomentsCard' in the list 0f explore moments.
   final int index;
+  final Function()? onTap;
   final bool showProfileAvatar;
   final List<ExploreMomentsModel> exploreMomentsModelList;
   const ExploreMomentsCard(
       {Key? key,
-      this.showProfileAvatar = true,
+      this.onTap,
+      this.showProfileAvatar =
+          true, // We do not show profile avatar on profile page moment's tab.
       required this.index,
       required this.exploreMomentsModelList})
       : super(key: key);
@@ -813,14 +806,18 @@ class ExploreMomentsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        NavigationUtil.push(
-          context,
-          screen: MomentsDetailsScreen(
-            indexOfMoment: index,
-            momentsModelList:
-                exploreMomentsModelList.map((e) => e.moments!).toList(),
-          ),
-        );
+        if (onTap != null) {
+          onTap!();
+        } else {
+          NavigationUtil.push(
+            context,
+            screen: MomentsDetailsScreen(
+              indexOfMoment: index,
+              momentsModelList:
+                  exploreMomentsModelList.map((e) => e.moments!).toList(),
+            ),
+          );
+        }
       },
       child: Card(
         color: Colors.grey,
@@ -856,13 +853,10 @@ class ExploreMomentsCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      truncateString(
-                        str: messageDecoderWithEmoji(
-                            exploreMomentsModelList[index].ownerName!)!,
-                        lengthToTruncateAt: 20,
-                      ),
-                      style: TextStyle(
+                    userNameWithVerifiedIcon(
+                      name: exploreMomentsModelList[index].ownerName!,
+                      isVerified: false,
+                      textStyle: TextStyle(
                         fontSize: 12,
                         shadows: [
                           Shadow(
@@ -875,6 +869,7 @@ class ExploreMomentsCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+
                     Text(
                       getFormattedViewCount(
                           noOfViews:
@@ -897,12 +892,6 @@ class ExploreMomentsCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Align(
-            //   alignment: Alignment.topRight,
-            //   child: momentListLengthWidget(
-            //     exploreMomentsModelList[index].moments!.length,
-            //   ),
-            // ),
           ],
         ),
       ),

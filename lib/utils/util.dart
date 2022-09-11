@@ -788,15 +788,18 @@ Widget userNameWithVerifiedIcon({
   required String name,
   required bool? isVerified,
   int lengthToTruncateAt = 25,
+  TextStyle? textStyle,
+  Color? verifiedIconColor,
 }) {
   return RichText(
     maxLines: 1,
     text: TextSpan(
-      style: TextStyle(
-        color: blackFont,
-        fontWeight: FontWeight.bold,
-        fontSize: 15,
-      ),
+      style: textStyle ??
+          TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
       text: truncateString(
         str: messageDecoderWithEmoji(name)!,
         lengthToTruncateAt: lengthToTruncateAt,
@@ -807,7 +810,7 @@ Widget userNameWithVerifiedIcon({
           child: isVerified != null && isVerified == true
               ? Icon(
                   Icons.verified_rounded,
-                  color: navyBlue,
+                  color: verifiedIconColor ?? navyBlue,
                   size: 18,
                 )
               : SizedBox.shrink(),

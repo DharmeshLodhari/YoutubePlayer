@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../routes/route_constants.dart';
@@ -23,6 +25,7 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
   Timer? typingTimer;
   String? nextPage; //For pagination.
   String? lastInputValue;
+  bool _isLoading = false;
   String userSearchedText = '';
   bool searchMomentLoading = false;
   List<SearchMomentModel> searchMomentModelList = [];
@@ -115,97 +118,120 @@ class _MomentSearchScreenState extends State<MomentSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar(),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              CustomizedTextFormField(
-                hintText: 'Search',
-                autoFocus: true,
-                onChanged: _onChanged,
-              ),
-              SizedBox(height: 10),
-              searchMomentLoading
-                  ? shimmerGridview()
-                  : Expanded(
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        controller: _scrollController,
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisExtent: 300,
-                          maxCrossAxisExtent: 200,
-                        ),
-                        itemCount: searchMomentModelList.length,
-                        itemBuilder: (context, index) {
-                          if (searchMomentModelList.isEmpty) {
-                            return Text(
-                              'Search for a moment',
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                            );
-                          }
-                          if (index == searchMomentModelList.length) {
-                            if (nextPage != null) {
-                              _getSearchedMoments();
+    return ModalProgressHUD(
+      inAsyncCall: _isLoading,
+      child: Scaffold(
+        appBar: appBar(),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search',
+                  autoFocus: true,
+                  onChanged: _onChanged,
+                ),
+                SizedBox(height: 10),
+                searchMomentLoading
+                    ? shimmerGridview()
+                    : Expanded(
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          controller: _scrollController,
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisExtent: 300,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: searchMomentModelList.length,
+                          itemBuilder: (context, index) {
+                            if (searchMomentModelList.isEmpty) {
+                              return Text(
+                                'Search for a moment',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              );
                             }
-                            // return Center(
-                            //   child: nextPage != null
-                            //       ? shimmerGridview()
-                            //       : SizedBox.shrink(),
-                            // );
-                          }
-                          return SearchMomentSingleWidget(
-                            userTextToSearch: userSearchedText,
-                            searchMomentModel: searchMomentModelList[index],
-                          );
-                        },
+                            if (index == searchMomentModelList.length) {
+                              if (nextPage != null) {
+                                _getSearchedMoments();
+                              }
+                            }
+                            return SearchMomentSingleWidget(
+                              onTap: () {
+                                searchMomentSingleWidgetOnTap(
+                                    searchMomentModelList[index]);
+                              },
+                              userTextToSearch: userSearchedText,
+                              searchMomentModel: searchMomentModelList[index],
+                            );
+                          },
+                        ),
                       ),
-                    ),
-              searchMomentLoading
-                  ? Expanded(
-                      child: shimmerGridview(),
-                    )
-                  : SizedBox.shrink()
-            ],
+                searchMomentLoading
+                    ? Expanded(
+                        child: shimmerGridview(),
+                      )
+                    : SizedBox.shrink()
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  searchMomentSingleWidgetOnTap(SearchMomentModel searchMomentModel) {
+    if (_isLoading == true) return;
+    if (mounted) setState(() {});
+    _isLoading = true;
+    MomentsService()
+        .getSingleMoment(momentId: searchMomentModel.id!)
+        .then((momentsModelList) {
+      if (mounted) setState(() {});
+      _isLoading = false;
+      NavigationUtil.push(
+        context,
+        screen: MomentsDetailsScreen(
+          indexOfMoment: 0,
+// Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
+          momentsModelList: [momentsModelList],
+        ),
+      );
+    }).catchError((e) {
+      if (mounted) setState(() {});
+      _isLoading = false;
+      showToast(message: 'ERROR -> $e');
+    });
+  }
 }
 
-class SearchMomentSingleWidget extends StatelessWidget {
+class SearchMomentSingleWidget extends StatefulWidget {
+  final Function onTap;
   final String userTextToSearch;
   final SearchMomentModel searchMomentModel;
   const SearchMomentSingleWidget(
       {Key? key,
+      required this.onTap,
       required this.userTextToSearch,
       required this.searchMomentModel})
       : super(key: key);
 
   @override
+  State<SearchMomentSingleWidget> createState() =>
+      _SearchMomentSingleWidgetState();
+}
+
+class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
+  bool isLoading = false;
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        MomentsService()
-            .getSingleMoment(momentId: searchMomentModel.id!)
-            .then((momentsModelList) {
-          NavigationUtil.push(
-            context,
-            screen: MomentsDetailsScreen(
-              indexOfMoment: 0,
-              // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
-              momentsModelList: [momentsModelList],
-            ),
-          );
-        }).catchError((e) {
-          showToast(message: 'ERROR -> $e');
-        });
+        widget.onTap();
       },
       child: Card(
         color: Colors.grey,
@@ -216,17 +242,31 @@ class SearchMomentSingleWidget extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             _getMediaRenderer(
-                searchMomentModel: searchMomentModel, context: context),
+                searchMomentModel: widget.searchMomentModel, context: context),
             Align(
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.only(left: 4.0),
                 child: SizedBox(
                   width: 25,
-                  child: getCircularUserAvatar(searchMomentModel.avatar!),
+                  child:
+                      getCircularUserAvatar(widget.searchMomentModel.avatar!),
                 ),
               ),
             ),
+            isLoading
+                ? Align(
+                    alignment: Alignment.topRight,
+                    child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 8),
+                          child: CircularLoadingIndicator(),
+                        )),
+                  )
+                : SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
@@ -236,12 +276,10 @@ class SearchMomentSingleWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      truncateString(
-                        str: searchMomentModel.ownerName!,
-                        lengthToTruncateAt: 20,
-                      ),
-                      style: TextStyle(
+                    userNameWithVerifiedIcon(
+                      name: widget.searchMomentModel.ownerName!,
+                      isVerified: false,
+                      textStyle: TextStyle(
                         fontSize: 12,
                         shadows: [
                           Shadow(
@@ -257,7 +295,8 @@ class SearchMomentSingleWidget extends StatelessWidget {
                     SizedBox(height: 3),
                     Text(
                       truncateString(
-                        str: messageDecoderWithEmoji(searchMomentModel.text!)!,
+                        str: messageDecoderWithEmoji(
+                            widget.searchMomentModel.text!)!,
                         lengthToTruncateAt: 74,
                       ),
                       style: TextStyle(
@@ -293,12 +332,6 @@ class SearchMomentSingleWidget extends StatelessWidget {
                 ),
               ),
             ),
-            // Align(
-            //   alignment: Alignment.topRight,
-            //   child: momentListLengthWidget(
-            //     exploreMomentsModelList[index].moments!.length,
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -307,7 +340,7 @@ class SearchMomentSingleWidget extends StatelessWidget {
     return InkWell(
         onTap: () {
           MomentsService()
-              .getSingleMoment(momentId: searchMomentModel.id!)
+              .getSingleMoment(momentId: widget.searchMomentModel.id!)
               .then((momentsModelList) {
             NavigationUtil.push(
               context,
@@ -341,7 +374,7 @@ class SearchMomentSingleWidget extends StatelessWidget {
                         children: [
                           Text(
                             truncateString(
-                                str: searchMomentModel.ownerName!,
+                                str: widget.searchMomentModel.ownerName!,
                                 lengthToTruncateAt: 35),
                             maxLines: 1,
                             style: TextStyle(
@@ -352,7 +385,7 @@ class SearchMomentSingleWidget extends StatelessWidget {
                           Text(' • '),
                           Text(
                             getGetMomentDetailDateTime(
-                                searchMomentModel.createdAt!),
+                                widget.searchMomentModel.createdAt!),
                             textAlign: TextAlign.end,
                             style: TextStyle(
                               fontSize: 12,
@@ -363,14 +396,15 @@ class SearchMomentSingleWidget extends StatelessWidget {
                       subtitle: SingleChildScrollView(
                         child: Row(
                           children: getSubtitleTextWidget(
-                              userTextToSearch: userTextToSearch),
+                              userTextToSearch: widget.userTextToSearch),
                         ),
                       ),
                       leading: InkWell(
                         onTap: () {
                           Navigator.pushNamed(context, Routes.USER_PROFILE,
                               arguments: {
-                                "searchedUserName": searchMomentModel.owner,
+                                "searchedUserName":
+                                    widget.searchMomentModel.owner,
                               });
                         },
                         child: Container(
@@ -384,9 +418,9 @@ class SearchMomentSingleWidget extends StatelessWidget {
                           ),
                           child: ClipOval(
                             child: CachedNetworkImage(
-                              imageUrl: searchMomentModel.avatar == ""
+                              imageUrl: widget.searchMomentModel.avatar == ""
                                   ? defaultImage
-                                  : searchMomentModel.avatar!,
+                                  : widget.searchMomentModel.avatar!,
                               colorBlendMode: BlendMode.darken,
                               fit: BoxFit.cover,
                               errorWidget: imageErrorWidget,
@@ -412,43 +446,10 @@ class SearchMomentSingleWidget extends StatelessWidget {
   }
 
   // Padding(
-  // padding: const EdgeInsets.symmetric(vertical: 2.0),
-  // child: Card(
-  // color: Colors.white,
-  // shape: RoundedRectangleBorder(
-  // borderRadius: BorderRadius.circular(6),
-  // ),
-  // child: ListTile(
-  // leading: Container(
-  // width: 30,
-  // height: 30,
-  // padding: EdgeInsets.all(6),
-  // decoration: BoxDecoration(
-  // border: Border.all(color: blackFont, width: 2),
-  // shape: BoxShape.circle,
-  // image: DecorationImage(
-  // fit: BoxFit.cover,
-  // image: CachedNetworkImageProvider(
-  // searchMomentModel.avatar!,
-  // ),
-  // ),
-  // ),
-  // ),
-  // title: Text(searchMomentModel.owner!),
-  // subtitle: SingleChildScrollView(
-  // scrollDirection: Axis.horizontal,
-  // child: Row(
-  // children: getSubtitleText(userTextToSearch: userTextToSearch),
-  // ),
-  // ),
-  // ),
-  // ),
-  // )
-
   List<Widget> getSubtitleTextWidget({required String userTextToSearch}) {
     List<Widget> widgets = [];
 
-    searchMomentModel.tags!.forEach((tag) {
+    widget.searchMomentModel.tags!.forEach((tag) {
       widgets.add(
         Text(
           '#$tag ',
@@ -498,8 +499,8 @@ Widget _getMediaRenderer(
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
         imageUrl: searchMomentModel.mediaPoster!,
-        fit: BoxFit.fill,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
+        fit: BoxFit.cover,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
       ),
     );
   }
@@ -512,8 +513,8 @@ Widget _getMediaRenderer(
       borderRadius: BorderRadius.circular(10),
       child: CachedNetworkImage(
         imageUrl: searchMomentModel.media!,
-        fit: BoxFit.fill,
-        memCacheHeight: (MediaQuery.of(context).size.height * 0.3).toInt(),
+        fit: BoxFit.cover,
+        memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
       ),
     );
   }

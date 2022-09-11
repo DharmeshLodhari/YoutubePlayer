@@ -1040,7 +1040,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   Widget build(BuildContext context) {
     if (initialized) {
       return FittedBox(
-        fit: BoxFit.cover,
+        fit: BoxFit.fitWidth,
         child: SizedBox(
           width: _controller.value.size.width,
           height: _controller.value.size.height,
@@ -1094,7 +1094,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
             widget.momentsModel.mediaPoster != null
                 ? CachedNetworkImage(
                     imageUrl: widget.momentsModel.mediaPoster!,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitWidth,
                     memCacheHeight:
                         (MediaQuery.of(context).size.height * 0.8).toInt(),
                     placeholder: (context, _) {

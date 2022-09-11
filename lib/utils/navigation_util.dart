@@ -23,6 +23,6 @@ class NavigationUtil {
   }
 
   static pop(BuildContext context) {
-     Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
 }

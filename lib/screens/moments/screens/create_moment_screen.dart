@@ -379,7 +379,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
               File(
                 imagePath!,
               ),
-              fit: BoxFit.cover,
+              fit: BoxFit.fitWidth,
             ),
           ),
           Positioned(

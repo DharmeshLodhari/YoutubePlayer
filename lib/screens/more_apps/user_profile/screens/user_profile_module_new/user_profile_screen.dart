@@ -284,7 +284,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       } else if (hasAddress || hasContact) {
         height = 460;
       } else {
-        height = 410;
+        height = 420;
       }
     }
 
@@ -427,17 +427,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ),
           actions: actionButtons(),
           title: isShrink
-              ? Container(
-                  child: Text(
-                    searchedUser!.displayName()!,
-                    style: TextStyle(
-                      fontSize: 22,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+              ? userNameWithVerifiedIcon(
+                  name: searchedUser!.displayName()!,
+                  isVerified: searchedUser!.isVerified,
+                  textStyle: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
+                  verifiedIconColor: Colors.white,
                 )
               : Stack(
                   clipBehavior: Clip.none,
@@ -493,81 +491,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         getUserDetails(),
       ],
     );
-  }
-
-  Widget getUserBio() {
-    return isLoading
-        ? Container()
-        : SliverToBoxAdapter(
-            child: Container(
-              padding: EdgeInsets.only(left: 20, right: 20),
-              color: Colors.white,
-              child: isLoading
-                  ? SizedBox.shrink()
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          truncateString(
-                              str: searchedUser!.displayName()!,
-                              lengthToTruncateAt: 53),
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                        ),
-                        Text(
-                          '@${searchedUser!.userName!}',
-                          style: TextStyle(
-                              fontSize: 14.0,
-                              color: darkGrey,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        // InkWell(
-                        //   onTap: myMomentsLoading
-                        //       ? null
-                        //       : () async {
-                        //           getCurrentUserMoment();
-                        //         },
-                        //   child: Container(
-                        //     margin: EdgeInsets.symmetric(vertical: 8),
-                        //     padding: EdgeInsets.symmetric(
-                        //         horizontal: 8, vertical: 4),
-                        //     decoration: BoxDecoration(
-                        //         borderRadius: BorderRadius.circular(50),
-                        //         border:
-                        //             Border.all(color: naturalGreen, width: 2)),
-                        //     child: Row(
-                        //       mainAxisSize: MainAxisSize.min,
-                        //       children: [
-                        //         myMomentsLoading
-                        //             ? SizedBox(
-                        //                 width: 20,
-                        //                 height: 20,
-                        //                 child: CircularLoadingIndicator(),
-                        //               )
-                        //             : Icon(
-                        //                 Icons.play_circle_fill,
-                        //                 color: Colors.black,
-                        //                 size: 20,
-                        //               ),
-                        //         SizedBox(width: 6),
-                        //         Text(
-                        //           'Moments',
-                        //           style: TextStyle(
-                        //             fontSize: 14,
-                        //             color: Colors.black,
-                        //             fontWeight: FontWeight.w600,
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
-                    ),
-            ),
-          );
   }
 
   void getCurrentUserMoment() {
@@ -1461,41 +1384,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           Navigator.pop(context);
         },
       ),
-      title: Text(
-        isLoading ? "" : searchedUser!.displayName()!,
-        style: TextStyle(
-            color: blackFont, fontSize: 22, fontWeight: FontWeight.bold),
-        overflow: TextOverflow.fade,
-        softWrap: false,
-        maxLines: 1,
-      ),
-    );
-  }
-
-  Widget getUserName() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        SizedBox(
-          height: 8,
-        ),
-        Text(
-          isLoading ? "" : searchedUser!.displayName()!,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 14.0,
-          ),
-        ),
-        Text(
-          isLoading ? "" : searchedUser!.userName!,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 10.0,
-          ),
-        )
-      ],
+      title: isLoading
+          ? SizedBox.shrink()
+          : userNameWithVerifiedIcon(
+              name: searchedUser!.displayName()!,
+              isVerified: searchedUser!.isVerified),
     );
   }
 
@@ -1998,6 +1891,8 @@ class _MomentsTabState extends State<MomentsTab> {
     );
   }
 
+  bool momentClicked = false;
+
   Widget myMomentsListWidget() {
     if (myMomentsList.isEmpty) {
       return NoItemInList(
@@ -2022,6 +1917,31 @@ class _MomentsTabState extends State<MomentsTab> {
                   return ExploreMomentsCard(
                     index: index,
                     showProfileAvatar: false,
+                    onTap: () {
+                      if (momentClicked == true) return;
+                      momentClicked = true;
+                      if (mounted) setState(() {});
+                      MomentsService()
+                          .getSingleMoment(momentId: myMomentsList[index].id!)
+                          .then((momentsModelList) {
+                        momentClicked = false;
+                        if (mounted) setState(() {});
+
+                        NavigationUtil.push(
+                          context,
+                          screen: MomentsDetailsScreen(
+                            indexOfMoment: 0,
+                            // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
+                            momentsModelList: [momentsModelList],
+                          ),
+                        );
+                      }).catchError((e) {
+                        momentClicked = false;
+                        if (mounted) setState(() {});
+
+                        showToast(message: 'ERROR -> $e');
+                      });
+                    },
                     exploreMomentsModelList: myMomentsList
                         .map(
                           (e) => ExploreMomentsModel(
