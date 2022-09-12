@@ -256,35 +256,35 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (bioLength == 0) {
       if (hasAddress && hasContact) {
-        height = 360;
+        height = 380;
       } else if (hasAddress || hasContact) {
-        height = 340;
+        height = 360;
       } else {
-        height = 320;
+        height = 340;
       }
     } else if (bioLength <= 50) {
       if (hasAddress && hasContact) {
-        height = 400;
-      } else if (hasAddress || hasContact) {
-        height = 380;
-      } else {
         height = 420;
+      } else if (hasAddress || hasContact) {
+        height = 400;
+      } else {
+        height = 440;
       }
     } else if (bioLength <= 100) {
       if (hasAddress && hasContact) {
-        height = 440;
+        height = 460;
       } else if (hasAddress || hasContact) {
-        height = 420;
+        height = 440;
       } else {
-        height = 360;
+        height = 380;
       }
     } else if (bioLength <= 200) {
       if (hasAddress && hasContact) {
-        height = 440;
-      } else if (hasAddress || hasContact) {
         height = 460;
+      } else if (hasAddress || hasContact) {
+        height = 480;
       } else {
-        height = 420;
+        height = 440;
       }
     }
 
@@ -716,7 +716,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
-          // getFollowUnFollowWidget(),
+          getFollowUnFollowWidget(),
           // Row(
           //   children: [
           //     Expanded(
@@ -865,30 +865,37 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getFollowUnFollowWidget() {
-    return InkWell(
-      onTap: () {
-        NavigationUtil.push(context, screen: FollowAndUnFollowScreen());
-      },
-      child: Row(
-        children: [
-          Text(
-            '10.8K ',
-            style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Following',
-          ),
-          SizedBox(width: 30),
-          Text(
-            '100K ',
-            style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            'Followers',
-          ),
-        ],
-      ),
-    );
+    if (searchedUser!.following != null && searchedUser!.followers != null) {
+      return InkWell(
+        onTap: () {
+          NavigationUtil.push(context, screen: FollowAndUnFollowScreen());
+        },
+        child: Row(
+          children: [
+            Text(
+              getFormattedViewCount(
+                  noOfViews: searchedUser!.following!, addViewText: false),
+              style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(width: 4),
+            Text(
+              'Following',
+            ),
+            SizedBox(width: 30),
+            Text(
+              getFormattedViewCount(
+                  noOfViews: searchedUser!.followers!, addViewText: false),
+              style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(width: 4),
+            Text(
+              'Followers',
+            ),
+          ],
+        ),
+      );
+    }
+    return SizedBox.shrink();
   }
 
   Widget getUserBioStringWidget() {

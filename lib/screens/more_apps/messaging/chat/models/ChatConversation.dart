@@ -51,7 +51,7 @@ class ChatConversation {
       blockedParticipants: json['blocked_participants'] != null
           ? new List<String>.from(json['blocked_participants'])
           : [],
-      isVerified: json['is_verified'],
+      isVerified: json['is_verified'] ?? false,
       conversationId: json['conversation_id'],
       description: json['description'] ?? "",
       fullName: json['full_name'],
@@ -139,7 +139,8 @@ class ChatConversation {
     data['blocked_participants'] = jsonEncode(this.blockedParticipants);
     data['muted_participants'] = jsonEncode(this.mutedParticipants);
     data['participants'] = jsonEncode(this.participants);
-    data['is_verified'] = this.isVerified != null && this.isVerified! == true ? 1 : 0;
+    data['is_verified'] =
+        this.isVerified != null && this.isVerified! == true ? 1 : 0;
 
     return data;
   }
