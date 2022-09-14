@@ -183,10 +183,12 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                               padding: EdgeInsets.all(2),
                               badgeColor: naturalGreen,
                               animationType: BadgeAnimationType.slide,
-                              badgeContent: Text(
-                                '++',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.white),
+                              badgeContent: Center(
+                                child: Text(
+                                  '++',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.white),
+                                ),
                               ),
                               position: BadgePosition(end: 0, top: 0),
                             ),

@@ -674,18 +674,25 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                   ),
                                 ),
                               ),
-                              Text(
-                                '${getGetMomentDetailDateTime(widget.momentsModelList[index].createdAt!)}',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontWeight: FontWeight.w400,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 10.0,
-                                      offset: Offset(0.0, 0),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '${getGetMomentDetailDateTime(widget.momentsModelList[index].createdAt!)}',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontWeight: FontWeight.w400,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 10.0,
+                                          offset: Offset(0.0, 0),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(width: 4),
+                                  getPrivateOrPublicIcon(index),
+                                ],
                               ),
                             ],
                           ),
@@ -752,6 +759,25 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
           ],
         );
       },
+    );
+  }
+
+  Widget getPrivateOrPublicIcon(int index){
+    return Padding(
+      padding: EdgeInsets.only(top: 4),
+      child: widget.momentsModelList[index]
+          .isPublic ==
+          true
+          ? Icon(
+        Icons.public_outlined,
+        color: Colors.white,
+        size: 16,
+      )
+          : Icon(
+        Icons.security_outlined,
+        color: Colors.white,
+        size: 16,
+      ),
     );
   }
 
@@ -1209,16 +1235,11 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
           Provider.of<MomentsBloc>(context, listen: false).numberOfComments;
 
-      debugPrint('BASE COUNT --> ${basePaginationModel!.count}');
-      debugPrint(
-          'PROVIDER NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
-
       if (mounted) {
         setState(() {
           isCommentsLoading = false;
         });
       }
-      debugPrint('COMMENTS ADDED -> ${comments[0].comment}');
     }).catchError((e) {
       basePaginationModel = BasePaginationModel(
         count: 0,
@@ -1322,7 +1343,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
               itemCount: comments.length + 1,
               itemBuilder: (context, index) {
                 if (index == comments.length) {
-                  return buildIndicator(isLoading: isCommentsLoading);
+                  return buildLoadingIndicator(isLoading: isCommentsLoading);
                 } else {
                   return singleCommentWidget(comments[index]);
                 }

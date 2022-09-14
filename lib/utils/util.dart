@@ -217,7 +217,12 @@ Widget getCircularUserAvatar(
 }
 
 String getFormattedViewCount(
-    {required int noOfViews, bool addViewText = true}) {
+    {required int noOfViews,
+    bool addViewText = true,
+    bool showZeroViews = false}) {
+  if (noOfViews == 0 && showZeroViews == true) {
+    return '0${addViewText ? ' view' : ''}';
+  }
   if (noOfViews == 1 || noOfViews == 0) {
     return '1${addViewText ? ' view' : ''}';
   }
@@ -458,7 +463,7 @@ Widget getChatSettingTitle() {
   );
 }
 
-Widget buildIndicator({required bool isLoading}) {
+Widget buildLoadingIndicator({required bool isLoading}) {
   return new Padding(
     padding: const EdgeInsets.all(8.0),
     child: new Center(

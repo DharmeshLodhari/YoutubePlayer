@@ -102,8 +102,6 @@ class MomentsService extends AuthService {
     bool fromUserProfile =
         false, // This is true when we click on the moment's button from a user's profile.
   }) async {
-    debugPrint('MOMENT OWNER NAME ::: ${ownerName}');
-
     late String url;
 
     if (fromUserProfile == true) {

@@ -384,6 +384,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
                     Lottie.asset('assets/lottie/no_moment_lottie.json'),
                     SizedBox(height: 20),
                     Text('Create a moment with the camera icon at the top.'),
+                    Text('Pull down to refresh to see latest moments.'),
                   ],
                 ),
               ),
@@ -779,6 +780,15 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                       )
                     : SizedBox.shrink(),
               ),
+              widget.userMomentModel.mediaType == 'video'
+                  ? Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: Icon(Icons.video_call),
+                      ),
+                    )
+                  : SizedBox.shrink(),
             ],
           ),
         ),
@@ -847,8 +857,7 @@ class ExploreMomentsCard extends StatelessWidget {
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -869,7 +878,6 @@ class ExploreMomentsCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
                     Text(
                       getFormattedViewCount(
                           noOfViews:
@@ -892,6 +900,15 @@ class ExploreMomentsCard extends StatelessWidget {
                 ),
               ),
             ),
+            exploreMomentsModelList[index].moments!.first.mediaType == 'video'
+                ? Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: Icon(Icons.video_call),
+                    ),
+                  )
+                : SizedBox.shrink(),
           ],
         ),
       ),
@@ -923,6 +940,8 @@ Widget momentListLengthWidget(int? length, {double? fontSize}) {
 
 Widget _getMediaRenderer(
     {required MomentsModel momentModel, required BuildContext context}) {
+  debugPrint('POSTER --> ${momentModel.ownerName}');
+  debugPrint('POSTER --> ${momentModel.mediaPoster}');
   if (momentModel.mediaPoster != null) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -930,13 +949,11 @@ Widget _getMediaRenderer(
         imageUrl: momentModel.mediaPoster!,
         fit: BoxFit.fill,
         memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
+        errorWidget: productAndServiceBigErrorWidget,
       ),
     );
   }
-  // Image.asset(
-  //   'assets/images/moment_placeholder_image.png',
-  //   fit: BoxFit.cover,
-  // ),
+
   if (momentModel.mediaType == "image") {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -944,6 +961,7 @@ Widget _getMediaRenderer(
         imageUrl: momentModel.media!,
         fit: BoxFit.cover,
         memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
+        errorWidget: productAndServiceBigErrorWidget,
       ),
     );
   }
@@ -954,13 +972,6 @@ Widget _getMediaRenderer(
         decoration: BoxDecoration(
           color: Color(0XFFdcdcdc).withOpacity(0.5),
           borderRadius: BorderRadius.circular(10),
-        ),
-      );
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.asset(
-          'assets/images/moment_placeholder_image.png',
-          fit: BoxFit.cover,
         ),
       );
     } else {

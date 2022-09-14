@@ -695,28 +695,36 @@ class _SignUpState extends State<SignUp> {
           validateDOB();
         }).catchError((error) {});
       },
-      child: CustomizedDropDownField(
-        title: isPersonalAccount ? "Birthdate" : 'Business Owner\'s Birthdate',
-        child: Container(
-          child: ListTile(
-            dense: true,
-            title: Text(
-              /*This is so that when the user
-             * comes to this page before picking a date, the field will be empty*/
-              showDOB == true ? formatDate(dob) : '',
-              style: TextStyle(
-                color: blackFont,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomizedDropDownField(
+            title:
+                isPersonalAccount ? "Birthdate" : 'Business Owner\'s Birthdate',
+            child: Container(
+              child: ListTile(
+                dense: true,
+                title: Text(
+                  /*This is so that when the user
+                     * comes to this page before picking a date, the field will be empty*/
+                  showDOB == true ? formatDate(dob) : '',
+                  style: TextStyle(
+                    color: blackFont,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+                trailing: Icon(
+                  SlydoAppIcon.date,
+                  size: 16,
+                  color: darkGrey,
+                ),
               ),
             ),
-            trailing: Icon(
-              SlydoAppIcon.date,
-              size: 16,
-              color: darkGrey,
-            ),
           ),
-        ),
+          SizedBox(height: 4),
+          Text('You must be 12 years or older'),
+        ],
       ),
     );
   }
@@ -777,7 +785,8 @@ class _SignUpState extends State<SignUp> {
   bool validateDOB() {
     DateTime dateTime = DateTime.now();
 
-    if (dob.add(Duration(days: 4745)).isBefore(dateTime)) {
+    // Validating for 12 years and above
+    if (dob.add(Duration(days: 4380)).isBefore(dateTime)) {
       isValidAge = true;
       return true;
     } else {

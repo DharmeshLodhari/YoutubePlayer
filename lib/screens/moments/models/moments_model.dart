@@ -180,7 +180,7 @@ class MomentsModel {
       owner: json['owner'],
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
-      isPublic: json['is_public'],
+      isPublic: json['is_public'] ?? false,
     );
   }
 }

@@ -421,7 +421,7 @@ class _TransactionListState extends State<TransactionList> {
               itemCount: transactionList.length + 1,
               itemBuilder: (BuildContext context, int index) {
                 if (index == transactionList.length) {
-                  return buildIndicator(isLoading: isLoading);
+                  return buildLoadingIndicator(isLoading: isLoading);
                 } else {
                   return _getSlidableWithLists(
                       context, transactionList[index], index);

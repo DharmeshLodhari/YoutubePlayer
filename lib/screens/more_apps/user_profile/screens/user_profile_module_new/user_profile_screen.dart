@@ -10,7 +10,7 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/follow_and_unfollow_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/following_and_follwers_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
@@ -268,7 +268,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       } else if (hasAddress || hasContact) {
         height = 400;
       } else {
-        height = 440;
+        height = 380;
       }
     } else if (bioLength <= 100) {
       if (hasAddress && hasContact) {
@@ -710,36 +710,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ),
           SizedBox(height: 12),
           getUserBioStringWidget(),
-          SizedBox(height: 8),
           displayUserAddress(),
-          SizedBox(height: 8),
           getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
           getFollowUnFollowWidget(),
-          // Row(
-          //   children: [
-          //     Expanded(
-          //       child: SizedBox(
-          //         width: 20,
-          //         height: 20,
-          //         child: CurvedButton(
-          //           onPressed: () {},
-          //         ),
-          //       ),
-          //     ),
-          //     SizedBox(width: 20),
-          //     Expanded(
-          //       child: SizedBox(
-          //         width: 20,
-          //         height: 20,
-          //         child: CurvedButton(
-          //           onPressed: () {},
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -839,6 +814,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget getJoinedDate() {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 8),
         Row(
@@ -868,13 +844,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     if (searchedUser!.following != null && searchedUser!.followers != null) {
       return InkWell(
         onTap: () {
-          NavigationUtil.push(context, screen: FollowAndUnFollowScreen());
+          NavigationUtil.push(
+            context,
+            screen:
+                FollowingAndFollowersList(userName: searchedUser!.userName!),
+          );
         },
         child: Row(
           children: [
             Text(
               getFormattedViewCount(
-                  noOfViews: searchedUser!.following!, addViewText: false),
+                  noOfViews: searchedUser!.following!,
+                  addViewText: false,
+                  showZeroViews: true),
               style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
             ),
             SizedBox(width: 4),
@@ -884,7 +866,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             SizedBox(width: 30),
             Text(
               getFormattedViewCount(
-                  noOfViews: searchedUser!.followers!, addViewText: false),
+                  noOfViews: searchedUser!.followers!,
+                  addViewText: false,
+                  showZeroViews: true),
               style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
             ),
             SizedBox(width: 4),
@@ -900,16 +884,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget getUserBioStringWidget() {
     print(searchedUser?.bio);
+    if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty)
+      return SizedBox.shrink();
     return Container(
       margin: EdgeInsets.only(right: 4),
       width: MediaQuery.of(context).size.width,
-      child: Linkify(
-        onOpen: _onOpen,
-        text: searchedUser?.bio == null
-            ? ''
-            : messageDecoderWithEmoji(searchedUser!.bio!)!,
-        textAlign: TextAlign.left,
-        style: TextStyle(fontSize: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Linkify(
+            onOpen: _onOpen,
+            text: searchedUser?.bio == null
+                ? ''
+                : messageDecoderWithEmoji(searchedUser!.bio!)!,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(height: 8),
+        ],
       ),
     );
   }
@@ -923,7 +916,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getContact() {
-    debugPrint('CONTACT -> ${searchedUser?.userAbout?.contact}');
     if (searchedUser?.userAbout?.contact != null &&
         searchedUser!.userAbout!.contact.isNotEmpty) {
       return Row(
@@ -944,16 +936,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget displayUserAddress() {
     return searchedUser?.userAbout?.userAddress?.addressLine1 != null &&
             searchedUser!.userAbout!.userAddress!.addressLine1!.isNotEmpty
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                SlydoAppIcon.location,
-                color: blackFont,
-                size: 12,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    SlydoAppIcon.location,
+                    color: blackFont,
+                    size: 12,
+                  ),
+                  SizedBox(width: 12),
+                  GetFullAddressWidget(userAbout: searchedUser!.userAbout!)
+                ],
               ),
-              SizedBox(width: 12),
-              GetFullAddressWidget(userAbout: searchedUser!.userAbout!)
+              SizedBox(height: 8),
             ],
           )
         : SizedBox.shrink();
@@ -1754,7 +1753,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
           left: 16,
         ),
         color: Colors.white,
-        child: Center(child: _tabBar),
+        child: _tabBar,
       ),
     );
   }
@@ -1818,7 +1817,7 @@ class _MomentsTabState extends State<MomentsTab> {
             isMyMomentsLoading = false;
 
             if (mounted) setState(() {});
-            showToast(message: 'Moment not found');
+
             debugPrint('ERROR GETTING MY MOMENTS -> $error');
           },
         );

@@ -186,26 +186,18 @@ class _HomeState extends State<Home> {
             getGreetingMessage(),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
-          Text(
-            truncateString(
-              str: userBloc.user.displayName()!,
-              lengthToTruncateAt: 38,
-            ),
-            style: TextStyle(
-              fontSize: 14,
-            ),
-          )
+          userNameWithVerifiedIcon(
+            name: userBloc.user.displayName()!,
+            isVerified: userBloc.user.isVerified,
+            textStyle: TextStyle(fontSize: 16),
+          ),
         ],
       ),
       actions: <Widget>[
         _searchBtn(),
-        SizedBox(
-          width: 8.0,
-        ),
+        SizedBox(width: 8.0),
         _messageBtn(),
-        SizedBox(
-          width: 4.0,
-        ),
+        SizedBox(width: 4.0),
         _cartBtn(),
         SizedBox(width: 8.0),
       ],
@@ -379,9 +371,6 @@ class _HomeState extends State<Home> {
                       EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
                   leading: GestureDetector(
                     onTap: () {
-                      // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                      //     arguments: userBloc.user.avatar);
-
                       Navigator.of(context).pushNamed('/add-edit-user-bio',
                           arguments: {"searchedUser": userBloc.user.userAbout});
                     },
@@ -398,7 +387,7 @@ class _HomeState extends State<Home> {
                           child: ClipOval(
                             child: CachedNetworkImage(
                               imageUrl: userBloc.user.avatar!,
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                               errorWidget: imageErrorWidget,
                             ),
                           ),
@@ -410,6 +399,12 @@ class _HomeState extends State<Home> {
                             height: 22,
                             width: 22,
                             backgroundColor: greyBorderColor.withOpacity(0.7),
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed('/add-edit-user-bio', arguments: {
+                                "searchedUser": userBloc.user.userAbout
+                              });
+                            },
                             icon: Icon(
                               SlydoAppIcon.edit,
                               color: blackFont,

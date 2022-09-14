@@ -186,6 +186,12 @@ class _SuperBlogState extends State<SuperBlog> {
   }
 
   @override
+  void dispose() {
+    _postScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),

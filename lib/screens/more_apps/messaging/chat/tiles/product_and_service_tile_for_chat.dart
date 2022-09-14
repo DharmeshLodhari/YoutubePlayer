@@ -151,7 +151,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                       child: CachedNetworkImage(
                                         width: double.infinity,
                                         imageUrl: product!.cover!,
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                         filterQuality: FilterQuality.high,
                                         progressIndicatorBuilder:
                                             (context, url, downloadProgress) =>
@@ -497,7 +497,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                       child: CachedNetworkImage(
                                         width: double.infinity,
                                         imageUrl: service!.cover!,
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                         filterQuality: FilterQuality.high,
                                         progressIndicatorBuilder:
                                             (context, url, downloadProgress) =>

@@ -7,6 +7,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:Slydo/widget/slide_action_button.dart';
+import 'package:Slydo/widget/vertical_list_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,6 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../payment_and_banking_auth.dart';
-import 'package:Slydo/widget/vertical_list_item.dart';
 
 class BankAccountList extends StatefulWidget {
   @override
@@ -173,7 +173,7 @@ class _BankAccountListState extends State<BankAccountList> {
             itemCount: bankAccountList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == bankAccountList.length) {
-                return buildIndicator(isLoading: isLoading);
+                return buildLoadingIndicator(isLoading: isLoading);
               } else {
                 return _getSlidableWithLists(
                     context,

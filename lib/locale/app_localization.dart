@@ -483,6 +483,20 @@ class AppLocalization {
     );
   }
 
+  String get suggestions {
+    return Intl.message(
+      "Suggestions",
+      name: "suggestions",
+    );
+  }
+
+  String get noSuggestions {
+    return Intl.message(
+      "No Suggestions",
+      name: "noSuggestions",
+    );
+  }
+
   String get chat {
     return Intl.message(
       "Chat",
@@ -2000,6 +2014,20 @@ class AppLocalization {
     return Intl.message(
       "No Posts",
       name: "noPosts",
+    );
+  }
+
+  String get noFollowingUsers {
+    return Intl.message(
+      "No following users",
+      name: "noFollowingUsers",
+    );
+  }
+
+  String get noFollowers {
+    return Intl.message(
+      "No followers",
+      name: "noFollowers",
     );
   }
 

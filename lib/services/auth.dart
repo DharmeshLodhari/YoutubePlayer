@@ -25,8 +25,8 @@ class AuthService {
   // static int authCallCount = 0;
   // static int authCallLimit = 5;
 
-  final Duration timeOutDuration = Duration(seconds: 8);
-  final String timeOutErrorMessage = "Server Time-out !!";
+  final Duration timeOutDuration = Duration(seconds: 12);
+  final String timeOutErrorMessage = "Check your network";
 
   DatabaseHelper _db = DatabaseHelper();
 

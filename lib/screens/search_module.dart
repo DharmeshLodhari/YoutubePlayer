@@ -15,12 +15,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
+import '../widget/custom_slydo_usercard.dart';
 import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
+import 'moments/models/comment_model.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
@@ -71,6 +74,7 @@ class _SearchModuleState extends State<SearchModule> {
   bool usingOutsideOfDashboard = false;
   List<String> userConnectionNames = [];
   AppConfigurationModel? appConfigurationModel;
+  int currentIndex = 0;
 
   @override
   void initState() {
@@ -130,6 +134,92 @@ class _SearchModuleState extends State<SearchModule> {
     setState(() {});
   }
 
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        getTabTitle(),
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        maxLines: 1,
+      ),
+      bottom: tabBar() as PreferredSizeWidget?,
+    );
+  }
+
+  Widget tabBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(50.0),
+      child: TabBar(
+        labelPadding: EdgeInsets.zero,
+        indicator: BoxDecoration(),
+        onTap: (int index) {
+          currentIndex = index;
+          setState(() {});
+        },
+        tabs: [
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 0
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                AppLocalization.of(context)!.search,
+                style: TextStyle(
+                  color: currentIndex == 0 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 1
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                AppLocalization.of(context)!.suggestions,
+                style: TextStyle(
+                  color: currentIndex == 1 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     searchTypeSelectionMenu = CustomizedPopUpMenu(
@@ -155,21 +245,47 @@ class _SearchModuleState extends State<SearchModule> {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
-    return Scaffold(
-      key: _scaffoldSearchKey,
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: Column(
-        children: [
-          SizedBox(height: 6),
-          searchBox(),
-          SizedBox(height: 16),
-          Expanded(
-            child: _buildResultList(),
-          ),
-        ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        key: _scaffoldSearchKey,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: tabViews(),
       ),
+    );
+  }
+
+  String getTabTitle() {
+    if (currentIndex == 0) {
+      return AppLocalization.of(context)!.search;
+    } else if (currentIndex == 1) {
+      return AppLocalization.of(context)!.suggestions;
+    }
+    return "";
+  }
+
+  Widget tabViews() {
+    return IndexedStack(
+      index: currentIndex,
+      children: [
+        searchTab(),
+        SuggestionTab(),
+      ],
+    );
+  }
+
+  Widget searchTab() {
+    return Column(
+      children: [
+        SizedBox(height: 6),
+        searchBox(),
+        SizedBox(height: 16),
+        Expanded(
+          child: _buildResultList(),
+        ),
+      ],
     );
   }
 
@@ -344,30 +460,30 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      titleSpacing: 16,
-      backgroundColor: Colors.white,
-      automaticallyImplyLeading: false,
-      centerTitle: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        "Search",
-        style: TextStyle(
-            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
-      ),
-    );
-  }
+  // Widget appBar() {
+  //   return AppBar(
+  //     elevation: 0,
+  //     titleSpacing: 16,
+  //     backgroundColor: Colors.white,
+  //     automaticallyImplyLeading: false,
+  //     centerTitle: false,
+  //     leading: IconButton(
+  //       icon: Icon(
+  //         Icons.keyboard_arrow_left,
+  //         color: navyBlue,
+  //         size: 24,
+  //       ),
+  //       onPressed: () {
+  //         Navigator.pop(context);
+  //       },
+  //     ),
+  //     title: Text(
+  //       "Search",
+  //       style: TextStyle(
+  //           color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
+  //     ),
+  //   );
+  // }
 
   Widget _buildResultList() {
     return isSearchIsEmpty
@@ -1011,13 +1127,14 @@ class _SearchModuleState extends State<SearchModule> {
           icon: Icons.payments_rounded,
           onTap: () async {
             if (appConfigurationModel?.enablePayment == true) {
-              customerProfileBloc.customer =
-                  await UserAuth().fetchCustomerProfile(user.userName);
+              // customerProfileBloc.customer =
+              //     await UserAuth().fetchCustomerProfile(user.userName);
               Navigator.of(context).pushNamed(
                 Routes.REQUEST_PAYMENT,
-                arguments: <String, bool>{
+                arguments: <String, dynamic>{
                   'isFromProfile': false,
                   'isRequest': true,
+                  'recipient': user.userName,
                 },
               );
             } else {
@@ -1033,11 +1150,12 @@ class _SearchModuleState extends State<SearchModule> {
           icon: Icons.payments_rounded,
           onTap: () async {
             if (appConfigurationModel?.enablePayment == true) {
-              customerProfileBloc.customer =
-                  await UserAuth().fetchCustomerProfile(user.userName);
+              // customerProfileBloc.customer =
+              //     await UserAuth().fetchCustomerProfile(user.userName);
               Navigator.of(context)
-                  .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+                  .pushNamed(Routes.SEND_PAYMENT, arguments: <String, dynamic>{
                 'isFromProfile': false,
+                'recipient': user.userName,
               });
             } else {
               showToast(message: 'Payment not available at the moment');
@@ -1342,6 +1460,110 @@ class VerticalListItem2 extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
+    );
+  }
+}
+
+class SuggestionTab extends StatefulWidget {
+  const SuggestionTab({Key? key}) : super(key: key);
+
+  @override
+  _SuggestionTabState createState() => _SuggestionTabState();
+}
+
+class _SuggestionTabState extends State<SuggestionTab> {
+  String? nextPageUrl;
+  bool _isLoading = false;
+  bool isFirstTime = true;
+  bool noItemInList = false;
+  List<CustomerProfile> suggestionsList = [];
+  ScrollController _scrollCtrl = ScrollController();
+  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
+  BasePaginationModel<List<CustomerProfile>>? basePaginationModel;
+
+  @override
+  void initState() {
+    super.initState();
+    getListOfSuggestions();
+
+    _scrollCtrl.addListener(() {
+      if (_scrollCtrl.position.pixels == _scrollCtrl.position.maxScrollExtent &&
+          _scrollCtrl.position.pixels != 0) {
+        getListOfSuggestions();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollCtrl.dispose();
+    super.dispose();
+  }
+
+  void getListOfSuggestions() {
+    if (isFirstTime == false) {
+      if (nextPageUrl == null || nextPageUrl!.isEmpty) return;
+    }
+    if (mounted) setState(() => _isLoading = true);
+
+    UserAuth().getListOfSuggestions(nextUrl: nextPageUrl).then((value) {
+      if (mounted) setState(() => _isLoading = false);
+
+      basePaginationModel = value;
+      suggestionsList.addAll(value.result);
+      nextPageUrl = basePaginationModel!.next;
+      isFirstTime = false;
+      debugPrint('NEXT PAGE URL -> ${basePaginationModel!.next}');
+
+      if (suggestionsList.isEmpty) {
+        if (mounted) setState(() => noItemInList = true);
+      }
+    }).catchError((e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          noItemInList = true;
+        });
+      }
+      isFirstTime = false;
+
+      // showToast(message: e.toString());
+      // Navigator.pop(context);
+    });
+  }
+
+  void _onRefresh() {
+    isFirstTime = true;
+    suggestionsList.clear();
+    nextPageUrl = null;
+    getListOfSuggestions();
+    _refreshCtrl.refreshCompleted();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _refreshCtrl,
+      onRefresh: _onRefresh,
+      child: noItemInList
+          ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
+          : ListView.builder(
+              physics: ClampingScrollPhysics(),
+              controller: _scrollCtrl,
+              itemCount: suggestionsList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == suggestionsList.length) {
+                  return buildLoadingIndicator(isLoading: _isLoading);
+                } else {
+                  return CustomSlydoUserCard(user: suggestionsList[index]);
+                }
+              },
+            ),
     );
   }
 }

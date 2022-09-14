@@ -522,14 +522,14 @@ class _SendPaymentState extends State<SendPayment> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    _payee!.displayName() != null ? _payee!.displayName()! : '',
-                    style: TextStyle(
+                  title: userNameWithVerifiedIcon(
+                    name: _payee!.displayName()!,
+                    isVerified: true,
+                    lengthToTruncateAt: 20,
+                    textStyle: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
                   subtitle: Text(
                     _payee!.userName != null ? _payee!.userName! : '',
