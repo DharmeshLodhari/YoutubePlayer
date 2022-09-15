@@ -25,6 +25,9 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/moments/screens/moment_detail_page.dart';
+import '../screens/moments/screens/moments_service.dart';
+
 bool isDialogueOpen = false;
 
 Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
@@ -77,6 +80,7 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
       data['data'] = dataOfNotification['data'] is Map
           ? dataOfNotification['data']
           : jsonDecode(dataOfNotification['data']);
+
       if (data['data']['type'] == "nudge_user") {
         data['actions'] = notification['actions'];
         data['body'] = notification['body'];
@@ -124,6 +128,8 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
         MainSocketMessageHandler()
             .handleAcknowledgementMessage(messageData: messageData);
       }
+
+      AwesomeNotificationService().showNotification(message: data);
     }
 
     // Here is the push notification.
@@ -134,8 +140,12 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
           data['notification']['click_action'] ??
           "";
 
+      debugPrint('ACTION NOTI -> $action');
       if (action == "/transaction") {
         data['data'] = {"type": "transaction"};
+      } else if (action.contains('/moment')) {
+        debugPrint('FRANK body !--> ${data['body']}');
+        data['data'] = {"type": action};
       } else if (action == Routes.REQUEST_PAYMENT) {
         data['data'] = {"type": "request-payment"};
       } else if (action == "/connection-request") {
@@ -227,6 +237,8 @@ class PushNotificationService {
           ? decodeNotificationIOS(message.data)
           : decodeNotification(message.data);
 
+      debugPrint('FRANK NOTI DATA ---> ${notification["data"]}');
+
       if (notification["data"] != null &&
           notification["data"]["type"] != null &&
           (notification["data"]['type'] == "chatroom_message" ||
@@ -239,6 +251,8 @@ class PushNotificationService {
           decodeMessage = notification["data"] is Map
               ? notification["data"]
               : jsonDecode(notification["data"]);
+
+          debugPrint('FRANK DECODED MESSAGE ---> ${decodeMessage}');
         } catch (error) {
           debugPrint("ERROR:- while adding data to db from FCM $notification");
         }
@@ -248,6 +262,8 @@ class PushNotificationService {
           }
         }
       } else {
+        debugPrint('FRANK ELSE BLOCK LINE 265 ---> ${notification}');
+
         if ((notification["body"].toString().toLowerCase() == "hello" ||
                     notification["body"].toString().toLowerCase() == "null") &&
                 notification['title'] == "" ||
@@ -255,11 +271,17 @@ class PushNotificationService {
           print("ERROR:- notification data = $notification");
           return;
         }
+        if (notification["actions"].toString().contains('/moment/')) return;
+
         if (isDialogueOpen) {
+          debugPrint('FRANK DIALOG OPEN');
+
           Navigator.pop(myGlobals.scaffoldKey.currentContext!);
           isDialogueOpen = false;
         }
         if (!isDialogueOpen) {
+          debugPrint('FRANK DIALOG NOT OPEN');
+
           Future.delayed(Duration(seconds: 3), () {
             showAlertMessage(
                 notification: notification,
@@ -291,6 +313,8 @@ class PushNotificationService {
   // This is for the Firebase Push Notification
   void onSelectNotification(String? payload, BuildContext? context,
       Map<String, dynamic> notification) async {
+    debugPrint("showing payload : $payload");
+
     // example of notification response
     // {body: abiola.rasheed.2 sent you a message,
     // title: You've Got Mail, vibrate: [200,100,200,100,200,100,400],
@@ -359,6 +383,8 @@ class PushNotificationService {
         Navigator.of(context!).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
           'order': order,
         });
+      } else if (payload.toString().contains('/moment/')) {
+     debugPrint('FRANK MOMENT ---> $payload');
       }
     } catch (error) {
       print("new error:- $error");

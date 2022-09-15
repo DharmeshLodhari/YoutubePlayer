@@ -31,9 +31,12 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../services/app_tutorial_controller.dart';
+import '../utils/navigation_util.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'home.dart';
+import 'moments/screens/moment_detail_page.dart';
 import 'moments/screens/moments_screen.dart';
+import 'moments/screens/moments_service.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'super_store/super_store.dart';
@@ -221,10 +224,14 @@ class _DashboardState extends State<Dashboard> {
     /// actionLifeCycle: AppKilled,
     /// dismissedLifeCycle: null,
     /// buttonKeyPressed: null, buttonKeyInput: null}
+    ///
+    debugPrint('NOTIFICAITON TYPE --> $data');
 
     Map<String, dynamic> notification = data['payload'] is String
         ? jsonDecode(data['payload'])
         : data['payload'];
+
+    debugPrint('NOTIFICAITON TYPE --> ${notification['type']}');
 
     if (notification['type'] == "chatroom_message" ||
         notification['type'] == "nudge_user") {
@@ -290,6 +297,31 @@ class _DashboardState extends State<Dashboard> {
 
       Navigator.of(context).pushNamed(Routes.ORDER_DETAIL_PAGE, arguments: {
         'order': order,
+      });
+    } else if (notification['type'].toString().contains("moment")) {
+      Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
+      showDialog(
+          context: context,
+          builder: (context) => Center(child: CircularLoadingIndicator()));
+      MomentsService()
+          .getSingleMoment(
+              momentId: notification['type'].toString().split('moment/')[1])
+          .then((momentsModelList) {
+        Navigator.pop(context);
+
+        NavigationUtil.push(
+          context,
+          screen: MomentsDetailsScreen(
+            indexOfMoment: 0,
+            // Wrapping it around a List ([]) because the moment detail screen requires a List<List<MomentModel>>
+            momentsModelList: [momentsModelList],
+          ),
+        );
+      }).catchError((e) {
+        Navigator.pop(context);
+
+        debugPrint('ERROR M -> $e');
+        showToast(message: 'ERROR -> $e');
       });
     }
   }

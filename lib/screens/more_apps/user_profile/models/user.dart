@@ -103,7 +103,7 @@ class User {
     User user = User(
       nickName: json['nickname'] ?? "",
       type: json['account_type'],
-      avatar: json['avatar'],
+      avatar: json['avatar'] ?? defaultImage,
       currency: json['default_currency'],
       fullName: json['full_name'],
       isVerified: json['is_verified'],

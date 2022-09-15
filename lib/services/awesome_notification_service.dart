@@ -186,7 +186,6 @@ class AwesomeNotificationService {
   }
 
   void showNudgeNotification({required Map<String, dynamic> message}) async {
-
     try {
       int id = Random().nextInt(5000);
       Map<String, String> messagePayload =
@@ -197,14 +196,14 @@ class AwesomeNotificationService {
 
       await awesomeNotifications.createNotification(
           content: NotificationContent(
-              channelKey: "ringtone_channel",
-              id: id,
-              body: message['body'],
-              largeIcon: message['data']['author_avatar'],
-              payload: messagePayload,
-              title: message['title'],
-              //createdSource: NotificationSource.Local,
-              ),
+            channelKey: "ringtone_channel",
+            id: id,
+            body: message['body'],
+            largeIcon: message['data']['author_avatar'],
+            payload: messagePayload,
+            title: message['title'],
+            //createdSource: NotificationSource.Local,
+          ),
           actionButtons: [
             NotificationActionButton(
                 label: "Accept",
@@ -226,11 +225,32 @@ class AwesomeNotificationService {
   void showNotification({required Map<String, dynamic> message}) async {
     int id = Random().nextInt(50000);
 
+    debugPrint('FRANK show-notification ---> ${message['notification']}');
+
+    Map<String, String> finalNotification = {};
+    Map<String, dynamic> tempNotification =
+        Map<String, dynamic>.from(message['notification']);
+
+    //We are converting those values that are null to empty string,
+    // because payload property of NotificationContent requires a Map<String, String>,
+    // so we can't have null.
+    tempNotification.forEach((key, value) {
+      if (value == null) {
+        finalNotification[key] = '';
+      } else {
+        finalNotification[key] = value;
+      }
+    });
+
+    debugPrint('FRANK NEW show-notification ---> ${finalNotification}');
+
     Map<String, String> notification =
-        Map<String, String>.from(message['notification']);
+        Map<String, String>.from(finalNotification);
 
     notification['type'] = message['data']['type'];
     notification['notification_id'] = id.toString();
+
+    debugPrint('FRANK show-notification type ---> ${message['data']['type']}');
 
     //  await awesomeNotifications.cancelAll();
 
@@ -249,6 +269,8 @@ class AwesomeNotificationService {
         ),
       );
     } else {
+      debugPrint('FRANK show-notification body ---> ${notification['body']}');
+
       await awesomeNotifications.createNotification(
         content: NotificationContent(
           channelKey: "basic_channel",

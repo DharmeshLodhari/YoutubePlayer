@@ -951,12 +951,13 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
         Navigator.pop(context); // Dismiss the loader
         Navigator.pop(context); // Dismiss preview moment screen
         Navigator.pop(context,
-            true); // Dismiss create moment screen and reload moment screen page.
+            true); // Dis// miss create moment screen and reload moment screen page.
+        showToast(message: 'Moment created');
       }
     }).catchError((e) {
       Navigator.pop(context);
       debugPrint('SUBMIT MOMENT ERROR -> $e');
-      showToast(message: 'Error -> $e');
+      showToast(message: 'Error -> something went wrong');
     });
   }
 

@@ -41,24 +41,20 @@ class _ChatChannelsState extends State<ChatChannels> {
     });
 
     searchTextCtrl.addListener(() {
-      if (searchTextCtrl.text.trim().isNotEmpty) {
-        setState(() {
-          _onRefresh();
-        });
-      }
-      if (channelModelList.isNotEmpty || searchTextCtrl.text.length != 0) {
-        if (mounted) {
-          setState(() {
-            noItemInList = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            noItemInList = true;
-          });
-        }
-      }
+      _onRefresh();
+      // if (channelModelList.isNotEmpty || searchTextCtrl.text.length != 0) {
+      //   if (mounted) {
+      //     setState(() {
+      //       noItemInList = false;
+      //     });
+      //   }
+      // } else {
+      //   if (mounted) {
+      //     setState(() {
+      //       noItemInList = true;
+      //     });
+      //   }
+      // }
     });
   }
 
@@ -80,12 +76,15 @@ class _ChatChannelsState extends State<ChatChannels> {
       if (mounted) setState(() => _isLoading = false);
 
       basePaginationModel = value;
+      channelModelList.clear();
       channelModelList.addAll(value.result);
       nextPageUrl = basePaginationModel!.next;
       isFirstTime = false;
 
       if (channelModelList.isEmpty) {
         if (mounted) setState(() => noItemInList = true);
+      } else {
+        if (mounted) setState(() => noItemInList = false);
       }
     }).catchError((e) {
       if (mounted) setState(() => _isLoading = false);
@@ -140,7 +139,9 @@ class _ChatChannelsState extends State<ChatChannels> {
           ),
           SizedBox(height: 6),
           noItemInList
-              ? NoItemInList(msg: AppLocalization.of(context)!.noChannels)
+              ? Expanded(
+                  child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noChannels))
               : Expanded(
                   child: ListView.builder(
                     physics: ClampingScrollPhysics(),
