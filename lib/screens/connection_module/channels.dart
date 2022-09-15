@@ -41,9 +41,11 @@ class _ChatChannelsState extends State<ChatChannels> {
     });
 
     searchTextCtrl.addListener(() {
+      if (searchTextCtrl.text.trim().isNotEmpty) {
         setState(() {
           _onRefresh();
         });
+      }
       if (channelModelList.isNotEmpty || searchTextCtrl.text.length != 0) {
         if (mounted) {
           setState(() {

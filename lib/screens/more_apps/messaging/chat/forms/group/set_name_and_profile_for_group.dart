@@ -589,7 +589,6 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         return;
       }
     }
-    showToast(message: 'Got here');
 
     groupModel.users = selectedConnectionList;
     groupModel.maxAllowedMembers =

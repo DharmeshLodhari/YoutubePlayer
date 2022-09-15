@@ -241,7 +241,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   Widget createGroupBtn() {
     if (appConfigurationModel != null &&
-        appConfigurationModel!.enableGroupChat == false) {
+        appConfigurationModel!.enableGroupChat == true) {
       return RoundedBackgroundIcon(
         height: 34,
         width: 34,
