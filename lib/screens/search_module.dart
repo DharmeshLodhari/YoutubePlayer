@@ -15,16 +15,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
-import '../widget/custom_slydo_usercard.dart';
 import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
-import 'moments/models/comment_model.dart';
+import 'connection_module/channels.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
+import 'more_apps/suggestions_tab.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
@@ -215,6 +214,27 @@ class _SearchModuleState extends State<SearchModule> {
               ),
             ),
           ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 2
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                AppLocalization.of(context)!.chatChannels,
+                style: TextStyle(
+                  color: currentIndex == 2 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -246,7 +266,7 @@ class _SearchModuleState extends State<SearchModule> {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         key: _scaffoldSearchKey,
         resizeToAvoidBottomInset: true,
@@ -262,6 +282,8 @@ class _SearchModuleState extends State<SearchModule> {
       return AppLocalization.of(context)!.search;
     } else if (currentIndex == 1) {
       return AppLocalization.of(context)!.suggestions;
+    } else if (currentIndex == 2) {
+      return AppLocalization.of(context)!.chatChannels;
     }
     return "";
   }
@@ -271,7 +293,8 @@ class _SearchModuleState extends State<SearchModule> {
       index: currentIndex,
       children: [
         searchTab(),
-        SuggestionTab(),
+        SuggestionsTab(),
+        ChatChannels(),
       ],
     );
   }
@@ -1460,110 +1483,6 @@ class VerticalListItem2 extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 2),
         child: child,
       ),
-    );
-  }
-}
-
-class SuggestionTab extends StatefulWidget {
-  const SuggestionTab({Key? key}) : super(key: key);
-
-  @override
-  _SuggestionTabState createState() => _SuggestionTabState();
-}
-
-class _SuggestionTabState extends State<SuggestionTab> {
-  String? nextPageUrl;
-  bool _isLoading = false;
-  bool isFirstTime = true;
-  bool noItemInList = false;
-  List<CustomerProfile> suggestionsList = [];
-  ScrollController _scrollCtrl = ScrollController();
-  RefreshController _refreshCtrl = RefreshController(initialRefresh: false);
-  BasePaginationModel<List<CustomerProfile>>? basePaginationModel;
-
-  @override
-  void initState() {
-    super.initState();
-    getListOfSuggestions();
-
-    _scrollCtrl.addListener(() {
-      if (_scrollCtrl.position.pixels == _scrollCtrl.position.maxScrollExtent &&
-          _scrollCtrl.position.pixels != 0) {
-        getListOfSuggestions();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollCtrl.dispose();
-    super.dispose();
-  }
-
-  void getListOfSuggestions() {
-    if (isFirstTime == false) {
-      if (nextPageUrl == null || nextPageUrl!.isEmpty) return;
-    }
-    if (mounted) setState(() => _isLoading = true);
-
-    UserAuth().getListOfSuggestions(nextUrl: nextPageUrl).then((value) {
-      if (mounted) setState(() => _isLoading = false);
-
-      basePaginationModel = value;
-      suggestionsList.addAll(value.result);
-      nextPageUrl = basePaginationModel!.next;
-      isFirstTime = false;
-      debugPrint('NEXT PAGE URL -> ${basePaginationModel!.next}');
-
-      if (suggestionsList.isEmpty) {
-        if (mounted) setState(() => noItemInList = true);
-      }
-    }).catchError((e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          noItemInList = true;
-        });
-      }
-      isFirstTime = false;
-
-      // showToast(message: e.toString());
-      // Navigator.pop(context);
-    });
-  }
-
-  void _onRefresh() {
-    isFirstTime = true;
-    suggestionsList.clear();
-    nextPageUrl = null;
-    getListOfSuggestions();
-    _refreshCtrl.refreshCompleted();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-      ),
-      controller: _refreshCtrl,
-      onRefresh: _onRefresh,
-      child: noItemInList
-          ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
-          : ListView.builder(
-              physics: ClampingScrollPhysics(),
-              controller: _scrollCtrl,
-              itemCount: suggestionsList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == suggestionsList.length) {
-                  return buildLoadingIndicator(isLoading: _isLoading);
-                } else {
-                  return CustomSlydoUserCard(user: suggestionsList[index]);
-                }
-              },
-            ),
     );
   }
 }

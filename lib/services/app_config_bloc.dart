@@ -50,11 +50,13 @@ class AppConfigurationModel {
   bool freeSubscription;
   bool enableAddUserCreditCard;
   bool enableWalletTopupWithCreditCard;
+  bool enablePaidGroupChat;
 
   AppConfigurationModel({
     required this.id,
     required this.country,
     this.enableAsk = false,
+    this.enablePaidGroupChat = false,
     this.enableSuperBlog = false,
     this.enablePayment = false,
     this.freeSubscription = false,
@@ -76,6 +78,7 @@ class AppConfigurationModel {
       id: json['id'] ?? '1',
       country: json['country_name'] ?? 'Nigeria',
       freeSubscription: json['free_subscription'] ?? false,
+      enablePaidGroupChat: json['enable_paid_group_chat'] ?? false,
       enableAsk: json['enable_ask'] ?? false,
       enableSuperBlog: json['enable_super_blog'] ?? false,
       enablePayment: json['enable_payment'] ?? false,

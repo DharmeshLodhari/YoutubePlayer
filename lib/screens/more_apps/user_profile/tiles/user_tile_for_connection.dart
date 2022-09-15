@@ -92,10 +92,11 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         height: 48,
         width: 48,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2),
+        ),
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: widget.user!.avatar == "" || widget.user!.avatar == null
@@ -241,7 +242,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
             color: naturalGreen.withOpacity(0.1),
           ),
           child: Text(
-            "Group",
+            "Channel",
             style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
           ),

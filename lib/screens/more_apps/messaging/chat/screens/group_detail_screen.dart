@@ -20,6 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../routes/route_constants.dart';
+
 class GroupDetailScreen extends StatefulWidget {
   final arguments;
 
@@ -889,11 +891,16 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       if (value) {
         ConnectionListBloc connectionListBloc =
             Provider.of<ConnectionListBloc>(context, listen: false);
+        DashboardBloc dashboardBloc =
+            Provider.of<DashboardBloc>(context, listen: false);
         connectionListBloc.deleteChatConversation(
             conversationId: groupDetail!.conversationId);
 
-        showToast(message: "You left the ${groupDetail!.fullName}!!");
-        Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+        showToast(message: "You left ${groupDetail!.fullName}!!");
+        dashboardBloc.index = 3;
+        Navigator.of(context).popUntil(ModalRoute.withName(Routes.ACCOUNTS));
+
+        // Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");

@@ -1591,7 +1591,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   ? chatConversation!.avatar ?? defaultImage
                   : defaultImage,
               colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
+
               filterQuality: FilterQuality.high,
               errorWidget: imageErrorWidget,
             ),

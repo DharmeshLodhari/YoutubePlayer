@@ -102,10 +102,6 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                getChatSettingTitle(),
-                SizedBox(
-                  height: 8,
-                ),
                 getIncomingSoundTile(),
                 getOutGoingSoundTile(),
                 getCurrencyTile(),
@@ -177,16 +173,6 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
           height: 20,
         ),
       ],
-    );
-  }
-
-  Widget getChatSettingTitle() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Text(
-        "Chat Settings",
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-      ),
     );
   }
 

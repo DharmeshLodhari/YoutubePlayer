@@ -10,6 +10,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile_for_connection.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -28,7 +29,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
-import '../../user_auth.dart';
 
 class ConnectionList extends StatefulWidget {
   @override

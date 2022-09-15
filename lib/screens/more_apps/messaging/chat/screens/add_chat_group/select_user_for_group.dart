@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
@@ -125,8 +126,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     if (isForAddingUserInGroup) {
       Navigator.of(context).pop(selectedConnectionList);
     } else {
-      Navigator.of(context).pushNamed("/set-name-and-profile-for-group",
-          arguments: {"users": selectedConnectionList});
+      Navigator.of(context)
+          .pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP, arguments: {"users": selectedConnectionList});
     }
   }
 

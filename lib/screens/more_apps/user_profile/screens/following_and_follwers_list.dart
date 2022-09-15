@@ -169,6 +169,7 @@ class FollowAndFollowersList extends StatefulWidget {
 class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
   String? nextPageUrl;
   bool _isLoading = false;
+  bool isFirstTime = true;
   bool noItemInList = false;
   List<CustomerProfile> usersList = [];
   ScrollController _scrollCtrl = ScrollController();
@@ -195,6 +196,9 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
   }
 
   void getListOfFollowers() {
+    if (isFirstTime == false) {
+      if (nextPageUrl == null || nextPageUrl!.isEmpty) return;
+    }
     if (mounted) setState(() => _isLoading = true);
 
     UserAuth()
@@ -208,6 +212,7 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
       basePaginationModel = value;
       usersList.addAll(value.result);
       nextPageUrl = basePaginationModel!.next;
+      isFirstTime = false;
 
       if (usersList.isEmpty) {
         if (mounted) setState(() => noItemInList = true);
@@ -215,12 +220,15 @@ class _FollowAndFollowersListState extends State<FollowAndFollowersList> {
     }).catchError((e) {
       if (mounted) setState(() => _isLoading = false);
 
+      isFirstTime = false;
+
       showToast(message: e.toString());
       Navigator.pop(context);
     });
   }
 
   _onRefresh() {
+    isFirstTime = true;
     usersList.clear();
     nextPageUrl = null;
     getListOfFollowers();

@@ -504,6 +504,11 @@ class AppLocalization {
     );
   }
 
+  ///Create paid group chat
+  ///Make public
+  ///Limit group members
+  ///Max. number of users
+
   String get kycDetails {
     return Intl.message(
       "KYC Details",
@@ -3029,8 +3034,22 @@ class AppLocalization {
 
   String get myContacts {
     return Intl.message(
-      "My Contacts",
+      "Contacts",
       name: "myContacts",
+    );
+  }
+
+  String get chatChannels {
+    return Intl.message(
+      "Channels",
+      name: "chatChannels",
+    );
+  }
+
+  String get noChannels {
+    return Intl.message(
+      "No Channels",
+      name: "noChannels",
     );
   }
 
