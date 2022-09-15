@@ -904,8 +904,10 @@ class ExploreMomentsCard extends StatelessWidget {
                 ? Align(
                     alignment: Alignment.topRight,
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 4.0),
-                      child: Icon(Icons.video_call),
+                      padding: const EdgeInsets.all(4.0),
+                      child: Icon(
+                        Icons.play_circle_filled_outlined,
+                      ),
                     ),
                   )
                 : SizedBox.shrink(),

@@ -169,12 +169,10 @@ class _PostTileState extends State<PostTile> {
                                     ),
                                   ),
                                   SizedBox(width: 8),
-                                  Text(
-                                    truncateString(
-                                        str: widget.post!.authorName!,
-                                        lengthToTruncateAt: 35),
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                  userNameWithVerifiedIcon(
+                                    name: widget.post!.authorName!,
+                                    isVerified: false,
+                                    textStyle: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 16,
                                       color: Colors.white,
