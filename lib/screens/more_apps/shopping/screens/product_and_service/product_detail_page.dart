@@ -1121,14 +1121,17 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     ),
                   ),
                 ),
-                title: Text(
-                  product!.sellerFullName ?? "",
-                  style: TextStyle(
+                title:
+                userNameWithVerifiedIcon(
+                  name: product!.sellerFullName ?? '',
+                  isVerified: false,
+                  textStyle: TextStyle(
                       fontSize: 14,
                       color: blackFont,
                       fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.justify,
                 ),
+
+
                 subtitle: Text(
                   product!.seller ?? "",
                   style: TextStyle(

@@ -846,14 +846,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     ),
                   ),
                 ),
-                title: Text(
-                  service!.providerFullName ?? "",
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: blackFont,
-                      fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.justify,
-                ),
+                title: userNameWithVerifiedIcon(
+    name: service!.providerFullName ?? '',
+    isVerified: false,
+    textStyle: TextStyle(
+    fontSize: 14,
+    color: blackFont,
+    fontWeight: FontWeight.w600),
+    ),
                 subtitle: Text(
                   service!.provider ?? "",
                   style: TextStyle(
