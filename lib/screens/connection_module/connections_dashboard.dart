@@ -1,17 +1,20 @@
 import 'dart:io';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/settings/chat_connection_settings.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'block_list.dart';
-import 'channels.dart';
 import 'connection_request_list.dart';
 import 'connections_list.dart';
 
@@ -29,14 +32,33 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   var filterValue = "Contacts";
   late AppLocalization appLocalization;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
     if (widget.arguments != null) {
       currentIndex = widget.arguments["index"] ?? 0;
     }
 
+    getConnectionRequest();
+
     super.initState();
+  }
+
+  getConnectionRequest() async {
+    Map<String, dynamic>? result =
+        await UserAuth().listContactRequests('', '').catchError((error) {
+      debugPrint("ERROR:- $error");
+      //  return;
+    });
+
+    if (result == null) return;
+    List connectionRequest = result['results'] as List;
+
+    Provider.of<ConnectionRequestListBloc>(context, listen: false)
+        .setHasConnectionRequests = connectionRequest.isNotEmpty;
   }
 
   @override
@@ -52,7 +74,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
           return true;
         },
         child: DefaultTabController(
-          length: 4,
+          length: 3,
           child: Scaffold(
             backgroundColor: Colors.white,
             appBar: appBar() as PreferredSizeWidget?,
@@ -87,13 +109,11 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   // ignore: missing_return
   String getTitle() {
     if (currentIndex == 0) {
-      return "Contacts";
+      return AppLocalization.of(context)!.contacts;
     } else if (currentIndex == 1) {
       return AppLocalization.of(context)!.requests;
     } else if (currentIndex == 2) {
       return AppLocalization.of(context)!.blocked;
-    } else if (currentIndex == 3) {
-      return AppLocalization.of(context)!.chatChannels;
     }
     return "";
   }
@@ -120,7 +140,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     : Colors.white,
               ),
               child: Text(
-                appLocalization.myContacts,
+                appLocalization.contacts,
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,
@@ -140,14 +160,42 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     ? navyBlue.withOpacity(0.1)
                     : Colors.white,
               ),
-              child: Text(
-                appLocalization.requests,
-                style: TextStyle(
-                  color: currentIndex == 1 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    appLocalization.requests,
+                    style: TextStyle(
+                      color: currentIndex == 1 ? navyBlue : blackFont,
+                      fontSize: 14,
+                      fontWeight:
+                          currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                  ),
+                  Provider.of<ConnectionRequestListBloc>(context)
+                          .hasConnectionRequests
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Padding(
+                            padding: const EdgeInsets.only(),
+                            child: Badge(
+                              padding: EdgeInsets.all(2),
+                              badgeColor: naturalGreen,
+                              animationType: BadgeAnimationType.slide,
+                              badgeContent: Center(
+                                child: Text(
+                                  '++',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                              ),
+                              position: BadgePosition(end: 0, top: 0),
+                            ),
+                          ),
+                        )
+                      : SizedBox.shrink()
+                ],
               ),
             ),
           ),
@@ -172,27 +220,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
               ),
             ),
           ),
-          Tab(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                shape: BoxShape.rectangle,
-                color: currentIndex == 3
-                    ? navyBlue.withOpacity(0.1)
-                    : Colors.white,
-              ),
-              child: Text(
-                appLocalization.chatChannels,
-                style: TextStyle(
-                  color: currentIndex == 3 ? navyBlue : blackFont,
-                  fontSize: 14,
-                  fontWeight:
-                  currentIndex == 3 ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -213,44 +240,25 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   }
 
   Widget createGroupBtn() {
-    return Row(
-      children: [
-        RoundedBackgroundIcon(
-          height: 34,
-          width: 34,
-          icon: Icon(
-            Icons.settings,
-            size: 20,
-            color: blackFont,
-          ),
-          onTap: () {
-
-            NavigationUtil.push(
-                context,
-                screen: ChatConnectionSettings()
-            );
-
-          },
-          backgroundColor: lightGrey,
-          enableMargin: true,
+    if (appConfigurationModel != null &&
+        appConfigurationModel!.enableGroupChat == false) {
+      return RoundedBackgroundIcon(
+        height: 34,
+        width: 34,
+        icon: Icon(
+          Icons.group_add,
+          size: 20,
+          color: blackFont,
         ),
-        SizedBox(width: 10,),
-        RoundedBackgroundIcon(
-          height: 34,
-          width: 34,
-          icon: Icon(
-            Icons.group_add,
-            size: 20,
-            color: blackFont,
-          ),
-          onTap: () {
-            Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
-          },
-          backgroundColor: lightGrey,
-          enableMargin: true,
-        ),
-      ],
-    );
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.SELECT_USER_FOR_GROUP);
+        },
+        backgroundColor: lightGrey,
+        enableMargin: true,
+      );
+    }
+
+    return SizedBox.shrink();
   }
 
   Widget synchronizeContactBtn() {
@@ -277,7 +285,6 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
         ConnectionList(),
         ConnectionRequestList(),
         BlockedList(),
-        Channels()
       ],
     );
   }

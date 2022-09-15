@@ -483,13 +483,26 @@ class AppLocalization {
     );
   }
 
+  String get suggestions {
+    return Intl.message(
+      "Suggestions",
+      name: "suggestions",
+    );
+  }
+
+  String get noSuggestions {
+    return Intl.message(
+      "No Suggestions",
+      name: "noSuggestions",
+    );
+  }
+
   String get chat {
     return Intl.message(
       "Chat",
       name: "chat",
     );
   }
-
 
   ///Create paid group chat
   ///Make public
@@ -980,6 +993,13 @@ class AppLocalization {
     return Intl.message(
       "Moments",
       name: "moments",
+    );
+  }
+
+  String get noMoments {
+    return Intl.message(
+      "No Moments",
+      name: "noMoments",
     );
   }
 
@@ -2002,6 +2022,20 @@ class AppLocalization {
     );
   }
 
+  String get noFollowingUsers {
+    return Intl.message(
+      "No following users",
+      name: "noFollowingUsers",
+    );
+  }
+
+  String get noFollowers {
+    return Intl.message(
+      "No followers",
+      name: "noFollowers",
+    );
+  }
+
   String get notNow {
     return Intl.message(
       "Not now",
@@ -2567,7 +2601,6 @@ class AppLocalization {
     );
   }
 
-
   String get lowestPrice {
     return Intl.message(
       "Lowest price",
@@ -2963,6 +2996,20 @@ class AppLocalization {
     );
   }
 
+  String get following {
+    return Intl.message(
+      "Following",
+      name: "following",
+    );
+  }
+
+  String get followers {
+    return Intl.message(
+      "Followers",
+      name: "followers",
+    );
+  }
+
   //user_dashboard
   String get updateMyAvatar {
     return Intl.message(
@@ -2999,6 +3046,12 @@ class AppLocalization {
     );
   }
 
+  String get noChannels {
+    return Intl.message(
+      "No Channels",
+      name: "noChannels",
+    );
+  }
 
   String get addContact {
     return Intl.message(

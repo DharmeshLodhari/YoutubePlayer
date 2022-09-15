@@ -15,11 +15,15 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:Slydo/widget/image_crop.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
+import '../../../../../../locator.dart';
+import '../../../../../../services/app_config_bloc.dart';
 
 class SetNameAndProfileOfGroup extends StatefulWidget {
   final arguments;
@@ -42,16 +46,23 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   AddGroupModel groupModel = AddGroupModel();
 
-  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _channelFeeCtrl = TextEditingController();
+  final TextEditingController _maxNoOfUsersCtrl =
+      TextEditingController(text: '255');
 
+  String selectedAge = '18+';
+  bool ageRestriction = false;
   bool? makeGroupPaid = false;
-  bool? makeGroupPublic = false;
+  bool? makeChannelPublic = false;
   bool? limitGroupMembers = false;
+  AppConfigurationModel? appConfigurationModel;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @protected
   void initState() {
     groupNameController = TextEditingController();
     groupDescriptionController = TextEditingController();
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     fetchConnectionList();
 
@@ -78,7 +89,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         ? null
         : FloatingActionButton(
             backgroundColor: navyBlue,
-            onPressed: () => createGroup(onCallBack: (){
+            onPressed: () => createGroup(onCallBack: () {
               NavigationUtil.pop(context);
               NavigationUtil.pop(context);
             }),
@@ -86,7 +97,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
               Icons.arrow_forward_rounded,
               size: 28,
             ),
-    );
+          );
   }
 
   Widget getAppBar() {
@@ -106,7 +117,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         },
       ),
       title: Text(
-        "New Group",
+        "New Channel",
         style: TextStyle(
             color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
         overflow: TextOverflow.fade,
@@ -118,130 +129,54 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
 
   Widget getScaffoldBody() {
     return Container(
-      child: Column(
-        children: [
-          getGroupNameAndProfile(),
-          getGroupDescription(),
-          Container(
-            height: (160 * selectedConnectionList.length).toDouble(),
-              child: _buildConnectionsList()
-          ),
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Column(children: [
-
-              Row(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            getGroupNameAndProfile(),
+            getGroupDescription(),
+            Container(
+                height: (160 * selectedConnectionList.length).toDouble(),
+                child: _buildConnectionsList()),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Text(
-                      'Create paid group chat',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Switch(
-                    onChanged: (bool value) {
-                      setState(() {
-                        makeGroupPaid = value;
-                      });
-                    },
-                    value: makeGroupPaid!,
-                  ),
-                  SizedBox(width: 10,)
+                  getMakePublicField(),
+                  SizedBox(height: 10),
+                  getPaidGroupChatField(),
+                  getLimitGroupMembersField(),
+                  getAgeRestrictionField(),
                 ],
               ),
-              if(makeGroupPaid!) ... [
-                SizedBox(height: 10,),
-                CustomizedTextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                  keyboardType: TextInputType.phone,
-                  controller: _amountController,
-                  isAmountField: true,
-                  labelText: AppLocalization.of(context)!.amount,
-                  onChanged: (value) {
-
-                  },
-                  validator: (val) {
-                    try {
-                      double userAmount =
-                      double.parse(val.replaceAll(',', ''));
-                      if (userAmount > amountLimit) {
-                        return 'You cannot fund more than $amountLimit';
-                      }
-                    } catch (e) {
-                      return AppLocalization.of(context)!.invalidAmount;
-                    }
-                    return null;
-                  },
-                ),
-              ],
-              SizedBox(height: 10,),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Make public',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Switch(
-                    onChanged: (bool value) {
-                      setState(() {
-                        makeGroupPublic = value;
-                      });
-                    },
-                    value: makeGroupPublic!,
-                  ),
-                  SizedBox(width: 10,)
-                ],
-              ),
-              SizedBox(height: 10,),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Limit group members',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Switch(
-                    onChanged: (bool value) {
-                      setState(() {
-                        limitGroupMembers = value;
-                      });
-                    },
-                    value: limitGroupMembers!,
-                  ),
-                  SizedBox(width: 10,)
-                ],
-              ),
-
-              if(limitGroupMembers!) ... [
-                SizedBox(height: 10,),
-                CustomizedTextFormField(
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                  keyboardType: TextInputType.number,
-                  controller: _amountController,
-                  isAmountField: false,
-                  labelText: 'Max. number of users',
-                  onChanged: (value) {
-
-                  },
-                  validator: (val) {
-
-                    return null;
-                  },
-                ),
-              ],
-              SizedBox(height: 30,),
-
-            ],),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget getMakePublicField() {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Make public',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          ),
+        ),
+        Switch(
+          onChanged: (bool value) {
+            setState(() {
+              makeChannelPublic = value;
+            });
+          },
+          value: makeChannelPublic!,
+        ),
+        SizedBox(
+          width: 10,
+        )
+      ],
     );
   }
 
@@ -419,9 +354,257 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
     );
   }
 
+  Widget getPaidGroupChatField() {
+    return appConfigurationModel?.enablePayment == true &&
+            appConfigurationModel?.enablePaidGroupChat == true
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Create paid group chat',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Switch(
+                    onChanged: (bool value) {
+                      setState(() {
+                        makeGroupPaid = value;
+                      });
+                    },
+                    value: makeGroupPaid!,
+                  ),
+                  SizedBox(width: 10),
+                ],
+              ),
+              if (makeGroupPaid!) ...[
+                SizedBox(
+                  height: 10,
+                ),
+                CustomizedTextFormField(
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.phone,
+                  controller: _channelFeeCtrl,
+                  isAmountField: true,
+                  labelText: AppLocalization.of(context)!.amount,
+                  onChanged: (value) {},
+                  validator: (val) {
+                    try {
+                      double userAmount = double.parse(val.replaceAll(',', ''));
+                      // if (userAmount > amountLimit) {
+                      //   return 'You cannot fund more than $amountLimit';
+                      // }
+                    } catch (e) {
+                      return AppLocalization.of(context)!.invalidAmount;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Create paid group chat',
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Switch(
+                    onChanged: (bool value) {
+                      setState(() {
+                        makeGroupPaid = value;
+                      });
+                    },
+                    value: makeGroupPaid!,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  )
+                ],
+              ),
+              if (makeGroupPaid!) ...[
+                SizedBox(
+                  height: 10,
+                ),
+                CustomizedTextFormField(
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.phone,
+                  controller: _maxNoOfUsersCtrl,
+                  isAmountField: true,
+                  labelText: AppLocalization.of(context)!.amount,
+                  onChanged: (value) {},
+                  validator: (val) {
+                    try {
+                      double userAmount = double.parse(val.replaceAll(',', ''));
+                      if (userAmount > amountLimit) {
+                        return 'You cannot fund more than $amountLimit';
+                      }
+                    } catch (e) {
+                      return AppLocalization.of(context)!.invalidAmount;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+              SizedBox(height: 10),
+            ],
+          )
+        : SizedBox.shrink();
+  }
+
+  Widget getLimitGroupMembersField() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Limit channel members',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    'By default, number of allowed members is 255',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              onChanged: (bool value) {
+                setState(() {
+                  limitGroupMembers = value;
+                });
+              },
+              value: limitGroupMembers!,
+            ),
+            SizedBox(width: 10)
+          ],
+        ),
+        if (limitGroupMembers!) ...[
+          SizedBox(height: 10),
+          CustomizedTextFormField(
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            keyboardType: TextInputType.number,
+            controller: _maxNoOfUsersCtrl,
+            isAmountField: false,
+            labelText: 'Max. number of users',
+            onChanged: (value) {},
+            validator: (val) {
+              return null;
+            },
+          ),
+        ],
+        SizedBox(height: 30),
+      ],
+    );
+  }
+
+  Widget getAgeRestrictionField() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Age restriction',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    'Set age of members that can join the group.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              onChanged: (bool value) {
+                setState(() {
+                  ageRestriction = value;
+                });
+              },
+              value: ageRestriction,
+            ),
+            SizedBox(width: 10)
+          ],
+        ),
+        if (ageRestriction) ...[
+          SizedBox(height: 10),
+          Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: dividerColor),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: DropdownButton2(
+              isExpanded: true,
+              value: selectedAge,
+              dropdownDecoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              hint: Text('Select an age'),
+              underline: SizedBox.shrink(),
+              items: ['13+', '15+', '18+', '21+'].map((String item) {
+                return DropdownMenuItem(
+                  value: item,
+                  child: Text(item),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedAge = value!;
+                });
+              },
+            ),
+          ),
+        ],
+        SizedBox(height: 30),
+      ],
+    );
+  }
+
   void createGroup({Function? onCallBack}) async {
+    if (limitGroupMembers!) {
+      if (int.parse(_maxNoOfUsersCtrl.text) > 255) {
+        showToast(message: 'Max number of users is 255');
+        return;
+      }
+    }
+    showToast(message: 'Got here');
+
     groupModel.users = selectedConnectionList;
+    groupModel.maxAllowedMembers =
+        _maxNoOfUsersCtrl.text.replaceAll(' ', '').isEmpty
+            ? 255
+            : int.parse(_maxNoOfUsersCtrl.text);
+    groupModel.makePublic = makeChannelPublic;
+    if (makeGroupPaid == true &&
+        _channelFeeCtrl.text.replaceAll(' ', '').isNotEmpty) {
+      groupModel.channelFee =
+          double.parse(_channelFeeCtrl.text.replaceAll(',', ''));
+    }
+
     groupModel.groupName = groupNameController!.text.trim();
+    groupModel.ageRestriction = int.parse(selectedAge.split('+')[0]);
     groupModel.groupDescription = groupDescriptionController!.text.trim();
 
     showDialog(

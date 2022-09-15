@@ -219,16 +219,9 @@ class _ShareToUserTileState extends State<ShareToUserTile> {
   }
 
   Widget getTitle() {
-    return Text(
-      widget.user!.fullName!,
-      maxLines: 1,
-      style: TextStyle(
-        color: blackFont,
-        fontWeight: FontWeight.bold,
-        fontSize: 15,
-      ),
-      overflow: TextOverflow.fade,
-      softWrap: false,
+    return userNameWithVerifiedIcon(
+      name: widget.user!.fullName!,
+      isVerified: widget.user!.isVerified!,
     );
   }
 

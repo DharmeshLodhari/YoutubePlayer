@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/moments/models/comment_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -13,6 +14,7 @@ import 'package:Slydo/services/device_info.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
 import 'models/UserAbout.dart';
@@ -45,7 +47,6 @@ class UserAuth extends AuthService {
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
-
       return Future.error("ERROR:- ${response.body}");
     }
   }
@@ -62,6 +63,8 @@ class UserAuth extends AuthService {
     print('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+      print('FETCH PROFILE  ::: $url ${jsonData['profile']['contact']}');
+
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
     } else {
@@ -143,6 +146,9 @@ class UserAuth extends AuthService {
         "/";
 
     var response = await httpDelete(url, headers: headers);
+
+    debugPrint(
+        '   "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- ${response.body}")');
     if (response.statusCode == 204) {
       return true;
     } else {
@@ -493,24 +499,73 @@ class UserAuth extends AuthService {
     return Future.error("Something went wrong");
   }
 
-  Future<bool> updateSimpleUserDetail({String? nickName}) async {
-    var url = AppConfig.baseUrl + "/api/v1/user/update-customer-nickname/";
+  Future<Map<String, dynamic>> updateSimpleUserDetail(
+      {String? nickName, String? bio, String? wallpaper}) async {
+    var url = AppConfig.baseUrl + "/api/v1/user/update-customer/";
     debugPrint("URL:- $url");
-    var data = {"nickname": nickName};
+    debugPrint("URL WALLPAPER:- $wallpaper");
+
+    var response;
+    var responseBody;
     var headers = await getAuthHeaders();
-    var _data = jsonEncode(data);
-    var response = await httpPatch(url, headers: headers, body: _data);
-    debugPrint(
-        "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
-    if (response.statusCode == 200) {
-      return true;
+    if (wallpaper != null) {
+      var request = http.MultipartRequest("PATCH", Uri.parse(url));
+      Map<String, dynamic> data = {"nickname": nickName, "bio": bio};
+
+      data.forEach((key, value) {
+        request.fields[key] = value;
+      });
+
+      //create multipart using filepath, string or bytes
+      var multipartFile =
+          await http.MultipartFile.fromPath("wallpaper", wallpaper);
+
+      //add multipart to request
+      request.files.add(multipartFile);
+
+      headers.forEach((k, v) => request.headers[k] = v);
+
+      debugPrint("Files send:- ${request.files}");
+      debugPrint("Data Send:- ${request.fields}");
+
+      response = await request.send();
+
+      responseBody = await response.stream.bytesToString();
+
+      debugPrint(
+          "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
+    } else {
+      var data = {"nickname": nickName, "bio": bio};
+      var headers = await getAuthHeaders();
+      var _data = jsonEncode(data);
+      response = await httpPatch(url, headers: headers, body: _data);
+
+      responseBody = response.body;
+      debugPrint(
+          "RESPONSE :- STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     }
-    return false;
+
+    if (response.statusCode == 200) {
+      dynamic responseData = jsonDecode(responseBody);
+      return {
+        "nickname": responseData['nickname'],
+        "bio": responseData['bio'],
+        "chat_wallpaper": responseData['chat_wallpaper'],
+        "wallpaper": responseData['wallpaper'],
+      };
+    }
+    return Future.error('Something went wrong.');
   }
 
-  Future<bool> deleteImageCover() async {
+  Future<bool> deleteImageCover({bool isUserNormalUser = false}) async {
     var headers = await getAuthHeaders();
-    var url = AppConfig.baseUrl + "/api/v1/user/about/";
+    late var url;
+
+    if (isUserNormalUser) {
+      url = AppConfig.baseUrl + "/api/v1/user/about/";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/user/update-customer/";
+    }
 
     var response = await httpDelete(url, headers: headers);
 
@@ -659,6 +714,9 @@ class UserAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
+    debugPrint("is In Request List-->${response.body}");
+    debugPrint("is In Request List-->${response.statusCode}");
+
     if (response.statusCode == 200) {
       return true;
     }
@@ -775,7 +833,7 @@ class UserAuth extends AuthService {
     return false;
   }
 
-  Future<bool> rejectContactRequest(CustomerProfile user) async {
+  Future<bool> cancelOrRejectContactRequest(CustomerProfile user) async {
     var url =
         AppConfig.baseUrl + "/api/v1/user/contact-request/cancel-or-reject/";
     var data = {"user": user.userName};
@@ -936,6 +994,97 @@ class UserAuth extends AuthService {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
       return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  //Follow or unfollow functions
+  Future<bool> followOrUnfollowUser(String userName,
+      {required bool shouldFollow}) async {
+    late var url;
+    var response;
+
+    var data = {"followee": userName};
+
+    var headers = await getAuthHeaders();
+    var _data = jsonEncode(data);
+
+    if (shouldFollow == true) {
+      url = AppConfig.baseUrl + "/api/v1/user/follow/";
+      response = await httpPost(url, headers: headers, body: _data);
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/user/follow/unfollow/";
+      response = await httpPatch(url, headers: headers, body: _data);
+    }
+
+    debugPrint("FOLLOWEE data :- $url");
+    debugPrint("FOLLOWEE data :- $data");
+    debugPrint("FOLLOWEE response :- ${response.statusCode}");
+    debugPrint("FOLLOWEE response :- ${response.body}");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    }
+    return Future.error('Something went wrong, please try again.');
+  }
+
+  Future<BasePaginationModel<List<CustomerProfile>>>
+      getFollowingOrFollowersList(
+          {required String? nextUrl,
+          required String username,
+          required bool isFollowingUser}) async {
+    late String? url;
+
+    if (nextUrl != null && nextUrl.isNotEmpty) {
+      url = getSecureUrl(url: nextUrl);
+    }
+
+    if (isFollowingUser == true) {
+      url = AppConfig.baseUrl + "/api/v1/user/follow/following/$username";
+    } else {
+      url = AppConfig.baseUrl + "/api/v1/user/follow/followers/$username";
+    }
+
+    final headers = await getAuthHeaders();
+    Response response = await httpGet(url, headers: headers);
+
+    debugPrint('FOLLOWING LIST ::: ${response.statusCode}');
+    debugPrint('FOLLOWING LIST ::: ${response.body}');
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      List results = jsonData['results'];
+
+      return BasePaginationModel<List<CustomerProfile>>.fromJson(
+        jsonData,
+        results.map((e) => CustomerProfile.fromJson(e)).toList(),
+      );
+    } else {
+      return Future.error('Something went wrong, please try again.');
+    }
+  }
+
+  Future<BasePaginationModel<List<CustomerProfile>>> getListOfSuggestions({
+    required String? nextUrl,
+  }) async {
+    late String? url = AppConfig.baseUrl + "/api/v1/user/suggestions/";
+
+    if (nextUrl != null && nextUrl.isNotEmpty) {
+      url = getSecureUrl(url: nextUrl);
+    }
+
+    final headers = await getAuthHeaders();
+    Response response = await httpGet(url, headers: headers);
+
+    debugPrint('SUGGESTIONS LIST ::: ${response.statusCode}');
+    debugPrint('SUGGESTIONS LIST ::: ${response.body}');
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      List results = jsonData['results'];
+
+      return BasePaginationModel<List<CustomerProfile>>.fromJson(
+        jsonData,
+        results.map((e) => CustomerProfile.fromJson(e)).toList(),
+      );
+    } else {
+      return Future.error('Something went wrong, please try again.');
     }
   }
 }

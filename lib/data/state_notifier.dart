@@ -73,6 +73,7 @@ class UserBloc extends ChangeNotifier {
   }
 
   void removeProfileCover() {
+    _user.wallpaper = "";
     _user.userAbout!.wallpaper = "";
     notifyListeners();
   }
@@ -199,6 +200,18 @@ class BasketBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  int getProductOrServiceQuantityInCart(String id) {
+    int quantity = 0;
+
+    items.forEach((element) {
+      if (element["item"].id == id) {
+        quantity = element['qty'] as int;
+      }
+    });
+
+    return quantity;
+  }
+
   int getSubTotalPriceByMerchant({required String merchantUserName}) {
     int subTotal = 0;
     items.forEach((element) {
@@ -240,7 +253,6 @@ class BasketBloc extends ChangeNotifier {
   }
 
   void removeMerchantName(var item) {
-    // var merchantUserName = item is Product ? item.seller : item.provider;
     var merchantFullName =
         item is Product ? item.sellerFullName : item.providerFullName;
 
@@ -524,6 +536,7 @@ class ConnectionListBloc extends ChangeNotifier {
 
     _connectionUsers.clear();
     _connectionUsers = await _getConnectionUsers();
+    debugPrint('CONNECTION USERS --> ${_connectionUsers[0].isVerified}');
     notifyListeners();
     return Future.value();
   }
@@ -581,5 +594,16 @@ class ConnectionListBloc extends ChangeNotifier {
     _connectionUsers = await _getConnectionUsers();
     notifyListeners();
     return;
+  }
+}
+
+class ConnectionRequestListBloc extends ChangeNotifier {
+  bool _hasConnectionRequests = false;
+
+  bool get hasConnectionRequests => _hasConnectionRequests;
+
+  set setHasConnectionRequests(bool hasRequests) {
+    _hasConnectionRequests = hasRequests;
+    notifyListeners();
   }
 }

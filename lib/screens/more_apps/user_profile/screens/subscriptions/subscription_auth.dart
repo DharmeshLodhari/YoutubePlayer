@@ -10,8 +10,9 @@ class SubscriptionsAuth extends AuthService {
       {required String accountType}) async {
     String url = AppConfig.baseUrl + "/api/v1/user/profile-pricing/";
 
-    var headers = await getAuthHeaders();
-    var response = await httpGet(url, headers: headers);
+    var headers = getNonAuthHeader();
+    var response =
+        await httpGet(url, headers: headers as Map<String, dynamic>?);
     print('GET SUBSCRIPTION LIST');
     debugPrint(
         "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");

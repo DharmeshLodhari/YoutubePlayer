@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:Slydo/data/environment.dart';
@@ -40,6 +39,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -50,9 +50,15 @@ import 'locator.dart';
 late List<CameraDescription> cameras;
 final getStorage = GetStorage(appFeaturesKey);
 
+String appVersion = '';
+
 void main() async {
   await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
+
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  appVersion = packageInfo.version;
+
   cameras = await availableCameras();
   locatorSetup();
   AppConfig();
@@ -307,5 +313,8 @@ List<ChangeNotifierProvider> providersList = [
   ),
   ChangeNotifierProvider<AskViewModel>.value(
     value: AskViewModel(),
+  ),
+  ChangeNotifierProvider<ConnectionRequestListBloc>.value(
+    value: ConnectionRequestListBloc(),
   ),
 ];

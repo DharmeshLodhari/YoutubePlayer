@@ -72,6 +72,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
         body: Center(
           child: Text(
             'Camera permissions have not been granted yet',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w400,
@@ -378,7 +379,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
               File(
                 imagePath!,
               ),
-              fit: BoxFit.cover,
+              fit: BoxFit.fitWidth,
             ),
           ),
           Positioned(

@@ -321,7 +321,7 @@ class _ContractScreenState extends State<ContractScreen> {
         itemCount: contractBloc.contractList.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == contractBloc.contractList.length) {
-            return buildIndicator(isLoading: contractBloc.isLoading);
+            return buildLoadingIndicator(isLoading: contractBloc.isLoading);
           } else {
             ContractModel contract = contractBloc.contractList[index];
             bool userIsContractor =

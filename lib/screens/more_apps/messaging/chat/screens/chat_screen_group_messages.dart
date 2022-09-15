@@ -1288,13 +1288,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       right: false,
       child: WillPopScope(
         onWillPop: () async {
-          if(showMoreAction){
+          if (showMoreAction) {
             setState(() {
               showMoreAction = false;
             });
             return Future.value(false);
-
-          }else{
+          } else {
             disposeAudioPlayers();
             mainSocketProvider!.removeStreamSubscription(streamSubscription);
             mainSocketProvider!.currentConversationId = null;
@@ -1302,7 +1301,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
             return Future.value(true);
           }
-
         },
         child: Platform.isAndroid
             ? mainStack()
@@ -1364,16 +1362,11 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    getUserFullName(),
-                    style: TextStyle(
-                      color: blackFont,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    maxLines: 1,
+                  userNameWithVerifiedIcon(
+                    name: chatConversation?.fullName != null
+                        ? chatConversation!.fullName!
+                        : '',
+                    isVerified: chatConversation?.isVerified,
                   ),
                   Text(
                     chatConversation != null
@@ -1598,7 +1591,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   ? chatConversation!.avatar ?? defaultImage
                   : defaultImage,
               colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
+
               filterQuality: FilterQuality.high,
               errorWidget: imageErrorWidget,
             ),
@@ -1637,6 +1631,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool checkIfParticipantIsMutedOrBlocked() {
     if (isChatConversationLoading) {
       return false;
+    }
+
+    if (chatConversation!.userName!.toLowerCase() == 'slydo') {
+      return true;
     }
 
     if (!chatConversation!.isGroupConversation!) {
@@ -1748,20 +1746,29 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
   Widget getMutedOrBlockedParticipantMessage() {
     return Container(
-        color: isUserMuted ? lightGrey : mateRed.withOpacity(0.1),
-        constraints: BoxConstraints(minHeight: 54),
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Center(
-          child: Text(
-              isUserMuted
-                  ? "You are muted by the admin, Please contact admin to continue conversation in this group."
-                  : "You are blocked by the admin, Please contact admin to continue conversation in this group.",
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isUserMuted ? blackFont : mateRed),
-              textAlign: TextAlign.center),
-        ));
+      color: isUserMuted ? lightGrey : mateRed.withOpacity(0.1),
+      constraints: BoxConstraints(minHeight: 54),
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Center(
+        child: Text(getMutedOrBlockedMessage(),
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isUserMuted ? blackFont : mateRed),
+            textAlign: TextAlign.center),
+      ),
+    );
+  }
+
+  String getMutedOrBlockedMessage() {
+    if (isUserMuted) {
+      return "You are muted by the admin, Please contact admin to continue conversation in this group.";
+    } else {
+      if (chatConversation!.userName!.toLowerCase() == 'slydo') {
+        return 'You cannot chat with Slydo';
+      }
+      return "You are blocked by the admin, Please contact admin to continue conversation in this group.";
+    }
   }
 
   Widget getAudioCancelBtn() {
@@ -2178,8 +2185,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        debugPrint(
-            'LOCATION S -> ${appConfigurationModel?.enableLocationSharing}');
         if (appConfigurationModel?.enableLocationSharing == true) {
           showMoreAction = false;
           if (mounted) setState(() {});
@@ -2338,7 +2343,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
         backgroundColor: navyBlue.withOpacity(0.08),
         onTap: () async {
-          if (appConfigurationModel?.enableMagicEnvelope == true) {
+          if (appConfigurationModel?.enablePayment == true &&
+              appConfigurationModel?.enableMagicEnvelope == true) {
             showMoreAction = false;
 
             if (mounted) setState(() {});
@@ -2377,7 +2383,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
-        if (appConfigurationModel?.enableMagicEnvelope == true) {
+        if (appConfigurationModel?.enablePayment == true &&
+            appConfigurationModel?.enableEmptyEnvelope == true) {
           showMoreAction = false;
 
           if (mounted) setState(() {});
@@ -2666,6 +2673,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     if (pickedMedia != null) {
       File file = File(pickedMedia.files.single.path!);
       String mediaType = getFileType(pickedMedia);
+
+      // int sizeInBytes = file.lengthSync();
+      //
+      // int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
+      //
+      // if (sizeInMb > maxVideoFileSize) {
+      //   showToast(message: 'File is too large');
+      //   return;
+      // }
+
       if (mediaType == "") {
         setupShakeDetector();
         return;

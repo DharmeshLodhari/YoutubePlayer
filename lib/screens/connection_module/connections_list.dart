@@ -62,6 +62,8 @@ class _ConnectionListState extends State<ConnectionList> {
 
   @protected
   void initState() {
+    getList();
+
     fetchConnectionListFromDbIfAvailable();
 
     setupSearchChatConnection();
@@ -74,7 +76,7 @@ class _ConnectionListState extends State<ConnectionList> {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        // getList();
+        getList();
       }
     });
     _slideController = SlidableController(
@@ -331,10 +333,11 @@ class _ConnectionListState extends State<ConnectionList> {
     return itemCount;
   }
 
+  String noContactMsg = "No contact found\nPull down to refresh";
   Widget _buildConnectionsList() {
     try {
       return _connectionListBloc.connectionUsers.length == 0
-          ? NoItemInList(msg: "No contact found !!", isResult: true)
+          ? NoItemInList(msg: noContactMsg, isResult: true)
           : ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
@@ -359,7 +362,7 @@ class _ConnectionListState extends State<ConnectionList> {
       debugPrint("ERROR=>:- $error");
       return _connectionListBloc.connectionUsers.length == 0
           ? NoItemInList(
-              msg: "No contact found !!",
+              msg: noContactMsg,
               isResult: true,
             )
           : ListView.builder(
@@ -396,12 +399,14 @@ class _ConnectionListState extends State<ConnectionList> {
 
         List tempList = result['results'];
 
-        // debugPrint("List:- $tempList");
+        debugPrint("List:- $tempList");
 
         List<ChatConversation> users = [];
 
         tempList.forEach(
             (element) => users.add(ChatConversation.fromJson(element)));
+
+        debugPrint('CONNECTION USERS 0 --> ${users[0].isVerified}');
 
         // connectionsList.addAll(users);
 
@@ -441,6 +446,10 @@ class _ConnectionListState extends State<ConnectionList> {
   }
 
   List<Widget> listSecondaryActions(ChatConversation user, int index) {
+    if (user.userName!.toLowerCase() == 'slydo') {
+      return [];
+    }
+
     if (user.isGroupConversation!) {
       return [];
     }
@@ -464,6 +473,10 @@ class _ConnectionListState extends State<ConnectionList> {
       ChatConversation chatConversation, int index) {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
+    if (chatConversation.userName!.toLowerCase() == 'slydo') {
+      return [];
+    }
+
     if (chatConversation.isGroupConversation!) {
       if (userBloc.user.userName == chatConversation.owner) {
         return [];
@@ -481,6 +494,7 @@ class _ConnectionListState extends State<ConnectionList> {
         ),
       ];
     }
+
     CustomerProfile customerProfile =
         CustomerProfile.fromChatConversation(chatConversation);
 
@@ -535,9 +549,9 @@ class _ConnectionListState extends State<ConnectionList> {
         connectionListBloc.deleteChatConversation(
             conversationId: user.conversationId);
 
-        // if (connectionsList.length <= 9) {
-        //   getList();
-        // }
+        if (connectionsList.length <= 9) {
+          getList();
+        }
         setState(() {});
       } else {
         _showSnackBar(context, AppLocalization.of(context)!.error);

@@ -186,6 +186,7 @@ class AwesomeNotificationService {
   }
 
   void showNudgeNotification({required Map<String, dynamic> message}) async {
+
     try {
       int id = Random().nextInt(5000);
       Map<String, String> messagePayload =
@@ -196,14 +197,14 @@ class AwesomeNotificationService {
 
       await awesomeNotifications.createNotification(
           content: NotificationContent(
-            channelKey: "ringtone_channel",
-            id: id,
-            body: message['body'],
-            largeIcon: message['data']['author_avatar'],
-            payload: messagePayload,
-            title: message['title'],
-            //createdSource: NotificationSource.Local,
-          ),
+              channelKey: "ringtone_channel",
+              id: id,
+              body: message['body'],
+              largeIcon: message['data']['author_avatar'],
+              payload: messagePayload,
+              title: message['title'],
+              //createdSource: NotificationSource.Local,
+              ),
           actionButtons: [
             NotificationActionButton(
                 label: "Accept",

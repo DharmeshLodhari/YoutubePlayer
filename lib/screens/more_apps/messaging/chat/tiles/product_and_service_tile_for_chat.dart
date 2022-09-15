@@ -151,7 +151,7 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                       child: CachedNetworkImage(
                                         width: double.infinity,
                                         imageUrl: product!.cover!,
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                         filterQuality: FilterQuality.high,
                                         progressIndicatorBuilder:
                                             (context, url, downloadProgress) =>
@@ -348,14 +348,14 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
         basketBloc.addItemToCart(item: item, type: type);
         late var mapData;
         basketBloc.items.forEach((element) {
-          if (element["item"].subscriptionId == item.subscriptionId) {
+          if (element["item"].id == item.id) {
             mapData = element;
             return;
           }
         });
         Map data = {
           "type": type,
-          "id": mapData["item"].subscriptionId,
+          "id": mapData["item"].id,
           "qty": mapData["qty"],
         };
         debugPrint("Data From Product Page : $data");
@@ -497,7 +497,7 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                       child: CachedNetworkImage(
                                         width: double.infinity,
                                         imageUrl: service!.cover!,
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                         filterQuality: FilterQuality.high,
                                         progressIndicatorBuilder:
                                             (context, url, downloadProgress) =>

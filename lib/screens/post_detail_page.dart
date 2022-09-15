@@ -808,13 +808,19 @@ class _PostDetailPageScaffoldBodyState
   }
 
   Widget postImage() {
-    return Container(
-      child: CachedNetworkImage(
-        imageUrl: widget.postImageUrl ?? "",
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: 220,
-        errorWidget: imageErrorWidget,
+    return InkWell(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: widget.postImageUrl);
+      },
+      child: Container(
+        child: CachedNetworkImage(
+          imageUrl: widget.postImageUrl ?? "",
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: 220,
+          errorWidget: imageErrorWidget,
+        ),
       ),
     );
   }

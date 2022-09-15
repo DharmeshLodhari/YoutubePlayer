@@ -9,7 +9,6 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
@@ -65,17 +64,16 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
 
   void checkCurrentUserIsInRequestList() async {
     if (userBloc.user.userName != widget.user!.userName) {
-      UserAuth()
-        ..checkInRequest(widget.user!.userName).then((value) {
-          if (mounted) {
-            setState(() {
-              if (value) {
-                isInRequestList = true;
-                debugPrint("is In Request List : $isInRequestList");
-              }
-            });
-          }
-        });
+      UserAuth().checkInRequest(widget.user!.userName).then((value) {
+        if (mounted) {
+          setState(() {
+            if (value) {
+              isInRequestList = true;
+              debugPrint("is In Request List : $isInRequestList");
+            }
+          });
+        }
+      });
     }
   }
 
@@ -188,16 +186,17 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
         child: Column(
           children: <Widget>[
             Container(
-                padding:
-                    EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
-                child: CachedNetworkImage(
-                  imageUrl: widget.user!.qrCode!,
-                  colorBlendMode: BlendMode.darken,
-                  errorWidget: imageErrorWidget,
-                  fit: BoxFit.fitWidth,
-                  filterQuality: FilterQuality.high,
-                  placeholder: (context, url) => CircularLoadingIndicator(),
-                )),
+              padding:
+                  EdgeInsets.only(right: 40, left: 40, top: 40, bottom: 10),
+              child: CachedNetworkImage(
+                imageUrl: widget.user!.qrCode!,
+                colorBlendMode: BlendMode.darken,
+                errorWidget: imageErrorWidget,
+                fit: BoxFit.fitWidth,
+                filterQuality: FilterQuality.high,
+                placeholder: (context, url) => CircularLoadingIndicator(),
+              ),
+            ),
             displayUserType(),
             SizedBox(
               height: 12,
@@ -209,7 +208,8 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
                     thickness: 1,
                   )
                 : Container(),
-            userBloc.user.userName != widget.user!.userName
+            userBloc.user.userName != widget.user!.userName &&
+                    widget.user?.userName?.toLowerCase() != 'slydo'
                 ? Container(
                     height: 45,
                     child: Row(
@@ -349,9 +349,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -378,9 +376,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(
-            width: 8,
-          ),
+          SizedBox(width: 8),
           RoundedBackgroundIcon(
             height: 28,
             width: 28,
@@ -448,7 +444,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
       };
     } else if (isInRequestList) {
       return () {
-        UserAuth().rejectContactRequest(widget.user!).then((value) {
+        UserAuth().cancelOrRejectContactRequest(widget.user!).then((value) {
           if (value) {
             showToast(message: "Connection request Canceled");
           } else {

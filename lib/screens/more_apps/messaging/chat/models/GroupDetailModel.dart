@@ -15,6 +15,7 @@ class GroupDetailModel {
   String? username;
   String? owner;
   String? description;
+  bool? isVerified;
 
   GroupDetailModel(
       {this.adminUsers = const [],
@@ -29,6 +30,7 @@ class GroupDetailModel {
       this.createdAt,
       this.username,
       this.owner,
+      this.isVerified = false,
       this.description});
 
   factory GroupDetailModel.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class GroupDetailModel {
         type: json['type'],
         username: json['username'],
         owner: json['owner'],
+        isVerified: json['is_verified'],
         description: json['description'] ?? "");
   }
 
@@ -73,6 +76,7 @@ class GroupDetailModel {
         type: chatConversation.type,
         username: chatConversation.userName,
         owner: chatConversation.owner,
+        isVerified: chatConversation.isVerified,
         description: chatConversation.description);
   }
 
@@ -90,6 +94,7 @@ class GroupDetailModel {
     data['admin_users'] = this.adminUsers;
     data['blocked_participants'] = this.blockedParticipants;
     data['muted_participants'] = this.mutedParticipants;
+    data['is_verified'] = this.isVerified;
     data['participants'] = this.participants.map((v) => v.toJson()).toList();
     return data;
   }

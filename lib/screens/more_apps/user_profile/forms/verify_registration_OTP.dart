@@ -226,6 +226,8 @@ class _VerifyRegistrationOTPScreenState
           .then((verified) {
         Navigator.pop(context);
 
+        debugPrint('Phone number verify -> $phoneNumber');
+
         Navigator.of(context).popAndPushNamed(Routes.SIGN_UP, arguments: {
           'phoneNumber': phoneNumber,
         });

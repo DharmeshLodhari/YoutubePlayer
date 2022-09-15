@@ -509,7 +509,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
             });
             Map data = {
               "type": type,
-              "id": mapData["item"].subscriptionId,
+              "id": mapData["item"].id,
               "qty": mapData["qty"],
             };
             debugPrint("Data From Service Page : $data");
@@ -838,7 +838,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl: service!.providerAvatar!,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitHeight,
+
                         errorWidget: imageErrorWidget,
                         filterQuality: FilterQuality.high,
                       ),
@@ -893,7 +894,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                             placeholder: (context, url) =>
                                 Center(child: CircularLoadingIndicator()),
                             imageUrl: imgList![0]!,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.fitHeight,
                             height: double.infinity,
                             width: double.infinity,
                             errorWidget: productAndServiceBigErrorWidget,
@@ -938,7 +939,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                                             imageUrl: item!,
                                             errorWidget:
                                                 productAndServiceBigErrorWidget,
-                                            fit: BoxFit.fill,
+                                            fit: BoxFit.fitHeight,
                                             height: double.infinity,
                                             width: double.infinity,
                                           ),
@@ -1193,16 +1194,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ],
             ),
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => displayService(
-                context: context,
+              itemBuilder: (context, index) => DisplayService(
                 service: sellersOtherItems[index],
               ),
             ),

@@ -790,7 +790,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       "id": item.conversationID,
     };
 
-    _auth.removeItemToShoppingCart(data);
+    _auth.removeItemFromShoppingCart(data);
     basketBloc.removeItemFromCart(item);
     showToast(
         message:

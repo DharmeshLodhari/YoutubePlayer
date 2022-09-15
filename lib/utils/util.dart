@@ -31,9 +31,13 @@ import '../screens/more_apps/payment_and_banking/models/transactions.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/image_crop.dart';
 import 'colors.dart';
+import 'common.dart';
 
 export 'colors.dart';
 export 'common.dart';
+
+int maxVideoFileSize =
+    90; // Maximum amount of MB that we accept for video files.
 
 int amountLimit =
     10000000000; //For a given tile, if the amount is less than this, the amount will float to the right.
@@ -89,7 +93,7 @@ Future<String?> getFile(BuildContext context,
     } else {
       final file = await ImagePicker().pickVideo(source: fileSource);
       if (file != null) {
-        return file.path;
+        videoPath = file.path;
       }
     }
   }
@@ -213,7 +217,12 @@ Widget getCircularUserAvatar(
 }
 
 String getFormattedViewCount(
-    {required int noOfViews, bool addViewText = true}) {
+    {required int noOfViews,
+    bool addViewText = true,
+    bool showZeroViews = false}) {
+  if (noOfViews == 0 && showZeroViews == true) {
+    return '0${addViewText ? ' view' : ''}';
+  }
   if (noOfViews == 1 || noOfViews == 0) {
     return '1${addViewText ? ' view' : ''}';
   }
@@ -454,7 +463,7 @@ Widget getChatSettingTitle() {
   );
 }
 
-Widget buildIndicator({required bool isLoading}) {
+Widget buildLoadingIndicator({required bool isLoading}) {
   return new Padding(
     padding: const EdgeInsets.all(8.0),
     child: new Center(
@@ -565,7 +574,10 @@ String formatTime(String date) {
   return time;
 }
 
-String formatDate(DateTime dateTime) {
+String formatDate(DateTime? dateTime) {
+  if (dateTime == null) {
+    return '';
+  }
   String date =
       "${dateTime.day} ${monthName[dateTime.month - 1]}, ${dateTime.year}";
 
@@ -777,6 +789,42 @@ String? validateSlydoName(String userInput) {
   }
 }
 
+Widget userNameWithVerifiedIcon({
+  required String name,
+  required bool? isVerified,
+  int lengthToTruncateAt = 25,
+  TextStyle? textStyle,
+  Color? verifiedIconColor,
+}) {
+  return RichText(
+    maxLines: 1,
+    text: TextSpan(
+      style: textStyle ??
+          TextStyle(
+            color: blackFont,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+      text: truncateString(
+        str: messageDecoderWithEmoji(name)!,
+        lengthToTruncateAt: lengthToTruncateAt,
+      ),
+      children: [
+        TextSpan(text: ' '),
+        WidgetSpan(
+          child: isVerified != null && isVerified == true
+              ? Icon(
+                  Icons.verified_rounded,
+                  color: verifiedIconColor ?? navyBlue,
+                  size: 18,
+                )
+              : SizedBox.shrink(),
+        ),
+      ],
+    ),
+  );
+}
+
 String truncateString(
     {required String str,
     required int lengthToTruncateAt,
@@ -937,7 +985,10 @@ Widget getRating({required int? numberOfRating, double starSize = 11}) {
       ),
     );
   }
-  return Row(children: widgets);
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    children: widgets,
+  );
 }
 
 Color getRatingColor(int? numberOfRating, int i) {
@@ -2064,4 +2115,13 @@ List<String> getLgs({required String? state}) {
   }
 
   return lgs;
+}
+
+extension StringCasingExtension on String {
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }

@@ -37,7 +37,7 @@ class AppConfigurationModel {
   String? country;
   bool enableMoment;
   bool enableAsk;
-  bool enableBlog;
+  bool enableSuperBlog;
   bool enableLocationSharing;
   bool enableEmptyEnvelope;
   bool enableMagicEnvelope;
@@ -50,12 +50,14 @@ class AppConfigurationModel {
   bool freeSubscription;
   bool enableAddUserCreditCard;
   bool enableWalletTopupWithCreditCard;
+  bool enablePaidGroupChat;
 
   AppConfigurationModel({
     required this.id,
     required this.country,
     this.enableAsk = false,
-    this.enableBlog = false,
+    this.enablePaidGroupChat = false,
+    this.enableSuperBlog = false,
     this.enablePayment = false,
     this.freeSubscription = false,
     this.enableUtility = false,
@@ -75,9 +77,10 @@ class AppConfigurationModel {
     return AppConfigurationModel(
       id: json['id'] ?? '1',
       country: json['country_name'] ?? 'Nigeria',
-      freeSubscription: json['enable_ask'] ?? false,
-      enableAsk: json['enable_blog'] ?? false,
-      enableBlog: json['free_subscription'] ?? false,
+      freeSubscription: json['free_subscription'] ?? false,
+      enablePaidGroupChat: json['enable_paid_group_chat'] ?? false,
+      enableAsk: json['enable_ask'] ?? false,
+      enableSuperBlog: json['enable_super_blog'] ?? false,
       enablePayment: json['enable_payment'] ?? false,
       enableMoment: json['enable_moments'] ?? false,
       enableAddUserCreditCard: json['enable_add_user_credit_card'] ?? false,

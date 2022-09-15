@@ -42,7 +42,7 @@ class _UserTileState extends State<UserTile> {
                   ? defaultImage
                   : widget.user!.avatar!,
               colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
               filterQuality: FilterQuality.high,
               errorWidget: imageErrorWidget,
             ),
@@ -58,16 +58,9 @@ class _UserTileState extends State<UserTile> {
         decoration: decorateBox(),
         child: ListTile(
           dense: true,
-          title: Text(
-            widget.user!.displayName()!,
-            maxLines: 1,
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-            overflow: TextOverflow.fade,
-            softWrap: false,
+          title: userNameWithVerifiedIcon(
+            name: widget.user!.displayName()!,
+            isVerified: widget.user!.isVerified,
           ),
           subtitle: getSubtitle(context),
           leading: avatarImage,

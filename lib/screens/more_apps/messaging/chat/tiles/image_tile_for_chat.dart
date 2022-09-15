@@ -26,6 +26,8 @@ class ImageTileForChat extends StatelessWidget {
 
     messageText = messageDecoderWithEmoji(messageText);
 
+    debugPrint('IMAGE ==> ${message!['media']}');
+
     return Column(
       children: [
         Row(

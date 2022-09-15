@@ -234,7 +234,7 @@ class _CreditCardListState extends State<CreditCardList> {
             itemCount: creditCardList.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (index == creditCardList.length) {
-                return buildIndicator(isLoading: isLoading);
+                return buildLoadingIndicator(isLoading: isLoading);
               } else {
                 return _getSlidableWithLists(
                   context,

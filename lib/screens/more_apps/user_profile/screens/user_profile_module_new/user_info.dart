@@ -4,17 +4,10 @@ import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/item_display_card.dart';
-import 'package:Slydo/widget/read_more_widget.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../models/UserAbout.dart';
-import '../../user_auth.dart';
 
 // ignore: must_be_immutable
 class UserInfo extends StatefulWidget {
@@ -157,7 +150,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget _buildProductList() {
     return Container(
-      height: 250,
+      height: 220,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -208,7 +201,7 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget _buildServiceList() {
     return Container(
-      height: 250,
+      height: 220,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -262,157 +255,82 @@ class _UserInfoState extends State<UserInfo> {
   List<Widget> getUserAboutSection() {
     List<Widget> list = [];
 
-    if (widget.user!.userAbout!.bio.isNotEmpty) {
-      list.addAll([
-        // ExpandableText(searchedUserAbout.bio),
-        ReadMoreText(
-          widget.user!.userAbout!.bio,
-          trimMode: TrimMode.Line,
-          trimLines: 3,
-          textAlign: TextAlign.justify,
-          colorClickableText: darkGrey,
-          delimiter: isBioShowingLess ? "..." : "",
-          callback: (isOpen) {
-            isBioShowingLess = isOpen;
-            if (mounted) setState(() {});
-          },
-          moreStyle: TextStyle(color: darkGrey, fontWeight: FontWeight.w600),
-          lessStyle: TextStyle(color: darkGrey, fontWeight: FontWeight.w600),
-          trimExpandedText: "See less",
-          trimCollapsedText: "See more",
-          style: TextStyle(
-              color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
-        ),
-        SizedBox(
-          height: 16,
-        ),
-      ]);
-    }
+    // if (widget.user!.userAbout!.bio.isNotEmpty) {
+    //   list.addAll([
+    //     // ExpandableText(searchedUserAbout.bio),
+    //     ReadMoreText(
+    //       widget.user!.userAbout!.bio,
+    //       trimMode: TrimMode.Line,
+    //       trimLines: 3,
+    //       textAlign: TextAlign.justify,
+    //       colorClickableText: darkGrey,
+    //       delimiter:  "...",
+    //       callback: (isOpen) {
+    //         isBioShowingLess = isOpen;
+    //         if (mounted) setState(() {});
+    //       },
+    //       moreStyle: TextStyle(color: darkGrey, fontWeight: FontWeight.w600),
+    //       lessStyle: TextStyle(color: darkGrey, fontWeight: FontWeight.w600),
+    //       trimExpandedText: "See less",
+    //       trimCollapsedText: "See more",
+    //       style: TextStyle(
+    //           color: blackFont, fontSize: 14, fontWeight: FontWeight.w400),
+    //     ),
+    //     SizedBox(
+    //       height: 16,
+    //     ),
+    //   ]);
+    // }
 
-    if (widget.user?.userAbout?.userAddress?.addressLine1 != null &&
-        widget.user!.userAbout!.userAddress!.addressLine1!.isNotEmpty) {
-      list.addAll([
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            RoundedBackgroundIcon(
-              height: 32,
-              width: 32,
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                SlydoAppIcon.location,
-                color: blackFont,
-                size: 14,
-              ),
-            ),
-            SizedBox(width: 12),
-            GetFullAddressWidget(user: widget.user!),
-          ],
-        ),
-        SizedBox(
-          height: 8,
-        ),
-      ]);
-    }
+    // if (widget.user?.userAbout?.userAddress?.addressLine1 != null &&
+    //     widget.user!.userAbout!.userAddress!.addressLine1!.isNotEmpty) {
+    //   list.addAll([
+    //     Row(
+    //       crossAxisAlignment: CrossAxisAlignment.center,
+    //       children: [
+    //         RoundedBackgroundIcon(
+    //           height: 32,
+    //           width: 32,
+    //           backgroundColor: iconBtnGrey,
+    //           icon: Icon(
+    //             SlydoAppIcon.location,
+    //             color: blackFont,
+    //             size: 14,
+    //           ),
+    //         ),
+    //         SizedBox(width: 12),
+    //         GetFullAddressWidget(user: widget.user!),
+    //       ],
+    //     ),
+    //     SizedBox(
+    //       height: 8
+    //     ),
+    //   ]);
+    // }
 
-    if (widget.user!.userAbout!.contact.isNotEmpty) {
-      list.addAll([
-        Row(
-          children: [
-            RoundedBackgroundIcon(
-              height: 32,
-              width: 32,
-              backgroundColor: iconBtnGrey,
-              icon: Icon(
-                Icons.call,
-                color: blackFont,
-                size: 18,
-              ),
-            ),
-            SizedBox(
-              width: 12,
-            ),
-            Expanded(child: Text(widget.user!.userAbout!.contact))
-          ],
-        )
-      ]);
-    }
+    // if (widget.user!.userAbout!.contact.isNotEmpty) {
+    //   list.addAll([
+    //     Row(
+    //       children: [
+    //         RoundedBackgroundIcon(
+    //           height: 32,
+    //           width: 32,
+    //           backgroundColor: iconBtnGrey,
+    //           icon: Icon(
+    //             Icons.call,
+    //             color: blackFont,
+    //             size: 18,
+    //           ),
+    //         ),
+    //         SizedBox(
+    //           width: 12,
+    //         ),
+    //         Expanded(child: Text(widget.user!.userAbout!.contact))
+    //       ],
+    //     )
+    //   ]);
+    // }
 
     return list;
-  }
-}
-
-class GetFullAddressWidget extends StatefulWidget {
-  final CustomerProfile? user;
-
-  const GetFullAddressWidget({Key? key, required this.user}) : super(key: key);
-
-  @override
-  _GetFullAddressWidgetState createState() => _GetFullAddressWidgetState();
-}
-
-class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
-  int? stateId;
-  String? stateName;
-  bool isStateLoading = true;
-  Map<int, String> statesMap = {};
-
-  @override
-  void initState() {
-    super.initState();
-    UserAbout? userAbout =
-        Provider.of<UserBloc>(context, listen: false).userAbout;
-
-    if (userAbout?.userAddress?.state != null) {
-      stateId = userAbout!.userAddress!.state;
-    }
-
-    UserAuth().getStates().then((value) {
-      value.forEach((element) {
-        statesMap[element.id!] = element.name!;
-      });
-
-      stateName = statesMap[stateId];
-
-      isStateLoading = false;
-      if (mounted) setState(() {});
-    }).catchError((e) {
-      isStateLoading = false;
-      if (mounted) setState(() {});
-    });
-  }
-
-  String getFullAddress() {
-    UserAddress? userAddress = widget.user!.userAbout!.userAddress;
-    List<String> addresses = [];
-
-    if (userAddress?.addressLine1 != null &&
-        userAddress!.addressLine1!.isNotEmpty) {
-      addresses.add(userAddress.addressLine1!);
-    }
-    if (userAddress?.addressLine2 != null &&
-        userAddress!.addressLine2!.isNotEmpty) {
-      addresses.add(userAddress.addressLine2!);
-    }
-    if (userAddress?.city != null && userAddress!.city!.isNotEmpty) {
-      addresses.add(userAddress.city!);
-    }
-    if (stateName != null && stateName!.isNotEmpty) {
-      addresses.add(stateName!);
-    }
-
-    return addresses.join(', ').replaceAll('.', '');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return isStateLoading
-        ? SizedBox(width: 20, height: 20, child: CircularLoadingIndicator())
-        : Expanded(
-            child: Text(
-              getFullAddress(),
-              // textAlign: TextAlign.justify,
-            ),
-          );
   }
 }

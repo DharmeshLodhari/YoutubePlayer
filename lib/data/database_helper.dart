@@ -476,6 +476,7 @@ class DatabaseHelper {
       List<ChatConversation> connectionList =
           res.map((element) => ChatConversation.fromDBJson(element)).toList();
 
+      debugPrint('CONNECTION LIST ---> ${connectionList[0].isVerified}');
       return connectionList;
     }
     return [];

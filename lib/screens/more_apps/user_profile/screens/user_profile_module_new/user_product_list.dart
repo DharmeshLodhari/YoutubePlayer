@@ -7,15 +7,16 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/item_display_card.dart';
+import '../../../../../widget/noItemInList.dart';
 
 // ignore: must_be_immutable
 class UserProductList extends StatefulWidget {
@@ -79,26 +80,6 @@ class _UserProductListState extends State<UserProductList> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _productScaffoldKey,
-      body: Container(
-        color: lightGrey,
-        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-        child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _productsRefreshController,
-            onRefresh: _onProductRefresh,
-            child: _buildProductList()),
-      ),
-    );
-  }
-
   void getProductList() async {
     if (!isProductLoading) {
       if (productNext != null && !isProductLoading) {
@@ -126,6 +107,7 @@ class _UserProductListState extends State<UserProductList> {
             noProductInList = false;
             isProductLoading = false;
             productList.addAll(tempList);
+            productList.addAll(tempList);
           });
         }
       }
@@ -145,39 +127,121 @@ class _UserProductListState extends State<UserProductList> {
     }
   }
 
-  Widget _buildProductList() {
-    return noProductInList
-        ? NoItemInList(
-            msg: AppLocalization.of(context)!.noProducts,
-          )
-        : ListView.builder(
-            itemCount: productList.length + 1,
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            controller: _productScrollController,
-            itemBuilder: (context, index) {
-              if (index == productList.length) {
-                return _buildProductIndicator();
-              } else {
-                return CustomBoxShadow(
-                  child: SizedBox(
-                    height: 250,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4),
-                      child: DisplayProduct(
-                        product: productList[index],
-                        onProductRefresh: () {
-                          _onProductRefresh();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _productScaffoldKey,
+      body: Container(
+        color: lightGrey,
+        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+        child: SmartRefresher(
+          enablePullDown: true,
+          header: WaterDropHeader(
+            complete: Container(),
+            waterDropColor: navyBlue,
+          ),
+          controller: _productsRefreshController,
+          onRefresh: _onProductRefresh,
+          child: ListView(
+            children: [
+              _buildProductList(),
+              isProductLoading
+                  ? Shimmer.fromColors(
+                      baseColor: Colors.white,
+                      highlightColor: greyBorderColor,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisExtent: 180,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 15,
+                          maxCrossAxisExtent: 200,
+                        ),
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          );
                         },
                       ),
-                    ),
-                  ),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductList() {
+    if (productList.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    if (noProductInList) {
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.noProducts,
+      );
+    }
+
+    return productNext == "" && isProductLoading
+        ? SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              controller: _productScrollController,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                mainAxisSpacing: 8,
+                mainAxisExtent: 180,
+                crossAxisSpacing: 15,
+                maxCrossAxisExtent: 200,
+              ),
+              itemCount: productList.length,
+              itemBuilder: (context, index) {
+                return DisplayProduct(
+                  product: productList[index],
+                  onProductRefresh: () {
+                    _onProductRefresh();
+                  },
                 );
-                return productTile(index);
-              }
-            },
+              },
+            ),
           );
+
+    ListView.builder(
+      itemCount: productList.length + 1,
+      shrinkWrap: true,
+      physics: ClampingScrollPhysics(),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      controller: _productScrollController,
+      itemBuilder: (context, index) {
+        if (index == productList.length) {
+          return _buildProductIndicator();
+        } else {
+          return CustomBoxShadow(
+            child: SizedBox(
+              height: 250,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: DisplayProduct(
+                  product: productList[index],
+                  onProductRefresh: () {
+                    _onProductRefresh();
+                  },
+                ),
+              ),
+            ),
+          );
+          return productTile(index);
+        }
+      },
+    );
     // StaggeredGridView.countBuilder(
     //   physics: ClampingScrollPhysics(),
     //   controller: _productScrollController,

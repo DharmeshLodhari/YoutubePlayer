@@ -158,9 +158,11 @@ class CustomizedAlertForNudge {
 
 // Returns alert image for icon
   Widget? _getImage() {
+    debugPrint('MESSAGE DATA-> ${image}');
+
     return roundedBackgroundIcon != null
         ? roundedBackgroundIcon
-        : image != null
+        : image != null && image!.isNotEmpty
             ? Container(
                 child: ClipOval(
                   child: Image.network(

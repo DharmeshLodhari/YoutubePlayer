@@ -15,6 +15,9 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../moments/models/comment_model.dart';
+import 'chat/models/channel_model.dart';
+
 class MessageAuth extends AuthService {
   // Send email to user.
   Future<bool> sendMessage(Map data) async {
@@ -338,18 +341,20 @@ class MessageAuth extends AuthService {
       listOfUser.add(element.userName);
     });
 
-    request.fields["participants"] = jsonEncode(listOfUser);
     request.fields["group_name"] = group.groupName!;
+    request.fields["participants"] = jsonEncode(listOfUser);
     request.fields["description"] = group.groupDescription!;
-
     request.fields["is_group_conversation"] = jsonEncode(true);
-
+    request.fields["is_public_group"] = jsonEncode(group.makePublic);
+    request.fields["age_restriction"] = jsonEncode(group.ageRestriction);
     //PAID GROUP OPTIONS
     request.fields["group_subscription_currency"] = 'NGN';
-    request.fields["group_subscription_fee"] = (30 * 100).toString();  ///TODO: USER FUNCTION FOR CONVERTING NAIRA TO KOBO
-    request.fields["group_max_allowed_users"] = 50.toString();
-    request.fields["is_public_group"] = 'true';
-
+    if (group.channelFee != null) {
+      request.fields["group_subscription_fee"] =
+          jsonEncode(group.channelFee! * 100);
+    }
+    request.fields["group_max_allowed_users"] =
+        jsonEncode(group.maxAllowedMembers);
     if (group.groupProfilePhoto != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
@@ -358,6 +363,8 @@ class MessageAuth extends AuthService {
       // Add multipart to request
       request.files.add(multipartFile1);
     }
+
+    debugPrint('CREATE GROUP FIELDS -> ${request.fields}');
 
     headers.forEach((k, v) => request.headers[k] = v);
 
@@ -459,9 +466,7 @@ class MessageAuth extends AuthService {
 
   // Get status of the user you are chatting with
   Future<dynamic> fetchChannels() async {
-
-    var url = AppConfig.baseUrl +
-        "/api/v1/chat/conversation/channels/";
+    var url = AppConfig.baseUrl + "/api/v1/chat/conversation/channels/";
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers)
@@ -499,6 +504,37 @@ class MessageAuth extends AuthService {
 
     if (response.statusCode == 200) {
       return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
+  Future<bool> joinChannel(
+      {required String channelId, required String userName}) async {
+    var url = AppConfig.baseUrl +
+        "/api/v1/user/group-conversation/join-channel/" +
+        channelId +
+        "/";
+    var headers = await getAuthHeaders();
+
+    debugPrint("List of users to add:- ${[userName]}");
+
+    Map<String, dynamic> data = {
+      "users": [userName]
+    };
+
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(data));
+
+    debugPrint(
+        "JOIN CHANNEL:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      return true;
+    } else if (response.statusCode == 412) {
+      return Future.error(jsonDecode(response.body)['error']);
     } else {
       debugPrint(
           "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
@@ -1006,10 +1042,9 @@ class MessageAuth extends AuthService {
     }
   }
 
-
-  Future<Map<String, dynamic>?> getChatWallpapers(String? next, String? previous,
+  Future<Map<String, dynamic>?> getChatWallpapers(
+      String? next, String? previous,
       {String? filter}) async {
-
     await Future.delayed(Duration(seconds: 1));
 
     var url = "";
@@ -1029,17 +1064,22 @@ class MessageAuth extends AuthService {
 
     //var headers = await getAuthHeaders();
     //
-     //var response = await httpGet(url, headers: headers);
+    //var response = await httpGet(url, headers: headers);
     //
     // debugPrint('MESSAGE URL ::: ${response.statusCode}');
     // debugPrint('MESSAGE ::: ${response.body}');
 
     if (true) {
-      var jsonData = {'count' : 0, 'next' : '', 'previous': '', 'results' : [
-            'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
-            'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
-            'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
-      ]};
+      var jsonData = {
+        'count': 0,
+        'next': '',
+        'previous': '',
+        'results': [
+          'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+          'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+          'https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg',
+        ]
+      };
 
       Map<String, dynamic> result = {
         "count": jsonData["count"],
@@ -1058,6 +1098,35 @@ class MessageAuth extends AuthService {
     // }
   }
 
+  Future<BasePaginationModel<List<ChannelModel>>> getChannels(
+      {required String? nextUrl, String? searchText}) async {
+    var url = AppConfig.baseUrl + "/api/v1/user/channels/";
 
+    if (searchText != null && searchText.isNotEmpty) {
+      url = url + "?search=$searchText";
+    }
 
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+    debugPrint(
+        "GET CHANNELS $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      final jsonData = jsonDecode(response.body);
+      List results = jsonData['results'];
+
+      return BasePaginationModel<List<ChannelModel>>.fromJson(
+        jsonData,
+        results.map((e) => ChannelModel.fromJson(e)).toList(),
+      );
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
 }

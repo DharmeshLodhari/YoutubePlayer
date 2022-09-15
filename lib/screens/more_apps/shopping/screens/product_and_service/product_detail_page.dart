@@ -798,7 +798,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                   placeholder: (context, url) =>
                                       Center(child: CircularLoadingIndicator()),
                                   imageUrl: imgList?[0] ?? "",
-                                  fit: BoxFit.contain,
+                                  fit: BoxFit.fitHeight,
                                   height: double.infinity,
                                   width: double.infinity,
                                   errorWidget: productAndServiceBigErrorWidget,
@@ -838,7 +838,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                                         child:
                                                             CircularLoadingIndicator()),
                                                 imageUrl: item!,
-                                                fit: BoxFit.contain,
+                                                fit: BoxFit.fitHeight,
+
                                                 height: double.infinity,
                                                 width: double.infinity,
                                                 errorWidget:
@@ -1111,7 +1112,9 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                     child: ClipOval(
                       child: CachedNetworkImage(
                         imageUrl: product!.sellerAvatar!,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitHeight,
+
+
                         errorWidget: imageErrorWidget,
                         filterQuality: FilterQuality.high,
                       ),
@@ -1187,8 +1190,11 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => DisplayProduct(
-                product: sellersOtherItems[index],
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: DisplayProduct(
+                  product: sellersOtherItems[index],
+                ),
               ),
             ),
           )

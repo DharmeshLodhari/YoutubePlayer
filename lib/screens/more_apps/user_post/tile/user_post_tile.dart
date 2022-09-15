@@ -448,8 +448,6 @@ class _PostTileState extends State<PostTile> {
             SizedBox(width: 4),
             Text(
               widget.post?.likes != null ? widget.post!.likes!.toString() : '0',
-
-
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w400,
@@ -513,8 +511,9 @@ class _PostTileState extends State<PostTile> {
             ),
             SizedBox(width: 4),
             Text(
-              widget.post?.dislikes != null ? widget.post!.dislikes!.toString() : '0',
-
+              widget.post?.dislikes != null
+                  ? widget.post!.dislikes!.toString()
+                  : '0',
               style: TextStyle(
                 color: blackFont,
                 fontWeight: FontWeight.w400,

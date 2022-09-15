@@ -384,6 +384,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
                     Lottie.asset('assets/lottie/no_moment_lottie.json'),
                     SizedBox(height: 20),
                     Text('Create a moment with the camera icon at the top.'),
+                    Text('Pull down to refresh to see latest moments.'),
                   ],
                 ),
               ),
@@ -730,12 +731,10 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        truncateString(
-                          str: widget.userMomentModel.ownerName!,
-                          lengthToTruncateAt: 14,
-                        ),
-                        style: TextStyle(
+                      userNameWithVerifiedIcon(
+                        name: widget.userMomentModel.ownerName!,
+                        isVerified: false,
+                        textStyle: TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -769,13 +768,6 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                   ),
                 ),
               ),
-              // Align(
-              //   alignment: Alignment.topRight,
-              //   child: momentListLengthWidget(
-              //     lengthOfOwnerMoments,
-              //     fontSize: 12,
-              //   ),
-              // ),
               Align(
                 alignment: Alignment.center,
                 child: isConnectionsMomentLoading
@@ -788,6 +780,15 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                       )
                     : SizedBox.shrink(),
               ),
+              widget.userMomentModel.mediaType == 'video'
+                  ? Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: Icon(Icons.video_call),
+                      ),
+                    )
+                  : SizedBox.shrink(),
             ],
           ),
         ),
@@ -799,23 +800,34 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
 class ExploreMomentsCard extends StatelessWidget {
   // This index is the position of the 'ExploreMomentsCard' in the list 0f explore moments.
   final int index;
+  final Function()? onTap;
+  final bool showProfileAvatar;
   final List<ExploreMomentsModel> exploreMomentsModelList;
   const ExploreMomentsCard(
-      {Key? key, required this.index, required this.exploreMomentsModelList})
+      {Key? key,
+      this.onTap,
+      this.showProfileAvatar =
+          true, // We do not show profile avatar on profile page moment's tab.
+      required this.index,
+      required this.exploreMomentsModelList})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        NavigationUtil.push(
-          context,
-          screen: MomentsDetailsScreen(
-            indexOfMoment: index,
-            momentsModelList:
-                exploreMomentsModelList.map((e) => e.moments!).toList(),
-          ),
-        );
+        if (onTap != null) {
+          onTap!();
+        } else {
+          NavigationUtil.push(
+            context,
+            screen: MomentsDetailsScreen(
+              indexOfMoment: index,
+              momentsModelList:
+                  exploreMomentsModelList.map((e) => e.moments!).toList(),
+            ),
+          );
+        }
       },
       child: Card(
         color: Colors.grey,
@@ -829,32 +841,31 @@ class ExploreMomentsCard extends StatelessWidget {
               momentModel: exploreMomentsModelList[index].moments!.first,
               context: context,
             ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 4.0),
-                child: SizedBox(
-                  width: 25,
-                  child: getCircularUserAvatar(
-                      exploreMomentsModelList[index].avatar!),
-                ),
-              ),
-            ),
+            showProfileAvatar
+                ? Align(
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: SizedBox(
+                        width: 25,
+                        child: getCircularUserAvatar(
+                            exploreMomentsModelList[index].avatar!),
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(),
             Align(
               alignment: Alignment.bottomLeft,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      truncateString(
-                        str: exploreMomentsModelList[index].ownerName!,
-                        lengthToTruncateAt: 20,
-                      ),
-                      style: TextStyle(
+                    userNameWithVerifiedIcon(
+                      name: exploreMomentsModelList[index].ownerName!,
+                      isVerified: false,
+                      textStyle: TextStyle(
                         fontSize: 12,
                         shadows: [
                           Shadow(
@@ -889,12 +900,15 @@ class ExploreMomentsCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Align(
-            //   alignment: Alignment.topRight,
-            //   child: momentListLengthWidget(
-            //     exploreMomentsModelList[index].moments!.length,
-            //   ),
-            // ),
+            exploreMomentsModelList[index].moments!.first.mediaType == 'video'
+                ? Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: Icon(Icons.video_call),
+                    ),
+                  )
+                : SizedBox.shrink(),
           ],
         ),
       ),
@@ -926,6 +940,8 @@ Widget momentListLengthWidget(int? length, {double? fontSize}) {
 
 Widget _getMediaRenderer(
     {required MomentsModel momentModel, required BuildContext context}) {
+  debugPrint('POSTER --> ${momentModel.ownerName}');
+  debugPrint('POSTER --> ${momentModel.mediaPoster}');
   if (momentModel.mediaPoster != null) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -933,13 +949,11 @@ Widget _getMediaRenderer(
         imageUrl: momentModel.mediaPoster!,
         fit: BoxFit.fill,
         memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
+        errorWidget: productAndServiceBigErrorWidget,
       ),
     );
   }
-  // Image.asset(
-  //   'assets/images/moment_placeholder_image.png',
-  //   fit: BoxFit.cover,
-  // ),
+
   if (momentModel.mediaType == "image") {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -947,6 +961,7 @@ Widget _getMediaRenderer(
         imageUrl: momentModel.media!,
         fit: BoxFit.cover,
         memCacheHeight: (MediaQuery.of(context).size.height * 0.8).toInt(),
+        errorWidget: productAndServiceBigErrorWidget,
       ),
     );
   }
@@ -957,13 +972,6 @@ Widget _getMediaRenderer(
         decoration: BoxDecoration(
           color: Color(0XFFdcdcdc).withOpacity(0.5),
           borderRadius: BorderRadius.circular(10),
-        ),
-      );
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.asset(
-          'assets/images/moment_placeholder_image.png',
-          fit: BoxFit.cover,
         ),
       );
     } else {

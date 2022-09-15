@@ -21,7 +21,9 @@ import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
 import '../widget/dialog.dart';
 import '../widget/rounded_background_icon.dart';
+import 'connection_module/channels.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_manager.dart';
+import 'more_apps/suggestions_tab.dart';
 import 'more_apps/user_profile/user_auth.dart';
 
 class SearchModule extends StatefulWidget {
@@ -71,6 +73,7 @@ class _SearchModuleState extends State<SearchModule> {
   bool usingOutsideOfDashboard = false;
   List<String> userConnectionNames = [];
   AppConfigurationModel? appConfigurationModel;
+  int currentIndex = 0;
 
   @override
   void initState() {
@@ -130,6 +133,113 @@ class _SearchModuleState extends State<SearchModule> {
     setState(() {});
   }
 
+  Widget appBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      titleSpacing: 0,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 24,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        getTabTitle(),
+        style: TextStyle(
+            color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
+        overflow: TextOverflow.fade,
+        softWrap: false,
+        maxLines: 1,
+      ),
+      bottom: tabBar() as PreferredSizeWidget?,
+    );
+  }
+
+  Widget tabBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(50.0),
+      child: TabBar(
+        labelPadding: EdgeInsets.zero,
+        indicator: BoxDecoration(),
+        onTap: (int index) {
+          currentIndex = index;
+          setState(() {});
+        },
+        tabs: [
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 0
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                AppLocalization.of(context)!.search,
+                style: TextStyle(
+                  color: currentIndex == 0 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 0 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 1
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                AppLocalization.of(context)!.suggestions,
+                style: TextStyle(
+                  color: currentIndex == 1 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 1 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                shape: BoxShape.rectangle,
+                color: currentIndex == 2
+                    ? navyBlue.withOpacity(0.1)
+                    : Colors.white,
+              ),
+              child: Text(
+                AppLocalization.of(context)!.chatChannels,
+                style: TextStyle(
+                  color: currentIndex == 2 ? navyBlue : blackFont,
+                  fontSize: 14,
+                  fontWeight:
+                      currentIndex == 2 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     searchTypeSelectionMenu = CustomizedPopUpMenu(
@@ -155,21 +265,50 @@ class _SearchModuleState extends State<SearchModule> {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
-    return Scaffold(
-      key: _scaffoldSearchKey,
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: Column(
-        children: [
-          SizedBox(height: 6),
-          searchBox(),
-          SizedBox(height: 16),
-          Expanded(
-            child: _buildResultList(),
-          ),
-        ],
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        key: _scaffoldSearchKey,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: tabViews(),
       ),
+    );
+  }
+
+  String getTabTitle() {
+    if (currentIndex == 0) {
+      return AppLocalization.of(context)!.search;
+    } else if (currentIndex == 1) {
+      return AppLocalization.of(context)!.suggestions;
+    } else if (currentIndex == 2) {
+      return AppLocalization.of(context)!.chatChannels;
+    }
+    return "";
+  }
+
+  Widget tabViews() {
+    return IndexedStack(
+      index: currentIndex,
+      children: [
+        searchTab(),
+        SuggestionsTab(),
+        ChatChannels(),
+      ],
+    );
+  }
+
+  Widget searchTab() {
+    return Column(
+      children: [
+        SizedBox(height: 6),
+        searchBox(),
+        SizedBox(height: 16),
+        Expanded(
+          child: _buildResultList(),
+        ),
+      ],
     );
   }
 
@@ -344,30 +483,30 @@ class _SearchModuleState extends State<SearchModule> {
     );
   }
 
-  Widget appBar() {
-    return AppBar(
-      elevation: 0,
-      titleSpacing: 16,
-      backgroundColor: Colors.white,
-      automaticallyImplyLeading: false,
-      centerTitle: false,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 24,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-      ),
-      title: Text(
-        "Search",
-        style: TextStyle(
-            color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
-      ),
-    );
-  }
+  // Widget appBar() {
+  //   return AppBar(
+  //     elevation: 0,
+  //     titleSpacing: 16,
+  //     backgroundColor: Colors.white,
+  //     automaticallyImplyLeading: false,
+  //     centerTitle: false,
+  //     leading: IconButton(
+  //       icon: Icon(
+  //         Icons.keyboard_arrow_left,
+  //         color: navyBlue,
+  //         size: 24,
+  //       ),
+  //       onPressed: () {
+  //         Navigator.pop(context);
+  //       },
+  //     ),
+  //     title: Text(
+  //       "Search",
+  //       style: TextStyle(
+  //           color: blackFont, fontSize: 20, fontWeight: FontWeight.w700),
+  //     ),
+  //   );
+  // }
 
   Widget _buildResultList() {
     return isSearchIsEmpty
@@ -389,9 +528,11 @@ class _SearchModuleState extends State<SearchModule> {
                       return _buildIndicator();
                     } else {
                       try {
+                        debugPrint(' SHOW RESULT ->');
+
                         return results[index];
                       } catch (error) {
-                        debugPrint(error.toString());
+                        debugPrint('ERROR RESULT -> ${error.toString()}');
                       }
                     }
                     return _buildIndicator();
@@ -435,12 +576,13 @@ class _SearchModuleState extends State<SearchModule> {
           return;
         }
 
-        debugPrint('RESULT ::: $result');
-
         count = result['count'];
         next = result['next'];
         previous = result['previous'];
         List? tempList = result['results'];
+
+        debugPrint('RESULT ::: $tempList');
+
         if (mounted) {
           isLoading = false;
           results.clear();
@@ -449,7 +591,10 @@ class _SearchModuleState extends State<SearchModule> {
             tempList!.forEach((result) {
               results.add(getResultTile(result));
             });
-          } catch (e) {}
+            debugPrint('FINAL RESULT-> ${results}');
+          } catch (e) {
+            debugPrint('CANNOT SHOW SEARCH RESULT -> ${e.toString()}');
+          }
 
           setState(() {});
         }
@@ -476,6 +621,7 @@ class _SearchModuleState extends State<SearchModule> {
   Widget getResultTile(var result) {
     switch (selectedMenuItemIndex) {
       case 0:
+        debugPrint('RESULT OKAY->');
         return getUserTile(result);
 
       case 1:
@@ -511,14 +657,20 @@ class _SearchModuleState extends State<SearchModule> {
 
   Widget getUserTile(var object) {
     CustomerProfile user = CustomerProfile(
-        avatar: object["avatar"],
-        fullName: object["full_name"],
-        qrCode: object["qr_code"],
-        userName: object["username"],
-        type: object['type'] ?? 'user');
+      avatar: object["avatar"],
+      fullName: object["full_name"],
+      qrCode: object["qr_code"],
+      userName: object["username"],
+      type: object['type'] ?? 'user',
+      isVerified: object['is_verified'] ?? false,
+    );
 
-    if (user.userName.toString().toLowerCase() == "slydo" ||
-        user.userName.toString().toLowerCase() == "slydo_envelope") {
+    // if (user.userName.toString().toLowerCase() == "slydo" ||
+    //     user.userName.toString().toLowerCase() == "slydo_envelope") {
+    //   return Container();
+    // }
+
+    if (user.userName.toString().toLowerCase() == "slydo_envelope") {
       return Container();
     }
 
@@ -541,15 +693,9 @@ class _SearchModuleState extends State<SearchModule> {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: ListTile(
                   dense: true,
-                  title: Text(
-                    user.displayName()!.length <= 35
-                        ? user.displayName()!
-                        : '${user.displayName()!.substring(0, 36)}...',
-                    maxLines: 1,
-                    style: TextStyle(
-                        color: blackFont,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14),
+                  title: userNameWithVerifiedIcon(
+                    name: user.fullName!,
+                    isVerified: user.isVerified,
                   ),
                   subtitle: Text(
                     user.userName!,
@@ -987,8 +1133,12 @@ class _SearchModuleState extends State<SearchModule> {
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.25,
       child: VerticalListItem(searchCard, user),
-      actions: listActionSlideActions(user),
-      secondaryActions: listSecondaryActions(user),
+      actions: user.userName.toString().toLowerCase() == "slydo"
+          ? []
+          : listActionSlideActions(user),
+      secondaryActions: user.userName.toString().toLowerCase() == "slydo"
+          ? []
+          : listSecondaryActions(user),
     );
   }
 
@@ -1000,13 +1150,14 @@ class _SearchModuleState extends State<SearchModule> {
           icon: Icons.payments_rounded,
           onTap: () async {
             if (appConfigurationModel?.enablePayment == true) {
-              customerProfileBloc.customer =
-                  await UserAuth().fetchCustomerProfile(user.userName);
+              // customerProfileBloc.customer =
+              //     await UserAuth().fetchCustomerProfile(user.userName);
               Navigator.of(context).pushNamed(
                 Routes.REQUEST_PAYMENT,
-                arguments: <String, bool>{
+                arguments: <String, dynamic>{
                   'isFromProfile': false,
                   'isRequest': true,
+                  'recipient': user.userName,
                 },
               );
             } else {
@@ -1022,11 +1173,12 @@ class _SearchModuleState extends State<SearchModule> {
           icon: Icons.payments_rounded,
           onTap: () async {
             if (appConfigurationModel?.enablePayment == true) {
-              customerProfileBloc.customer =
-                  await UserAuth().fetchCustomerProfile(user.userName);
+              // customerProfileBloc.customer =
+              //     await UserAuth().fetchCustomerProfile(user.userName);
               Navigator.of(context)
-                  .pushNamed(Routes.SEND_PAYMENT, arguments: <String, bool>{
+                  .pushNamed(Routes.SEND_PAYMENT, arguments: <String, dynamic>{
                 'isFromProfile': false,
+                'recipient': user.userName,
               });
             } else {
               showToast(message: 'Payment not available at the moment');

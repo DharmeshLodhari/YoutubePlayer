@@ -2,6 +2,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -97,10 +98,11 @@ class _BlockedListState extends State<BlockedList> {
     );
   }
 
+  String noBlockedListMsg = "No Blocked Users\nPull down to refresh";
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "No Blocked Users",
+            msg: noBlockedListMsg,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(

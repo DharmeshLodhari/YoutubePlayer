@@ -97,15 +97,27 @@ class _HomeState extends State<Home> {
   }
 
   Widget _backgroundScreen() {
-    if (userBloc.user.userAbout == null ||
-        userBloc.user.userAbout!.wallpaper == "") {
-      return Container(
-        child: Image.asset(
-          "assets/images/home_screen_background.png",
-          frameBuilder: imageFrameBuilder,
-          fit: BoxFit.cover,
-        ),
-      );
+    if (userBloc.user.type!.toLowerCase() == 'user') {
+      if (userBloc.user.wallpaper == null || userBloc.user.wallpaper == "") {
+        return Container(
+          child: Image.asset(
+            "assets/images/home_screen_background.png",
+            frameBuilder: imageFrameBuilder,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
+    } else {
+      if (userBloc.user.userAbout == null ||
+          userBloc.user.userAbout!.wallpaper == "") {
+        return Container(
+          child: Image.asset(
+            "assets/images/home_screen_background.png",
+            frameBuilder: imageFrameBuilder,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
     }
 
     return ClipRRect(
@@ -116,7 +128,9 @@ class _HomeState extends State<Home> {
         width: 100.0.w,
         height: 33.0.h,
         child: CachedNetworkImage(
-          imageUrl: userBloc.user.userAbout!.wallpaper,
+          imageUrl: userBloc.user.type == 'User'
+              ? userBloc.user.wallpaper!
+              : userBloc.user.userAbout!.wallpaper,
           fit: BoxFit.cover,
           color: blackFont.withOpacity(0.4),
           colorBlendMode: BlendMode.darken,
@@ -172,26 +186,18 @@ class _HomeState extends State<Home> {
             getGreetingMessage(),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
-          Text(
-            truncateString(
-              str: userBloc.user.displayName()!,
-              lengthToTruncateAt: 38,
-            ),
-            style: TextStyle(
-              fontSize: 14,
-            ),
-          )
+          userNameWithVerifiedIcon(
+            name: userBloc.user.displayName()!,
+            isVerified: userBloc.user.isVerified,
+            textStyle: TextStyle(fontSize: 16),
+          ),
         ],
       ),
       actions: <Widget>[
         _searchBtn(),
-        SizedBox(
-          width: 8.0,
-        ),
+        SizedBox(width: 8.0),
         _messageBtn(),
-        SizedBox(
-          width: 4.0,
-        ),
+        SizedBox(width: 4.0),
         _cartBtn(),
         SizedBox(width: 8.0),
       ],
@@ -365,32 +371,53 @@ class _HomeState extends State<Home> {
                       EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
                   leading: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                          arguments: userBloc.user.avatar);
+                      Navigator.of(context).pushNamed('/add-edit-user-bio',
+                          arguments: {"searchedUser": userBloc.user.userAbout});
                     },
-                    child: Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            25,
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 48,
+                          width: 48,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                25,
+                              ),
+                              border: Border.all(color: borderColor, width: 2)),
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: userBloc.user.avatar!,
+                              fit: BoxFit.cover,
+                              errorWidget: imageErrorWidget,
+                            ),
                           ),
-                          border: Border.all(color: borderColor, width: 2)),
-                      child: ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: userBloc.user.avatar!,
-                          fit: BoxFit.fill,
-                          errorWidget: imageErrorWidget,
                         ),
-                      ),
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: RoundedBackgroundIcon(
+                            height: 22,
+                            width: 22,
+                            backgroundColor: greyBorderColor.withOpacity(0.7),
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed('/add-edit-user-bio', arguments: {
+                                "searchedUser": userBloc.user.userAbout
+                              });
+                            },
+                            icon: Icon(
+                              SlydoAppIcon.edit,
+                              color: blackFont,
+                              size: 12,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  title: Text(
-                    userBloc.user.displayName()!.length <= 22
-                        ? userBloc.user.displayName()!
-                        : '${userBloc.user.displayName()!.substring(0, 23)}...',
-                    maxLines: 1,
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  title: userNameWithVerifiedIcon(
+                    name: userBloc.user.displayName()!,
+                    isVerified: userBloc.user.isVerified,
                   ),
                   subtitle: Text(
                     userBloc.user.userName!,
@@ -426,6 +453,7 @@ class _HomeState extends State<Home> {
                 ),
                 Container(
                   key: tutorialQrCodeKey,
+                  alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
                   child: CachedNetworkImage(
                     height: MediaQuery.of(context).size.width / 1.7,

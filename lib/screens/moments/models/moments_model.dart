@@ -62,6 +62,7 @@ class ExploreMomentsModel {
   });
   factory ExploreMomentsModel.fromJson(Map<String, dynamic> json) {
     List moments = json['moments'];
+
     return ExploreMomentsModel(
       owner: json['owner'],
       avatar: json['avatar'],
@@ -122,6 +123,39 @@ class MomentsModel {
     this.isPublic,
   });
 
+  // factory MomentsModel.fromExploreMoments(ExploreMomentsModel exploreMomentsModel) {
+  //
+  //   String? owner;
+  //   String? avatar;
+  //   String? ownerName;
+  //   List<MomentsModel>? moments;
+  //   return MomentsModel(
+  //     id: exploreMomentsModel.id,
+  //     views: json['views'] ?? 0,
+  //     payMeLabel: json['pay_me_label'],
+  //     payMeButtonColor: json['payme_button_color'],
+  //     payMe: json['enable_payme'],
+  //     tags: json['tags'],
+  //     enableLikes: json['enable_like'],
+  //     enableCommenting: json['enable_commenting'],
+  //     likes: json['likes'] ?? 0,
+  //     dislikes: json['dislikes'] ?? 0,
+  //     mediaType: json['media_type'],
+  //     attachment: json['attachment'] ?? {},
+  //     numberOfComments: json['number_of_comments'] ?? 0,
+  //     avatar: json['avatar'],
+  //     ownerName: json['owner_name'],
+  //     media: json['media'],
+  //     mediaPoster: json['media_poster'],
+  //     gif: json['gif'],
+  //     text: json['text'],
+  //     owner: exploreMomentsModel.owner,
+  //     createdAt: json['created_at'],
+  //     expireAt: json['expire_at'],
+  //     isPublic: json['is_public'],
+  //   );
+  // }
+
   factory MomentsModel.fromJson(Map<String, dynamic> json) {
     return MomentsModel(
       id: json['id'],
@@ -146,7 +180,7 @@ class MomentsModel {
       owner: json['owner'],
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
-      isPublic: json['is_public'],
+      isPublic: json['is_public'] ?? false,
     );
   }
 }

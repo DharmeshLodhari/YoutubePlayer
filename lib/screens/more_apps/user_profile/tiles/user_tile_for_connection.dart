@@ -89,24 +89,26 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         }
       },
       child: Container(
-          height: 48,
-          width: 48,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                25,
-              ),
-              border: Border.all(color: borderColor, width: 2)),
-          child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: widget.user!.avatar == "" || widget.user!.avatar == null
-                  ? defaultImage
-                  : widget.user!.avatar!,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.fill,
-              filterQuality: FilterQuality.high,
-              errorWidget: imageErrorWidget,
-            ),
-          )),
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2),
+        ),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.user!.avatar == "" || widget.user!.avatar == null
+                ? defaultImage
+                : widget.user!.avatar!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      ),
     );
 
     Widget tile = Card(
@@ -118,16 +120,9 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
         decoration: decorateBox(),
         child: ListTile(
           dense: true,
-          title: Text(
-            widget.user!.fullName!,
-            maxLines: 1,
-            style: TextStyle(
-              color: blackFont,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-            overflow: TextOverflow.fade,
-            softWrap: false,
+          title: userNameWithVerifiedIcon(
+            name: widget.user!.fullName!,
+            isVerified: widget.user?.isVerified,
           ),
           subtitle: getSubtitle(context),
           leading: avatarImage,
@@ -247,7 +242,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
             color: naturalGreen.withOpacity(0.1),
           ),
           child: Text(
-            "Group",
+            "Channel",
             style: TextStyle(
                 fontSize: 11, fontWeight: FontWeight.w600, color: naturalGreen),
           ),

@@ -2,10 +2,14 @@ import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
+import '../screens/more_apps/shopping/shopping_auth.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import 'bottom_sheet_item.dart';
 
@@ -25,205 +29,142 @@ class DisplayProduct extends StatefulWidget {
 }
 
 class _DisplayProductState extends State<DisplayProduct> {
+  late bool isOwner;
+  late BasketBloc basketBloc;
+  bool showAddToCartButton = true;
+  final _auth = ShoppingAuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    isOwner = widget.product.seller == getLoggedInUserName(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isOwner = widget.product.seller == getLoggedInUserName(context);
-    return Card(
-      color: Colors.white,
-      margin: EdgeInsets.only(
-          right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      shadowColor: boxShadow,
-      child: GestureDetector(
-        child: Container(
-          width: MediaQuery.of(context).size.width - 220,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Expanded(
-                child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: CachedNetworkImage(
-                        imageUrl: widget.product.cover!,
-                        fit: BoxFit.fitWidth,
-                        width: double.infinity,
-                        errorWidget: productAndServiceBigErrorWidget,
+    basketBloc = Provider.of<BasketBloc>(context);
+
+    return GestureDetector(
+      onTap: () {
+        if (showAddToCartButton == false) {
+          showAddToCartButton = true;
+          if (mounted) setState(() {});
+          return;
+        }
+
+        Product currentProduct = Product();
+        currentProduct.name = widget.product.name;
+        currentProduct.id = widget.product.id;
+        currentProduct.shortDescription = widget.product.shortDescription;
+        currentProduct.description = "";
+        currentProduct.condition = widget.product.condition;
+        currentProduct.currency = widget.product.currency;
+        currentProduct.price = widget.product.price;
+        currentProduct.availableFrom =
+            widget.product.availableFrom ?? DateTime.now();
+        currentProduct.isAvailable = widget.product.isAvailable;
+        currentProduct.qrCode = widget.product.qrCode;
+        currentProduct.seller = widget.product.seller;
+        currentProduct.manufacturer = widget.product.manufacturer;
+        currentProduct.serverImages = widget.product.serverImages;
+        currentProduct.rating = widget.product.rating;
+        Navigator.pushNamed(context, '/product',
+            arguments: {"product": currentProduct});
+      },
+      child: SizedBox(
+        width: 180,
+        child: Card(
+          color: Colors.white,
+          margin: EdgeInsets.only(
+              right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shadowColor: boxShadow,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Expanded(
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10)),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.product.cover!,
+                          fit: BoxFit.fitHeight,
+                          width: double.infinity,
+                          errorWidget: productAndServiceBigErrorWidget,
+                        ),
                       ),
-                    ),
-                    Positioned(
+                      Positioned(
                         right: 10,
                         bottom: 10,
                         child: getRating(
-                            numberOfRating: widget.product.rating?.toInt())),
-                  ],
+                            numberOfRating: widget.product.rating?.toInt()),
+                      ),
+                      getMenuIcon(),
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            truncateString(
-                              str: widget.product.name!,
-                              lengthToTruncateAt: 16,
-                              showEllipsis: false,
-                            ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        truncateString(
+                          str: widget.product.name!,
+                          lengthToTruncateAt: 16,
+                          showEllipsis: false,
+                        ),
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[widget.product.currency!]!,
                             style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
+                              fontFamily: "Roboto",
                               fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: navyBlue,
                             ),
                           ),
-                        ),
-                        isOwner
-                            ? InkWell(
-                                onTap: () => showUserProfileActionsSheet(),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: Icon(SlydoAppIcon.menu, size: 16),
-                                ),
-                              )
-                            : SizedBox.shrink(),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        // Expanded(
-                        //   child: Text(
-                        //     product.shortDescription ?? "",
-                        //     style: TextStyle(
-                        //       color: darkGrey,
-                        //       fontSize: 12,
-                        //     ),
-                        //     maxLines: 1,
-                        //     overflow: TextOverflow.ellipsis,
-                        //   ),
-                        // ),
-                        Text(
-                          worldCurrencies[widget.product.currency!]!,
-                          style: TextStyle(
-                            fontFamily: "Roboto",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: navyBlue,
+                          Text(
+                            moneyDisplayNormalizer(
+                                int.parse(widget.product.price!)),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: navyBlue,
+                            ),
                           ),
-                        ),
-                        Text(
-                          moneyDisplayNormalizer(
-                              int.parse(widget.product.price!)),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: navyBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 4),
-                  ],
+                          Spacer(),
+                          // getFavouriteIcon(),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // ListTile(
-              //   dense: true,
-              //   title: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       Expanded(
-              //         child: Text(
-              //           product.name!,
-              //           style: TextStyle(
-              //             color: blackFont,
-              //             fontSize: 14,
-              //             fontWeight: FontWeight.bold,
-              //           ),
-              //           maxLines: 1,
-              //           softWrap: false,
-              //           overflow: TextOverflow.fade,
-              //         ),
-              //       ),
-              //       SizedBox(width: 12),
-              //       Row(
-              //         mainAxisSize: MainAxisSize.min,
-              //         children: <Widget>[
-              //           Text(
-              //             worldCurrencies[product.currency!]!,
-              //             style: TextStyle(
-              //               fontFamily: "Roboto",
-              //               fontWeight: FontWeight.bold,
-              //               fontSize: 14,
-              //               color: navyBlue,
-              //             ),
-              //           ),
-              //           Text(
-              //             moneyDisplayNormalizer(int.parse(product.price!)),
-              //             style: TextStyle(
-              //               fontWeight: FontWeight.bold,
-              //               fontSize: 14,
-              //               color: navyBlue,
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ],
-              //   ),
-              //   subtitle: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       Expanded(
-              //         child: Text(
-              //           product.shortDescription ?? "",
-              //           style: TextStyle(
-              //             color: darkGrey,
-              //             fontSize: 12,
-              //           ),
-              //           maxLines: 1,
-              //           overflow: TextOverflow.ellipsis,
-              //         ),
-              //       ),
-              //       getRating(numberOfRating: product.rating?.toInt()),
-              //     ],
-              //   ),
-              // ),
-            ],
+              ],
+            ),
           ),
         ),
-        onTap: () {
-          Product currentProduct = Product();
-          currentProduct.name = widget.product.name;
-          currentProduct.id = widget.product.id;
-          currentProduct.shortDescription = widget.product.shortDescription;
-          currentProduct.description = "";
-          currentProduct.condition = widget.product.condition;
-          currentProduct.currency = widget.product.currency;
-          currentProduct.price = widget.product.price;
-          currentProduct.availableFrom =
-              widget.product.availableFrom ?? DateTime.now();
-          currentProduct.isAvailable = widget.product.isAvailable;
-          currentProduct.qrCode = widget.product.qrCode;
-          currentProduct.seller = widget.product.seller;
-          currentProduct.manufacturer = widget.product.manufacturer;
-          currentProduct.serverImages = widget.product.serverImages;
-          currentProduct.rating = widget.product.rating;
-          Navigator.pushNamed(context, '/product',
-              arguments: {"product": currentProduct});
-        },
       ),
     );
   }
 
-  void showUserProfileActionsSheet() {
+  void showProductProfileActionsSheet() {
     showModalBottomSheet<void>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -295,6 +236,172 @@ class _DisplayProductState extends State<DisplayProduct> {
 
     return list;
   }
+
+  Widget getMenuIcon() {
+    if (basketBloc.getProductOrServiceQuantityInCart(widget.product.id!) == 0) {
+      setState(() {
+        showAddToCartButton = true;
+      });
+    }
+    if (isOwner) {
+      return Positioned(
+        top: 5,
+        right: 5,
+        child: RoundedBackgroundIcon(
+          icon: Icon(
+            SlydoAppIcon.menu,
+            size: 22,
+            color: Colors.black,
+          ),
+          onTap: () {
+            showProductProfileActionsSheet();
+          },
+          backgroundColor: Colors.white.withOpacity(0.5),
+        ),
+      );
+    } else {
+      if (showAddToCartButton) {
+        return Positioned(
+          top: 5,
+          right: 5,
+          child: RoundedBackgroundIcon(
+            icon: Icon(
+              SlydoAppIcon.cart,
+              size: 16,
+              color: blackFont,
+            ),
+            backgroundColor: Colors.white.withOpacity(0.5),
+            onTap: () async {
+              setState(() {
+                showAddToCartButton = false;
+              });
+              addProductToCart();
+            },
+          ),
+        );
+      } else {
+        return Positioned(
+          top: 5,
+          right: 5,
+          child: SizedBox(
+            height: 100,
+            width: 40,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: InkWell(
+                        onTap: () {
+                          addProductToCart();
+                        },
+                        child: Icon(Icons.add),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: navyBlue,
+                      child: Center(
+                        child: Text(
+                          '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: InkWell(
+                          onTap: () {
+                            if (basketBloc.getProductOrServiceQuantityInCart(
+                                    widget.product.id!) ==
+                                1) {
+                              setState(() {
+                                showAddToCartButton = true;
+                              });
+                            }
+
+                            removeProductFromCart();
+                          },
+                          child: Icon(Icons.remove_rounded)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Widget getFavouriteIcon() {
+    return !isOwner
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: InkWell(
+              child: Icon(Icons.favorite_border),
+            ),
+          )
+        : SizedBox.shrink();
+  }
+
+  void addProductToCart() async {
+    if (widget.product.isAvailable!) {
+      if (!isOwner) {
+        String type = "product";
+        basketBloc.addItemToCart(item: widget.product, type: type);
+        late var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == widget.product.id) {
+            mapData = element;
+            return;
+          }
+        });
+        Map data = {
+          "type": type,
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+        };
+        debugPrint("Data From Display Product widget Page : $data");
+        await _auth.addItemToShoppingCart(data);
+      } else {
+        showToast(
+            message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+      }
+    } else {
+      showToast(message: AppLocalization.of(context)!.productOutOfStock);
+    }
+  }
+
+  void removeProductFromCart() async {
+    String type = "product";
+
+    late var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == widget.product.id) {
+        mapData = element;
+        return;
+      }
+    });
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"] - 1,
+    };
+
+    debugPrint("Data send From Remove Button : $data");
+    basketBloc.removeItemFromCart(widget.product);
+    await ShoppingAuthService().removeItemFromShoppingCart(data);
+  }
 }
 
 class DisplayService extends StatefulWidget {
@@ -313,23 +420,58 @@ class DisplayService extends StatefulWidget {
 }
 
 class _DisplayServiceState extends State<DisplayService> {
+  late bool isOwner;
+  late BasketBloc basketBloc;
+  bool showAddToCartButton = true;
+  final _auth = ShoppingAuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    isOwner =
+        widget.service.getMerchantUserName() == getLoggedInUserName(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isOwner =
-        widget.service.getMerchantUserName() == getLoggedInUserName(context);
+    basketBloc = Provider.of<BasketBloc>(context);
 
-    debugPrint(widget.service.getMerchantUserName());
-    debugPrint('LOGED IN -> ${getLoggedInUserName(context)}');
-    return Card(
-      color: Colors.white,
-      margin: EdgeInsets.only(
-          right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      shadowColor: boxShadow,
-      child: GestureDetector(
+    return GestureDetector(
+      onTap: () {
+        if (showAddToCartButton == false) {
+          showAddToCartButton = true;
+          if (mounted) setState(() {});
+          return;
+        }
+
+        Service currentService = Service();
+        currentService.name = widget.service.name;
+        currentService.id = widget.service.id;
+        currentService.shortDescription = widget.service.shortDescription;
+        currentService.currency = widget.service.currency;
+        currentService.price = widget.service.price;
+        currentService.isAvailable = widget.service.isAvailable;
+        currentService.qrCode = widget.service.qrCode;
+        currentService.provider = widget.service.provider;
+        currentService.serverImages = widget.service.serverImages;
+        currentService.currency = widget.service.currency;
+        currentService.description = widget.service.description;
+        currentService.availableFrom = DateTime.now();
+        currentService.rating = currentService.rating;
+
+        Navigator.pushNamed(context, '/service-detail',
+            arguments: {"service": currentService});
+      },
+      child: Card(
+        color: Colors.white,
+        margin: EdgeInsets.only(
+            right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadow,
         child: Container(
           width: MediaQuery.of(context).size.width - 220,
+          margin: const EdgeInsets.symmetric(vertical: 12.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -349,46 +491,33 @@ class _DisplayServiceState extends State<DisplayService> {
                       ),
                     ),
                     Positioned(
-                        right: 10,
-                        bottom: 10,
-                        child: getRating(
-                            numberOfRating: widget.service.rating?.toInt())),
+                      right: 10,
+                      bottom: 10,
+                      child: getRating(
+                        numberOfRating: widget.service.rating?.toInt(),
+                      ),
+                    ),
+                    getMenuIcon(),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.only(left: 8.0, top: 4),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            truncateString(
-                              str: widget.service.name!,
-                              lengthToTruncateAt: 16,
-                              showEllipsis: false,
-                            ),
-                            style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        isOwner
-                            ? InkWell(
-                                onTap: () => showUserProfileActionsSheet(),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: Icon(SlydoAppIcon.menu, size: 16),
-                                ),
-                              )
-                            : SizedBox.shrink(),
-                      ],
+                    Text(
+                      truncateString(
+                        str: widget.service.name!,
+                        lengthToTruncateAt: 16,
+                        showEllipsis: false,
+                      ),
+                      style: TextStyle(
+                        color: blackFont,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Row(
                       children: [
@@ -419,30 +548,118 @@ class _DisplayServiceState extends State<DisplayService> {
             ],
           ),
         ),
-        onTap: () {
-          Service currentService = Service();
-          currentService.name = widget.service.name;
-          currentService.id = widget.service.id;
-          currentService.shortDescription = widget.service.shortDescription;
-          currentService.currency = widget.service.currency;
-          currentService.price = widget.service.price;
-          currentService.isAvailable = widget.service.isAvailable;
-          currentService.qrCode = widget.service.qrCode;
-          currentService.provider = widget.service.provider;
-          currentService.serverImages = widget.service.serverImages;
-          currentService.currency = widget.service.currency;
-          currentService.description = widget.service.description;
-          currentService.availableFrom = DateTime.now();
-          currentService.rating = currentService.rating;
-
-          Navigator.pushNamed(context, '/service-detail',
-              arguments: {"service": currentService});
-        },
       ),
     );
   }
 
-  void showUserProfileActionsSheet() {
+  Widget getMenuIcon() {
+    if (basketBloc.getProductOrServiceQuantityInCart(widget.service.id!) == 0) {
+      setState(() {
+        showAddToCartButton = true;
+      });
+    }
+    if (isOwner) {
+      return Positioned(
+        top: 5,
+        right: 5,
+        child: RoundedBackgroundIcon(
+          icon: Icon(
+            SlydoAppIcon.menu,
+            size: 22,
+            color: Colors.black,
+          ),
+          onTap: () {
+            showServiceActionsSheet();
+          },
+          backgroundColor: Colors.white.withOpacity(0.5),
+        ),
+      );
+    } else {
+      if (showAddToCartButton) {
+        return Positioned(
+          top: 5,
+          right: 5,
+          child: RoundedBackgroundIcon(
+            icon: Icon(
+              SlydoAppIcon.cart,
+              size: 16,
+              color: blackFont,
+            ),
+            backgroundColor: Colors.white.withOpacity(0.5),
+            onTap: () async {
+              setState(() {
+                showAddToCartButton = false;
+              });
+              addServiceToCart();
+            },
+          ),
+        );
+      } else {
+        return Positioned(
+          top: 5,
+          right: 5,
+          child: SizedBox(
+            height: 100,
+            width: 40,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: InkWell(
+                        onTap: () {
+                          addServiceToCart();
+                        },
+                        child: Icon(Icons.add),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: navyBlue,
+                      child: Center(
+                        child: Text(
+                          '${basketBloc.getProductOrServiceQuantityInCart(widget.service.id!)}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: InkWell(
+                        onTap: () {
+                          if (basketBloc.getProductOrServiceQuantityInCart(
+                                  widget.service.id!) ==
+                              1) {
+                            setState(() {
+                              showAddToCartButton = true;
+                            });
+                          }
+
+                          removeServiceFromCart();
+                        },
+                        child: Icon(Icons.remove_rounded),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void showServiceActionsSheet() {
     showModalBottomSheet<void>(
         backgroundColor: Colors.transparent,
         context: context,
@@ -514,117 +731,53 @@ class _DisplayServiceState extends State<DisplayService> {
 
     return list;
   }
-}
 
-Widget displayService(
-    {required BuildContext context,
-    required Service service,
-    bool inSuperStore = false}) {
-  return Card(
-    color: Colors.white,
-    margin: EdgeInsets.only(right: inSuperStore ? 0 : 10.0, bottom: 8.0),
-    elevation: 3,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    shadowColor: boxShadow,
-    child: GestureDetector(
-      child: Container(
-        width: MediaQuery.of(context).size.width - 220,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Expanded(
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10)),
-                    child: CachedNetworkImage(
-                      imageUrl: service.cover!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorWidget: productAndServiceBigErrorWidget,
-                    ),
-                  ),
-                  Positioned(
-                      right: 10,
-                      bottom: 10,
-                      child:
-                          getRating(numberOfRating: service.rating?.toInt())),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(service.name) ?? "",
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold),
-                          maxLines: 1,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        worldCurrencies[service.currency!]!,
-                        style: TextStyle(
-                          fontFamily: "Roboto",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: navyBlue,
-                        ),
-                      ),
-                      Text(
-                        moneyDisplayNormalizer(
-                            int.parse(service.price.toString())),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: navyBlue,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      onTap: () {
-        Service currentService = Service();
-        currentService.name = service.name;
-        currentService.id = service.id;
-        currentService.shortDescription = service.shortDescription;
-        currentService.currency = service.currency;
-        currentService.price = service.price;
-        currentService.isAvailable = service.isAvailable;
-        currentService.qrCode = service.qrCode;
-        currentService.provider = service.provider;
-        currentService.serverImages = service.serverImages;
-        currentService.currency = service.currency;
-        currentService.description = service.description;
-        currentService.availableFrom = DateTime.now();
-        currentService.rating = currentService.rating;
+  void removeServiceFromCart() async {
+    String type = "service";
 
-        Navigator.pushNamed(context, '/service-detail',
-            arguments: {"service": currentService});
-      },
-    ),
-  );
+    late var mapData;
+    basketBloc.items.forEach((element) {
+      if (element["item"].id == widget.service.id) {
+        mapData = element;
+        return;
+      }
+    });
+    Map data = {
+      "type": type,
+      "id": mapData["item"].id,
+      "qty": mapData["qty"] - 1,
+    };
+
+    debugPrint("Data send From Remove Button : $data");
+    basketBloc.removeItemFromCart(widget.service);
+    await ShoppingAuthService().removeItemFromShoppingCart(data);
+  }
+
+  void addServiceToCart() async {
+    if (widget.service.isAvailable!) {
+      if (!isOwner) {
+        String type = "product";
+        basketBloc.addItemToCart(item: widget.service, type: type);
+        late var mapData;
+        basketBloc.items.forEach((element) {
+          if (element["item"].id == widget.service.id) {
+            mapData = element;
+            return;
+          }
+        });
+        Map data = {
+          "type": type,
+          "id": mapData["item"].id,
+          "qty": mapData["qty"],
+        };
+        debugPrint("Data From Display Product widget Page : $data");
+        await _auth.addItemToShoppingCart(data);
+      } else {
+        showToast(
+            message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
+      }
+    } else {
+      showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
+    }
+  }
 }

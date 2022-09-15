@@ -324,7 +324,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       itemCount: invoiceBloc.invoiceList.length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index == invoiceBloc.invoiceList.length) {
-          return buildIndicator(isLoading: invoiceBloc.isLoading);
+          return buildLoadingIndicator(isLoading: invoiceBloc.isLoading);
         } else {
           InvoiceModel invoice = invoiceBloc.invoiceList[index];
 

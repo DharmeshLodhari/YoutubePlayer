@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/utils/date_time_and_money_converter.dart';
+import 'package:flutter/foundation.dart';
 
 /// Model for user's connection list
 class ChatConversation {
@@ -20,6 +21,7 @@ class ChatConversation {
   String? qrCode;
   String? type;
   String? userName;
+  bool? isVerified;
 
   ChatConversation(
       {this.adminUsers = const [],
@@ -35,10 +37,12 @@ class ChatConversation {
       this.participants = const [],
       this.qrCode,
       this.type,
-      this.userName});
+      this.userName,
+      this.isVerified = false});
 
   /// Creating ChatConversation From Server Payload
   factory ChatConversation.fromJson(Map<String, dynamic> json) {
+    debugPrint('JSON VE ->> ${json['is_verified']}');
     return ChatConversation(
       adminUsers: json['admin_users'] != null
           ? new List<String>.from(json['admin_users'])
@@ -47,6 +51,7 @@ class ChatConversation {
       blockedParticipants: json['blocked_participants'] != null
           ? new List<String>.from(json['blocked_participants'])
           : [],
+      isVerified: json['is_verified'] ?? false,
       conversationId: json['conversation_id'],
       description: json['description'] ?? "",
       fullName: json['full_name'],
@@ -84,6 +89,7 @@ class ChatConversation {
     data['blocked_participants'] = this.blockedParticipants;
     data['muted_participants'] = this.mutedParticipants;
     data['participants'] = this.participants;
+    data['is_verified'] = this.isVerified;
     return data;
   }
 
@@ -106,6 +112,7 @@ class ChatConversation {
           ? new List<String>.from(jsonDecode(json['muted_participants']))
           : [],
       owner: json['owner'],
+      isVerified: json['is_verified'] == 1 ? true : false,
       participants: json['participants'] != null
           ? new List<String>.from(jsonDecode(json['participants']))
           : [],
@@ -132,6 +139,8 @@ class ChatConversation {
     data['blocked_participants'] = jsonEncode(this.blockedParticipants);
     data['muted_participants'] = jsonEncode(this.mutedParticipants);
     data['participants'] = jsonEncode(this.participants);
+    data['is_verified'] =
+        this.isVerified != null && this.isVerified! == true ? 1 : 0;
 
     return data;
   }
@@ -150,6 +159,7 @@ class ChatConversation {
       mutedParticipants: groupDetailModel.mutedParticipants,
       createdAt: groupDetailModel.createdAt,
       owner: groupDetailModel.owner,
+      isVerified: groupDetailModel.isVerified,
       participants: getParticipants(groupDetailModel.participants),
       qrCode: "",
       type: groupDetailModel.type,
@@ -180,6 +190,7 @@ class ChatConversation {
     _chatConversation.qrCode = chatConversation.qrCode;
     _chatConversation.type = chatConversation.type;
     _chatConversation.userName = chatConversation.userName;
+    _chatConversation.isVerified = chatConversation.isVerified;
 
     return _chatConversation;
   }

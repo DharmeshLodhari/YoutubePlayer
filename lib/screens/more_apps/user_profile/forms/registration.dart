@@ -99,14 +99,14 @@ class _RegistrationState extends State<Registration> {
       child: Row(
         children: <Widget>[
           Text(
-            "Register to ",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
-          ),
-          Text(
-            "Slydo",
+            "Slydo ",
             style: TextStyle(
                 fontSize: 22, fontWeight: FontWeight.w700, color: navyBlue),
+          ),
+          Text(
+            "Registration",
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.w700, color: blackFont),
           ),
         ],
       ),

@@ -97,16 +97,14 @@ class MomentsService extends AuthService {
     }
   }
 
-  Future<List<MomentsModel>> getMomentsWithOwnerName(
-      {required String ownerName,
-        bool fromUserProfile = false, // This is true when we click on the moment's button from a user's profile.
-
-      }) async {
-    debugPrint('MOMENT OWNER NAME ::: ${ownerName}');
-
+  Future<List<MomentsModel>> getMomentsWithOwnerName({
+    required String ownerName,
+    bool fromUserProfile =
+        false, // This is true when we click on the moment's button from a user's profile.
+  }) async {
     late String url;
 
-    if (fromUserProfile) {
+    if (fromUserProfile == true) {
       url = AppConfig.baseUrl + "/api/v1/social/moments/public/$ownerName/";
     } else {
       url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";
@@ -206,14 +204,12 @@ class MomentsService extends AuthService {
     request.files.add(mediaMultipartFile);
 
     request.fields["text"] = createMomentModel.text!;
-    // if (createMomentModel.url != null && createMomentModel.url!.isNotEmpty) {
-    //   request.fields["url"] = createMomentModel.url!;
-    // }
+
     if (createMomentModel.attachmentMap != null) {
       request.fields["attachment"] =
           jsonEncode(createMomentModel.attachmentMap!);
     }
-    request.fields["isPublic"] = jsonEncode(createMomentModel.isPublic);
+    request.fields["is_public"] = jsonEncode(createMomentModel.isPublic);
 
     request.fields["tags"] = jsonEncode(createMomentModel.userTags);
     if (createMomentModel.payMeLabel != null) {

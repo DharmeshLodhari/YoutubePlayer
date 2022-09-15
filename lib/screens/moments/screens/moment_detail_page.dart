@@ -207,11 +207,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
           if (getNextList) {
             widget.momentsModelList!.add(momentsModelList);
           } else {
-            debugPrint('INSERT MOMENTS LIST');
-
             widget.momentsModelList!.insert(0, momentsModelList);
           }
-          debugPrint('LENGTH --> ${widget.momentsModelList!.length}');
 
           setState(() {});
         } catch (e) {
@@ -406,6 +403,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       scrollDirection: Axis.horizontal,
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
+        // var _index = 1;
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -625,11 +623,14 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                       children: [
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(context, Routes.USER_PROFILE,
-                                arguments: {
-                                  "searchedUserName":
-                                      widget.momentsModelList[index].owner,
-                                });
+                            Navigator.pushNamed(
+                              context,
+                              Routes.USER_PROFILE,
+                              arguments: {
+                                "searchedUserName":
+                                    widget.momentsModelList[index].owner,
+                              },
+                            );
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
@@ -649,14 +650,17 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                               InkWell(
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, Routes.USER_PROFILE,
-                                      arguments: {
-                                        "searchedUserName": widget
-                                            .momentsModelList[index].owner,
-                                      });
+                                    context,
+                                    Routes.USER_PROFILE,
+                                    arguments: {
+                                      "searchedUserName":
+                                          widget.momentsModelList[index].owner,
+                                    },
+                                  );
                                 },
                                 child: Text(
-                                  '${widget.momentsModelList[index].ownerName!}',
+                                  messageDecoderWithEmoji(
+                                      '${widget.momentsModelList[index].ownerName!}')!,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -670,18 +674,25 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                   ),
                                 ),
                               ),
-                              Text(
-                                '${getGetMomentDetailDateTime(widget.momentsModelList[index].createdAt!)}',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontWeight: FontWeight.w400,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 10.0,
-                                      offset: Offset(0.0, 0),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    '${getGetMomentDetailDateTime(widget.momentsModelList[index].createdAt!)}',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontWeight: FontWeight.w400,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 10.0,
+                                          offset: Offset(0.0, 0),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(width: 4),
+                                  getPrivateOrPublicIcon(index),
+                                ],
                               ),
                             ],
                           ),
@@ -748,6 +759,25 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
           ],
         );
       },
+    );
+  }
+
+  Widget getPrivateOrPublicIcon(int index){
+    return Padding(
+      padding: EdgeInsets.only(top: 4),
+      child: widget.momentsModelList[index]
+          .isPublic ==
+          true
+          ? Icon(
+        Icons.public_outlined,
+        color: Colors.white,
+        size: 16,
+      )
+          : Icon(
+        Icons.security_outlined,
+        color: Colors.white,
+        size: 16,
+      ),
     );
   }
 
@@ -1036,7 +1066,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   Widget build(BuildContext context) {
     if (initialized) {
       return FittedBox(
-        fit: BoxFit.cover,
+        fit: BoxFit.fitWidth,
         child: SizedBox(
           width: _controller.value.size.width,
           height: _controller.value.size.height,
@@ -1090,7 +1120,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
             widget.momentsModel.mediaPoster != null
                 ? CachedNetworkImage(
                     imageUrl: widget.momentsModel.mediaPoster!,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitWidth,
                     memCacheHeight:
                         (MediaQuery.of(context).size.height * 0.8).toInt(),
                     placeholder: (context, _) {
@@ -1205,16 +1235,11 @@ class _CommentListWidgetState extends State<CommentListWidget> {
       Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
           Provider.of<MomentsBloc>(context, listen: false).numberOfComments;
 
-      debugPrint('BASE COUNT --> ${basePaginationModel!.count}');
-      debugPrint(
-          'PROVIDER NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
-
       if (mounted) {
         setState(() {
           isCommentsLoading = false;
         });
       }
-      debugPrint('COMMENTS ADDED -> ${comments[0].comment}');
     }).catchError((e) {
       basePaginationModel = BasePaginationModel(
         count: 0,
@@ -1318,7 +1343,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
               itemCount: comments.length + 1,
               itemBuilder: (context, index) {
                 if (index == comments.length) {
-                  return buildIndicator(isLoading: isCommentsLoading);
+                  return buildLoadingIndicator(isLoading: isCommentsLoading);
                 } else {
                   return singleCommentWidget(comments[index]);
                 }
@@ -1354,7 +1379,8 @@ class _CommentListWidgetState extends State<CommentListWidget> {
                         Text(
                           truncateString(
                               lengthToTruncateAt: 13,
-                              str: commentModel.authorUsername!,
+                              str: messageDecoderWithEmoji(
+                                  commentModel.authorUsername!)!,
                               showEllipsis: false),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,

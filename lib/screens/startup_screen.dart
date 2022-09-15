@@ -9,19 +9,20 @@ import 'package:page_view_indicators/page_view_indicators.dart';
 import 'package:sizer/sizer.dart';
 
 // ignore: must_be_immutable
-class Index extends StatefulWidget {
+class StartupScreen extends StatefulWidget {
   var arguments;
 
-  Index({this.arguments});
+  StartupScreen({this.arguments});
 
   @override
-  _IndexState createState() => _IndexState(arguments: arguments);
+  _StartupScreenState createState() =>
+      _StartupScreenState(arguments: arguments);
 }
 
-class _IndexState extends State<Index> {
+class _StartupScreenState extends State<StartupScreen> {
   var arguments;
 
-  _IndexState(
+  _StartupScreenState(
       {this.arguments}); // for Checking if User  start App first time or come back from logout button
 
   bool? isIntroDone = false;
@@ -131,16 +132,12 @@ class _IndexState extends State<Index> {
                       CurvedButton(
                         backgroundColor: Color.fromARGB(38, 255, 255, 255),
                         onPressed: () {
-                          // Navigator.of(context)
-                          //     .pushNamed(Routes.NEW_REGISTRATION);
-                          Navigator.of(context).pushNamed(Routes.SIGN_UP);
+                          Navigator.of(context).pushNamed(Routes.REGISTRATION);
                         },
                         text: "Register",
                         textColor: Colors.white,
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                       // resetDeviceField(),
                     ],
                   ),
@@ -189,28 +186,14 @@ class _IndexState extends State<Index> {
     );
   }
 
-  Widget registerButton() {
-    return ButtonTheme(
-      child: MaterialButton(
-        minWidth: 300,
-        onPressed: () {
-          Navigator.of(context).pushNamed(Routes.NEW_REGISTRATION);
-        },
-        textColor: Colors.white,
-        color: blackFont,
-        height: 50,
-        child: Text(AppLocalization.of(context)!.register),
-      ),
-    );
-  }
-
   Widget appIcon() {
     return Container(
-        child: Image.asset(
-      'assets/images/app_logo.png',
-      height: MediaQuery.of(context).size.height / 10,
-      frameBuilder: imageFrameBuilder,
-    ));
+      child: Image.asset(
+        'assets/images/app_logo.png',
+        height: MediaQuery.of(context).size.height / 10,
+        frameBuilder: imageFrameBuilder,
+      ),
+    );
   }
 
   Widget introScreen() {

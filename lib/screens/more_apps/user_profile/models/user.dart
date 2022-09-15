@@ -2,6 +2,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.d
 import 'package:Slydo/screens/more_apps/messaging/chat/models/Participant.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:flutter/foundation.dart';
 
 class ShippingAddress {
   String? addressLineOne;
@@ -67,12 +68,18 @@ class User {
   String conversationId;
   UserStatus status;
   double? rating;
+  String? bio;
+  String? wallpaper;
+  String? chatWallpaper;
   UserAbout? userAbout;
 
   // Pass in as named parameter in constructor
   User({
+    this.bio = "",
     this.uuid = "",
     this.url = "",
+    this.wallpaper = "",
+    this.chatWallpaper = "",
     this.phoneNumber = "",
     this.fullName = "",
     this.userName = "",
@@ -90,7 +97,10 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(
+    UserAbout userAbout = UserAbout.fromJson(json["profile"]);
+
+    debugPrint('IS-VERIFIED --> ${json['is_verified']}');
+    User user = User(
       nickName: json['nickname'] ?? "",
       type: json['account_type'],
       avatar: json['avatar'],
@@ -101,11 +111,18 @@ class User {
       phoneNumber: json['phone_number'],
       qrCode: json['qr_code'],
       url: json['url'],
-      rating: formatRating(json['rating']),
+      bio: json['bio'] ?? '',
       userAbout: UserAbout.fromJson(json["profile"]),
+      chatWallpaper: json['chat_wallpaper'],
+      wallpaper: json['wallpaper'],
+      rating: formatRating(json['rating']),
       userName: json['username'],
       uuid: json['uuid'],
     );
+    // userAbout.bio = user.bio == null ? '' : user.bio!;
+    // user.userAbout = userAbout;
+
+    return user;
   }
 
   Map<String, dynamic> toJson() {
@@ -165,17 +182,29 @@ class CustomerProfile {
   String? qrCode;
   String? nickName;
   String? type;
+  String? wallpaper;
   String? conversationId;
   String uuid;
+  String? bio;
+  int? followers;
+  int? following;
+  String? chatWallpaper;
   String defaultCurrency;
-  bool isVerified;
+  bool? isVerified;
   UserAbout? userAbout;
   UserStatus status;
   double rating;
+  bool? isFollowing;
+  String? dateJoined;
 
   // Pass in as named parameter in constructor
   CustomerProfile(
-      {this.fullName = "",
+      {this.following = 0,
+      this.followers = 0,
+      this.fullName = "",
+      this.bio = "",
+      this.wallpaper = "",
+      this.chatWallpaper = "",
       this.userName = "",
       this.avatar = "",
       this.userAbout,
@@ -186,15 +215,25 @@ class CustomerProfile {
       this.defaultCurrency = "NGN",
       this.isVerified = false,
       this.uuid = "",
+      this.dateJoined = '',
+      this.isFollowing = false,
       this.status = UserStatus.UNKNOWN,
       this.rating = 0.0});
 
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
+    debugPrint('CUSTOMER --> ${json['following']}');
     CustomerProfile profile = CustomerProfile(
         fullName: json['full_name'] ?? json['name'] ?? "",
         userName: json['username'] ?? "",
+        bio: json['bio'] ?? "",
+        dateJoined: json['date_joined'] ?? "",
+        isFollowing: json['is_following'] ?? false,
+        chatWallpaper: json['chat_wallpaper'] ?? "",
+        wallpaper: json['wallpaper'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
+        following: json['following'] ?? 0,
+        followers: json['followers'] ?? 0,
         nickName: json['nickname'] ?? json['name'] ?? "",
         type: json['type'] ?? json['account_type'] ?? "user",
         conversationId: json['conversation_id'] ?? "",

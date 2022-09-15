@@ -8,8 +8,8 @@ class UserAbout {
   List<OpeningHourForDay> openingHours;
 
   UserAbout(
-      {this.userAddress,
-      this.bio = "",
+      {this.bio = '',
+      this.userAddress,
       this.contact = "",
       this.wallpaper = "",
       this.openingHours = const []});
@@ -17,7 +17,6 @@ class UserAbout {
   factory UserAbout.fromJson(Map<String, dynamic> json) {
     return UserAbout(
       userAddress: UserAddress.fromJson(json['address']),
-      bio: json['bio'] ?? "",
       wallpaper: json['wallpaper'] ?? "",
       contact: json['contact'] ?? "",
       openingHours: json['opening_hours'] != null

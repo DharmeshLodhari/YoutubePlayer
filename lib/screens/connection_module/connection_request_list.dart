@@ -20,6 +20,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../routes/route_constants.dart';
 
+
 class ConnectionRequestList extends StatefulWidget {
   @override
   _ConnectionRequestListState createState() => _ConnectionRequestListState();
@@ -106,10 +107,12 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
     );
   }
 
+  String noConnectionRequestMsg =
+      "You have no connection request\nPull down to refresh";
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(
-            msg: "You Have No Connection Request",
+            msg: noConnectionRequestMsg,
           )
         : ListView.builder(
             padding: EdgeInsets.symmetric(
@@ -162,6 +165,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
         isLoading = false;
         connectionRequestList.addAll(tempList);
+        Provider.of<ConnectionRequestListBloc>(context, listen: false)
+            .setHasConnectionRequests = connectionRequestList.isNotEmpty;
 
         if (mounted) setState(() {});
       }
@@ -264,7 +269,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoText: AppLocalization.of(context)!.cancel,
     );
     if (result != null && result) {
-      bool done = await UserAuth().rejectContactRequest(user);
+      bool done = await UserAuth().cancelOrRejectContactRequest(user);
       done = true;
       if (done) {
         _showSnackBar(
