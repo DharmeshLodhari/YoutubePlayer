@@ -859,9 +859,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   showZeroViews: true),
               style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
             ),
-            SizedBox(width: 4),
+            SizedBox(width: 2),
             Text(
-              'Following',
+              'Following'
             ),
             SizedBox(width: 30),
             Text(
@@ -871,9 +871,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   showZeroViews: true),
               style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
             ),
-            SizedBox(width: 4),
+            SizedBox(width: 2),
             Text(
-              'Followers',
+              searchedUser!.followers! > 1 ? 'Followers' : 'Follower',
             ),
           ],
         ),

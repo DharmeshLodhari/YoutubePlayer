@@ -76,7 +76,7 @@ class _ChatChannelsState extends State<ChatChannels> {
       if (mounted) setState(() => _isLoading = false);
 
       basePaginationModel = value;
-      channelModelList.clear();
+      // channelModelList.clear();
       channelModelList.addAll(value.result);
       nextPageUrl = basePaginationModel!.next;
       isFirstTime = false;

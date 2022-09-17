@@ -16,6 +16,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../locator.dart';
+import '../../../../../services/app_config_bloc.dart';
 import '../utils.dart';
 
 class ProductTileForChatMessage extends StatefulWidget {
@@ -36,10 +38,12 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
 
   late UserBloc userBloc;
   late CustomerProfileBloc customerProfileBloc;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
     super.initState();
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
   }
 
   @override
@@ -237,19 +241,20 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                           ),
                                                           Expanded(
                                                             child: CurvedButton(
-                                                                height: 36,
-                                                                isPaymentBtn:
-                                                                    true,
-                                                                textColor:
-                                                                    Colors
-                                                                        .white,
-                                                                backgroundColor:
-                                                                    navyBlue,
-                                                                text: "BUY NOW",
-                                                                borderRadius:
-                                                                    10,
-                                                                onPressed:
-                                                                    () async {
+                                                              height: 36,
+                                                              isPaymentBtn:
+                                                                  true,
+                                                              textColor:
+                                                                  Colors.white,
+                                                              backgroundColor:
+                                                                  navyBlue,
+                                                              text: "BUY NOW",
+                                                              borderRadius: 10,
+                                                              onPressed:
+                                                                  () async {
+                                                                if (appConfigurationModel
+                                                                        ?.enablePayment ==
+                                                                    true) {
                                                                   bool result =
                                                                       await showDisclaimerDialogueForGoods(
                                                                           context);
@@ -271,7 +276,9 @@ class _ProductTileForChatMessageState extends State<ProductTileForChatMessage> {
                                                                       },
                                                                     );
                                                                   }
-                                                                }),
+                                                                }
+                                                              },
+                                                            ),
                                                           ),
                                                         ],
                                                       ),
@@ -383,10 +390,12 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
 
   late UserBloc userBloc;
   late CustomerProfileBloc customerProfileBloc;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
     super.initState();
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
   }
 
   @override
@@ -581,19 +590,20 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                           ),
                                                           Expanded(
                                                             child: CurvedButton(
-                                                                height: 36,
-                                                                isPaymentBtn:
-                                                                    false,
-                                                                textColor:
-                                                                    Colors
-                                                                        .white,
-                                                                backgroundColor:
-                                                                    navyBlue,
-                                                                text: "PAY NOW",
-                                                                borderRadius:
-                                                                    10,
-                                                                onPressed:
-                                                                    () async {
+                                                              height: 36,
+                                                              isPaymentBtn:
+                                                                  false,
+                                                              textColor:
+                                                                  Colors.white,
+                                                              backgroundColor:
+                                                                  navyBlue,
+                                                              text: "PAY NOW",
+                                                              borderRadius: 10,
+                                                              onPressed:
+                                                                  () async {
+                                                                if (appConfigurationModel
+                                                                        ?.enablePayment ==
+                                                                    true) {
                                                                   bool result =
                                                                       await showDisclaimerDialogueForGoods(
                                                                           context);
@@ -615,7 +625,9 @@ class _ServiceTileChatMessageState extends State<ServiceTileChatMessage> {
                                                                       },
                                                                     );
                                                                   }
-                                                                }),
+                                                                }
+                                                              },
+                                                            ),
                                                           ),
                                                         ],
                                                       ),

@@ -363,22 +363,16 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
               });
             },
           ),
-          actions: [
-            editProfileCoverIcon(),
-            SizedBox(
-              width: 16,
-            )
-          ],
+          actions: [editProfileCoverIcon(), SizedBox(width: 16)],
           title: Container(
-            child: Text(
-              userBloc.user.displayName()!,
-              style: TextStyle(
+            child: userNameWithVerifiedIcon(
+              name: userBloc.user.displayName()!,
+              isVerified: userBloc.user.isVerified,
+              textStyle: TextStyle(
                 color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
           titleSpacing: 0,
