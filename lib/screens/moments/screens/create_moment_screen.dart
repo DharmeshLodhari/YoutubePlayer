@@ -435,7 +435,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
             });
           }
         } else {
-          // showToast(message: 'Error formatting video, please try again.');
+          // showToast(message: 'Error formatting video, please try again');
         }
       }
     }

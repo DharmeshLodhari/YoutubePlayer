@@ -107,7 +107,6 @@ class _UserProductListState extends State<UserProductList> {
             noProductInList = false;
             isProductLoading = false;
             productList.addAll(tempList);
-            productList.addAll(tempList);
           });
         }
       }

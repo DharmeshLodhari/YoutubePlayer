@@ -640,7 +640,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           children: [
                             getUserProfilePic(),
                             Positioned.fill(
-                              bottom: -20,
+                              bottom: -10,
                               left: 0,
                               right: 0,
                               child: Align(
@@ -961,24 +961,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       radius: 35,
       backgroundImage: CachedNetworkImageProvider(
         searchedUser!.avatar!,
+
         // fit: BoxFit.fill,
         // filterQuality: FilterQuality.high,
         // imageUrl: searchedUser!.avatar!,
         // errorWidget: imageErrorWidget,
       ),
     );
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(50),
-      child: Container(
-        color: Colors.white,
-        child: CachedNetworkImage(
-          height: 60,
-          width: 40,
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
-          imageUrl: searchedUser!.avatar!,
-          errorWidget: imageErrorWidget,
-        ),
+      child: CachedNetworkImage(
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        imageUrl: searchedUser!.avatar!,
+        errorWidget: imageErrorWidget,
       ),
     );
   }
