@@ -413,7 +413,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
         allowMultiple: false,
         type: FileType.custom,
-        allowedExtensions: imageExtensions + videoExtensions);
+        allowedExtensions: imageExtensions);
 
     if (pickedMedia != null) {
       File file = File(pickedMedia.files.single.path!);
