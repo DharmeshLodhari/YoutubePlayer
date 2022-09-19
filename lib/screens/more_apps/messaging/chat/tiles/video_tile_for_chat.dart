@@ -6,12 +6,10 @@ import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../../../../routes/route_constants.dart';
-import '../../../../../utils/enums.dart';
 
 class VideoTileForChat extends StatelessWidget {
   final Map<String, dynamic>? message;
@@ -27,6 +25,11 @@ class VideoTileForChat extends StatelessWidget {
     String? messageText = message!['text'] ?? "";
     bool isMessageEmpty = messageText == "";
     messageText = messageDecoderWithEmoji(messageText);
+
+    if (message!["media"] == null) {
+      message!["media"] =
+          "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4";
+    }
 
     return Column(
       children: [

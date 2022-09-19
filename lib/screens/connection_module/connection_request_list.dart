@@ -20,7 +20,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../routes/route_constants.dart';
 
-
 class ConnectionRequestList extends StatefulWidget {
   @override
   _ConnectionRequestListState createState() => _ConnectionRequestListState();
@@ -108,7 +107,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   }
 
   String noConnectionRequestMsg =
-      "You have no connection request\nPull down to refresh";
+      "You have no friend request\nPull down to refresh";
   Widget _buildFriendsList() {
     return noItemInList
         ? NoItemInList(

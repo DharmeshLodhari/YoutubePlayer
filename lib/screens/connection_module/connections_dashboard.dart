@@ -30,7 +30,7 @@ class ConnectionDashboard extends StatefulWidget {
 class _ConnectionDashboardState extends State<ConnectionDashboard> {
   int currentIndex = 0;
 
-  var filterValue = "Contacts";
+  var filterValue = "Friends";
   late AppLocalization appLocalization;
   AppConfigurationModel? appConfigurationModel;
 
@@ -63,7 +63,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    if (filterValue == 'Connections') filterValue = "Contacts";
+    if (filterValue == 'Connections') filterValue = "Friends";
     appLocalization = AppLocalization.of(context)!;
     return ColorfulSafeArea(
       bottom: Platform.isIOS ? true : false,
@@ -109,7 +109,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
   // ignore: missing_return
   String getTitle() {
     if (currentIndex == 0) {
-      return AppLocalization.of(context)!.contacts;
+      return AppLocalization.of(context)!.friends;
     } else if (currentIndex == 1) {
       return AppLocalization.of(context)!.requests;
     } else if (currentIndex == 2) {
@@ -140,7 +140,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                     : Colors.white,
               ),
               child: Text(
-                appLocalization.contacts,
+                appLocalization.friends,
                 style: TextStyle(
                   color: currentIndex == 0 ? navyBlue : blackFont,
                   fontSize: 14,

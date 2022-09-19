@@ -2911,10 +2911,10 @@ class AppLocalization {
   }
 
   //contacts_dashboard
-  String get contacts {
+  String get friends {
     return Intl.message(
-      "Contacts",
-      name: "contacts",
+      "Friends",
+      name: "friends",
     );
   }
 

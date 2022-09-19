@@ -785,7 +785,10 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                       alignment: Alignment.topRight,
                       child: Padding(
                         padding: const EdgeInsets.only(right: 4.0),
-                        child: Icon(Icons.play_circle_filled_outlined),
+                        child: Icon(
+                          Icons.play_circle_filled_outlined,
+                          color: Colors.white,
+                        ),
                       ),
                     )
                   : SizedBox.shrink(),
@@ -907,6 +910,7 @@ class ExploreMomentsCard extends StatelessWidget {
                       padding: const EdgeInsets.all(4.0),
                       child: Icon(
                         Icons.play_circle_filled_outlined,
+                        color: Colors.white,
                       ),
                     ),
                   )
