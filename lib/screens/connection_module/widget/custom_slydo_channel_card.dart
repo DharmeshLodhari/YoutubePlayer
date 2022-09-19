@@ -138,7 +138,7 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
                 if (mounted) setState(() => isLoading = false);
 
                 if (value) {
-                  showToast(message: "Joined group successfully");
+                  showToast(message: "Joined channel successfully");
                   widget.channelModel!.isMember = true;
                   if (mounted) setState(() {});
                 }

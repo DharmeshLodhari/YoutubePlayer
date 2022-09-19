@@ -321,15 +321,21 @@ class _ConnectionListState extends State<ConnectionList> {
   /// If appConfigurationModel.groupChatWorks is false (i.e, we want to disable the groupChat feature),
   /// remove groupChat conversations from the list of connections.
   int getConnectionListItemCount() {
+    debugPrint(
+        'ITEM COUNT CONNECTION USERS -> ${_connectionListBloc.connectionUsers.length}');
+
     int itemCount = 0;
-    if (appConfigurationModel?.enableGroupChat == true) {
+    if (appConfigurationModel?.enableGroupChat == false) {
       _connectionListBloc.connectionUsers
-          .removeWhere((element) => element.isGroupConversation!);
+          .removeWhere((element) => element.isGroupConversation! == true);
       itemCount = _connectionListBloc.connectionUsers.length;
     } else {
       itemCount = _connectionListBloc.connectionUsers.length;
     }
 
+    debugPrint('ITEM COUNT CHANNEL -> $itemCount');
+    debugPrint(
+        'ITEM COUNT CHANNEL GROUP -> ${appConfigurationModel?.enableGroupChat}');
     return itemCount;
   }
 
@@ -345,10 +351,12 @@ class _ConnectionListState extends State<ConnectionList> {
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               itemBuilder: (BuildContext context, int index) {
+                debugPrint('ITEM COUNT INDEX -> $index');
+
                 ChatConversation chatConversation =
                     _connectionListBloc.connectionUsers[index];
 
-                if (appConfigurationModel?.enableGroupChat == true) {
+                if (appConfigurationModel?.enableGroupChat == false) {
                   if (chatConversation.isGroupConversation!) {
                     return SizedBox.shrink();
                   }
@@ -406,9 +414,8 @@ class _ConnectionListState extends State<ConnectionList> {
         tempList.forEach(
             (element) => users.add(ChatConversation.fromJson(element)));
 
-        debugPrint('CONNECTION USERS 0 --> ${users[0].isVerified}');
-
         // connectionsList.addAll(users);
+        debugPrint("List Length users:- ${users.length}");
 
         connectionListBloc.setConnectionUsers(users: users);
 

@@ -536,7 +536,7 @@ class ConnectionListBloc extends ChangeNotifier {
 
     _connectionUsers.clear();
     _connectionUsers = await _getConnectionUsers();
-    debugPrint('CONNECTION USERS --> ${_connectionUsers[0].isVerified}');
+    debugPrint('CONNECTION USERS --> ${_connectionUsers.length}');
     notifyListeners();
     return Future.value();
   }
