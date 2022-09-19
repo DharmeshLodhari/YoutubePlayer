@@ -274,7 +274,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       if (hasAddress && hasContact) {
         height = 460;
       } else if (hasAddress || hasContact) {
-        height = 440;
+        height = 460;
       } else {
         height = 400;
       }
@@ -284,7 +284,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       } else if (hasAddress || hasContact) {
         height = 480;
       } else {
-        height = 440;
+        height = 460;
       }
     }
 
