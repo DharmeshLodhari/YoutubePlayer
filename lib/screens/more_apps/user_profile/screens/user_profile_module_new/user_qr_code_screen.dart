@@ -438,7 +438,7 @@ class _UserQRCodeScreenState extends State<UserQRCodeScreen> {
           } else {
             showToast(
                 message:
-                    "Connection is Removed From Your Connection List Unsuccessfully .");
+                    "Connection is Removed From Your Friends List Unsuccessfully .");
           }
         });
       };

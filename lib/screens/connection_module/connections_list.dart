@@ -625,7 +625,7 @@ class _ConnectionListState extends State<ConnectionList> {
       title: AppLocalization.of(context)!.delete,
       description: AppLocalization.of(context)!.areYouSureWantToDelete +
           " ${user.displayName()} " +
-          "From Your Connection List",
+          "From Your friends List",
       actionOneText: AppLocalization.of(context)!.delete,
       actionTwoText: AppLocalization.of(context)!.cancel,
     );

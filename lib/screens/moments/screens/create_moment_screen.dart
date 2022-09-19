@@ -426,17 +426,17 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
           if (mounted) setState(() {});
         }
       } else if (mediaType == 'video') {
-        // var videoFilePath =
-        //     await NavigationUtil.push(context, screen: TrimmerView(file: file));
-        // if (videoFilePath is String) {
-        //   if (mounted) {
-        //     setState(() {
-        //       videoPath = videoFilePath;
-        //     });
-        //   }
-        // } else {
-        //   // showToast(message: 'Error formatting video, please try again.');
-        // }
+        var videoFilePath =
+            await NavigationUtil.push(context, screen: TrimmerView(file: file));
+        if (videoFilePath is String) {
+          if (mounted) {
+            setState(() {
+              videoPath = videoFilePath;
+            });
+          }
+        } else {
+          // showToast(message: 'Error formatting video, please try again.');
+        }
       }
     }
   }

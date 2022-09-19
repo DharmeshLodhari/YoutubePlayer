@@ -225,7 +225,6 @@ class AwesomeNotificationService {
   void showNotification({required Map<String, dynamic> message}) async {
     int id = Random().nextInt(50000);
 
-    debugPrint('FRANK show-notification ---> ${message['notification']}');
 
     Map<String, String> finalNotification = {};
     Map<String, dynamic> tempNotification =
@@ -242,7 +241,6 @@ class AwesomeNotificationService {
       }
     });
 
-    debugPrint('FRANK NEW show-notification ---> ${finalNotification}');
 
     Map<String, String> notification =
         Map<String, String>.from(finalNotification);
@@ -250,7 +248,6 @@ class AwesomeNotificationService {
     notification['type'] = message['data']['type'];
     notification['notification_id'] = id.toString();
 
-    debugPrint('FRANK show-notification type ---> ${message['data']['type']}');
 
     //  await awesomeNotifications.cancelAll();
 
@@ -269,7 +266,6 @@ class AwesomeNotificationService {
         ),
       );
     } else {
-      debugPrint('FRANK show-notification body ---> ${notification['body']}');
 
       await awesomeNotifications.createNotification(
         content: NotificationContent(

@@ -51,11 +51,13 @@ class AppConfigurationModel {
   bool enableAddUserCreditCard;
   bool enableWalletTopupWithCreditCard;
   bool enablePaidGroupChat;
+  bool enableCheckout;
 
   AppConfigurationModel({
     required this.id,
     required this.country,
     this.enableAsk = false,
+    this.enableCheckout = false,
     this.enablePaidGroupChat = false,
     this.enableSuperBlog = false,
     this.enablePayment = false,
@@ -77,6 +79,7 @@ class AppConfigurationModel {
     return AppConfigurationModel(
       id: json['id'] ?? '1',
       country: json['country_name'] ?? 'Nigeria',
+      enableCheckout: json['enable_checkout'] ?? false,
       freeSubscription: json['free_subscription'] ?? false,
       enablePaidGroupChat: json['enable_paid_group_chat'] ?? false,
       enableAsk: json['enable_ask'] ?? false,

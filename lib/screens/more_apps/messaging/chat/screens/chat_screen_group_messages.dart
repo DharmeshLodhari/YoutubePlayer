@@ -1010,7 +1010,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       context: context,
       actionOneBgColor: greyBorderColor,
       actionOneTextColor: blackFont,
-      title: "Connection Removed",
+      title: "Friend Removed",
       description:
           "${chatConversation!.fullName} has removed you from Contact.",
       image: chatConversation!.avatar,

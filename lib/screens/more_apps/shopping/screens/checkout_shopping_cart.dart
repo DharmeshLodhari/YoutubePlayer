@@ -19,6 +19,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../locator.dart';
+import '../../../../services/app_config_bloc.dart';
 import '../../payment_and_banking/payment_and_banking_auth.dart';
 import '../../user_profile/user_auth.dart';
 import '../shopping_auth.dart';
@@ -67,6 +69,16 @@ class _ShoppingCartState extends State<ShoppingCart> {
       String type = element is Product ? "product" : "service";
       basketBloc.addItemToCart(item: element, type: type);
     });
+  }
+  AppConfigurationModel? appConfigurationModel;
+
+
+  @override
+  void initState() {
+
+    super.initState();
+    appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
   }
 
   @override
@@ -206,10 +218,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       fontSize: 16),
                 ),
                 onPressed: () {
-                  NavigationUtil.push(
-                    context,
-                    screen: CheckoutScreen(),
-                  );
+                  if(appConfigurationModel?.enableCheckout == true){
+                    NavigationUtil.push(
+                      context,
+                      screen: CheckoutScreen(),
+                    );
+                  }else{
+                    showToast(message: 'Checkout not available now');
+                  }
+
                   // if (basketBloc.items.length != 0) {
                   //   addNoteDialog();
                   // } else {

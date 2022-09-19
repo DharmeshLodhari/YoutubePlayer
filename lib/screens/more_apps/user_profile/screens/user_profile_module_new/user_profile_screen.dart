@@ -860,9 +860,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
             ),
             SizedBox(width: 2),
-            Text(
-              'Following'
-            ),
+            Text('Following'),
             SizedBox(width: 30),
             Text(
               getFormattedViewCount(
@@ -1051,17 +1049,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 .cancelOrRejectContactRequest(searchedUser!)
                 .then((value) {
               if (value) {
-                showToast(message: "Connection request Canceled");
+                showToast(message: "Friend request Canceled");
               } else {
-                showToast(
-                    message: "Connection request Canceled unsuccessfully");
+                showToast(message: "Friend request Canceled unsuccessfully");
               }
               getSearchedUser();
             });
           } else {
             UserAuth().makeContactRequest(searchedUser!).then((value) {
               if (value) {
-                showToast(message: "Connection Request Sent !!");
+                showToast(message: "Friend Request Sent !!");
               } else {
                 showToast(message: "Request Not Sent.. ");
               }

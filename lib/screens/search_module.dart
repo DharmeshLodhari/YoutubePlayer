@@ -1390,7 +1390,7 @@ class _SearchModuleState extends State<SearchModule> {
       actionTwoTextColor: Colors.white,
       title: AppLocalization.of(context)!.connect,
       description:
-          "Are you sure you want to add ${user.displayName()} to your list of connections",
+          "Are you sure you want to add ${user.displayName()} to your list of friends",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.connect,
       rightButtonOnPressed: () {
@@ -1401,7 +1401,7 @@ class _SearchModuleState extends State<SearchModule> {
         UserAuth().makeContactRequest(user).then((value) {
           Navigator.pop(context);
           if (value) {
-            showToast(message: "Connection Request Sent !!");
+            showToast(message: "Friends Request Sent !!");
           } else {
             showToast(message: "Request Not Sent.. ");
           }

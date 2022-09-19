@@ -785,7 +785,7 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
                       alignment: Alignment.topRight,
                       child: Padding(
                         padding: const EdgeInsets.only(right: 4.0),
-                        child: Icon(Icons.video_call),
+                        child: Icon(Icons.play_circle_filled_outlined),
                       ),
                     )
                   : SizedBox.shrink(),
