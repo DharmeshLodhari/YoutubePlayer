@@ -42,7 +42,7 @@ class AppTutorialController {
   void showTutorial(BuildContext context) {
     _fillTargets();
 
-    tutorial = TutorialCoachMark(context,
+    tutorial = TutorialCoachMark(
         targets: _targets, // List<TargetFocus>
         colorShadow: Colors.black12, // DEFAULT Colors.black
         // alignSkip: Alignment.bottomRight,
@@ -52,13 +52,15 @@ class AppTutorialController {
         // pulseAnimationDuration: Duration(milliseconds: 500),
         // pulseVariation: Tween(begin: 1.0, end: 0.99),
         onFinish: () {
-      print("finish");
-    }, onClickTarget: (target) {
-      print(target);
-    }, onSkip: () {
-      print("skip");
-    })
-      ..show();
+          print("finish");
+        },
+        onClickTarget: (target) {
+          print(target);
+        },
+        onSkip: () {
+          print("skip");
+        })
+      ..show(context: context);
 
     // tutorial.skip();
     // tutorial.finish();
