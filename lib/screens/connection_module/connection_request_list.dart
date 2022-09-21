@@ -313,7 +313,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       title: AppLocalization.of(context)!.accept,
       description: "Are you sure you want to add" +
           " ${user.displayName()} " +
-          "into your Connections?",
+          "as a friend?",
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );

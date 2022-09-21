@@ -512,7 +512,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            "Exit group",
+            "Exit Channel",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -898,7 +898,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
         showToast(message: "You left ${groupDetail!.fullName}!!");
         dashboardBloc.index = 3;
-        Navigator.of(context).popUntil(ModalRoute.withName(Routes.ACCOUNTS));
+        Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
 
         // Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
       }

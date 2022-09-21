@@ -481,7 +481,7 @@ class _MomentsScreenState extends State<MomentsScreen> {
             ),
             SizedBox(width: 6),
             Text(
-              "My Connections",
+              "My Friends",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: blackFont,
