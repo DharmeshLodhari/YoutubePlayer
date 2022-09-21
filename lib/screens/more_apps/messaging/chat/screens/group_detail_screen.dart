@@ -480,7 +480,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         decoration: decorateBox(),
         child: ListTile(
           title: Text(
-            "Delete group",
+            "Delete Channel",
             maxLines: 1,
             style: TextStyle(
               color: mateRed,
@@ -917,7 +917,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         connectionListBloc.deleteChatConversation(
             conversationId: groupDetail!.conversationId);
         showToast(message: "You deleted the ${groupDetail!.fullName}!!");
-        Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+        Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
       }
     }).catchError((error) {
       debugPrint("ERROR:- $error");

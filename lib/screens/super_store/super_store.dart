@@ -301,7 +301,7 @@ class _SuperStoreState extends State<SuperStore> {
             children: [
               noProductInList
                   ? SizedBox.shrink()
-                  : Text(
+                  : todaysDealsEmpty ? SizedBox.shrink(): Text(
                       "Other deals",
                       style: TextStyle(
                         fontSize: 18,
