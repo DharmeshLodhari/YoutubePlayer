@@ -258,7 +258,7 @@ class DatabaseHelper {
           "UPDATE $CHAT_USER_TABLE SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
       debugPrint(
-          "DATABASE:- Chat message count updated from db $conversationId");
+          "DATABASE:- Chat message count updated from db $conversationId hashedMessage = $hashedMessage");
     } catch (e) {
       debugPrint("DATABASE:- ERROR:- while updating the Chat Message count $e");
     }

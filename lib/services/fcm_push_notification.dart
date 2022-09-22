@@ -190,7 +190,7 @@ class PushNotificationService {
 
   FirebaseMessaging get fcm => _fcm;
 
-  initialize() async {
+  Future<void> initialize() async {
     //to stop automatically recreates the token when we deregister user in logout
     _fcm.setAutoInitEnabled(false);
 
