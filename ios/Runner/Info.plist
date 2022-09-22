@@ -45,6 +45,8 @@
 	<string>This app requires access to your microphone to send audio messages.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Can we access your photo library to upload user photo?</string>
+	<key>NSAppleMusicUsageDescription</key>
+    <string>This app requires access to your music for playing music.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
