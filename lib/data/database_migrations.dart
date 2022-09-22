@@ -198,7 +198,5 @@ final initialDBSchema = [
 
 ///Add List Of Migration query's when app is in production
 List<String> dbMigrations = [
-  ''' 
-ALTER TABLE $USER_CONNECTION_TABLE ADD is_verified INTEGER
-'''
+  ''' ALTER TABLE $USER_CONNECTION_TABLE ADD is_verified INTEGER''',
 ];

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
@@ -24,9 +25,6 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
-import '../screens/moments/screens/moment_detail_page.dart';
-import '../screens/moments/screens/moments_service.dart';
 
 bool isDialogueOpen = false;
 
@@ -108,9 +106,13 @@ Future<void> fcmBackgroundMessageHandler(RemoteMessage remoteMessage) async {
           String hashedMessage =
               generateHashedMessage(jsonEncode(data['data']));
 
+          log("====> UPDATE CHAT USER MESSAGE COUNT FROM FCM");
+
           /// update the message count
           await ChatUserManager().updateChatUserMessageCount(
-              conversationId: conversationId, hashedMessage: hashedMessage);
+            conversationId: conversationId,
+            hashedMessage: hashedMessage,
+          );
 
           /// send acknowledgement to server
           MainSocketMessageHandler()
@@ -258,7 +260,8 @@ class PushNotificationService {
         }
         if (decodeMessage != null) {
           if (decodeMessage.isNotEmpty) {
-            MainSocketMessageHandler(message: jsonEncode(decodeMessage));
+            MainSocketMessageHandler(
+                message: jsonEncode(decodeMessage), isFCMMessage: true);
           }
         }
       } else {
@@ -457,7 +460,9 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
   }
 
   try {
-    if (message["data"] != null && message['data']['notification'] != null) {
+    if (message["data"] != null &&
+        message['data'] is Map &&
+        (message['data'] as Map)['notification'] != null) {
       Map<String, dynamic> notificationFromMessage =
           jsonDecode(message['data']['notification']);
 
@@ -469,7 +474,7 @@ Map<String, dynamic> decodeNotification(Map<String, dynamic> message) {
           "";
     }
   } catch (error) {
-    debugPrint("ERROR:- $error");
+    debugPrint("ERROR11:- $error");
   }
 
   print("notification from android $notification");
@@ -492,7 +497,9 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
   }
 
   try {
-    if (message["data"] != null && message['data']['notification'] != null) {
+    if (message["data"] != null &&
+        message['data'] is Map &&
+        (message['data'] as Map)['notification'] != null) {
       Map<String, dynamic> notificationFromMessage =
           jsonDecode(message['data']['notification']);
 
@@ -504,7 +511,7 @@ Map<String, dynamic> decodeNotificationIOS(Map<String, dynamic> message) {
           "";
     }
   } catch (error) {
-    debugPrint("ERROR:- $error");
+    debugPrint("ERROR22:- $error");
   }
 
   print("notification from android $notification");

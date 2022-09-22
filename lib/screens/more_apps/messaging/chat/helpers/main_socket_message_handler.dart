@@ -48,7 +48,9 @@ class MainSocketMessageHandler {
   static Timer? _nudgeAlertTimer;
   static Duration nudgeAlertDuration = Duration(seconds: 10);
 
-  MainSocketMessageHandler({this.message}) {
+  bool isFCMMessage = false;
+
+  MainSocketMessageHandler({this.message, this.isFCMMessage = false}) {
     if (message != null) {
       handleMessageAccordingToType();
     }
@@ -79,14 +81,32 @@ class MainSocketMessageHandler {
               ? messageData["conversation"]
               : messageData["conversation_id"]);
 
+          /// Converting message Data into MODEL
+          // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
+          ChatMessage chatMessage = ChatMessage.fromJson(messageData);
+
+          /// If we received same message from Socket and FCM then we will check if that message is already received or not
+          if (isFCMMessage) {
+            if (chatMessage.conversationId == null ||
+                chatMessage.checkId == null) {
+              return;
+            }
+            await Future.delayed(Duration(seconds: 3));
+            bool messageIsReceivedAlready = await ChatMessageHandler()
+                .checkIfMessageExist(
+                    conversationId: chatMessage.conversationId ?? "",
+                    checkId: chatMessage.checkId ?? "");
+
+            print("messageIsReceivedAlready ===> $messageIsReceivedAlready");
+            if (messageIsReceivedAlready) return;
+          }
+
           /// checking if the recipient is in the current chat screen then we will not update message count
           if (mainSocketProvider.currentConversationId != conversationId) {
             await saveAndUpdateUserMessageCount(messageData: messageData);
           }
 
           /// update message in the local message db
-          // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
-          ChatMessage chatMessage = ChatMessage.fromJson(messageData);
           await ChatMessageHandler()
               .updateChatMessage(chatMessage: chatMessage);
 
@@ -330,7 +350,6 @@ class MainSocketMessageHandler {
           MainSocketMessageModel.fromJson(messageData);
 
       String hashedMessage = generateHashedMessage(jsonEncode(messageData));
-
       await ChatUserManager().addUser(
           conversationId:
               messageData["conversation"] ?? messageData["conversation_id"]);

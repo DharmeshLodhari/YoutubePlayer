@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:Slydo/data/database_migrations.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
@@ -247,6 +248,12 @@ class DatabaseHelper {
       {String? conversationId, String? hashedMessage}) async {
     var dbClient = await db;
     try {
+      // List<Map<String, dynamic>> oldMessages = await dbClient.query(
+      //     CHAT_USER_TABLE,
+      //     where: "conversationId = ?",
+      //     whereArgs: [conversationId]);
+      // log("OLD MESSAGES :- \n$oldMessages");
+
       await dbClient.execute(
           "UPDATE $CHAT_USER_TABLE SET messageCount = messageCount + 1 , hashedMessage = ? where conversationId = ? AND hashedMessage != ?",
           [hashedMessage, conversationId, hashedMessage]);
@@ -684,6 +691,23 @@ class DatabaseHelper {
     return [];
   }
 
+  Future<List<ChatMessage>> getChatMessagesByConversationIdAndCheckId(
+      {required String conversationId, required String checkId}) async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> res = await dbClient.query(CHAT_MESSAGE_TABLE,
+        where: "conversation_id = ? AND check_id = ?",
+        whereArgs: [conversationId, checkId]);
+
+    if (res.length > 0) {
+      List<ChatMessage> chatMessages = res.map((element) {
+        return ChatMessage.fromDBJson(element);
+      }).toList();
+      return chatMessages;
+    }
+    return [];
+  }
+
   Future<List<ChatMessage>> getLimitedChatMessages(
       {String? conversationId, int? limit = 10}) async {
     Database dbClient = await db;
@@ -824,8 +848,13 @@ class DatabaseHelper {
         whereArgs: [chatMessage.conversationId, chatMessage.checkId],
         conflictAlgorithm: ConflictAlgorithm.replace);
 
+    log("RESULT:-    $result");
     if (result == 0) {
-      await dbClient.insert("ChatMessage", chatMessage.toDBJson());
+      await dbClient.insert(
+        "ChatMessage",
+        chatMessage.toDBJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
     }
 
     return result;

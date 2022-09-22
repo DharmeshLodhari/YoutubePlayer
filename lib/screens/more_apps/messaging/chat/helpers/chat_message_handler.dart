@@ -86,6 +86,20 @@ class ChatMessageHandler {
     return await _db.deleteChatMessage(checkId, conversationId);
   }
 
+  Future<bool> checkIfMessageExist(
+      {required String checkId, required String conversationId}) async {
+    List<ChatMessage> messages =
+        await _db.getChatMessagesByConversationIdAndCheckId(
+      checkId: checkId,
+      conversationId: conversationId,
+    );
+
+    if (messages.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
   Future<int> updateEditedChatMessage(
       {String? checkId,
       String? conversationId,
