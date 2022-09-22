@@ -30,12 +30,15 @@ class ChatUserManager {
     return;
   }
 
-  Future<ChatUserModel> getUser(String? conversationId) async {
-    Map<String, dynamic> user = await _db.getChatUser(conversationId);
+  Future<ChatUserModel?> getUser(String? conversationId) async {
+    Map<String, dynamic>? user = await _db.getChatUser(conversationId);
 
-    ChatUserModel chatUserModel = ChatUserModel.fromJson(user);
+    if (user != null) {
+      ChatUserModel chatUserModel = ChatUserModel.fromJson(user);
 
-    return chatUserModel;
+      return chatUserModel;
+    }
+    return null;
   }
 
   Future<int> clearChatUsers() async {

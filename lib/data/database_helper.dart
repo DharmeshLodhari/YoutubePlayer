@@ -191,13 +191,16 @@ class DatabaseHelper {
 
   /// ChatUser Operation
 
-  Future<Map<String, dynamic>> getChatUser(String? conversationId) async {
+  Future<Map<String, dynamic>?> getChatUser(String? conversationId) async {
     Database dbClient = await db;
 
     List<Map<String, dynamic>> result = await dbClient.query(CHAT_USER_TABLE,
         where: "conversationId = ?", whereArgs: [conversationId]);
 
-    return result.first;
+    if (result.isNotEmpty) {
+      return result.first;
+    }
+    return null;
   }
 
   void saveChatUserCount(List<ChatUserModel> users) async {

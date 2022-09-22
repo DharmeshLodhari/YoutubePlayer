@@ -885,26 +885,28 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void exitFromGroup() {
-    MessageAuth()
-        .exitFromGroup(conversationId: groupDetail!.conversationId!)
-        .then((value) {
-      if (value) {
-        ConnectionListBloc connectionListBloc =
-            Provider.of<ConnectionListBloc>(context, listen: false);
-        DashboardBloc dashboardBloc =
-            Provider.of<DashboardBloc>(context, listen: false);
-        connectionListBloc.deleteChatConversation(
-            conversationId: groupDetail!.conversationId);
+    String? conversationId = groupDetail?.conversationId;
 
-        showToast(message: "You left ${groupDetail!.fullName}!!");
-        dashboardBloc.index = 3;
-        Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
+    if (conversationId != null) {
+      MessageAuth().exitFromGroup(conversationId: conversationId).then((value) {
+        if (value) {
+          ConnectionListBloc connectionListBloc =
+              Provider.of<ConnectionListBloc>(context, listen: false);
+          DashboardBloc dashboardBloc =
+              Provider.of<DashboardBloc>(context, listen: false);
+          connectionListBloc.deleteChatConversation(
+              conversationId: conversationId);
 
-        // Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
-      }
-    }).catchError((error) {
-      debugPrint("ERROR:- $error");
-    });
+          showToast(message: "You left ${groupDetail?.fullName}!!");
+          dashboardBloc.index = 3;
+          Navigator.of(context).popUntil(ModalRoute.withName(Routes.DASHBOARD));
+
+          // Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
+        }
+      }).catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+    }
   }
 
   void deleteGroup() {

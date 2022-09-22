@@ -157,7 +157,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
     return StreamBuilder(
         stream: ChatMessageSynchronizer().getChatMessageCountStream,
         builder: (context, snapshot) {
-          return FutureBuilder<ChatUserModel>(
+          return FutureBuilder<ChatUserModel?>(
               future: ChatUserManager().getUser(widget.user!.conversationId),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -166,7 +166,10 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
                     height: 0,
                   );
                 } else if (snapshot.hasData) {
-                  return getBadgeAndGroupLabel(snapshot.data!.messageCount);
+                  if (snapshot.data != null) {
+                    return getBadgeAndGroupLabel(
+                        snapshot.data?.messageCount ?? 0);
+                  }
                 }
                 return Container(
                   width: 0,
