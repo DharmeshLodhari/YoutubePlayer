@@ -13,5 +13,3 @@ extension FORMAT on String {
     return 'assets/images/$this.jpg';
   }
 }
-
-

@@ -99,9 +99,7 @@ class _EditUserReviewState extends State<EditUserReview> {
                             ),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          SizedBox(
-                            height: 20
-                          ),
+                          SizedBox(height: 20),
                           Text(
                             getTitle(),
                             style: TextStyle(
@@ -110,9 +108,7 @@ class _EditUserReviewState extends State<EditUserReview> {
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          SizedBox(
-                            height: 8
-                          ),
+                          SizedBox(height: 8),
                           Text(
                             getSubTitle(),
                             style: TextStyle(
@@ -124,9 +120,7 @@ class _EditUserReviewState extends State<EditUserReview> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 20
-                    ),
+                    SizedBox(height: 20),
                     _buildWriteUserReview(),
                     SizedBox(
                       height: 5,
@@ -196,21 +190,15 @@ class _EditUserReviewState extends State<EditUserReview> {
                       height: 10,
                     ),
                     _buildRatingBar(),
-                    SizedBox(
-                      height: 32
-                    ),
+                    SizedBox(height: 32),
                     _buildWriteReviewTextField(),
-                    SizedBox(
-                      height: 16
-                    ),
+                    SizedBox(height: 16),
                   ],
                 ),
               ),
             ),
           ),
-          SizedBox(
-            height: 30
-          ),
+          SizedBox(height: 30),
           CurvedButton(
             onPressed: onButtonTap,
             text: "Submit",
@@ -223,13 +211,14 @@ class _EditUserReviewState extends State<EditUserReview> {
 
   Widget _buildRatingBar() {
     return Center(
-      child: getClickableRatingBar(initialRating: rating.toDouble(), onRatingUpdate: (rate){
+        child: getClickableRatingBar(
+      initialRating: rating.toDouble(),
+      onRatingUpdate: (rate) {
         {
           rating = rate.floor();
         }
-      },));
-
-
+      },
+    ));
   }
 
   Widget _buildWriteReviewTextField() {

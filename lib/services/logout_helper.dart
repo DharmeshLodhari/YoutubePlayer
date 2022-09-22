@@ -26,19 +26,18 @@ class LogoutHelper {
     MainSocketMessageHandler().dispose();
 
     print("logout===>start");
-      await AuthService().logOut().catchError((error) {
-        debugPrint("ERROR:- while logging out the user");
-      });
-      print("logout===>stop");
+    await AuthService().logOut().catchError((error) {
+      debugPrint("ERROR:- while logging out the user");
+    });
+    print("logout===>stop");
 
     CacheManager().deleteCache(clearAll: true);
 
-      MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
-          myGlobals.navigationKey.currentContext!,
-          listen: false);
+    MainSocketProvider socketProvider = Provider.of<MainSocketProvider>(
+        myGlobals.navigationKey.currentContext!,
+        listen: false);
 
-      await socketProvider.close();
-
+    await socketProvider.close();
 
     PushNotificationService().logout();
 
@@ -62,8 +61,9 @@ class LogoutHelper {
       await SecureStorage().clear();
     }
 
-    Navigator.of(myGlobals.navigationKey.currentContext!)
-        .popUntil(ModalRoute.withName('/splash'),);
+    Navigator.of(myGlobals.navigationKey.currentContext!).popUntil(
+      ModalRoute.withName('/splash'),
+    );
 
     Navigator.of(myGlobals.navigationKey.currentContext!)
         .pushNamed("/index", arguments: {'isIntroDone': true});

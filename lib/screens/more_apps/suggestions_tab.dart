@@ -1,5 +1,3 @@
-
-
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:flutter/material.dart';
@@ -101,17 +99,17 @@ class _SuggestionsTabState extends State<SuggestionsTab> {
       child: noItemInList
           ? NoItemInList(msg: AppLocalization.of(context)!.noSuggestions)
           : ListView.builder(
-        physics: ClampingScrollPhysics(),
-        controller: _scrollCtrl,
-        itemCount: suggestionsList.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == suggestionsList.length) {
-            return buildLoadingIndicator(isLoading: _isLoading);
-          } else {
-            return CustomSlydoUserCard(user: suggestionsList[index]);
-          }
-        },
-      ),
+              physics: ClampingScrollPhysics(),
+              controller: _scrollCtrl,
+              itemCount: suggestionsList.length + 1,
+              itemBuilder: (BuildContext context, int index) {
+                if (index == suggestionsList.length) {
+                  return buildLoadingIndicator(isLoading: _isLoading);
+                } else {
+                  return CustomSlydoUserCard(user: suggestionsList[index]);
+                }
+              },
+            ),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
 class AskViewModel extends ChangeNotifier {
-
   int? currentAskTapOnHome = 0;
   String? categoryToAskOn = '';
   String? newlySelectedCategory = '';
@@ -19,7 +18,8 @@ class AskViewModel extends ChangeNotifier {
     'Finance',
     'Art & Culture',
     'Relationship',
-    'Religion'];
+    'Religion'
+  ];
 
   List<Color> categoryColors = [
     Color(0xFFF07097),
@@ -37,52 +37,45 @@ class AskViewModel extends ChangeNotifier {
     Color(0xFF243A73),
   ];
 
-  List<String> selectedCategoryList = [
-
-  ];
+  List<String> selectedCategoryList = [];
 
   List<String> userTags = [];
 
-  void init(){
+  void init() {
     currentAskTapOnHome = 0;
     selectedCategoryList = [];
     userTags = [];
     notifyListeners();
   }
 
-  void updateCategoryToAskOn({String? c}){
+  void updateCategoryToAskOn({String? c}) {
     categoryToAskOn = c;
     notifyListeners();
   }
 
   void onSelectCategory({String? c}) {
-    if(selectedCategoryList.contains(c)) {
+    if (selectedCategoryList.contains(c)) {
       selectedCategoryList.remove(c);
       notifyListeners();
     } else {
-      if(selectedCategoryList.length < 3) {
+      if (selectedCategoryList.length < 3) {
         selectedCategoryList.add(c!);
         notifyListeners();
       }
     }
   }
 
-  void updateNewlySelected(String v){
+  void updateNewlySelected(String v) {
     newlySelectedCategory = v;
     notifyListeners();
   }
 
-  void updateCurrentAskTapOnHome({int? i}){
+  void updateCurrentAskTapOnHome({int? i}) {
     currentAskTapOnHome = i;
     notifyListeners();
   }
 
-  void joinACategory() {
+  void joinACategory() {}
 
-  }
-
-  void setInTag() {
-
-  }
-
+  void setInTag() {}
 }

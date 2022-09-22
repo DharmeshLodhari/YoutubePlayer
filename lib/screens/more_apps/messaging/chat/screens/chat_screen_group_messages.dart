@@ -1592,7 +1592,6 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                   : defaultImage,
               colorBlendMode: BlendMode.darken,
               fit: BoxFit.cover,
-
               filterQuality: FilterQuality.high,
               errorWidget: imageErrorWidget,
             ),

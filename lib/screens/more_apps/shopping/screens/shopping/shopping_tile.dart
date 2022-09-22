@@ -268,7 +268,8 @@ class _ShoppingTileWithHeartWithProductState
                     height: 60,
                     width: 60,
                     errorWidget: productAndServiceErrorWidget,
-                    memCacheHeight: (MediaQuery.of(context).size.height * 0.6).toInt(),
+                    memCacheHeight:
+                        (MediaQuery.of(context).size.height * 0.6).toInt(),
                   ),
                 ),
                 SizedBox(width: 16),

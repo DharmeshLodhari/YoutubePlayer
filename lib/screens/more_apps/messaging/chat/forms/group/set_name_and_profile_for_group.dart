@@ -502,7 +502,7 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
             labelText: 'Max. number of users',
             onChanged: (value) {},
             validator: (val) {
-              if (int.parse(val) < 3){
+              if (int.parse(val) < 3) {
                 return "You can not create channels with less than 3 members";
               }
               return null;
@@ -591,7 +591,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         showToast(message: 'Max number of users is 255');
         return;
       } else if (int.parse(_maxNoOfUsersCtrl.text) < 3) {
-        showToast(message: 'You can not create channels with less than 3 members');
+        showToast(
+            message: 'You can not create channels with less than 3 members');
         return;
       }
     }

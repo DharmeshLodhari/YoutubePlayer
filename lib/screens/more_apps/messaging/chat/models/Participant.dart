@@ -5,7 +5,12 @@ class Participant {
   String? userName;
   bool? isVerified;
 
-  Participant({this.avatar, this.fullName, this.type, this.userName, this.isVerified = false});
+  Participant(
+      {this.avatar,
+      this.fullName,
+      this.type,
+      this.userName,
+      this.isVerified = false});
 
   factory Participant.fromJson(Map<String, dynamic> json) {
     return Participant(

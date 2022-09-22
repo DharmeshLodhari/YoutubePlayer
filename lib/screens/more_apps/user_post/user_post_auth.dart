@@ -187,7 +187,6 @@ class UserPostAuth extends AuthService {
     if (response.statusCode == 201 || response.statusCode == 200) {
       print('MEDIA RESPONSE SUCCESS ::: ${responseBody}');
       return responseBodyDecoded;
-
     } else {
       return Future.error(
           "ERROR while calling $url StatusCode:- ${response.statusCode} Body:- $responseBody");

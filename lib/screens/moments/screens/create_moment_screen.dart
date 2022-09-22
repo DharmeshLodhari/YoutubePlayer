@@ -29,24 +29,37 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   String? imagePath;
   int videoTimer = 30;
   bool videoPlayerLoading = false;
-  late CameraController cameraController;
-  late VideoPlayerController videoPlayerController;
+  CameraController? cameraController;
+  VideoPlayerController? videoPlayerController;
 
   @override
   void initState() {
     super.initState();
-    _initCameraController(newCameraDescription: cameras[0]);
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      if (cameras.isNotEmpty) {
+        _initCameraController(newCameraDescription: cameras[0]);
+      } else {
+        showToast(message: "You don't have any Camera !!");
+        Navigator.of(context).pop();
+      }
+    });
   }
 
-  _initCameraController({required CameraDescription newCameraDescription}) {
+  @override
+  void dispose() {
+    cameraController?.dispose();
+    videoPlayerController?.dispose();
+    super.dispose();
+  }
+
+  void _initCameraController(
+      {required CameraDescription newCameraDescription}) {
     cameraController =
         CameraController(newCameraDescription, ResolutionPreset.max);
-    cameraController.initialize().then((_) {
-      cameraController.setFlashMode(FlashMode.off);
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
+    cameraController?.initialize().then((_) {
+      cameraController?.setFlashMode(FlashMode.off);
+
+      if (mounted) setState(() {});
     }).catchError((Object e) {
       if (e is CameraException) {
         switch (e.code) {
@@ -62,15 +75,9 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   }
 
   @override
-  void dispose() {
-    cameraController.dispose();
-    videoPlayerController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (!cameraController.value.isInitialized) {
+    if (cameraController == null ||
+        !(cameraController?.value.isInitialized ?? false)) {
       return Scaffold(
         body: Center(
           child: Text(
@@ -92,7 +99,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
         children: <Widget>[
           mediaCaptured()
               ? showCapturedMedia()
-              : CameraPreview(cameraController),
+              : CameraPreview(cameraController!),
           // Positioned(
           //   top: ht / 3,
           //   left: 4,
@@ -139,8 +146,10 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                   onTap: mediaCaptured()
                       ? null
                       : () {
-                          if (!cameraController.value.isTakingPicture &&
-                              !cameraController.value.isRecordingVideo) {
+                          if (!(cameraController?.value.isTakingPicture ??
+                                  false) &&
+                              !(cameraController?.value.isRecordingVideo ??
+                                  false)) {
                             pickFileFromMedia();
                           }
                         },
@@ -180,7 +189,8 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
                           : () {
                               timer?.cancel();
                               videoTimer = 30;
-                              if (cameraController.value.isRecordingVideo) {
+                              if (cameraController?.value.isRecordingVideo ??
+                                  false) {
                                 stopVideoRecording();
                               }
                             },
@@ -250,22 +260,44 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
               ],
             ),
           ),
-          !mediaCaptured()
-              ? Positioned(
-                  right: 15,
-                  top: 50,
-                  child: InkWell(
-                    onTap: () {
-                      _toggleCameraLens();
-                    },
-                    child: Icon(
-                      Icons.flip_camera_android_outlined,
-                      color: Colors.white,
-                    ),
-                  ),
-                )
-              : SizedBox.shrink()
+          _buildCameraToggle(),
+          _buildBackButton(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCameraToggle() {
+    if (!mediaCaptured()) {
+      return Positioned(
+        right: 15,
+        top: 50,
+        child: InkWell(
+          onTap: () {
+            _toggleCameraLens();
+          },
+          child: Icon(
+            Icons.flip_camera_android_outlined,
+            color: Colors.white,
+          ),
+        ),
+      );
+    }
+    return SizedBox.shrink();
+  }
+
+  Widget _buildBackButton() {
+    return Positioned(
+      left: 15,
+      top: 50,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+        child: Icon(
+          Icons.arrow_back_ios_new_rounded,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -286,13 +318,13 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   }
 
   Future<XFile?> takePictureOrVideo({required MediaType mediaType}) async {
-    if (!cameraController.value.isInitialized) {
+    if (!(cameraController?.value.isInitialized ?? false)) {
       showToast(message: 'Error: select a camera first.');
       return null;
     }
 
-    if (cameraController.value.isTakingPicture ||
-        cameraController.value.isRecordingVideo) {
+    if ((cameraController?.value.isTakingPicture ?? false) ||
+        (cameraController?.value.isRecordingVideo ?? false)) {
       return null;
     }
 
@@ -300,7 +332,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
       if (mediaType == MediaType.picture) {
         debugPrint('Taking picture');
 
-        final XFile? file = await cameraController.takePicture();
+        final XFile? file = await cameraController?.takePicture();
         debugPrint('PICTURE TAKEN :: $file');
 
         if (file != null) {
@@ -309,7 +341,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
           return null;
         }
       } else {
-        cameraController.startVideoRecording();
+        cameraController?.startVideoRecording();
         timer = Timer.periodic(Duration(seconds: 1), (timer) {
           if (mounted) {
             setState(() {
@@ -336,7 +368,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
 
   setUpVideoPlayer() async {
     videoPlayerController = VideoPlayerController.file(File(videoPath!))
-      ..initialize().then((_) => videoPlayerController.play())
+      ..initialize().then((_) => videoPlayerController?.play())
       ..setLooping(true);
   }
 
@@ -350,7 +382,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
           SizedBox(
             width: double.infinity,
             height: double.infinity,
-            child: VideoPlayer(videoPlayerController),
+            child: VideoPlayer(videoPlayerController!),
           ),
           Positioned(
             right: 15,
@@ -359,7 +391,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
               onPressed: () {
                 setState(() {
                   videoPath = null;
-                  videoPlayerController.dispose();
+                  videoPlayerController?.dispose();
                 });
               },
               icon: Icon(Icons.close, size: 25, color: Colors.red),
@@ -442,7 +474,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   }
 
   void stopVideoRecording() {
-    cameraController.stopVideoRecording().then((xfile) {
+    cameraController?.stopVideoRecording().then((xfile) {
       if (mounted) {
         setState(() {
           videoPath = xfile.path;
@@ -464,7 +496,8 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
 
   void _toggleCameraLens() async {
     // get current lens direction (front / rear)
-    final lensDirection = cameraController.description.lensDirection;
+    final lensDirection = cameraController?.description.lensDirection ??
+        CameraLensDirection.front;
     List<CameraDescription> _availableCameras = await availableCameras();
     CameraDescription? newDescription;
     if (lensDirection == CameraLensDirection.front) {

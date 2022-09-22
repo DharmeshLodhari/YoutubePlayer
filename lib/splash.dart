@@ -207,8 +207,6 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     precacheImage(AssetImage("assets/images/app_logo.png"), context);

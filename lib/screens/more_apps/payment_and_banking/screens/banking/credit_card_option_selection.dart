@@ -16,7 +16,7 @@ class CreditCardOptionSelection extends StatefulWidget {
 }
 
 class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
-   AppConfigurationModel? appConfigurationModel;
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
@@ -71,7 +71,8 @@ class _CreditCardOptionSelectionState extends State<CreditCardOptionSelection> {
                   image: SvgPicture.asset('assets/images/top_up_icon.svg'),
                   iconColor: HexColor("#3F61DB"),
                   onTap: () {
-                    if (appConfigurationModel?.enableWalletTopupWithCreditCard ==
+                    if (appConfigurationModel
+                            ?.enableWalletTopupWithCreditCard ==
                         true) {
                       Navigator.of(context)
                           .pushNamed(Routes.CARD_PAYMENT_PAGE, arguments: true);

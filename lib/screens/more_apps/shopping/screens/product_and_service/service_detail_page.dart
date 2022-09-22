@@ -839,7 +839,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                       child: CachedNetworkImage(
                         imageUrl: service!.providerAvatar!,
                         fit: BoxFit.fitHeight,
-
                         errorWidget: imageErrorWidget,
                         filterQuality: FilterQuality.high,
                       ),
@@ -847,13 +846,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   ),
                 ),
                 title: userNameWithVerifiedIcon(
-    name: service!.providerFullName ?? '',
-    isVerified: false,
-    textStyle: TextStyle(
-    fontSize: 14,
-    color: blackFont,
-    fontWeight: FontWeight.w600),
-    ),
+                  name: service!.providerFullName ?? '',
+                  isVerified: false,
+                  textStyle: TextStyle(
+                      fontSize: 14,
+                      color: blackFont,
+                      fontWeight: FontWeight.w600),
+                ),
                 subtitle: Text(
                   service!.provider ?? "",
                   style: TextStyle(

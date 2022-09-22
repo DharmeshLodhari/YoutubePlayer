@@ -15,7 +15,10 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
       backgroundColor: white,
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        leading: Icon(Icons.arrow_back_ios_rounded, color: navyBlue,),
+        leading: Icon(
+          Icons.arrow_back_ios_rounded,
+          color: navyBlue,
+        ),
         backgroundColor: white,
         elevation: 0,
         title: Row(
@@ -34,9 +37,9 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
       ),
       body: Column(
         children: [
-
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
@@ -58,13 +61,7 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                     ),
                     trailing: Icon(Icons.navigate_next),
                     onTap: () async {
-
-                      await getFile(context).then((value) {
-
-
-
-                      });
-
+                      await getFile(context).then((value) {});
                     },
                   ),
                   ListTile(
@@ -80,9 +77,7 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                       softWrap: false,
                     ),
                     trailing: Icon(Icons.navigate_next),
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                   ),
                   ListTile(
                     title: Text(
@@ -97,19 +92,18 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                       softWrap: false,
                     ),
                     trailing: Icon(Icons.navigate_next),
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                   ),
                 ],
               ),
             ),
           ),
-
-          SizedBox(height: 20,),
-
+          SizedBox(
+            height: 20,
+          ),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
@@ -127,10 +121,11 @@ class _ChatWallpaperSettingsState extends State<ChatWallpaperSettings> {
                   overflow: TextOverflow.fade,
                   softWrap: false,
                 ),
-                leading: Icon(Icons.clear_rounded, color: Colors.red,),
-                onTap: () {
-
-                },
+                leading: Icon(
+                  Icons.clear_rounded,
+                  color: Colors.red,
+                ),
+                onTap: () {},
               ),
             ),
           ),

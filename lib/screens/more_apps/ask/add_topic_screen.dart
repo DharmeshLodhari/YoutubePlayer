@@ -9,7 +9,6 @@ import '../../../widget/curved_btn.dart';
 import 'ask_viewmodel.dart';
 
 class AddTopicScreen extends StatefulWidget {
-
   @override
   State<AddTopicScreen> createState() => _AddTopicScreenState();
 }
@@ -21,7 +20,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   late FocusNode textFieldTagFocusNode;
 
   @override
-  void initState(){
+  void initState() {
     textFieldTagFocusNode = FocusNode();
     super.initState();
   }
@@ -56,14 +55,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           },
         ),
       ),
-      body: Consumer<AskViewModel>(
-          builder: (context, model, child) {
-          return SingleChildScrollView(
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              child: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Column(children: [
+      body: Consumer<AskViewModel>(builder: (context, model, child) {
+        return SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            child: Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Column(
+                children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -75,13 +74,17 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                           color: blackFont,
                         ),
                       ),
-                      SizedBox(height: 7,),
+                      SizedBox(
+                        height: 7,
+                      ),
                       TopicTextField(
                         controller: topicTextController,
                       ),
                     ],
                   ),
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -93,14 +96,18 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                           color: blackFont,
                         ),
                       ),
-                      SizedBox(height: 7,),
+                      SizedBox(
+                        height: 7,
+                      ),
                       TopicTextField(
                         height: 140,
                         controller: topicTitleController,
                       ),
                     ],
                   ),
-                  SizedBox(height: 20,),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Focus(
                     focusNode: textFieldTagFocusNode,
                     child: TextFieldTags(
@@ -128,7 +135,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(11),
                         border: Border.all(
@@ -136,48 +144,62 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                           width: 2,
                         ),
                       ),
-                      child: Column(children: [
-                        Text(
-                          'Import Image',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: blackFont,
+                      child: Column(
+                        children: [
+                          Text(
+                            'Import Image',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: blackFont,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 10,),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: navyBlue.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(7),
+                          SizedBox(
+                            height: 10,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-                            child: Text(
-                              'Choose file',
-                              style: TextStyle(
-                                color: navyBlue,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                          Container(
+                            decoration: BoxDecoration(
+                              color: navyBlue.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 9),
+                              child: Text(
+                                'Choose file',
+                                style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 10,),
-                        Text(
-                          'Image should not be more than 2mb',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: blackFont.withOpacity(0.3),
+                          SizedBox(
+                            height: 10,
                           ),
-                        ),
-                        SizedBox(height: 10,)
-                      ],),
+                          Text(
+                            'Image should not be more than 2mb',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: blackFont.withOpacity(0.3),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10,),
-                  Expanded(child: SizedBox(height: 10,)),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                      child: SizedBox(
+                    height: 10,
+                  )),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -186,28 +208,26 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                         alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(horizontal: 24),
                         constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context)
-                                .size
-                                .width - 60),
+                            maxWidth: MediaQuery.of(context).size.width - 60),
                         child: CurvedButton(
                           height: 56,
                           textColor: Colors.white,
                           backgroundColor: navyBlue,
                           text: "Submit",
-                          onPressed: () async {
-
-                          },
+                          onPressed: () async {},
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 170,)
-                ],),
+                  SizedBox(
+                    height: 170,
+                  )
+                ],
               ),
             ),
-          );
-        }
-      ),
+          ),
+        );
+      }),
     );
   }
 }
@@ -258,13 +278,11 @@ class TopicTextField extends StatelessWidget {
         textAlignVertical: TextAlignVertical.center,
         onEditingComplete: function,
         controller: controller,
-
         style: TextStyle(
           fontSize: 16,
           color: blackFont,
           fontWeight: FontWeight.w400,
         ),
-
         validator: validator,
         keyboardType: TextInputType.multiline,
         maxLines: 10,

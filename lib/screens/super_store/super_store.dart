@@ -301,14 +301,16 @@ class _SuperStoreState extends State<SuperStore> {
             children: [
               noProductInList
                   ? SizedBox.shrink()
-                  : todaysDealsEmpty ? SizedBox.shrink(): Text(
-                      "Other deals",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: blackFont,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                  : todaysDealsEmpty
+                      ? SizedBox.shrink()
+                      : Text(
+                          "Other deals",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: blackFont,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
               noProductInList ? SizedBox.shrink() : SizedBox(height: 16),
               GridView.builder(
                 shrinkWrap: true,

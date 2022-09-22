@@ -1,6 +1,3 @@
-
-
-
 class StatesModel {
   int? id;
   String? name;
@@ -9,15 +6,12 @@ class StatesModel {
   StatesModel({required this.id, required this.name, required this.country});
 
   factory StatesModel.fromJson(Map<String, dynamic> json) {
-
     return StatesModel(
-
-        id : json['id'],
-        name : json['name'],
-        country :
-    json['country'] != null ? Country.fromJson(json['country']) : null,
+      id: json['id'],
+      name: json['name'],
+      country:
+          json['country'] != null ? Country.fromJson(json['country']) : null,
     );
-
   }
 
   Map<String, dynamic> toJson() {
@@ -39,14 +33,11 @@ class Country {
   Country({required this.id, required this.name, required this.isoCode});
 
   factory Country.fromJson(Map<String, dynamic> json) {
-
     return Country(
-        id : json['id'],
-        name : json['name'],
-        isoCode : json['iso_code'],
+      id: json['id'],
+      name: json['name'],
+      isoCode: json['iso_code'],
     );
-
-
   }
 
   Map<String, dynamic> toJson() {

@@ -675,8 +675,6 @@ class PaymentAndBankingAuth extends AuthService {
     return response;
   }
 
-
-
   //Send payout to backend
   Future<http.Response> accountPayout(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/payout/";

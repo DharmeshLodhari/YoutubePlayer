@@ -762,22 +762,20 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     );
   }
 
-  Widget getPrivateOrPublicIcon(int index){
+  Widget getPrivateOrPublicIcon(int index) {
     return Padding(
       padding: EdgeInsets.only(top: 4),
-      child: widget.momentsModelList[index]
-          .isPublic ==
-          true
+      child: widget.momentsModelList[index].isPublic == true
           ? Icon(
-        Icons.public_outlined,
-        color: Colors.white,
-        size: 16,
-      )
+              Icons.public_outlined,
+              color: Colors.white,
+              size: 16,
+            )
           : Icon(
-        Icons.security_outlined,
-        color: Colors.white,
-        size: 16,
-      ),
+              Icons.security_outlined,
+              color: Colors.white,
+              size: 16,
+            ),
     );
   }
 

@@ -262,8 +262,7 @@ class _CardPaymentPageState extends State<CardPaymentPage> {
                         }
                       });
                     },
-                    extraFunctionWhenInputWasNotVerifiedFromServer:
-                        () {
+                    extraFunctionWhenInputWasNotVerifiedFromServer: () {
                       setState(() {
                         showButton = false;
                         showToast(message: 'Card not valid');

@@ -18,7 +18,10 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
       backgroundColor: white,
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        leading: Icon(Icons.arrow_back_ios_rounded, color: navyBlue,),
+        leading: Icon(
+          Icons.arrow_back_ios_rounded,
+          color: navyBlue,
+        ),
         backgroundColor: white,
         elevation: 0,
         title: Row(
@@ -37,9 +40,9 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
       ),
       body: Column(
         children: [
-
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
@@ -57,20 +60,22 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                   overflow: TextOverflow.fade,
                   softWrap: false,
                 ),
-                trailing: Icon(Icons.navigate_next_rounded, color: navyBlue,),
+                trailing: Icon(
+                  Icons.navigate_next_rounded,
+                  color: navyBlue,
+                ),
                 onTap: () {
-                    NavigationUtil.push(context,
-                        screen: ChatWallpaperSettings()
-                    );
+                  NavigationUtil.push(context, screen: ChatWallpaperSettings());
                 },
               ),
             ),
           ),
-
-          SizedBox(height: 14,),
-
+          SizedBox(
+            height: 14,
+          ),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
@@ -90,19 +95,15 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                 ),
                 trailing: Switch(
                   value: false,
-                  onChanged: (bool value) {
-
-                  },
+                  onChanged: (bool value) {},
                 ),
-                onTap: () {
-
-                },
+                onTap: () {},
               ),
             ),
           ),
-
-          SizedBox(height: 12,),
-
+          SizedBox(
+            height: 12,
+          ),
           Container(
             width: 340,
             child: Text(
@@ -115,11 +116,12 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
               ),
             ),
           ),
-
-          SizedBox(height: 12,),
-
+          SizedBox(
+            height: 12,
+          ),
           Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             shadowColor: boxShadowTwo,
             elevation: 0,
@@ -140,9 +142,7 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                       softWrap: false,
                     ),
                     leading: Icon(Icons.archive),
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                   ),
                   ListTile(
                     title: Text(
@@ -156,10 +156,11 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    leading: Icon(Icons.clear_rounded, color: Colors.red,),
-                    onTap: () {
-
-                    },
+                    leading: Icon(
+                      Icons.clear_rounded,
+                      color: Colors.red,
+                    ),
+                    onTap: () {},
                   ),
                   ListTile(
                     title: Text(
@@ -173,18 +174,18 @@ class _ChatConnectionSettingsState extends State<ChatConnectionSettings> {
                       overflow: TextOverflow.fade,
                       softWrap: false,
                     ),
-                    leading: Icon(Icons.delete, color: Colors.red,),
-                    onTap: () {
-
-                    },
+                    leading: Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
+                    onTap: () {},
                   ),
                 ],
               ),
             ),
           ),
-
-
-      ],),
+        ],
+      ),
     );
   }
 }

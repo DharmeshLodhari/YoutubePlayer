@@ -203,7 +203,8 @@ class _AddReviewState extends State<AddReview> {
   }
 
   Widget _buildRatingBar() {
-    return Center(child: getClickableRatingBar(
+    return Center(
+        child: getClickableRatingBar(
       initialRating: 0,
       onRatingUpdate: (rate) {
         rating = rate.floor();

@@ -950,7 +950,8 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       if (momentPosted == true) {
         Navigator.pop(context); // Dismiss the loader
         Navigator.pop(context); // Dismiss preview moment screen
-        Navigator.pop(context, true); // Dis// miss create moment screen and reload moment screen page.
+        Navigator.pop(context,
+            true); // Dis// miss create moment screen and reload moment screen page.
         showToast(message: 'Moment created');
       }
     }).catchError((e) {

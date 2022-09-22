@@ -225,7 +225,6 @@ class AwesomeNotificationService {
   void showNotification({required Map<String, dynamic> message}) async {
     int id = Random().nextInt(50000);
 
-
     Map<String, String> finalNotification = {};
     Map<String, dynamic> tempNotification =
         Map<String, dynamic>.from(message['notification']);
@@ -241,13 +240,11 @@ class AwesomeNotificationService {
       }
     });
 
-
     Map<String, String> notification =
         Map<String, String>.from(finalNotification);
 
     notification['type'] = message['data']['type'];
     notification['notification_id'] = id.toString();
-
 
     //  await awesomeNotifications.cancelAll();
 
@@ -266,7 +263,6 @@ class AwesomeNotificationService {
         ),
       );
     } else {
-
       await awesomeNotifications.createNotification(
         content: NotificationContent(
           channelKey: "basic_channel",

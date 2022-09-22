@@ -37,7 +37,6 @@ class _TrimmerViewState extends State<TrimmerView> {
             onSave: (String? outputPath) {
               print('OUTPUT PATH: $outputPath');
               _value = outputPath;
-
             })
         .then((value) {
       print('OUTPUT PATH');

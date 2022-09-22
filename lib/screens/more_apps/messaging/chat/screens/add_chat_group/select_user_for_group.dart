@@ -126,8 +126,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
     if (isForAddingUserInGroup) {
       Navigator.of(context).pop(selectedConnectionList);
     } else {
-      Navigator.of(context)
-          .pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP, arguments: {"users": selectedConnectionList});
+      Navigator.of(context).pushNamed(Routes.SET_NAME_AND_PROFILE_FOR_GROUP,
+          arguments: {"users": selectedConnectionList});
     }
   }
 

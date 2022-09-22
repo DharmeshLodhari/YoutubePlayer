@@ -19,11 +19,10 @@ class AskHomeScreen extends StatefulWidget {
 }
 
 class _AskHomeScreenState extends State<AskHomeScreen> {
-
   late PageController _pageViewCtrl;
 
   @override
-  void initState(){
+  void initState() {
     //Future.microtask(() => context.read<AskViewModel>().initialiseVM());
     _pageViewCtrl = PageController(initialPage: 0);
     super.initState();
@@ -31,206 +30,210 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AskViewModel>(
-        builder: (context, model, child) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: blackFont,
-              child: Icon(Icons.add, color: Colors.white,),
-              onPressed: () {
+    return Consumer<AskViewModel>(builder: (context, model, child) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: blackFont,
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            showModalBottomSheet<void>(
+              backgroundColor: Colors.transparent,
+              context: context,
+              builder: (BuildContext context) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                  ),
+                  color: Colors.white,
+                  margin: EdgeInsets.zero,
+                  child: AskCategoryPick(
+                    onCategoryPick: (c) {
+                      model.updateCategoryToAskOn(c: c);
 
-                showModalBottomSheet<void>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                      ),
-                      color: Colors.white,
-                      margin: EdgeInsets.zero,
-                      child: AskCategoryPick(onCategoryPick: (c){
+                      NavigationUtil.pop(context);
 
-                        model.updateCategoryToAskOn(c: c);
-
-                        NavigationUtil.pop(context);
-
-                        NavigationUtil.push(
-                          context,
-                          screen: AddTopicScreen(),
-                        );
-
-                      },),
-                    );
-                  },
+                      NavigationUtil.push(
+                        context,
+                        screen: AddTopicScreen(),
+                      );
+                    },
+                  ),
                 );
               },
-            ),
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              title: Row(
-                children: [
-                  Text(
-                    'Ask',
-                    style: TextStyle(
-                      fontSize: 21,
-                      fontWeight: FontWeight.w700,
-                      color: blackFont,
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.search_rounded,
-                      color: blackFont,
-                      size: 26,
-                    ),
-                    SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () {
-                        NavigationUtil.push(
-                          context,
-                          screen: AskSettingsScreen(),
-                        );
-                      },
-                      child: Icon(
-                        Icons.settings,
-                        color: blackFont,
-                        size: 26,
-                      ),
-                    ),
-                    SizedBox(width: 17),
-                  ],
+            );
+          },
+        ),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Row(
+            children: [
+              Text(
+                'Ask',
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                  color: blackFont,
                 ),
-              ],
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.keyboard_arrow_left,
-                  color: navyBlue,
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              children: [
+                Icon(
+                  Icons.search_rounded,
+                  color: blackFont,
                   size: 26,
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+                SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    NavigationUtil.push(
+                      context,
+                      screen: AskSettingsScreen(),
+                    );
+                  },
+                  child: Icon(
+                    Icons.settings,
+                    color: blackFont,
+                    size: 26,
+                  ),
+                ),
+                SizedBox(width: 17),
+              ],
             ),
-            body: Container(
-              padding: EdgeInsets.symmetric(horizontal: 6, ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: navyBlue,
+              size: 26,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 6,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(children: [
-                          ...List.generate(
-                            model.categoryList.length, (i) {
-
-                              return GestureDetector(
-                                onTap: () {
-                                  model.updateNewlySelected(model.categoryList[i]);
-                                  NavigationUtil.push(
-                                    context,
-                                    screen: AskByCategoryScreen(),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: model.categoryColors[i].withOpacity(0.07),
-                                    ),
-                                    height: 35,
-                                    width: model.categoryList[i].length > 8 ? 120 : 90,
-                                    child: Center(
-                                      child: Text(
-                                        model.categoryList[i],
-                                        style: TextStyle(
-                                            color: model.categoryColors[i].withOpacity(1),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600
-                                        ),
-                                      ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        ...List.generate(
+                          model.categoryList.length,
+                          (i) {
+                            return GestureDetector(
+                              onTap: () {
+                                model
+                                    .updateNewlySelected(model.categoryList[i]);
+                                NavigationUtil.push(
+                                  context,
+                                  screen: AskByCategoryScreen(),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: model.categoryColors[i]
+                                        .withOpacity(0.07),
+                                  ),
+                                  height: 35,
+                                  width: model.categoryList[i].length > 8
+                                      ? 120
+                                      : 90,
+                                  child: Center(
+                                    child: Text(
+                                      model.categoryList[i],
+                                      style: TextStyle(
+                                          color: model.categoryColors[i]
+                                              .withOpacity(1),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                        ],),
-                      ),
-                      SizedBox(height: 17),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          pageViewTabItem(
-                              onPageTap: () {
-                                model.updateCurrentAskTapOnHome(i: 0);
-                                _pageViewCtrl.jumpToPage(0);
-                              },
-                              pageNum: 0,
-                              title: 'Trending Topics',
-                              currentTapIndex: model.currentAskTapOnHome
-                          ),
-                          pageViewTabItem(
-                              onPageTap: () {
-                                model.updateCurrentAskTapOnHome(i: 1);
-                                _pageViewCtrl.jumpToPage(1);
-                              },
-                              pageNum: 1,
-                              title: 'Latest Topics',
-                              currentTapIndex: model.currentAskTapOnHome
-                          ),
-                          pageViewTabItem(
-                              onPageTap: () {
-                                model.updateCurrentAskTapOnHome(i: 2);
-                                _pageViewCtrl.jumpToPage(2);
-                              },
-                              pageNum: 2,
-                              title: 'My Topics',
-                              currentTapIndex: model.currentAskTapOnHome
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 7),
-                    ],
-                  ),
-                  Expanded(
-                    child: PageView(
-                      onPageChanged: (currentPage) {
-                        model.updateCurrentAskTapOnHome(i: currentPage);
-                      },
-                      controller: _pageViewCtrl,
-                      children: [
-                        AskListView(listLength: 5),
-                        AskListView(listLength: 2),
-                        AskListView(listLength: 3)
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
+                  SizedBox(height: 17),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      pageViewTabItem(
+                          onPageTap: () {
+                            model.updateCurrentAskTapOnHome(i: 0);
+                            _pageViewCtrl.jumpToPage(0);
+                          },
+                          pageNum: 0,
+                          title: 'Trending Topics',
+                          currentTapIndex: model.currentAskTapOnHome),
+                      pageViewTabItem(
+                          onPageTap: () {
+                            model.updateCurrentAskTapOnHome(i: 1);
+                            _pageViewCtrl.jumpToPage(1);
+                          },
+                          pageNum: 1,
+                          title: 'Latest Topics',
+                          currentTapIndex: model.currentAskTapOnHome),
+                      pageViewTabItem(
+                          onPageTap: () {
+                            model.updateCurrentAskTapOnHome(i: 2);
+                            _pageViewCtrl.jumpToPage(2);
+                          },
+                          pageNum: 2,
+                          title: 'My Topics',
+                          currentTapIndex: model.currentAskTapOnHome),
+                    ],
+                  ),
+                  SizedBox(height: 7),
                 ],
               ),
-            ),
-          );
-        }
-    );
+              Expanded(
+                child: PageView(
+                  onPageChanged: (currentPage) {
+                    model.updateCurrentAskTapOnHome(i: currentPage);
+                  },
+                  controller: _pageViewCtrl,
+                  children: [
+                    AskListView(listLength: 5),
+                    AskListView(listLength: 2),
+                    AskListView(listLength: 3)
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
-  Widget pageViewTabItem({
-    required int pageNum,
-    required String title,
-    int? currentTapIndex,
-    Function? onPageTap
-  }) {
+  Widget pageViewTabItem(
+      {required int pageNum,
+      required String title,
+      int? currentTapIndex,
+      Function? onPageTap}) {
     return InkWell(
       onTap: () => onPageTap!(),
       child: Container(
@@ -247,9 +250,8 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           style: TextStyle(
             color: currentTapIndex == pageNum ? navyBlue : blackFont,
             fontSize: 14,
-            fontWeight: currentTapIndex == pageNum
-                ? FontWeight.w600
-                : FontWeight.w400,
+            fontWeight:
+                currentTapIndex == pageNum ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ),
@@ -257,7 +259,8 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
   }
 
   Widget AskListView({int? listLength}) {
-    RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+    RefreshController _postRefreshController =
+        RefreshController(initialRefresh: false);
 
     return Column(
       children: [
@@ -269,7 +272,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
               waterDropColor: navyBlue,
             ),
             controller: _postRefreshController,
-            onRefresh: (){},
+            onRefresh: () {},
             child: AskLists(listLength: listLength),
           ),
         ),
@@ -292,7 +295,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           },
           child: AskPosts(
             showTag: true,
-            onOptionsAction: (){
+            onOptionsAction: () {
               showModalBottomSheet<void>(
                 backgroundColor: Colors.transparent,
                 context: context,

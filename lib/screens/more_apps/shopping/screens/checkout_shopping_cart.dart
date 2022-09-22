@@ -70,15 +70,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
       basketBloc.addItemToCart(item: element, type: type);
     });
   }
-  AppConfigurationModel? appConfigurationModel;
 
+  AppConfigurationModel? appConfigurationModel;
 
   @override
   void initState() {
-
     super.initState();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
-
   }
 
   @override
@@ -201,9 +199,10 @@ class _ShoppingCartState extends State<ShoppingCart> {
               ],
             ),
             Expanded(
-                child: SizedBox(
-              width: 10,
-            ),),
+              child: SizedBox(
+                width: 10,
+              ),
+            ),
             Expanded(
               child: MaterialButton(
                 height: 40,
@@ -218,12 +217,12 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       fontSize: 16),
                 ),
                 onPressed: () {
-                  if(appConfigurationModel?.enableCheckout == true){
+                  if (appConfigurationModel?.enableCheckout == true) {
                     NavigationUtil.push(
                       context,
                       screen: CheckoutScreen(),
                     );
-                  }else{
+                  } else {
                     showToast(message: 'Checkout not available now');
                   }
 

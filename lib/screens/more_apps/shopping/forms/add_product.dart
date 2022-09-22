@@ -138,7 +138,6 @@ class _AddProductState extends State<AddProduct> {
                       SizedBox(height: 10),
                       addImages(),
                       SizedBox(height: 10),
-
                       addTitleField(),
                       SizedBox(
                         height: 10,
@@ -835,7 +834,6 @@ class _AddProductState extends State<AddProduct> {
       },
       isChecked: productEnableInSuperStore,
       title: AppLocalization.of(context)!.enableInSuperStore,
-
     );
   }
 

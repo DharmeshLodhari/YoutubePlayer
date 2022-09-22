@@ -321,8 +321,6 @@ class _ConnectionListState extends State<ConnectionList> {
   /// If appConfigurationModel.groupChatWorks is false (i.e, we want to disable the groupChat feature),
   /// remove groupChat conversations from the list of connections.
   int getConnectionListItemCount() {
-
-
     int itemCount = 0;
     if (appConfigurationModel?.enableGroupChat == false) {
       _connectionListBloc.connectionUsers
@@ -331,7 +329,6 @@ class _ConnectionListState extends State<ConnectionList> {
     } else {
       itemCount = _connectionListBloc.connectionUsers.length;
     }
-
 
     return itemCount;
   }
@@ -348,8 +345,6 @@ class _ConnectionListState extends State<ConnectionList> {
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               itemBuilder: (BuildContext context, int index) {
-
-
                 ChatConversation chatConversation =
                     _connectionListBloc.connectionUsers[index];
 

@@ -839,7 +839,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                                                             CircularLoadingIndicator()),
                                                 imageUrl: item!,
                                                 fit: BoxFit.fitHeight,
-
                                                 height: double.infinity,
                                                 width: double.infinity,
                                                 errorWidget:
@@ -1113,16 +1112,13 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       child: CachedNetworkImage(
                         imageUrl: product!.sellerAvatar!,
                         fit: BoxFit.fitHeight,
-
-
                         errorWidget: imageErrorWidget,
                         filterQuality: FilterQuality.high,
                       ),
                     ),
                   ),
                 ),
-                title:
-                userNameWithVerifiedIcon(
+                title: userNameWithVerifiedIcon(
                   name: product!.sellerFullName ?? '',
                   isVerified: false,
                   textStyle: TextStyle(
@@ -1130,8 +1126,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                       color: blackFont,
                       fontWeight: FontWeight.w600),
                 ),
-
-
                 subtitle: Text(
                   product!.seller ?? "",
                   style: TextStyle(

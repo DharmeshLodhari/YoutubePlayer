@@ -1,4 +1,3 @@
-
 class AttachmentItemModel {
   String id;
   String title;
