@@ -311,9 +311,9 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
       actionTwoTextColor: Colors.white,
       firstActionPrimary: false,
       title: AppLocalization.of(context)!.accept,
-      description: "Are you sure you want to add" +
+      description: messageDecoderWithEmoji("Are you sure you want to add" +
           " ${user.displayName()} " +
-          "as a friend?",
+          "as a friend?"),
       actionOneText: AppLocalization.of(context)!.cancel,
       actionTwoText: AppLocalization.of(context)!.accept,
     );

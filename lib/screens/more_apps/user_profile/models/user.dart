@@ -337,14 +337,14 @@ class CustomerProfile {
           this.type != "" &&
           this.type != "Business" &&
           this.type != "Developer") {
-        return this.nickName;
+        return messageDecoderWithEmoji(this.nickName);
       }
     }
 
     if (this.fullName != null && this.fullName != "") {
-      return this.fullName;
+      return messageDecoderWithEmoji(this.fullName);
     }
-    return this.userName;
+    return messageDecoderWithEmoji(this.userName);
   }
 }
 
