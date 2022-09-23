@@ -221,7 +221,6 @@ class CustomerProfile {
       this.rating = 0.0});
 
   factory CustomerProfile.fromJson(Map<String, dynamic> json) {
-    debugPrint('CUSTOMER --> ${json['following']}');
     CustomerProfile profile = CustomerProfile(
         fullName: json['full_name'] ?? json['name'] ?? "",
         userName: json['username'] ?? "",

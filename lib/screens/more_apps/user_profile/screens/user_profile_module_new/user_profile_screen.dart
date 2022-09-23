@@ -638,9 +638,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ? Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            getUserProfilePic(),
+                            Center(child: getUserProfilePic()),
                             Positioned.fill(
-                              bottom: -10,
+                              bottom: -12,
                               left: 0,
                               right: 0,
                               child: Align(
@@ -654,7 +654,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                     ),
                                   ),
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 5),
+                                      horizontal: 5, vertical: 2),
                                   child: getRating(
                                       numberOfRating:
                                           searchedUser?.rating.toInt()),
