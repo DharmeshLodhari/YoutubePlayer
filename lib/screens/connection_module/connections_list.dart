@@ -220,13 +220,12 @@ class _ConnectionListState extends State<ConnectionList> {
   // refresh the list when lifecycle called onResume method
   void _onRefreshOnResume() {
     _refreshBloc = Provider.of<RefreshBlocForConnectionDashboard>(context);
-    _refreshBloc!
-      ..addListener(() async {
-        if (_refreshBloc!.isRefresh) {
-          await refreshList();
-          _refreshBloc!.isRefresh = false;
-        }
-      });
+    _refreshBloc?.addListener(() async {
+      if (_refreshBloc?.isRefresh ?? false) {
+        await refreshList();
+        _refreshBloc?.isRefresh = false;
+      }
+    });
   }
 
   Future<void> refreshList() async {

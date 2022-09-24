@@ -36,6 +36,22 @@ Future<String?> getVideoThumbnail(File file) async {
   return path;
 }
 
+String? getFileTypeByPath({required String path}) {
+  if (path.isEmpty) return null;
+
+  List<String> splitName = path.split(".");
+
+  if (splitName.isNotEmpty) {
+    String extension = splitName.last.toLowerCase();
+
+    if (fileExtensions.contains(extension)) return "file";
+    if (imageExtensions.contains(extension)) return "image";
+    if (videoExtensions.contains(extension)) return "video";
+    if (audioExtensions.contains(extension)) return "audio";
+  }
+  return null;
+}
+
 String getFileType(FilePickerResult pickedMedia) {
   debugPrint("File path :- ${pickedMedia.files.single.path}");
   debugPrint("File name :- ${pickedMedia.files.single.name}");

@@ -225,6 +225,9 @@ List<ChangeNotifierProvider> providersList = [
   ChangeNotifierProvider<RefreshBlocForConnectionDashboard>.value(
     value: RefreshBlocForConnectionDashboard(),
   ),
+  ChangeNotifierProvider<RefreshBlocForConnectionList>.value(
+    value: RefreshBlocForConnectionList(),
+  ),
   ChangeNotifierProvider<BasketBloc>.value(
     value: BasketBloc(),
   ),

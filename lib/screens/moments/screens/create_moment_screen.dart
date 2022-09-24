@@ -3,17 +3,17 @@ import 'dart:io';
 
 import 'package:Slydo/screens/moments/screens/preview_moment_screen.dart';
 import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:camera/camera.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:images_picker/images_picker.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../main.dart';
 import '../../../widget/image_crop.dart';
-import '../../more_apps/messaging/chat/utils.dart';
 
 class CreateMediaMomentScreen extends StatefulWidget {
   const CreateMediaMomentScreen({Key? key}) : super(key: key);
@@ -99,7 +99,9 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
         children: <Widget>[
           mediaCaptured()
               ? showCapturedMedia()
-              : CameraPreview(cameraController!),
+              : CameraPreview(
+                  cameraController!,
+                ),
           // Positioned(
           //   top: ht / 3,
           //   left: 4,
@@ -442,33 +444,46 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
     // final file = await ImagePicker()
     //     .pickImage(source: ImageSource.gallery, imageQuality: 70);
 
-    FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        type: FileType.custom,
-        allowedExtensions: imageExtensions);
+    // FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+    //     allowMultiple: false,
+    //     type: FileType.custom,
+    //     allowedExtensions: imageExtensions);
 
-    if (pickedMedia != null) {
-      File file = File(pickedMedia.files.single.path!);
-      String mediaType = getFileType(pickedMedia);
+    List<Media>? res = await ImagesPicker.pick(
+      count: 1,
+      pickType: PickType.all,
+      language: Language.System,
+      maxTime: 120,
+      maxSize: 500,
+      cropOpt: CropOption(
+        // aspectRatio: CropAspectRatio.wh16x9,
+        cropType: CropType.rect,
+      ),
+    );
 
-      if (mediaType == 'image') {
-        String? croppedImagePath = await ImageCrop().cropImage(file.path);
-        if (croppedImagePath != null) {
-          imagePath = croppedImagePath;
-          if (mounted) setState(() {});
-        }
-      } else if (mediaType == 'video') {
-        var videoFilePath =
-            await NavigationUtil.push(context, screen: TrimmerView(file: file));
-        if (videoFilePath is String) {
-          if (mounted) {
-            setState(() {
-              videoPath = videoFilePath;
-            });
-          }
-        } else {
-          // showToast(message: 'Error formatting video, please try again');
-        }
+    if (res == null || res.isEmpty) return;
+    File file = File(res.first.path);
+    String? mediaType = getFileTypeByPath(path: file.path);
+
+    if (mediaType == null) return;
+
+    if (mediaType == 'image') {
+      imagePath = file.path;
+      if (mounted) setState(() {});
+
+      // String? croppedImagePath = await ImageCrop().cropImage(file.path);
+      // if (croppedImagePath != null) {
+      //   imagePath = croppedImagePath;
+      //   if (mounted) setState(() {});
+      // }
+    } else if (mediaType == 'video') {
+      var videoFilePath =
+          await NavigationUtil.push(context, screen: TrimmerView(file: file));
+      if (videoFilePath is String) {
+        videoPath = videoFilePath;
+        if (mounted) setState(() {});
+      } else {
+        // showToast(message: 'Error formatting video, please try again');
       }
     }
   }

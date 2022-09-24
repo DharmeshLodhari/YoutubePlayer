@@ -100,7 +100,7 @@ dependencies:
   sizer: ^2.0.15
   colorful_safe_area: ^0.3.0
   flutter_secure_storage: ^4.2.1
-  image_cropper: ^2.0.2
+  image_cropper: ^3.0.0
   linkwell: ^2.0.6
   swipe_to: ^0.1.0-nullsafety.1
   giphy_picker: ^2.0.0
@@ -133,6 +133,7 @@ dependencies:
 #  http: ^0.12.0+2
   collection: ^1.15.0-nullsafety.4
   webview_flutter: ^3.0.4
+  images_picker: ^1.2.11
 
 flutter_icons:
   android: "launcher_icon"
