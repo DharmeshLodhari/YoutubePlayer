@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
@@ -25,6 +26,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 bool isDialogueOpen = false;
 
@@ -339,13 +341,23 @@ class PushNotificationService {
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
         Navigator.of(context).pushNamed(Routes.TRANSACTIONS);
       } else if (payload == "/connection-request") {
+        DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+            context ?? myGlobals.navigationKey.currentContext!,
+            listen: false);
+        dashboardBloc.index = 3;
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(context)
-            .pushNamed('/friends-dashboard', arguments: {"index": 1});
+
+        // Navigator.of(context)
+        //     .pushNamed('/friends-dashboard', arguments: {"index": 1});
       } else if (payload == "/friends-dashboard") {
+        DashboardBloc dashboardBloc = Provider.of<DashboardBloc>(
+            context ?? myGlobals.navigationKey.currentContext!,
+            listen: false);
+        dashboardBloc.index = 3;
         Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
-        Navigator.of(context)
-            .pushNamed('/friends-dashboard', arguments: {"index": 0});
+        // Navigator.of(context!).popUntil(ModalRoute.withName('/dashboard'));
+        // Navigator.of(context)
+        //     .pushNamed('/friends-dashboard', arguments: {"index": 0});
       } else if (payload!.length > 15 &&
           payload.substring(0, 16) == "/detail_message/") {
         //this variable will fetch the id of message from the response

@@ -99,6 +99,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.17.0'
+
+    implementation ('com.github.yalantis:ucrop:2.2.6-native') {
+        exclude group: "com.android.support", module: "support-v4"
+    }
+//    compileOnly 'com.github.yalantis:ucrop:2.2.6-native'
+//    compileOnly 'com.github.yalantis:ucrop:2.2.6'
 }
 
 // ADD THIS AT THE BOTTOM
