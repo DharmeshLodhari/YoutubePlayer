@@ -116,9 +116,13 @@ class ShareInChat {
 
       List<ChatConversation?> recipientList = [];
 
-      tempList.forEach((element) {
-        recipientList.add(element);
-      });
+      if (tempList != null && tempList.isNotEmpty) {
+        for (ChatConversation? conversation in tempList) {
+          if (conversation != null) {
+            recipientList.add(conversation);
+          }
+        }
+      }
 
       shareMessageToChatBloc.clearRecipient();
 
