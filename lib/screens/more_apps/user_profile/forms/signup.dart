@@ -493,7 +493,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   String? fullNameValidator(String enteredName) {
-    List<String> nameList = enteredName.split(" ");
+    List<String> nameList = enteredName.trim().split(" ");
 
     /// For not allowing user to put any profession title
     List<String> notValidProfessionTitles = [

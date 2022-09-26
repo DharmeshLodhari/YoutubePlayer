@@ -453,8 +453,7 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
       count: 1,
       pickType: PickType.all,
       language: Language.System,
-      maxTime: 120,
-      maxSize: 500,
+      maxTime: 900,
       cropOpt: CropOption(
         // aspectRatio: CropAspectRatio.wh16x9,
         cropType: CropType.rect,
