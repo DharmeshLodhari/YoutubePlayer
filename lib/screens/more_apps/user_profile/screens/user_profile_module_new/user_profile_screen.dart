@@ -92,6 +92,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isInRequestList = false;
   bool isLoadingFollowingAction = false;
+  bool isLoadingFriendRequest = false;
 
   @override
   void initState() {
@@ -158,7 +159,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     showPostsTab = await getIsShowPost();
 
-    if (searchedUser!.type!.toLowerCase() == "user") {
+    if (searchedUser?.type?.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
 
       if (showPostsTab) {
@@ -235,7 +236,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Map<String, dynamic>? data;
     try {
       data = await UserPostAuth()
-          .listUserPosts(next: '', userName: searchedUser!.userName);
+          .listUserPosts(next: '', userName: searchedUser?.userName);
     } catch (error) {}
     if (data != null) {
       debugPrint('IS SHOW POST ---> $data');
@@ -301,8 +302,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
-    if (_userBloc.user.userName != searchedUser!.userName) {
-      UserAuth().checkInRequest(searchedUser!.userName).then((value) {
+    if (_userBloc.user.userName != searchedUser?.userName) {
+      UserAuth().checkInRequest(searchedUser?.userName).then((value) {
         if (mounted) {
           setState(() {
             debugPrint("is In Request List : $isInRequestList");
@@ -389,10 +390,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget getAppbar(BuildContext context) {
     bool hasAddress =
-        searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
-            searchedUser!.userAbout!.userAddress!.addressLine1!.isNotEmpty;
+        searchedUser?.userAbout?.userAddress?.addressLine1 != null &&
+            (searchedUser?.userAbout?.userAddress?.addressLine1?.isNotEmpty ??
+                false);
     bool hasContact = searchedUser?.userAbout?.contact != null &&
-        searchedUser!.userAbout!.contact.isNotEmpty;
+        (searchedUser?.userAbout?.contact.isNotEmpty ?? false);
 
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -881,7 +883,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getUserBioStringWidget() {
-    print(searchedUser?.bio);
     if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty)
       return SizedBox.shrink();
     return Container(
@@ -895,9 +896,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             onOpen: _onOpen,
             text: searchedUser?.bio == null
                 ? ''
-                : messageDecoderWithEmoji(searchedUser!.bio!)!,
+                : messageDecoderWithEmoji("${searchedUser?.bio}"
+                        "") ??
+                    "",
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 14),
+            maxLines: 6,
           ),
           SizedBox(height: 8),
         ],
@@ -1041,25 +1045,38 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           color: isInRequestList ? mateRed : blackFont,
         ),
         onTap: () {
+          isLoadingFriendRequest = true;
+          if (mounted) setState(() {});
+
           if (isInRequestList) {
             UserAuth()
                 .cancelOrRejectContactRequest(searchedUser!)
-                .then((value) {
+                .then((value) async {
               if (value) {
                 showToast(message: "Friend request Canceled");
               } else {
                 showToast(message: "Friend request Canceled unsuccessfully");
               }
-              getSearchedUser();
+              await getSearchedUser(load: false);
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            }).catchError((error) {
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
             });
           } else {
-            UserAuth().makeContactRequest(searchedUser!).then((value) {
+            UserAuth().makeContactRequest(searchedUser!).then((value) async {
               if (value) {
                 showToast(message: "Friend Request Sent !!");
               } else {
                 showToast(message: "Request Not Sent.. ");
               }
-              getSearchedUser();
+              await getSearchedUser(load: false);
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            }).catchError((error) {
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
             });
           }
         },
@@ -1070,6 +1087,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getActionOnUsersBtn() {
+    if (isLoadingFriendRequest) {
+      return Row(
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularLoadingIndicator(),
+          ),
+          SizedBox(width: 24),
+        ],
+      );
+    }
+
     if (searchedUser!.userName != userBloc.user.userName) {
       if (searchedUser!.conversationId != "") {
         return Row(
