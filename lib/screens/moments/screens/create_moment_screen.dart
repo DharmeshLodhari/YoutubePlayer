@@ -94,13 +94,18 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
 
     double wt = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
-        fit: StackFit.expand,
         children: <Widget>[
           mediaCaptured()
               ? showCapturedMedia()
-              : CameraPreview(
-                  cameraController!,
+              : Center(
+                  child: AspectRatio(
+                    aspectRatio: 9 / 16,
+                    child: CameraPreview(
+                      cameraController!,
+                    ),
+                  ),
                 ),
           // Positioned(
           //   top: ht / 3,
