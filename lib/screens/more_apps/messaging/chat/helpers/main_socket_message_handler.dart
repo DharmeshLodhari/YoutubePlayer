@@ -85,22 +85,6 @@ class MainSocketMessageHandler {
           // {"created_at": "2021-05-07 10:05:26.332872Z", "check_id": "337e4aa6-039d-4c13-b438-34905cbcb3b3", "author": "brijesh.sakariya", "text": "10", "kind": "text", "meta_data": {}, "read_by_author": true, "read_by_recipient": false, "delivered": true, "type": "chatroom_message", "conversation_id": "9ae68069-b342-4e04-b568-602bde6fe901"}
           ChatMessage chatMessage = ChatMessage.fromJson(messageData);
 
-          /// If we received same message from Socket and FCM then we will check if that message is already received or not
-          if (isFCMMessage) {
-            if (chatMessage.conversationId == null ||
-                chatMessage.checkId == null) {
-              return;
-            }
-            await Future.delayed(Duration(seconds: 3));
-            bool messageIsReceivedAlready = await ChatMessageHandler()
-                .checkIfMessageExist(
-                    conversationId: chatMessage.conversationId ?? "",
-                    checkId: chatMessage.checkId ?? "");
-
-            print("messageIsReceivedAlready ===> $messageIsReceivedAlready");
-            if (messageIsReceivedAlready) return;
-          }
-
           /// checking if the recipient is in the current chat screen then we will not update message count
           if (mainSocketProvider.currentConversationId != conversationId) {
             await saveAndUpdateUserMessageCount(messageData: messageData);
@@ -349,7 +333,14 @@ class MainSocketMessageHandler {
       MainSocketMessageModel messageModel =
           MainSocketMessageModel.fromJson(messageData);
 
-      String hashedMessage = generateHashedMessage(jsonEncode(messageData));
+      // {body: test, data: {"replied_to":null,"author":"japa","kind":"text","deleted_for_author":false,"check_id":"9a8878b3-793d-46a4-8a43-8c07f470fa91","read_by_recipient":false,"created_at":"2022-09-26T10:34:31.694323+01:00","delivered":false,"was_edited":false,"type":"chatroom_message",
+      // "read_by_author":true,"updated_at":"2022-09-26T10:34:31.694292+01:00","meta_data":{},"to_customer_avatar":"","id":"938d70c6-6a79-4d2d-a460-044b1e42ec32","text":"test","deleted_for_recipient":false,
+      // "conversation":"7d3ceb51-1f09-467d-a29e-b95256a06fc7","from_customer_avatar":"http:\/\/cdn.slydo.co.global.prod.fastly.net\/media\/customer\/avatar\/1519ace0-54d6-4589-a038-6d5b0dac2e3d.jpg"},
+      // title: Slydo Notification, actions: /chat-screen/7d3ceb51-1f09-467d-a29e-b95256a06fc7,
+      // image: http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/1519ace0-54d6-4589-a038-6d5b0dac2e3d.jpg}
+
+      String hashedMessage =
+          generateHashedMessage(jsonEncode(messageModel.toHashedJson()));
       await ChatUserManager().addUser(
           conversationId:
               messageData["conversation"] ?? messageData["conversation_id"]);

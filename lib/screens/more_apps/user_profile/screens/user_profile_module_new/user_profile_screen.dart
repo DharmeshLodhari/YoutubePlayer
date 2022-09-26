@@ -1648,7 +1648,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   void sendProfileToUsersInChat() async {
     List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient?.length}");
+    debugPrint("Selected users = ${listOfRecipient.length}");
 
     Map<String, dynamic> itemData = searchedUser?.toJsonToSendInToChat() ?? {};
 
