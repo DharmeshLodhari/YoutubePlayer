@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
@@ -387,11 +388,14 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   void initState() {
     super.initState();
     _pageCtrl = PageController();
-    Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
-        widget.momentsModelList.map((e) => e.numberOfComments!).toList();
 
-    debugPrint(
-        'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
+          widget.momentsModelList.map((e) => e.numberOfComments!).toList();
+
+      debugPrint(
+          'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
+    });
   }
 
   @override
@@ -575,15 +579,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                         iconEnabled: commentingEnabled(index),
                         iconData: Icons.messenger,
                         text: commentingEnabled(index)
-                            ? Provider.of<MomentsBloc>(context)
-                                        .numberOfComments[index] <
-                                    1
-                                ? ''
-                                : getFormattedViewCount(
-                                    noOfViews: Provider.of<MomentsBloc>(context)
-                                        .numberOfComments[index],
-                                    addViewText: false,
-                                  )
+                            ? getCommentCount(index)
                             : '',
                         onPressed: commentingEnabled(index)
                             ? () {
@@ -760,6 +756,28 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
         );
       },
     );
+  }
+
+  String getCommentCount(int index) {
+    String commentCount = '';
+
+    try {
+      MomentsBloc momentsBloc = Provider.of<MomentsBloc>(context);
+
+      if (momentsBloc.numberOfComments.length <= index + 1) {
+        if (momentsBloc.numberOfComments[index] >= 1) {
+          commentCount = getFormattedViewCount(
+            noOfViews: momentsBloc.numberOfComments[index],
+            addViewText: false,
+          );
+        }
+      }
+    }catch(error)
+    {
+      commentCount = '';
+    }
+
+    return commentCount;
   }
 
   Widget getPrivateOrPublicIcon(int index) {
