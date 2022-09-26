@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
@@ -772,8 +771,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
           );
         }
       }
-    }catch(error)
-    {
+    } catch (error) {
       commentCount = '';
     }
 
