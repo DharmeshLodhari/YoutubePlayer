@@ -38,6 +38,9 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    configurations {
+        all*.exclude module: 'ucrop' // This removes all other versions of `support-v4` if gets duplicated from all the artifacts.
+    }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -100,11 +103,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:21.0.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.17.0'
 
-    implementation ('com.github.yalantis:ucrop:2.2.6-native') {
-        exclude group: "com.android.support", module: "support-v4"
-    }
-//    compileOnly 'com.github.yalantis:ucrop:2.2.6-native'
-//    compileOnly 'com.github.yalantis:ucrop:2.2.6'
+//    implementation 'io.github.lucksiege:pictureselector:v2.7.3-rc08'
+    compileOnly 'com.github.yalantis:ucrop:2.2.8-native'
+    compileOnly 'com.github.yalantis:ucrop:2.2.8'
 }
 
 // ADD THIS AT THE BOTTOM
