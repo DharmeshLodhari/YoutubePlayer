@@ -48,6 +48,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   late MainSocketProvider mainSocketProvider;
   StreamSubscription? streamSubscription;
 
+  bool isExitingGroup = false;
+
   @protected
   void initState() {
     getGroupDetail();
@@ -78,14 +80,15 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     switch (messageData['type']) {
       case "group_conversation_admin_actions":
         if (messageData['meta_data']['conversation_id'] ==
-            groupDetail!.conversationId) {
+            groupDetail?.conversationId) {
           if (messageData['meta_data']['action'] == "delete_group") {
             showToast(
                 message:
                     "${messageData['meta_data']['author']} has deleted this group !!");
 
-            Navigator.popUntil(
-                context, ModalRoute.withName("/friends-dashboard"));
+            if (mounted)
+              Navigator.popUntil(
+                  context, ModalRoute.withName(Routes.DASHBOARD));
             return;
           } else if (messageData['meta_data']['action'] == "remove_user") {
             List users = messageData['meta_data']['users'];
@@ -97,8 +100,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
                   message:
                       "${messageData['meta_data']['author']} has removed you from group !!");
 
-              Navigator.popUntil(
-                  context, ModalRoute.withName("/friends-dashboard"));
+              if (mounted)
+                Navigator.popUntil(
+                    context, ModalRoute.withName(Routes.DASHBOARD));
               return;
             }
           }
@@ -406,12 +410,23 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           SizedBox(
             height: 16,
           ),
-          userBloc.user.userName != groupDetail!.owner
-              ? getExitGroupTile()
-              : getDeleteGroupTile(),
+
+          _buildExitingGroup(),
         ],
       ),
     );
+  }
+
+  Widget _buildExitingGroup() {
+    if (isExitingGroup) {
+      return Center(child: CircularLoadingIndicator());
+    }
+
+    if (userBloc.user.userName != groupDetail?.owner) {
+      return getExitGroupTile();
+    } else {
+      return getDeleteGroupTile();
+    }
   }
 
   void seeAllGroupMember() async {
@@ -888,7 +903,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     String? conversationId = groupDetail?.conversationId;
 
     if (conversationId != null) {
+      isExitingGroup = true;
+      if (mounted) setState(() {});
       MessageAuth().exitFromGroup(conversationId: conversationId).then((value) {
+        isExitingGroup = false;
+        if (mounted) setState(() {});
         if (value) {
           ConnectionListBloc connectionListBloc =
               Provider.of<ConnectionListBloc>(context, listen: false);
@@ -904,26 +923,41 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           // Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
         }
       }).catchError((error) {
+        isExitingGroup = false;
+        if (mounted) setState(() {});
         debugPrint("ERROR:- $error");
       });
     }
   }
 
   void deleteGroup() {
-    MessageAuth()
-        .deleteGroup(conversationId: groupDetail!.conversationId!)
-        .then((value) {
-      if (value) {
-        ConnectionListBloc connectionListBloc =
-            Provider.of<ConnectionListBloc>(context, listen: false);
-        connectionListBloc.deleteChatConversation(
-            conversationId: groupDetail!.conversationId);
-        showToast(message: "You deleted the ${groupDetail!.fullName}!!");
-        Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
-      }
-    }).catchError((error) {
-      debugPrint("ERROR:- $error");
-    });
+    String? conversationId = groupDetail?.conversationId;
+
+    if (conversationId != null) {
+      isExitingGroup = true;
+      if (mounted) setState(() {});
+      MessageAuth().deleteGroup(conversationId: conversationId).then((value) {
+        isExitingGroup = false;
+        if (mounted) setState(() {});
+        if (value) {
+          ConnectionListBloc connectionListBloc =
+              Provider.of<ConnectionListBloc>(context, listen: false);
+          DashboardBloc dashboardBloc =
+              Provider.of<DashboardBloc>(context, listen: false);
+          connectionListBloc.deleteChatConversation(
+              conversationId: conversationId);
+          dashboardBloc.index = 3;
+          showToast(message: "You deleted the ${groupDetail?.fullName}!!");
+          if (mounted)
+            Navigator.of(context)
+                .popUntil(ModalRoute.withName(Routes.DASHBOARD));
+        }
+      }).catchError((error) {
+        isExitingGroup = false;
+        if (mounted) setState(() {});
+        debugPrint("ERROR:- $error");
+      });
+    }
   }
 }
 

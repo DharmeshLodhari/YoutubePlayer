@@ -918,8 +918,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message:
                 "${messageData['meta_data']['author']} has deleted this group !!");
 
-        Navigator.popUntil(
-            context, ModalRoute.withName(Routes.FRIENDS_DASHBOARD));
+        if (mounted)
+          Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
         return;
       } else if (messageData['meta_data']['action'] == "remove_user") {
         List users = messageData['meta_data']['users'];
@@ -933,8 +933,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               message:
                   "${messageData['meta_data']['author']} has removed you from group !!");
 
-          Navigator.popUntil(
-              context, ModalRoute.withName(Routes.FRIENDS_DASHBOARD));
+          if (mounted)
+            Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
           return;
         }
       }
