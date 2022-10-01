@@ -100,7 +100,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
     _videoPath = widget.userPost!.video;
 
     if (_videoPath != null && _videoPath!.isNotEmpty) {
-      _mainVideoController = VideoPlayerController.network(_videoPath!);
+      _mainVideoController = VideoPlayerController.network(_videoPath!,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
 
       videoFromServerChewieMainController = ChewieController(
         videoPlayerController: _mainVideoController!,
@@ -653,7 +654,8 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
 
     if (_videoPath != null && _videoPath!.isNotEmpty) {
       if (!videoFromServer) {
-        var mainVideoController = VideoPlayerController.file(File(_videoPath!));
+        var mainVideoController = VideoPlayerController.file(File(_videoPath!),
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
 
         pickedVideoChewieMainController = ChewieController(
           videoPlayerController: mainVideoController,

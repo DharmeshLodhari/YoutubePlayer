@@ -133,6 +133,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     selectedIndexStream.close();
     _scrollController?.removeListener(_scrollListener);
     _scrollController?.dispose();
+    _tabController?.dispose();
   }
 
   Future<void> getSearchedUser({bool load = true}) async {
@@ -843,40 +844,63 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getFollowUnFollowWidget() {
-    if (searchedUser!.following != null && searchedUser!.followers != null) {
-      return InkWell(
-        onTap: () {
-          NavigationUtil.push(
-            context,
-            screen:
-                FollowingAndFollowersList(userName: searchedUser!.userName!),
-          );
-        },
-        child: Row(
-          children: [
-            Text(
-              getFormattedViewCount(
-                  noOfViews: searchedUser!.following!,
-                  addViewText: false,
-                  showZeroViews: true),
-              style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+    if (searchedUser?.following != null && searchedUser?.followers != null) {
+      return Row(
+        children: [
+          InkWell(
+            onTap: () {
+              if (searchedUser?.userName != null) {
+                NavigationUtil.push(
+                  context,
+                  screen: FollowingAndFollowersList(
+                      userName: searchedUser?.userName ?? ""),
+                );
+              }
+            },
+            child: Row(
+              children: [
+                Text(
+                  getFormattedViewCount(
+                      noOfViews: searchedUser?.following ?? 0,
+                      addViewText: false,
+                      showZeroViews: true),
+                  style:
+                      TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 2),
+                Text('Following'),
+              ],
             ),
-            SizedBox(width: 2),
-            Text('Following'),
-            SizedBox(width: 30),
-            Text(
-              getFormattedViewCount(
-                  noOfViews: searchedUser!.followers!,
-                  addViewText: false,
-                  showZeroViews: true),
-              style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(width: 30),
+          InkWell(
+            onTap: () {
+              if (searchedUser?.userName != null) {
+                NavigationUtil.push(
+                  context,
+                  screen: FollowingAndFollowersList(
+                      userName: searchedUser?.userName ?? "", index: 1),
+                );
+              }
+            },
+            child: Row(
+              children: [
+                Text(
+                  getFormattedViewCount(
+                      noOfViews: searchedUser!.followers!,
+                      addViewText: false,
+                      showZeroViews: true),
+                  style:
+                      TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 2),
+                Text(
+                  searchedUser!.followers! > 1 ? 'Followers' : 'Follower',
+                ),
+              ],
             ),
-            SizedBox(width: 2),
-            Text(
-              searchedUser!.followers! > 1 ? 'Followers' : 'Follower',
-            ),
-          ],
-        ),
+          ),
+        ],
       );
     }
     return SizedBox.shrink();
@@ -1863,7 +1887,8 @@ class _MomentsTabState extends State<MomentsTab> {
       } else {
         showToast(
             message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)?.internetConnectionNotAvailable ??
+                    "");
         _refreshController.refreshCompleted();
       }
     });

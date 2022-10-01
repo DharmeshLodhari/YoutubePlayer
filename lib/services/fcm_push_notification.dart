@@ -287,6 +287,8 @@ class PushNotificationService {
         if (!isDialogueOpen) {
           debugPrint('FRANK DIALOG NOT OPEN');
 
+          log("BLACK LOG => $notification");
+
           Future.delayed(Duration(seconds: 3), () {
             showAlertMessage(
                 notification: notification,

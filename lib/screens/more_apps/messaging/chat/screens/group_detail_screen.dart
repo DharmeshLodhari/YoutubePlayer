@@ -193,7 +193,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             width: 12,
           ),
           Text(
-            groupDetail!.fullName!,
+            messageDecoderWithEmoji(groupDetail?.fullName ?? "") ?? "",
             style: TextStyle(
                 color: blackFont, fontSize: 18, fontWeight: FontWeight.bold),
             overflow: TextOverflow.fade,

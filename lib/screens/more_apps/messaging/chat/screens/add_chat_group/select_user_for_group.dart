@@ -284,7 +284,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         }
         Map<String, dynamic>? result = await UserAuth().searchUserInContact(
             next, previous,
-            query: searchUserController!.text.trim());
+            query: searchUserController?.text.trim() ?? "");
         if (result == null) {
           isLoading = false;
           return;
@@ -297,8 +297,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
         List<CustomerProfile> users = [];
 
-        tempList
-            .forEach((element) => users.add(CustomerProfile.fromJson(element)));
+        tempList.forEach((element) {
+          CustomerProfile customerProfile = CustomerProfile.fromJson(element);
+
+          if (customerProfile.fullName != "Slydo Inc" &&
+              customerProfile.userName != "slydo") {
+            users.add(customerProfile);
+          }
+        });
 
         isLoading = false;
         if (mounted) setState(() {});
@@ -310,8 +316,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         if (mounted) setState(() {});
       } else if (next == null && connectionList.length > 6) {
         _scaffoldSelectUserForGroupKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          content: Text(
+              AppLocalization.of(context)?.youHaveReachedBottomOfTheList ?? ""),
           duration: Duration(milliseconds: 500),
         ));
       }

@@ -374,7 +374,8 @@ class _CreateMediaMomentScreenState extends State<CreateMediaMomentScreen> {
   }
 
   setUpVideoPlayer() async {
-    videoPlayerController = VideoPlayerController.file(File(videoPath!))
+    videoPlayerController = VideoPlayerController.file(File(videoPath!),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
       ..initialize().then((_) => videoPlayerController?.play())
       ..setLooping(true);
   }

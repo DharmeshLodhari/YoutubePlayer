@@ -306,7 +306,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     getUserStatus();
     setUserStatusTimer();
     initializeSocket();
-    await setUpAudioRecorder();
+
     chatShakeDetection = Provider.of<ChatShakeDetection>(
         myGlobals.scaffoldKey.currentContext!,
         listen: false);
@@ -2128,6 +2128,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
+        await setUpAudioRecorder();
+
         await getAudioPermission();
 
         if (isAudioRecording) {

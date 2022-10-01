@@ -8,14 +8,12 @@ import 'package:Slydo/utils/video_player_controller/chewie_player.dart';
 import 'package:Slydo/utils/video_player_controller/chewie_progress_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../../utils/enums.dart';
 import '../../../../../utils/util.dart';
 import '../../../user_post/models/user_post.dart';
-import '../../../user_profile/models/user.dart';
 
 class PostTileForChat extends StatefulWidget {
   Map<String, dynamic>? message;
@@ -44,8 +42,9 @@ class _PostTileForChatState extends State<PostTileForChat> {
         PostForChatModel.fromJson(jsonDecode(widget.message!['meta_data']));
 
     if (postForChatModel.video != null) {
-      _mainVideoController =
-          VideoPlayerController.network(postForChatModel.video!);
+      _mainVideoController = VideoPlayerController.network(
+          postForChatModel.video!,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
 
       _chewieMainController = ChewieController(
           videoPlayerController: _mainVideoController!,

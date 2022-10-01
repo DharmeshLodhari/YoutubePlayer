@@ -1056,24 +1056,25 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   void initState() {
     debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!}');
-    _controller =
-        CachedVideoPlayerController.network(widget.momentsModel.media!)
-          ..initialize().then((value) {
-            _controller.play();
-            initialized = true;
-            _controller.setLooping(true);
-            setState(() {});
-          }).catchError((e) {
-            Navigator.pop(context);
-            showToast(message: 'Unable to display moment');
-          });
+    _controller = CachedVideoPlayerController.network(
+      widget.momentsModel.media!,
+    )..initialize().then((value) {
+        _controller.play();
+        initialized = true;
+        _controller.setLooping(true);
+        setState(() {});
+      }).catchError((e) {
+        Navigator.pop(context);
+        showToast(message: 'Unable to display moment');
+      });
     super.initState();
   }
 
   @override
-  void dispose() {
+  void dispose() async {
+    await _controller.pause();
+    await _controller.dispose();
     super.dispose();
-    _controller.dispose();
   }
 
   @override

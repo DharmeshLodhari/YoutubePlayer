@@ -880,7 +880,9 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
     //   ..initialize().then((_) => videoPlayerController?.play())
     //   ..setLooping(false);
 
-    videoPlayerController = VideoPlayerController.file(File(widget.filePath));
+    videoPlayerController = VideoPlayerController.file(
+      File(widget.filePath),
+    );
 
     await videoPlayerController?.initialize();
     await videoPlayerController?.setLooping(false);
