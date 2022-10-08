@@ -508,7 +508,7 @@ class _SignUpState extends State<SignUp> {
       "evang",
     ];
 
-    RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s]{0,}$");
+    RegExp regExp = RegExp(r"^[A-Za-z\s]{1,}[A-Za-z\s-]{0,}$");
 
     if (!regExp.hasMatch(enteredName)) {
       return "Please enter valid name";

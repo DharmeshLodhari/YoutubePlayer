@@ -224,6 +224,7 @@ class MomentsService extends AuthService {
     request.fields["enable_like"] = jsonEncode(createMomentModel.enableLike);
     request.fields["enable_commenting"] =
         jsonEncode(createMomentModel.enableCommenting);
+    request.fields["is_permanent"] = jsonEncode(createMomentModel.isPermanent);
 
     debugPrint('REQUEST FIELDS :: ${request.fields}');
     if (createMomentModel.mediaPoster != null) {

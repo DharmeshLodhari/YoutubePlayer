@@ -42,6 +42,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
   bool enableLikes = false;
   bool enablePayMe = false;
   bool enableCommenting = false;
+  bool isPermanent = false;
   List<String> userTags = [];
   String? pickedAttachmentType;
   late String fileType;
@@ -230,6 +231,20 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
                               onChanged: (value) {
                                 setState(() {
                                   enableCommenting = value;
+                                });
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          previewMomentSwitchOptions(
+                            title: 'Permanent',
+                            description:
+                                'If you make a moment Permanent it will stay forever till you delete it',
+                            switchBtn: Switch(
+                              value: isPermanent,
+                              onChanged: (value) {
+                                setState(() {
+                                  isPermanent = value;
                                 });
                               },
                             ),
@@ -936,6 +951,7 @@ class _PreviewMomentScreenState extends State<PreviewMomentScreen> {
       createMomentModel: CreateMomentModel(
         enableLike: enableLikes,
         enableCommenting: enableCommenting,
+        isPermanent: isPermanent,
         enablePayMe: enablePayMe,
         isPublic: isPublic,
         userTags: newUserTags,
