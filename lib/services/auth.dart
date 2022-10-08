@@ -30,6 +30,8 @@ class AuthService {
 
   DatabaseHelper _db = DatabaseHelper();
 
+  static const int API_CALL_RETRY_COUNT = 5;
+
   // This function creates a user object from named args passed in
   Future<User> createUser(Map<String, dynamic> userData) async {
     //delete old user if exist
@@ -507,25 +509,60 @@ class AuthService {
     if (response.statusCode == 401 ||
         response.statusCode == 403 ||
         response.statusCode == 423) {
-      var jsonData = jsonDecode(response.body);
-      // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
-
-      debugPrint(
-          "Token Black List ===> ${response.statusCode}  ${response.body}");
-
       try {
-        if (jsonData["messages"][0]["status_code"] == 423 ||
-            jsonData["messages"][0]["status_code"] == "423") {
-          //  showUserLogoutCard(context: myGlobals.navigationKey.currentContext);
+        var jsonData = jsonDecode(response.body);
+        // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
+
+        debugPrint(
+            "Token Black List ===> ${response.statusCode}  ${response.body}");
+
+        try {
+          if (jsonData["messages"][0]["status_code"] == 423 ||
+              jsonData["messages"][0]["status_code"] == "423") {
+            //  showUserLogoutCard(context: myGlobals.navigationKey.currentContext);
+          }
+        } catch (error) {
+          debugPrint("Token is Valid");
         }
       } catch (error) {
-        debugPrint("Token is Valid");
+        debugPrint("ERROR TOKEN IS BLACK LISTED");
       }
     }
     return;
   }
 
-  Future<Response> httpGet(String url, {Map<String, dynamic>? headers}) async {
+  /// TO CHECK IF WE GET TOKEN EXPIRED RESPONSE FROM API
+  Future<bool> isTokenExpire(var response) async {
+    if (response.statusCode == 401 ||
+        response.statusCode == 403 ||
+        response.statusCode == 423) {
+      try {
+        var jsonData = jsonDecode(response.body);
+        // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
+
+        debugPrint(
+            "Token Black List ===> ${response.statusCode}  ${response.body}");
+
+        try {
+          if (jsonData["messages"][0]["status_code"] == 423 ||
+              jsonData["messages"][0]["status_code"] == "423") {
+            return true;
+          }
+        } catch (error) {
+          debugPrint("Token is Valid");
+        }
+      } catch (error) {
+        debugPrint("TOKEN IS EXPIRED !!!+++");
+      }
+    }
+    return false;
+  }
+
+  Future<Response> httpGet(
+    String url, {
+    Map<String, dynamic>? headers,
+    int count = API_CALL_RETRY_COUNT,
+  }) async {
     Uri uri = Uri.parse(url);
     debugPrint("URL:- $uri");
 
@@ -533,31 +570,65 @@ class AuthService {
         .get(uri, headers: headers as Map<String, String>?)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
+    /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
+    bool result = await isTokenExpire(response);
+    if (result) {
+      count = count - 1;
+      if (count != 0) {
+        return await httpGet(url, headers: headers, count: count);
+      }
+    }
     // var utf8runs = response.body.runes.toList();
     // Response res = Response(utf8.decode(utf8runs), response.statusCode);
-    wasTokenBlackListed(response);
+    await wasTokenBlackListed(response);
     return response;
   }
 
-  Future<Response> httpPost(String url,
-      {Map<String, dynamic>? headers, String? body}) async {
+  Future<Response> httpPost(
+    String url, {
+    Map<String, dynamic>? headers,
+    String? body,
+    int count = API_CALL_RETRY_COUNT,
+  }) async {
     Uri uri = Uri.parse(url);
     var response = await http
         .post(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    wasTokenBlackListed(response);
+    /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
+    bool result = await isTokenExpire(response);
+    if (result) {
+      count = count - 1;
+      if (count != 0) {
+        return await httpPost(url, headers: headers, body: body, count: count);
+      }
+    }
+
+    await wasTokenBlackListed(response);
     return response;
   }
 
-  Future<Response> httpPatch(String url,
-      {Map<String, dynamic>? headers, String? body}) async {
+  Future<Response> httpPatch(
+    String url, {
+    Map<String, dynamic>? headers,
+    String? body,
+    int count = API_CALL_RETRY_COUNT,
+  }) async {
     Uri uri = Uri.parse(url);
     var response = await http
         .patch(uri, headers: headers as Map<String, String>?, body: body)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
-    wasTokenBlackListed(response);
+    /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
+    bool result = await isTokenExpire(response);
+    if (result) {
+      count = count - 1;
+      if (count != 0) {
+        return await httpPatch(url, headers: headers, body: body, count: count);
+      }
+    }
+
+    await wasTokenBlackListed(response);
     return response;
   }
 
@@ -570,11 +641,21 @@ class AuthService {
   // }
 
   Future<Response> httpDelete(String url,
-      {Map<String, dynamic>? headers}) async {
+      {Map<String, dynamic>? headers, int count = API_CALL_RETRY_COUNT}) async {
     Uri uri = Uri.parse(url);
     var response =
         await http.delete(uri, headers: headers as Map<String, String>?);
-    wasTokenBlackListed(response)
+
+    /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
+    bool result = await isTokenExpire(response);
+    if (result) {
+      count = count - 1;
+      if (count != 0) {
+        return await httpDelete(url, headers: headers, count: count);
+      }
+    }
+
+    await wasTokenBlackListed(response)
         .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
 
     return response;

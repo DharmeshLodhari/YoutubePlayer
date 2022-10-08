@@ -186,7 +186,26 @@ class _MomentsScreenState extends State<MomentsScreen> {
         var tempList = result['results'];
 
         isExploreMomentsLoading = false;
-        exploreMomentsList.addAll(tempList);
+
+        List<ExploreMomentsModel> uniqueMomentList = [];
+
+        if (tempList != null && tempList is List && tempList.isNotEmpty) {
+          for (ExploreMomentsModel e in tempList) {
+            if (exploreMomentsList.isNotEmpty) {
+              for (ExploreMomentsModel exploreMomentsModel
+                  in exploreMomentsList) {
+                if (e.owner != exploreMomentsModel.owner) {
+                  uniqueMomentList.add(e);
+                }
+              }
+            } else {
+              exploreMomentsList.add(e);
+              uniqueMomentList.add(e);
+            }
+          }
+        }
+
+        exploreMomentsList = uniqueMomentList;
 
         debugPrint('EXPLORE MOM :: $exploreMomentsList');
 
