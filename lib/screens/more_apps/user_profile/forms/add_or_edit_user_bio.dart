@@ -135,7 +135,7 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
       }
 
       if (userBioDetail?.userAddress?.state != null) {
-        pickedStateId = userBioDetail!.userAddress!.state!;
+        pickedStateId = userBioDetail?.userAddress?.state;
       }
 
       if (userBioDetail?.contact != null) {
