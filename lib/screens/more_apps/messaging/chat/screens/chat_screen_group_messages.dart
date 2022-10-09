@@ -6,6 +6,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_action_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
@@ -45,6 +46,7 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -66,6 +68,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:images_picker/images_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:path_provider/path_provider.dart';
@@ -2663,53 +2666,75 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     showMoreAction = false;
     if (mounted) setState(() {});
 
-    List<String> allowedExtensions =
-        imageExtensions + videoExtensions + audioExtensions;
+    // List<String> allowedExtensions =
+    //     imageExtensions + videoExtensions + audioExtensions;
+    //
+    // FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+    //     allowMultiple: false,
+    //     type: FileType.custom,
+    //     allowedExtensions: allowedExtensions);
 
-    FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        type: FileType.custom,
-        allowedExtensions: allowedExtensions);
+    List<Media>? res = await ImagesPicker.pick(
+      count: 1,
+      pickType: PickType.all,
+      language: Language.System,
+      maxTime: 900,
+      cropOpt: CropOption(
+        // aspectRatio: CropAspectRatio.wh16x9,
+        cropType: CropType.rect,
+      ),
+    );
 
-    if (pickedMedia != null) {
-      File file = File(pickedMedia.files.single.path!);
-      String mediaType = getFileType(pickedMedia);
+    if (res == null || res.isEmpty) return;
+    File? file;
+    file = File(res.first.path);
+    String? mediaType = getFileTypeByPath(path: file.path);
 
-      // int sizeInBytes = file.lengthSync();
-      //
-      // int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
-      //
-      // if (sizeInMb > maxVideoFileSize) {
-      //   showToast(message: 'File is too large');
-      //   return;
-      // }
-
-      if (mediaType == "") {
-        setupShakeDetector();
-        return;
-      }
-
-      Object? result = await Navigator.of(context).pushNamed(
-        Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
-        arguments: {
-          "data": {
-            "conversation": chatConversation!.conversationId,
-            "author": userBloc!.user.userName,
-          },
-          "media": file,
-          "message": messageController!.text.trim(),
-          "mediaType": mediaType
-        },
-      ).catchError((error) {
-        debugPrint("Error: = = = = $error");
-      });
+    if (mediaType == null) {
       setupShakeDetector();
-
-      if (result == null) return;
-
-      messageController!.text = "";
-      debugPrint("Result:- $result");
+      return;
     }
+
+    if (mediaType == 'video') {
+      var videoFilePath =
+          await NavigationUtil.push(context, screen: TrimmerView(file: file));
+      if (videoFilePath is String) {
+        file = File(videoFilePath);
+      }
+    }
+
+    // File file = File(pickedMedia.files.single.path!);
+    // String mediaType = getFileType(pickedMedia);
+
+    // int sizeInBytes = file.lengthSync();
+    //
+    // int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
+    //
+    // if (sizeInMb > maxVideoFileSize) {
+    //   showToast(message: 'File is too large');
+    //   return;
+    // }
+
+    Object? result = await Navigator.of(context).pushNamed(
+      Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
+      arguments: {
+        "data": {
+          "conversation": chatConversation!.conversationId,
+          "author": userBloc!.user.userName,
+        },
+        "media": file,
+        "message": messageController!.text.trim(),
+        "mediaType": mediaType
+      },
+    ).catchError((error) {
+      debugPrint("Error: = = = = $error");
+    });
+    setupShakeDetector();
+
+    if (result == null) return;
+
+    messageController!.text = "";
+    debugPrint("Result:- $result");
   }
 
   void addDocumentFileToMessage() async {
