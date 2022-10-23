@@ -12,6 +12,8 @@ import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/BottomSheetItemWithCheck.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -163,6 +165,11 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     onTap: () async {
                       Navigator.of(context).pushNamed(Routes.CHANGE_PASSWORD);
                     }),
+                getSettingsTile(
+                    title: "Deactivate Account",
+                    onTap: () async {
+                      deactivateAccount();
+                    }),
                 getLogoutTile(),
               ],
             ),
@@ -174,6 +181,46 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         ),
       ],
     );
+  }
+
+  void deactivateAccount() async {
+    bool? result = await showDialogBox(
+      context: context,
+      actionOneTextColor: white,
+      actionOneBgColor: mateRed,
+      actionTwoTextColor: blackFont,
+      actionTwoBgColor: greyBorderColor,
+      title: 'Deactivate Account',
+      actionTwoText: "Cancel",
+      actionOneText: "Yes",
+      description: 'are sure they want to deactivate your account?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Icon(SlydoAppIcon.delete),
+      ),
+    );
+    // if (result != null && result) {
+    //   bool? result1 = await showDialogBox(
+    //     context: myGlobals.navigationKey.currentContext,
+    //     actionOneTextColor: white,
+    //     actionOneBgColor: mateRed,
+    //     actionTwoTextColor: blackFont,
+    //     actionTwoBgColor: greyBorderColor,
+    //     title: 'Deactivate Account',
+    //     actionTwoText: "Cancel",
+    //     actionOneText: "Deactivate",
+    //     description:
+    //         'all your transaction will still be Available But your account will be deactivated?',
+    //     roundedBackgroundIcon: RoundedBackgroundIcon(
+    //       enableMargin: false,
+    //       width: 90,
+    //       height: 90,
+    //       image: Icon(SlydoAppIcon.delete),
+    //     ),
+    //   );
+    // }
   }
 
   Widget _infoTile() {

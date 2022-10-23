@@ -26,7 +26,6 @@ class ImageTileForChat extends StatelessWidget {
 
     messageText = messageDecoderWithEmoji(messageText);
 
-    debugPrint('IMAGE ==> ${message!['media']}');
     if (message!['media'] == null) {
       message!['media'] = defaultImage;
     }

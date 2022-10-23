@@ -30,6 +30,8 @@ import '../widgets/custom_moment_detail_button.dart';
 import 'create_moment_screen.dart';
 import 'moments_service.dart';
 
+late CachedVideoPlayerController _controller;
+
 class MomentsDetailsScreen extends StatefulWidget {
   String? nextPageUrl;
 
@@ -984,6 +986,8 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   }
 }
 
+GlobalKey videoPlayerKey = GlobalKey();
+
 class RenderMedia extends StatefulWidget {
   final MomentsModel momentsModel;
   const RenderMedia({Key? key, required this.momentsModel}) : super(key: key);
@@ -1028,7 +1032,8 @@ class _RenderMediaState extends State<RenderMedia> {
         },
       );
     } else if (widget.momentsModel.mediaType == "video") {
-      return VideoDisplay(momentsModel: widget.momentsModel);
+      return VideoDisplay(
+          key: videoPlayerKey, momentsModel: widget.momentsModel);
     } else {
       return Container(
         decoration: BoxDecoration(
@@ -1051,7 +1056,6 @@ class VideoDisplay extends StatefulWidget {
 class _VideoDisplayState extends State<VideoDisplay> {
   bool initialized = false;
   bool showMediaIcon = false;
-  late CachedVideoPlayerController _controller;
 
   @override
   void initState() {
@@ -1073,7 +1077,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   void dispose() async {
     await _controller.pause();
-    await _controller.dispose();
+    // await _controller.dispose();
     super.dispose();
   }
 

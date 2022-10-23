@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/messaging/button/message_nav_btn.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
@@ -240,61 +241,8 @@ class _HomeState extends State<Home> {
   }
 
   Widget _messageBtn() {
-    return Stack(
+    return MessageNavBtn(
       key: tutorialMessageKey,
-      clipBehavior: Clip.none,
-      children: [
-        Column(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 34,
-                width: 34,
-                child: InkWell(
-                  child: Card(
-                    elevation: 0,
-                    color: lightGrey.withOpacity(0.1),
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      SlydoAppIcon.message,
-                      size: 16,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.MESSAGE_LIST);
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-        StreamBuilder<dynamic>(
-            stream: socketProvider.socketStream,
-            initialData: null,
-            builder: (context, snapshot) {
-              if (snapshot.error == false) {
-                return Container();
-              }
-              if (snapshot.hasData) {
-                return Container();
-                // return Positioned(
-                //   top: 8,
-                //   right: -2,
-                //   child: ClipOval(
-                //     child: Container(
-                //       height: 8,
-                //       width: 8,
-                //       color: naturalGreen,
-                //     ),
-                //   ),
-                // );
-              }
-              return Container();
-            }),
-      ],
     );
   }
 

@@ -149,6 +149,38 @@ class ShoppingAuthService extends AuthService {
     }
   }
 
+  // List the  item with pagination
+  Future<Map<String, dynamic>?> searchServices(
+      String searchedText, String? next, String? previous) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/search/services/?search=" + searchedText;
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('SEARCH BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
+    }
+  }
+
   Future<Map<String, dynamic>?> searchShoppingProductsInSuperStore(
       String searchedText, String? next, String? previous) async {
     String url = AppConfig.baseUrl + "/api/v1/products/?search=" + searchedText;

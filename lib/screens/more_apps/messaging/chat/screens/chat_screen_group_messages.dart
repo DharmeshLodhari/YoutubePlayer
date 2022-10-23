@@ -233,6 +233,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserNudging = false;
   AppConfigurationModel? appConfigurationModel;
 
+  /// CHAT SYNCHRONIZER
+  Duration _chatSynchronizeTime = Duration(seconds: 2);
+  Timer? _chatSynchronizerTimer;
+
   @override
   void initState() {
     messageListController = GroupedItemScrollController();
@@ -272,7 +276,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     /// by adding observer in this screen we can listen the app life cycle state
     /// on this screen by this method
     // lib/screens/more_apps/messaging/chat/screens/chat_screen.dart:294
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   void checkNetworkConnectivity() async {
@@ -319,6 +323,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: chatConversation!.conversationId);
+
+    // setupSynchronizer();
+  }
+
+  void setupSynchronizer() {
+    _chatSynchronizerTimer =
+        Timer.periodic(_chatSynchronizeTime, (timer) async {
+      if (mounted)
+        await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
+    });
   }
 
   void setUserStatusTimer() {
@@ -548,6 +562,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     messageController?.dispose();
     messageFocus?.dispose();
+
+    if (_chatSynchronizerTimer?.isActive ?? false) {
+      _chatSynchronizerTimer?.cancel();
+    }
   }
 
   @override

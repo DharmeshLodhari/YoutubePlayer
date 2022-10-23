@@ -358,8 +358,8 @@ class AuthService {
     var uuid = Uuid();
     var transactionId = uuid.v4();
 
-    debugPrint('BEARER :: $bearer');
-    debugPrint('TRANSACTION ID  :: $transactionId');
+    // debugPrint('BEARER :: $bearer');
+    // debugPrint('TRANSACTION ID  :: $transactionId');
 
     var headers = {
       "Authorization": bearer,
