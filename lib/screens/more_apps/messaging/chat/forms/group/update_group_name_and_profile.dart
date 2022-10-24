@@ -65,7 +65,8 @@ class _UpdateGroupNameAndProfileState extends State<UpdateGroupNameAndProfile> {
     getGroupDetail();
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-    groupNameController!.text = groupDetail!.fullName!;
+    groupNameController!.text =
+        messageDecoderWithEmoji(groupDetail!.fullName!)!;
     groupDescriptionController!.text = groupDetail!.description!;
     if (groupDetail?.ageRestriction != null) {
       ageRestriction = true;

@@ -241,8 +241,11 @@ class _HomeState extends State<Home> {
   }
 
   Widget _messageBtn() {
-    return MessageNavBtn(
+    return Container(
       key: tutorialMessageKey,
+      child: MessageNavBtn(
+        key: UniqueKey(),
+      ),
     );
   }
 
