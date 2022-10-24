@@ -472,14 +472,14 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      momentVisibilityOption(
-                                          widget.momentsModelList[index]),
-                                      momentPermanentOption(
-                                          widget.momentsModelList[index]),
-                                      momentCommentingOption(
-                                          widget.momentsModelList[index]),
-                                      momentLikeOption(
-                                          widget.momentsModelList[index]),
+                                      // momentVisibilityOption(
+                                      //     widget.momentsModelList[index]),
+                                      // momentPermanentOption(
+                                      //     widget.momentsModelList[index]),
+                                      // momentCommentingOption(
+                                      //     widget.momentsModelList[index]),
+                                      // momentLikeOption(
+                                      //     widget.momentsModelList[index]),
                                       bottomSheetItem(
                                         title: 'Delete',
                                         iconData: Icons.delete,
