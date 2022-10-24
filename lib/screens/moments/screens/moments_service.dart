@@ -255,6 +255,39 @@ class MomentsService extends AuthService {
     }
   }
 
+  Future<MomentsModel> updateMoment(
+      {required String momentId, required Map<String, dynamic> data}) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/moments/$momentId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpPatch(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    debugPrint(
+        "URL $url REQUEST FIELD: $data STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      MomentsModel momentsModel =
+          MomentsModel.fromJson(jsonDecode(response.body));
+
+      return momentsModel;
+    } else {
+      if (response.statusCode != 500) {
+        var jsonData = jsonDecode(response.body);
+        debugPrint(
+            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        return Future.error(jsonData is Map
+            ? jsonData["error"]
+            : jsonData is List
+                ? jsonData[0]
+                : 'Something went wrong');
+      }
+      return Future.error("Server Error");
+    }
+  }
+
   Future<MomentsModel> likeMoment(String momentId) async {
     var url = AppConfig.baseUrl + "/api/v1/social/moments/like/$momentId/";
     Map<String, String> headers = await getAuthHeaders();

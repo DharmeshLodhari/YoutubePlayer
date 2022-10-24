@@ -5,6 +5,7 @@ import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
@@ -409,6 +410,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
         // var _index = 1;
+
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -472,14 +474,14 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      // momentVisibilityOption(
-                                      //     widget.momentsModelList[index]),
-                                      // momentPermanentOption(
-                                      //     widget.momentsModelList[index]),
-                                      // momentCommentingOption(
-                                      //     widget.momentsModelList[index]),
-                                      // momentLikeOption(
-                                      //     widget.momentsModelList[index]),
+                                      momentVisibilityOption(
+                                          widget.momentsModelList[index]),
+                                      momentPermanentOption(
+                                          widget.momentsModelList[index]),
+                                      momentCommentingOption(
+                                          widget.momentsModelList[index]),
+                                      momentLikeOption(
+                                          widget.momentsModelList[index]),
                                       bottomSheetItem(
                                         title: 'Delete',
                                         iconData: Icons.delete,
@@ -780,93 +782,57 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
 
   Widget momentVisibilityOption(MomentsModel momentModel) {
     String title = "Make ";
+    bool isPublic = false;
+    IconData icon;
     if (momentModel.isPublic ?? false) {
       title += "Private";
+      icon = Icons.shield;
+      isPublic = false;
     } else {
       title += "Public";
+      icon = Icons.public;
+      isPublic = true;
     }
 
     return bottomSheetItem(
       title: title,
-      iconData: Icons.delete,
+      iconData: icon,
       onTap: () {
         Navigator.pop(context);
-
-        showDialogBox(
-          context: context,
-          actionOneTextColor: white,
-          actionOneBgColor: mateRed,
-          actionTwoTextColor: blackFont,
-          actionTwoBgColor: greyBorderColor,
-          title: AppLocalization.of(context)!.delete,
-          actionTwoText: AppLocalization.of(context)!.cancel,
-          actionOneText: AppLocalization.of(context)!.delete,
-          description: 'Are you sure you want to delete this moment?',
-          roundedBackgroundIcon: RoundedBackgroundIcon(
-            enableMargin: false,
-            width: 90,
-            height: 90,
-            image: Image.asset('assets/images/delete_dialog_icon.png'),
-          ),
-          leftButtonOnPressed: () {
-            showDialog(
-                context: context,
-                builder: (dialogLoadingContext) => LoadingIndicator());
-            MomentsService().deleteMoment(momentModel.id!).then(
-              (value) {
-                Navigator.pop(context); // Dismiss loading indicator
-                Navigator.pop(context);
-                showToast(message: 'Moment deleted');
-              },
-            ).catchError((e) {
-              Navigator.pop(context);
-              showToast(message: e.toString());
-            });
+        MomentsService().updateMoment(
+            momentId: momentModel.id!, data: {"is_public": isPublic}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
           },
-        );
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
       },
     );
   }
 
   Widget momentPermanentOption(MomentsModel momentModel) {
     return bottomSheetItem(
-      title: 'Make Permanent',
-      iconData: Icons.delete,
+      title: "Make Permanent",
+      iconData: CupertinoIcons.infinite,
       onTap: () {
         Navigator.pop(context);
-
-        showDialogBox(
-          context: context,
-          actionOneTextColor: white,
-          actionOneBgColor: mateRed,
-          actionTwoTextColor: blackFont,
-          actionTwoBgColor: greyBorderColor,
-          title: AppLocalization.of(context)!.delete,
-          actionTwoText: AppLocalization.of(context)!.cancel,
-          actionOneText: AppLocalization.of(context)!.delete,
-          description: 'Are you sure you want to delete this moment?',
-          roundedBackgroundIcon: RoundedBackgroundIcon(
-            enableMargin: false,
-            width: 90,
-            height: 90,
-            image: Image.asset('assets/images/delete_dialog_icon.png'),
-          ),
-          leftButtonOnPressed: () {
-            showDialog(
-                context: context,
-                builder: (dialogLoadingContext) => LoadingIndicator());
-            MomentsService().deleteMoment(momentModel.id!).then(
-              (value) {
-                Navigator.pop(context); // Dismiss loading indicator
-                Navigator.pop(context);
-                showToast(message: 'Moment deleted');
-              },
-            ).catchError((e) {
-              Navigator.pop(context);
-              showToast(message: e.toString());
-            });
+        MomentsService().updateMoment(
+            momentId: momentModel.id!, data: {"is_permanent": true}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
           },
-        );
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
       },
     );
   }
@@ -878,91 +844,72 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       isCommentingEnable = momentModel.enableCommenting!;
     }
 
+    IconData icon;
     if (isCommentingEnable) {
+      title = "Turn off Commenting";
+      icon = Icons.comments_disabled;
+    } else {
       title = "Turn on Commenting";
+      icon = Icons.comment;
     }
 
     return bottomSheetItem(
-      title: 'Make ${momentModel.isPublic}Private',
-      iconData: Icons.delete,
+      title: title,
+      iconData: icon,
       onTap: () {
         Navigator.pop(context);
-
-        showDialogBox(
-          context: context,
-          actionOneTextColor: white,
-          actionOneBgColor: mateRed,
-          actionTwoTextColor: blackFont,
-          actionTwoBgColor: greyBorderColor,
-          title: AppLocalization.of(context)!.delete,
-          actionTwoText: AppLocalization.of(context)!.cancel,
-          actionOneText: AppLocalization.of(context)!.delete,
-          description: 'Are you sure you want to delete this moment?',
-          roundedBackgroundIcon: RoundedBackgroundIcon(
-            enableMargin: false,
-            width: 90,
-            height: 90,
-            image: Image.asset('assets/images/delete_dialog_icon.png'),
-          ),
-          leftButtonOnPressed: () {
-            showDialog(
-                context: context,
-                builder: (dialogLoadingContext) => LoadingIndicator());
-            MomentsService().deleteMoment(momentModel.id!).then(
-              (value) {
-                Navigator.pop(context); // Dismiss loading indicator
-                Navigator.pop(context);
-                showToast(message: 'Moment deleted');
-              },
-            ).catchError((e) {
-              Navigator.pop(context);
-              showToast(message: e.toString());
-            });
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"enable_commenting": !isCommentingEnable}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
           },
-        );
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
       },
     );
   }
 
   Widget momentLikeOption(MomentsModel momentModel) {
+    bool isLikeEnabled = false;
+    String title;
+    if (momentModel.enableLikes ?? false) {
+      isLikeEnabled = momentModel.enableLikes!;
+    }
+
+    IconData icon;
+    if (isLikeEnabled) {
+      title = "Enable Likes";
+      icon = Icons.thumb_up_alt;
+    } else {
+      title = "Disable Likes";
+      icon = Icons.thumb_up_alt;
+    }
+
     return bottomSheetItem(
-      title: 'Make ${momentModel.isPublic}Private',
-      iconData: Icons.delete,
+      title: title,
+      iconData: icon,
       onTap: () {
         Navigator.pop(context);
 
-        showDialogBox(
-          context: context,
-          actionOneTextColor: white,
-          actionOneBgColor: mateRed,
-          actionTwoTextColor: blackFont,
-          actionTwoBgColor: greyBorderColor,
-          title: AppLocalization.of(context)!.delete,
-          actionTwoText: AppLocalization.of(context)!.cancel,
-          actionOneText: AppLocalization.of(context)!.delete,
-          description: 'Are you sure you want to delete this moment?',
-          roundedBackgroundIcon: RoundedBackgroundIcon(
-            enableMargin: false,
-            width: 90,
-            height: 90,
-            image: Image.asset('assets/images/delete_dialog_icon.png'),
-          ),
-          leftButtonOnPressed: () {
-            showDialog(
-                context: context,
-                builder: (dialogLoadingContext) => LoadingIndicator());
-            MomentsService().deleteMoment(momentModel.id!).then(
-              (value) {
-                Navigator.pop(context); // Dismiss loading indicator
-                Navigator.pop(context);
-                showToast(message: 'Moment deleted');
-              },
-            ).catchError((e) {
-              Navigator.pop(context);
-              showToast(message: e.toString());
-            });
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"enable_like": !isLikeEnabled}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
           },
-        );
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
       },
     );
   }
