@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/GroupDetailModel.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/UpdateGroupDetailModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/models/message.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/Envelope.dart';
@@ -357,9 +357,9 @@ class MessageAuth extends AuthService {
       listOfUser.add(element.userName);
     });
 
-    request.fields["group_name"] = group.groupName!;
+    request.fields["group_name"] = group.name!;
     request.fields["participants"] = jsonEncode(listOfUser);
-    request.fields["description"] = group.groupDescription!;
+    request.fields["description"] = group.description!;
     request.fields["is_group_conversation"] = jsonEncode(true);
     request.fields["is_public_group"] = jsonEncode(group.makePublic);
     request.fields["age_restriction"] = jsonEncode(group.ageRestriction);
@@ -414,7 +414,7 @@ class MessageAuth extends AuthService {
   }
 
   Future<Map<String, dynamic>?> updateGroupChat(
-      {required UpdateGroupDetailModel group}) async {
+      {required AddGroupModel group}) async {
     var url = AppConfig.baseUrl +
         "/api/v1/user/group-conversation/${group.groupConversationId}/";
     // debugPrint("URL:- $url");
@@ -424,6 +424,16 @@ class MessageAuth extends AuthService {
 
     request.fields["group_name"] = group.name!;
     request.fields["description"] = group.description!;
+    request.fields["age_restriction"] = jsonEncode(group.ageRestriction);
+    request.fields["is_public_group"] = jsonEncode(group.makePublic);
+    request.fields["group_subscription_currency"] = 'NGN';
+    if (group.channelFee != null) {
+      request.fields["group_subscription_fee"] =
+          jsonEncode(group.channelFee! * 100);
+    }
+    request.fields["group_max_allowed_users"] =
+        jsonEncode(group.maxAllowedMembers);
+
     if (group.avatar != null) {
       // Create multipart using filepath, string or bytes
       var multipartFile1 =
@@ -446,6 +456,8 @@ class MessageAuth extends AuthService {
     }
     var responseBody = await response.stream.bytesToString();
     debugPrint("$responseBody");
+
+    log("URL:- $url REQUEST FIELDS:- ${request.fields} RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- $responseBody");
 
     if (response.statusCode == 200) {
       debugPrint(
@@ -471,6 +483,7 @@ class MessageAuth extends AuthService {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
+      log("URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  \nRESPONSE BODY:- \n${response.body}");
       GroupDetailModel groupDetailModel = GroupDetailModel.fromJson(jsonData);
       return groupDetailModel;
     } else {

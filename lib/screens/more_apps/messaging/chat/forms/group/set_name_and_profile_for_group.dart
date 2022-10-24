@@ -609,9 +609,9 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           double.parse(_channelFeeCtrl.text.replaceAll(',', ''));
     }
 
-    groupModel.groupName = groupNameController!.text.trim();
+    groupModel.name = groupNameController!.text.trim();
     groupModel.ageRestriction = int.parse(selectedAge.split('+')[0]);
-    groupModel.groupDescription = groupDescriptionController!.text.trim();
+    groupModel.description = groupDescriptionController!.text.trim();
 
     showDialog(
         context: context,

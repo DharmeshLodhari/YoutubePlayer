@@ -6,8 +6,10 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/logout_helper.dart';
+import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/BottomSheetItemWithCheck.dart';
@@ -168,7 +170,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 getSettingsTile(
                     title: "Deactivate Account",
                     onTap: () async {
-                      deactivateAccount();
+                      deactivateAccountDialogue();
                     }),
                 getLogoutTile(),
               ],
@@ -183,7 +185,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
     );
   }
 
-  void deactivateAccount() async {
+  void deactivateAccountDialogue() async {
     bool? result = await showDialogBox(
       context: context,
       actionOneTextColor: white,
@@ -201,26 +203,42 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         image: Icon(SlydoAppIcon.delete),
       ),
     );
-    // if (result != null && result) {
-    //   bool? result1 = await showDialogBox(
-    //     context: myGlobals.navigationKey.currentContext,
-    //     actionOneTextColor: white,
-    //     actionOneBgColor: mateRed,
-    //     actionTwoTextColor: blackFont,
-    //     actionTwoBgColor: greyBorderColor,
-    //     title: 'Deactivate Account',
-    //     actionTwoText: "Cancel",
-    //     actionOneText: "Deactivate",
-    //     description:
-    //         'all your transaction will still be Available But your account will be deactivated?',
-    //     roundedBackgroundIcon: RoundedBackgroundIcon(
-    //       enableMargin: false,
-    //       width: 90,
-    //       height: 90,
-    //       image: Icon(SlydoAppIcon.delete),
-    //     ),
-    //   );
-    // }
+    if (result != null && result) {
+      bool? result1 = await showDialogBox(
+        context: myGlobals.navigationKey.currentContext!,
+        actionOneTextColor: white,
+        actionOneBgColor: mateRed,
+        actionTwoTextColor: blackFont,
+        actionTwoBgColor: greyBorderColor,
+        title: 'Deactivate Account',
+        actionTwoText: "Cancel",
+        actionOneText: "Deactivate",
+        description:
+            'all your transaction will still be Available But your account will be deactivated?',
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          enableMargin: false,
+          width: 90,
+          height: 90,
+          image: Icon(SlydoAppIcon.delete),
+        ),
+      );
+
+      if (result1 != null && result1) {
+        debugPrint("USER HAS REQUESTED ACCOUNT DEACTIVATION $result1");
+        await deactivateAccount();
+      }
+    }
+  }
+
+  Future<void> deactivateAccount() async {
+    bool result = await UserAuth().deactivateUserAccount();
+    if (result) {
+      showDialog(
+          context: (context),
+          builder: (context) => Center(child: CircularLoadingIndicator()),
+          barrierDismissible: false);
+      await LogoutHelper().logoutUser();
+    }
   }
 
   Widget _infoTile() {

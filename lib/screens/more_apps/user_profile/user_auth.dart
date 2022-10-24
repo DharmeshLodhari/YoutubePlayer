@@ -1087,4 +1087,20 @@ class UserAuth extends AuthService {
       return Future.error('Something went wrong, please try again.');
     }
   }
+
+  Future<bool> deactivateUserAccount() async {
+    var url = AppConfig.baseUrl + "/api/v1/user/deactivate-account/";
+    debugPrint("URL:- $url ");
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    if (response.statusCode == 204) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return true;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return false;
+    }
+  }
 }

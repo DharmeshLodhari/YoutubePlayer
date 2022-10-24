@@ -469,57 +469,76 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                               onPressed: () {
                                 androidBottomSheet(
                                   context: context,
-                                  child: bottomSheetItem(
-                                    title: 'Delete',
-                                    iconData: Icons.delete,
-                                    onTap: () {
-                                      Navigator.pop(context);
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      momentVisibilityOption(
+                                          widget.momentsModelList[index]),
+                                      momentPermanentOption(
+                                          widget.momentsModelList[index]),
+                                      momentCommentingOption(
+                                          widget.momentsModelList[index]),
+                                      momentLikeOption(
+                                          widget.momentsModelList[index]),
+                                      bottomSheetItem(
+                                        title: 'Delete',
+                                        iconData: Icons.delete,
+                                        onTap: () {
+                                          Navigator.pop(context);
 
-                                      showDialogBox(
-                                        context: context,
-                                        actionOneTextColor: white,
-                                        actionOneBgColor: mateRed,
-                                        actionTwoTextColor: blackFont,
-                                        actionTwoBgColor: greyBorderColor,
-                                        title:
-                                            AppLocalization.of(context)!.delete,
-                                        actionTwoText:
-                                            AppLocalization.of(context)!.cancel,
-                                        actionOneText:
-                                            AppLocalization.of(context)!.delete,
-                                        description:
-                                            'Are you sure you want to delete this moment?',
-                                        roundedBackgroundIcon:
-                                            RoundedBackgroundIcon(
-                                          enableMargin: false,
-                                          width: 90,
-                                          height: 90,
-                                          image: Image.asset(
-                                              'assets/images/delete_dialog_icon.png'),
-                                        ),
-                                        leftButtonOnPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (dialogLoadingContext) =>
-                                                  LoadingIndicator());
-                                          MomentsService()
-                                              .deleteMoment(widget
-                                                  .momentsModelList[index].id!)
-                                              .then(
-                                            (value) {
-                                              Navigator.pop(
-                                                  context); // Dismiss loading indicator
-                                              Navigator.pop(context);
-                                              showToast(
-                                                  message: 'Moment deleted');
+                                          showDialogBox(
+                                            context: context,
+                                            actionOneTextColor: white,
+                                            actionOneBgColor: mateRed,
+                                            actionTwoTextColor: blackFont,
+                                            actionTwoBgColor: greyBorderColor,
+                                            title: AppLocalization.of(context)!
+                                                .delete,
+                                            actionTwoText:
+                                                AppLocalization.of(context)!
+                                                    .cancel,
+                                            actionOneText:
+                                                AppLocalization.of(context)!
+                                                    .delete,
+                                            description:
+                                                'Are you sure you want to delete this moment?',
+                                            roundedBackgroundIcon:
+                                                RoundedBackgroundIcon(
+                                              enableMargin: false,
+                                              width: 90,
+                                              height: 90,
+                                              image: Image.asset(
+                                                  'assets/images/delete_dialog_icon.png'),
+                                            ),
+                                            leftButtonOnPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (dialogLoadingContext) =>
+                                                          LoadingIndicator());
+                                              MomentsService()
+                                                  .deleteMoment(widget
+                                                      .momentsModelList[index]
+                                                      .id!)
+                                                  .then(
+                                                (value) {
+                                                  Navigator.pop(
+                                                      context); // Dismiss loading indicator
+                                                  Navigator.pop(context);
+                                                  showToast(
+                                                      message:
+                                                          'Moment deleted');
+                                                },
+                                              ).catchError((e) {
+                                                Navigator.pop(context);
+                                                showToast(
+                                                    message: e.toString());
+                                              });
                                             },
-                                          ).catchError((e) {
-                                            Navigator.pop(context);
-                                            showToast(message: e.toString());
-                                          });
+                                          );
                                         },
-                                      );
-                                    },
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
@@ -754,6 +773,195 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  Widget momentVisibilityOption(MomentsModel momentModel) {
+    String title = "Make ";
+    if (momentModel.isPublic ?? false) {
+      title += "Private";
+    } else {
+      title += "Public";
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: Icons.delete,
+      onTap: () {
+        Navigator.pop(context);
+
+        showDialogBox(
+          context: context,
+          actionOneTextColor: white,
+          actionOneBgColor: mateRed,
+          actionTwoTextColor: blackFont,
+          actionTwoBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.delete,
+          actionTwoText: AppLocalization.of(context)!.cancel,
+          actionOneText: AppLocalization.of(context)!.delete,
+          description: 'Are you sure you want to delete this moment?',
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            enableMargin: false,
+            width: 90,
+            height: 90,
+            image: Image.asset('assets/images/delete_dialog_icon.png'),
+          ),
+          leftButtonOnPressed: () {
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+            MomentsService().deleteMoment(momentModel.id!).then(
+              (value) {
+                Navigator.pop(context); // Dismiss loading indicator
+                Navigator.pop(context);
+                showToast(message: 'Moment deleted');
+              },
+            ).catchError((e) {
+              Navigator.pop(context);
+              showToast(message: e.toString());
+            });
+          },
+        );
+      },
+    );
+  }
+
+  Widget momentPermanentOption(MomentsModel momentModel) {
+    return bottomSheetItem(
+      title: 'Make Permanent',
+      iconData: Icons.delete,
+      onTap: () {
+        Navigator.pop(context);
+
+        showDialogBox(
+          context: context,
+          actionOneTextColor: white,
+          actionOneBgColor: mateRed,
+          actionTwoTextColor: blackFont,
+          actionTwoBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.delete,
+          actionTwoText: AppLocalization.of(context)!.cancel,
+          actionOneText: AppLocalization.of(context)!.delete,
+          description: 'Are you sure you want to delete this moment?',
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            enableMargin: false,
+            width: 90,
+            height: 90,
+            image: Image.asset('assets/images/delete_dialog_icon.png'),
+          ),
+          leftButtonOnPressed: () {
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+            MomentsService().deleteMoment(momentModel.id!).then(
+              (value) {
+                Navigator.pop(context); // Dismiss loading indicator
+                Navigator.pop(context);
+                showToast(message: 'Moment deleted');
+              },
+            ).catchError((e) {
+              Navigator.pop(context);
+              showToast(message: e.toString());
+            });
+          },
+        );
+      },
+    );
+  }
+
+  Widget momentCommentingOption(MomentsModel momentModel) {
+    bool isCommentingEnable = false;
+    String title;
+    if (momentModel.enableCommenting ?? false) {
+      isCommentingEnable = momentModel.enableCommenting!;
+    }
+
+    if (isCommentingEnable) {
+      title = "Turn on Commenting";
+    }
+
+    return bottomSheetItem(
+      title: 'Make ${momentModel.isPublic}Private',
+      iconData: Icons.delete,
+      onTap: () {
+        Navigator.pop(context);
+
+        showDialogBox(
+          context: context,
+          actionOneTextColor: white,
+          actionOneBgColor: mateRed,
+          actionTwoTextColor: blackFont,
+          actionTwoBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.delete,
+          actionTwoText: AppLocalization.of(context)!.cancel,
+          actionOneText: AppLocalization.of(context)!.delete,
+          description: 'Are you sure you want to delete this moment?',
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            enableMargin: false,
+            width: 90,
+            height: 90,
+            image: Image.asset('assets/images/delete_dialog_icon.png'),
+          ),
+          leftButtonOnPressed: () {
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+            MomentsService().deleteMoment(momentModel.id!).then(
+              (value) {
+                Navigator.pop(context); // Dismiss loading indicator
+                Navigator.pop(context);
+                showToast(message: 'Moment deleted');
+              },
+            ).catchError((e) {
+              Navigator.pop(context);
+              showToast(message: e.toString());
+            });
+          },
+        );
+      },
+    );
+  }
+
+  Widget momentLikeOption(MomentsModel momentModel) {
+    return bottomSheetItem(
+      title: 'Make ${momentModel.isPublic}Private',
+      iconData: Icons.delete,
+      onTap: () {
+        Navigator.pop(context);
+
+        showDialogBox(
+          context: context,
+          actionOneTextColor: white,
+          actionOneBgColor: mateRed,
+          actionTwoTextColor: blackFont,
+          actionTwoBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.delete,
+          actionTwoText: AppLocalization.of(context)!.cancel,
+          actionOneText: AppLocalization.of(context)!.delete,
+          description: 'Are you sure you want to delete this moment?',
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            enableMargin: false,
+            width: 90,
+            height: 90,
+            image: Image.asset('assets/images/delete_dialog_icon.png'),
+          ),
+          leftButtonOnPressed: () {
+            showDialog(
+                context: context,
+                builder: (dialogLoadingContext) => LoadingIndicator());
+            MomentsService().deleteMoment(momentModel.id!).then(
+              (value) {
+                Navigator.pop(context); // Dismiss loading indicator
+                Navigator.pop(context);
+                showToast(message: 'Moment deleted');
+              },
+            ).catchError((e) {
+              Navigator.pop(context);
+              showToast(message: e.toString());
+            });
+          },
         );
       },
     );
