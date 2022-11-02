@@ -919,15 +919,20 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
 
     try {
       MomentsBloc momentsBloc = Provider.of<MomentsBloc>(context);
-
-      if (momentsBloc.numberOfComments.length <= index + 1) {
-        if (momentsBloc.numberOfComments[index] >= 1) {
-          commentCount = getFormattedViewCount(
-            noOfViews: momentsBloc.numberOfComments[index],
-            addViewText: false,
-          );
-        }
+      if (momentsBloc.numberOfComments[index] >= 1) {
+        commentCount = getFormattedViewCount(
+          noOfViews: momentsBloc.numberOfComments[index],
+          addViewText: false,
+        );
       }
+      // if (momentsBloc.numberOfComments.length <= index + 1) {
+      //   if (momentsBloc.numberOfComments[index] >= 1) {
+      //     commentCount = getFormattedViewCount(
+      //       noOfViews: momentsBloc.numberOfComments[index],
+      //       addViewText: false,
+      //     );
+      //   }
+      // }
     } catch (error) {
       commentCount = '';
     }
@@ -1403,6 +1408,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
 
       basePaginationModel = value;
       nextUrl = basePaginationModel!.next;
+      print("INDEX:- ${widget.index}");
       Provider.of<MomentsBloc>(context, listen: false)
           .numberOfComments[widget.index] = basePaginationModel!.count;
 

@@ -27,8 +27,8 @@ class OrdersList extends StatefulWidget {
 }
 
 class _OrdersListState extends State<OrdersList> {
-  final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
-      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldOrderListKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerOrderListKey = new GlobalKey<ScaffoldMessengerState>();
   final _auth = ShoppingAuthService();
   SlidableController? _slideController;
   int? count = 0;
@@ -150,16 +150,19 @@ class _OrdersListState extends State<OrdersList> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        key: _scaffoldOrderListKey,
-        backgroundColor: Colors.white,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            getDateRangeText(),
-            Expanded(child: _buildOrderList()),
-          ],
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerOrderListKey,
+        child: Scaffold(
+          key: _scaffoldOrderListKey,
+          backgroundColor: Colors.white,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              getDateRangeText(),
+              Expanded(child: _buildOrderList()),
+            ],
+          ),
         ),
       ),
     );
@@ -404,7 +407,7 @@ class _OrdersListState extends State<OrdersList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldOrderListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerOrderListKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

@@ -37,7 +37,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
   Service? service;
   double rating = 0.0;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -121,7 +121,7 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
           });
         }
       } else if (reviewNext == null && reviewList.length > 6) {
-        _scaffoldKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -144,79 +144,82 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          "Reviews($reviewCount)",
-          style: TextStyle(
-            color: blackFont,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        elevation: 0,
-        centerTitle: true,
-        automaticallyImplyLeading: true,
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerKey,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
-      body: SafeArea(
-        child: Container(
-          padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
-          child: Column(
-            children: [
-              Align(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: getReviewTotal(),
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: blackFont,
-                              fontWeight: FontWeight.w600,
+        appBar: AppBar(
+          title: Text(
+            "Reviews($reviewCount)",
+            style: TextStyle(
+              color: blackFont,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          elevation: 0,
+          centerTitle: true,
+          automaticallyImplyLeading: true,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+        ),
+        body: SafeArea(
+          child: Container(
+            padding: EdgeInsets.fromLTRB(10, 15, 10, 0),
+            child: Column(
+              children: [
+                Align(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: getReviewTotal(),
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: blackFont,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          TextSpan(
-                            text: '/5.0',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: blackFont,
-                              fontWeight: FontWeight.w600,
+                            TextSpan(
+                              text: '/5.0',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: blackFont,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _buildRatingBar(),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              isLoading
-                  ? Expanded(
-                      child: Center(
-                        child: CircularLoadingIndicator(),
-                      ),
-                    )
-                  : noReviewInList
-                      ? Expanded(child: NoItemInList(msg: "No Review yet"))
-                      : Expanded(
-                          child: ListView.builder(
-                            itemBuilder: (context, index) => ReviewTile(
-                              review: reviewList[index],
-                              product: product,
-                              reviewedUser: reviewedUser,
-                              service: service,
-                            ),
-                            itemCount: reviewList.length,
-                          ),
+                          ],
                         ),
-            ],
+                      ),
+                      _buildRatingBar(),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                isLoading
+                    ? Expanded(
+                        child: Center(
+                          child: CircularLoadingIndicator(),
+                        ),
+                      )
+                    : noReviewInList
+                        ? Expanded(child: NoItemInList(msg: "No Review yet"))
+                        : Expanded(
+                            child: ListView.builder(
+                              itemBuilder: (context, index) => ReviewTile(
+                                review: reviewList[index],
+                                product: product,
+                                reviewedUser: reviewedUser,
+                                service: service,
+                              ),
+                              itemCount: reviewList.length,
+                            ),
+                          ),
+              ],
+            ),
           ),
         ),
       ),

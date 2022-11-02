@@ -303,7 +303,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
               },
               cancelCallBack: () {
                 Navigator.pop(context);
-                Scaffold.of(context).showSnackBar(SnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(AppLocalization.of(context)!.invalidPassword),
                 ));
               });

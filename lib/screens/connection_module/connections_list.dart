@@ -36,8 +36,8 @@ class ConnectionList extends StatefulWidget {
 }
 
 class _ConnectionListState extends State<ConnectionList> {
-  final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
-      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldContactsListKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerContactsListKey = new GlobalKey<ScaffoldMessengerState>();
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
@@ -133,22 +133,25 @@ class _ConnectionListState extends State<ConnectionList> {
     _onRefreshOnResume();
     _connectionListBloc = Provider.of<ConnectionListBloc>(context);
 
-    return Scaffold(
-      key: _scaffoldContactsListKey,
-      backgroundColor: Colors.white,
-      body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: Column(
-          children: [
-            getSearchTextField(),
-            isUserIsSearching
-                ? Expanded(child: getSearchedUserListUI())
-                : Expanded(
-                    child: getRefreshIndicator(),
-                  ),
-          ],
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerContactsListKey,
+      child: Scaffold(
+        key: _scaffoldContactsListKey,
+        backgroundColor: Colors.white,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          },
+          child: Column(
+            children: [
+              getSearchTextField(),
+              isUserIsSearching
+                  ? Expanded(child: getSearchedUserListUI())
+                  : Expanded(
+                      child: getRefreshIndicator(),
+                    ),
+            ],
+          ),
         ),
       ),
     );
@@ -425,7 +428,7 @@ class _ConnectionListState extends State<ConnectionList> {
         if (mounted) setState(() {});
       } else if (next == null &&
           connectionListBloc.connectionUsers.length > 6) {
-        _scaffoldContactsListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerContactsListKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -439,7 +442,7 @@ class _ConnectionListState extends State<ConnectionList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactsListKey.currentState!
+    _scaffoldMessengerContactsListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 

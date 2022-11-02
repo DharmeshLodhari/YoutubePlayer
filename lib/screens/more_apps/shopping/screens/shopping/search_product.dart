@@ -40,6 +40,7 @@ class _SearchProductState extends State<SearchProduct> {
   List<Product> products = [];
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey = GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
 
@@ -166,7 +167,7 @@ class _SearchProductState extends State<SearchProduct> {
           setState(() {});
         }
       } else if (next == null && products.length > 6) {
-        _scaffoldSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -204,11 +205,14 @@ class _SearchProductState extends State<SearchProduct> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldSearchKey,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: scaffoldBody(),
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerSearchKey,
+      child: Scaffold(
+        key: _scaffoldSearchKey,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: scaffoldBody(),
+      ),
     );
   }
 

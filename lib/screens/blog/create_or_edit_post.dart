@@ -385,9 +385,6 @@ class _CreateOrEditPostScreenState extends State<CreateorEditPostScreen> {
   Widget getEditor() {
     Widget editorWidget = flutterQuill.QuillToolbar.basic(
       showDirection: false,
-      showImageButton: false,
-      showVideoButton: false,
-      showCameraButton: false,
       showHeaderStyle: false,
       showInlineCode: false,
       showCodeBlock: false,

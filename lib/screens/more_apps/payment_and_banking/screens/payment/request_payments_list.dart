@@ -34,8 +34,8 @@ class PaymentRequestList extends StatefulWidget {
 }
 
 class _PaymentRequestListState extends State<PaymentRequestList> {
-  final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
-      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldPaymentListKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerPaymentListKey = new GlobalKey<ScaffoldMessengerState>();
 
   final _auth = PaymentAndBankingAuth();
   SlidableController? _slideController;
@@ -200,17 +200,20 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
     // refresh the list when lifecycle called onResume method\
     _onRefreshOnResume();
 
-    return Scaffold(
-      key: _scaffoldPaymentListKey,
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          getDateRangeText(),
-          Expanded(child: _buildRequestPaymentList()),
-        ],
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerPaymentListKey,
+      child: Scaffold(
+        key: _scaffoldPaymentListKey,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            getDateRangeText(),
+            Expanded(child: _buildRequestPaymentList()),
+          ],
+        ),
       ),
     );
   }
@@ -591,7 +594,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
           _scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
-        _scaffoldPaymentListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerPaymentListKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -631,7 +634,7 @@ class _PaymentRequestListState extends State<PaymentRequestList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldPaymentListKey.currentState!
+    _scaffoldMessengerPaymentListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 

@@ -72,6 +72,7 @@ class _RequestPaymentState extends State<RequestPayment> {
   String? paymentCategory;
   late ConnectionListBloc _connectionListBloc;
   final requestPaymentScaffold = GlobalKey<ScaffoldState>();
+  final requestPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -175,12 +176,15 @@ class _RequestPaymentState extends State<RequestPayment> {
         customerProfileBloc.customer = null;
         return true;
       },
-      child: Scaffold(
-        key: requestPaymentScaffold,
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+      child: ScaffoldMessenger(
+        key: requestPaymentScaffoldMessenger,
+        child: Scaffold(
+          key: requestPaymentScaffold,
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: true,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+        ),
       ),
     );
   }
@@ -842,7 +846,7 @@ class _RequestPaymentState extends State<RequestPayment> {
                 },
                 cancelCallBack: () async {
                   Navigator.pop(context);
-                  requestPaymentScaffold.currentState!.showSnackBar(SnackBar(
+                  requestPaymentScaffoldMessenger.currentState!.showSnackBar(SnackBar(
                     content: Text(AppLocalization.of(context)!.invalidPassword),
                   ));
                 });

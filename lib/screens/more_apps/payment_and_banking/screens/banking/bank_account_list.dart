@@ -24,6 +24,7 @@ class BankAccountList extends StatefulWidget {
 
 class _BankAccountListState extends State<BankAccountList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users bank account
   final _auth = PaymentAndBankingAuth();
@@ -92,19 +93,22 @@ class _BankAccountListState extends State<BankAccountList> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.white,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildBankAccountList()),
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerKey,
+        child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: Colors.white,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildBankAccountList()),
+        ),
       ),
     );
   }
@@ -219,7 +223,7 @@ class _BankAccountListState extends State<BankAccountList> {
           });
         }
       } else if (next == null && bankAccountList.length > 6) {
-        _scaffoldKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

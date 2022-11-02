@@ -16,6 +16,7 @@ class PayoutTransactions extends StatefulWidget {
 
 class _PayoutTransactionsState extends State<PayoutTransactions> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users transactions
   int? count = 0;
@@ -73,19 +74,22 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.white,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: _buildPayoutTransactionList()),
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerKey,
+        child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: Colors.white,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: _buildPayoutTransactionList()),
+        ),
       ),
     );
   }
@@ -185,7 +189,7 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
           });
         }
       } else if (next == null && payoutList.length > 6) {
-        _scaffoldKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

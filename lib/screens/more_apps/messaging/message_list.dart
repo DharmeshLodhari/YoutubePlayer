@@ -28,8 +28,8 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  final GlobalKey<ScaffoldState> _scaffoldMessageKey =
-      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldMessageKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerMessageKey = new GlobalKey<ScaffoldMessengerState>();
   final _messageAuth = MessageAuth();
   SlidableController? slidableController;
   int? count = 0;
@@ -141,32 +141,35 @@ class _MessageListState extends State<MessageList> {
     // refresh the list when lifecycle called onResume method
     _onRefreshOnResume();
 
-    return Scaffold(
-      key: _scaffoldMessageKey,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerMessageKey,
+      child: Scaffold(
+        key: _scaffoldMessageKey,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildMessageList()),
+        floatingActionButton: FloatingActionButton(
+          heroTag: "compose_message",
+          backgroundColor: navyBlue,
+          isExtended: false,
+          child: Icon(
+            SlydoAppIcon.text_message,
+            size: 20,
           ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _buildMessageList()),
-      floatingActionButton: FloatingActionButton(
-        heroTag: "compose_message",
-        backgroundColor: navyBlue,
-        isExtended: false,
-        child: Icon(
-          SlydoAppIcon.text_message,
-          size: 20,
+          onPressed: () {
+            Navigator.of(context).pushNamed(
+              Routes.COMPOSE_MESSAGE,
+            );
+          },
         ),
-        onPressed: () {
-          Navigator.of(context).pushNamed(
-            Routes.COMPOSE_MESSAGE,
-          );
-        },
       ),
     );
   }
@@ -331,7 +334,7 @@ class _MessageListState extends State<MessageList> {
           });
         }
       } else if (next == null && messageList.length > 6) {
-        _scaffoldMessageKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerMessageKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -345,7 +348,7 @@ class _MessageListState extends State<MessageList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldMessageKey.currentState!
+    _scaffoldMessengerMessageKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 

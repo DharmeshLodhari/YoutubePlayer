@@ -36,6 +36,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
 
   final _formKey = GlobalKey<FormState>();
   final _sendEnvelopeScaffold = GlobalKey<ScaffoldState>();
+  final _sendEnvelopeScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
 
   double? amount;
@@ -87,12 +88,15 @@ class _SendEnvelopeState extends State<SendEnvelope> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        key: _sendEnvelopeScaffold,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+      child: ScaffoldMessenger(
+        key: _sendEnvelopeScaffoldMessenger,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          key: _sendEnvelopeScaffold,
+          resizeToAvoidBottomInset: true,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+        ),
       ),
     );
   }
@@ -403,7 +407,7 @@ class _SendEnvelopeState extends State<SendEnvelope> {
                 context, ModalRoute.withName(Routes.CHAT_SCREEN));
           },
           cancelCallBack: () {
-            _sendEnvelopeScaffold.currentState!.showSnackBar(SnackBar(
+            _sendEnvelopeScaffoldMessenger.currentState!.showSnackBar(SnackBar(
               content: Text(AppLocalization.of(context)!.invalidPassword),
             ));
           });

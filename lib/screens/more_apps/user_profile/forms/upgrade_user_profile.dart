@@ -35,6 +35,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
   final _auth = AuthService();
 
   final _upgradeProfileScaffold = GlobalKey<ScaffoldState>();
+  final _upgradeMessengerProfileScaffold = GlobalKey<ScaffoldMessengerState>();
 
   late UserBloc userBloc;
   bool hideAmountDropDown = false;
@@ -376,7 +377,7 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
               },
               cancelCallBack: () {
                 Navigator.pop(context);
-                _upgradeProfileScaffold.currentState!.showSnackBar(SnackBar(
+                _upgradeMessengerProfileScaffold.currentState!.showSnackBar(SnackBar(
                   content: Text(AppLocalization.of(context)!.invalidPassword),
                 ));
               });
