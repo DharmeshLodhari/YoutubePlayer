@@ -110,6 +110,8 @@ class MomentsService extends AuthService {
       url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";
     }
 
+    debugPrint("MY MOMENTS URL ::: $url");
+
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);

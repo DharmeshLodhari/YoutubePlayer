@@ -210,6 +210,8 @@ class _UserDashboardState extends State<UserDashboard> {
                 ),
                 SizedBox(height: 16),
                 firstRowOfMoreApps(),
+                SizedBox(height: 12),
+                secondRowOfMoreApps(),
                 SizedBox(height: 70),
                 appVersionDataUI(),
                 SizedBox(height: 32),
@@ -597,6 +599,37 @@ class _UserDashboardState extends State<UserDashboard> {
             },
             iconColor: HexColor("#374677"),
           ),
+        ),
+        SizedBox(width: 12),
+      ],
+    );
+  }
+
+  Widget secondRowOfMoreApps() {
+    return Row(
+      children: [
+        Expanded(
+          child: UserDashboardItemTile(
+            icon: Icons.business_center_rounded,
+            title: "Services",
+            onTap: () {
+              // if (appConfigurationModel?.enableUtility == true) {
+              //   Navigator.pushNamed(context, Routes.SUPER_HUB);
+              // } else {
+              //   showToast(message: 'Coming soon.');
+              // }
+              Navigator.pushNamed(context, Routes.SUPER_HUB);
+            },
+            iconColor: HexColor("#9B51E0"),
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: Container(),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: Container()
         ),
         SizedBox(width: 12),
       ],

@@ -96,6 +96,7 @@ class MomentsModel {
   Map<String, dynamic>? attachment;
   String? payMeLabel;
   String? payMeButtonColor;
+  bool? isPermanent;
 
   MomentsModel({
     this.id,
@@ -121,6 +122,7 @@ class MomentsModel {
     this.createdAt,
     this.expireAt,
     this.isPublic,
+    this.isPermanent = false
   });
 
   // factory MomentsModel.fromExploreMoments(ExploreMomentsModel exploreMomentsModel) {
@@ -181,6 +183,7 @@ class MomentsModel {
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
       isPublic: json['is_public'] ?? false,
+      isPermanent: json['is_permanent'],
     );
   }
 }

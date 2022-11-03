@@ -156,4 +156,6 @@ class Routes {
   static const String WALLET_OPTIONS_SELECTION = "/wallet-options-selection";
   static const String WEB_VIEW = "/web-view";
   static const String SUPER_BLOG = "/super-blog";
+  static const String SUPER_HUB = "/super-hub";
+  static const String SEARCH_SERVICES = "/search-services";
 }

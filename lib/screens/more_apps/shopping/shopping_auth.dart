@@ -506,6 +506,53 @@ class ShoppingAuthService extends AuthService {
   }
 
   // List services
+  Future<Map<String, dynamic>?> listOfServices(String? next, String? previous,
+      {String? userName, bool otherDeals = false}) async {
+    debugPrint('CALLING PRODUCT');
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      if (otherDeals == true) {
+        url = AppConfig.baseUrl + "/api/v1/services/";
+      } else {
+        url =
+            AppConfig.baseUrl + "/api/v1/services/";
+      }
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint('CALLING OTHER DEALS ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<Service> serviceList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        Service service = createService(item);
+        serviceList.add(service);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": serviceList
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // List services by provider
   Future<Map<String, dynamic>?> listServicesByProvider(
       String? next, String? previous,
       {String? userName}) async {
@@ -1143,6 +1190,80 @@ class ShoppingAuthService extends AuthService {
         "next": jsonData["next"],
         "previous": jsonData["previous"],
         "results": productList
+      };
+      debugPrint("result:- $result");
+      return result;
+    } else if (response.statusCode == 500) {
+      throw "Server Error";
+    } else {
+      List<Product> productList = [];
+      Map<String, dynamic> result = {
+        "count": 0,
+        "next": "test",
+        "previous": "test",
+        "results": productList
+      };
+      return result;
+    }
+  }
+
+  // Search Services
+
+  Future<Map<String, dynamic>?> searchServiceInServices(
+      String? next, String? previous,
+      {required SearchItemWithFilterModelForSuperStore filterOptions}) async {
+    var url = "";
+    if (next == null) {
+      return null;
+    }
+    debugPrint('SORT BY Search -> ${filterOptions.sortBy}');
+
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/search/services/?search=${filterOptions.searchedText}";
+
+      if (filterOptions.minPrice != null) {
+        url = url + "&min_price=${filterOptions.minPrice}";
+      }
+      if (filterOptions.maxPrice != null) {
+        url = url + "&max_price=${filterOptions.maxPrice}";
+      }
+      if (filterOptions.rating != null) {
+        url = url + "&rating=${filterOptions.rating}";
+      }
+      if (filterOptions.categories.isNotEmpty) {
+        url = url + "&categories=${filterOptions.categories.join(',')}";
+      }
+      if (filterOptions.sortBy != null) {
+        url = url + "&sort_by=${filterOptions.sortBy}";
+      }
+
+      url = Uri.encodeFull(url);
+    } else {
+      url = getSecureUrl(url: next);
+    }
+
+    debugPrint('SEARCH FILTER URL ---> $url');
+
+    debugPrint(url);
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+    debugPrint('SEARCH FILTER STATUS CODE ---> ${response.statusCode}');
+    debugPrint('SEARCH FILTER BODY ---> ${response.body}');
+
+    if (response.statusCode == 200) {
+      List<Service> serviceList = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        Service service = createService(item);
+        serviceList.add(service);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": serviceList
       };
       debugPrint("result:- $result");
       return result;
