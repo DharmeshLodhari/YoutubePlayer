@@ -34,6 +34,7 @@ import 'package:sizer/sizer.dart';
 
 import '../locator.dart';
 import '../routes/route_constants.dart';
+import '../utils/slydo_app_icon_new_icons.dart';
 import 'more_apps/ask/ask_start_screen.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/user_auth.dart';
@@ -610,7 +611,7 @@ class _UserDashboardState extends State<UserDashboard> {
       children: [
         Expanded(
           child: UserDashboardItemTile(
-            icon: Icons.business_center_rounded,
+            icon: SlydoAppIconNew.vector,
             title: "Services",
             onTap: () {
               // if (appConfigurationModel?.enableUtility == true) {
@@ -620,7 +621,7 @@ class _UserDashboardState extends State<UserDashboard> {
               // }
               Navigator.pushNamed(context, Routes.SUPER_HUB);
             },
-            iconColor: HexColor("#9B51E0"),
+            iconColor: HexColor("#93000A"),
           ),
         ),
         SizedBox(width: 12),
@@ -628,9 +629,7 @@ class _UserDashboardState extends State<UserDashboard> {
           child: Container(),
         ),
         SizedBox(width: 12),
-        Expanded(
-          child: Container()
-        ),
+        Expanded(child: Container()),
         SizedBox(width: 12),
       ],
     );

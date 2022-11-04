@@ -222,6 +222,10 @@ flutter:
       fonts:
         - asset: assets/fonts/SlydoAppIcon.ttf
 
+    - family: SlydoAppIconNew
+      fonts:
+        - asset: assets/fonts/SlydoAppIconNew.ttf
+
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

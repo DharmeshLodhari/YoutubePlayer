@@ -20,6 +20,7 @@ import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -460,25 +461,25 @@ class _DashboardState extends State<Dashboard> {
         },
         items: [
           bottomNavigationBarItem(
-            iconData: SlydoAppIcon.home,
+            iconData: SlydoAppIconNew.home,
             title: AppLocalization.of(context)!.home,
           ),
 
           bottomNavigationBarItem(
             iconSize: 20,
             key: tutorialSuperStoreKey,
-            iconData: Icons.shopping_bag,
+            iconData: SlydoAppIconNew.bag,
             title: AppLocalization.of(context)!.store,
           ),
           bottomNavigationBarItem(
             iconSize: 20,
-            iconData: Icons.play_circle_filled,
+            iconData: SlydoAppIconNew.play,
             title: AppLocalization.of(context)!.moments,
           ),
           bottomNavigationBarItem(
             isChatIcon: true,
             key: tutorialChatMessageKey,
-            iconData: SlydoAppIcon.text_message,
+            iconData: SlydoAppIconNew.send,
             title: AppLocalization.of(context)!.chat,
           ),
           // bottomNavigationBarItem(
@@ -487,21 +488,27 @@ class _DashboardState extends State<Dashboard> {
           //   title: AppLocalization.of(context)!.chat,
           // ),
 
-          BottomNavigationBarItem(
-            icon: Container(
-              key: tutorialExploreKey,
-              height: 50,
-              child: Icon(
-                Icons.explore,
-                color: blackFont,
-                size: 18,
-              ),
-            ),
-            label: "Explore",
-            activeIcon: activeIcon(
-                title: AppLocalization.of(context)!.explore,
-                icon: Icons.explore),
+          bottomNavigationBarItem(
+            key: tutorialExploreKey,
+            iconData: SlydoAppIconNew.explore,
+            title: AppLocalization.of(context)!.explore,
           ),
+
+          // BottomNavigationBarItem(
+          //   icon: Container(
+          //     key: tutorialExploreKey,
+          //     height: 50,
+          //     child: Icon(
+          //       Icons.explore,
+          //       color: blackFont,
+          //       size: 18,
+          //     ),
+          //   ),
+          //   label: "Explore",
+          //   activeIcon: activeIcon(
+          //       title: AppLocalization.of(context)!.explore,
+          //       icon: Icons.explore),
+          // ),
         ],
       ),
     );

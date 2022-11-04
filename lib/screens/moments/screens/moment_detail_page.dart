@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
@@ -25,6 +27,7 @@ import '../../../widget/dialog.dart';
 import '../../../widget/read_more_widget.dart';
 import '../../../widget/rounded_background_icon.dart';
 import '../../more_apps/messaging/chat/models/ChatConversation.dart';
+import '../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import '../../more_apps/shopping/models/store.dart';
 import '../../post_detail_page.dart';
 import '../models/comment_model.dart';
@@ -33,10 +36,6 @@ import '../moments_bloc.dart';
 import '../widgets/custom_moment_detail_button.dart';
 import 'create_moment_screen.dart';
 import 'moments_service.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/data/environment.dart';
-import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/data/state_notifier.dart';
 
 late CachedVideoPlayerController _controller;
 
@@ -492,12 +491,13 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                       momentLikeOption(
                                           widget.momentsModelList[index]),
                                       bottomSheetItem(
-                                        title: 'Share in chat',
-                                        iconData: Icons.send_outlined,
-                                        onTap: () {
-                                          // sendItemToUsersInChat();
-                                        }
-                                      ),
+                                          title: 'Share in chat',
+                                          iconData: Icons.send_outlined,
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                            sendMomentToUserInChat(
+                                                context: context, momentsModel: widget.momentsModelList[index]);
+                                          }),
                                       bottomSheetItem(
                                         title: 'Delete',
                                         iconData: Icons.delete,
@@ -796,44 +796,43 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     );
   }
 
-  void sendItemToUsersInChat() async {
+  static sendMomentToUserInChat({required BuildContext context, required MomentsModel momentsModel}) async {
     List<ChatConversation?> listOfRecipient =
-    await ShareInChat().selectShareCustomer(context);
+        await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    String url = AppConfig.baseUrl +
-        "/api/v1/${product is Product ? "products" : "services"}/" +
-        product!.id! +
-        "/";
-
-    Map<String, dynamic>? itemData =
-    await ShoppingAuthService().getProductOrService(url);
-
     listOfRecipient.forEach((recipient) {
-      addProductOrServiceToChat(
-          item: product,
-          itemData: itemData,
-          recipientUser: recipient!,
-          url: url);
+      addMomentPostToChat(context: context, recipientUser: recipient!, momentsModel: momentsModel);
     });
   }
 
-  void addProductOrServiceToChat(
-      {Map<String, dynamic>? itemData,
-        required ChatConversation recipientUser,
-        String? url,
-        dynamic item}) async {
+  static addMomentPostToChat({
+    required BuildContext context,
+    required ChatConversation recipientUser,
+    required MomentsModel momentsModel,
+    String? url,
+  }) async {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
     Map<String, dynamic> data = {
-      "meta_data": jsonEncode(itemData),
+      "meta_data": jsonEncode({
+        "id": momentsModel.id,
+        "title": momentsModel.text,
+        "image": momentsModel.media,
+        // "video": momentsModel.video,
+        "author_avatar": momentsModel.avatar,
+        "author_username": momentsModel.ownerName,
+      }),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
-      "author": userBloc?.user.userName,
-      "message": url,
-      "kind": item is Product ? "product" : "service",
+      "author": userBloc.user.userName,
+      "message": 'blog_post',
+      "kind": "blog_post",
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
     };
     await sendDataToSocket(data);
+    showToast(message: 'Post Shared');
   }
 
   Widget momentVisibilityOption(MomentsModel momentModel) {
@@ -892,7 +891,8 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       onTap: () {
         Navigator.pop(context);
         MomentsService().updateMoment(
-            momentId: momentModel.id!, data: {"is_permanent": !isPermanent}).then(
+            momentId: momentModel.id!,
+            data: {"is_permanent": !isPermanent}).then(
           (value) {
             momentModel = value;
             if (mounted) setState(() {});

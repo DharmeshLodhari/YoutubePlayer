@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/messaging/button/message_nav_btn.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:badges/badges.dart';
@@ -82,20 +83,26 @@ class _HomeState extends State<Home> {
               (AppBar().preferredSize.height),
           width: MediaQuery.of(context).size.width,
           color: Colors.white,
-          child: Stack(
-            children: <Widget>[
-              _backgroundScreen(),
-              Column(
-                children: [
-                  Expanded(child: _foregroundScreen()),
-                ],
-              ),
+          child: Column(
+            children: [
+              Expanded(child: _foregroundScreen()),
             ],
           ),
         ),
       ),
     );
   }
+
+  // Stack(
+  // children: <Widget>[
+  // _backgroundScreen(),
+  // Column(
+  // children: [
+  // Expanded(child: _foregroundScreen()),
+  // ],
+  // ),
+  // ],
+  // ),
 
   Widget _backgroundScreen() {
     if (userBloc.user.type!.toLowerCase() == 'user') {
@@ -174,38 +181,54 @@ class _HomeState extends State<Home> {
   }
 
   Widget _appBar() {
+    Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
     return AppBar(
       backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       elevation: 0,
-      titleSpacing: 0,
       centerTitle: false,
+      leading: Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: userBloc.user.avatar!,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             getGreetingMessage(),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: HexColor("#151515")),
           ),
           userNameWithVerifiedIcon(
             name: userBloc.user.displayName()!,
             isVerified: userBloc.user.isVerified,
-            textStyle: TextStyle(fontSize: 16),
+            textStyle: TextStyle(fontSize: 16, color: HexColor("#151515")),
           ),
         ],
       ),
       actions: <Widget>[
-        _searchBtn(),
+        _scanBtn(),
         SizedBox(width: 8.0),
-        _messageBtn(),
-        SizedBox(width: 4.0),
         _cartBtn(),
+        SizedBox(width: 4.0),
+        _messageBtn(),
         SizedBox(width: 8.0),
       ],
     );
   }
 
-  Widget _searchBtn() {
+  Widget _scanBtn() {
     return Stack(
       key: tutorialSearchItemsKey,
       clipBehavior: Clip.none,
@@ -217,15 +240,7 @@ class _HomeState extends State<Home> {
                 height: 34,
                 width: 34,
                 child: InkWell(
-                  child: Card(
-                    elevation: 0,
-                    color: lightGrey.withOpacity(0.1),
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(SlydoAppIcon.search, size: 16),
-                  ),
+                  child: Icon(SlydoAppIconNew.scan, size: 16, color: HexColor("#151515"),),
                   onTap: () async {
                     await Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
 
@@ -268,8 +283,9 @@ class _HomeState extends State<Home> {
         position:
             BadgePosition(end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
         child: Icon(
-          SlydoAppIcon.cart,
+          Icons.shopping_cart_rounded,
           size: 16,
+          color: HexColor("#151515"),
         ),
       ),
       onTap: () {

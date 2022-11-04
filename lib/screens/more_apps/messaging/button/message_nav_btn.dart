@@ -50,8 +50,9 @@ class _MessageNavBtnState extends State<MessageNavBtn> {
         position:
             BadgePosition(end: count.toString().length == 1 ? -5 : -10, top: 0),
         child: Icon(
-          SlydoAppIcon.message,
+          Icons.mail_rounded,
           size: 16,
+          color: HexColor("#151515"),
         ),
       ),
       onTap: () {
