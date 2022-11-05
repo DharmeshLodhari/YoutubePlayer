@@ -167,7 +167,7 @@ class _HomeState extends State<Home> {
                       )
                     : flexibleSpace(),
                 _appBar(),
-                flexibleSpace(flex: 3),
+                flexibleSpace(),
                 _displayUserInfo(),
                 flexibleSpace(),
                 _displayPaymentButtons(),
@@ -218,7 +218,7 @@ class _HomeState extends State<Home> {
         ],
       ),
       actions: <Widget>[
-        _scanBtn(),
+        _searchBtn(),
         SizedBox(width: 8.0),
         _cartBtn(),
         SizedBox(width: 4.0),
@@ -228,7 +228,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _scanBtn() {
+  Widget _searchBtn() {
     return Stack(
       key: tutorialSearchItemsKey,
       clipBehavior: Clip.none,
@@ -240,7 +240,7 @@ class _HomeState extends State<Home> {
                 height: 34,
                 width: 34,
                 child: InkWell(
-                  child: Icon(SlydoAppIconNew.scan, size: 16, color: HexColor("#151515"),),
+                  child: Icon(SlydoAppIcon.search, size: 16, color: HexColor("#151515"),),
                   onTap: () async {
                     await Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
 
@@ -624,15 +624,8 @@ class _HomeState extends State<Home> {
             ],
           ),
           onTap: () {
-            if (getIt<AppConfigurationBloc>()
-                .appConfigurationModel
-                ?.enablePayment ==
-                true) {
-              Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
-                  arguments: <String, bool>{'isFromProfile': true});
-            } else {
-              showToast(message: 'Payment not available at the moment');
-            }
+            NavigationUtil.push(context,
+                screen: QRCodeView(arguments: {'isRequest': false}));
           }),
     );
   }
