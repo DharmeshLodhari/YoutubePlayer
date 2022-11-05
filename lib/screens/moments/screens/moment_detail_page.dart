@@ -493,10 +493,10 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                                       bottomSheetItem(
                                           title: 'Share in chat',
                                           iconData: Icons.send_outlined,
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            sendMomentToUserInChat(
-                                                context: context, momentsModel: widget.momentsModelList[index]);
+                                          onTap: () async {
+                                            await sendMomentToUserInChat(
+                                                momentsModel: widget
+                                                    .momentsModelList[index]);
                                           }),
                                       bottomSheetItem(
                                         title: 'Delete',
@@ -562,6 +562,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                               },
                             )
                           : SizedBox.shrink(),
+                      _buildShareMomentOption(index),
                       CustomMomentDetailButton(
                         iconEnabled: likeEnabled(index),
                         iconData: Icons.thumb_up,
@@ -796,38 +797,63 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     );
   }
 
-  static sendMomentToUserInChat({required BuildContext context, required MomentsModel momentsModel}) async {
+  Widget _buildShareMomentOption(int index) {
+    if (isMyMoment(index)) {
+      return SizedBox.shrink();
+    }
+
+    return CustomMomentDetailButton(
+        iconEnabled: true,
+        iconData: Icons.share,
+        text: "Share",
+        onPressed: () async {
+          await sendMomentToUserInChat(
+              momentsModel: widget.momentsModelList[index]);
+        });
+  }
+
+  Future<void> sendMomentToUserInChat(
+      {required MomentsModel momentsModel}) async {
     List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {
-      addMomentPostToChat(context: context, recipientUser: recipient!, momentsModel: momentsModel);
+      addMomentPostToChat(
+          recipientUser: recipient!, momentsModel: momentsModel);
     });
   }
 
-  static addMomentPostToChat({
-    required BuildContext context,
+  Future<void> addMomentPostToChat({
     required ChatConversation recipientUser,
     required MomentsModel momentsModel,
     String? url,
   }) async {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
+    Map<String, dynamic> metaData = {
+      "id": momentsModel.id,
+      "title": messageDecoderWithEmoji(momentsModel.text),
+      "author_avatar": momentsModel.avatar,
+      "author_username": messageDecoderWithEmoji(momentsModel.ownerName),
+    };
+
+    switch (momentsModel.mediaType) {
+      case "image":
+        metaData.addAll({"image": momentsModel.media});
+        break;
+      case "video":
+        metaData.addAll({"image": momentsModel.mediaPoster});
+        break;
+    }
+
     Map<String, dynamic> data = {
-      "meta_data": jsonEncode({
-        "id": momentsModel.id,
-        "title": momentsModel.text,
-        "image": momentsModel.media,
-        // "video": momentsModel.video,
-        "author_avatar": momentsModel.avatar,
-        "author_username": momentsModel.ownerName,
-      }),
+      "meta_data": jsonEncode(metaData),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
-      "message": 'blog_post',
-      "kind": "blog_post",
+      "message": 'moment',
+      "kind": "moment",
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
     };
@@ -1306,9 +1332,8 @@ class _VideoDisplayState extends State<VideoDisplay> {
 
   @override
   void dispose() async {
-    await _controller.pause();
-    // await _controller.dispose();
     super.dispose();
+    await _controller.pause();
   }
 
   @override

@@ -179,6 +179,20 @@ Widget imageErrorWidget(BuildContext context, String url, dynamic error) =>
       ),
     );
 
+Widget imageErrorWidgetForMomentTile(
+        BuildContext context, String url, dynamic error) =>
+    Container(
+      color: darkGrey.withOpacity(0.50),
+      child: Image.asset(
+        defaultProductAndServiceImage,
+        width: double.infinity,
+        height: double.infinity,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.scaleDown,
+        filterQuality: FilterQuality.high,
+      ),
+    );
+
 Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
     Image.asset(
       defaultWallPaper,
@@ -313,7 +327,10 @@ Widget customThemeBuilder(BuildContext context, Widget? child) {
 }
 
 BoxDecoration decorateBox(
-    {Color? borderColor, double borderRadius = 10, Color? shadowColor}) {
+    {Color? borderColor,
+    double borderRadius = 10,
+    Color? shadowColor,
+    Color? color}) {
   if (shadowColor == null) shadowColor = boxShadowTwo;
   return BoxDecoration(
     boxShadow: <BoxShadow>[
@@ -323,7 +340,7 @@ BoxDecoration decorateBox(
         blurRadius: 20.0,
       ),
     ],
-    color: Colors.white,
+    color: color ?? Colors.white,
     borderRadius: BorderRadius.all(
       Radius.circular(borderRadius),
     ),

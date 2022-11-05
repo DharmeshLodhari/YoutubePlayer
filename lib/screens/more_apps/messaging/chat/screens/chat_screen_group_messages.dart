@@ -30,6 +30,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_c
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/gif_image_tile_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/location_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/moment_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/text_message_render_for_chat_screen.dart';
@@ -3175,6 +3176,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         finalUI = renderPostUI(
             message: messageData, chatConversation: chatConversation);
         break;
+      case "moment":
+        finalUI = renderMomentUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
 
       case "payment-contract":
         finalUI = renderPaymentContractUI(
@@ -3806,6 +3811,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget renderPostUI(
       {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
     return PostTileForChat(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderMomentUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return MomentTileForChat(
+      key: ValueKey(message?["id"]),
       message: message,
       chatConversation: chatConversation,
     );
