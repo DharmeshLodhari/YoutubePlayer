@@ -318,185 +318,195 @@ class _HomeState extends State<Home> {
   Widget _displayUserInfo() {
     Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
 
-    return GestureDetector(
-      child: CustomBoxShadow(
-        child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: EdgeInsets.zero,
-          elevation: 0.0,
-          child: Container(
-            decoration: decorateBox(),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ListTile(
-                  key: tutorialUserProfileDetailKey,
-                  dense:
-                      MediaQuery.of(context).size.height > 600 ? false : true,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
-                  leading: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed('/add-edit-user-bio',
-                          arguments: {"searchedUser": userBloc.user.userAbout});
-                    },
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 48,
-                          width: 48,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                25,
-                              ),
-                              border: Border.all(color: borderColor, width: 2)),
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              imageUrl: userBloc.user.avatar!,
-                              fit: BoxFit.cover,
-                              errorWidget: imageErrorWidget,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: RoundedBackgroundIcon(
-                            height: 22,
-                            width: 22,
-                            backgroundColor: greyBorderColor.withOpacity(0.7),
-                            onTap: () {
-                              Navigator.of(context)
-                                  .pushNamed('/add-edit-user-bio', arguments: {
-                                "searchedUser": userBloc.user.userAbout
-                              });
-                            },
-                            icon: Icon(
-                              SlydoAppIcon.edit,
-                              color: blackFont,
-                              size: 12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  title: userNameWithVerifiedIcon(
-                    name: userBloc.user.displayName()!,
-                    isVerified: userBloc.user.isVerified,
-                  ),
-                  subtitle: Text(
-                    userBloc.user.userName!,
-                    maxLines: 1,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  trailing: InkWell(
-                    key: tutorialScanQrCodeKey,
-                    onTap: () {
-                      NavigationUtil.push(context,
-                          screen: QRCodeView(arguments: {'isRequest': false}));
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Icon(
-                        SlydoAppIcon.qr_code,
-                        size: 16,
-                        color: blackFont,
-                      ),
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName": userBloc.user.userName
-                        });
-                  },
-                ),
-                Divider(
-                  thickness: 1,
-                  color: dividerColor,
-                  height: 1,
-                ),
-                Container(
-                  key: tutorialQrCodeKey,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-                  child: CachedNetworkImage(
-                    height: MediaQuery.of(context).size.width / 1.7,
-                    width: MediaQuery.of(context).size.width / 1.7,
-                    imageUrl: userBloc.user.qrCode!,
-                    colorBlendMode: BlendMode.darken,
-                    fit: BoxFit.fill,
-                    errorWidget: imageErrorWidget,
-                    filterQuality: FilterQuality.high,
-                    placeholder: (context, url) => Center(
-                      child: CircularLoadingIndicator(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+    return Container(
+      key: tutorialQrCodeKey,
+      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+      child: CachedNetworkImage(
+        height: MediaQuery.of(context).size.width / 1.7,
+        width: MediaQuery.of(context).size.width / 1.7,
+        imageUrl: userBloc.user.qrCode!,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.fill,
+        errorWidget: imageErrorWidget,
+        filterQuality: FilterQuality.high,
+        placeholder: (context, url) => Center(
+          child: CircularLoadingIndicator(),
         ),
       ),
-      onTap: () async {
-        // DBSocketMessageHandler().clearSocketQueueChatMessage();
-        // ChatUserManager().clearChatUsers();
-        // ChatMessageHandler().deleteChatMessages();
-        //
-        // ConnectionListBloc connectionListBloc =
-        //     Provider.of<ConnectionListBloc>(context, listen: false);
-        // await connectionListBloc.clearConnectionList();
-
-        // Navigator.pushNamed(
-        //   context,
-        //   '/nfc-reader',
-        // );
-
-        //  MainSocketMessageHandler().logoutUser();
-
-        //  showSwipeHintCard(context: context);
-        //  showHoldHintCard(context: context);
-        //  showUserLogoutCard(context: context);
-      },
     );
+
+    // return GestureDetector(
+    //   child: CustomBoxShadow(
+    //     child: Card(
+    //       shape:
+    //           RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    //       margin: EdgeInsets.zero,
+    //       elevation: 0.0,
+    //       child: Container(
+    //         decoration: decorateBox(),
+    //         child: Column(
+    //           mainAxisSize: MainAxisSize.min,
+    //           children: <Widget>[
+    //             ListTile(
+    //               key: tutorialUserProfileDetailKey,
+    //               dense:
+    //                   MediaQuery.of(context).size.height > 600 ? false : true,
+    //               contentPadding:
+    //                   EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
+    //               leading: GestureDetector(
+    //                 onTap: () {
+    //                   Navigator.of(context).pushNamed('/add-edit-user-bio',
+    //                       arguments: {"searchedUser": userBloc.user.userAbout});
+    //                 },
+    //                 child: Stack(
+    //                   children: [
+    //                     Container(
+    //                       height: 48,
+    //                       width: 48,
+    //                       decoration: BoxDecoration(
+    //                           borderRadius: BorderRadius.circular(
+    //                             25,
+    //                           ),
+    //                           border: Border.all(color: borderColor, width: 2)),
+    //                       child: ClipOval(
+    //                         child: CachedNetworkImage(
+    //                           imageUrl: userBloc.user.avatar!,
+    //                           fit: BoxFit.cover,
+    //                           errorWidget: imageErrorWidget,
+    //                         ),
+    //                       ),
+    //                     ),
+    //                     Positioned(
+    //                       right: 0,
+    //                       bottom: 0,
+    //                       child: RoundedBackgroundIcon(
+    //                         height: 22,
+    //                         width: 22,
+    //                         backgroundColor: greyBorderColor.withOpacity(0.7),
+    //                         onTap: () {
+    //                           Navigator.of(context)
+    //                               .pushNamed('/add-edit-user-bio', arguments: {
+    //                             "searchedUser": userBloc.user.userAbout
+    //                           });
+    //                         },
+    //                         icon: Icon(
+    //                           SlydoAppIcon.edit,
+    //                           color: blackFont,
+    //                           size: 12,
+    //                         ),
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //               title: userNameWithVerifiedIcon(
+    //                 name: userBloc.user.displayName()!,
+    //                 isVerified: userBloc.user.isVerified,
+    //               ),
+    //               subtitle: Text(
+    //                 userBloc.user.userName!,
+    //                 maxLines: 1,
+    //                 style: TextStyle(fontSize: 14),
+    //               ),
+    //               trailing: InkWell(
+    //                 key: tutorialScanQrCodeKey,
+    //                 onTap: () {
+    //                   NavigationUtil.push(context,
+    //                       screen: QRCodeView(arguments: {'isRequest': false}));
+    //                 },
+    //                 child: Padding(
+    //                   padding: const EdgeInsets.all(12.0),
+    //                   child: Icon(
+    //                     SlydoAppIcon.qr_code,
+    //                     size: 16,
+    //                     color: blackFont,
+    //                   ),
+    //                 ),
+    //               ),
+    //               onTap: () {
+    //                 Navigator.pushNamed(context, Routes.USER_PROFILE,
+    //                     arguments: {
+    //                       "searchedUserName": userBloc.user.userName
+    //                     });
+    //               },
+    //             ),
+    //             Divider(
+    //               thickness: 1,
+    //               color: dividerColor,
+    //               height: 1,
+    //             ),
+    //             Container(
+    //               key: tutorialQrCodeKey,
+    //               alignment: Alignment.center,
+    //               padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
+    //               child: CachedNetworkImage(
+    //                 height: MediaQuery.of(context).size.width / 1.7,
+    //                 width: MediaQuery.of(context).size.width / 1.7,
+    //                 imageUrl: userBloc.user.qrCode!,
+    //                 colorBlendMode: BlendMode.darken,
+    //                 fit: BoxFit.fill,
+    //                 errorWidget: imageErrorWidget,
+    //                 filterQuality: FilterQuality.high,
+    //                 placeholder: (context, url) => Center(
+    //                   child: CircularLoadingIndicator(),
+    //                 ),
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    //   onTap: () async {
+    //     // DBSocketMessageHandler().clearSocketQueueChatMessage();
+    //     // ChatUserManager().clearChatUsers();
+    //     // ChatMessageHandler().deleteChatMessages();
+    //     //
+    //     // ConnectionListBloc connectionListBloc =
+    //     //     Provider.of<ConnectionListBloc>(context, listen: false);
+    //     // await connectionListBloc.clearConnectionList();
+    //
+    //     // Navigator.pushNamed(
+    //     //   context,
+    //     //   '/nfc-reader',
+    //     // );
+    //
+    //     //  MainSocketMessageHandler().logoutUser();
+    //
+    //     //  showSwipeHintCard(context: context);
+    //     //  showHoldHintCard(context: context);
+    //     //  showUserLogoutCard(context: context);
+    //   },
+    // );
   }
 
   Widget _displayPaymentButtons() {
-    return CustomBoxShadow(
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: EdgeInsets.zero,
-        child: Container(
-          decoration: decorateBox(),
-          padding: EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: MediaQuery.of(context).size.height > 600 ? 16 : 8,
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: MediaQuery.of(context).size.height > 600 ? 16 : 8,
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            key: tutorialRequestPaymentKey,
+            child: Container(
+              child: _requestPaymentButton(),
+            ),
           ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                key: tutorialRequestPaymentKey,
-                child: Container(
-                  child: _requestPaymentButton(),
-                ),
-              ),
-              Container(
-                width: 1.5,
-                color: dividerColor,
-                height: 50,
-              ),
-              Expanded(
-                key: tutorialSendPaymentKey,
-                child: Container(
-                  child: _sendPaymentButton(),
-                ),
-              ),
-            ],
+          Expanded(
+            key: tutorialSendPaymentKey,
+            child: Container(
+              child: _sendPaymentButton(),
+            ),
           ),
-        ),
+          Expanded(
+            child: Container(
+              child: _scanButton(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -508,22 +518,15 @@ class _HomeState extends State<Home> {
         highlightColor: Colors.transparent,
       ),
       child: InkWell(
-          child: Row(
+          child: Column(
             children: <Widget>[
               SizedBox(
                 height: 50,
                 width: 50,
-                child: Card(
-                  elevation: 0,
-                  color: navyBlue.withOpacity(0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    SlydoAppIcon.receive,
-                    size: 20,
-                    color: navyBlue,
-                  ),
+                child: Icon(
+                  SlydoAppIcon.receive,
+                  size: 20,
+                  color: navyBlue,
                 ),
               ),
               SizedBox(
@@ -558,23 +561,16 @@ class _HomeState extends State<Home> {
         highlightColor: Colors.white,
       ),
       child: InkWell(
-          child: Row(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
                 height: 50,
                 width: 50,
-                child: Card(
-                  elevation: 0,
-                  color: naturalGreen.withOpacity(0.1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    SlydoAppIcon.send,
-                    size: 20,
-                    color: naturalGreen,
-                  ),
+                child: Icon(
+                  SlydoAppIcon.send,
+                  size: 20,
+                  color: naturalGreen,
                 ),
               ),
               SizedBox(
@@ -590,6 +586,47 @@ class _HomeState extends State<Home> {
             if (getIt<AppConfigurationBloc>()
                     .appConfigurationModel
                     ?.enablePayment ==
+                true) {
+              Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+                  arguments: <String, bool>{'isFromProfile': true});
+            } else {
+              showToast(message: 'Payment not available at the moment');
+            }
+          }),
+    );
+  }
+
+  Widget _scanButton() {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.white,
+        highlightColor: Colors.white,
+      ),
+      child: InkWell(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: Icon(
+                  SlydoAppIconNew.scan,
+                  size: 20,
+                ),
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                "Scan",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          onTap: () {
+            if (getIt<AppConfigurationBloc>()
+                .appConfigurationModel
+                ?.enablePayment ==
                 true) {
               Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
                   arguments: <String, bool>{'isFromProfile': true});
