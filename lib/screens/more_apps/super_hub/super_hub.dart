@@ -15,7 +15,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../../routes/route_constants.dart';
 import '../../../widget/item_display_card.dart';
 import '../../../widget/rounded_background_icon.dart';
-import 'package:Slydo/routes/route_constants.dart';
 
 class SuperHub extends StatefulWidget {
   const SuperHub({Key? key}) : super(key: key);
@@ -38,7 +37,8 @@ class _SuperHubState extends State<SuperHub> {
   String? productPrevious = "";
   late BasketBloc basketBloc;
 
-  final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -592,7 +592,10 @@ class SuperStoreSingleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DisplayService(service: service, giveRightPadding: false,);
+    return DisplayService(
+      service: service,
+      giveRightPadding: false,
+    );
     // return Stack(
     //   children: [
     //     InkWell(
