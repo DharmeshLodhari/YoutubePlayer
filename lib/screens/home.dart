@@ -161,11 +161,7 @@ class _HomeState extends State<Home> {
             flex: MediaQuery.of(context).size.height > 600 ? 9 : 50,
             child: Column(
               children: <Widget>[
-                Platform.isIOS
-                    ? Container(
-                        height: 10,
-                      )
-                    : flexibleSpace(),
+                Container(height: 10),
                 _appBar(),
                 flexibleSpace(),
                 _displayUserInfo(),
@@ -318,167 +314,49 @@ class _HomeState extends State<Home> {
   Widget _displayUserInfo() {
     Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
 
-    return Container(
-      key: tutorialQrCodeKey,
-      alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-      child: CachedNetworkImage(
-        height: MediaQuery.of(context).size.width / 1.7,
-        width: MediaQuery.of(context).size.width / 1.7,
-        imageUrl: userBloc.user.qrCode!,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.fill,
-        errorWidget: imageErrorWidget,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, url) => Center(
-          child: CircularLoadingIndicator(),
+    // return Container(
+    //   key: tutorialQrCodeKey,
+    //   alignment: Alignment.center,
+    //   decoration: decorateBox(),
+    //   child: CachedNetworkImage(
+    //     height: MediaQuery.of(context).size.width / 1.7,
+    //     width: MediaQuery.of(context).size.width / 1.7,
+    //     imageUrl: userBloc.user.qrCode!,
+    //     colorBlendMode: BlendMode.darken,
+    //     fit: BoxFit.fill,
+    //     errorWidget: imageErrorWidget,
+    //     filterQuality: FilterQuality.high,
+    //     placeholder: (context, url) => Center(
+    //       child: CircularLoadingIndicator(),
+    //     ),
+    //   ),
+    // );
+
+    return Card(
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: EdgeInsets.zero,
+      elevation: 0.0,
+      child: Container(
+        decoration: decorateBox(),
+        child: Container(
+          margin: EdgeInsets.all(10),
+          key: tutorialQrCodeKey,
+          child: CachedNetworkImage(
+            height: MediaQuery.of(context).size.width / 1.7,
+            width: MediaQuery.of(context).size.width / 1.7,
+            imageUrl: userBloc.user.qrCode!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => Center(
+              child: CircularLoadingIndicator(),
+            ),
+          ),
         ),
       ),
     );
-
-    // return GestureDetector(
-    //   child: CustomBoxShadow(
-    //     child: Card(
-    //       shape:
-    //           RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    //       margin: EdgeInsets.zero,
-    //       elevation: 0.0,
-    //       child: Container(
-    //         decoration: decorateBox(),
-    //         child: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: <Widget>[
-    //             ListTile(
-    //               key: tutorialUserProfileDetailKey,
-    //               dense:
-    //                   MediaQuery.of(context).size.height > 600 ? false : true,
-    //               contentPadding:
-    //                   EdgeInsets.symmetric(horizontal: 16, vertical: 4.0),
-    //               leading: GestureDetector(
-    //                 onTap: () {
-    //                   Navigator.of(context).pushNamed('/add-edit-user-bio',
-    //                       arguments: {"searchedUser": userBloc.user.userAbout});
-    //                 },
-    //                 child: Stack(
-    //                   children: [
-    //                     Container(
-    //                       height: 48,
-    //                       width: 48,
-    //                       decoration: BoxDecoration(
-    //                           borderRadius: BorderRadius.circular(
-    //                             25,
-    //                           ),
-    //                           border: Border.all(color: borderColor, width: 2)),
-    //                       child: ClipOval(
-    //                         child: CachedNetworkImage(
-    //                           imageUrl: userBloc.user.avatar!,
-    //                           fit: BoxFit.cover,
-    //                           errorWidget: imageErrorWidget,
-    //                         ),
-    //                       ),
-    //                     ),
-    //                     Positioned(
-    //                       right: 0,
-    //                       bottom: 0,
-    //                       child: RoundedBackgroundIcon(
-    //                         height: 22,
-    //                         width: 22,
-    //                         backgroundColor: greyBorderColor.withOpacity(0.7),
-    //                         onTap: () {
-    //                           Navigator.of(context)
-    //                               .pushNamed('/add-edit-user-bio', arguments: {
-    //                             "searchedUser": userBloc.user.userAbout
-    //                           });
-    //                         },
-    //                         icon: Icon(
-    //                           SlydoAppIcon.edit,
-    //                           color: blackFont,
-    //                           size: 12,
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ],
-    //                 ),
-    //               ),
-    //               title: userNameWithVerifiedIcon(
-    //                 name: userBloc.user.displayName()!,
-    //                 isVerified: userBloc.user.isVerified,
-    //               ),
-    //               subtitle: Text(
-    //                 userBloc.user.userName!,
-    //                 maxLines: 1,
-    //                 style: TextStyle(fontSize: 14),
-    //               ),
-    //               trailing: InkWell(
-    //                 key: tutorialScanQrCodeKey,
-    //                 onTap: () {
-    //                   NavigationUtil.push(context,
-    //                       screen: QRCodeView(arguments: {'isRequest': false}));
-    //                 },
-    //                 child: Padding(
-    //                   padding: const EdgeInsets.all(12.0),
-    //                   child: Icon(
-    //                     SlydoAppIcon.qr_code,
-    //                     size: 16,
-    //                     color: blackFont,
-    //                   ),
-    //                 ),
-    //               ),
-    //               onTap: () {
-    //                 Navigator.pushNamed(context, Routes.USER_PROFILE,
-    //                     arguments: {
-    //                       "searchedUserName": userBloc.user.userName
-    //                     });
-    //               },
-    //             ),
-    //             Divider(
-    //               thickness: 1,
-    //               color: dividerColor,
-    //               height: 1,
-    //             ),
-    //             Container(
-    //               key: tutorialQrCodeKey,
-    //               alignment: Alignment.center,
-    //               padding: EdgeInsets.symmetric(vertical: 32, horizontal: 32),
-    //               child: CachedNetworkImage(
-    //                 height: MediaQuery.of(context).size.width / 1.7,
-    //                 width: MediaQuery.of(context).size.width / 1.7,
-    //                 imageUrl: userBloc.user.qrCode!,
-    //                 colorBlendMode: BlendMode.darken,
-    //                 fit: BoxFit.fill,
-    //                 errorWidget: imageErrorWidget,
-    //                 filterQuality: FilterQuality.high,
-    //                 placeholder: (context, url) => Center(
-    //                   child: CircularLoadingIndicator(),
-    //                 ),
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    //   onTap: () async {
-    //     // DBSocketMessageHandler().clearSocketQueueChatMessage();
-    //     // ChatUserManager().clearChatUsers();
-    //     // ChatMessageHandler().deleteChatMessages();
-    //     //
-    //     // ConnectionListBloc connectionListBloc =
-    //     //     Provider.of<ConnectionListBloc>(context, listen: false);
-    //     // await connectionListBloc.clearConnectionList();
-    //
-    //     // Navigator.pushNamed(
-    //     //   context,
-    //     //   '/nfc-reader',
-    //     // );
-    //
-    //     //  MainSocketMessageHandler().logoutUser();
-    //
-    //     //  showSwipeHintCard(context: context);
-    //     //  showHoldHintCard(context: context);
-    //     //  showUserLogoutCard(context: context);
-    //   },
-    // );
   }
 
   Widget _displayPaymentButtons() {
