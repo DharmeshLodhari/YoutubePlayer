@@ -7,6 +7,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
@@ -27,6 +28,8 @@ import 'package:Slydo/widget/dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../screens/moments/screens/moment_detail_page.dart';
 
 bool isDialogueOpen = false;
 
@@ -401,7 +404,12 @@ class PushNotificationService {
           'order': order,
         });
       } else if (payload.toString().contains('/moment/')) {
-        debugPrint('FRANK MOMENT ---> $payload');
+        debugPrint('FRANK MOMENT ---> ${notification["data"]}');
+        MomentsModel momentsModel = MomentsModel.fromJson(notification['data']);
+        NavigationUtil.push(context!, screen: MomentsDetailsScreen(
+          indexOfMoment: 0,
+          momentsModelList: [[momentsModel]],
+        ));
       }
     } catch (error) {
       print("new error:- $error");
