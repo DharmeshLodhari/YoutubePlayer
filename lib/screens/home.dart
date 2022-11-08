@@ -190,11 +190,10 @@ class _HomeState extends State<Home> {
       leading: Container(
         height: 48,
         width: 48,
+        padding: EdgeInsets.all(3),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
+          shape: BoxShape.circle,
+            border: Border.all(color: borderColor, width: 1)),
         child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: userBloc.user.avatar!,
