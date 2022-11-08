@@ -6,6 +6,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/messaging/button/message_nav_btn.dart';
 import 'package:Slydo/screens/scan_qr_code.dart';
 import 'package:Slydo/services/app_tutorial_controller.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -13,6 +14,7 @@ import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
@@ -163,8 +165,10 @@ class _HomeState extends State<Home> {
               children: <Widget>[
                 Container(height: 10),
                 _appBar(),
-                flexibleSpace(),
+                flexibleSpace(flex: 2),
                 _displayUserInfo(),
+                SizedBox(height: 10,),
+                _displayUserName(),
                 flexibleSpace(),
                 _displayPaymentButtons(),
               ],
@@ -204,21 +208,21 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           Text(
             getGreetingMessage(),
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: HexColor("#151515")),
+            style: TextStyle(fontSize: 12, color: HexColor("#151515")),
           ),
           userNameWithVerifiedIcon(
             name: userBloc.user.displayName()!,
             isVerified: userBloc.user.isVerified,
-            textStyle: TextStyle(fontSize: 16, color: HexColor("#151515")),
+            textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: HexColor("#151515")),
           ),
         ],
       ),
       actions: <Widget>[
         _searchBtn(),
         SizedBox(width: 8.0),
-        _cartBtn(),
-        SizedBox(width: 4.0),
         _messageBtn(),
+        SizedBox(width: 4.0),
+        _cartBtn(),
         SizedBox(width: 8.0),
       ],
     );
@@ -279,7 +283,7 @@ class _HomeState extends State<Home> {
         position:
             BadgePosition(end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
         child: Icon(
-          Icons.shopping_cart_rounded,
+          SlydoAppIconNew.cart,
           size: 16,
           color: HexColor("#151515"),
         ),
@@ -312,31 +316,11 @@ class _HomeState extends State<Home> {
   }
 
   Widget _displayUserInfo() {
-    Color borderColor = getUserTypeColorByType(type: userBloc.user.type!);
-
-    // return Container(
-    //   key: tutorialQrCodeKey,
-    //   alignment: Alignment.center,
-    //   decoration: decorateBox(),
-    //   child: CachedNetworkImage(
-    //     height: MediaQuery.of(context).size.width / 1.7,
-    //     width: MediaQuery.of(context).size.width / 1.7,
-    //     imageUrl: userBloc.user.qrCode!,
-    //     colorBlendMode: BlendMode.darken,
-    //     fit: BoxFit.fill,
-    //     errorWidget: imageErrorWidget,
-    //     filterQuality: FilterQuality.high,
-    //     placeholder: (context, url) => Center(
-    //       child: CircularLoadingIndicator(),
-    //     ),
-    //   ),
-    // );
-
     return Card(
       shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: EdgeInsets.zero,
-      elevation: 0.0,
+      elevation: 5.0,
       child: Container(
         decoration: decorateBox(),
         child: Container(
@@ -359,6 +343,26 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget _displayUserName() {
+    return Column(
+      children: [
+        userNameWithVerifiedIcon(
+          name: userBloc.user.displayName()!,
+          isVerified: userBloc.user.isVerified,
+          textStyle: TextStyle(fontSize: 16, color: HexColor("#151515")),
+        ),
+        Text(
+          "Scan to pay @${userBloc.user.userName!}",
+          maxLines: 1,
+          style: TextStyle(
+              fontSize: 12,
+            color: HexColor("#B8B6B6")
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _displayPaymentButtons() {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -368,15 +372,15 @@ class _HomeState extends State<Home> {
       child: Row(
         children: <Widget>[
           Expanded(
-            key: tutorialRequestPaymentKey,
-            child: Container(
-              child: _requestPaymentButton(),
-            ),
-          ),
-          Expanded(
             key: tutorialSendPaymentKey,
             child: Container(
               child: _sendPaymentButton(),
+            ),
+          ),
+          Expanded(
+            key: tutorialRequestPaymentKey,
+            child: Container(
+              child: _requestPaymentButton(),
             ),
           ),
           Expanded(
@@ -401,10 +405,8 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 50,
                 width: 50,
-                child: Icon(
-                  SlydoAppIcon.receive,
-                  size: 20,
-                  color: navyBlue,
+                child: SvgPicture.asset(
+                  "request_payment".toSVG(),
                 ),
               ),
               SizedBox(
@@ -412,7 +414,7 @@ class _HomeState extends State<Home> {
               ),
               Text(
                 appLocalization.request,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -445,18 +447,16 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 50,
                 width: 50,
-                child: Icon(
-                  SlydoAppIcon.send,
-                  size: 20,
-                  color: naturalGreen,
-                ),
+                child: SvgPicture.asset(
+                    "send_payment".toSVG(),
+                )
               ),
               SizedBox(
                 width: 12,
               ),
               Text(
                 appLocalization.send,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -487,9 +487,8 @@ class _HomeState extends State<Home> {
               SizedBox(
                 height: 50,
                 width: 50,
-                child: Icon(
-                  SlydoAppIconNew.scan,
-                  size: 20,
+                child: SvgPicture.asset(
+                  "scan_qr".toSVG(),
                 ),
               ),
               SizedBox(
@@ -497,7 +496,7 @@ class _HomeState extends State<Home> {
               ),
               Text(
                 "Scan",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
               ),
             ],
           ),

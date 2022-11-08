@@ -468,18 +468,18 @@ class _DashboardState extends State<Dashboard> {
           bottomNavigationBarItem(
             iconSize: 20,
             key: tutorialSuperStoreKey,
-            iconData: SlydoAppIconNew.bag,
+            iconData: SlydoAppIconNew.super_store,
             title: AppLocalization.of(context)!.store,
           ),
           bottomNavigationBarItem(
             iconSize: 20,
-            iconData: SlydoAppIconNew.play,
+            iconData: SlydoAppIconNew.moment,
             title: AppLocalization.of(context)!.moments,
           ),
           bottomNavigationBarItem(
             isChatIcon: true,
             key: tutorialChatMessageKey,
-            iconData: SlydoAppIconNew.send,
+            iconData: SlydoAppIconNew.chat,
             title: AppLocalization.of(context)!.chat,
           ),
           // bottomNavigationBarItem(

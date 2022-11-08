@@ -611,7 +611,7 @@ class _UserDashboardState extends State<UserDashboard> {
       children: [
         Expanded(
           child: UserDashboardItemTile(
-            icon: SlydoAppIconNew.vector,
+            icon: SlydoAppIconNew.vector_1,
             title: "Services",
             onTap: () {
               // if (appConfigurationModel?.enableUtility == true) {

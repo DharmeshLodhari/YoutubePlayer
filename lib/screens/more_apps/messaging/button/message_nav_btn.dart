@@ -2,6 +2,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class _MessageNavBtnState extends State<MessageNavBtn> {
         position:
             BadgePosition(end: count.toString().length == 1 ? -5 : -10, top: 0),
         child: Icon(
-          Icons.mail_rounded,
+          SlydoAppIconNew.inbox,
           size: 16,
           color: HexColor("#151515"),
         ),
