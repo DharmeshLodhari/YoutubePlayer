@@ -63,7 +63,7 @@ class _SuperHubState extends State<SuperHub> {
         },
       ),
       title: Text(
-        "Super Hub",
+        "Service Hub",
         style: TextStyle(
           color: blackFont,
           fontSize: 20,

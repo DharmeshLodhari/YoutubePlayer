@@ -51,10 +51,10 @@ class _SearchServicesState extends State<SearchServices> {
   bool noItemInList = false;
   bool isSearchIsEmpty = true;
   String autoCompleteSearchText = "";
-  ProductCategory? pressedCategory;
-  ProductCategory? selectedProductCategory;
-  List<ProductCategory>? productCategories;
-  List<ProductCategory>? productCategoriesCopy;
+  ServiceCategory? pressedCategory;
+  ServiceCategory? selectedServicesCategory;
+  List<ServiceCategory>? servicesCategories;
+  List<ServiceCategory>? servicesCategoriesCopy;
   String productCategory = "";
   int? minAmount;
   int? maxAmount;
@@ -188,15 +188,15 @@ class _SearchServicesState extends State<SearchServices> {
     if (mounted) setState(() {});
 
     try {
-      productCategories = await ShoppingAuthService().getProductCategories();
-      productCategoriesCopy = productCategories;
+      servicesCategories = await ShoppingAuthService().getServicesCategories();
+      servicesCategoriesCopy = servicesCategories;
 
-      productCategoriesCopy!.forEach((element) {
+      servicesCategoriesCopy!.forEach((element) {
         categoryCheckMark[element.name] = false;
       });
     } catch (e) {
-      productCategories = [];
-      productCategoriesCopy = [];
+      servicesCategories = [];
+      servicesCategoriesCopy = [];
     }
 
     isLoading = false;
@@ -399,7 +399,7 @@ class _SearchServicesState extends State<SearchServices> {
                 showFilterProductSheet();
               },
             ),
-            hintText: "Search name, manufacturer, categories",
+            hintText: "Search anything",
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
@@ -505,7 +505,7 @@ class _SearchServicesState extends State<SearchServices> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          selectedServicesCategory != null ? selectedServicesCategory!.name : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -545,7 +545,7 @@ class _SearchServicesState extends State<SearchServices> {
   }
 
   void categoryAndroidSheet(StateSetter bottomSheetSetState) {
-    productCategories = productCategoriesCopy;
+    servicesCategories = servicesCategoriesCopy;
     androidBottomSheet(
       context: context,
       enableDrag: false,
@@ -561,7 +561,7 @@ class _SearchServicesState extends State<SearchServices> {
                   hintText: 'Search category',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
-                      productCategories = productCategoriesCopy!
+                      servicesCategories = servicesCategoriesCopy!
                           .where((element) => element.name
                           .toLowerCase()
                           .startsWith(value.toString().toLowerCase()))
@@ -569,7 +569,7 @@ class _SearchServicesState extends State<SearchServices> {
                       changeState(
                               () {}); // To upgrade the product categories in the bottom sheet.
                     } else {
-                      productCategories = productCategoriesCopy;
+                      servicesCategories = servicesCategoriesCopy;
                       changeState(() {});
                     }
                   },
@@ -586,9 +586,9 @@ class _SearchServicesState extends State<SearchServices> {
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: productCategories!.length,
+                    itemCount: servicesCategories!.length,
                     itemBuilder: (context, index) {
-                      ProductCategory category = productCategories![index];
+                      ServiceCategory category = servicesCategories![index];
                       return CheckboxListTile(
                         value: categoryCheckMark[category.name] ?? false,
                         onChanged: (isChecked) {
@@ -612,60 +612,60 @@ class _SearchServicesState extends State<SearchServices> {
                         ),
                       );
 
-                      if (selectedProductCategory == category) {
-                        return Container(
-                          color: selectedListItemBackgroundBlue,
-                          child: ListTile(
-                            dense: true,
-                            title: Text(
-                              category.name,
-                              overflow: TextOverflow.fade,
-                              softWrap: false,
-                              style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: Icon(
-                              SlydoAppIcon.checked,
-                              color: navyBlue,
-                              size: 12,
-                            ),
-                            onTap: () {
-                              pressedCategory = category;
-                              Navigator.pop(context);
-                              if (pressedCategory != null) {
-                                selectedProductCategory = pressedCategory;
-                                productCategory = selectedProductCategory!.name;
-                                setState(() {});
-                              }
-                            },
-                          ),
-                        );
-                      }
+                      // if (selectedServicesCategory == category) {
+                      //   return Container(
+                      //     color: selectedListItemBackgroundBlue,
+                      //     child: ListTile(
+                      //       dense: true,
+                      //       title: Text(
+                      //         category.name,
+                      //         overflow: TextOverflow.fade,
+                      //         softWrap: false,
+                      //         style: TextStyle(
+                      //             color: navyBlue,
+                      //             fontSize: 16,
+                      //             fontWeight: FontWeight.w600),
+                      //       ),
+                      //       trailing: Icon(
+                      //         SlydoAppIcon.checked,
+                      //         color: navyBlue,
+                      //         size: 12,
+                      //       ),
+                      //       onTap: () {
+                      //         pressedCategory = category;
+                      //         Navigator.pop(context);
+                      //         if (pressedCategory != null) {
+                      //           selectedServicesCategory = pressedCategory;
+                      //           productCategory = selectedServicesCategory!.name;
+                      //           setState(() {});
+                      //         }
+                      //       },
+                      //     ),
+                      //   );
+                      // }
 
-                      return ListTile(
-                        title: Text(
-                          category.name,
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                              color: blackFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        dense: true,
-                        onTap: () {
-                          pressedCategory = category;
-                          Navigator.pop(context);
-                          if (pressedCategory != null) {
-                            selectedProductCategory = pressedCategory;
-                            productCategory = selectedProductCategory!.name;
-                            // setState(() {});
-                            bottomSheetSetState(() {});
-                          }
-                        },
-                      );
+                      // return ListTile(
+                      //   title: Text(
+                      //     category.name,
+                      //     softWrap: false,
+                      //     overflow: TextOverflow.fade,
+                      //     style: TextStyle(
+                      //         color: blackFont,
+                      //         fontSize: 16,
+                      //         fontWeight: FontWeight.w400),
+                      //   ),
+                      //   dense: true,
+                      //   onTap: () {
+                      //     pressedCategory = category;
+                      //     Navigator.pop(context);
+                      //     if (pressedCategory != null) {
+                      //       selectedServicesCategory = pressedCategory;
+                      //       productCategory = selectedServicesCategory!.name;
+                      //       // setState(() {});
+                      //       bottomSheetSetState(() {});
+                      //     }
+                      //   },
+                      // );
                     },
                   ),
                 ),
@@ -690,7 +690,7 @@ class _SearchServicesState extends State<SearchServices> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedProductCategory != null ? selectedProductCategory!.name : "",
+          selectedServicesCategory != null ? selectedServicesCategory!.name : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),

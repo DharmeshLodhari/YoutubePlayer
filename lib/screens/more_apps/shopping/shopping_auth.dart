@@ -1220,7 +1220,7 @@ class ShoppingAuthService extends AuthService {
 
     if (next == "") {
       url = AppConfig.baseUrl +
-          "/api/v1/search/services/?search=${filterOptions.searchedText}";
+          "/api/v1/services/?search=${filterOptions.searchedText}";
 
       if (filterOptions.minPrice != null) {
         url = url + "&min_price=${filterOptions.minPrice}";
@@ -1329,6 +1329,33 @@ class ShoppingAuthService extends AuthService {
       return Future.value(<ProductCategory>[]);
     }
   }
+
+  Future<List<ServiceCategory>> getServicesCategories() async {
+    var url = AppConfig.baseUrl + "/api/v1/services/choices/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      List<dynamic> results = jsonData["results"];
+
+      List<ServiceCategory> categories = [];
+
+      for (int i = 0; i < results.length; i++) {
+        categories.add(ServiceCategory(messageDecoderWithEmoji(results[i])!));
+      }
+
+      return categories;
+    } else {
+      debugPrint(
+          "URL FOR CATEGORIES $url STATUS CODE:- ${response.statusCode} Body:- ${response.body}");
+      return Future.value(<ServiceCategory>[]);
+    }
+  }
+
 }
 
 class ShoppingCartModelFromQrCode {

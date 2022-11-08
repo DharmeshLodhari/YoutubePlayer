@@ -167,7 +167,7 @@ class _HomeState extends State<Home> {
                 _appBar(),
                 flexibleSpace(flex: 2),
                 _displayUserInfo(),
-                SizedBox(height: 10,),
+                SizedBox(height: 15,),
                 _displayUserName(),
                 flexibleSpace(),
                 _displayPaymentButtons(),
@@ -212,7 +212,7 @@ class _HomeState extends State<Home> {
           userNameWithVerifiedIcon(
             name: userBloc.user.displayName()!,
             isVerified: userBloc.user.isVerified,
-            textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: HexColor("#151515")),
+            textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: HexColor("#151515")),
           ),
         ],
       ),
@@ -317,13 +317,13 @@ class _HomeState extends State<Home> {
   Widget _displayUserInfo() {
     return Card(
       shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),side: BorderSide(color: Color(0xFFF3F3F3), width: 2)),
       margin: EdgeInsets.zero,
-      elevation: 5.0,
+      elevation: 0.0,
       child: Container(
-        decoration: decorateBox(),
+        decoration: decorateBox(borderRadius: 20, borderColor: HexColor("#F3F3F3")),
         child: Container(
-          margin: EdgeInsets.all(10),
+          margin: EdgeInsets.all(13),
           key: tutorialQrCodeKey,
           child: CachedNetworkImage(
             height: MediaQuery.of(context).size.width / 1.7,
@@ -348,7 +348,7 @@ class _HomeState extends State<Home> {
         userNameWithVerifiedIcon(
           name: userBloc.user.displayName()!,
           isVerified: userBloc.user.isVerified,
-          textStyle: TextStyle(fontSize: 16, color: HexColor("#151515")),
+          textStyle: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.bold),
         ),
         Text(
           "Scan to pay @${userBloc.user.userName!}",

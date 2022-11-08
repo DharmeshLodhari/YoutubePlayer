@@ -37,6 +37,7 @@ import '../widgets/custom_moment_detail_button.dart';
 import 'create_moment_screen.dart';
 import 'moments_service.dart';
 
+late CachedVideoPlayerController _controller;
 
 
 class MomentsDetailsScreen extends StatefulWidget {
@@ -1312,7 +1313,6 @@ class VideoDisplay extends StatefulWidget {
 class _VideoDisplayState extends State<VideoDisplay> {
   bool initialized = false;
   bool showMediaIcon = false;
-  CachedVideoPlayerController? _controller;
 
   @override
   void initState() {
@@ -1320,9 +1320,9 @@ class _VideoDisplayState extends State<VideoDisplay> {
     _controller = CachedVideoPlayerController.network(
       widget.momentsModel.media!,
     )..initialize().then((value) {
-        _controller!.play();
+        _controller.play();
         initialized = true;
-        _controller!.setLooping(true);
+        _controller.setLooping(true);
         setState(() {});
       }).catchError((e) {
         Navigator.pop(context);
@@ -1334,8 +1334,8 @@ class _VideoDisplayState extends State<VideoDisplay> {
   @override
   void dispose() async {
     super.dispose();
-    await _controller!.pause();
-    await _controller!.dispose();
+    await _controller.pause();
+    await _controller.dispose();
   }
 
   @override
@@ -1344,23 +1344,23 @@ class _VideoDisplayState extends State<VideoDisplay> {
       return FittedBox(
         fit: BoxFit.fitWidth,
         child: SizedBox(
-          width: _controller!.value.size.width,
-          height: _controller!.value.size.height,
+          width: _controller.value.size.width,
+          height: _controller.value.size.height,
           child: AspectRatio(
-            aspectRatio: _controller!.value.aspectRatio,
+            aspectRatio: _controller.value.aspectRatio,
             child: InkWell(
               onTap: () {
-                if (_controller!.value.isPlaying) {
-                  _controller!.pause();
+                if (_controller.value.isPlaying) {
+                  _controller.pause();
                   showMediaIconFor2Seconds();
                 } else {
-                  _controller!.play();
+                  _controller.play();
                   showMediaIconFor2Seconds();
                 }
               },
               child: Stack(
                 children: [
-                  CachedVideoPlayer(_controller!),
+                  CachedVideoPlayer(_controller),
                   Align(
                     alignment: Alignment.center,
                     child: Visibility(
@@ -1370,7 +1370,7 @@ class _VideoDisplayState extends State<VideoDisplay> {
                         height: 80,
                         borderRadius: 50,
                         icon: Icon(
-                          !_controller!.value.isPlaying
+                          !_controller.value.isPlaying
                               ? Icons.pause
                               : Icons.play_arrow_rounded,
                           color: Colors.white,
