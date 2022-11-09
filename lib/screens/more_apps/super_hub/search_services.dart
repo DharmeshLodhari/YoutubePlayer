@@ -395,8 +395,9 @@ class _SearchServicesState extends State<SearchServices> {
                 color: navyBlue,
                 size: 20,
               ),
-              onPressed: () {
-                showFilterProductSheet();
+              onPressed: () async {
+                FocusScope.of(context).unfocus();
+                await Future.delayed(Duration(milliseconds: 100)).then((value) => showFilterProductSheet());
               },
             ),
             hintText: "Search anything",
