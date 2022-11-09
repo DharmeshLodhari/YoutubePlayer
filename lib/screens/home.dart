@@ -10,9 +10,9 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/CustomBoxShadow.dart';
 import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -325,17 +325,27 @@ class _HomeState extends State<Home> {
         child: Container(
           margin: EdgeInsets.all(13),
           key: tutorialQrCodeKey,
-          child: CachedNetworkImage(
-            height: MediaQuery.of(context).size.width / 1.7,
-            width: MediaQuery.of(context).size.width / 1.7,
-            imageUrl: userBloc.user.qrCode!,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.fill,
-            errorWidget: imageErrorWidget,
-            filterQuality: FilterQuality.high,
-            placeholder: (context, url) => Center(
-              child: CircularLoadingIndicator(),
-            ),
+          child: CustomPaint(
+            painter: QrPainter(
+                data: "https://api.slydo.co/api/v1/user/customer/${userBloc.user.userName!}",
+                options: QrOptions(
+                    shapes: QrShapes(
+                        darkPixel: QrPixelShapeCircle(
+                            radiusFraction: .8
+
+                        ),
+                        frame: QrFrameShapeRoundCorners(
+                            cornerFraction: .25
+                        ),
+                        ball: QrBallShapeRoundCorners(
+                            cornerFraction: .25
+                        )
+                    ),
+                    colors: QrColors(
+                        light : QrColorSolid(Color.fromARGB(0, 0, 0, 0))
+                    )
+                )),
+            size: Size(MediaQuery.of(context).size.width / 1.7, MediaQuery.of(context).size.width / 1.7),
           ),
         ),
       ),

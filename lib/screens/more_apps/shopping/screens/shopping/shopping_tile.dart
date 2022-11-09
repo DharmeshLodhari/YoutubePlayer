@@ -481,9 +481,9 @@ class _ShoppingTileWithHeartWithServiceState
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        ShoppingAuthService().getProduct(widget.service!.id!).then((value) {
-          Navigator.pushNamed(context, '/product',
-              arguments: {"product": value});
+        ShoppingAuthService().getService(widget.service!.id!).then((value) {
+          Navigator.pushNamed(context, '/service-detail',
+              arguments: {"service": value});
         });
       },
       child: Card(

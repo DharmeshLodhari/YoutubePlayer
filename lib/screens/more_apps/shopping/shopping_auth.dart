@@ -708,6 +708,8 @@ class ShoppingAuthService extends AuthService {
       Service service = createService(jsonData);
       return service;
     } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       throw jsonData;
     }
   }
