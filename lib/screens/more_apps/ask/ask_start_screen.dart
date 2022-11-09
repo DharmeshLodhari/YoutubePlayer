@@ -1,11 +1,15 @@
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
+import '../../../locale/app_localization.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../widget/curved_btn.dart';
+import 'ask_auth.dart';
 import 'ask_home_screen.dart';
 import 'ask_viewmodel.dart';
+import 'models/ask_categories_model.dart';
+import 'components/category_chip.dart';
 
 class AskStartScreen extends StatefulWidget {
   @override
@@ -13,37 +17,94 @@ class AskStartScreen extends StatefulWidget {
 }
 
 class _AskStartScreenState extends State<AskStartScreen> {
+
+  bool isAskCategoriesLoading = false;
+  String? categoriesNext = "";
+  String? categoriesPrevious = "";
+  bool noCategoriesList = false;
+  int? categoryCount = 0;
+  List<AskCategories> askCategoriesList = [];
+  List<AskCategories> selectedAskCategoriesList = [];
+  final GlobalKey<ScaffoldMessengerState> _askCategoriesScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+
+
   @override
   void initState() {
     Future.microtask(() => context.read<AskViewModel>().init());
+    getAskCategoriesList();
     super.initState();
+  }
+
+  void getAskCategoriesList() async {
+    if (!isAskCategoriesLoading) {
+      if (categoriesNext != null && !isAskCategoriesLoading) {
+        isAskCategoriesLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await AskAuth()
+            .getAllCategories(categoriesNext, categoriesPrevious!, otherDeals: true);
+
+        if (result == null) {
+          noCategoriesList = true;
+
+          isAskCategoriesLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        categoryCount = result['count'];
+        categoriesNext = result['next'];
+        categoriesPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          setState(() {
+            noCategoriesList = false;
+            isAskCategoriesLoading = false;
+            askCategoriesList.addAll(tempList);
+          });
+        }
+      }
+      if (askCategoriesList.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noCategoriesList = true;
+          });
+        }
+      } else if (categoriesNext == null && askCategoriesList.length > 6) {
+        _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+          content:
+          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+          duration: Duration(milliseconds: 500),
+        ));
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AskViewModel>(builder: (context, model, child) {
-      return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
+      return ScaffoldMessenger(
+        key: _askCategoriesScaffoldMessengerKey,
+        child: Scaffold(
           backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: navyBlue,
-              size: 26,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(
+                Icons.keyboard_arrow_left,
+                color: navyBlue,
+                size: 26,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
           ),
-        ),
-        body: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 26,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          body: ListView(
+            padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
             children: [
               SizedBox(
                 height: 15,
@@ -62,49 +123,23 @@ class _AskStartScreenState extends State<AskStartScreen> {
               SizedBox(
                 height: 65,
               ),
-              Wrap(
+              !isAskCategoriesLoading ? Wrap(
                 runSpacing: 30,
-                spacing: 26,
-                children: model.categoryList
+                spacing: 15,
+                children: askCategoriesList
                     .map(
-                      (e) => GestureDetector(
+                      (e) => CategoryChip(
                         onTap: () {
-                          model.onSelectCategory(c: e);
-                          print(model.categoryList.indexOf(e));
+                          onCategorySelected(e);
                         },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: model
-                                .categoryColors[model.categoryList.indexOf(e)]
-                                .withOpacity(0.1),
-                            border: Border.all(
-                                color: model.selectedCategoryList.contains(e)
-                                    ? Colors.blueAccent
-                                    : Colors.blueAccent.withOpacity(0.1)),
-                          ),
-                          height: 40,
-                          width: e.length > 8 ? 120 : 90,
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Text(
-                                e,
-                                style: TextStyle(
-                                    color:
-                                        model.selectedCategoryList.contains(e)
-                                            ? navyBlue
-                                            : blackFont.withOpacity(0.9),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+                        title: e.name!,
+                        selectedCategoryBorderColor: selectedAskCategoriesList.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
+                        categoryColor: Color(0xFFF07097).withOpacity(0.1),
+                        selectedCategoryTextColor: selectedAskCategoriesList.contains(e)
+                            ? navyBlue
+                            : blackFont.withOpacity(0.9),
+                      )).toList(),
+              ) : Center(child: CircularProgressIndicator(),),
               SizedBox(
                 height: 85,
               ),
@@ -122,11 +157,11 @@ class _AskStartScreenState extends State<AskStartScreen> {
                       textColor: Colors.white,
                       backgroundColor: navyBlue,
                       text:
-                          "${model.selectedCategoryList.length} out of 3 selected",
+                          "${selectedAskCategoriesList.length} out of 3 selected",
                       onPressed: () async {
                         NavigationUtil.push(
                           context,
-                          screen: AskHomeScreen(),
+                          screen: AskHomeScreen(askCategories: askCategoriesList),
                         );
                       },
                     ),
@@ -138,5 +173,17 @@ class _AskStartScreenState extends State<AskStartScreen> {
         ),
       );
     });
+  }
+
+  void onCategorySelected(AskCategories category) {
+    if (selectedAskCategoriesList.contains(category)) {
+      selectedAskCategoriesList.remove(category);
+      setState(() {});
+    } else {
+      if (selectedAskCategoriesList.length < 3) {
+        selectedAskCategoriesList.add(category);
+        setState(() {});
+      }
+    }
   }
 }

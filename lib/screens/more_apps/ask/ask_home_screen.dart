@@ -12,8 +12,14 @@ import 'ask_viewmodel.dart';
 import 'components/ask_category_pick.dart';
 import 'components/ask_options.dart';
 import 'components/ask_posts_view.dart';
+import 'models/ask_categories_model.dart';
 
 class AskHomeScreen extends StatefulWidget {
+
+  List<AskCategories>? askCategories;
+
+  AskHomeScreen({this.askCategories});
+
   @override
   State<AskHomeScreen> createState() => _AskHomeScreenState();
 }
@@ -135,12 +141,12 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                     child: Row(
                       children: [
                         ...List.generate(
-                          model.categoryList.length,
+                          widget.askCategories!.length,
                           (i) {
                             return GestureDetector(
                               onTap: () {
-                                model
-                                    .updateNewlySelected(model.categoryList[i]);
+                                // model
+                                //     .updateNewlySelected(widget.askCategories![i]);
                                 NavigationUtil.push(
                                   context,
                                   screen: AskByCategoryScreen(),
@@ -151,18 +157,17 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
-                                    color: model.categoryColors[i]
-                                        .withOpacity(0.07),
+                                    color: Color(0xFFF07097).withOpacity(0.1),
                                   ),
                                   height: 35,
-                                  width: model.categoryList[i].length > 8
+                                  width: widget.askCategories!.length > 8
                                       ? 120
                                       : 90,
                                   child: Center(
                                     child: Text(
-                                      model.categoryList[i],
+                                      widget.askCategories![i].name!,
                                       style: TextStyle(
-                                          color: model.categoryColors[i]
+                                          color: Color(0xFFF07097)
                                               .withOpacity(1),
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600),
@@ -186,7 +191,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                             _pageViewCtrl.jumpToPage(0);
                           },
                           pageNum: 0,
-                          title: 'Trending Topics',
+                          title: 'Yarns',
                           currentTapIndex: model.currentAskTapOnHome),
                       pageViewTabItem(
                           onPageTap: () {
@@ -194,7 +199,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                             _pageViewCtrl.jumpToPage(1);
                           },
                           pageNum: 1,
-                          title: 'Latest Topics',
+                          title: 'Questions',
                           currentTapIndex: model.currentAskTapOnHome),
                       pageViewTabItem(
                           onPageTap: () {
@@ -202,7 +207,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                             _pageViewCtrl.jumpToPage(2);
                           },
                           pageNum: 2,
-                          title: 'My Topics',
+                          title: 'My Feeds',
                           currentTapIndex: model.currentAskTapOnHome),
                     ],
                   ),
