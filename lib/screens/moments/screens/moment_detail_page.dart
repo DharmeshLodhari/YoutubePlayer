@@ -670,14 +670,8 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                       children: [
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              Routes.USER_PROFILE,
-                              arguments: {
-                                "searchedUserName":
-                                    widget.momentsModelList[index].owner,
-                              },
-                            );
+                            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                                arguments: widget.momentsModelList[index].avatar);
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
@@ -870,7 +864,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       "type": "chatroom_message",
     };
     await sendDataToSocket(data);
-    showToast(message: 'Post Shared');
+    showToast(message: 'Moment Shared');
   }
 
   Widget momentVisibilityOption(MomentsModel momentModel) {

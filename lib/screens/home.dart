@@ -367,22 +367,30 @@ class _HomeState extends State<Home> {
   }
 
   Widget _displayUserName() {
-    return Column(
-      children: [
-        userNameWithVerifiedIcon(
-          name: userBloc.user.displayName()!,
-          isVerified: userBloc.user.isVerified,
-          textStyle: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "Scan to pay @${userBloc.user.userName!}",
-          maxLines: 1,
-          style: TextStyle(
-              fontSize: 12,
-            color: HexColor("#B8B6B6")
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
+            arguments: {
+              "searchedUserName": userBloc.user.userName
+            });
+      },
+      child: Column(
+        children: [
+          userNameWithVerifiedIcon(
+            name: userBloc.user.displayName()!,
+            isVerified: userBloc.user.isVerified,
+            textStyle: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.bold),
           ),
-        ),
-      ],
+          Text(
+            "Scan to pay @${userBloc.user.userName!}",
+            maxLines: 1,
+            style: TextStyle(
+                fontSize: 12,
+              color: HexColor("#B8B6B6")
+            ),
+          ),
+        ],
+      ),
     );
   }
 
