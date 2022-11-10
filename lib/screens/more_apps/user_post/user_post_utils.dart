@@ -81,6 +81,6 @@ class UserPostUtils {
       "type": "chatroom_message",
     };
     await sendDataToSocket(data);
-    showToast(message: 'Post Shared');
+    showToast(message: 'Moment Shared');
   }
 }
