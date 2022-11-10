@@ -589,18 +589,18 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: AppLocalization.of(context)!.ask,
             onTap: () {
-              NavigationUtil.push(
-                context,
-                screen: AskStartScreen(),
-              );
-              // if (appConfigurationModel?.enableAsk == true) {
-              //   NavigationUtil.push(
-              //     context,
-              //     screen: AskStartScreen(),
-              //   );
-              // } else {
-              //   showToast(message: 'Feature not available at the moment');
-              // }
+              // NavigationUtil.push(
+              //   context,
+              //   screen: AskStartScreen(),
+              // );
+              if (appConfigurationModel?.enableAsk == true) {
+                NavigationUtil.push(
+                  context,
+                  screen: AskStartScreen(),
+                );
+              } else {
+                showToast(message: 'Feature not available at the moment');
+              }
             },
             iconColor: HexColor("#374677"),
           ),
