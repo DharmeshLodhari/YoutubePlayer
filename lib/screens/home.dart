@@ -187,34 +187,48 @@ class _HomeState extends State<Home> {
       automaticallyImplyLeading: false,
       elevation: 0,
       centerTitle: false,
-      leading: Container(
-        height: 48,
-        width: 48,
-        padding: EdgeInsets.all(3),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-            border: Border.all(color: borderColor, width: 1)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
+      leading: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+              arguments: userBloc.user.avatar);
+        },
+        child: Container(
+          height: 48,
+          width: 48,
+          padding: EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+              border: Border.all(color: borderColor, width: 1)),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: userBloc.user.avatar!,
+              fit: BoxFit.cover,
+              errorWidget: imageErrorWidget,
+            ),
           ),
         ),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            getGreetingMessage(),
-            style: TextStyle(fontSize: 12, color: HexColor("#151515")),
-          ),
-          userNameWithVerifiedIcon(
-            name: userBloc.user.displayName()!,
-            isVerified: userBloc.user.isVerified,
-            textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: HexColor("#151515")),
-          ),
-        ],
+      title: InkWell(
+        onTap: () {
+          Navigator.pushNamed(context, Routes.USER_PROFILE,
+              arguments: {
+                "searchedUserName": userBloc.user.userName
+              });
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              getGreetingMessage(),
+              style: TextStyle(fontSize: 12, color: HexColor("#151515")),
+            ),
+            userNameWithVerifiedIcon(
+              name: userBloc.user.displayName()!,
+              isVerified: userBloc.user.isVerified,
+              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: HexColor("#151515")),
+            ),
+          ],
+        ),
       ),
       actions: <Widget>[
         _searchBtn(),
