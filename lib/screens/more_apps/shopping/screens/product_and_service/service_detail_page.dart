@@ -1195,10 +1195,13 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
           ),
           SizedBox(height: 16),
           Expanded(
-            child: ListView.builder(
+            child: ListView.separated(
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
+              separatorBuilder: (context, index) {
+                return SizedBox(width: 10);
+              },
               itemBuilder: (context, index) => DisplayService(
                 service: sellersOtherItems[index],
               ),

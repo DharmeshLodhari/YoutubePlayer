@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
+import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 
 class AskAuth extends AuthService {
@@ -17,7 +18,7 @@ class AskAuth extends AuthService {
     return categories;
   }
 
-  // Get all ASK Categories
+  // Get all YARN Categories
   Future<Map<String, dynamic>?> getAllCategories(String? next, String previous, {String? userName, bool otherDeals = false}) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
@@ -54,6 +55,49 @@ class AskAuth extends AuthService {
         "results": askCategories
       };
 
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Get all YARN Topics
+  Future<Map<String, dynamic>?> getAllTopics(String? next, String previous, {String? userName, bool otherDeals = false, String? type, bool isType = false}) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      if (isType) {
+        url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/social/ask/$type/";
+      }
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<YarnTopic> yarnTopics = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        YarnTopic yarnTopic = YarnTopic.fromJson(item);
+        yarnTopics.add(yarnTopic);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": yarnTopics
+      };
       return result;
     } else if (response.statusCode == 500) {
       return null;

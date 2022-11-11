@@ -15,26 +15,20 @@ class CategoryChip extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
+        padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: categoryColor,
           border: Border.all(
               color: selectedCategoryBorderColor!),
         ),
-        height: 40,
-        width: 120,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Text(
-              title!,
-              style: TextStyle(
-                  color:
-                  selectedCategoryTextColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
+        child: Text(
+          title!,
+          style: TextStyle(
+              color:
+              selectedCategoryTextColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600),
         ),
       ),
     );

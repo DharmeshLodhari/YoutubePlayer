@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:flutter/cupertino.dart';
 
 class AskViewModel extends ChangeNotifier {

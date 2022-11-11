@@ -27,6 +27,22 @@ class _AskStartScreenState extends State<AskStartScreen> {
   List<AskCategories> selectedAskCategoriesList = [];
   final GlobalKey<ScaffoldMessengerState> _askCategoriesScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
 
+  List<Color> categoryColors = [
+    Color(0xFFF07097),
+    Color(0xFF030F36),
+    Color(0xFF8829C1),
+    Color(0xFF8B008B),
+    Color(0xFF3F61DB),
+    Color(0xFFB22727),
+    Color(0xFFFFCC00),
+    Color(0xFF8B008B),
+    Color(0xFFFFA500),
+    Color(0xFF46CE7C),
+    Color(0xFF964B00),
+    Color(0xFFF35B46),
+    Color(0xFF243A73),
+  ];
+
 
   @override
   void initState() {
@@ -72,107 +88,124 @@ class _AskStartScreenState extends State<AskStartScreen> {
             noCategoriesList = true;
           });
         }
-      } else if (categoriesNext == null && askCategoriesList.length > 6) {
-        _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-          content:
-          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-          duration: Duration(milliseconds: 500),
-        ));
       }
+      // else if (categoriesNext == null && askCategoriesList.length > 6) {
+      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      //     content:
+      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+      //     duration: Duration(milliseconds: 500),
+      //   ));
+      // }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AskViewModel>(builder: (context, model, child) {
-      return ScaffoldMessenger(
-        key: _askCategoriesScaffoldMessengerKey,
-        child: Scaffold(
+    return ScaffoldMessenger(
+      key: _askCategoriesScaffoldMessengerKey,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
           backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(
-                Icons.keyboard_arrow_left,
-                color: navyBlue,
-                size: 26,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.keyboard_arrow_left,
+              color: navyBlue,
+              size: 26,
             ),
-          ),
-          body: ListView(
-            padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
-            children: [
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                'What topic are you interested in?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                'Select 3 or more categories to continue. We’ll use this to recommend topics you may like.',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-              ),
-              SizedBox(
-                height: 65,
-              ),
-              !isAskCategoriesLoading ? Wrap(
-                runSpacing: 30,
-                spacing: 15,
-                children: askCategoriesList
-                    .map(
-                      (e) => CategoryChip(
-                        onTap: () {
-                          onCategorySelected(e);
-                        },
-                        title: e.name!,
-                        selectedCategoryBorderColor: selectedAskCategoriesList.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
-                        categoryColor: Color(0xFFF07097).withOpacity(0.1),
-                        selectedCategoryTextColor: selectedAskCategoriesList.contains(e)
-                            ? navyBlue
-                            : blackFont.withOpacity(0.9),
-                      )).toList(),
-              ) : Center(child: CircularProgressIndicator(),),
-              SizedBox(
-                height: 85,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width - 60),
-                    child: CurvedButton(
-                      height: 50,
-                      textColor: Colors.white,
-                      backgroundColor: navyBlue,
-                      text:
-                          "${selectedAskCategoriesList.length} out of 3 selected",
-                      onPressed: () async {
-                        NavigationUtil.push(
-                          context,
-                          screen: AskHomeScreen(askCategories: askCategoriesList),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              )
-            ],
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
         ),
+        body: ListView(
+          padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
+          children: [
+            SizedBox(
+              height: 15,
+            ),
+            _buildTitleAndDescription(
+                title: 'What topic are you interested in?',
+                fontSize: 18,
+                fontWeight: FontWeight.w700
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            _buildTitleAndDescription(
+                title: 'Select 3 or more categories to continue. We’ll use this to recommend topics you may like.',
+                fontSize: 14,
+                fontWeight: FontWeight.w400
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            _buildCategoryList(),
+            SizedBox(
+              height: 65,
+            ),
+            _buildSaveButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTitleAndDescription({String? title, double? fontSize, FontWeight? fontWeight}) {
+    return Text(
+      title!,
+      style: TextStyle(fontSize: fontSize, fontWeight: fontWeight),
+    );
+  }
+
+  Widget _buildCategoryList() {
+    if (!isAskCategoriesLoading) {
+      return Wrap(
+        runSpacing: 30,
+        spacing: 15,
+        children: askCategoriesList
+            .map(
+                (e) => CategoryChip(
+              onTap: () {
+                onCategorySelected(e);
+              },
+              title: e.name!,
+              selectedCategoryBorderColor: selectedAskCategoriesList.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
+              categoryColor: askCategoriesList.indexOf(e) <= categoryColors.length-1 ? categoryColors[askCategoriesList.indexOf(e)].withOpacity(0.1) : categoryColors[0].withOpacity(0.1),
+              selectedCategoryTextColor: askCategoriesList.indexOf(e) <= categoryColors.length-1 ? categoryColors[askCategoriesList.indexOf(e)] : categoryColors[0],
+            )).toList(),
       );
-    });
+    }
+    return Center(child: CircularProgressIndicator(),);
+  }
+
+  Widget _buildSaveButton() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width - 60),
+          child: CurvedButton(
+            height: 50,
+            textColor: Colors.white,
+            backgroundColor: navyBlue,
+            text:
+            "${selectedAskCategoriesList.length} out of 3 selected",
+            onPressed: () async {
+              NavigationUtil.push(
+                context,
+                screen: AskHomeScreen(askCategories: askCategoriesList, selectedCategories: selectedAskCategoriesList,),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   void onCategorySelected(AskCategories category) {
