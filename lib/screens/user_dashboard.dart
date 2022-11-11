@@ -587,20 +587,20 @@ class _UserDashboardState extends State<UserDashboard> {
               Icons.question_answer_rounded,
               size: 22,
             ),
-            title: AppLocalization.of(context)!.ask,
+            title: "YARN",
             onTap: () {
-              NavigationUtil.push(
-                context,
-                screen: AskStartScreen(),
-              );
-              // if (appConfigurationModel?.enableAsk == true) {
-              //   NavigationUtil.push(
-              //     context,
-              //     screen: AskStartScreen(),
-              //   );
-              // } else {
-              //   showToast(message: 'Feature not available at the moment');
-              // }
+              // NavigationUtil.push(
+              //   context,
+              //   screen: AskStartScreen(),
+              // );
+              if (appConfigurationModel?.enableAsk == true) {
+                NavigationUtil.push(
+                  context,
+                  screen: AskStartScreen(),
+                );
+              } else {
+                showToast(message: 'Feature not available at the moment');
+              }
             },
             iconColor: HexColor("#374677"),
           ),
