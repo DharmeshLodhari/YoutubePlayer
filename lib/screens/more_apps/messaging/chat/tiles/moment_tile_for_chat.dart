@@ -96,9 +96,9 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
               isSend ? Container() : Container(width: 20),
               Container(
                 constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width / 1.50,
-                  minWidth: MediaQuery.of(context).size.width / 1.50,
-                  maxHeight: 500,
+                  maxWidth: MediaQuery.of(context).size.width / 1.75,
+                  minWidth: MediaQuery.of(context).size.width / 1.75,
+                  maxHeight: 400,
                 ),
                 decoration: BoxDecoration(
                   color: widget.chatConversation!.isGroupConversation!
