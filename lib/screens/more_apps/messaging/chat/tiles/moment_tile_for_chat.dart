@@ -211,19 +211,21 @@ class _MomentTileForChatState extends State<MomentTileForChat> {
                                                   ),
                                                 ),
                                                 SizedBox(width: 10),
-                                                Text(
-                                                  messageDecoderWithEmoji(
-                                                          momentForChatModel
-                                                              .authorUsername) ??
-                                                      "",
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: white,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                  maxLines: 2,
-                                                  softWrap: true,
-                                                  overflow: TextOverflow.clip,
+                                                Expanded(
+                                                  child: Text(
+                                                    messageDecoderWithEmoji(
+                                                            momentForChatModel
+                                                                .authorUsername) ??
+                                                        "",
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: white,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                    maxLines: 2,
+                                                    softWrap: true,
+                                                    overflow: TextOverflow.clip,
+                                                  ),
                                                 ),
                                               ],
                                             ),
