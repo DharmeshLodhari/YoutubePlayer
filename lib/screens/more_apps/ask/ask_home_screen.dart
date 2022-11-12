@@ -1,23 +1,17 @@
-import 'package:connectivity/connectivity.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-import '../../../locale/app_localization.dart';
-import '../../../utils/colors.dart';
 import '../../../utils/navigation_util.dart';
+import '../../../utils/slydo_app_icon_icons.dart';
+import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import 'add_topic_screen.dart';
-import 'ask_auth.dart';
-import 'ask_by_category_screen.dart';
-import 'ask_detail_screen.dart';
 import 'ask_settings_screen.dart';
 import 'ask_viewmodel.dart';
 import 'components/ask_category_pick.dart';
-import 'components/ask_options.dart';
-import 'components/ask_posts_view.dart';
 import 'components/category_chip.dart';
-import 'models/Topics/YarnTopic.dart';
+import 'components/myfeed.dart';
+import 'components/question_view.dart';
+import 'components/topics_view.dart';
 import 'models/ask_categories_model.dart';
 
 class AskHomeScreen extends StatefulWidget {
@@ -34,15 +28,6 @@ class AskHomeScreen extends StatefulWidget {
 class _AskHomeScreenState extends State<AskHomeScreen> {
   late PageController _pageViewCtrl;
   int? currentAskTapOnHome = 0;
-
-  bool isLoading = false;
-  String next = "", previous = "";
-  List<YarnTopic> yarnTopicList = [];
-  int count = 0;
-  bool noList = false;
-  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
-  RefreshController _postRefreshController1 = RefreshController(initialRefresh: false);
-  RefreshController _postRefreshController2 = RefreshController(initialRefresh: false);
 
   List<Color> categoryColors = [
     Color(0xFFF07097),
@@ -62,59 +47,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
 
   @override
   void initState() {
-    //Future.microtask(() => context.read<AskViewModel>().initialiseVM());
-    getYarnTopic("topic", true);
+    // Future.microtask(() => context.read<AskViewModel>().init());
     _pageViewCtrl = PageController(initialPage: 0);
     super.initState();
-  }
-
-  void getYarnTopic(String type, bool isType) async {
-    if (!isLoading) {
-      if (next != null && !isLoading) {
-        isLoading = true;
-        if (mounted) setState(() {});
-
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType);
-
-        if (result == null) {
-          noList = true;
-
-          isLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
-        var tempList = result['results'];
-        yarnTopicList = [];
-        if (mounted) {
-          setState(() {
-            noList = false;
-            isLoading = false;
-            yarnTopicList.addAll(tempList);
-          });
-        }
-        debugPrint("YARN TOPICS:- $yarnTopicList");
-      }
-      if (yarnTopicList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noList = true;
-          });
-        }
-      }
-      // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //     content:
-      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //     duration: Duration(milliseconds: 500),
-      //   ));
-      // }
-    }
   }
 
   @override
@@ -197,13 +132,21 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     );
   }
 
-  Widget _buildIconButton({GestureTapCallback? onTap, IconData? icon, Color? iconColor}) {
+  Widget _buildIconButton({GestureTapCallback? onTap, IconData? icon, Color? iconColor, double? iconSize}) {
     return InkWell(
       onTap: onTap,
-      child: Icon(
-        icon,
-        color: iconColor,
-        size: 26,
+      child: Container(
+        height: 34,
+        width: 34,
+        decoration: BoxDecoration(
+          color: Color(0xFFFBFBFF),
+          borderRadius: BorderRadius.circular(3)
+        ),
+        child: Icon(
+          icon,
+          color: iconColor,
+          size: iconSize ?? 26,
+        ),
       ),
     );
   }
@@ -224,10 +167,21 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
               screen: AskSettingsScreen(),
             );
           },
-          icon: Icons.settings,
-          iconColor: blackFont
+          icon: SlydoAppIconNew.notification,
+          iconColor: blackFont,
+          iconSize: 22,
         ),
         SizedBox(width: 17),
+        _buildIconButton(
+            onTap: () {
+              NavigationUtil.push(
+                context,
+                screen: AskSettingsScreen(),
+              );
+            },
+            icon: Icons.settings,
+            iconColor: blackFont
+        ),
       ],
     );
   }
@@ -268,9 +222,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                 child: CategoryChip(
                   onTap: () {},
                   title: widget.askCategories![i].name,
-                  categoryColor: i <= categoryColors.length-1 ? categoryColors[i].withOpacity(0.1) : categoryColors[0].withOpacity(0.1),
+                  categoryColor: widget.askCategories![i].color!.withOpacity(0.1),
                   selectedCategoryBorderColor: widget.selectedCategories!.contains(widget.askCategories![i]) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
-                  selectedCategoryTextColor: i <= categoryColors.length-1 ? categoryColors[i] : categoryColors[0],
+                  selectedCategoryTextColor: widget.askCategories![i].color!,
                 ),
               );
             },
@@ -288,8 +242,6 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
             onPageTap: () {
               updateCurrentAskTapOnHome(i: 0);
               _pageViewCtrl.jumpToPage(0);
-              yarnTopicList = [];
-              getYarnTopic("topic", true);
             },
             pageNum: 0,
             title: 'Yarns',
@@ -299,8 +251,6 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
             onPageTap: () {
              updateCurrentAskTapOnHome(i: 1);
               _pageViewCtrl.jumpToPage(1);
-             yarnTopicList = [];
-             getYarnTopic("question", true);
             },
             pageNum: 1,
             title: 'Questions',
@@ -310,8 +260,6 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
             onPageTap: () {
               updateCurrentAskTapOnHome(i: 2);
               _pageViewCtrl.jumpToPage(2);
-              yarnTopicList = [];
-              getYarnTopic("my-topics", false);
             },
             pageNum: 2,
             title: 'My Feeds',
@@ -329,9 +277,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         },
         controller: _pageViewCtrl,
         children: [
-          askListView(yarnTopic: yarnTopicList),
-          askListView(yarnTopic: yarnTopicList),
-          askListView(yarnTopic: yarnTopicList)
+          TopicView(),
+          QuestionView(),
+          MyFeedView(),
         ],
       ),
     );
@@ -366,115 +314,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     );
   }
 
-  Widget askListView({required List<YarnTopic> yarnTopic}) {
-    return Column(
-      children: [
-        Expanded(
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: currentAskTapOnHome == 0 ? _postRefreshController : currentAskTapOnHome == 1 ? _postRefreshController1 : _postRefreshController2,
-            onRefresh: _onPostRefresh,
-            child: askLists(yarnTopic: yarnTopic),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget askLists({required List<YarnTopic> yarnTopic}) {
-    return ListView.builder(
-      physics: ClampingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
-      itemCount: yarnTopic.length,
-      itemBuilder: (BuildContext context, int index) {
-        return InkWell(
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: AskDetailScreen(),
-            );
-          },
-          child: AskPosts(
-            showTag: true,
-            onOptionsAction: () {
-              showModalBottomSheet<void>(
-                backgroundColor: Colors.transparent,
-                context: context,
-                builder: (BuildContext context) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    color: Colors.white,
-                    margin: EdgeInsets.zero,
-                    child: AskOptions(),
-                  );
-                },
-              );
-            },
-            isImages: yarnTopic[index].image != null ? true : false,
-            images: yarnTopic[index].image != null ? yarnTopic[index].image : [],
-            title: yarnTopic[index].title,
-            body: yarnTopic[index].body,
-            authorName: yarnTopic[index].authorName,
-            authorAvatar: yarnTopic[index].authorAvatar,
-            tags: yarnTopic[index].tags != null ? yarnTopic[index].tags : [],
-          ),
-        );
-      },
-    );
-  }
-
   void updateCurrentAskTapOnHome({int? i}) {
     setState(() {
       currentAskTapOnHome = i;
-    });
-  }
-
-  void _onPostRefresh() async {
-    Connectivity().checkConnectivity().then((value) {
-      var connectionResult = value;
-      if (connectionResult == ConnectivityResult.wifi ||
-          connectionResult == ConnectivityResult.mobile) {
-        count = 0;
-        next = "";
-        previous = "";
-        yarnTopicList = [];
-        if (mounted) setState(() {});
-        String? type;
-        bool isType = false;
-        if (currentAskTapOnHome == 0){
-          type = "topic";
-          isType = true;
-        } else if (currentAskTapOnHome == 1) {
-          type = "question";
-          isType = true;
-        } else if (currentAskTapOnHome == 2) {
-          type = "my-topics";
-          isType = false;
-        }
-        getYarnTopic(type!, isType);
-       setState(() {
-         _postRefreshController.refreshCompleted();
-         _postRefreshController1.refreshCompleted();
-         _postRefreshController2.refreshCompleted();
-       });
-      } else {
-        showToast(
-            message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
-        setState(() {
-          _postRefreshController.refreshCompleted();
-          _postRefreshController1.refreshCompleted();
-          _postRefreshController2.refreshCompleted();
-        });
-      }
     });
   }
 }

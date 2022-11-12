@@ -22,6 +22,7 @@ class SlydoAppIconNew {
   static const String? _kFontPkg = null;
 
   static const IconData vector_1 = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData notification = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData super_store = IconData(0xe810, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData home = IconData(0xe812, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData explore = IconData(0xe813, fontFamily: _kFontFam, fontPackage: _kFontPkg);

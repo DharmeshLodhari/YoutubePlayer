@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -23,8 +25,8 @@ class _AskStartScreenState extends State<AskStartScreen> {
   String? categoriesPrevious = "";
   bool noCategoriesList = false;
   int? categoryCount = 0;
-  List<AskCategories> askCategoriesList = [];
-  List<AskCategories> selectedAskCategoriesList = [];
+  // List<AskCategories> askCategoriesList = [];
+  // List<AskCategories> selectedAskCategoriesList = [];
   final GlobalKey<ScaffoldMessengerState> _askCategoriesScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
 
   List<Color> categoryColors = [
@@ -75,14 +77,13 @@ class _AskStartScreenState extends State<AskStartScreen> {
         categoriesPrevious = result['previous'];
         var tempList = result['results'];
         if (mounted) {
-          setState(() {
-            noCategoriesList = false;
-            isAskCategoriesLoading = false;
-            askCategoriesList.addAll(tempList);
-          });
+          noCategoriesList = false;
+          isAskCategoriesLoading = false;
+          context.read<AskViewModel>().setAskCategories(tempList);
+          //askCategoriesList.addAll(tempList);
         }
       }
-      if (askCategoriesList.isEmpty) {
+      if (Provider.of<AskViewModel>(context, listen: false).askCategories.isEmpty) {
         if (mounted) {
           setState(() {
             noCategoriesList = true;
@@ -101,54 +102,58 @@ class _AskStartScreenState extends State<AskStartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-      key: _askCategoriesScaffoldMessengerKey,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: navyBlue,
-              size: 26,
+    return Consumer<AskViewModel>(
+      builder: (context, model, child) {
+        return ScaffoldMessenger(
+          key: _askCategoriesScaffoldMessengerKey,
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.keyboard_arrow_left,
+                  color: navyBlue,
+                  size: 26,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            body: ListView(
+              padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
+              children: [
+                SizedBox(
+                  height: 15,
+                ),
+                _buildTitleAndDescription(
+                    title: 'What topic are you interested in?',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                _buildTitleAndDescription(
+                    title: 'Select 3 or more categories to continue. We’ll use this to recommend topics you may like.',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                _buildCategoryList(model),
+                SizedBox(
+                  height: 65,
+                ),
+                _buildSaveButton(model),
+              ],
+            ),
           ),
-        ),
-        body: ListView(
-          padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
-          children: [
-            SizedBox(
-              height: 15,
-            ),
-            _buildTitleAndDescription(
-                title: 'What topic are you interested in?',
-                fontSize: 18,
-                fontWeight: FontWeight.w700
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            _buildTitleAndDescription(
-                title: 'Select 3 or more categories to continue. We’ll use this to recommend topics you may like.',
-                fontSize: 14,
-                fontWeight: FontWeight.w400
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            _buildCategoryList(),
-            SizedBox(
-              height: 65,
-            ),
-            _buildSaveButton(),
-          ],
-        ),
-      ),
+        );
+      }
     );
   }
 
@@ -159,28 +164,31 @@ class _AskStartScreenState extends State<AskStartScreen> {
     );
   }
 
-  Widget _buildCategoryList() {
+  Widget _buildCategoryList(AskViewModel model) {
     if (!isAskCategoriesLoading) {
       return Wrap(
         runSpacing: 30,
         spacing: 15,
-        children: askCategoriesList
+        children: model.askCategories
             .map(
-                (e) => CategoryChip(
-              onTap: () {
-                onCategorySelected(e);
-              },
-              title: e.name!,
-              selectedCategoryBorderColor: selectedAskCategoriesList.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
-              categoryColor: askCategoriesList.indexOf(e) <= categoryColors.length-1 ? categoryColors[askCategoriesList.indexOf(e)].withOpacity(0.1) : categoryColors[0].withOpacity(0.1),
-              selectedCategoryTextColor: askCategoriesList.indexOf(e) <= categoryColors.length-1 ? categoryColors[askCategoriesList.indexOf(e)] : categoryColors[0],
-            )).toList(),
+                (e) {
+                  // int random = Random().nextInt(model.categoryColors.length-1);
+                  return CategoryChip(
+                    onTap: () {
+                      model.onSelectedAskCategories(e);
+                    },
+                    title: e.name!,
+                    selectedCategoryBorderColor: model.selectedAskCategories.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
+                    categoryColor: e.color!.withOpacity(0.1),
+                    selectedCategoryTextColor: e.color!,
+                  );
+                }).toList(),
       );
     }
     return Center(child: CircularProgressIndicator(),);
   }
 
-  Widget _buildSaveButton() {
+  Widget _buildSaveButton(AskViewModel model) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -195,28 +203,16 @@ class _AskStartScreenState extends State<AskStartScreen> {
             textColor: Colors.white,
             backgroundColor: navyBlue,
             text:
-            "${selectedAskCategoriesList.length} out of 3 selected",
+            "${model.selectedAskCategories.length} out of 3 selected",
             onPressed: () async {
               NavigationUtil.push(
                 context,
-                screen: AskHomeScreen(askCategories: askCategoriesList, selectedCategories: selectedAskCategoriesList,),
+                screen: AskHomeScreen(askCategories: model.askCategories, selectedCategories: model.selectedAskCategories,),
               );
             },
           ),
         ),
       ],
     );
-  }
-
-  void onCategorySelected(AskCategories category) {
-    if (selectedAskCategoriesList.contains(category)) {
-      selectedAskCategoriesList.remove(category);
-      setState(() {});
-    } else {
-      if (selectedAskCategoriesList.length < 3) {
-        selectedAskCategoriesList.add(category);
-        setState(() {});
-      }
-    }
   }
 }
