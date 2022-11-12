@@ -553,12 +553,12 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
 
   Widget getUserTile({required Participant user, int? index}) {
     CustomerProfile customerProfile = CustomerProfile(
-      fullName: user.fullName,
-      avatar: user.avatar,
-      userName: user.userName,
-      type: user.type,
-      isVerified: user.isVerified,
-    );
+        fullName: user.fullName,
+        avatar: user.avatar,
+        userName: user.userName,
+        type: user.type,
+        isVerified: user.isVerified,
+        nickName: user.nickName);
 
     return _getSlideLists(context, customerProfile, index);
   }
