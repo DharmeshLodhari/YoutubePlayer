@@ -5,6 +5,8 @@ import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import 'add_topic_screen.dart';
+import 'ask_auth.dart';
+import 'ask_search_screen.dart';
 import 'ask_settings_screen.dart';
 import 'ask_viewmodel.dart';
 import 'components/ask_category_pick.dart';
@@ -28,6 +30,11 @@ class AskHomeScreen extends StatefulWidget {
 class _AskHomeScreenState extends State<AskHomeScreen> {
   late PageController _pageViewCtrl;
   int? currentAskTapOnHome = 0;
+  bool isAskCategoriesLoading = false;
+  String? categoriesNext = "";
+  String? categoriesPrevious = "";
+  bool noCategoriesList = false;
+  int? categoryCount = 0;
 
   List<Color> categoryColors = [
     Color(0xFFF07097),
@@ -52,6 +59,53 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     super.initState();
   }
 
+  void getAskCategoriesList() async {
+    if (!isAskCategoriesLoading) {
+      if (categoriesNext != null && !isAskCategoriesLoading) {
+        isAskCategoriesLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await AskAuth()
+            .getAllCategories(categoriesNext, categoriesPrevious!);
+
+        if (result == null) {
+          noCategoriesList = true;
+
+          isAskCategoriesLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        categoryCount = result['count'];
+        categoriesNext = result['next'];
+        categoriesPrevious = result['previous'];
+        var tempList = result['results'];
+        if (mounted) {
+          noCategoriesList = false;
+          isAskCategoriesLoading = false;
+          context.read<AskViewModel>().setAskCategories(tempList);
+          //askCategoriesList.addAll(tempList);
+        }
+      }
+      if (Provider.of<AskViewModel>(context, listen: false).askCategories.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noCategoriesList = true;
+          });
+        }
+      }
+      // else if (categoriesNext == null && askCategoriesList.length > 6) {
+      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      //     content:
+      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+      //     duration: Duration(milliseconds: 500),
+      //   ));
+      // }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AskViewModel>(builder: (context, model, child) {
@@ -59,7 +113,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         backgroundColor: Colors.white,
         floatingActionButton: _buildFloatingActionButton(),
         appBar: _buildAppBar() as PreferredSizeWidget,
-        body: _buildBody(),
+        body: _buildBody(model),
       );
     });
   }
@@ -122,13 +176,15 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         _buildAppBarActions()
       ],
       elevation: 0,
-      leading: _buildIconButton(
-        onTap: () {
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+        ),
+        onPressed: () {
           Navigator.pop(context);
         },
-        icon: Icons.keyboard_arrow_left,
-        iconColor: navyBlue,
-      ),
+        color: navyBlue,
+      )
     );
   }
 
@@ -155,7 +211,13 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     return Row(
       children: [
         _buildIconButton(
-          onTap: () {},
+          onTap: () {
+            print("ONTAP");
+            NavigationUtil.push(
+              context,
+              screen: SearchScreen(),
+            );
+          },
           icon: Icons.search_rounded,
           iconColor: blackFont,
         ),
@@ -186,22 +248,22 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(AskViewModel model) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
-          _buildCategoryAndTabs(),
+          _buildCategoryAndTabs(model),
           _buildPageView()
         ],
       ),
     );
   }
 
-  Widget _buildCategoryAndTabs() {
+  Widget _buildCategoryAndTabs(AskViewModel model) {
     return Column(
       children: [
-        _buildCategoryChip(),
+        _buildCategoryChip(model),
         SizedBox(height: 17),
         _buildPageViewTabs(),
         SizedBox(height: 7),
@@ -209,22 +271,22 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     );
   }
 
-  Widget _buildCategoryChip() {
+  Widget _buildCategoryChip(AskViewModel model) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
           ...List.generate(
-            widget.askCategories!.length,
+            model.askCategories.length,
                 (i) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CategoryChip(
                   onTap: () {},
-                  title: widget.askCategories![i].name,
-                  categoryColor: widget.askCategories![i].color!.withOpacity(0.1),
-                  selectedCategoryBorderColor: widget.selectedCategories!.contains(widget.askCategories![i]) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
-                  selectedCategoryTextColor: widget.askCategories![i].color!,
+                  title: model.askCategories[i].name,
+                  categoryColor: model.askCategories[i].color!.withOpacity(0.1),
+                  selectedCategoryBorderColor: Colors.blueAccent.withOpacity(0.1),
+                  selectedCategoryTextColor: model.askCategories[i].color!,
                 ),
               );
             },

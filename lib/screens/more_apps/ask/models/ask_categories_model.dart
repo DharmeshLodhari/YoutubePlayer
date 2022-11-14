@@ -17,3 +17,45 @@ class AskCategories {
     "name": name,
   };
 }
+
+class UsersCategories {
+  String? id;
+  String? owner;
+  List<AskCategories>? categories;
+
+  UsersCategories({this.id, this.owner, this.categories});
+
+  UsersCategories.fromJson(object) {
+    this.id = object["id"];
+    this.owner = object["owner"];
+    if (object["categories"] != null) {
+      categories = [];
+      object["categories"].forEach((v) {
+        categories!.add(AskCategories.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "owner": owner,
+    "categories": categories!.map((v) => v.toJson()).toList(),
+  };
+}
+
+class UserCategoriesStructure {
+  String? userId;
+  String? userSelectedCategory;
+
+  UserCategoriesStructure({this.userId, this.userSelectedCategory});
+
+  UserCategoriesStructure.fromJson(object) {
+    this.userId = object['user_id'];
+    this.userSelectedCategory = object['categories'];
+  }
+
+  Map<String, dynamic> toJson() => {
+    "user_id": userId,
+    "categories": userSelectedCategory,
+  };
+}

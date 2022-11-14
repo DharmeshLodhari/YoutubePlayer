@@ -9,8 +9,8 @@ class AskViewModel extends ChangeNotifier {
   String? newlySelectedCategory = '';
   List<AskCategories> _askCategories = [];
   List<AskCategories> get askCategories => _askCategories;
-  List<AskCategories> _selectedAskCategories = [];
-  List<AskCategories> get selectedAskCategories => _selectedAskCategories;
+  List<String> _selectedAskCategories = [];
+  List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length-1);
 
   void setAskCategories(List<AskCategories> cat) {
@@ -23,16 +23,14 @@ class AskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onSelectedAskCategories(AskCategories c) {
+  void onSelectedAskCategories(String c) {
     print("SELECTED CATEGORIES:- $c");
     if (_selectedAskCategories.contains(c)) {
       _selectedAskCategories.remove(c);
       notifyListeners();
     } else {
-      if (_selectedAskCategories.length < 3) {
-        _selectedAskCategories.add(c);
-        notifyListeners();
-      }
+      _selectedAskCategories.add(c);
+      notifyListeners();
     }
   }
 

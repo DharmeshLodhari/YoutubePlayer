@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
@@ -61,6 +64,7 @@ class _UserDashboardState extends State<UserDashboard> {
   bool isBalanceHidden = true;
   late AppLocalization appLocalization;
   AppConfigurationModel? appConfigurationModel;
+  DatabaseHelper _db = DatabaseHelper();
 
   @override
   void initState() {
@@ -69,6 +73,12 @@ class _UserDashboardState extends State<UserDashboard> {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     super.initState();
+  }
+
+  Future<UsersCategories> getUserCategories() async {
+    Map<String, dynamic>? result = await AskAuth().getUsersCategories();
+    UsersCategories usersCategory = result!['results'];
+    return usersCategory;
   }
 
   @override

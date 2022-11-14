@@ -17,6 +17,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_migration/sqflite_migration.dart';
 
+import '../screens/more_apps/ask/models/ask_categories_model.dart';
 import '../screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 
 class DatabaseHelper {
@@ -1021,6 +1022,37 @@ class DatabaseHelper {
         await dbClient.query(FEE_STRUCTURE);
     if (feeStructure.length > 0)
       return FeeStructure.fromJson(feeStructure.first);
+    return null;
+  }
+
+  /// YARN USER CATEGORIES
+
+  // save user's fee structure to the db
+  Future<int> saveUserSelectedYarnCategories(UserCategoriesStructure userCategoriesStructure) async {
+    var dbClient = await db;
+    await deleteUserSelectedYarnCategories();
+    int res = await dbClient.insert(YARN_CATEGORY, userCategoriesStructure.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    debugPrint("DATABASE:- $FEE_STRUCTURE saved to db");
+    return res;
+  }
+
+  // Delete the fee structure from the db
+  Future<int> deleteUserSelectedYarnCategories() async {
+    var dbClient = await db;
+    int res = await dbClient.delete(YARN_CATEGORY);
+    debugPrint("DATABASE:- $YARN_CATEGORY deleted from db");
+    return res;
+  }
+
+  // Get current user's fee structure from db
+  Future<UserCategoriesStructure?> getUserSelectedYarnCategories() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> userCategoriesStructure =
+    await dbClient.query(YARN_CATEGORY);
+    if (userCategoriesStructure.length > 0)
+      return UserCategoriesStructure.fromJson(userCategoriesStructure.first);
     return null;
   }
 

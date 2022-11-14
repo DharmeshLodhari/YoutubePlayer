@@ -1,10 +1,9 @@
-import 'dart:math';
-
+import 'dart:convert';
+import 'package:Slydo/data/database_helper.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-
-import '../../../locale/app_localization.dart';
-import '../../../utils/colors.dart';
+import '../../../data/state_notifier.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../widget/curved_btn.dart';
 import 'ask_auth.dart';
@@ -28,6 +27,8 @@ class _AskStartScreenState extends State<AskStartScreen> {
   // List<AskCategories> askCategoriesList = [];
   // List<AskCategories> selectedAskCategoriesList = [];
   final GlobalKey<ScaffoldMessengerState> _askCategoriesScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  late UserBloc userBloc;
+  DatabaseHelper _db = DatabaseHelper();
 
   List<Color> categoryColors = [
     Color(0xFFF07097),
@@ -60,7 +61,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await AskAuth()
-            .getAllCategories(categoriesNext, categoriesPrevious!, otherDeals: true);
+            .getAllCategories(categoriesNext, categoriesPrevious!);
 
         if (result == null) {
           noCategoriesList = true;
@@ -100,8 +101,16 @@ class _AskStartScreenState extends State<AskStartScreen> {
     }
   }
 
+  Future<void> saveUsersCategories(String body) async {
+    Map<String, dynamic>? result = await AskAuth().saveUsersCategories(body);
+    UsersCategories usersCategories = result!['results'] as UsersCategories;
+    UserCategoriesStructure userCategoriesStructure = UserCategoriesStructure(userId: userBloc.user.uuid, userSelectedCategory: jsonEncode(usersCategories.categories));
+    await _db.saveUserSelectedYarnCategories(userCategoriesStructure);
+  }
+
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Consumer<AskViewModel>(
       builder: (context, model, child) {
         return ScaffoldMessenger(
@@ -175,10 +184,10 @@ class _AskStartScreenState extends State<AskStartScreen> {
                   // int random = Random().nextInt(model.categoryColors.length-1);
                   return CategoryChip(
                     onTap: () {
-                      model.onSelectedAskCategories(e);
+                      model.onSelectedAskCategories(e.id!);
                     },
                     title: e.name!,
-                    selectedCategoryBorderColor: model.selectedAskCategories.contains(e) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
+                    selectedCategoryBorderColor: model.selectedAskCategories.contains(e.id) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
                     categoryColor: e.color!.withOpacity(0.1),
                     selectedCategoryTextColor: e.color!,
                   );
@@ -205,10 +214,20 @@ class _AskStartScreenState extends State<AskStartScreen> {
             text:
             "${model.selectedAskCategories.length} out of 3 selected",
             onPressed: () async {
-              NavigationUtil.push(
-                context,
-                screen: AskHomeScreen(askCategories: model.askCategories, selectedCategories: model.selectedAskCategories,),
-              );
+              if (model.selectedAskCategories.isEmpty) {
+                showToast(message: "Please select minimum 3 categories");
+              } else {
+                if (model.selectedAskCategories.length <= 3) {
+                  showToast(message: "Please select more then 3 categories");
+                } else {
+                  // await saveUsersCategories(jsonEncode({"categories": model.selectedAskCategories}));
+                  NavigationUtil.push(
+                    context,
+                    screen: AskHomeScreen(askCategories: model.askCategories),
+                  );
+                }
+              }
+
             },
           ),
         ),

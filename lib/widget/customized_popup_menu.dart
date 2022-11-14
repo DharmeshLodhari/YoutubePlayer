@@ -10,6 +10,7 @@ class CustomizedPopUpMenu {
   late Size buttonSize;
   late Offset buttonPosition;
   bool isMenuOpen = false;
+  bool isTitleShow = false;
   BuildContext context;
   List children = [];
   bool hasIcon;
@@ -110,19 +111,20 @@ class CustomizedPopUpMenu {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 6),
-                                child: ListTile(
-                                  dense: true,
-                                  title: Text(
-                                    "Filter",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: blackFont),
+                              if (!isTitleShow)
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 6),
+                                  child: ListTile(
+                                    dense: true,
+                                    title: Text(
+                                      "Filter",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: blackFont),
+                                    ),
                                   ),
                                 ),
-                              ),
                               childrenList(),
                             ],
                           ),

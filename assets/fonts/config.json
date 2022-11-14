@@ -145,6 +145,20 @@
       "search": [
         "vector-(4)"
       ]
+    },
+    {
+      "uid": "b18949098ddaefdb1d2b6429b7094144",
+      "css": "filter",
+      "code": 59402,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M138.5 292.3H1061.5V384.6H138.5V292.3ZM346.2 584.6H853.8V676.9H346.2V584.6ZM484.6 876.9H715.4V969.2H484.6V876.9ZM0 0H1200V92.3H0V0Z",
+        "width": 1200
+      },
+      "search": [
+        "vector-(5)"
+      ]
     }
   ]
 }
