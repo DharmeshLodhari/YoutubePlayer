@@ -38,7 +38,7 @@ class DatabaseHelper {
 
   Future<Database> openDB() async {
     final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'Initial_Slydo.db');
+    final path = join(databasesPath, 'Slydo_DB.db');
 
     return await openDatabaseWithMigration(path, config);
   }

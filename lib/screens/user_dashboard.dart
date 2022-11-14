@@ -589,6 +589,13 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: "Yarn",
             onTap: () {
+              //TODO: GET USER CATEGORY FROM DB
+              //TODO: if CATEGORY is EMPTY OR NULL
+              //TODO: MAKE API CALL AND GET USER CATEGORY AND STORE IN DB IF IT IS NULL OR EMPTY
+              //TODO: NAVIGATE TO ONBORDING
+
+              //TODO: IF CATEROY IS THREE OR MORE THEN REDIRECT USER TO HOME PAGE OF YARN
+
               // NavigationUtil.push(
               //   context,
               //   screen: AskStartScreen(),

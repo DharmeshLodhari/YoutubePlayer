@@ -11,6 +11,7 @@ const String NOTIFICATION_TABLE = "Notification";
 const String VIRTUAL_ACCOUNT_TABLE = "VirtualAccount";
 const String APP_SETTING_TABLE = "GeneralSettings";
 const String FEE_STRUCTURE = "FeeStructure";
+const String YARN_CATEGORY = "YarnCategory";
 const String DOWNLOAD_FILE_IN_CHAT_TABLE = "DownloadFileInChatTable";
 
 final initialDBSchema = [
@@ -192,6 +193,14 @@ final initialDBSchema = [
           "tax_rate" INTEGER,
           "country" TEXT,
           "currency" TEXT
+        );
+    '''
+
+      // Create the Fee Structure table
+      '''CREATE TABLE $YARN_CATEGORY (     
+          "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+          "user_id" INTEGER,
+          "categories" TEXT,
         );
     '''
 ];
