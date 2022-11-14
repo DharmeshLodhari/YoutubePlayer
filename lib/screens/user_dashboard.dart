@@ -587,7 +587,7 @@ class _UserDashboardState extends State<UserDashboard> {
               Icons.question_answer_rounded,
               size: 22,
             ),
-            title: "YARN",
+            title: "Yarn",
             onTap: () {
               // NavigationUtil.push(
               //   context,
