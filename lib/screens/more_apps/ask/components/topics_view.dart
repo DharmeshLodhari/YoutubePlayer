@@ -6,6 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../../../../widget/noItemInList.dart';
 import '../ask_auth.dart';
 import '../ask_detail_screen.dart';
 import '../models/Topics/YarnTopic.dart';
@@ -13,8 +14,8 @@ import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
 class TopicView extends StatefulWidget {
-  const TopicView({Key? key}) : super(key: key);
-
+  String? categoryId;
+  TopicView({Key? key, this.categoryId}) : super(key: key);
   @override
   State<TopicView> createState() => _TopicViewState();
 }
@@ -41,7 +42,7 @@ class _TopicViewState extends State<TopicView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: widget.categoryId);
 
         if (result == null) {
           noList = true;
@@ -130,16 +131,15 @@ class _TopicViewState extends State<TopicView> {
                       );
                     },
                     isImages: yarnTopicList[index].image != null ? true : false,
-                    images: yarnTopicList[index].image != null ? yarnTopicList[index].image : [],
-                    title: yarnTopicList[index].title,
-                    body: yarnTopicList[index].body,
-                    authorName: yarnTopicList[index].authorName,
-                    authorAvatar: yarnTopicList[index].authorAvatar,
-                    tags: yarnTopicList[index].tags != null ? yarnTopicList[index].tags : [],
+                    yarnTopic: yarnTopicList[index],
                   ),
                 );
               },
-            ) : Center(child: Text("No Post"),) : Shimmer.fromColors(
+            ) : Expanded(
+              child: NoItemInList(
+                msg: AppLocalization.of(context)!.noResultFound,
+              ),
+            ) : Shimmer.fromColors(
               baseColor: Colors.white,
               highlightColor: greyBorderColor,
               child: ListView.builder(

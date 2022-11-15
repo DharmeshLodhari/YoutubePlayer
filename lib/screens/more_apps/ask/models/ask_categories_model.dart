@@ -4,8 +4,9 @@ class AskCategories {
   String? id;
   String? name;
   Color? color;
+  String? image;
 
-  AskCategories({this.id, this.name, this.color});
+  AskCategories({this.id, this.name, this.color, this.image});
 
   AskCategories.fromJson(object) {
     this.id = object['id'];

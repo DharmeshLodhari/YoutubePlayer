@@ -1,14 +1,25 @@
-import 'package:Slydo/utils/colors.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
+import '../../../locale/app_localization.dart';
+import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
+import '../../../widget/CustomBoxShadow.dart';
 import '../../../widget/curved_btn.dart';
+import '../../../widget/customized_dropdown_field.dart';
+import '../../../widget/customized_textform_field.dart';
+import '../../../widget/image_crop.dart';
 import 'ask_viewmodel.dart';
 
 class AddTopicScreen extends StatefulWidget {
+  List<AskCategories>? askCategories;
+  bool? isYarn = false;
+  AddTopicScreen({this.askCategories, this.isYarn});
+
   @override
   State<AddTopicScreen> createState() => _AddTopicScreenState();
 }
@@ -18,10 +29,18 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   final topicTextController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
+  ScrollController _scrollController = ScrollController();
+  List<PickedFile> selectedImages = [];
+  int imageCount = 5;
+  AskCategories? selectedAskCategory;
+  AskCategories? pressedAskCategory;
+  List<AskCategories>? askCategoriesCopy;
+  String askCategory = "";
 
   @override
   void initState() {
     textFieldTagFocusNode = FocusNode();
+    askCategoriesCopy = widget.askCategories;
     super.initState();
   }
 
@@ -29,32 +48,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Row(
-          children: [
-            Text(
-              'Add Topic',
-              style: TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.w700,
-                color: blackFont,
-              ),
-            ),
-          ],
-        ),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.keyboard_arrow_left,
-            color: navyBlue,
-            size: 26,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: Consumer<AskViewModel>(builder: (context, model, child) {
         return SingleChildScrollView(
           child: Container(
@@ -62,49 +56,15 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             child: Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
+
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Topic/Questions',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      TopicTextField(
-                        controller: topicTextController,
-                      ),
-                    ],
-                  ),
+                  addImages(),
+                  SizedBox(height: 20),
+                  _buildYarnField(),
                   SizedBox(
                     height: 20,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Text',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: blackFont,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      TopicTextField(
-                        height: 140,
-                        controller: topicTitleController,
-                      ),
-                    ],
-                  ),
+                  _buildTextFiled(),
                   SizedBox(
                     height: 20,
                   ),
@@ -132,74 +92,13 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                       },
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(11),
-                        border: Border.all(
-                          color: navyBlueLight.withOpacity(0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            'Import Image',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: blackFont,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: navyBlue.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 18, vertical: 9),
-                              child: Text(
-                                'Choose file',
-                                style: TextStyle(
-                                  color: navyBlue,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'Image should not be more than 2mb',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: blackFont.withOpacity(0.3),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
                   SizedBox(
                     height: 10,
                   ),
-                  Expanded(
-                      child: SizedBox(
+                  getCategoryField(),
+                  SizedBox(
                     height: 10,
-                  )),
+                  ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -230,6 +129,345 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       }),
     );
   }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: Text(
+        'Add Topic',
+        style: TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.w700,
+          color: blackFont,
+        ),
+      ),
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 26,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Widget addImages() {
+    return Container(
+      height: 100,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: selectedImages.length + 1,
+        itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
+          child: index != selectedImages.length
+              ? showImage(index)
+              : selectedImages.length != imageCount
+              ? addImageButton()
+              : null,
+        ),
+      ),
+    );
+  }
+
+  Widget addImageButton() {
+    return CustomBoxShadow(
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shadowColor: boxShadowTwo,
+        margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+        child: Container(
+          width: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  SlydoAppIcon.add_image,
+                  color: darkGrey,
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  AppLocalization.of(context)!.addImage,
+                  style: TextStyle(color: darkGrey, fontSize: 14),
+                ),
+              ],
+            ),
+            onTap: () {
+              pickImage();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget showImage(int index) {
+    return Container(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: dividerColor,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: FileImage(
+                      File(selectedImages[index].path),
+                    ),
+                    fit: BoxFit.fill),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  selectedImages.removeAt(index);
+                });
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildYarnField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Yarn',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: blackFont,
+          ),
+        ),
+        SizedBox(
+          height: 7,
+        ),
+        TopicTextField(
+          height: 140,
+          controller: topicTextController,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextFiled() {
+    if (!widget.isYarn!) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Text',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: blackFont,
+            ),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          TopicTextField(
+            height: 140,
+            controller: topicTitleController,
+          ),
+        ],
+      );
+    }
+    return SizedBox();
+  }
+
+  Widget getCategoryField() {
+    return CustomizedDropDownField(
+      title: AppLocalization.of(context)!.category,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedAskCategory != null ? selectedAskCategory!.name! : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          categoryAndroidSheet();
+          // selectItemCategory();
+        },
+      ),
+    );
+  }
+
+  void pickImage() async {
+    final imageSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(AppLocalization.of(context)!.selectTheImageSource),
+          actions: <Widget>[
+            MaterialButton(
+              child: Text(AppLocalization.of(context)!.camera),
+              onPressed: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            MaterialButton(
+              child: Text(AppLocalization.of(context)!.gallery),
+              onPressed: () => Navigator.pop(context, ImageSource.gallery),
+            )
+          ],
+        ));
+
+    if (imageSource != null) {
+      ImagePicker().pickImage(source: imageSource).then((value) async {
+        if (value != null) {
+          /// for cropping the image
+          String? croppedImage = await ImageCrop().cropImage(value.path);
+          if (croppedImage == null) {
+            return;
+          }
+
+          selectedImages.add(PickedFile(croppedImage));
+          if (mounted) setState(() {});
+        }
+      });
+    }
+  }
+
+  void categoryAndroidSheet() {
+    widget.askCategories = askCategoriesCopy;
+    debugPrint("CATEGORIES:- ${widget.askCategories}");
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: Column(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Search category',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      widget.askCategories = askCategoriesCopy!
+                          .where((element) => element.name!
+                          .toLowerCase()
+                          .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                              () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      widget.askCategories = askCategoriesCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: widget.askCategories!.length,
+                    itemBuilder: (context, index) {
+                      AskCategories category = widget.askCategories![index];
+                      if (selectedAskCategory == category) {
+                        return Container(
+                          color: selectedListItemBackgroundBlue,
+                          child: ListTile(
+                            dense: true,
+                            title: Text(
+                              category.name!,
+                              overflow: TextOverflow.fade,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: navyBlue,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(
+                              SlydoAppIcon.checked,
+                              color: navyBlue,
+                              size: 12,
+                            ),
+                            onTap: () {
+                              pressedAskCategory = category;
+                              Navigator.pop(context);
+                              if (pressedAskCategory != null) {
+                                selectedAskCategory = pressedAskCategory;
+                                askCategory = selectedAskCategory!.name!;
+                                setState(() {});
+                              }
+                            },
+                          ),
+                        );
+                      }
+                      return ListTile(
+                        title: Text(
+                          category.name!,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          pressedAskCategory = category;
+                          Navigator.pop(context);
+                          if (pressedAskCategory != null) {
+                            selectedAskCategory = pressedAskCategory;
+                            askCategory = selectedAskCategory!.name!;
+                            setState(() {});
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
 }
 
 class TopicTextField extends StatelessWidget {

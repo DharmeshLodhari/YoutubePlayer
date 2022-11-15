@@ -1,3 +1,4 @@
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/navigation_util.dart';
@@ -35,6 +36,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
   String? categoriesPrevious = "";
   bool noCategoriesList = false;
   int? categoryCount = 0;
+  String? selectedCategoryId;
 
   List<Color> categoryColors = [
     Color(0xFFF07097),
@@ -56,6 +58,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
   void initState() {
     // Future.microtask(() => context.read<AskViewModel>().init());
     _pageViewCtrl = PageController(initialPage: 0);
+    getAskCategoriesList();
     super.initState();
   }
 
@@ -111,49 +114,71 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     return Consumer<AskViewModel>(builder: (context, model, child) {
       return Scaffold(
         backgroundColor: Colors.white,
-        floatingActionButton: _buildFloatingActionButton(),
+        floatingActionButton: _buildFloatingActionButton(model),
         appBar: _buildAppBar() as PreferredSizeWidget,
         body: _buildBody(model),
       );
     });
   }
 
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      backgroundColor: blackFont,
+  Widget _buildFloatingActionButton(AskViewModel model) {
+    return SpeedDial(
       child: Icon(
         Icons.add,
         color: Colors.white,
       ),
-      onPressed: () {
-        showModalBottomSheet<void>(
-          backgroundColor: Colors.transparent,
-          context: context,
-          builder: (BuildContext context) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-              ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: AskCategoryPick(
-                onCategoryPick: (c) {
-                  // model.updateCategoryToAskOn(c: c);
+      activeChild: Icon(
+        Icons.close,
+        color: HexColor("#3F61DB"),
+      ),
+      backgroundColor: HexColor("#3F61DB"),
+      activeBackgroundColor: HexColor("#FFFFFF"),
+      children: [
+        _buildSpeedDialChild(
+          title: "Ask Question",
+          icon: SlydoAppIconNew.question,
+          onTap: () {
+            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: false,));
+          }
+        ),
+        _buildSpeedDialChild(
+          title: "Yarn",
+          icon: SlydoAppIconNew.yarn,
+          onTap: () {
+            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: true,));
+          }
+        ),
+      ],
+    );
+  }
 
-                  NavigationUtil.pop(context);
-
-                  NavigationUtil.push(
-                    context,
-                    screen: AddTopicScreen(),
-                  );
-                },
+  SpeedDialChild _buildSpeedDialChild({required String title, required IconData icon, required VoidCallback onTap}) {
+    return SpeedDialChild(
+        onTap: onTap,
+        backgroundColor: HexColor("#3F61DB"),
+        labelBackgroundColor: HexColor("#FFFFFF"),
+        labelWidget: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Text(
+              title,
+              style: TextStyle(
+                  color: HexColor("#424242"),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600
               ),
-            );
-          },
-        );
-      },
+            ),
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: 20,
+        )
     );
   }
 
@@ -282,10 +307,17 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CategoryChip(
-                  onTap: () {},
+                  onTap: () {
+                    if (selectedCategoryId == model.askCategories[i].id) {
+                      selectedCategoryId = null;
+                    } else {
+                      selectedCategoryId =  model.askCategories[i].id;
+                    }
+                    setState(() {});
+                  },
                   title: model.askCategories[i].name,
                   categoryColor: model.askCategories[i].color!.withOpacity(0.1),
-                  selectedCategoryBorderColor: Colors.blueAccent.withOpacity(0.1),
+                  selectedCategoryBorderColor: selectedCategoryId == model.askCategories[i].id ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
                   selectedCategoryTextColor: model.askCategories[i].color!,
                 ),
               );
@@ -339,9 +371,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         },
         controller: _pageViewCtrl,
         children: [
-          TopicView(),
-          QuestionView(),
-          MyFeedView(),
+          TopicView(categoryId: selectedCategoryId,),
+          QuestionView(categoryId: selectedCategoryId,),
+          MyFeedView(categoryId: selectedCategoryId,),
         ],
       ),
     );

@@ -7,6 +7,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/ask/ask_home_screen.dart';
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
@@ -598,7 +599,28 @@ class _UserDashboardState extends State<UserDashboard> {
               size: 22,
             ),
             title: "Yarn",
-            onTap: () {
+            onTap: () async {
+              UserCategoriesStructure? userCategories = await _db.getUserSelectedYarnCategories();
+              var data = jsonDecode(userCategories!.userSelectedCategory!);
+              if(data == null && data.length != 3) {
+                UsersCategories userCategory = await getUserCategories();
+                if (userCategory.categories!.length != 3) {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskStartScreen(),
+                  );
+                } else {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskHomeScreen(),
+                  );
+                }
+              } else {
+                NavigationUtil.push(
+                  context,
+                  screen: AskHomeScreen(),
+                );
+              }
               //TODO: GET USER CATEGORY FROM DB
               //TODO: if CATEGORY is EMPTY OR NULL
               //TODO: MAKE API CALL AND GET USER CATEGORY AND STORE IN DB IF IT IS NULL OR EMPTY
@@ -610,14 +632,14 @@ class _UserDashboardState extends State<UserDashboard> {
               //   context,
               //   screen: AskStartScreen(),
               // );
-              if (appConfigurationModel?.enableAsk == true) {
-                NavigationUtil.push(
-                  context,
-                  screen: AskStartScreen(),
-                );
-              } else {
-                showToast(message: 'Feature not available at the moment');
-              }
+              // if (appConfigurationModel?.enableAsk == true) {
+              //   NavigationUtil.push(
+              //     context,
+              //     screen: AskStartScreen(),
+              //   );
+              // } else {
+              //   showToast(message: 'Feature not available at the moment');
+              // }
             },
             iconColor: HexColor("#374677"),
           ),

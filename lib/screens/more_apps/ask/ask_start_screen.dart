@@ -105,7 +105,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
     Map<String, dynamic>? result = await AskAuth().saveUsersCategories(body);
     UsersCategories usersCategories = result!['results'] as UsersCategories;
     UserCategoriesStructure userCategoriesStructure = UserCategoriesStructure(userId: userBloc.user.uuid, userSelectedCategory: jsonEncode(usersCategories.categories));
-    await _db.saveUserSelectedYarnCategories(userCategoriesStructure);
+    _db.saveUserSelectedYarnCategories(userCategoriesStructure);
   }
 
   @override
@@ -217,16 +217,21 @@ class _AskStartScreenState extends State<AskStartScreen> {
               if (model.selectedAskCategories.isEmpty) {
                 showToast(message: "Please select minimum 3 categories");
               } else {
-                if (model.selectedAskCategories.length <= 3) {
+                if (model.selectedAskCategories.length < 3) {
                   showToast(message: "Please select more then 3 categories");
                 } else {
-                  // await saveUsersCategories(jsonEncode({"categories": model.selectedAskCategories}));
+                  await saveUsersCategories(jsonEncode({"categories": model.selectedAskCategories}));
                   NavigationUtil.push(
                     context,
                     screen: AskHomeScreen(askCategories: model.askCategories),
                   );
                 }
               }
+
+              // NavigationUtil.push(
+              //   context,
+              //   screen: AskHomeScreen(askCategories: model.askCategories),
+              // );
 
             },
           ),

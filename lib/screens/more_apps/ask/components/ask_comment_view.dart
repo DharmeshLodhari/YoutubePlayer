@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
+import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -114,9 +115,7 @@ class AskCommentView extends StatelessWidget {
                       child: Column(
                         children: [
                           TopicActions(
-                            totalDislikes: totalDislikes,
-                            totalLikes: totalLikes,
-                            totalReply: totalReplies,
+                            yarnTopic: YarnTopic(),
                           ),
                         ],
                       ),

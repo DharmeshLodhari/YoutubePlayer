@@ -39,7 +39,7 @@ class DatabaseHelper {
 
   Future<Database> openDB() async {
     final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'Slydo_DB.db');
+    final path = join(databasesPath, 'Slydo_DB_1.db');
 
     return await openDatabaseWithMigration(path, config);
   }
@@ -1033,7 +1033,7 @@ class DatabaseHelper {
     await deleteUserSelectedYarnCategories();
     int res = await dbClient.insert(YARN_CATEGORY, userCategoriesStructure.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace);
-    debugPrint("DATABASE:- $FEE_STRUCTURE saved to db");
+    debugPrint("DATABASE:- $YARN_CATEGORY saved to db");
     return res;
   }
 

@@ -26,6 +26,7 @@ class AskCategoryPick extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
+      padding: EdgeInsets.all(10),
       child: Column(
         children: [
           Text(

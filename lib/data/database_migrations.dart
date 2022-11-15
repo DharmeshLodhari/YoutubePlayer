@@ -199,10 +199,12 @@ final initialDBSchema = [
       // Create the Fee Structure table
       '''CREATE TABLE $YARN_CATEGORY (     
           "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-          "user_id" INTEGER,
-          "categories" TEXT,
+          "user_id" TEXT,
+          "categories" TEXT
         );
     '''
+
+
 ];
 
 ///Add List Of Migration query's when app is in production

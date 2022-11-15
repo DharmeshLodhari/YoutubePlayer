@@ -87,6 +87,7 @@ import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
+import '../tiles/yarn_question_tile.dart';
 
 class ChatScreenGroupMessage extends StatefulWidget {
   final arguments;
@@ -3180,7 +3181,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         finalUI = renderMomentUI(
             message: messageData, chatConversation: chatConversation);
         break;
-
+      case "yarn":
+        finalUI = renderYarnUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
       case "payment-contract":
         finalUI = renderPaymentContractUI(
             message: messageData, chatConversation: chatConversation);
@@ -3819,6 +3823,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget renderMomentUI(
       {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
     return MomentTileForChat(
+      key: ValueKey(message?["id"]),
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderYarnUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return YarnQuestionTileForChat(
       key: ValueKey(message?["id"]),
       message: message,
       chatConversation: chatConversation,

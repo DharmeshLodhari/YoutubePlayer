@@ -17,7 +17,7 @@ class AskViewModel extends ChangeNotifier {
     List<AskCategories> tempList = [];
     for (var c in cat) {
       int random = Random().nextInt(categoryColors.length-1);
-      tempList.add(AskCategories(id: c.id, name: c.name, color: categoryColors[random]));
+      tempList.add(AskCategories(id: c.id, name: c.name, color: categoryColors[random],));
     }
     _askCategories = tempList;
     notifyListeners();

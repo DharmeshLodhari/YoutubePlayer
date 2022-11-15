@@ -119,7 +119,7 @@ class AskAuth extends AuthService {
   }
 
   // Get all YARN Topics
-  Future<Map<String, dynamic>?> getAllTopics(String? next, String previous, {String? type, bool isType = false}) async {
+  Future<Map<String, dynamic>?> getAllTopics(String? next, String previous, {String? type, bool isType = false, String? categoryId}) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
@@ -127,7 +127,11 @@ class AskAuth extends AuthService {
     }
     if (next == "") {
       if (isType) {
-        url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
+        if (categoryId != null) {
+          url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType&category=$categoryId";
+        } else {
+          url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
+        }
       } else {
         url = AppConfig.baseUrl + "/api/v1/social/ask/$type/";
       }

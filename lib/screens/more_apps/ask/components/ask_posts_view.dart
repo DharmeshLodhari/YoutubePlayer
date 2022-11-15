@@ -1,10 +1,12 @@
 import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
+import 'package:Slydo/screens/more_apps/ask/components/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
+import '../models/Topics/YarnTopic.dart';
 
 class AskPosts extends StatelessWidget {
   bool? openComments;
@@ -13,12 +15,7 @@ class AskPosts extends StatelessWidget {
   Function? onOptionsAction;
 
   bool? isImages = false;
-  List<String>? tags = [];
-  String? authorName;
-  String? authorAvatar;
-  String? title;
-  String? body;
-  List<String>? images;
+  YarnTopic? yarnTopic;
 
   AskPosts({
     this.openComments = false,
@@ -26,12 +23,7 @@ class AskPosts extends StatelessWidget {
     this.showTag = true,
     this.onOptionsAction,
     this.isImages,
-    this.tags,
-    this.authorName,
-    this.authorAvatar,
-    this.title,
-    this.body,
-    this.images
+    this.yarnTopic,
   });
 
   @override
@@ -141,7 +133,7 @@ class AskPosts extends StatelessWidget {
               ),
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: authorAvatar!,
+                  imageUrl: yarnTopic!.authorAvatar!,
                   fit: BoxFit.cover,
                   errorWidget: imageErrorWidget,
                 ),
@@ -155,7 +147,7 @@ class AskPosts extends StatelessWidget {
         Expanded(
             child: Row(
               children: [
-                userNameWithVerifiedIcon(name: authorName!, isVerified: false),
+                userNameWithVerifiedIcon(name: yarnTopic!.authorName!, isVerified: false),
                 SizedBox(width: 5,),
                 Icon(
                   Icons.verified,
@@ -187,7 +179,7 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildPostTitle() {
     return Text(
-      title!,
+      yarnTopic!.title!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,
@@ -199,7 +191,7 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildPostDescription() {
     return Text(
-      body!,
+      yarnTopic!.body!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,
@@ -210,11 +202,22 @@ class AskPosts extends StatelessWidget {
   }
 
   Widget _buildTagsAndViewerRow() {
+    List<String> selectedImages = [];
+    if (yarnTopic!.viewersAvatars!.abiolarasheed != null) {
+      selectedImages.add(yarnTopic!.viewersAvatars!.abiolarasheed!);
+    }
+    if (yarnTopic!.viewersAvatars!.gbemiglad != null) {
+      selectedImages.add(yarnTopic!.viewersAvatars!.gbemiglad!);
+    }
+    if (yarnTopic!.viewersAvatars!.kingdavid != null) {
+      selectedImages.add(yarnTopic!.viewersAvatars!.kingdavid!);
+    }
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: Row(
-            children: tags!.map((e) => Container(
+            children: yarnTopic!.tags!.map((e) => Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(3),
                 color: Color(0xFFEBEDFC),
@@ -230,22 +233,9 @@ class AskPosts extends StatelessWidget {
             )).toList(),
           ),
         ),
-        Container(
-          height: 22,
-          width: 22,
-          padding: EdgeInsets.all(5),
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFF06164B)
-          ),
-          child: Text(
-            "+11",
-            style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFFFFFFFF)
-            ),
-          ),
+        SizedBox(
+            width: 70,
+            child: ViewerArranger(selectedImages: selectedImages)
         ),
       ],
     );
@@ -253,9 +243,7 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildTopActions() {
     return TopicActions(
-      totalDislikes: '30',
-      totalLikes: '323',
-      totalReply: '23',
+      yarnTopic: yarnTopic!,
     );
   }
 
@@ -263,7 +251,7 @@ class AskPosts extends StatelessWidget {
     return Container(
       height: 175,
       child: Row(
-        children: images!.map((e) => Expanded(
+        children: yarnTopic!.image!.map((e) => Expanded(
           child: Container(
             height: 175,
             padding: EdgeInsets.only(right: 10),

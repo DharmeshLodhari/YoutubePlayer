@@ -13,7 +13,9 @@ class YarnTopic {
       String? status, 
       num? numberOfAnswers, 
       ViewersAvatars? viewersAvatars, 
-      bool? isQuestion,}){
+      bool? isQuestion,
+      int? numberOfComments,
+  }){
     _id = id;
     _tags = tags;
     _authorName = authorName;
@@ -28,6 +30,7 @@ class YarnTopic {
     _numberOfAnswers = numberOfAnswers;
     _viewersAvatars = viewersAvatars;
     _isQuestion = isQuestion;
+    _numberOfComments = numberOfComments;
 }
 
   YarnTopic.fromJson(dynamic json) {
@@ -45,6 +48,7 @@ class YarnTopic {
     _numberOfAnswers = json['number_of_answers'];
     _viewersAvatars = json['viewers_avatars'] != null ? ViewersAvatars.fromJson(json['viewers_avatars']) : null;
     _isQuestion = json['is_question'];
+    _numberOfComments = json['number_of_comments'];
   }
   String? _id;
   List<String>? _tags;
@@ -60,6 +64,7 @@ class YarnTopic {
   num? _numberOfAnswers;
   ViewersAvatars? _viewersAvatars;
   bool? _isQuestion;
+  int? _numberOfComments;
 YarnTopic copyWith({  String? id,
   List<String>? tags,
   String? authorName,
@@ -74,6 +79,7 @@ YarnTopic copyWith({  String? id,
   num? numberOfAnswers,
   ViewersAvatars? viewersAvatars,
   bool? isQuestion,
+  int? numberOfComments
 }) => YarnTopic(  id: id ?? _id,
   tags: tags ?? _tags,
   authorName: authorName ?? _authorName,
@@ -88,6 +94,7 @@ YarnTopic copyWith({  String? id,
   numberOfAnswers: numberOfAnswers ?? _numberOfAnswers,
   viewersAvatars: viewersAvatars ?? _viewersAvatars,
   isQuestion: isQuestion ?? _isQuestion,
+  numberOfComments: numberOfComments ?? _numberOfComments,
 );
   String? get id => _id;
   List<String>? get tags => _tags;
@@ -103,6 +110,7 @@ YarnTopic copyWith({  String? id,
   num? get numberOfAnswers => _numberOfAnswers;
   ViewersAvatars? get viewersAvatars => _viewersAvatars;
   bool? get isQuestion => _isQuestion;
+  int? get numberOfComments => _numberOfComments;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -122,6 +130,7 @@ YarnTopic copyWith({  String? id,
       map['viewers_avatars'] = _viewersAvatars?.toJson();
     }
     map['is_question'] = _isQuestion;
+    map['number_of_comments'] = _numberOfComments;
     return map;
   }
 

@@ -1,9 +1,11 @@
 import 'package:Slydo/screens/more_apps/ask/components/ask_posts_view.dart';
 import 'package:flutter/material.dart';
 
+import '../../../locale/app_localization.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../widget/customized_popup_menu.dart';
+import '../../../widget/noItemInList.dart';
 import 'ask_auth.dart';
 import 'components/ask_options.dart';
 import 'models/Topics/YarnTopic.dart';
@@ -28,6 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
+  bool isSearchIsEmpty = false;
 
   void menuItemSelectionChange(String value, int index) {
     selectedMenuItemIndex = index;
@@ -44,10 +47,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void getYarnTopic() async {
     bool isQuestion = false;
-    if (filterValue == "question") {
-      isQuestion = false;
+    debugPrint("FILTER VALUE:- $filterValue");
+    if (filterValue != null) {
+      if (filterValue == "question") {
+        isQuestion = false;
+      } else {
+        isQuestion = true;
+      }
     } else {
-      isQuestion = true;
+      isQuestion = false;
     }
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -95,6 +103,40 @@ class _SearchScreenState extends State<SearchScreen> {
       //   ));
       // }
     }
+  }
+
+  _refreshList() {
+    count = 0;
+    next = "";
+    previous = "";
+    yarnTopicList.clear();
+    noList = false;
+    getYarnTopic();
+  }
+
+  @override
+  void initState() {
+    searchController.addListener(() {
+      if (searchController.text.length >= 3) {
+        setState(() {
+          _refreshList();
+        });
+      }
+      if (yarnTopicList.isNotEmpty || searchController.text.length != 0) {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = false;
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            isSearchIsEmpty = true;
+          });
+        }
+      }
+    });
+    super.initState();
   }
 
   @override
@@ -145,7 +187,19 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         children: [
           _buildSearchBox(),
-          _buildPostList(),
+          isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
+          isSearchIsEmpty ? Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!
+                  .pleaseTypeSomethingToGetResult,
+              isResult: false,
+            ),
+          ) : noList
+              ? Expanded(
+            child: NoItemInList(
+              msg: AppLocalization.of(context)!.noResultFound,
+            ),
+          ) :  _buildPostList(),
         ],
       ),
     );
@@ -300,12 +354,7 @@ class _SearchScreenState extends State<SearchScreen> {
               );
             },
             isImages: yarnTopicList[index].image != null ? true : false,
-            images: yarnTopicList[index].image != null ? yarnTopicList[index].image : [],
-            title: yarnTopicList[index].title,
-            body: yarnTopicList[index].body,
-            authorName: yarnTopicList[index].authorName,
-            authorAvatar: yarnTopicList[index].authorAvatar,
-            tags: yarnTopicList[index].tags,
+            yarnTopic: yarnTopicList[index],
           );
         },
       ),
