@@ -197,12 +197,7 @@ final initialDBSchema = [
     '''
 
       // Create the Fee Structure table
-      '''CREATE TABLE $YARN_CATEGORY (     
-          "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
-          "user_id" TEXT,
-          "categories" TEXT
-        );
-    '''
+
 
 
 ];
@@ -210,4 +205,11 @@ final initialDBSchema = [
 ///Add List Of Migration query's when app is in production
 List<String> dbMigrations = [
   ''' ALTER TABLE $USER_CONNECTION_TABLE ADD is_verified INTEGER''',
+
+  '''CREATE TABLE $YARN_CATEGORY (     
+          "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
+          "user_id" TEXT,
+          "categories" TEXT
+        );
+    '''
 ];

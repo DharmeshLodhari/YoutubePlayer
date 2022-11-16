@@ -601,8 +601,28 @@ class _UserDashboardState extends State<UserDashboard> {
             title: "Yarn",
             onTap: () async {
               UserCategoriesStructure? userCategories = await _db.getUserSelectedYarnCategories();
-              var data = jsonDecode(userCategories!.userSelectedCategory!);
-              if(data == null && data.length != 3) {
+              if (userCategories != null) {
+                var data = jsonDecode(userCategories.userSelectedCategory!);
+                if(data == null && data.length != 3) {
+                  UsersCategories userCategory = await getUserCategories();
+                  if (userCategory.categories!.length != 3) {
+                    NavigationUtil.push(
+                      context,
+                      screen: AskStartScreen(),
+                    );
+                  } else {
+                    NavigationUtil.push(
+                      context,
+                      screen: AskHomeScreen(),
+                    );
+                  }
+                } else {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskHomeScreen(),
+                  );
+                }
+              } else {
                 UsersCategories userCategory = await getUserCategories();
                 if (userCategory.categories!.length != 3) {
                   NavigationUtil.push(
@@ -615,11 +635,6 @@ class _UserDashboardState extends State<UserDashboard> {
                     screen: AskHomeScreen(),
                   );
                 }
-              } else {
-                NavigationUtil.push(
-                  context,
-                  screen: AskHomeScreen(),
-                );
               }
               //TODO: GET USER CATEGORY FROM DB
               //TODO: if CATEGORY is EMPTY OR NULL

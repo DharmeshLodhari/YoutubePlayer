@@ -74,13 +74,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
-        if (openComments! && commentsOnPosts != null) ...[
-          Divider(
-            thickness: 1,
-            color: blackFont.withOpacity(0.3),
-          ),
-          commentsOnPosts!,
-        ]
+        _buildCommentView(),
       ],
     );
   }
@@ -109,13 +103,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
-        if (openComments! && commentsOnPosts != null) ...[
-          Divider(
-            thickness: 1,
-            color: blackFont.withOpacity(0.3),
-          ),
-          commentsOnPosts!,
-        ]
+        _buildCommentView(),
       ],
     );
   }
@@ -203,14 +191,10 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildTagsAndViewerRow() {
     List<String> selectedImages = [];
-    if (yarnTopic!.viewersAvatars!.abiolarasheed != null) {
-      selectedImages.add(yarnTopic!.viewersAvatars!.abiolarasheed!);
-    }
-    if (yarnTopic!.viewersAvatars!.gbemiglad != null) {
-      selectedImages.add(yarnTopic!.viewersAvatars!.gbemiglad!);
-    }
-    if (yarnTopic!.viewersAvatars!.kingdavid != null) {
-      selectedImages.add(yarnTopic!.viewersAvatars!.kingdavid!);
+    if (yarnTopic!.viewersAvatars != null) {
+      for (ViewersAvatars avatars in yarnTopic!.viewersAvatars!) {
+        selectedImages.add(avatars.avatar!);
+      }
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -267,6 +251,21 @@ class AskPosts extends StatelessWidget {
         )).toList(),
       ),
     );
+  }
+
+  Widget _buildCommentView() {
+    if (openComments! && commentsOnPosts != null) {
+      return Column(
+        children: [
+          Divider(
+            thickness: 1,
+            color: blackFont.withOpacity(0.3),
+          ),
+          commentsOnPosts!,
+        ],
+      );
+    }
+    return SizedBox();
   }
 
 }

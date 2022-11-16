@@ -6,9 +6,10 @@ class CustomizedDropDownField extends StatefulWidget {
   Widget child;
   String title;
   Color? titleColor;
+  double? borderWidth;
 
   CustomizedDropDownField(
-      {required this.child, required this.title, this.titleColor});
+      {required this.child, required this.title, this.titleColor, this.borderWidth});
 
   @override
   _CustomizedDropDownFieldState createState() =>
@@ -36,7 +37,7 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
           color: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: greyBorderColor)),
+              side: BorderSide(color: greyBorderColor, width: widget.borderWidth != null ? widget.borderWidth! : 1.0)),
           margin: EdgeInsets.all(0),
           borderOnForeground: true,
           child: DropdownButtonHideUnderline(

@@ -284,7 +284,11 @@ TagsStyler textFieldTagStyler = TagsStyler(
   tagCancelIconPadding: EdgeInsets.only(left: 12),
   tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
 );
-TextFieldStyler textFieldStyler = TextFieldStyler(helperText: '');
+TextFieldStyler textFieldStyler = TextFieldStyler(
+  helperText: '',
+  hintText: '',
+  textFieldBorder: InputBorder.none,
+);
 
 Widget productAndServiceErrorWidget(
         BuildContext context, String url, dynamic error) =>
@@ -2107,6 +2111,12 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Zurmi"
     ]
   }
+];
+
+List<String> expiresList = [
+  "72 hours",
+  "42 hours",
+  "24 hours",
 ];
 
 List<String> getAllStates() {

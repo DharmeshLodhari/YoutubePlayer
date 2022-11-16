@@ -7,6 +7,7 @@ import 'package:textfield_tags/textfield_tags.dart';
 
 import '../../../locale/app_localization.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
+import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/CustomBoxShadow.dart';
 import '../../../widget/curved_btn.dart';
@@ -50,81 +51,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
       body: Consumer<AskViewModel>(builder: (context, model, child) {
-        return SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Column(
-
-                children: [
-                  addImages(),
-                  SizedBox(height: 20),
-                  _buildYarnField(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  _buildTextFiled(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Focus(
-                    focusNode: textFieldTagFocusNode,
-                    child: TextFieldTags(
-                      initialTags: model.userTags,
-                      tagsStyler: textFieldTagStyler,
-                      validator: (value) {
-                        return null;
-                      },
-                      textFieldStyler: textFieldStyler,
-                      onTag: (tag) {
-                        setState(() {
-                          model.userTags.add(tag);
-                          model.userTags = model.userTags.toSet().toList();
-                        });
-                        model.userTags.removeWhere((tag) => tag.isEmpty);
-                      },
-                      onDelete: (tag) {
-                        setState(() {
-                          model.userTags.remove(tag);
-                        });
-                        model.userTags.removeWhere((tag) => tag.isEmpty);
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  getCategoryField(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width - 60),
-                        child: CurvedButton(
-                          height: 56,
-                          textColor: Colors.white,
-                          backgroundColor: navyBlue,
-                          text: "Submit",
-                          onPressed: () async {},
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 170,
-                  )
-                ],
-              ),
-            ),
-          ),
+        return ListView(
+          padding: EdgeInsets.all(15),
+          children: [
+            _buildYarnOrQuestionForm(model)
+          ],
         );
       }),
     );
@@ -134,7 +65,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        'Add Topic',
+        widget.isYarn! ? "Create Yarn" : "Ask Question",
         style: TextStyle(
           fontSize: 21,
           fontWeight: FontWeight.w700,
@@ -142,6 +73,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         ),
       ),
       elevation: 0,
+      centerTitle: true,
       leading: IconButton(
         icon: Icon(
           Icons.keyboard_arrow_left,
@@ -152,10 +84,67 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           Navigator.pop(context);
         },
       ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.add_photo_alternate_rounded,
+            color: HexColor("#000000"),
+            size: 26,
+          ),
+          onPressed: () {
+            pickImage();
+          },
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildYarnOrQuestionForm(AskViewModel model) {
+    if (widget.isYarn!) {
+      return _buildYarnForm(model);
+    }
+    return _buildQuestionForm(model);
+  }
+  
+  Widget _buildYarnForm(AskViewModel model) {
+    return Column(
+      children: [
+        _buildAddImages(),
+        SizedBox(height: 20,),
+        _buildYarnField(),
+        SizedBox(height: 20,),
+        _buildTags(model),
+        SizedBox(height: 20,),
+        getCategoryField(),
+        SizedBox(height: 50,),
+        _buildSubmitButton(),
+      ],
+    );
+  }
+  
+  Widget _buildQuestionForm(AskViewModel model) {
+    return Column(
+      children: [
+        _buildAddImages(),
+        SizedBox(height: 20,),
+        _buildYarnField(),
+        SizedBox(height: 20,),
+        _buildTextFiled(),
+        SizedBox(height: 20,),
+        _buildTags(model),
+        SizedBox(height: 20,),
+        getCategoryField(),
+        SizedBox(height: 20,),
+        getAmountField(),
+        SizedBox(height: 20,),
+        _buildExpiresField(),
+        SizedBox(height: 50,),
+        _buildSubmitButton(),
+      ],
     );
   }
 
-  Widget addImages() {
+  Widget _buildAddImages() {
     return Container(
       height: 100,
       child: ListView.builder(
@@ -271,11 +260,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Yarn',
+          widget.isYarn! ? 'Yarn' : 'Question',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: blackFont,
+            fontSize: 14,
+            color: darkGrey,
           ),
         ),
         SizedBox(
@@ -284,40 +272,91 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         TopicTextField(
           height: 140,
           controller: topicTextController,
+          hint: widget.isYarn! ? "Yarn Something" : 'Ask Something',
         ),
       ],
     );
   }
 
   Widget _buildTextFiled() {
-    if (!widget.isYarn!) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Text',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: blackFont,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Text',
+          style: TextStyle(
+            fontSize: 14,
+            color: darkGrey,
+          ),
+        ),
+        SizedBox(
+          height: 7,
+        ),
+        TopicTextField(
+          height: 140,
+          controller: topicTitleController,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTags(AskViewModel model) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Tags',
+          style: TextStyle(
+            fontSize: 14,
+            color: darkGrey,
+          ),
+        ),
+        SizedBox(height: 7,),
+        Focus(
+          focusNode: textFieldTagFocusNode,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(11),
+              border: Border.all(
+                color: blackFont.withOpacity(0.1),
+                width: 2,
+              ),
+            ),
+            child: TextFieldTags(
+              initialTags: model.userTags,
+              tagsStyler: textFieldTagStyler,
+              validator: (value) {
+                return null;
+              },
+              textFieldStyler: TextFieldStyler(
+                helperText: '',
+                hintText: '',
+                textFieldBorder: InputBorder.none,
+              ),
+              onTag: (tag) {
+                setState(() {
+                  model.userTags.add(tag);
+                  model.userTags = model.userTags.toSet().toList();
+                });
+                model.userTags.removeWhere((tag) => tag.isEmpty);
+              },
+              onDelete: (tag) {
+                setState(() {
+                  model.userTags.remove(tag);
+                });
+                model.userTags.removeWhere((tag) => tag.isEmpty);
+              },
             ),
           ),
-          SizedBox(
-            height: 7,
-          ),
-          TopicTextField(
-            height: 140,
-            controller: topicTitleController,
-          ),
-        ],
-      );
-    }
-    return SizedBox();
+        )
+      ],
+    );
   }
 
   Widget getCategoryField() {
     return CustomizedDropDownField(
-      title: AppLocalization.of(context)!.category,
+      title: "Categories",
+      borderWidth: 2.0,
       child: ListTile(
         dense: true,
         title: Text(
@@ -333,6 +372,75 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           categoryAndroidSheet();
           // selectItemCategory();
         },
+      ),
+    );
+  }
+
+  Widget getAmountField() {
+    return CustomizedTextFormField(
+      labelText: "Amount",
+      keyboardType: Platform.isIOS
+          ? TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
+      isAmountField: true,
+      borderWidth: 2.0,
+      onChanged: (val) {
+        if (val.isNotEmpty) {
+          try {
+            // productPrice = double.parse(val.replaceAll(',', '')).toString();
+          } catch (e) {
+            showToast(message: e.toString());
+          }
+        }
+      },
+      validator: (val) {
+        // if (val.isNotEmpty) {
+        //   try {
+        //     double.parse(val.replaceAll(',', ''));
+        //     return null;
+        //   } catch (e) {
+        //     return AppLocalization.of(context)!.invalidAmount;
+        //   }
+        // }
+        // return AppLocalization.of(context)!.pleaseEnterValidAmout;
+      },
+    );
+  }
+
+  Widget _buildExpiresField() {
+    return CustomizedDropDownField(
+      title: "Expire",
+      borderWidth: 2.0,
+      child: ListTile(
+        dense: true,
+        title: Text(
+          selectedAskCategory != null ? selectedAskCategory!.name! : "",
+          style: TextStyle(
+              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        trailing: Icon(
+          Icons.keyboard_arrow_down,
+          color: darkGrey,
+        ),
+        onTap: () {
+          expiresAndroidSheet();
+        },
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return Container(
+      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(horizontal: 24),
+      constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 60),
+      child: CurvedButton(
+        height: 56,
+        textColor: Colors.white,
+        backgroundColor: navyBlue,
+        text: "Submit",
+        onPressed: () async {},
       ),
     );
   }
@@ -461,6 +569,77 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                   ),
                 ),
               ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void expiresAndroidSheet() {
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.17,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: expiresList.length,
+              itemBuilder: (context, index) {
+                // if (selectedAskCategory == category) {
+                //   return Container(
+                //     color: selectedListItemBackgroundBlue,
+                //     child: ListTile(
+                //       dense: true,
+                //       title: Text(
+                //         category.name!,
+                //         overflow: TextOverflow.fade,
+                //         softWrap: false,
+                //         style: TextStyle(
+                //             color: navyBlue,
+                //             fontSize: 16,
+                //             fontWeight: FontWeight.w600),
+                //       ),
+                //       trailing: Icon(
+                //         SlydoAppIcon.checked,
+                //         color: navyBlue,
+                //         size: 12,
+                //       ),
+                //       onTap: () {
+                //         pressedAskCategory = category;
+                //         Navigator.pop(context);
+                //         if (pressedAskCategory != null) {
+                //           selectedAskCategory = pressedAskCategory;
+                //           askCategory = selectedAskCategory!.name!;
+                //           setState(() {});
+                //         }
+                //       },
+                //     ),
+                //   );
+                // }
+                return ListTile(
+                  title: Text(
+                    expiresList[index],
+                    softWrap: false,
+                    overflow: TextOverflow.fade,
+                    style: TextStyle(
+                        color: blackFont,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  dense: true,
+                  onTap: () {
+                    // pressedAskCategory = category;
+                    Navigator.pop(context);
+                    // if (pressedAskCategory != null) {
+                    //   selectedAskCategory = pressedAskCategory;
+                    //   askCategory = selectedAskCategory!.name!;
+                    //   setState(() {});
+                    // }
+                  },
+                );
+              },
             ),
           );
         },

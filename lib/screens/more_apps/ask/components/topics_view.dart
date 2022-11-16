@@ -107,7 +107,7 @@ class _TopicViewState extends State<TopicView> {
                   onTap: () {
                     NavigationUtil.push(
                       context,
-                      screen: AskDetailScreen(),
+                      screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
                     );
                   },
                   child: AskPosts(

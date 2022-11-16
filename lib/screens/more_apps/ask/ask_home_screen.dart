@@ -308,12 +308,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: CategoryChip(
                   onTap: () {
-                    if (selectedCategoryId == model.askCategories[i].id) {
-                      selectedCategoryId = null;
-                    } else {
-                      selectedCategoryId =  model.askCategories[i].id;
-                    }
-                    setState(() {});
+                    selectCategory(model.askCategories[i].id!);
                   },
                   title: model.askCategories[i].name,
                   categoryColor: model.askCategories[i].color!.withOpacity(0.1),
@@ -411,6 +406,16 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
   void updateCurrentAskTapOnHome({int? i}) {
     setState(() {
       currentAskTapOnHome = i;
+    });
+  }
+
+  void selectCategory(String categoryId) {
+    setState(() {
+      if (selectedCategoryId == categoryId) {
+        selectedCategoryId = null;
+      } else {
+        selectedCategoryId =  categoryId;
+      }
     });
   }
 }

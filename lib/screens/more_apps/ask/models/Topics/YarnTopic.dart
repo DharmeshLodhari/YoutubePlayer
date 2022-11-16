@@ -11,8 +11,8 @@ class YarnTopic {
       dynamic image, 
       String? author, 
       String? status, 
-      num? numberOfAnswers, 
-      ViewersAvatars? viewersAvatars, 
+      num? numberOfAnswers,
+      List<ViewersAvatars>? viewersAvatars,
       bool? isQuestion,
       int? numberOfComments,
   }){
@@ -46,7 +46,12 @@ class YarnTopic {
     _author = json['author'];
     _status = json['status'];
     _numberOfAnswers = json['number_of_answers'];
-    _viewersAvatars = json['viewers_avatars'] != null ? ViewersAvatars.fromJson(json['viewers_avatars']) : null;
+    if (json['viewers_avatars'] != null) {
+      _viewersAvatars = [];
+      json['viewers_avatars'].forEach((v) {
+        _viewersAvatars?.add(ViewersAvatars.fromJson(v));
+      });
+    }
     _isQuestion = json['is_question'];
     _numberOfComments = json['number_of_comments'];
   }
@@ -62,7 +67,7 @@ class YarnTopic {
   String? _author;
   String? _status;
   num? _numberOfAnswers;
-  ViewersAvatars? _viewersAvatars;
+  List<ViewersAvatars>? _viewersAvatars;
   bool? _isQuestion;
   int? _numberOfComments;
 YarnTopic copyWith({  String? id,
@@ -77,7 +82,7 @@ YarnTopic copyWith({  String? id,
   String? author,
   String? status,
   num? numberOfAnswers,
-  ViewersAvatars? viewersAvatars,
+  List<ViewersAvatars>? viewersAvatars,
   bool? isQuestion,
   int? numberOfComments
 }) => YarnTopic(  id: id ?? _id,
@@ -108,7 +113,7 @@ YarnTopic copyWith({  String? id,
   String? get author => _author;
   String? get status => _status;
   num? get numberOfAnswers => _numberOfAnswers;
-  ViewersAvatars? get viewersAvatars => _viewersAvatars;
+  List<ViewersAvatars>? get viewersAvatars => _viewersAvatars;
   bool? get isQuestion => _isQuestion;
   int? get numberOfComments => _numberOfComments;
 
@@ -127,7 +132,7 @@ YarnTopic copyWith({  String? id,
     map['status'] = _status;
     map['number_of_answers'] = _numberOfAnswers;
     if (_viewersAvatars != null) {
-      map['viewers_avatars'] = _viewersAvatars?.toJson();
+      map['viewers_avatars'] = _viewersAvatars?.map((v) => v.toJson()).toList();
     }
     map['is_question'] = _isQuestion;
     map['number_of_comments'] = _numberOfComments;
@@ -138,38 +143,30 @@ YarnTopic copyWith({  String? id,
 
 class ViewersAvatars {
   ViewersAvatars({
-      String? abiolarasheed, 
-      String? gbemiglad, 
-      String? kingdavid,}){
-    _abiolarasheed = abiolarasheed;
-    _gbemiglad = gbemiglad;
-    _kingdavid = kingdavid;
-}
+    String? username,
+    String? avatar,}){
+    _username = username;
+    _avatar = avatar;
+  }
 
   ViewersAvatars.fromJson(dynamic json) {
-    _abiolarasheed = json['abiola.rasheed'];
-    _gbemiglad = json['gbemiglad'];
-    _kingdavid = json['kingdavid'];
+    _username = json['username'];
+    _avatar = json['avatar'];
   }
-  String? _abiolarasheed;
-  String? _gbemiglad;
-  String? _kingdavid;
-ViewersAvatars copyWith({  String? abiolarasheed,
-  String? gbemiglad,
-  String? kingdavid,
-}) => ViewersAvatars(  abiolarasheed: abiolarasheed ?? _abiolarasheed,
-  gbemiglad: gbemiglad ?? _gbemiglad,
-  kingdavid: kingdavid ?? _kingdavid,
-);
-  String? get abiolarasheed => _abiolarasheed;
-  String? get gbemiglad => _gbemiglad;
-  String? get kingdavid => _kingdavid;
+  String? _username;
+  String? _avatar;
+  ViewersAvatars copyWith({  String? username,
+    String? avatar,
+  }) => ViewersAvatars(  username: username ?? _username,
+    avatar: avatar ?? _avatar,
+  );
+  String? get username => _username;
+  String? get avatar => _avatar;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['abiola.rasheed'] = _abiolarasheed;
-    map['gbemiglad'] = _gbemiglad;
-    map['kingdavid'] = _kingdavid;
+    map['username'] = _username;
+    map['avatar'] = _avatar;
     return map;
   }
 

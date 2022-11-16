@@ -224,7 +224,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
                   NavigationUtil.push(
                     context,
                     screen: AskHomeScreen(askCategories: model.askCategories),
-                  );
+                  ).then((value) => Navigator.of(context).pop());
                 }
               }
 

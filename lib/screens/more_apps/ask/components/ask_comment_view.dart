@@ -12,6 +12,7 @@ class AskCommentView extends StatelessWidget {
   String? totalDislikes;
   bool? isASubReply;
   bool? hasReplies;
+  YarnTopic? yarnTopic;
 
   AskCommentView(
       {this.replyViews,
@@ -19,6 +20,7 @@ class AskCommentView extends StatelessWidget {
       this.totalDislikes,
       this.hasReplies = false,
       this.isASubReply,
+      this.yarnTopic,
       this.totalReplies});
 
   @override
@@ -115,7 +117,7 @@ class AskCommentView extends StatelessWidget {
                       child: Column(
                         children: [
                           TopicActions(
-                            yarnTopic: YarnTopic(),
+                            yarnTopic: yarnTopic!,
                           ),
                         ],
                       ),
