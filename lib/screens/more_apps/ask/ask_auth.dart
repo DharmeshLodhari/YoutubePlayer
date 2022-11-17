@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart';
 
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
+import "package:http/http.dart" as http;
 
 class AskAuth extends AuthService {
 
@@ -146,6 +148,7 @@ class AskAuth extends AuthService {
     if (response.statusCode == 200) {
       List<YarnTopic> yarnTopics = [];
       var jsonData = json.decode(response.body);
+      debugPrint("GET DATA:- $jsonData");
       for (var item in jsonData["results"]) {
         YarnTopic yarnTopic = YarnTopic.fromJson(item);
         yarnTopics.add(yarnTopic);
@@ -205,53 +208,64 @@ class AskAuth extends AuthService {
     }
   }
 
-  // Future<bool> addYarn() async {
-  //   var headers = await getAuthHeaders();
-  //   var url = AppConfig.baseUrl + "/api/v1/products/";
-  //
-  //   //create multipart request for POST or PATCH method
-  //   var request = http.MultipartRequest("POST", Uri.parse(url));
-  //
-  //   Map<dynamic, dynamic> _data = product.toMap();
-  //   debugPrint('DATA ---> $_data');
-  //   _data["available_from"] = dateToString(product.availableFrom!);
-  //   _data["image_count"] = product.localImages!.length;
-  //
-  //   _data.forEach((k, v) {
-  //     request.fields[k] = v.toString();
-  //   });
-  //
-  //   List<MultipartFile> newList = [];
-  //
-  //   for (int i = 0; i < product.localImages!.length; i++) {
-  //     // Add fields
-  //     request.fields["imagefile_$i"] = product.localImages![i].path;
-  //
-  //     // Create multipart using filepath, string or bytes
-  //     var multipartFile = await http.MultipartFile.fromPath(
-  //         "imagefile_$i", product.localImages![i].path);
-  //
-  //     // Add multipart to newList
-  //     newList.add(multipartFile);
-  //   }
-  //
-  //   // Add multipart to request
-  //   request.files.addAll(newList);
-  //
-  //   headers.forEach((k, v) => request.headers[k] = v);
-  //   var response = await request.send();
-  //   if (response.statusCode == 413) {
-  //     return Future.error(
-  //         "Please upload smaller images, One or all of your images are too large.");
-  //   }
-  //   var responseBody = await response.stream.bytesToString();
-  //   if (response.statusCode == 201) {
-  //     return true;
-  //   } else {
-  //     debugPrint(
-  //         "URL $url STATUS CODE:- ${response.statusCode} BODY:- $responseBody");
-  //
-  //     throw responseBody;
-  //   }
-  // }
+  Future<bool> addYarnAndQuestion(AddYarnAndQuestion addYarnAndQuestion) async {
+    var headers = await getAuthHeaders();
+    var url = AppConfig.baseUrl + "/api/v1/social/ask/";
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
+    debugPrint('DATA ---> $_data');
+    // _data["available_from"] = dateToString(product.availableFrom!);
+    // _data["image_count"] = product.localImages!.length;
+
+    // _data.forEach((k, v) {
+    //   request.fields[k] = jsonEncode(v);
+    // });
+
+    request.fields.addAll({
+      "tags": jsonEncode(addYarnAndQuestion.tags),
+      "title": addYarnAndQuestion.title!,
+      "body": addYarnAndQuestion.body!,
+      "category": addYarnAndQuestion.categoryId!,
+      "author": addYarnAndQuestion.author!,
+      "is_question": jsonEncode(addYarnAndQuestion.isQuestion!)
+    });
+
+
+    List<MultipartFile> newList = [];
+
+    for (int i = 0; i < addYarnAndQuestion.localImages!.length; i++) {
+      // Add fields
+      request.fields["imagefile_$i"] = addYarnAndQuestion.localImages![i].path;
+
+      // Create multipart using filepath, string or bytes
+      var multipartFile = await http.MultipartFile.fromPath(
+          "imagefile_$i", addYarnAndQuestion.localImages![i].path);
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+
+    // Add multipart to request
+    request.files.addAll(newList);
+    debugPrint('REQUEST FIELDS ---> ${request.fields}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+    var responseBody = await response.stream.bytesToString();
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      debugPrint(
+          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${jsonDecode(responseBody)}");
+
+      throw responseBody;
+    }
+  }
 }

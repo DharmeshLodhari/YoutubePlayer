@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class YarnTopic {
   YarnTopic({
       String? id, 
@@ -138,7 +140,6 @@ YarnTopic copyWith({  String? id,
     map['number_of_comments'] = _numberOfComments;
     return map;
   }
-
 }
 
 class ViewersAvatars {
@@ -170,4 +171,27 @@ class ViewersAvatars {
     return map;
   }
 
+}
+
+class AddYarnAndQuestion {
+  List<File>? localImages;
+  List<String>? tags;
+  String? categoryId;
+  String? title;
+  String? body;
+  String? author;
+  bool? isQuestion;
+
+  AddYarnAndQuestion({this.localImages, this.tags, this.categoryId, this.title, this.body, this.isQuestion, this.author});
+
+  Map<String, dynamic> toAddMap() {
+    return {
+      "tags": tags,
+      "title": title,
+      "body": body,
+      "category": categoryId,
+      "author": null,
+      "is_question": isQuestion,
+    };
+  }
 }

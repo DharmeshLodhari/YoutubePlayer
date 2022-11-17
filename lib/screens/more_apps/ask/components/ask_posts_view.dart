@@ -200,7 +200,8 @@ class AskPosts extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: Row(
+          child: Wrap(
+            runSpacing: 5,
             children: yarnTopic!.tags!.map((e) => Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(3),

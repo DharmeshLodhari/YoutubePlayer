@@ -29,6 +29,10 @@ class AskHomeScreen extends StatefulWidget {
 }
 
 class _AskHomeScreenState extends State<AskHomeScreen> {
+  GlobalKey<TopicViewState> topicViewStateKey = GlobalKey<TopicViewState>();
+  GlobalKey<TopicViewState> questionViewStateKey = GlobalKey<TopicViewState>();
+  GlobalKey<MyFeedViewState> myFeedViewStateKey = GlobalKey<MyFeedViewState>();
+
   late PageController _pageViewCtrl;
   int? currentAskTapOnHome = 0;
   bool isAskCategoriesLoading = false;
@@ -138,14 +142,22 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           title: "Ask Question",
           icon: SlydoAppIconNew.question,
           onTap: () {
-            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: false,));
+            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: false,)).then((value) {
+              topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+              questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+              myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+            });
           }
         ),
         _buildSpeedDialChild(
           title: "Yarn",
           icon: SlydoAppIconNew.yarn,
           onTap: () {
-            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: true,));
+            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: true,)).then((value) {
+              topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+              questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+              myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+            });
           }
         ),
       ],
@@ -366,9 +378,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         },
         controller: _pageViewCtrl,
         children: [
-          TopicView(categoryId: selectedCategoryId,),
-          QuestionView(categoryId: selectedCategoryId,),
-          MyFeedView(categoryId: selectedCategoryId,),
+          TopicView(key: topicViewStateKey, selectedCategory: selectedCategoryId,),
+          QuestionView(key: questionViewStateKey, selectedCategory: selectedCategoryId,),
+          MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),
     );
@@ -416,6 +428,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
       } else {
         selectedCategoryId =  categoryId;
       }
+      topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+      questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+      myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
     });
   }
 }

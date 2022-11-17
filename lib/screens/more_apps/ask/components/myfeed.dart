@@ -14,36 +14,41 @@ import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
 class MyFeedView extends StatefulWidget {
-  String? categoryId;
-  MyFeedView({Key? key, this.categoryId}) : super(key: key);
+  String? selectedCategory;
+  MyFeedView({Key? key, this.selectedCategory}) : super(key: key);
 
   @override
-  State<MyFeedView> createState() => _MyFeedViewState();
+  State<MyFeedView> createState() => MyFeedViewState(key: key);
 }
 
-class _MyFeedViewState extends State<MyFeedView> {
+class MyFeedViewState extends State<MyFeedView> {
 
-
+  Key? key;
+  MyFeedViewState({this.key});
   bool isLoading = false;
   String next = "", previous = "";
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  String? selectedId;
 
   @override
   void initState() {
-    getYarnTopic("my-topics", false);
+    getYarnTopic(categoryId: widget.selectedCategory);
     super.initState();
   }
 
-  void getYarnTopic(String type, bool isType) async {
+  void getYarnTopic({String type = "my-topics", bool isType = false, String? categoryId}) async {
+    if (categoryId != null) {
+      selectedId = categoryId;
+    }
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: widget.categoryId);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
 
         if (result == null) {
           noList = true;
@@ -172,7 +177,7 @@ class _MyFeedViewState extends State<MyFeedView> {
         yarnTopicList = [];
         if (mounted) setState(() {});
 
-        getYarnTopic("my-topics", false);
+        getYarnTopic(categoryId: selectedId);
         setState(() {
           _postRefreshController.refreshCompleted();
         });

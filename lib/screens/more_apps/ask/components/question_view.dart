@@ -14,36 +14,41 @@ import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
 class QuestionView extends StatefulWidget {
-  String? categoryId;
-  QuestionView({Key? key, this.categoryId}) : super(key: key);
+  String? selectedCategory;
+  QuestionView({Key? key, this.selectedCategory}) : super(key: key);
 
   @override
-  State<QuestionView> createState() => _QuestionViewState();
+  State<QuestionView> createState() => QuestionViewState(key: key);
 }
 
-class _QuestionViewState extends State<QuestionView> {
+class QuestionViewState extends State<QuestionView> {
 
-
+  Key? key;
+  QuestionViewState({this.key});
   bool isLoading = false;
   String next = "", previous = "";
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  String? selectedId;
 
   @override
   void initState() {
-    getYarnTopic("question", true);
+    getYarnTopic(categoryId: widget.selectedCategory);
     super.initState();
   }
 
-  void getYarnTopic(String type, bool isType) async {
+  void getYarnTopic({String type = "question", bool isType = true, String? categoryId}) async {
+    if (categoryId != null) {
+      selectedId = categoryId;
+    }
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: widget.categoryId);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
 
         if (result == null) {
           noList = true;
@@ -136,10 +141,8 @@ class _QuestionViewState extends State<QuestionView> {
                   ),
                 );
               },
-            ) : Expanded(
-              child: NoItemInList(
-                msg: AppLocalization.of(context)!.noResultFound,
-              ),
+            ) : NoItemInList(
+              msg: AppLocalization.of(context)!.noResultFound,
             ) : Shimmer.fromColors(
               baseColor: Colors.white,
               highlightColor: greyBorderColor,
@@ -174,7 +177,7 @@ class _QuestionViewState extends State<QuestionView> {
         yarnTopicList = [];
         if (mounted) setState(() {});
 
-        getYarnTopic("question", true);
+        getYarnTopic(categoryId: selectedId);
         setState(() {
           _postRefreshController.refreshCompleted();
         });

@@ -14,14 +14,15 @@ import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
 class TopicView extends StatefulWidget {
-  String? categoryId;
-  TopicView({Key? key, this.categoryId}) : super(key: key);
+  String? selectedCategory;
+  TopicView({Key? key, this.selectedCategory}) : super(key: key);
   @override
-  State<TopicView> createState() => _TopicViewState();
+  State<TopicView> createState() => TopicViewState(key: key);
 }
 
-class _TopicViewState extends State<TopicView> {
-
+class TopicViewState extends State<TopicView> {
+  Key? key;
+  TopicViewState({this.key});
 
   bool isLoading = false;
   String next = "", previous = "";
@@ -29,20 +30,24 @@ class _TopicViewState extends State<TopicView> {
   int count = 0;
   bool noList = false;
   RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  String? selectedId;
 
   @override
   void initState() {
-    getYarnTopic("topic", true);
+    getYarnTopic(categoryId: widget.selectedCategory);
     super.initState();
   }
 
-  void getYarnTopic(String type, bool isType) async {
+  void getYarnTopic({String type = "topic", bool isType = true, String? categoryId}) async {
+    if (categoryId != null) {
+      selectedId = categoryId;
+    }
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: widget.categoryId);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
 
         if (result == null) {
           noList = true;
@@ -87,78 +92,70 @@ class _TopicViewState extends State<TopicView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _postRefreshController,
-            onRefresh: _onPostRefresh,
-            child: !isLoading ? !noList ? ListView.builder(
-              physics: ClampingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
-              itemCount: yarnTopicList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () {
-                    NavigationUtil.push(
-                      context,
-                      screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _postRefreshController,
+      onRefresh: _onPostRefresh,
+      child: !isLoading ? !noList ? ListView.builder(
+        physics: ClampingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
+        itemCount: yarnTopicList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return InkWell(
+            onTap: () {
+              NavigationUtil.push(
+                context,
+                screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+              );
+            },
+            child: AskPosts(
+              showTag: true,
+              onOptionsAction: () {
+                showModalBottomSheet<void>(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                      ),
+                      color: Colors.white,
+                      margin: EdgeInsets.zero,
+                      child: AskOptions(),
                     );
                   },
-                  child: AskPosts(
-                    showTag: true,
-                    onOptionsAction: () {
-                      showModalBottomSheet<void>(
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20)),
-                            ),
-                            color: Colors.white,
-                            margin: EdgeInsets.zero,
-                            child: AskOptions(),
-                          );
-                        },
-                      );
-                    },
-                    isImages: yarnTopicList[index].image != null ? true : false,
-                    yarnTopic: yarnTopicList[index],
-                  ),
                 );
               },
-            ) : Expanded(
-              child: NoItemInList(
-                msg: AppLocalization.of(context)!.noResultFound,
-              ),
-            ) : Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: greyBorderColor,
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  );
-                },
-              ),
+              isImages: yarnTopicList[index].image != null ? true : false,
+              yarnTopic: yarnTopicList[index],
             ),
-          ),
+          );
+        },
+      ) : NoItemInList(
+        msg: AppLocalization.of(context)!.noResultFound,
+      ) : Shimmer.fromColors(
+        baseColor: Colors.white,
+        highlightColor: greyBorderColor,
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: 2,
+          itemBuilder: (context, index) {
+            return Card(
+              color: Colors.grey,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            );
+          },
         ),
-      ],
+      ),
     );
   }
 
@@ -173,7 +170,7 @@ class _TopicViewState extends State<TopicView> {
         yarnTopicList = [];
         if (mounted) setState(() {});
 
-        getYarnTopic("topic", true);
+        getYarnTopic(categoryId: selectedId);
         setState(() {
           _postRefreshController.refreshCompleted();
         });

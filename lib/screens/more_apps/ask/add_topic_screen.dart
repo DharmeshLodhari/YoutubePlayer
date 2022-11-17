@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
+import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
@@ -26,9 +29,9 @@ class AddTopicScreen extends StatefulWidget {
 }
 
 class _AddTopicScreenState extends State<AddTopicScreen> {
-  final topicTitleController = TextEditingController();
+  final yarnController = TextEditingController();
 
-  final topicTextController = TextEditingController();
+  final textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
   List<PickedFile> selectedImages = [];
@@ -37,9 +40,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   AskCategories? pressedAskCategory;
   List<AskCategories>? askCategoriesCopy;
   String askCategory = "";
+  List<String> userTags = [];
+  late UserBloc userBloc;
 
   @override
   void initState() {
+    Future.microtask(() => context.read<AskViewModel>().init());
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
     super.initState();
@@ -47,6 +53,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
@@ -134,10 +141,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         _buildTags(model),
         SizedBox(height: 20,),
         getCategoryField(),
-        SizedBox(height: 20,),
-        getAmountField(),
-        SizedBox(height: 20,),
-        _buildExpiresField(),
+        // SizedBox(height: 20,),
+        // getAmountField(),
+        // SizedBox(height: 20,),
+        // _buildExpiresField(),
         SizedBox(height: 50,),
         _buildSubmitButton(),
       ],
@@ -271,7 +278,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         ),
         TopicTextField(
           height: 140,
-          controller: topicTextController,
+          controller: yarnController,
           hint: widget.isYarn! ? "Yarn Something" : 'Ask Something',
         ),
       ],
@@ -294,7 +301,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         ),
         TopicTextField(
           height: 140,
-          controller: topicTitleController,
+          controller: textController,
         ),
       ],
     );
@@ -323,7 +330,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               ),
             ),
             child: TextFieldTags(
-              initialTags: model.userTags,
+              initialTags: userTags,
               tagsStyler: textFieldTagStyler,
               validator: (value) {
                 return null;
@@ -337,14 +344,18 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                 setState(() {
                   model.userTags.add(tag);
                   model.userTags = model.userTags.toSet().toList();
+                  userTags = model.userTags;
                 });
                 model.userTags.removeWhere((tag) => tag.isEmpty);
+                userTags.removeWhere((tag) => tag.isEmpty);
               },
               onDelete: (tag) {
                 setState(() {
                   model.userTags.remove(tag);
+                  userTags.remove(tag);
                 });
                 model.userTags.removeWhere((tag) => tag.isEmpty);
+                userTags.removeWhere((tag) => tag.isEmpty);
               },
             ),
           ),
@@ -376,58 +387,58 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
-  Widget getAmountField() {
-    return CustomizedTextFormField(
-      labelText: "Amount",
-      keyboardType: Platform.isIOS
-          ? TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
-      isAmountField: true,
-      borderWidth: 2.0,
-      onChanged: (val) {
-        if (val.isNotEmpty) {
-          try {
-            // productPrice = double.parse(val.replaceAll(',', '')).toString();
-          } catch (e) {
-            showToast(message: e.toString());
-          }
-        }
-      },
-      validator: (val) {
-        // if (val.isNotEmpty) {
-        //   try {
-        //     double.parse(val.replaceAll(',', ''));
-        //     return null;
-        //   } catch (e) {
-        //     return AppLocalization.of(context)!.invalidAmount;
-        //   }
-        // }
-        // return AppLocalization.of(context)!.pleaseEnterValidAmout;
-      },
-    );
-  }
-
-  Widget _buildExpiresField() {
-    return CustomizedDropDownField(
-      title: "Expire",
-      borderWidth: 2.0,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          selectedAskCategory != null ? selectedAskCategory!.name! : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
-        ),
-        onTap: () {
-          expiresAndroidSheet();
-        },
-      ),
-    );
-  }
+  // Widget getAmountField() {
+  //   return CustomizedTextFormField(
+  //     labelText: "Amount",
+  //     keyboardType: Platform.isIOS
+  //         ? TextInputType.numberWithOptions(decimal: true)
+  //         : TextInputType.number,
+  //     isAmountField: true,
+  //     borderWidth: 2.0,
+  //     onChanged: (val) {
+  //       if (val.isNotEmpty) {
+  //         try {
+  //           // productPrice = double.parse(val.replaceAll(',', '')).toString();
+  //         } catch (e) {
+  //           showToast(message: e.toString());
+  //         }
+  //       }
+  //     },
+  //     validator: (val) {
+  //       // if (val.isNotEmpty) {
+  //       //   try {
+  //       //     double.parse(val.replaceAll(',', ''));
+  //       //     return null;
+  //       //   } catch (e) {
+  //       //     return AppLocalization.of(context)!.invalidAmount;
+  //       //   }
+  //       // }
+  //       // return AppLocalization.of(context)!.pleaseEnterValidAmout;
+  //     },
+  //   );
+  // }
+  //
+  // Widget _buildExpiresField() {
+  //   return CustomizedDropDownField(
+  //     title: "Expire",
+  //     borderWidth: 2.0,
+  //     child: ListTile(
+  //       dense: true,
+  //       title: Text(
+  //         selectedAskCategory != null ? selectedAskCategory!.name! : "",
+  //         style: TextStyle(
+  //             color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+  //       ),
+  //       trailing: Icon(
+  //         Icons.keyboard_arrow_down,
+  //         color: darkGrey,
+  //       ),
+  //       onTap: () {
+  //         expiresAndroidSheet();
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildSubmitButton() {
     return Container(
@@ -440,7 +451,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         textColor: Colors.white,
         backgroundColor: navyBlue,
         text: "Submit",
-        onPressed: () async {},
+        onPressed: () async {
+          addYarnAndQuestion();
+        },
       ),
     );
   }
@@ -645,6 +658,29 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         },
       ),
     );
+  }
+
+  Future<void> addYarnAndQuestion() async {
+    AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
+    addYarnAndQuestion.localImages = selectedImages.map((file) => File(file.path)).toList();
+    addYarnAndQuestion.tags = userTags;
+    addYarnAndQuestion.title = yarnController.text;
+    addYarnAndQuestion.body = !widget.isYarn! ? textController.text : yarnController.text;
+    addYarnAndQuestion.categoryId = selectedAskCategory!.id;
+    addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
+    addYarnAndQuestion.author = userBloc.user.userName;
+    debugPrint("USER TAGS:- $userTags");
+    debugPrint("USER TAGS:- ${addYarnAndQuestion.tags}");
+
+    await AskAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
+      Navigator.pop(context);
+      showToast(
+          message: widget.isYarn! ? "Yarn add successfully" : "Question add successfully");
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+
   }
 
 }
