@@ -3,7 +3,7 @@ import 'dart:ui';
 class AskCategories {
   String? id;
   String? name;
-  Color? color;
+  String? color;
   String? image;
 
   AskCategories({this.id, this.name, this.color, this.image});
@@ -11,11 +11,15 @@ class AskCategories {
   AskCategories.fromJson(object) {
     this.id = object['id'];
     this.name = object['name'];
+    this.color = object['color'];
+    this.image = object['image'];
   }
 
   Map toJson() => {
     "id": id,
     "name": name,
+    "color": color,
+    "image": image,
   };
 }
 

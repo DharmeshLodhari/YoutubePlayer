@@ -9,8 +9,8 @@ class YarnTopic {
       String? createdAt, 
       dynamic updatedAt, 
       String? title, 
-      String? body, 
-      dynamic image, 
+      String? body,
+      List<Media>? media,
       String? author, 
       String? status, 
       num? numberOfAnswers,
@@ -26,7 +26,7 @@ class YarnTopic {
     _updatedAt = updatedAt;
     _title = title;
     _body = body;
-    _image = image;
+    _media = media;
     _author = author;
     _status = status;
     _numberOfAnswers = numberOfAnswers;
@@ -44,7 +44,12 @@ class YarnTopic {
     _updatedAt = json['updated_at'];
     _title = json['title'];
     _body = json['body'];
-    _image = json['image'];
+    if (json['media'] != null) {
+      _media = [];
+      json['media'].forEach((v) {
+        _media?.add(Media.fromJson(v));
+      });
+    }
     _author = json['author'];
     _status = json['status'];
     _numberOfAnswers = json['number_of_answers'];
@@ -65,7 +70,7 @@ class YarnTopic {
   dynamic _updatedAt;
   String? _title;
   String? _body;
-  dynamic _image;
+  List<Media>? _media;
   String? _author;
   String? _status;
   num? _numberOfAnswers;
@@ -80,7 +85,7 @@ YarnTopic copyWith({  String? id,
   dynamic updatedAt,
   String? title,
   String? body,
-  dynamic image,
+  List<Media>? media,
   String? author,
   String? status,
   num? numberOfAnswers,
@@ -95,7 +100,7 @@ YarnTopic copyWith({  String? id,
   updatedAt: updatedAt ?? _updatedAt,
   title: title ?? _title,
   body: body ?? _body,
-  image: image ?? _image,
+  media: media ?? _media,
   author: author ?? _author,
   status: status ?? _status,
   numberOfAnswers: numberOfAnswers ?? _numberOfAnswers,
@@ -111,7 +116,7 @@ YarnTopic copyWith({  String? id,
   dynamic get updatedAt => _updatedAt;
   String? get title => _title;
   String? get body => _body;
-  dynamic get image => _image;
+  List<Media>? get media => _media;
   String? get author => _author;
   String? get status => _status;
   num? get numberOfAnswers => _numberOfAnswers;
@@ -129,7 +134,9 @@ YarnTopic copyWith({  String? id,
     map['updated_at'] = _updatedAt;
     map['title'] = _title;
     map['body'] = _body;
-    map['image'] = _image;
+    if (_media != null) {
+      map['media'] = _media?.map((v) => v.toJson()).toList();
+    }
     map['author'] = _author;
     map['status'] = _status;
     map['number_of_answers'] = _numberOfAnswers;
@@ -140,6 +147,29 @@ YarnTopic copyWith({  String? id,
     map['number_of_comments'] = _numberOfComments;
     return map;
   }
+}
+
+class Media {
+  Media({
+    String? file,}){
+    _file = file;
+  }
+
+  Media.fromJson(dynamic json) {
+    _file = json['file'];
+  }
+  String? _file;
+  Media copyWith({  String? file,
+  }) => Media(  file: file ?? _file,
+  );
+  String? get file => _file;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['file'] = _file;
+    return map;
+  }
+
 }
 
 class ViewersAvatars {

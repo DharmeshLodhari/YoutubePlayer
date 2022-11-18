@@ -136,7 +136,7 @@ class QuestionViewState extends State<QuestionView> {
                         },
                       );
                     },
-                    isImages: yarnTopicList[index].image != null ? true : false,
+                    isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
                     yarnTopic: yarnTopicList[index],
                   ),
                 );

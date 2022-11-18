@@ -2,11 +2,9 @@ import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
 
-class AskCommentView extends StatelessWidget {
+class AskReplyView extends StatelessWidget {
   Widget? replyViews;
   String? totalLikes;
   String? totalReplies;
@@ -15,14 +13,14 @@ class AskCommentView extends StatelessWidget {
   bool? hasReplies;
   YarnTopic? yarnTopic;
 
-  AskCommentView(
+  AskReplyView(
       {this.replyViews,
-      this.totalLikes,
-      this.totalDislikes,
-      this.hasReplies = false,
-      this.isASubReply,
-      this.yarnTopic,
-      this.totalReplies});
+        this.totalLikes,
+        this.totalDislikes,
+        this.hasReplies = false,
+        this.isASubReply,
+        this.yarnTopic,
+        this.totalReplies});
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +30,6 @@ class AskCommentView extends StatelessWidget {
         child: Column(
           children: [
             _buildUserInfoRow(),
-            Divider(
-              thickness: 2,
-              color: HexColor("#EBEDFC"),
-            ),
           ],
         ),
       ),
@@ -110,8 +104,8 @@ class AskCommentView extends StatelessWidget {
     return Text(
       "Replying to Ahmed Yusuf",
       style: TextStyle(
-        fontSize: 10,
-        color: HexColor("#030F36")
+          fontSize: 10,
+          color: HexColor("#030F36")
       ),
     );
   }

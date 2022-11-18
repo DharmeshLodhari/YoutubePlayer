@@ -124,7 +124,7 @@ class _TopicActionsState extends State<TopicActions> {
       "title": messageDecoderWithEmoji(yarnTopic.title),
       "author_avatar": yarnTopic.authorAvatar,
       "author_username": messageDecoderWithEmoji(yarnTopic.authorName),
-      "image": yarnTopic.image,
+      "image": yarnTopic.media,
       "description": yarnTopic.body,
     };
 

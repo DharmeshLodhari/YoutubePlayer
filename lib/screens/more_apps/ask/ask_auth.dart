@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
 import 'models/Topics/YarnTopic.dart';
+import 'models/Topics/CommentDetails.dart';
 import 'models/ask_categories_model.dart';
 import "package:http/http.dart" as http;
 
@@ -16,6 +17,8 @@ class AskAuth extends AuthService {
     AskCategories categories = AskCategories();
     categories.id = item['id'];
     categories.name = item['name'];
+    categories.color = item['color'];
+    categories.image = item['image'];
 
     return categories;
   }
@@ -36,6 +39,8 @@ class AskAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
       List<AskCategories> askCategories = [];
@@ -230,7 +235,8 @@ class AskAuth extends AuthService {
       "body": addYarnAndQuestion.body!,
       "category": addYarnAndQuestion.categoryId!,
       "author": addYarnAndQuestion.author!,
-      "is_question": jsonEncode(addYarnAndQuestion.isQuestion!)
+      "is_question": jsonEncode(addYarnAndQuestion.isQuestion!),
+      "media_count": jsonEncode(addYarnAndQuestion.localImages!.length)
     });
 
 
@@ -238,11 +244,11 @@ class AskAuth extends AuthService {
 
     for (int i = 0; i < addYarnAndQuestion.localImages!.length; i++) {
       // Add fields
-      request.fields["imagefile_$i"] = addYarnAndQuestion.localImages![i].path;
+      request.fields["mediafile_$i"] = addYarnAndQuestion.localImages![i].path;
 
       // Create multipart using filepath, string or bytes
       var multipartFile = await http.MultipartFile.fromPath(
-          "imagefile_$i", addYarnAndQuestion.localImages![i].path);
+          "mediafile_$i", addYarnAndQuestion.localImages![i].path);
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -266,6 +272,45 @@ class AskAuth extends AuthService {
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${jsonDecode(responseBody)}");
 
       throw responseBody;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getAllComments(String? next, String previous, String postId,) async {
+    debugPrint("CALLING ALL COMMENTS");
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$postId/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<CommentDetails> commentsDetails = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        CommentDetails commentsDetail = CommentDetails.fromJson(item);
+        commentsDetails.add(commentsDetail);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": commentsDetails
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
     }
   }
 }

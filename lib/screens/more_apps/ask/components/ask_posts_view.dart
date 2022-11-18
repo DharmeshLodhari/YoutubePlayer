@@ -16,6 +16,7 @@ class AskPosts extends StatelessWidget {
 
   bool? isImages = false;
   YarnTopic? yarnTopic;
+  Color? backGroundColor;
 
   AskPosts({
     this.openComments = false,
@@ -24,6 +25,7 @@ class AskPosts extends StatelessWidget {
     this.onOptionsAction,
     this.isImages,
     this.yarnTopic,
+    this.backGroundColor,
   });
 
   @override
@@ -33,7 +35,7 @@ class AskPosts extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
-          color: HexColor("#FBFBFF"),
+          color: backGroundColor == null ? HexColor("#FBFBFF") : backGroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: _buildPostCard()
@@ -56,10 +58,10 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        _buildPostTitle(),
-        SizedBox(
-          height: 10,
-        ),
+        if (yarnTopic!.isQuestion!)...[
+          _buildPostTitle(),
+          SizedBox(height: 10),
+        ],
         _buildPostDescription(),
         SizedBox(
           height: 10,
@@ -87,10 +89,10 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        _buildPostTitle(),
-        SizedBox(
-          height: 10,
-        ),
+        if (yarnTopic!.isQuestion!)...[
+          _buildPostTitle(),
+          SizedBox(height: 10),
+        ],
         _buildPostDescription(),
         SizedBox(
           height: 10,
@@ -236,7 +238,7 @@ class AskPosts extends StatelessWidget {
     return Container(
       height: 175,
       child: Row(
-        children: yarnTopic!.image!.map((e) => Expanded(
+        children: yarnTopic!.media!.map((mediaFile) => Expanded(
           child: Container(
             height: 175,
             padding: EdgeInsets.only(right: 10),
@@ -244,7 +246,7 @@ class AskPosts extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
             ),
             child: CachedNetworkImage(
-              imageUrl: e,
+              imageUrl: mediaFile.file!,
               fit: BoxFit.contain,
               errorWidget: imageErrorWidget,
             ),
@@ -260,7 +262,7 @@ class AskPosts extends StatelessWidget {
         children: [
           Divider(
             thickness: 1,
-            color: blackFont.withOpacity(0.3),
+            color: HexColor("#BEC2F4"),
           ),
           commentsOnPosts!,
         ],

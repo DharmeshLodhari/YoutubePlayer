@@ -323,9 +323,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                     selectCategory(model.askCategories[i].id!);
                   },
                   title: model.askCategories[i].name,
-                  categoryColor: model.askCategories[i].color!.withOpacity(0.1),
+                  categoryColor: HexColor(model.askCategories[i].color!).withOpacity(0.1),
                   selectedCategoryBorderColor: selectedCategoryId == model.askCategories[i].id ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
-                  selectedCategoryTextColor: model.askCategories[i].color!,
+                  selectedCategoryTextColor: HexColor(model.askCategories[i].color!),
                 ),
               );
             },
