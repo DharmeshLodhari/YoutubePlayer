@@ -1,9 +1,12 @@
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+import 'package:Slydo/utils/colors.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../../utils/colors.dart';
-import '../../../utils/navigation_util.dart';
-import '../../../utils/util.dart';
+import 'package:provider/provider.dart';
+
 import 'ask_auth.dart';
 import 'ask_comment_detail_screen.dart';
 import 'components/ask_comment_view.dart';
@@ -11,7 +14,6 @@ import 'components/ask_posts_view.dart';
 import 'models/Topics/CommentDetails.dart';
 
 class AskDetailScreen extends StatefulWidget {
-
   YarnTopic? yarnTopic;
 
   AskDetailScreen({this.yarnTopic});
@@ -21,7 +23,6 @@ class AskDetailScreen extends StatefulWidget {
 }
 
 class _AskDetailScreenState extends State<AskDetailScreen> {
-
   bool isLoading = false;
   String next = "", previous = "";
   List<CommentDetails> commentDetailsList = [];
@@ -40,7 +41,8 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllComments(next, previous, widget.yarnTopic!.id!);
+        Map<String, dynamic>? result = await AskAuth()
+            .getAllComments(next, previous, widget.yarnTopic!.id!);
 
         if (result == null) {
           noList = true;
@@ -118,72 +120,59 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
                 child: AskPosts(
                   openComments: true,
                   commentsOnPosts: Container(
-                    child: Column(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            NavigationUtil.push(
-                              context,
-                              screen: AskCommentDetailScreen(yarnTopic: widget.yarnTopic),
-                            );
-                          },
-                          child: AskCommentView(
-                            totalLikes: '3',
-                            totalDislikes: '6',
-                            totalReplies: '13',
-                            hasReplies: true,
-                            yarnTopic: widget.yarnTopic,
-                            replyViews: AskCommentView(
-                              totalLikes: '3',
-                              totalDislikes: '6',
-                              totalReplies: '13',
-                              isASubReply: true,
-                              yarnTopic: widget.yarnTopic,
-                            ),
-                          ),
-                        ),
-                        AskCommentView(
-                          totalLikes: '3',
-                          totalDislikes: '6',
-                          totalReplies: '13',
-                          hasReplies: true,
-                          yarnTopic: widget.yarnTopic,
-                          replyViews: AskCommentView(
-                            totalLikes: '3',
-                            totalDislikes: '6',
-                            totalReplies: '13',
-                            isASubReply: true,
-                            yarnTopic: widget.yarnTopic,
-                          ),
-                        ),
-                        AskCommentView(
-                          totalLikes: '3',
-                          totalDislikes: '6',
-                          totalReplies: '13',
-                          hasReplies: true,
-                          yarnTopic: widget.yarnTopic,
-                          replyViews: AskCommentView(
-                            totalLikes: '3',
-                            totalDislikes: '6',
-                            totalReplies: '13',
-                            isASubReply: true,
-                            yarnTopic: widget.yarnTopic,
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: _buildCommentSection(),
                   ),
                   yarnTopic: widget.yarnTopic,
-                  isImages: widget.yarnTopic!.media != null && widget.yarnTopic!.media!.isNotEmpty ? true : false,
+                  isImages: widget.yarnTopic!.media != null &&
+                          widget.yarnTopic!.media!.isNotEmpty
+                      ? true
+                      : false,
                 ),
-              ),),
-            TopicTextField(
-              height: 50,
-              controller: TextEditingController(),
-              hint: "Leave your thought",
+              ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TopicTextField(
+                height: 50,
+                controller: TextEditingController(),
+                hint: "Leave your thought",
+                yarn: widget.yarnTopic,
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            )
           ],
         ));
+  }
+
+  Widget _buildCommentSection() {
+    return Column(
+      children: commentDetailsList
+          .map((e) => InkWell(
+                onTap: () {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskCommentDetailScreen(yarnTopic: widget.yarnTopic),
+                  );
+                },
+                child: AskCommentView(
+                  totalLikes: '3',
+                  totalDislikes: '6',
+                  totalReplies: '13',
+                  hasReplies: true,
+                  yarnTopic: widget.yarnTopic,
+                  replyViews: AskCommentView(
+                    totalLikes: '3',
+                    totalDislikes: '6',
+                    totalReplies: '13',
+                    isASubReply: true,
+                    yarnTopic: widget.yarnTopic,
+                  ),
+                ),
+              ))
+          .toList(),
+    );
   }
 }
 
@@ -199,6 +188,7 @@ class TopicTextField extends StatelessWidget {
   final VoidCallback? onTap;
   final bool suffix;
   final Widget? suffixIcon;
+  final YarnTopic? yarn;
 
   const TopicTextField({
     Key? key,
@@ -209,6 +199,7 @@ class TopicTextField extends StatelessWidget {
     this.function,
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
+    this.yarn,
     this.leading = const SizedBox(
       width: 0,
       height: 0,
@@ -230,20 +221,18 @@ class TopicTextField extends StatelessWidget {
           width: 2,
         ),
       ),
-      child:
-      Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             height: 24,
             width: 24,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl: "http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/310d1a87-48e9-4fee-b876-36cae907dcf7.jpg",
+                imageUrl:
+                    "http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/310d1a87-48e9-4fee-b876-36cae907dcf7.jpg",
                 fit: BoxFit.cover,
                 errorWidget: imageErrorWidget,
               ),
@@ -266,17 +255,27 @@ class TopicTextField extends StatelessWidget {
               readOnly: readOnly,
               onTap: onTap,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.all(15),
-                border: InputBorder.none,
-                hintText: hint ?? '',
-                hintStyle: TextStyle(fontSize: 12, color: HexColor("#75818F")),
-                suffixIcon: suffixIcon ?? const SizedBox.shrink()
-              ),
+                  contentPadding: const EdgeInsets.all(15),
+                  border: InputBorder.none,
+                  hintText: hint ?? '',
+                  hintStyle:
+                      TextStyle(fontSize: 12, color: HexColor("#75818F")),
+                  suffixIcon: suffixIcon ?? const SizedBox.shrink()),
             ),
           ),
           IconButton(
             padding: EdgeInsets.zero,
-            onPressed: () {},
+            onPressed: () {
+              UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+              Map<String, dynamic> data = {
+                "comment": controller.text,
+                "author_username": userBloc.user.userName
+              };
+              AskAuth().addCommentToYarn(yarn!.id!, data).then((value) => () {
+                    print("Suceesss !!");
+                  });
+            },
             icon: Icon(
               Icons.send,
               color: HexColor("#3F61DB"),

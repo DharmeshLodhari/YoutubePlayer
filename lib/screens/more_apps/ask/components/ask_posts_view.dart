@@ -33,13 +33,13 @@ class AskPosts extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: backGroundColor == null ? HexColor("#FBFBFF") : backGroundColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: _buildPostCard()
-      ),
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color:
+                backGroundColor == null ? HexColor("#FBFBFF") : backGroundColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: _buildPostCard()),
     );
   }
 
@@ -58,7 +58,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        if (yarnTopic!.isQuestion!)...[
+        if (yarnTopic!.isQuestion!) ...[
           _buildPostTitle(),
           SizedBox(height: 10),
         ],
@@ -71,7 +71,9 @@ class AskPosts extends StatelessWidget {
           height: 15,
         ),
         _buildImagesRow(),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         _buildTopActions(),
         SizedBox(
           height: 20,
@@ -89,7 +91,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        if (yarnTopic!.isQuestion!)...[
+        if (yarnTopic!.isQuestion!) ...[
           _buildPostTitle(),
           SizedBox(height: 10),
         ],
@@ -118,9 +120,7 @@ class AskPosts extends StatelessWidget {
             Container(
               height: 24,
               width: 24,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle
-              ),
+              decoration: BoxDecoration(shape: BoxShape.circle),
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: yarnTopic!.authorAvatar!,
@@ -136,26 +136,30 @@ class AskPosts extends StatelessWidget {
         ),
         Expanded(
             child: Row(
-              children: [
-                userNameWithVerifiedIcon(name: yarnTopic!.authorName!, isVerified: false),
-                SizedBox(width: 5,),
-                Icon(
-                  Icons.verified,
-                  color: HexColor("#3F61DB"),
-                  size: 12,
-                ),
-                SizedBox(width: 5,),
-                Text(
-                  '4 mins',
-                  style: TextStyle(
-                    color: blackFont,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            )
-        ),
+          children: [
+            userNameWithVerifiedIcon(
+                name: yarnTopic!.authorName!, isVerified: false),
+            SizedBox(
+              width: 5,
+            ),
+            Icon(
+              Icons.verified,
+              color: HexColor("#3F61DB"),
+              size: 12,
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              '4 mins',
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        )),
         InkWell(
           onTap: () => onOptionsAction!(),
           child: Icon(
@@ -204,26 +208,27 @@ class AskPosts extends StatelessWidget {
         Expanded(
           child: Wrap(
             runSpacing: 5,
-            children: yarnTopic!.tags!.map((e) => Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
-                color: Color(0xFFEBEDFC),
-              ),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              margin: EdgeInsets.only(right: 5),
-              child: Text(
-                e,
-                style: TextStyle(
-                  fontSize: 8,
-                ),
-              ),
-            )).toList(),
+            children: yarnTopic!.tags!
+                .map((e) => Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        color: Color(0xFFEBEDFC),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                      margin: EdgeInsets.only(right: 5),
+                      child: Text(
+                        e,
+                        style: TextStyle(
+                          fontSize: 8,
+                        ),
+                      ),
+                    ))
+                .toList(),
           ),
         ),
         SizedBox(
-            width: 70,
-            child: ViewerArranger(selectedImages: selectedImages)
-        ),
+            width: 70, child: ViewerArranger(selectedImages: selectedImages)),
       ],
     );
   }
@@ -238,20 +243,22 @@ class AskPosts extends StatelessWidget {
     return Container(
       height: 175,
       child: Row(
-        children: yarnTopic!.media!.map((mediaFile) => Expanded(
-          child: Container(
-            height: 175,
-            padding: EdgeInsets.only(right: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: CachedNetworkImage(
-              imageUrl: mediaFile.file!,
-              fit: BoxFit.contain,
-              errorWidget: imageErrorWidget,
-            ),
-          ),
-        )).toList(),
+        children: yarnTopic!.media!
+            .map((mediaFile) => Expanded(
+                  child: Container(
+                    height: 175,
+                    padding: EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: mediaFile.file!,
+                      fit: BoxFit.contain,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ))
+            .toList(),
       ),
     );
   }
@@ -270,5 +277,4 @@ class AskPosts extends StatelessWidget {
     }
     return SizedBox();
   }
-
 }

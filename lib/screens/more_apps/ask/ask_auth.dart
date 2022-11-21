@@ -3,16 +3,15 @@ import 'dart:convert';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
+import "package:http/http.dart" as http;
 
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
-import 'models/Topics/YarnTopic.dart';
 import 'models/Topics/CommentDetails.dart';
+import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
-import "package:http/http.dart" as http;
 
 class AskAuth extends AuthService {
-
   AskCategories createAskCategories(Map<String, dynamic> item) {
     AskCategories categories = AskCategories();
     categories.id = item['id'];
@@ -24,7 +23,8 @@ class AskAuth extends AuthService {
   }
 
   // Get all YARN Categories
-  Future<Map<String, dynamic>?> getAllCategories(String? next, String previous) async {
+  Future<Map<String, dynamic>?> getAllCategories(
+      String? next, String previous) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
@@ -40,7 +40,8 @@ class AskAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
       List<AskCategories> askCategories = [];
@@ -75,7 +76,8 @@ class AskAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
       UsersCategories usersCategory;
@@ -83,9 +85,7 @@ class AskAuth extends AuthService {
       debugPrint("JSON DECODED:- $jsonData");
       usersCategory = UsersCategories.fromJson(jsonData);
 
-      Map<String, dynamic> result = {
-        "results": usersCategory
-      };
+      Map<String, dynamic> result = {"results": usersCategory};
 
       return result;
 
@@ -107,7 +107,8 @@ class AskAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: body);
 
-    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 201) {
       UsersCategories usersCategory;
@@ -115,9 +116,7 @@ class AskAuth extends AuthService {
       debugPrint("JSON DECODED:- $jsonData");
       usersCategory = UsersCategories.fromJson(jsonData);
 
-      Map<String, dynamic> result = {
-        "results": usersCategory
-      };
+      Map<String, dynamic> result = {"results": usersCategory};
 
       return result;
     } else if (response.statusCode == 500) {
@@ -128,7 +127,8 @@ class AskAuth extends AuthService {
   }
 
   // Get all YARN Topics
-  Future<Map<String, dynamic>?> getAllTopics(String? next, String previous, {String? type, bool isType = false, String? categoryId}) async {
+  Future<Map<String, dynamic>?> getAllTopics(String? next, String previous,
+      {String? type, bool isType = false, String? categoryId}) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
@@ -137,7 +137,8 @@ class AskAuth extends AuthService {
     if (next == "") {
       if (isType) {
         if (categoryId != null) {
-          url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType&category=$categoryId";
+          url = AppConfig.baseUrl +
+              "/api/v1/social/ask/?$type=$isType&category=$categoryId";
         } else {
           url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
         }
@@ -175,15 +176,49 @@ class AskAuth extends AuthService {
     }
   }
 
+  // {"comment":"xyz","author_username:""};
+  // ADD COMMENT TO YARN
+  Future<Map<String, dynamic>?> addCommentToYarn(
+      String yarnId, Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$yarnId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 201) {
+      // UsersCategories usersCategory;
+      // var jsonData = json.decode(response.body);
+      // debugPrint("JSON DECODED:- $jsonData");
+      // usersCategory = UsersCategories.fromJson(jsonData);
+      //
+      // Map<String, dynamic> result = {"results": usersCategory};
+
+      return {};
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // Search Yarns
-  Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous, {bool isQuestion = false, String? searchText}) async {
+  Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous,
+      {bool isQuestion = false, String? searchText}) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/?question=$isQuestion&search=$searchText";
+      url = AppConfig.baseUrl +
+          "/api/v1/social/ask/?question=$isQuestion&search=$searchText";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -241,7 +276,6 @@ class AskAuth extends AuthService {
       "media_count": jsonEncode(addYarnAndQuestion.localImages!.length)
     });
 
-
     List<MultipartFile> newList = [];
 
     for (int i = 0; i < addYarnAndQuestion.localImages!.length; i++) {
@@ -277,7 +311,11 @@ class AskAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> getAllComments(String? next, String previous, String postId,) async {
+  Future<Map<String, dynamic>?> getAllComments(
+    String? next,
+    String previous,
+    String postId,
+  ) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
     if (next == null) {
