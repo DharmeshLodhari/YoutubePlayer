@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/ask/ask_by_category_screen.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import '../../../utils/util.dart';
 import 'add_topic_screen.dart';
 import 'ask_auth.dart';
 import 'ask_search_screen.dart';
-import 'ask_settings_screen.dart';
+import 'ask_setting_screen.dart';
 import 'ask_viewmodel.dart';
 import 'components/ask_category_pick.dart';
 import 'components/category_chip.dart';
@@ -320,7 +321,8 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: CategoryChip(
                   onTap: () {
-                    selectCategory(model.askCategories[i].id!);
+                    // selectCategory(model.askCategories[i].id!);
+                    NavigationUtil.push(context, screen: AskByCategoryScreen(askCategories: model.askCategories[i],));
                   },
                   title: model.askCategories[i].name,
                   categoryColor: HexColor(model.askCategories[i].color!).withOpacity(0.1),

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -10,8 +10,14 @@ import 'ask_detail_screen.dart';
 import 'ask_viewmodel.dart';
 import 'components/ask_options.dart';
 import 'components/ask_posts_view.dart';
+import 'components/topics_view.dart';
+import 'components/question_view.dart';
 
 class AskByCategoryScreen extends StatefulWidget {
+  
+  AskCategories? askCategories;
+  AskByCategoryScreen({this.askCategories});
+  
   @override
   State<AskByCategoryScreen> createState() => _AskByCategoryScreenState();
 }
@@ -31,7 +37,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
       return Scaffold(
         backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
-          backgroundColor: blackFont,
+          backgroundColor: HexColor(widget.askCategories!.color!),
           child: Icon(
             Icons.add,
             color: Colors.white,
@@ -46,16 +52,16 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(80.0),
           child: AppBar(
-            backgroundColor: model.categoryColors[
-                    model.categoryList.indexOf(model.newlySelectedCategory!)]
+            backgroundColor: HexColor(widget.askCategories!.color!)
                 .withOpacity(0.8),
             title: Row(
               children: [
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      model.newlySelectedCategory!,
+                      widget.askCategories!.name!,
                       style: TextStyle(
                         fontSize: 21,
                         fontWeight: FontWeight.w700,
@@ -138,7 +144,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                             _pageViewCtrl.jumpToPage(0);
                           },
                           pageNum: 0,
-                          title: 'Latest',
+                          title: 'Yarn',
                           currentTapIndex: model.currentAskTapOnHome),
                       pageViewTabItem(
                           onPageTap: () {
@@ -146,7 +152,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                             _pageViewCtrl.jumpToPage(1);
                           },
                           pageNum: 1,
-                          title: 'Trending',
+                          title: 'Questions',
                           currentTapIndex: model.currentAskTapOnHome),
                     ],
                   ),
@@ -160,8 +166,8 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                   },
                   controller: _pageViewCtrl,
                   children: [
-                    AskListView(listLength: 2),
-                    AskListView(listLength: 3)
+                    TopicView(selectedCategory: widget.askCategories!.id!,),
+                    QuestionView(selectedCategory: widget.askCategories!.id!,),
                   ],
                 ),
               ),
@@ -185,13 +191,13 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
           color: currentTapIndex == pageNum
-              ? navyBlue.withOpacity(0.1)
+              ? HexColor(widget.askCategories!.color!).withOpacity(0.1)
               : Colors.white,
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: currentTapIndex == pageNum ? navyBlue : blackFont,
+            color: currentTapIndex == pageNum ? HexColor(widget.askCategories!.color!) : blackFont,
             fontSize: 14,
             fontWeight:
                 currentTapIndex == pageNum ? FontWeight.w600 : FontWeight.w400,

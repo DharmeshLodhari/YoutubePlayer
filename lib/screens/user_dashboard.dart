@@ -600,53 +600,46 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: "Yarn",
             onTap: () async {
-              UserCategoriesStructure? userCategories = await _db.getUserSelectedYarnCategories();
-              if (userCategories != null) {
-                var data = jsonDecode(userCategories.userSelectedCategory!);
-                if(data == null && data.length != 3) {
-                  UsersCategories userCategory = await getUserCategories();
-                  if (userCategory.categories!.length != 3) {
-                    NavigationUtil.push(
-                      context,
-                      screen: AskStartScreen(),
-                    );
-                  } else {
-                    NavigationUtil.push(
-                      context,
-                      screen: AskHomeScreen(),
-                    );
-                  }
-                } else {
-                  NavigationUtil.push(
-                    context,
-                    screen: AskHomeScreen(),
-                  );
-                }
-              } else {
-                UsersCategories userCategory = await getUserCategories();
-                if (userCategory.categories!.length != 3) {
-                  NavigationUtil.push(
-                    context,
-                    screen: AskStartScreen(),
-                  );
-                } else {
-                  NavigationUtil.push(
-                    context,
-                    screen: AskHomeScreen(),
-                  );
-                }
-              }
-              //TODO: GET USER CATEGORY FROM DB
-              //TODO: if CATEGORY is EMPTY OR NULL
-              //TODO: MAKE API CALL AND GET USER CATEGORY AND STORE IN DB IF IT IS NULL OR EMPTY
-              //TODO: NAVIGATE TO ONBORDING
-
-              //TODO: IF CATEROY IS THREE OR MORE THEN REDIRECT USER TO HOME PAGE OF YARN
-
-              // NavigationUtil.push(
-              //   context,
-              //   screen: AskStartScreen(),
-              // );
+              // UserCategoriesStructure? userCategories = await _db.getUserSelectedYarnCategories();
+              // if (userCategories != null) {
+              //   var data = jsonDecode(userCategories.userSelectedCategory!);
+              //   if(data == null && data.length != 3) {
+              //     UsersCategories userCategory = await getUserCategories();
+              //     if (userCategory.categories!.length != 3) {
+              //       NavigationUtil.push(
+              //         context,
+              //         screen: AskStartScreen(),
+              //       );
+              //     } else {
+              //       NavigationUtil.push(
+              //         context,
+              //         screen: AskHomeScreen(),
+              //       );
+              //     }
+              //   } else {
+              //     NavigationUtil.push(
+              //       context,
+              //       screen: AskHomeScreen(),
+              //     );
+              //   }
+              // } else {
+              //   UsersCategories userCategory = await getUserCategories();
+              //   if (userCategory.categories!.length != 3) {
+              //     NavigationUtil.push(
+              //       context,
+              //       screen: AskStartScreen(),
+              //     );
+              //   } else {
+              //     NavigationUtil.push(
+              //       context,
+              //       screen: AskHomeScreen(),
+              //     );
+              //   }
+              // }
+              NavigationUtil.push(
+                context,
+                screen: AskHomeScreen(),
+              );
               // if (appConfigurationModel?.enableAsk == true) {
               //   NavigationUtil.push(
               //     context,

@@ -75,6 +75,8 @@ class AskAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
     if (response.statusCode == 200) {
       UsersCategories usersCategory;
       var jsonData = json.decode(response.body);
