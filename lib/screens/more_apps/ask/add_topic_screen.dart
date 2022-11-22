@@ -10,7 +10,6 @@ import 'package:textfield_tags/textfield_tags.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
-import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/CustomBoxShadow.dart';
 import '../../../widget/curved_btn.dart';

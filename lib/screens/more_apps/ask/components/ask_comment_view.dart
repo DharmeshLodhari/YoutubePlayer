@@ -2,27 +2,18 @@ import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
+import '../models/Topics/CommentDetails.dart';
 
 class AskCommentView extends StatelessWidget {
-  Widget? replyViews;
-  String? totalLikes;
-  String? totalReplies;
-  String? totalDislikes;
-  bool? isASubReply;
-  bool? hasReplies;
   YarnTopic? yarnTopic;
+  CommentDetails? commentDetail;
 
   AskCommentView(
-      {this.replyViews,
-      this.totalLikes,
-      this.totalDislikes,
-      this.hasReplies = false,
-      this.isASubReply,
+      {
       this.yarnTopic,
-      this.totalReplies});
+      this.commentDetail,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +48,7 @@ class AskCommentView extends StatelessWidget {
               ),
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: yarnTopic!.authorAvatar!,
+                  imageUrl: commentDetail!.authorAvatar!,
                   fit: BoxFit.cover,
                   errorWidget: imageErrorWidget,
                 ),
@@ -74,10 +65,10 @@ class AskCommentView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    userNameWithVerifiedIcon(name: yarnTopic!.authorName!, isVerified: false),
+                    userNameWithVerifiedIcon(name: commentDetail!.authorUsername!, isVerified: false),
                     SizedBox(width: 5,),
                     Text(
-                      '4 mins',
+                      '',
                       style: TextStyle(
                         color: blackFont,
                         fontSize: 12,
@@ -108,7 +99,7 @@ class AskCommentView extends StatelessWidget {
 
   Widget _buildRepliedText() {
     return Text(
-      "Replying to Ahmed Yusuf",
+      "",
       style: TextStyle(
         fontSize: 10,
         color: HexColor("#030F36")
@@ -118,7 +109,7 @@ class AskCommentView extends StatelessWidget {
 
   Widget _buildCommentDescription() {
     return Text(
-      "Vitamin C helps in controlling fever, halts the infection from spreading and accelerates healing in the body. Lemon water, orange and sweet lime are good options. Eat as fruits or have as juice depending upon your condition.",
+      commentDetail!.comment!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,
@@ -131,6 +122,9 @@ class AskCommentView extends StatelessWidget {
   Widget _buildTopActions() {
     return TopicActions(
       yarnTopic: yarnTopic!,
+      commentCount: commentDetail!.replyCount! as int,
+      likeCount: commentDetail!.socialLikes != null ? commentDetail!.socialLikes! as int : 0,
+      disLikeCount: commentDetail!.socialDislikes != null ? commentDetail!.socialDislikes! as int : 0,
     );
   }
 }

@@ -5,12 +5,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../utils/colors.dart';
+import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../ask_comment_detail_screen.dart';
+import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
+import 'ask_comment_view.dart';
 
 class AskPosts extends StatelessWidget {
   bool? openComments;
-  Widget? commentsOnPosts;
+  List<CommentDetails>? commentDetailsList = [];
   bool? showTag;
   Function? onOptionsAction;
 
@@ -20,7 +24,7 @@ class AskPosts extends StatelessWidget {
 
   AskPosts({
     this.openComments = false,
-    this.commentsOnPosts,
+    this.commentDetailsList,
     this.showTag = true,
     this.onOptionsAction,
     this.isImages,
@@ -39,18 +43,18 @@ class AskPosts extends StatelessWidget {
                 backGroundColor == null ? HexColor("#FBFBFF") : backGroundColor,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: _buildPostCard()),
+          child: _buildPostCard(context: context)),
     );
   }
 
-  Widget _buildPostCard() {
+  Widget _buildPostCard({required BuildContext context}) {
     if (isImages!) {
-      return _buildWithImagesPostCard();
+      return _buildWithImagesPostCard(context: context);
     }
-    return _buildWithOutImagesPostCard();
+    return _buildWithOutImagesPostCard(context: context);
   }
 
-  Widget _buildWithImagesPostCard() {
+  Widget _buildWithImagesPostCard({required BuildContext context}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -78,12 +82,12 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
-        _buildCommentView(),
+        _buildCommentView(context: context),
       ],
     );
   }
 
-  Widget _buildWithOutImagesPostCard() {
+  Widget _buildWithOutImagesPostCard({required BuildContext context}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -107,7 +111,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
-        _buildCommentView(),
+        _buildCommentView(context: context),
       ],
     );
   }
@@ -151,7 +155,7 @@ class AskPosts extends StatelessWidget {
               width: 5,
             ),
             Text(
-              '4 mins',
+              '',
               style: TextStyle(
                 color: blackFont,
                 fontSize: 12,
@@ -263,15 +267,29 @@ class AskPosts extends StatelessWidget {
     );
   }
 
-  Widget _buildCommentView() {
-    if (openComments! && commentsOnPosts != null) {
+  Widget _buildCommentView({required BuildContext context}) {
+    if (openComments! && commentDetailsList!.isNotEmpty) {
       return Column(
         children: [
           Divider(
             thickness: 1,
             color: HexColor("#BEC2F4"),
           ),
-          commentsOnPosts!,
+          Column(
+            children: commentDetailsList!
+                .map((e) => InkWell(
+              onTap: () {
+                NavigationUtil.push(
+                  context,
+                  screen: AskCommentDetailScreen(yarnTopic: yarnTopic, commentDetail: e,),
+                );
+              },
+              child: AskCommentView(
+                yarnTopic: yarnTopic,
+                commentDetail: e,
+              ),
+            )).toList(),
+          ),
         ],
       );
     }

@@ -15,8 +15,11 @@ import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 
 class TopicActions extends StatefulWidget {
   YarnTopic yarnTopic;
+  int? commentCount;
+  int? likeCount;
+  int? disLikeCount;
 
-  TopicActions({required this.yarnTopic});
+  TopicActions({required this.yarnTopic, this.commentCount, this.likeCount, this.disLikeCount});
 
   @override
   State<TopicActions> createState() => _TopicActionsState();
@@ -50,7 +53,7 @@ class _TopicActionsState extends State<TopicActions> {
               width: 8,
             ),
             Text(
-              "956",
+              getLikeCount(),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
@@ -65,7 +68,7 @@ class _TopicActionsState extends State<TopicActions> {
               width: 8,
             ),
             Text(
-              "12",
+              getDisLikeCount(),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
@@ -103,9 +106,25 @@ class _TopicActionsState extends State<TopicActions> {
   }
 
   String getCommentCount() {
-    if (widget.yarnTopic.numberOfComments != null &&
-        widget.yarnTopic.numberOfComments != 0) {
-      return widget.yarnTopic.numberOfComments?.toString() ?? "";
+    if (widget.commentCount != null &&
+        widget.commentCount != 0) {
+      return widget.commentCount?.toString() ?? "";
+    }
+    return "";
+  }
+
+  String getLikeCount() {
+    if (widget.likeCount != null &&
+        widget.likeCount != 0) {
+      return widget.likeCount?.toString() ?? "";
+    }
+    return "";
+  }
+
+  String getDisLikeCount() {
+    if (widget.disLikeCount != null &&
+        widget.disLikeCount != 0) {
+      return widget.disLikeCount?.toString() ?? "";
     }
     return "";
   }
