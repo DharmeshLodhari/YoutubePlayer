@@ -1,14 +1,13 @@
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../utils/colors.dart';
 import '../../../utils/util.dart';
-import 'components/ask_comment_view.dart';
 import 'components/ask_posts_view.dart';
 import 'components/ask_reply_view.dart';
 
 class AskCommentDetailScreen extends StatelessWidget {
-
   YarnTopic? yarnTopic;
 
   AskCommentDetailScreen({this.yarnTopic});
@@ -47,28 +46,29 @@ class AskCommentDetailScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   padding: EdgeInsets.all(10),
                   child: AskPosts(
-                    openComments: true,
-                    commentsOnPosts: Container(
-                      child: Column(
-                        children: [
-                          AskReplyView(
-                            yarnTopic: yarnTopic,
-                          ),
-                          AskReplyView(yarnTopic: yarnTopic,),
-                          AskReplyView(
-                            yarnTopic: yarnTopic,
-                          ),
-                        ],
+                      openComments: true,
+                      commentsOnPosts: Container(
+                        child: Column(
+                          children: [
+                            AskReplyView(
+                              yarnTopic: yarnTopic,
+                            ),
+                            AskReplyView(
+                              yarnTopic: yarnTopic,
+                            ),
+                            AskReplyView(
+                              yarnTopic: yarnTopic,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    yarnTopic: yarnTopic,
-                    isImages: yarnTopic!.media != null ? true : false,
-                    backGroundColor: HexColor("#EBEDFC")
-                  ),
+                      yarnTopic: yarnTopic,
+                      isImages: yarnTopic!.media != null ? true : false,
+                      backGroundColor: HexColor("#EBEDFC")),
                 ),
-              ),),
+              ),
+            ),
             TopicTextField(
-              height: 50,
               controller: TextEditingController(),
               hint: "Leave your thought",
             ),
@@ -120,20 +120,18 @@ class TopicTextField extends StatelessWidget {
           width: 2,
         ),
       ),
-      child:
-      Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             height: 24,
             width: 24,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl: "http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/310d1a87-48e9-4fee-b876-36cae907dcf7.jpg",
+                imageUrl:
+                    "http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/310d1a87-48e9-4fee-b876-36cae907dcf7.jpg",
                 fit: BoxFit.cover,
                 errorWidget: imageErrorWidget,
               ),
@@ -159,9 +157,9 @@ class TopicTextField extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(15),
                   border: InputBorder.none,
                   hintText: hint ?? '',
-                  hintStyle: TextStyle(fontSize: 12, color: HexColor("#75818F")),
-                  suffixIcon: suffixIcon ?? const SizedBox.shrink()
-              ),
+                  hintStyle:
+                      TextStyle(fontSize: 12, color: HexColor("#75818F")),
+                  suffixIcon: suffixIcon ?? const SizedBox.shrink()),
             ),
           ),
           IconButton(

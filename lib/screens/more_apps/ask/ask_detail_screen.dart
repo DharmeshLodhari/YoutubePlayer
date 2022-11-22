@@ -141,14 +141,24 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
                 hint: "Leave your thought",
                 yarn: widget.yarnTopic,
                 userImage: userBloc.user.avatar,
-                onPressed: () {
+                onPressed: () async {
                   Map<String, dynamic> data = {
                     "comment": controller.text,
                     "author_username": userBloc.user.userName
                   };
-                  AskAuth().addCommentToYarn(widget.yarnTopic!.id!, data).then((value) => () {
-                    print("Success !!");
-                  });
+                  try {
+                    CommentDetails? commentDetails = await AskAuth()
+                        .addCommentToYarn(widget.yarnTopic!.id!, data);
+                    if (commentDetails != null) {
+                      commentDetailsList.insert(0, commentDetails);
+                      controller.clear();
+
+                      if (mounted) setState(() {});
+                    }
+                  } catch (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(error.toString() ?? "")));
+                  }
                 },
               ),
             ),
@@ -205,32 +215,32 @@ class TopicTextField extends StatelessWidget {
   final String? userImage;
   final VoidCallback? onPressed;
 
-  const TopicTextField({
-    Key? key,
-    required this.controller,
-    this.hint,
-    this.validator,
-    this.height = 60,
-    this.function,
-    this.keyboardType = TextInputType.text,
-    this.readOnly = false,
-    this.yarn,
-    this.leading = const SizedBox(
-      width: 0,
-      height: 0,
-    ),
-    this.onTap,
-    this.suffix = true,
-    this.suffixIcon,
-    this.userImage,
-    this.onPressed
-  }) : super(key: key);
+  const TopicTextField(
+      {Key? key,
+      required this.controller,
+      this.hint,
+      this.validator,
+      this.height = 60,
+      this.function,
+      this.keyboardType = TextInputType.text,
+      this.readOnly = false,
+      this.yarn,
+      this.leading = const SizedBox(
+        width: 0,
+        height: 0,
+      ),
+      this.onTap,
+      this.suffix = true,
+      this.suffixIcon,
+      this.userImage,
+      this.onPressed})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: height,
-      padding: EdgeInsets.symmetric(horizontal: 15),
+      padding: EdgeInsets.only(left: 16, right: 0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
@@ -271,11 +281,11 @@ class TopicTextField extends StatelessWidget {
               readOnly: readOnly,
               onTap: onTap,
               decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.all(15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   border: InputBorder.none,
                   hintText: hint ?? '',
                   hintStyle:
-                      TextStyle(fontSize: 12, color: HexColor("#75818F")),
+                      TextStyle(fontSize: 14, color: HexColor("#75818F")),
                   suffixIcon: suffixIcon ?? const SizedBox.shrink()),
             ),
           ),

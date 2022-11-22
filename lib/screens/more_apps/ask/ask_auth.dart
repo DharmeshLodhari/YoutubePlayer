@@ -107,7 +107,8 @@ class AskAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: body);
 
-    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 201) {
       UsersCategories usersCategory;
@@ -115,9 +116,7 @@ class AskAuth extends AuthService {
       debugPrint("JSON DECODED:- $jsonData");
       usersCategory = UsersCategories.fromJson(jsonData);
 
-      Map<String, dynamic> result = {
-        "results": usersCategory
-      };
+      Map<String, dynamic> result = {"results": usersCategory};
 
       return result;
     } else if (response.statusCode == 500) {
@@ -128,10 +127,12 @@ class AskAuth extends AuthService {
   }
 
   // Save User's Selected Single Categories
-  Future<Map<String, dynamic>?> saveUsersSingleCategories(String categoryId) async {
+  Future<Map<String, dynamic>?> saveUsersSingleCategories(
+      String categoryId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-single-interest/$categoryId/";
+    url = AppConfig.baseUrl +
+        "/api/v1/social/ask/user-single-interest/$categoryId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -157,10 +158,12 @@ class AskAuth extends AuthService {
   }
 
   // Delete User's Selected Single Categories
-  Future<Map<String, dynamic>?> deleteUsersSingleCategories(String categoryId) async {
+  Future<Map<String, dynamic>?> deleteUsersSingleCategories(
+      String categoryId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-single-interest/$categoryId/";
+    url = AppConfig.baseUrl +
+        "/api/v1/social/ask/user-single-interest/$categoryId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -234,7 +237,6 @@ class AskAuth extends AuthService {
       return null;
     }
   }
-
 
   // Search Yarns
   Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous,
@@ -342,7 +344,7 @@ class AskAuth extends AuthService {
 
   // {"comment":"xyz","author_username:""};
   // ADD COMMENT TO YARN
-  Future<Map<String, dynamic>?> addCommentToYarn(
+  Future<CommentDetails?> addCommentToYarn(
       String yarnId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
@@ -351,24 +353,19 @@ class AskAuth extends AuthService {
 
     var headers = await getAuthHeaders();
     var response =
-    await httpPost(url, headers: headers, body: jsonEncode(body));
+        await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 201) {
-      // UsersCategories usersCategory;
-      // var jsonData = json.decode(response.body);
-      // debugPrint("JSON DECODED:- $jsonData");
-      // usersCategory = UsersCategories.fromJson(jsonData);
-      //
-      // Map<String, dynamic> result = {"results": usersCategory};
-
-      return {};
+    if (response.statusCode == 200) {
+      CommentDetails commentDetails =
+          CommentDetails.fromJson(json.decode(response.body));
+      return commentDetails;
     } else if (response.statusCode == 500) {
-      return null;
+      return Future.error("Please try again later !!");
     } else {
-      return null;
+      return Future.error("${response.body}");
     }
   }
 
@@ -421,12 +418,13 @@ class AskAuth extends AuthService {
       String yarnId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$yarnId/";
+    url =
+        AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$yarnId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
     var response =
-    await httpPost(url, headers: headers, body: jsonEncode(body));
+        await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -449,17 +447,18 @@ class AskAuth extends AuthService {
 
   // Get all Reply
   Future<Map<String, dynamic>?> getAllReply(
-      String? next,
-      String previous,
-      String postId,
-      ) async {
+    String? next,
+    String previous,
+    String postId,
+  ) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$postId/";
+      url = AppConfig.baseUrl +
+          "/api/v1/social/ask/reply-a-yarn-comment/$postId/";
     } else {
       url = getSecureUrl(url: next);
     }
