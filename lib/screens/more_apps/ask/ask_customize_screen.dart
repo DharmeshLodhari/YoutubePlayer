@@ -14,7 +14,6 @@ class AskSCustomizeScreen extends StatefulWidget {
 }
 
 class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
-
   bool isAskCategoriesLoading = false;
   String? categoriesNext = "";
   String? categoriesPrevious = "";
@@ -39,7 +38,8 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
   }
 
   Future<UsersCategories?> saveUserCategories(String categoryId) async {
-    Map<String, dynamic>? result = await AskAuth().saveUsersSingleCategories(categoryId);
+    Map<String, dynamic>? result =
+        await AskAuth().saveUsersSingleCategories(categoryId);
     setState(() {
       usersCategory = result!['results'];
     });
@@ -47,7 +47,8 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
   }
 
   Future<UsersCategories?> deleteUserCategories(String categoryId) async {
-    Map<String, dynamic>? result = await AskAuth().deleteUsersSingleCategories(categoryId);
+    Map<String, dynamic>? result =
+        await AskAuth().deleteUsersSingleCategories(categoryId);
     setState(() {
       usersCategory = result!['results'];
     });
@@ -84,7 +85,9 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
           askCategories.addAll(tempList);
         }
       }
-      if (Provider.of<AskViewModel>(context, listen: false).askCategories.isEmpty) {
+      if (Provider.of<AskViewModel>(context, listen: false)
+          .askCategories
+          .isEmpty) {
         if (mounted) {
           setState(() {
             noCategoriesList = true;
@@ -106,66 +109,82 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
     return Consumer<AskViewModel>(builder: (context, model, child) {
       return Scaffold(
         backgroundColor: white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Text(
-            'Categories',
-            style: TextStyle(
-              fontSize: 21,
-              fontWeight: FontWeight.w700,
-              color: blackFont,
-            ),
-          ),
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.keyboard_arrow_left,
-              color: navyBlue,
-              size: 26,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: usersCategory != null ? Column(
-              children: [
-                ...List.generate(
-                  model.askCategories.length,
-                  (i) {
-                    return Column(
-                      children: [
-                        CustomizeCategory(
-                          askCategory: model.askCategories[i],
-                          isAdd: usersCategory!.categories!.length-1 >= i ? usersCategory!.categories![i].id == model.askCategories[i].id ? true : false : false,
-                          onTap: () {
-                            if (usersCategory!.categories!.length-1 >= i) {
-                              if (usersCategory!.categories![i].id == model.askCategories[i].id) {
-                                deleteUserCategories(model.askCategories[i].id!);
-                              } else {
-                                saveUserCategories(model.askCategories[i].id!);
-                              }
-                            } else {
-                              saveUserCategories(model.askCategories[i].id!);
-                            }
-                          },
-                        ),
-                        Divider(
-                          color: HexColor("#EBEDFC"),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ) : Center(child: CircularProgressIndicator(),),
-          ),
-        ),
+        appBar: _buildAppBar(),
+        body: _buildBody(),
       );
     });
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: Text(
+        'Categories',
+        style: TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.w700,
+          color: blackFont,
+        ),
+      ),
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.keyboard_arrow_left,
+          color: navyBlue,
+          size: 26,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: usersCategory != null
+            ? _buildCategoryList()
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryList() {
+    return Column(
+      children: askCategories.map((category) {
+        bool isCategorySelected = false;
+
+        for (AskCategories cat in usersCategory?.categories ?? []) {
+          if (cat.id == category.id) {
+            isCategorySelected = true;
+            break;
+          }
+        }
+
+        return Column(
+          children: [
+            CustomizeCategory(
+              askCategory: category,
+              isAdd: isCategorySelected,
+              onTap: () async {
+                if (isCategorySelected) {
+                  await deleteUserCategories(category.id!);
+                } else {
+                  await saveUserCategories(category.id!);
+                }
+              },
+            ),
+            Divider(
+              color: HexColor("#EBEDFC"),
+            ),
+          ],
+        );
+      }).toList(),
+    );
   }
 
   bool? isAddCategory() {

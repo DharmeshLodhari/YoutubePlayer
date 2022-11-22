@@ -4,16 +4,14 @@ import 'package:flutter/material.dart';
 import '../models/ask_categories_model.dart';
 
 class CustomizeCategory extends StatelessWidget {
-
   AskCategories? askCategory;
   bool? isAdd = false;
   GestureTapCallback? onTap;
-
-  CustomizeCategory({Key? key, this.askCategory, this.isAdd, this.onTap}) : super(key: key);
+  CustomizeCategory({this.askCategory, this.isAdd, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("IS ADDED CATEGORY- $isAdd");
+    debugPrint("IS ADDED CATEGORY- ${isAdd}");
     return ListTile(
       visualDensity: VisualDensity(vertical: -3, horizontal: 0),
       title: Text(
@@ -29,10 +27,11 @@ class CustomizeCategory extends StatelessWidget {
           height: 25,
           width: 60,
           decoration: BoxDecoration(
-            color: isAdd! ? Colors.white : HexColor("#3F61DB"),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: HexColor("#3F61DB"),)
-          ),
+              color: isAdd! ? Colors.white : HexColor("#3F61DB"),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: HexColor("#3F61DB"),
+              )),
           child: Center(
             child: Text(
               isAdd! ? "Remove" : "Add",
