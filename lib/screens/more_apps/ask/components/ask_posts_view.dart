@@ -34,17 +34,13 @@ class AskPosts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color:
-                backGroundColor == null ? HexColor("#FBFBFF") : backGroundColor,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: _buildPostCard(context: context)),
-    );
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12),
+        decoration: BoxDecoration(
+          color: HexColor("#FBFBFF"),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: _buildPostCard(context: context));
   }
 
   Widget _buildPostCard({required BuildContext context}) {
@@ -74,14 +70,11 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 15,
         ),
-        _buildImagesRow(),
+        _buildImagesRow(context: context),
         SizedBox(
           height: 20,
         ),
         _buildTopActions(),
-        SizedBox(
-          height: 20,
-        ),
         _buildCommentView(context: context),
       ],
     );
@@ -108,9 +101,6 @@ class AskPosts extends StatelessWidget {
           height: 15,
         ),
         _buildTopActions(),
-        SizedBox(
-          height: 20,
-        ),
         _buildCommentView(context: context),
       ],
     );
@@ -141,8 +131,20 @@ class AskPosts extends StatelessWidget {
         Expanded(
             child: Row(
           children: [
-            userNameWithVerifiedIcon(
-                name: yarnTopic!.authorName!, isVerified: false),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                userNameWithVerifiedIcon(
+                    name: yarnTopic!.authorName!, isVerified: false),
+                Text(
+                  "@${yarnTopic!.author!}",
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: HexColor("#3F61DB")
+                  ),
+                ),
+              ],
+            ),
             SizedBox(
               width: 5,
             ),
@@ -212,22 +214,15 @@ class AskPosts extends StatelessWidget {
         Expanded(
           child: Wrap(
             runSpacing: 5,
+            spacing: 2,
             children: yarnTopic!.tags!
-                .map((e) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(3),
-                        color: Color(0xFFEBEDFC),
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                      margin: EdgeInsets.only(right: 5),
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                          fontSize: 8,
-                        ),
-                      ),
-                    ))
+                .map((e) => Text(
+                  "#$e",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: HexColor("#3F61DB"),
+                  ),
+                ))
                 .toList(),
           ),
         ),
@@ -240,29 +235,188 @@ class AskPosts extends StatelessWidget {
   Widget _buildTopActions() {
     return TopicActions(
       yarnTopic: yarnTopic!,
+      commentCount: yarnTopic!.numberOfComments != null ? yarnTopic!.numberOfComments! : 0,
     );
   }
 
-  Widget _buildImagesRow() {
+  Widget _buildImagesRow({required BuildContext context}) {
+    if (yarnTopic!.media!.length == 1) {
+      return _buildSingleImage(context: context);
+    } else if (yarnTopic!.media!.length == 2) {
+      return _buildTwoImageRow(context: context);
+    } else if (yarnTopic!.media!.length == 3) {
+      return _buildThreeImageRow(context: context);
+    } else if (yarnTopic!.media!.length >= 4) {
+      return _buildFourImageRow(context: context);
+    }
+    return SizedBox();
+  }
+
+  Widget _buildSingleImage({required BuildContext context}) {
+    return Container(
+      width: double.infinity,
+      child: Container(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: CachedNetworkImage(
+            imageUrl: yarnTopic!.media!.first.file!,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTwoImageRow({required BuildContext context}) {
     return Container(
       height: 175,
       child: Row(
         children: yarnTopic!.media!
             .map((mediaFile) => Expanded(
-                  child: Container(
-                    height: 175,
-                    padding: EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+          child: Container(
+            height: (MediaQuery.of(context).size.width - 40) / 2,
+            width: (MediaQuery.of(context).size.width - 40) / 2,
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: yarnTopic!.media![0].file!,
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: double.infinity,
+                errorWidget: imageErrorWidget,
+              ),
+            ),
+          ),
+        ),)
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildThreeImageRow({required BuildContext context}) {
+    return Container(
+      height: 175,
+      child: Row(
+        children: yarnTopic!.media!
+            .map((mediaFile) => Container(
+          height: 175,
+          padding: EdgeInsets.only(right: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: CachedNetworkImage(
+              imageUrl: mediaFile.file!,
+              fit: BoxFit.cover,
+              errorWidget: imageErrorWidget,
+            ),
+          ),
+        ))
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildFourImageRow({required BuildContext context}) {
+    return Container(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
-                      imageUrl: mediaFile.file!,
-                      fit: BoxFit.contain,
+                      imageUrl: yarnTopic!.media![0].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
                       errorWidget: imageErrorWidget,
                     ),
                   ),
-                ))
-            .toList(),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnTopic!.media![1].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 8,),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnTopic!.media![2].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnTopic!.media![3].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

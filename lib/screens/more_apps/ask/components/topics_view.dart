@@ -100,7 +100,7 @@ class TopicViewState extends State<TopicView> {
       ),
       controller: _postRefreshController,
       onRefresh: _onPostRefresh,
-      child: !isLoading ? !noList ? ListView.builder(
+      child: !isLoading ? !noList ? ListView.separated(
         physics: ClampingScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
         itemCount: yarnTopicList.length,
@@ -136,6 +136,9 @@ class TopicViewState extends State<TopicView> {
               yarnTopic: yarnTopicList[index],
             ),
           );
+        },
+        separatorBuilder: (context, int) {
+          return SizedBox(height: 8,);
         },
       ) : NoItemInList(
         msg: AppLocalization.of(context)!.noResultFound,

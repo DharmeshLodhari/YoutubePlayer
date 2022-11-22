@@ -3,7 +3,6 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/navigation_util.dart';
-import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import 'add_topic_screen.dart';
@@ -11,7 +10,6 @@ import 'ask_auth.dart';
 import 'ask_search_screen.dart';
 import 'ask_setting_screen.dart';
 import 'ask_viewmodel.dart';
-import 'components/ask_category_pick.dart';
 import 'components/category_chip.dart';
 import 'components/myfeed.dart';
 import 'components/question_view.dart';
@@ -42,6 +40,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
   bool noCategoriesList = false;
   int? categoryCount = 0;
   String? selectedCategoryId;
+  late AskViewModel askViewModel;
 
   List<Color> categoryColors = [
     Color(0xFFF07097),
@@ -93,11 +92,10 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         if (mounted) {
           noCategoriesList = false;
           isAskCategoriesLoading = false;
-          context.read<AskViewModel>().setAskCategories(tempList);
-          //askCategoriesList.addAll(tempList);
+          askViewModel.askCategories.addAll(tempList);
         }
       }
-      if (Provider.of<AskViewModel>(context, listen: false).askCategories.isEmpty) {
+      if (askViewModel.askCategories.isEmpty) {
         if (mounted) {
           setState(() {
             noCategoriesList = true;
@@ -116,17 +114,16 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AskViewModel>(builder: (context, model, child) {
-      return Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: _buildFloatingActionButton(model),
-        appBar: _buildAppBar() as PreferredSizeWidget,
-        body: _buildBody(model),
-      );
-    });
+    askViewModel = Provider.of<AskViewModel>(context, listen: false);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      floatingActionButton: _buildFloatingActionButton(),
+      appBar: _buildAppBar() as PreferredSizeWidget,
+      body: _buildBody(),
+    );
   }
 
-  Widget _buildFloatingActionButton(AskViewModel model) {
+  Widget _buildFloatingActionButton() {
     return SpeedDial(
       child: Icon(
         Icons.add,
@@ -143,7 +140,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           title: "Ask Question",
           icon: SlydoAppIconNew.question,
           onTap: () {
-            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: false,)).then((value) {
+            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: false,)).then((value) {
               topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
               questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
               myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
@@ -154,7 +151,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           title: "Yarn",
           icon: SlydoAppIconNew.yarn,
           onTap: () {
-            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: model.askCategories, isYarn: true,)).then((value) {
+            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: true,)).then((value) {
               topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
               questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
               myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
@@ -215,6 +212,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
       ],
       elevation: 0,
       leading: IconButton(
+        padding: EdgeInsets.zero,
         icon: Icon(
           Icons.keyboard_arrow_left,
         ),
@@ -271,7 +269,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           iconColor: blackFont,
           iconSize: 22,
         ),
-        SizedBox(width: 17),
+        SizedBox(width: 10),
         _buildIconButton(
             onTap: () {
               NavigationUtil.push(
@@ -286,22 +284,22 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     );
   }
 
-  Widget _buildBody(AskViewModel model) {
+  Widget _buildBody() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
-          _buildCategoryAndTabs(model),
+          _buildCategoryAndTabs(),
           _buildPageView()
         ],
       ),
     );
   }
 
-  Widget _buildCategoryAndTabs(AskViewModel model) {
+  Widget _buildCategoryAndTabs() {
     return Column(
       children: [
-        _buildCategoryChip(model),
+        _buildCategoryChip(),
         SizedBox(height: 17),
         _buildPageViewTabs(),
         SizedBox(height: 7),
@@ -309,26 +307,31 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     );
   }
 
-  Widget _buildCategoryChip(AskViewModel model) {
+  Widget _buildCategoryChip() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
+          SizedBox(
+            width: 7,
+          ),
           ...List.generate(
-            model.askCategories.length,
+            askViewModel.askCategories.length,
                 (i) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CategoryChip(
-                  onTap: () {
-                    // selectCategory(model.askCategories[i].id!);
-                    NavigationUtil.push(context, screen: AskByCategoryScreen(askCategories: model.askCategories[i],));
-                  },
-                  title: model.askCategories[i].name,
-                  categoryColor: HexColor(model.askCategories[i].color!).withOpacity(0.1),
-                  selectedCategoryBorderColor: selectedCategoryId == model.askCategories[i].id ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
-                  selectedCategoryTextColor: HexColor(model.askCategories[i].color!),
-                ),
+              return Row(
+                children: [
+                  SizedBox(
+                    width: 5,
+                  ),
+                  CategoryChip(
+                    onTap: () {
+                      NavigationUtil.push(context, screen: AskByCategoryScreen(askCategories: askViewModel.askCategories[i],));
+                    },
+                    title: askViewModel.askCategories[i].name,
+                    categoryColor: HexColor(askViewModel.askCategories[i].color!).withOpacity(0.1),
+                    selectedCategoryTextColor: HexColor(askViewModel.askCategories[i].color!),
+                  )
+                ],
               );
             },
           ),
@@ -338,37 +341,40 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
   }
 
   Widget _buildPageViewTabs() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        pageViewTabItem(
-            onPageTap: () {
-              updateCurrentAskTapOnHome(i: 0);
-              _pageViewCtrl.jumpToPage(0);
-            },
-            pageNum: 0,
-            title: 'Yarns',
-            currentTapIndex: currentAskTapOnHome
-        ),
-        pageViewTabItem(
-            onPageTap: () {
-             updateCurrentAskTapOnHome(i: 1);
-              _pageViewCtrl.jumpToPage(1);
-            },
-            pageNum: 1,
-            title: 'Questions',
-            currentTapIndex: currentAskTapOnHome
-        ),
-        pageViewTabItem(
-            onPageTap: () {
-              updateCurrentAskTapOnHome(i: 2);
-              _pageViewCtrl.jumpToPage(2);
-            },
-            pageNum: 2,
-            title: 'My Feeds',
-            currentTapIndex: currentAskTapOnHome
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          pageViewTabItem(
+              onPageTap: () {
+                updateCurrentAskTapOnHome(i: 0);
+                _pageViewCtrl.jumpToPage(0);
+              },
+              pageNum: 0,
+              title: 'Yarns',
+              currentTapIndex: currentAskTapOnHome
+          ),
+          pageViewTabItem(
+              onPageTap: () {
+               updateCurrentAskTapOnHome(i: 1);
+                _pageViewCtrl.jumpToPage(1);
+              },
+              pageNum: 1,
+              title: 'Questions',
+              currentTapIndex: currentAskTapOnHome
+          ),
+          // pageViewTabItem(
+          //     onPageTap: () {
+          //       updateCurrentAskTapOnHome(i: 2);
+          //       _pageViewCtrl.jumpToPage(2);
+          //     },
+          //     pageNum: 2,
+          //     title: 'My Feeds',
+          //     currentTapIndex: currentAskTapOnHome
+          // ),
+        ],
+      ),
     );
   }
 

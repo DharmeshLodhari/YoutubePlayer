@@ -187,7 +187,6 @@ class _AskStartScreenState extends State<AskStartScreen> {
                       model.onSelectedAskCategories(e.id!);
                     },
                     title: e.name!,
-                    selectedCategoryBorderColor: model.selectedAskCategories.contains(e.id) ? Colors.blueAccent : Colors.blueAccent.withOpacity(0.1),
                     categoryColor: HexColor(e.color!).withOpacity(0.1),
                     selectedCategoryTextColor: HexColor(e.color!),
                   );

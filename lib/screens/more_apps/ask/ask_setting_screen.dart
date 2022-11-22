@@ -10,12 +10,12 @@ class AskSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _buildAppBar() as PreferredSizeWidget,
+      appBar: _buildAppBar(context: context) as PreferredSizeWidget,
       body: _buildBody(context),
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar({required BuildContext context}) {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
@@ -26,7 +26,7 @@ class AskSettingsScreen extends StatelessWidget {
           size: 26,
         ),
         onPressed: () {
-          // Navigator.pop(context);
+          Navigator.pop(context);
         },
       ),
       title: Text(

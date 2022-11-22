@@ -13,6 +13,11 @@ class AskViewModel extends ChangeNotifier {
   List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length-1);
 
+  set askCategories (List<AskCategories> cat) {
+    _askCategories = cat;
+    notifyListeners();
+  }
+
   void setAskCategories(List<AskCategories> cat) {
     _askCategories = cat;
     notifyListeners();

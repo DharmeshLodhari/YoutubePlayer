@@ -1,11 +1,7 @@
 import 'dart:convert';
-
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/moments/screens/moment_detail_page.dart';
-import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -218,33 +214,33 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   }
 
   Widget _buildPostCard() {
-    if (yarnQuestionForChatModel.image != null) {
-      return _buildWithImagesPostCard();
-    }
+    // if (yarnQuestionForChatModel.image != null) {
+    //   return _buildWithImagesPostCard();
+    // }
     return _buildWithOutImagesPostCard();
   }
 
-  Widget _buildWithImagesPostCard() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildUserInfoRow(),
-        SizedBox(
-          height: 10,
-        ),
-        _buildPostTitle(),
-        SizedBox(
-          height: 10,
-        ),
-        _buildPostDescription(),
-        SizedBox(
-          height: 10,
-        ),
-        _buildImagesRow(),
-        SizedBox(height: 20,),
-      ],
-    );
-  }
+  // Widget _buildWithImagesPostCard() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       _buildUserInfoRow(),
+  //       SizedBox(
+  //         height: 10,
+  //       ),
+  //       _buildPostTitle(),
+  //       SizedBox(
+  //         height: 10,
+  //       ),
+  //       _buildPostDescription(),
+  //       // SizedBox(
+  //       //   height: 10,
+  //       // ),
+  //       // _buildImagesRow(),
+  //       // SizedBox(height: 20,),
+  //     ],
+  //   );
+  // }
 
   Widget _buildWithOutImagesPostCard() {
     return Column(
@@ -302,7 +298,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 ),
                 SizedBox(width: 5,),
                 Text(
-                  '4 mins',
+                  '',
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 12,
@@ -319,7 +315,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildPostTitle() {
     return Text(
       yarnQuestionForChatModel.title!,
-      maxLines: 30,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 3,
       style: TextStyle(
         color: blackFont,
         fontSize: 16,
@@ -341,26 +338,24 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
-  Widget _buildImagesRow() {
-    return Container(
-      height: 175,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: CachedNetworkImage(
-          imageUrl: yarnQuestionForChatModel.image!,
-          fit: BoxFit.contain,
-          errorWidget: imageErrorWidget,
-        ),
-      ),
-    );
-  }
+  // Widget _buildImagesRow() {
+  //   return Container(
+  //     height: 175,
+  //     child: ClipRRect(
+  //       borderRadius: BorderRadius.circular(10),
+  //       child: CachedNetworkImage(
+  //         imageUrl: yarnQuestionForChatModel.image!.first.file!,
+  //         fit: BoxFit.contain,
+  //         errorWidget: imageErrorWidget,
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 class YarnQuestionForChatModel {
   String? id;
   String? title;
-  String? image;
-  String? video;
   String? authorAvatar;
   String? authorUsername;
   String? description;
@@ -368,8 +363,6 @@ class YarnQuestionForChatModel {
   YarnQuestionForChatModel({
     required this.id,
     required this.title,
-    required this.image,
-    required this.video,
     required this.authorAvatar,
     required this.authorUsername,
     required this.description,
@@ -379,8 +372,6 @@ class YarnQuestionForChatModel {
     return YarnQuestionForChatModel(
       id: json['id'],
       title: json['title'],
-      image: json['image'],
-      video: json['video'],
       authorAvatar: json['author_avatar'],
       authorUsername: json['author_username'],
       description: json['description']

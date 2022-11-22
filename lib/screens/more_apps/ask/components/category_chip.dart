@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CategoryChip extends StatelessWidget {
-  CategoryChip({Key? key, this.onTap, this.title, this.categoryColor, this.selectedCategoryBorderColor, this.selectedCategoryTextColor}) : super(key: key);
+  CategoryChip({Key? key, this.onTap, this.title, this.categoryColor, this.selectedCategoryTextColor}) : super(key: key);
 
   GestureTapCallback? onTap;
-  Color? selectedCategoryBorderColor;
   Color? categoryColor;
   String? title;
   Color? selectedCategoryTextColor;
@@ -15,12 +14,10 @@ class CategoryChip extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: categoryColor,
-          border: Border.all(
-              color: selectedCategoryBorderColor!),
         ),
         child: Text(
           title!,

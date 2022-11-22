@@ -35,13 +35,14 @@ class _TopicActionsState extends State<TopicActions> {
           children: [
             SvgPicture.asset("ask/reply".toSVG()),
             SizedBox(
-              width: 8,
+              width: 6,
             ),
             Text(
               getCommentCount(),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
               ),
             ),
           ],
@@ -50,13 +51,14 @@ class _TopicActionsState extends State<TopicActions> {
           children: [
             SvgPicture.asset("ask/like".toSVG()),
             SizedBox(
-              width: 8,
+              width: 6,
             ),
             Text(
               getLikeCount(),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
               ),
             ),
           ],
@@ -65,13 +67,14 @@ class _TopicActionsState extends State<TopicActions> {
           children: [
             SvgPicture.asset("ask/dislike".toSVG()),
             SizedBox(
-              width: 8,
+              width: 6,
             ),
             Text(
               getDisLikeCount(),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
               ),
             ),
           ],

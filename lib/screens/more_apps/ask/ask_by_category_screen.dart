@@ -1,15 +1,14 @@
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import '../../../data/state_notifier.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/navigation_util.dart';
+import '../../../utils/util.dart';
 import 'add_topic_screen.dart';
-import 'ask_detail_screen.dart';
+import 'ask_auth.dart';
 import 'ask_viewmodel.dart';
-import 'components/ask_options.dart';
-import 'components/ask_posts_view.dart';
 import 'components/topics_view.dart';
 import 'components/question_view.dart';
 
@@ -24,15 +23,35 @@ class AskByCategoryScreen extends StatefulWidget {
 
 class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   late PageController _pageViewCtrl;
+  UsersCategories? usersCategory;
+  late UserBloc userBloc;
 
   @override
   void initState() {
     _pageViewCtrl = PageController(initialPage: 0);
+    getUserCategories();
     super.initState();
+  }
+
+  Future<UsersCategories?> getUserCategories() async {
+    Map<String, dynamic>? result = await AskAuth().getUsersCategories();
+    setState(() {
+      usersCategory = result!['results'];
+    });
+    return usersCategory!;
+  }
+
+  Future<UsersCategories?> saveUserCategories(String categoryId) async {
+    Map<String, dynamic>? result = await AskAuth().saveUsersSingleCategories(categoryId);
+    setState(() {
+      usersCategory = result!['results'];
+    });
+    return usersCategory!;
   }
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Consumer<AskViewModel>(builder: (context, model, child) {
       return Scaffold(
         backgroundColor: Colors.white,
@@ -56,28 +75,31 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                 .withOpacity(0.8),
             title: Row(
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.askCategories!.name!,
-                      style: TextStyle(
-                        fontSize: 21,
-                        fontWeight: FontWeight.w700,
-                        color: white,
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.askCategories!.name!,
+                        overflow: TextOverflow.fade,
+                        style: TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w700,
+                          color: white,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      '12k Member   267 Topics',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: white,
+                      SizedBox(height: 5),
+                      Text(
+                        '',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: white,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -90,21 +112,37 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                     size: 26,
                   ),
                   SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: white,
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Text(
-                        'Add',
-                        style: TextStyle(
-                          color: blackFont,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                  !isAddCategory()! ? InkWell(
+                    onTap: () {
+                      saveUserCategories(widget.askCategories!.id!);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: white,
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: Text(
+                          'Add',
+                          style: TextStyle(
+                            color: blackFont,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
+                      ),
+                    ),
+                  ) : Container(
+                    height: 24,
+                    width: 24,
+                    decoration: BoxDecoration(shape: BoxShape.circle),
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: userBloc.user.avatar!,
+                        fit: BoxFit.cover,
+                        errorWidget: imageErrorWidget,
                       ),
                     ),
                   ),
@@ -207,64 +245,17 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
     );
   }
 
-  Widget AskListView({int? listLength}) {
-    RefreshController _postRefreshController =
-        RefreshController(initialRefresh: false);
-
-    return Column(
-      children: [
-        Expanded(
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _postRefreshController,
-            onRefresh: () {},
-            child: AskLists(listLength: listLength),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget AskLists({int? listLength}) {
-    return ListView.builder(
-      physics: ClampingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
-      itemCount: listLength,
-      itemBuilder: (BuildContext context, int index) {
-        return InkWell(
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: AskDetailScreen(),
-            );
-          },
-          child: AskPosts(
-            showTag: false,
-            onOptionsAction: () {
-              showModalBottomSheet<void>(
-                backgroundColor: Colors.transparent,
-                context: context,
-                builder: (BuildContext context) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    color: Colors.white,
-                    margin: EdgeInsets.zero,
-                    child: AskOptions(),
-                  );
-                },
-              );
-            },
-          ),
-        );
-      },
-    );
+  bool? isAddCategory() {
+    bool isAdded = false;
+    if (usersCategory != null) {
+      for (var usCate in usersCategory!.categories!) {
+        if (widget.askCategories!.id == usCate.id) {
+          isAdded = true;
+        } else {
+          isAdded = false;
+        }
+      }
+    }
+    return isAdded;
   }
 }

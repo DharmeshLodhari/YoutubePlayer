@@ -120,9 +120,9 @@ class AskAuth extends AuthService {
 
       return result;
     } else if (response.statusCode == 500) {
-      return null;
+      return Future.error("Please try again later !!");
     } else {
-      return null;
+      return Future.error("${response.body}");
     }
   }
 
@@ -151,9 +151,9 @@ class AskAuth extends AuthService {
 
       return result;
     } else if (response.statusCode == 500) {
-      return null;
+      return Future.error("Please try again later !!");
     } else {
-      return null;
+      return Future.error("${response.body}");
     }
   }
 
@@ -182,9 +182,9 @@ class AskAuth extends AuthService {
 
       return result;
     } else if (response.statusCode == 500) {
-      return null;
+      return Future.error("Please try again later !!");
     } else {
-      return null;
+      return Future.error("${response.body}");
     }
   }
 
