@@ -28,6 +28,8 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
   List<CommentDetails> commentDetailsList = [];
   int count = 0;
   bool noList = false;
+  late UserBloc userBloc;
+  final TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -87,12 +89,13 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Text(
-            'Health',
+            !widget.yarnTopic!.isQuestion! ? "Yarn" : "Question",
             style: TextStyle(
               fontSize: 21,
               fontWeight: FontWeight.w700,
@@ -134,9 +137,19 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: TopicTextField(
                 height: 50,
-                controller: TextEditingController(),
+                controller: controller,
                 hint: "Leave your thought",
                 yarn: widget.yarnTopic,
+                userImage: userBloc.user.avatar,
+                onPressed: () {
+                  Map<String, dynamic> data = {
+                    "comment": controller.text,
+                    "author_username": userBloc.user.userName
+                  };
+                  AskAuth().addCommentToYarn(widget.yarnTopic!.id!, data).then((value) => () {
+                    print("Success !!");
+                  });
+                },
               ),
             ),
             SizedBox(
@@ -189,6 +202,8 @@ class TopicTextField extends StatelessWidget {
   final bool suffix;
   final Widget? suffixIcon;
   final YarnTopic? yarn;
+  final String? userImage;
+  final VoidCallback? onPressed;
 
   const TopicTextField({
     Key? key,
@@ -207,6 +222,8 @@ class TopicTextField extends StatelessWidget {
     this.onTap,
     this.suffix = true,
     this.suffixIcon,
+    this.userImage,
+    this.onPressed
   }) : super(key: key);
 
   @override
@@ -231,8 +248,7 @@ class TopicTextField extends StatelessWidget {
             decoration: BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl:
-                    "http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/310d1a87-48e9-4fee-b876-36cae907dcf7.jpg",
+                imageUrl: userImage!,
                 fit: BoxFit.cover,
                 errorWidget: imageErrorWidget,
               ),
@@ -265,17 +281,7 @@ class TopicTextField extends StatelessWidget {
           ),
           IconButton(
             padding: EdgeInsets.zero,
-            onPressed: () {
-              UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-
-              Map<String, dynamic> data = {
-                "comment": controller.text,
-                "author_username": userBloc.user.userName
-              };
-              AskAuth().addCommentToYarn(yarn!.id!, data).then((value) => () {
-                    print("Suceesss !!");
-                  });
-            },
+            onPressed: onPressed,
             icon: Icon(
               Icons.send,
               color: HexColor("#3F61DB"),

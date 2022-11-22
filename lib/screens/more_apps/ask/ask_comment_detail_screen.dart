@@ -20,7 +20,7 @@ class AskCommentDetailScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Text(
-            'Health',
+            !yarnTopic!.isQuestion! ? "Yarn" : "Question",
             style: TextStyle(
               fontSize: 21,
               fontWeight: FontWeight.w700,

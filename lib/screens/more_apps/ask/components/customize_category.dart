@@ -13,6 +13,7 @@ class CustomizeCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("IS ADDED CATEGORY- $isAdd");
     return ListTile(
       visualDensity: VisualDensity(vertical: -3, horizontal: 0),
       title: Text(

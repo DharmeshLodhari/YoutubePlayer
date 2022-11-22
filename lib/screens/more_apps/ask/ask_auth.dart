@@ -70,7 +70,7 @@ class AskAuth extends AuthService {
   Future<Map<String, dynamic>?> getUsersCategories() async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-said-categories/";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -101,16 +101,75 @@ class AskAuth extends AuthService {
   Future<Map<String, dynamic>?> saveUsersCategories(String body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/user-said-categories/";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: body);
 
+    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 201) {
+      UsersCategories usersCategory;
+      var jsonData = json.decode(response.body);
+      debugPrint("JSON DECODED:- $jsonData");
+      usersCategory = UsersCategories.fromJson(jsonData);
+
+      Map<String, dynamic> result = {
+        "results": usersCategory
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Save User's Selected Single Categories
+  Future<Map<String, dynamic>?> saveUsersSingleCategories(String categoryId) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/user-single-interest/$categoryId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers);
+
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
+      UsersCategories usersCategory;
+      var jsonData = json.decode(response.body);
+      debugPrint("JSON DECODED:- $jsonData");
+      usersCategory = UsersCategories.fromJson(jsonData);
+
+      Map<String, dynamic> result = {"results": usersCategory};
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Delete User's Selected Single Categories
+  Future<Map<String, dynamic>?> deleteUsersSingleCategories(String categoryId) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/user-single-interest/$categoryId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
       UsersCategories usersCategory;
       var jsonData = json.decode(response.body);
       debugPrint("JSON DECODED:- $jsonData");
@@ -176,37 +235,6 @@ class AskAuth extends AuthService {
     }
   }
 
-  // {"comment":"xyz","author_username:""};
-  // ADD COMMENT TO YARN
-  Future<Map<String, dynamic>?> addCommentToYarn(
-      String yarnId, Map<String, dynamic> body) async {
-    debugPrint("CALLING ALL CATEGORIES");
-    String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$yarnId/";
-    debugPrint(url);
-
-    var headers = await getAuthHeaders();
-    var response =
-        await httpPost(url, headers: headers, body: jsonEncode(body));
-
-    debugPrint(
-        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
-
-    if (response.statusCode == 201) {
-      // UsersCategories usersCategory;
-      // var jsonData = json.decode(response.body);
-      // debugPrint("JSON DECODED:- $jsonData");
-      // usersCategory = UsersCategories.fromJson(jsonData);
-      //
-      // Map<String, dynamic> result = {"results": usersCategory};
-
-      return {};
-    } else if (response.statusCode == 500) {
-      return null;
-    } else {
-      return null;
-    }
-  }
 
   // Search Yarns
   Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous,
@@ -250,6 +278,7 @@ class AskAuth extends AuthService {
     }
   }
 
+  // Add Yarn and Question
   Future<bool> addYarnAndQuestion(AddYarnAndQuestion addYarnAndQuestion) async {
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/social/ask/";
@@ -311,6 +340,39 @@ class AskAuth extends AuthService {
     }
   }
 
+  // {"comment":"xyz","author_username:""};
+  // ADD COMMENT TO YARN
+  Future<Map<String, dynamic>?> addCommentToYarn(
+      String yarnId, Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$yarnId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 201) {
+      // UsersCategories usersCategory;
+      // var jsonData = json.decode(response.body);
+      // debugPrint("JSON DECODED:- $jsonData");
+      // usersCategory = UsersCategories.fromJson(jsonData);
+      //
+      // Map<String, dynamic> result = {"results": usersCategory};
+
+      return {};
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Get all Comment
   Future<Map<String, dynamic>?> getAllComments(
     String? next,
     String previous,
@@ -323,6 +385,81 @@ class AskAuth extends AuthService {
     }
     if (next == "") {
       url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$postId/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<CommentDetails> commentsDetails = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        CommentDetails commentsDetail = CommentDetails.fromJson(item);
+        commentsDetails.add(commentsDetail);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": commentsDetails
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // ADD COMMENT TO YARN
+  Future<Map<String, dynamic>?> addReplyToComment(
+      String yarnId, Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$yarnId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 201) {
+      // UsersCategories usersCategory;
+      // var jsonData = json.decode(response.body);
+      // debugPrint("JSON DECODED:- $jsonData");
+      // usersCategory = UsersCategories.fromJson(jsonData);
+      //
+      // Map<String, dynamic> result = {"results": usersCategory};
+
+      return {};
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Get all Reply
+  Future<Map<String, dynamic>?> getAllReply(
+      String? next,
+      String previous,
+      String postId,
+      ) async {
+    debugPrint("CALLING ALL COMMENTS");
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$postId/";
     } else {
       url = getSecureUrl(url: next);
     }

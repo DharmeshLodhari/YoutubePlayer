@@ -78,8 +78,11 @@ class _UserDashboardState extends State<UserDashboard> {
 
   Future<UsersCategories> getUserCategories() async {
     Map<String, dynamic>? result = await AskAuth().getUsersCategories();
-    UsersCategories usersCategory = result!['results'];
-    return usersCategory;
+    UsersCategories? usersCategory;
+    if (result != null) {
+      usersCategory = result['results'];
+    }
+    return usersCategory!;
   }
 
   @override
@@ -600,46 +603,53 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
             title: "Yarn",
             onTap: () async {
-              // UserCategoriesStructure? userCategories = await _db.getUserSelectedYarnCategories();
-              // if (userCategories != null) {
-              //   var data = jsonDecode(userCategories.userSelectedCategory!);
-              //   if(data == null && data.length != 3) {
-              //     UsersCategories userCategory = await getUserCategories();
-              //     if (userCategory.categories!.length != 3) {
-              //       NavigationUtil.push(
-              //         context,
-              //         screen: AskStartScreen(),
-              //       );
-              //     } else {
-              //       NavigationUtil.push(
-              //         context,
-              //         screen: AskHomeScreen(),
-              //       );
-              //     }
-              //   } else {
-              //     NavigationUtil.push(
-              //       context,
-              //       screen: AskHomeScreen(),
-              //     );
-              //   }
-              // } else {
-              //   UsersCategories userCategory = await getUserCategories();
-              //   if (userCategory.categories!.length != 3) {
-              //     NavigationUtil.push(
-              //       context,
-              //       screen: AskStartScreen(),
-              //     );
-              //   } else {
-              //     NavigationUtil.push(
-              //       context,
-              //       screen: AskHomeScreen(),
-              //     );
-              //   }
-              // }
-              NavigationUtil.push(
-                context,
-                screen: AskHomeScreen(),
-              );
+              UserCategoriesStructure? userCategories = await _db.getUserSelectedYarnCategories();
+              if (userCategories != null) {
+                var data = jsonDecode(userCategories.userSelectedCategory!);
+                if(data == null && data.length != 3) {
+                  UsersCategories userCategory = await getUserCategories();
+                  if (userCategory != null) {
+                    if (userCategory.categories!.length <= 3) {
+                      NavigationUtil.push(
+                        context,
+                        screen: AskStartScreen(),
+                      );
+                    } else {
+                      NavigationUtil.push(
+                        context,
+                        screen: AskHomeScreen(),
+                      );
+                    }
+                  } else {
+                    NavigationUtil.push(
+                      context,
+                      screen: AskStartScreen(),
+                    );
+                  }
+                } else {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskHomeScreen(),
+                  );
+                }
+              } else {
+                UsersCategories userCategory = await getUserCategories();
+                if (userCategory.categories!.length <= 3) {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskStartScreen(),
+                  );
+                } else {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskHomeScreen(),
+                  );
+                }
+              }
+              // NavigationUtil.push(
+              //   context,
+              //   screen: AskHomeScreen(),
+              // );
               // if (appConfigurationModel?.enableAsk == true) {
               //   NavigationUtil.push(
               //     context,

@@ -38,6 +38,22 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
     return usersCategory!;
   }
 
+  Future<UsersCategories?> saveUserCategories(String categoryId) async {
+    Map<String, dynamic>? result = await AskAuth().saveUsersSingleCategories(categoryId);
+    setState(() {
+      usersCategory = result!['results'];
+    });
+    return usersCategory!;
+  }
+
+  Future<UsersCategories?> deleteUserCategories(String categoryId) async {
+    Map<String, dynamic>? result = await AskAuth().deleteUsersSingleCategories(categoryId);
+    setState(() {
+      usersCategory = result!['results'];
+    });
+    return usersCategory!;
+  }
+
   void getAskCategoriesList() async {
     if (!isAskCategoriesLoading) {
       if (categoriesNext != null && !isAskCategoriesLoading) {
@@ -115,7 +131,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
+            child: usersCategory != null ? Column(
               children: [
                 ...List.generate(
                   model.askCategories.length,
@@ -124,8 +140,18 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
                       children: [
                         CustomizeCategory(
                           askCategory: model.askCategories[i],
-                          isAdd: isAddCategory(),
-                          onTap: () {},
+                          isAdd: usersCategory!.categories!.length-1 >= i ? usersCategory!.categories![i].id == model.askCategories[i].id ? true : false : false,
+                          onTap: () {
+                            if (usersCategory!.categories!.length-1 >= i) {
+                              if (usersCategory!.categories![i].id == model.askCategories[i].id) {
+                                deleteUserCategories(model.askCategories[i].id!);
+                              } else {
+                                saveUserCategories(model.askCategories[i].id!);
+                              }
+                            } else {
+                              saveUserCategories(model.askCategories[i].id!);
+                            }
+                          },
                         ),
                         Divider(
                           color: HexColor("#EBEDFC"),
@@ -135,7 +161,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
                   },
                 ),
               ],
-            ),
+            ) : Center(child: CircularProgressIndicator(),),
           ),
         ),
       );
@@ -144,13 +170,15 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
 
   bool? isAddCategory() {
     bool isAdded = false;
-    print("USER CATEGORY:- $usersCategory");
     for (var cate in askCategories) {
       if (usersCategory != null) {
-        if (usersCategory!.categories!.contains(cate)) {
-          isAdded = true;
+        for (var usCate in usersCategory!.categories!) {
+          if (cate.id == usCate.id) {
+            isAdded = true;
+          } else {
+            isAdded = false;
+          }
         }
-        isAdded = false;
       }
       isAdded = false;
     }
