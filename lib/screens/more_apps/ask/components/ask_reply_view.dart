@@ -2,25 +2,18 @@ import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
+import '../models/Topics/CommentDetails.dart';
+import '../models/Topics/ReplyCommentDetails.dart';
 
 class AskReplyView extends StatelessWidget {
-  Widget? replyViews;
-  String? totalLikes;
-  String? totalReplies;
-  String? totalDislikes;
-  bool? isASubReply;
-  bool? hasReplies;
   YarnTopic? yarnTopic;
+  CommentDetails? commentDetail;
+  ReplyCommentDetails? replyCommentDetail;
 
   AskReplyView(
-      {this.replyViews,
-        this.totalLikes,
-        this.totalDislikes,
-        this.hasReplies = false,
-        this.isASubReply,
-        this.yarnTopic,
-        this.totalReplies});
+      {this.yarnTopic, this.replyCommentDetail, this.commentDetail});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +22,7 @@ class AskReplyView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Column(
           children: [
-            _buildUserInfoRow(),
+            _buildUserInfoRow(context: context),
           ],
         ),
       ),
@@ -37,23 +30,29 @@ class AskReplyView extends StatelessWidget {
   }
 
 
-  Widget _buildUserInfoRow() {
+  Widget _buildUserInfoRow({required BuildContext context}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Container(
-              height: 24,
-              width: 24,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle
-              ),
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: yarnTopic!.authorAvatar!,
-                  fit: BoxFit.cover,
-                  errorWidget: imageErrorWidget,
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                    arguments: replyCommentDetail!.authorAvatar!);
+              },
+              child: Container(
+                height: 24,
+                width: 24,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle
+                ),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: replyCommentDetail!.authorAvatar!,
+                    fit: BoxFit.cover,
+                    errorWidget: imageErrorWidget,
+                  ),
                 ),
               ),
             ),
@@ -66,19 +65,27 @@ class AskReplyView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    userNameWithVerifiedIcon(name: yarnTopic!.authorName!, isVerified: false),
-                    SizedBox(width: 5,),
-                    Text(
-                      '4 mins',
-                      style: TextStyle(
-                        color: blackFont,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": replyCommentDetail!.authorUsername!
+                        });
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      userNameWithVerifiedIcon(
+                          name: replyCommentDetail!.authorName!, isVerified: false),
+                      Text(
+                        "@${replyCommentDetail!.authorUsername!}",
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: HexColor("#3F61DB")
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(height: 3,),
                 _buildRepliedText(),
@@ -101,18 +108,31 @@ class AskReplyView extends StatelessWidget {
   }
 
   Widget _buildRepliedText() {
-    return Text(
-      "Replying to Ahmed Yusuf",
-      style: TextStyle(
-          fontSize: 10,
-          color: HexColor("#030F36")
+    return RichText(
+      text: TextSpan(
+          children: [
+            TextSpan(
+              text: "Replying to ",
+              style: TextStyle(
+                  fontSize: 10,
+                  color: HexColor("#030F36")
+              ),
+            ),
+            TextSpan(
+              text: "@${commentDetail!.authorUsername}",
+              style: TextStyle(
+                  fontSize: 10,
+                  color: HexColor("#3F61DB")
+              ),
+            ),
+          ]
       ),
     );
   }
 
   Widget _buildCommentDescription() {
     return Text(
-      "Vitamin C helps in controlling fever, halts the infection from spreading and accelerates healing in the body. Lemon water, orange and sweet lime are good options. Eat as fruits or have as juice depending upon your condition.",
+      replyCommentDetail!.comment!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,
@@ -125,6 +145,9 @@ class AskReplyView extends StatelessWidget {
   Widget _buildTopActions() {
     return TopicActions(
       yarnTopic: yarnTopic!,
+      commentCount: replyCommentDetail!.replyCount != null ? replyCommentDetail!.replyCount as int : 0,
+      disLikeCount: replyCommentDetail!.socialDislikes != null ? replyCommentDetail!.socialDislikes as int : 0,
+      likeCount: replyCommentDetail!.socialLikes != null ? replyCommentDetail!.socialLikes as int : 0,
     );
   }
 }

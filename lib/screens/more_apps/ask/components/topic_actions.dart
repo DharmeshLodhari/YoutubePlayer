@@ -104,6 +104,14 @@ class _TopicActionsState extends State<TopicActions> {
             ],
           ),
         ),
+        InkWell(
+          onTap: () {},
+          child: Row(
+            children: [
+              SvgPicture.asset("ask/send_money".toSVG()),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -151,11 +159,14 @@ class _TopicActionsState extends State<TopicActions> {
 
     Map<String, dynamic> metaData = {
       "id": yarnTopic.id,
-      "title": messageDecoderWithEmoji(yarnTopic.title),
       "author_avatar": yarnTopic.authorAvatar,
-      "author_username": messageDecoderWithEmoji(yarnTopic.authorName),
-      "image": yarnTopic.media,
+      "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
+      "author_username": yarnTopic.author,
+      "title": messageDecoderWithEmoji(yarnTopic.title),
       "description": yarnTopic.body,
+      "tags": yarnTopic.tags,
+      "image": yarnTopic.media,
+      "is_question": yarnTopic.isQuestion,
     };
 
     // switch (yarnTopic.mediaType) {

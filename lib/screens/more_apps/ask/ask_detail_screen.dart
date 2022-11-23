@@ -117,7 +117,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(10),
-                child: AskPosts(
+                child: !isLoading ? AskPosts(
                   openComments: commentDetailsList.isNotEmpty ? true : false,
                   commentDetailsList: commentDetailsList,
                   yarnTopic: widget.yarnTopic,
@@ -125,7 +125,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
                           widget.yarnTopic!.media!.isNotEmpty
                       ? true
                       : false,
-                ),
+                ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),),),
               ),
             ),
             Padding(

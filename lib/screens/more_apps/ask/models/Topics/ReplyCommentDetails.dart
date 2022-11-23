@@ -1,17 +1,29 @@
-class CommentDetails {
-  CommentDetails({
+/// id : "72fa53ee-9e45-449c-85f2-259d659a2e72"
+/// author_avatar : "http://cdn.slydo.co.global.prod.fastly.net/media/customer/avatar/310d1a87-48e9-4fee-b876-36cae907dcf7.jpg"
+/// comment : "absdjabda"
+/// author_username : "blackstriker"
+/// is_reply : true
+/// reply_count : 0
+/// created_at : "2022-11-22T08:07:11.825351+01:00"
+/// is_approved : false
+/// social_likes : null
+/// social_dislikes : null
+/// replies : ["33532aa0-7aac-42c0-bead-0fe87fdb3681"]
+
+class ReplyCommentDetails {
+  ReplyCommentDetails({
       String? id, 
       String? authorAvatar, 
       String? comment, 
-      String? authorUsername,
+      String? authorUsername, 
       String? authorName,
-      bool? isReply, 
+      bool? isReply,
       num? replyCount, 
       String? createdAt, 
       bool? isApproved, 
-      dynamic replyTo, 
       dynamic socialLikes, 
-      dynamic socialDislikes,}){
+      dynamic socialDislikes, 
+      List<String>? replies,}){
     _id = id;
     _authorAvatar = authorAvatar;
     _comment = comment;
@@ -21,12 +33,12 @@ class CommentDetails {
     _replyCount = replyCount;
     _createdAt = createdAt;
     _isApproved = isApproved;
-    _replyTo = replyTo;
     _socialLikes = socialLikes;
     _socialDislikes = socialDislikes;
+    _replies = replies;
 }
 
-  CommentDetails.fromJson(dynamic json) {
+  ReplyCommentDetails.fromJson(dynamic json) {
     _id = json['id'];
     _authorAvatar = json['author_avatar'];
     _comment = json['comment'];
@@ -36,9 +48,9 @@ class CommentDetails {
     _replyCount = json['reply_count'];
     _createdAt = json['created_at'];
     _isApproved = json['is_approved'];
-    _replyTo = json['reply_to'];
     _socialLikes = json['social_likes'];
     _socialDislikes = json['social_dislikes'];
+    _replies = json['replies'] != null ? json['replies'].cast<String>() : [];
   }
   String? _id;
   String? _authorAvatar;
@@ -49,10 +61,10 @@ class CommentDetails {
   num? _replyCount;
   String? _createdAt;
   bool? _isApproved;
-  dynamic _replyTo;
   dynamic _socialLikes;
   dynamic _socialDislikes;
-CommentDetails copyWith({  String? id,
+  List<String>? _replies;
+ReplyCommentDetails copyWith({  String? id,
   String? authorAvatar,
   String? comment,
   String? authorUsername,
@@ -61,10 +73,10 @@ CommentDetails copyWith({  String? id,
   num? replyCount,
   String? createdAt,
   bool? isApproved,
-  dynamic replyTo,
   dynamic socialLikes,
   dynamic socialDislikes,
-}) => CommentDetails(  id: id ?? _id,
+  List<String>? replies,
+}) => ReplyCommentDetails(  id: id ?? _id,
   authorAvatar: authorAvatar ?? _authorAvatar,
   comment: comment ?? _comment,
   authorUsername: authorUsername ?? _authorUsername,
@@ -73,9 +85,9 @@ CommentDetails copyWith({  String? id,
   replyCount: replyCount ?? _replyCount,
   createdAt: createdAt ?? _createdAt,
   isApproved: isApproved ?? _isApproved,
-  replyTo: replyTo ?? _replyTo,
   socialLikes: socialLikes ?? _socialLikes,
   socialDislikes: socialDislikes ?? _socialDislikes,
+  replies: replies ?? _replies,
 );
   String? get id => _id;
   String? get authorAvatar => _authorAvatar;
@@ -86,9 +98,9 @@ CommentDetails copyWith({  String? id,
   num? get replyCount => _replyCount;
   String? get createdAt => _createdAt;
   bool? get isApproved => _isApproved;
-  dynamic get replyTo => _replyTo;
   dynamic get socialLikes => _socialLikes;
   dynamic get socialDislikes => _socialDislikes;
+  List<String>? get replies => _replies;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -101,9 +113,9 @@ CommentDetails copyWith({  String? id,
     map['reply_count'] = _replyCount;
     map['created_at'] = _createdAt;
     map['is_approved'] = _isApproved;
-    map['reply_to'] = _replyTo;
     map['social_likes'] = _socialLikes;
     map['social_dislikes'] = _socialDislikes;
+    map['replies'] = _replies;
     return map;
   }
 

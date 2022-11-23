@@ -446,7 +446,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width - 60),
       child: CurvedButton(
-        height: 56,
         textColor: Colors.white,
         backgroundColor: navyBlue,
         text: "Submit",

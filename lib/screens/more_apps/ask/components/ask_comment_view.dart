@@ -1,18 +1,27 @@
+import 'package:Slydo/screens/more_apps/ask/components/ask_reply_view.dart';
 import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../../../routes/route_constants.dart';
+import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
+import '../models/Topics/ReplyCommentDetails.dart';
 
 class AskCommentView extends StatelessWidget {
   YarnTopic? yarnTopic;
   CommentDetails? commentDetail;
+  List<ReplyCommentDetails>? replyCommentDetailsList = [];
+  bool? openReply = false;
 
   AskCommentView(
       {
       this.yarnTopic,
       this.commentDetail,
+      this.replyCommentDetailsList,
+      this.openReply,
       });
 
   @override
@@ -22,11 +31,12 @@ class AskCommentView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Column(
           children: [
-            _buildUserInfoRow(),
+            _buildUserInfoRow(context: context),
             Divider(
               thickness: 2,
               color: HexColor("#EBEDFC"),
             ),
+            _buildReplyCommentView(context: context),
           ],
         ),
       ),
@@ -34,23 +44,29 @@ class AskCommentView extends StatelessWidget {
   }
 
 
-  Widget _buildUserInfoRow() {
+  Widget _buildUserInfoRow({required BuildContext context}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Container(
-              height: 24,
-              width: 24,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle
-              ),
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: commentDetail!.authorAvatar!,
-                  fit: BoxFit.cover,
-                  errorWidget: imageErrorWidget,
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                    arguments: commentDetail!.authorAvatar!);
+              },
+              child: Container(
+                height: 24,
+                width: 24,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle
+                ),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: commentDetail!.authorAvatar!,
+                    fit: BoxFit.cover,
+                    errorWidget: imageErrorWidget,
+                  ),
                 ),
               ),
             ),
@@ -63,19 +79,27 @@ class AskCommentView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    userNameWithVerifiedIcon(name: commentDetail!.authorUsername!, isVerified: false),
-                    SizedBox(width: 5,),
-                    Text(
-                      '',
-                      style: TextStyle(
-                        color: blackFont,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": commentDetail!.authorUsername!
+                        });
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      userNameWithVerifiedIcon(
+                          name: commentDetail!.authorName!, isVerified: false),
+                      Text(
+                        "@${commentDetail!.authorUsername!}",
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: HexColor("#3F61DB")
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(height: 3,),
                 _buildRepliedText(),
@@ -98,11 +122,24 @@ class AskCommentView extends StatelessWidget {
   }
 
   Widget _buildRepliedText() {
-    return Text(
-      "",
-      style: TextStyle(
-        fontSize: 10,
-        color: HexColor("#030F36")
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: "Replying to ",
+            style: TextStyle(
+                fontSize: 10,
+                color: HexColor("#030F36")
+            ),
+          ),
+          TextSpan(
+            text: "@${yarnTopic!.author}",
+            style: TextStyle(
+                fontSize: 10,
+                color: HexColor("#3F61DB")
+            ),
+          ),
+        ]
       ),
     );
   }
@@ -126,5 +163,28 @@ class AskCommentView extends StatelessWidget {
       likeCount: commentDetail!.socialLikes != null ? commentDetail!.socialLikes! as int : 0,
       disLikeCount: commentDetail!.socialDislikes != null ? commentDetail!.socialDislikes! as int : 0,
     );
+  }
+
+  Widget _buildReplyCommentView({required BuildContext context}) {
+    if (openReply! && replyCommentDetailsList!.isNotEmpty && replyCommentDetailsList != null) {
+      return Column(
+        children: replyCommentDetailsList!.map((replyCommentDetail) {
+          return InkWell(
+            onTap: () {
+              // NavigationUtil.push(
+              //   context,
+              //   screen: AskCommentDetailScreen(yarnTopic: yarnTopic, commentDetail: commentDetail,),
+              // );
+            },
+            child: AskReplyView(
+              yarnTopic: yarnTopic,
+              commentDetail: commentDetail,
+              replyCommentDetail: replyCommentDetail,
+            ),
+          );
+        }).toList(),
+      );
+    }
+    return SizedBox();
   }
 }

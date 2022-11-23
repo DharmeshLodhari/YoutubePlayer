@@ -29,7 +29,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   @override
   void initState() {
     super.initState();
-
     yarnQuestionForChatModel =
         YarnQuestionForChatModel.fromJson(jsonDecode(widget.message!['meta_data']));
 
@@ -94,7 +93,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width / 1.35,
                   minWidth: MediaQuery.of(context).size.width / 1.35,
-                  maxHeight: 200,
+                  //maxHeight: 200,
                 ),
                 decoration: BoxDecoration(
                   color: widget.chatConversation!.isGroupConversation!
@@ -149,24 +148,15 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                       height: 0,
                       width: 0,
                     ),
-                    Expanded(
-                      child: Card(
-                        margin: EdgeInsets.zero,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Container(
-                          decoration: decorateBox(color: Colors.white),
-                          padding: EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: _buildPostCard(),
-                              ),
-                            ],
-                          ),
-                        ),
+                    Card(
+                      margin: EdgeInsets.zero,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Container(
+                        decoration: decorateBox(color: Colors.white),
+                        padding: EdgeInsets.only(right: 10, top: 10, left: 10, bottom: 4),
+                        child: _buildPostCard(),
                       ),
                     ),
                   ],
@@ -214,33 +204,35 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   }
 
   Widget _buildPostCard() {
-    // if (yarnQuestionForChatModel.image != null) {
-    //   return _buildWithImagesPostCard();
-    // }
+    if (yarnQuestionForChatModel.media != null) {
+      return _buildWithImagesPostCard();
+    }
     return _buildWithOutImagesPostCard();
   }
 
-  // Widget _buildWithImagesPostCard() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       _buildUserInfoRow(),
-  //       SizedBox(
-  //         height: 10,
-  //       ),
-  //       _buildPostTitle(),
-  //       SizedBox(
-  //         height: 10,
-  //       ),
-  //       _buildPostDescription(),
-  //       // SizedBox(
-  //       //   height: 10,
-  //       // ),
-  //       // _buildImagesRow(),
-  //       // SizedBox(height: 20,),
-  //     ],
-  //   );
-  // }
+  Widget _buildWithImagesPostCard() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildUserInfoRow(),
+        SizedBox(
+          height: 10,
+        ),
+        if (yarnQuestionForChatModel.isQuestion ?? false)...[
+          _buildPostTitle(),
+          SizedBox(
+            height: 10,
+          ),
+        ],
+        _buildPostDescription(),
+        SizedBox(
+          height: 10,
+        ),
+        _buildImagesRow(context: context),
+        SizedBox(height: 6,),
+      ],
+    );
+  }
 
   Widget _buildWithOutImagesPostCard() {
     return Column(
@@ -250,14 +242,15 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        _buildPostTitle(),
-        SizedBox(
-          height: 10,
-        ),
+        if (yarnQuestionForChatModel.isQuestion ?? false) ...[
+          _buildPostTitle(),
+          SizedBox(height: 10),
+        ],
         _buildPostDescription(),
         SizedBox(
           height: 10,
         ),
+        _buildTagsAndViewerRow(),
       ],
     );
   }
@@ -270,9 +263,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             Container(
               height: 24,
               width: 24,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle
-              ),
+              decoration: BoxDecoration(shape: BoxShape.circle),
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: yarnQuestionForChatModel.authorAvatar!,
@@ -289,25 +280,30 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         Expanded(
             child: Row(
               children: [
-                userNameWithVerifiedIcon(name: yarnQuestionForChatModel.authorUsername!, isVerified: false),
-                SizedBox(width: 5,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    userNameWithVerifiedIcon(
+                        name: yarnQuestionForChatModel.authorUsername ?? "", isVerified: false),
+                    Text(
+                      "@${yarnQuestionForChatModel.authorName ?? ''}",
+                      style: TextStyle(
+                          fontSize: 10,
+                          color: HexColor("#3F61DB")
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 5,
+                ),
                 Icon(
                   Icons.verified,
                   color: HexColor("#3F61DB"),
                   size: 12,
                 ),
-                SizedBox(width: 5,),
-                Text(
-                  '',
-                  style: TextStyle(
-                    color: blackFont,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
               ],
-            )
-        ),
+            )),
       ],
     );
   }
@@ -338,43 +334,296 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
-  // Widget _buildImagesRow() {
-  //   return Container(
-  //     height: 175,
-  //     child: ClipRRect(
-  //       borderRadius: BorderRadius.circular(10),
-  //       child: CachedNetworkImage(
-  //         imageUrl: yarnQuestionForChatModel.image!.first.file!,
-  //         fit: BoxFit.contain,
-  //         errorWidget: imageErrorWidget,
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _buildTagsAndViewerRow() {
+    return Wrap(
+      runSpacing: 5,
+      spacing: 2,
+      children: yarnQuestionForChatModel.tags != null ? yarnQuestionForChatModel.tags!
+          .map((e) => Text(
+        "#$e",
+        style: TextStyle(
+          fontSize: 12,
+          color: HexColor("#3F61DB"),
+        ),
+      ))
+          .toList() : [],
+    );
+  }
+
+  Widget _buildImagesRow({required BuildContext context}) {
+    if (yarnQuestionForChatModel.media!.length == 1) {
+      return _buildSingleImage(context: context);
+    } else if (yarnQuestionForChatModel.media!.length == 2) {
+      return _buildTwoImageRow(context: context);
+    } else if (yarnQuestionForChatModel.media!.length == 3) {
+      return _buildThreeImageRow(context: context);
+    } else if (yarnQuestionForChatModel.media!.length >= 4) {
+      return _buildFourImageRow(context: context);
+    }
+    return SizedBox();
+  }
+
+  Widget _buildSingleImage({required BuildContext context}) {
+    return Container(
+      width: double.infinity,
+      child: Container(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: CachedNetworkImage(
+            imageUrl: yarnQuestionForChatModel.media!.first.file!,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTwoImageRow({required BuildContext context}) {
+    return Container(
+      height: 175,
+      child: Row(
+        children: yarnQuestionForChatModel.media!
+            .map((mediaFile) => Expanded(
+          child: Container(
+            height: (MediaQuery.of(context).size.width - 40) / 2,
+            width: (MediaQuery.of(context).size.width - 40) / 2,
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: yarnQuestionForChatModel.media![0].file!,
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: double.infinity,
+                errorWidget: imageErrorWidget,
+              ),
+            ),
+          ),
+        ),)
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildThreeImageRow({required BuildContext context}) {
+    return Container(
+      height: 175,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: (MediaQuery.of(context).size.width - 40) / 2,
+              width: (MediaQuery.of(context).size.width - 40) / 2,
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CachedNetworkImage(
+                  imageUrl: yarnQuestionForChatModel.media![0].file!,
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                  errorWidget: imageErrorWidget,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              height: (MediaQuery.of(context).size.width - 40) / 2,
+              width: (MediaQuery.of(context).size.width - 40) / 2,
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CachedNetworkImage(
+                  imageUrl: yarnQuestionForChatModel.media![1].file!,
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                  errorWidget: imageErrorWidget,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              height: (MediaQuery.of(context).size.width - 40) / 2,
+              width: (MediaQuery.of(context).size.width - 40) / 2,
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CachedNetworkImage(
+                  imageUrl: yarnQuestionForChatModel.media![2].file!,
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                  errorWidget: imageErrorWidget,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFourImageRow({required BuildContext context}) {
+    return Container(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![0].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![1].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 8,),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![2].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![3].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class YarnQuestionForChatModel {
   String? id;
-  String? title;
   String? authorAvatar;
   String? authorUsername;
+  String? authorName;
+  String? title;
   String? description;
+  List? tags;
+  List<MediaFile>? media;
+  bool? isQuestion;
 
   YarnQuestionForChatModel({
-    required this.id,
-    required this.title,
-    required this.authorAvatar,
-    required this.authorUsername,
-    required this.description,
+    this.id,
+    this.authorAvatar,
+    this.authorUsername,
+    this.authorName,
+    this.title,
+    this.description,
+    this.tags,
+    this.media,
+    this.isQuestion
   });
 
   factory YarnQuestionForChatModel.fromJson(Map<String, dynamic> json) {
     return YarnQuestionForChatModel(
       id: json['id'],
-      title: json['title'],
       authorAvatar: json['author_avatar'],
       authorUsername: json['author_username'],
-      description: json['description']
+      authorName: json['author_name'],
+      title: json['title'],
+      description: json['description'],
+      tags: json['tags'],
+      media: json['image'] != null ? (json['image'] as List<dynamic>).map((e) => MediaFile.fromJson(e as Map<String, dynamic>)).toList() : [],
+      isQuestion: json['is_question'],
+    );
+  }
+}
+
+class MediaFile {
+  String? file;
+  MediaFile({
+    this.file,});
+
+  factory MediaFile.fromJson(Map<String, dynamic> json) {
+    return MediaFile(
+      file: json['file']
     );
   }
 }

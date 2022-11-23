@@ -8,6 +8,7 @@ import "package:http/http.dart" as http;
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
 import 'models/Topics/CommentDetails.dart';
+import 'models/Topics/ReplyCommentDetails.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 
@@ -86,8 +87,6 @@ class AskAuth extends AuthService {
       usersCategory = UsersCategories.fromJson(jsonData);
 
       Map<String, dynamic> result = {"results": usersCategory};
-
-      return result;
 
       return result;
     } else if (response.statusCode == 500) {
@@ -414,12 +413,12 @@ class AskAuth extends AuthService {
   }
 
   // ADD COMMENT TO YARN
-  Future<Map<String, dynamic>?> addReplyToComment(
-      String yarnId, Map<String, dynamic> body) async {
+  Future<ReplyCommentDetails?> addReplyToComment(
+      String commentId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
-        AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$yarnId/";
+        AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -429,15 +428,10 @@ class AskAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 201) {
-      // UsersCategories usersCategory;
-      // var jsonData = json.decode(response.body);
-      // debugPrint("JSON DECODED:- $jsonData");
-      // usersCategory = UsersCategories.fromJson(jsonData);
-      //
-      // Map<String, dynamic> result = {"results": usersCategory};
-
-      return {};
+    if (response.statusCode == 200) {
+      ReplyCommentDetails replyCommentDetail =
+      ReplyCommentDetails.fromJson(json.decode(response.body));
+      return replyCommentDetail;
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -449,7 +443,7 @@ class AskAuth extends AuthService {
   Future<Map<String, dynamic>?> getAllReply(
     String? next,
     String previous,
-    String postId,
+    String commentId,
   ) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
@@ -458,7 +452,7 @@ class AskAuth extends AuthService {
     }
     if (next == "") {
       url = AppConfig.baseUrl +
-          "/api/v1/social/ask/reply-a-yarn-comment/$postId/";
+          "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -468,18 +462,18 @@ class AskAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<CommentDetails> commentsDetails = [];
+      List<ReplyCommentDetails> replyCommentDetails = [];
       var jsonData = json.decode(response.body);
-      for (var item in jsonData["results"]) {
-        CommentDetails commentsDetail = CommentDetails.fromJson(item);
-        commentsDetails.add(commentsDetail);
+      for (var item in jsonData) {
+        ReplyCommentDetails replyCommentDetail = ReplyCommentDetails.fromJson(item);
+        replyCommentDetails.add(replyCommentDetail);
       }
 
       Map<String, dynamic> result = {
-        "count": jsonData["count"],
-        "next": jsonData["next"],
-        "previous": jsonData["previous"],
-        "results": commentsDetails
+        // "count": jsonData["count"],
+        // "next": jsonData["next"],
+        // "previous": jsonData["previous"],
+        "results": replyCommentDetails
       };
 
       return result;

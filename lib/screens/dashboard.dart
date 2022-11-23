@@ -72,7 +72,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ShareManager().initializeShareManager();
     });
     if (mounted) MainSocketMessageHandler().dispose();
@@ -174,14 +174,14 @@ class _DashboardState extends State<Dashboard> {
       } else if (receivedNotification.buttonKeyPressed == "accept_nudge") {
         // saveNudgeNotification(receivedNotification.payload);
 
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           navigateToNotification(receivedNotification.toMap());
         });
       } else {
         debugPrint("===> ${receivedNotification.toMap()}");
 
         // saveNotification(payload);
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           navigateToNotification(receivedNotification.toMap());
         });
       }

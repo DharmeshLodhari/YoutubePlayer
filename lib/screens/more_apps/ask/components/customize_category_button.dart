@@ -1,0 +1,120 @@
+import 'package:flutter/material.dart';
+
+import '../../../../utils/colors.dart';
+import '../../../../utils/util.dart';
+import '../ask_auth.dart';
+import '../models/ask_categories_model.dart';
+
+class CustomizeCategoryButton extends StatefulWidget {
+  AskCategories? askCategory;
+  UsersCategories? usersCategory;
+  CustomizeCategoryButton({Key? key, this.askCategory, this.usersCategory}) : super(key: key);
+
+  @override
+  State<CustomizeCategoryButton> createState() => _CustomizeCategoryButtonState();
+}
+
+class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
+
+  bool isAdd = false;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    userSelectedCategory();
+    super.initState();
+  }
+
+  void userSelectedCategory() {
+    setState(() {
+      isAdd = false;
+    });
+    for (AskCategories cat in widget.usersCategory!.categories ?? []) {
+      if (cat.id == widget.askCategory!.id) {
+        setState(() {
+          isAdd = true;
+        });
+        break;
+      }
+    }
+    debugPrint("IS ADD:- $isAdd");
+  }
+
+  Future<UsersCategories?> saveUserCategories(String categoryId) async {
+    try {
+      Map<String, dynamic>? result = await AskAuth().saveUsersSingleCategories(categoryId);
+      if (result != null) {
+        setState(() {
+          widget.usersCategory = result['results'];
+          userSelectedCategory();
+          isLoading = false;
+        });
+        showToast(message: "Saved Successfully");
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      showToast(message: error.toString());
+    }
+    return widget.usersCategory!;
+  }
+
+  Future<UsersCategories?> deleteUserCategories(String categoryId) async {
+    try {
+      Map<String, dynamic>? result =
+      await AskAuth().deleteUsersSingleCategories(categoryId);
+      if (result != null) {
+        setState(() {
+          widget.usersCategory = result['results'];
+          userSelectedCategory();
+          isLoading = false;
+        });
+        showToast(message: "Removed Successfully");
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      showToast(message: error.toString());
+    }
+    return widget.usersCategory;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () async {
+        setState(() {
+          isLoading = true;
+        });
+        if (isAdd) {
+          await deleteUserCategories(widget.askCategory!.id!);
+        } else {
+          await saveUserCategories(widget.askCategory!.id!);
+        }
+      },
+      child: !isLoading ? Container(
+        height: 25,
+        width: 60,
+        decoration: BoxDecoration(
+            color: isAdd ? Colors.white : HexColor("#3F61DB"),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: HexColor("#3F61DB"),
+            )),
+        child: Center(
+          child: Text(
+            isAdd ? "Remove" : "Add",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isAdd ? HexColor("#3F61DB") : Colors.white,
+            ),
+          ),
+        ),
+      ) : Container(height: 25,
+          width: 60, child: Center(child: SizedBox(height: 18, width: 18, child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue), strokeWidth: 2.0,),))),
+    );
+  }
+}

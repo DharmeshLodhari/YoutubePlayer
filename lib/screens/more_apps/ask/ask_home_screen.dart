@@ -195,18 +195,15 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
   Widget _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
-      title: Row(
-        children: [
-          Text(
-            'YARN',
-            style: TextStyle(
-              fontSize: 21,
-              fontWeight: FontWeight.w700,
-              color: blackFont,
-            ),
-          ),
-        ],
+      title: Text(
+        'YARN',
+        style: TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.w700,
+          color: blackFont,
+        ),
       ),
+      titleSpacing: 0,
       actions: [
         _buildAppBarActions()
       ],
@@ -248,7 +245,6 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
       children: [
         _buildIconButton(
           onTap: () {
-            print("ONTAP");
             NavigationUtil.push(
               context,
               screen: SearchScreen(),
@@ -280,6 +276,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
             icon: Icons.settings,
             iconColor: blackFont
         ),
+        SizedBox(width: 10),
       ],
     );
   }
@@ -344,7 +341,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           pageViewTabItem(
               onPageTap: () {
@@ -388,7 +385,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         children: [
           TopicView(key: topicViewStateKey, selectedCategory: selectedCategoryId,),
           QuestionView(key: questionViewStateKey, selectedCategory: selectedCategoryId,),
-          MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
+          // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),
     );

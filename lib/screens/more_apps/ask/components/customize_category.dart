@@ -2,12 +2,14 @@ import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 import '../models/ask_categories_model.dart';
+import 'customize_category_button.dart';
 
 class CustomizeCategory extends StatelessWidget {
   AskCategories? askCategory;
+  UsersCategories? usersCategory;
   bool? isAdd = false;
   GestureTapCallback? onTap;
-  CustomizeCategory({this.askCategory, this.isAdd, this.onTap});
+  CustomizeCategory({this.askCategory, this.isAdd, this.onTap, this.usersCategory});
 
   @override
   Widget build(BuildContext context) {
@@ -20,28 +22,9 @@ class CustomizeCategory extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      trailing: InkWell(
-        onTap: onTap,
-        child: Container(
-          height: 25,
-          width: 60,
-          decoration: BoxDecoration(
-              color: isAdd! ? Colors.white : HexColor("#3F61DB"),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: HexColor("#3F61DB"),
-              )),
-          child: Center(
-            child: Text(
-              isAdd! ? "Remove" : "Add",
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isAdd! ? HexColor("#3F61DB") : Colors.white,
-              ),
-            ),
-          ),
-        ),
+      trailing: CustomizeCategoryButton(
+        askCategory: askCategory,
+        usersCategory: usersCategory,
       ),
     );
   }

@@ -35,51 +35,6 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
     return usersCategory!;
   }
 
-  Future<UsersCategories?> saveUserCategories(String categoryId) async {
-    try {
-      setState(() {
-        isCategoryLoading = true;
-      });
-      Map<String, dynamic>? result = await AskAuth().saveUsersSingleCategories(categoryId);
-      if (result != null) {
-        setState(() {
-          usersCategory = result['results'];
-          isCategoryLoading = false;
-        });
-        showToast(message: "Saved Successfully");
-      }
-    } catch (error) {
-      setState(() {
-        isCategoryLoading = false;
-      });
-      showToast(message: error.toString());
-    }
-    return usersCategory!;
-  }
-
-  Future<UsersCategories?> deleteUserCategories(String categoryId) async {
-    try {
-      setState(() {
-        isCategoryLoading = true;
-      });
-      Map<String, dynamic>? result =
-      await AskAuth().deleteUsersSingleCategories(categoryId);
-      if (result != null) {
-        setState(() {
-          usersCategory = result['results'];
-          isCategoryLoading = false;
-        });
-        showToast(message: "Removed Successfully");
-      }
-    } catch (error) {
-      setState(() {
-        isCategoryLoading = false;
-      });
-      showToast(message: error.toString());
-    }
-    return usersCategory!;
-  }
-
   void getAskCategoriesList() async {
     if (!isAskCategoriesLoading) {
       if (categoriesNext != null && !isAskCategoriesLoading) {
@@ -104,9 +59,11 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
         categoriesPrevious = result['previous'];
         var tempList = result['results'];
         if (mounted) {
-          noCategoriesList = false;
-          isAskCategoriesLoading = false;
-          askCategories.addAll(tempList);
+          setState(() {
+            noCategoriesList = false;
+            isAskCategoriesLoading = false;
+            askCategories.addAll(tempList);
+          });
         }
       }
       if (askCategories.isEmpty) {
@@ -169,7 +126,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
         child: usersCategory != null
             ? _buildCategoryList()
             : Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),),
               ),
       ),
     );
@@ -178,27 +135,11 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
   Widget _buildCategoryList() {
     return Column(
       children: askCategories.map((category) {
-        bool isCategorySelected = false;
-
-        for (AskCategories cat in usersCategory?.categories ?? []) {
-          if (cat.id == category.id) {
-            isCategorySelected = true;
-            break;
-          }
-        }
-
         return Column(
           children: [
             CustomizeCategory(
               askCategory: category,
-              isAdd: isCategorySelected,
-              onTap: () async {
-                if (isCategorySelected) {
-                  await deleteUserCategories(category.id!);
-                } else {
-                  await saveUserCategories(category.id!);
-                }
-              },
+              usersCategory: usersCategory,
             ),
             Divider(
               color: HexColor("#EBEDFC"),

@@ -25,6 +25,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   late PageController _pageViewCtrl;
   UsersCategories? usersCategory;
   late UserBloc userBloc;
+  late AskViewModel askViewModel;
 
   @override
   void initState() {
@@ -52,168 +53,164 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Consumer<AskViewModel>(builder: (context, model, child) {
-      return Scaffold(
-        backgroundColor: Colors.white,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: HexColor(widget.askCategories!.color!),
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            NavigationUtil.push(
-              context,
-              screen: AddTopicScreen(),
-            );
-          },
-        ),
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(80.0),
-          child: AppBar(
-            backgroundColor: HexColor(widget.askCategories!.color!)
-                .withOpacity(0.8),
-            title: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.askCategories!.name!,
-                        overflow: TextOverflow.fade,
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w700,
-                          color: white,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        '',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.search_rounded,
-                    color: white,
-                    size: 26,
-                  ),
-                  SizedBox(width: 10),
-                  !isAddCategory()! ? InkWell(
-                    onTap: () {
-                      saveUserCategories(widget.askCategories!.id!);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: white,
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        child: Text(
-                          'Add',
-                          style: TextStyle(
-                            color: blackFont,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ) : Container(
-                    height: 24,
-                    width: 24,
-                    decoration: BoxDecoration(shape: BoxShape.circle),
-                    child: ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: userBloc.user.avatar!,
-                        fit: BoxFit.cover,
-                        errorWidget: imageErrorWidget,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 17),
-                ],
+    askViewModel = Provider.of<AskViewModel>(context);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      floatingActionButton: _buildFloatingActionButton(),
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+    );
+  }
+  
+  Widget _buildFloatingActionButton() {
+    return FloatingActionButton(
+      backgroundColor: HexColor(widget.askCategories!.color!),
+      child: Icon(
+        Icons.add,
+        color: Colors.white,
+      ),
+      onPressed: () {
+        NavigationUtil.push(
+          context,
+          screen: AddTopicScreen(),
+        );
+      },
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(80.0),
+      child: AppBar(
+        backgroundColor: HexColor(widget.askCategories!.color!)
+            .withOpacity(0.8),
+        titleSpacing: 0,
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.askCategories!.name!,
+              overflow: TextOverflow.fade,
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.w700,
+                color: white,
               ),
-            ],
-            elevation: 0,
-            leading: IconButton(
-              icon: Icon(
-                Icons.keyboard_arrow_left,
+            ),
+          ],
+        ),
+        actions: [
+          Row(
+            children: [
+              Icon(
+                Icons.search_rounded,
                 color: white,
                 size: 26,
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-        ),
-        body: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 6,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                children: [
-                  SizedBox(height: 17),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      pageViewTabItem(
-                          onPageTap: () {
-                            model.updateCurrentAskTapOnHome(i: 0);
-                            _pageViewCtrl.jumpToPage(0);
-                          },
-                          pageNum: 0,
-                          title: 'Yarn',
-                          currentTapIndex: model.currentAskTapOnHome),
-                      pageViewTabItem(
-                          onPageTap: () {
-                            model.updateCurrentAskTapOnHome(i: 1);
-                            _pageViewCtrl.jumpToPage(1);
-                          },
-                          pageNum: 1,
-                          title: 'Questions',
-                          currentTapIndex: model.currentAskTapOnHome),
-                    ],
+              SizedBox(width: 10),
+              !isAddCategory()! ? InkWell(
+                onTap: () {
+                  saveUserCategories(widget.askCategories!.id!);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: white,
+                    borderRadius: BorderRadius.circular(9),
                   ),
-                  SizedBox(height: 7),
-                ],
-              ),
-              Expanded(
-                child: PageView(
-                  onPageChanged: (currentPage) {
-                    model.updateCurrentAskTapOnHome(i: currentPage);
-                  },
-                  controller: _pageViewCtrl,
-                  children: [
-                    TopicView(selectedCategory: widget.askCategories!.id!,),
-                    QuestionView(selectedCategory: widget.askCategories!.id!,),
-                  ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5),
+                    child: Text(
+                      'Add',
+                      style: TextStyle(
+                        color: blackFont,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ) : Container(
+                height: 24,
+                width: 24,
+                decoration: BoxDecoration(shape: BoxShape.circle),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: userBloc.user.avatar!,
+                    fit: BoxFit.cover,
+                    errorWidget: imageErrorWidget,
+                  ),
                 ),
               ),
+              SizedBox(width: 17),
             ],
           ),
+        ],
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+            color: white,
+            size: 26,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-      );
-    });
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 6,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              SizedBox(height: 17),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  pageViewTabItem(
+                      onPageTap: () {
+                        askViewModel.updateCurrentAskTapOnHome(i: 0);
+                        _pageViewCtrl.jumpToPage(0);
+                      },
+                      pageNum: 0,
+                      title: 'Yarn',
+                      currentTapIndex: askViewModel.currentAskTapOnHome),
+                  pageViewTabItem(
+                      onPageTap: () {
+                        askViewModel.updateCurrentAskTapOnHome(i: 1);
+                        _pageViewCtrl.jumpToPage(1);
+                      },
+                      pageNum: 1,
+                      title: 'Questions',
+                      currentTapIndex: askViewModel.currentAskTapOnHome),
+                ],
+              ),
+              SizedBox(height: 7),
+            ],
+          ),
+          Expanded(
+            child: PageView(
+              onPageChanged: (currentPage) {
+                askViewModel.updateCurrentAskTapOnHome(i: currentPage);
+              },
+              controller: _pageViewCtrl,
+              children: [
+                TopicView(selectedCategory: widget.askCategories!.id!,),
+                QuestionView(selectedCategory: widget.askCategories!.id!,),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget pageViewTabItem(
@@ -251,8 +248,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
       for (var usCate in usersCategory!.categories!) {
         if (widget.askCategories!.id == usCate.id) {
           isAdded = true;
-        } else {
-          isAdded = false;
+          break;
         }
       }
     }
