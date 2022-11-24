@@ -23,6 +23,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../routes/route_constants.dart';
+import '../../../utils/navigation_util.dart';
+import '../ask/ask_setting_screen.dart';
 import '../payment_and_banking/screens/banking/user_kyc.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
@@ -110,6 +112,14 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 getOutGoingSoundTile(),
                 getCurrencyTile(),
                 getLanguageTile(),
+                getSettingsTile(
+                    title: "Yarn Settings",
+                    onTap: () {
+                      NavigationUtil.push(
+                        context,
+                        screen: AskSettingsScreen(),
+                      );
+                    }),
                 getSettingsTile(
                     title: "Terms & Conditions",
                     onTap: () async {
