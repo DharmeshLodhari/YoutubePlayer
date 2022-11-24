@@ -13,7 +13,7 @@ import 'models/Topics/CommentDetails.dart';
 class AskDetailScreen extends StatefulWidget {
   YarnTopic? yarnTopic;
 
-  AskDetailScreen({this.yarnTopic});
+  AskDetailScreen({@required this.yarnTopic});
 
   @override
   State<AskDetailScreen> createState() => _AskDetailScreenState();

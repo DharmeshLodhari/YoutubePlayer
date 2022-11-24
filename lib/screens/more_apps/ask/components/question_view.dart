@@ -113,7 +113,7 @@ class QuestionViewState extends State<QuestionView> {
                   onTap: () {
                     NavigationUtil.push(
                       context,
-                      screen: AskDetailScreen(),
+                      screen: AskDetailScreen(yarnTopic: yarnTopicList[index],),
                     );
                   },
                   child: AskPosts(
