@@ -1,23 +1,21 @@
 import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
 import 'package:Slydo/screens/more_apps/ask/components/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/colors.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
 import 'ask_comment_view.dart';
+import 'ask_options.dart';
 
 class AskPosts extends StatelessWidget {
   bool? openComments;
   List<CommentDetails>? commentDetailsList = [];
   bool? showTag;
-  Function? onOptionsAction;
+  GestureTapCallback? onOptionsAction;
 
   bool? isImages = false;
   YarnTopic? yarnTopic;
@@ -75,7 +73,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
-        _buildTopActions(),
+        _buildTopActions(context: context),
         _buildCommentView(context: context),
       ],
     );
@@ -101,7 +99,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 15,
         ),
-        _buildTopActions(),
+        _buildTopActions(context: context),
         _buildCommentView(context: context),
       ],
     );
@@ -109,41 +107,39 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildUserInfoRow({required BuildContext context}) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                    arguments: yarnTopic!.authorAvatar!);
-              },
-              child: Container(
-                height: 24,
-                width: 24,
-                decoration: BoxDecoration(shape: BoxShape.circle),
-                child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: yarnTopic!.authorAvatar!,
-                    fit: BoxFit.cover,
-                    errorWidget: imageErrorWidget,
-                  ),
-                ),
+        InkWell(
+          onTap: () {
+            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                arguments: yarnTopic!.authorAvatar!);
+          },
+          child: Container(
+            height: 24,
+            width: 24,
+            decoration: BoxDecoration(shape: BoxShape.circle),
+            child: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: yarnTopic!.authorAvatar!,
+                fit: BoxFit.cover,
+                errorWidget: imageErrorWidget,
               ),
             ),
-            SizedBox(
-              width: 10,
-            ),
-          ],
+          ),
+        ),
+        SizedBox(
+          width: 10,
         ),
         Expanded(
-            child: Row(
-          children: [
-            InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, Routes.USER_PROFILE,
-                    arguments: {
-                      "searchedUserName": yarnTopic!.author
-                    });
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {
+                        "searchedUserName": yarnTopic!.author
+                      });
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,26 +159,37 @@ class AskPosts extends StatelessWidget {
             SizedBox(
               width: 5,
             ),
-            Icon(
-              Icons.verified,
-              color: HexColor("#3F61DB"),
-              size: 12,
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            Text(
-              '',
+              Text(
+              '${getGetYarnQuestionDateTime(yarnTopic!.createdAt!)}',
+              overflow: TextOverflow.fade,
               style: TextStyle(
                 color: blackFont,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        )),
+              ],
+            )
+        ),
         InkWell(
-          onTap: () => onOptionsAction!(),
+          onTap: () {
+            showModalBottomSheet<void>(
+              backgroundColor: Colors.transparent,
+              context: context,
+              builder: (BuildContext context) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                  ),
+                  color: Colors.white,
+                  margin: EdgeInsets.zero,
+                  child: AskOptions(yarnTopic: yarnTopic!,),
+                );
+              },
+            );
+          },
           child: Icon(
             Icons.more_horiz_rounded,
             color: Color(0xFF4B545A),
@@ -247,10 +254,9 @@ class AskPosts extends StatelessWidget {
     );
   }
 
-  Widget _buildTopActions() {
+  Widget _buildTopActions({required BuildContext context}) {
     return TopicActions(
       yarnTopic: yarnTopic!,
-      commentCount: yarnTopic!.numberOfComments != null ? yarnTopic!.numberOfComments! : 0,
     );
   }
 
@@ -563,5 +569,9 @@ class AskPosts extends StatelessWidget {
       );
     }
     return SizedBox();
+  }
+
+  String getGetYarnQuestionDateTime(String dateTime) {
+    return toTimeAgoLabel(dateTime: DateTime.parse(dateTime));
   }
 }

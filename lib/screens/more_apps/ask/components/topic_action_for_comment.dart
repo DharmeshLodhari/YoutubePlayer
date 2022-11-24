@@ -1,47 +1,38 @@
 import 'dart:convert';
+
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
+
 import '../../../../data/state_notifier.dart';
-import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/bottom_sheet_item.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../ask_auth.dart';
-import '../ask_detail_screen.dart';
+import '../models/Topics/CommentDetails.dart';
 
-class TopicActions extends StatefulWidget {
-  YarnTopic? yarnTopic;
+class TopicActionsForComment extends StatefulWidget {
+  CommentDetails? commentDetail;
 
-  TopicActions({this.yarnTopic});
+  TopicActionsForComment({this.commentDetail});
 
   @override
-  State<TopicActions> createState() => _TopicActionsState();
+  State<TopicActionsForComment> createState() => _TopicActionsForCommentState();
 }
 
-class _TopicActionsState extends State<TopicActions> {
+class _TopicActionsForCommentState extends State<TopicActionsForComment> {
 
 
-  Future addLikeToYarnAndQuestion() async {
-    int? voteCount = await AskAuth().addLike(widget.yarnTopic!.id!);
-    if (voteCount != null && voteCount != 0) {
-      setState(() {
-        widget.yarnTopic!.voteCount = widget.yarnTopic!.voteCount!+ voteCount;
-      });
-    }
+  Future addLikeToComment() async {
+    await AskAuth().addLikeComment(widget.commentDetail!.id!);
   }
 
-  Future addDisLikeToYarnAndQuestion() async {
-    int? downVoteCount = await AskAuth().addDisLike(widget.yarnTopic!.id!);
-    if (downVoteCount != null && downVoteCount != 0) {
-      setState(() {
-        widget.yarnTopic!.downVoteCount = widget.yarnTopic!.downVoteCount!+downVoteCount;
-      });
-    }
+  Future addDisLikeToComment() async {
+    await AskAuth().addDisLikeComment(widget.commentDetail!.id!);
   }
 
   @override
@@ -50,12 +41,7 @@ class _TopicActionsState extends State<TopicActions> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         InkWell(
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: AskDetailScreen(yarnTopic: widget.yarnTopic),
-            );
-          },
+          onTap: () {},
           child: Row(
             children: [
               SvgPicture.asset("ask/reply".toSVG()),
@@ -65,9 +51,9 @@ class _TopicActionsState extends State<TopicActions> {
               Text(
                 getCommentCount(),
                 style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: HexColor("#75818F")
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: HexColor("#75818F")
                 ),
               ),
             ],
@@ -75,7 +61,7 @@ class _TopicActionsState extends State<TopicActions> {
         ),
         InkWell(
           onTap: () {
-            addLikeToYarnAndQuestion();
+            // addLikeToComment();
           },
           child: Row(
             children: [
@@ -86,9 +72,9 @@ class _TopicActionsState extends State<TopicActions> {
               Text(
                 getLikeCount(),
                 style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: HexColor("#75818F")
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: HexColor("#75818F")
                 ),
               ),
             ],
@@ -96,7 +82,7 @@ class _TopicActionsState extends State<TopicActions> {
         ),
         InkWell(
           onTap: () {
-            addDisLikeToYarnAndQuestion();
+            // addDisLikeToComment();
           },
           child: Row(
             children: [
@@ -107,9 +93,9 @@ class _TopicActionsState extends State<TopicActions> {
               Text(
                 getDisLikeCount(),
                 style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: HexColor("#75818F")
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: HexColor("#75818F")
                 ),
               ),
             ],
@@ -117,22 +103,22 @@ class _TopicActionsState extends State<TopicActions> {
         ),
         InkWell(
           onTap: () {
-            androidBottomSheet(
-              context: context,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  bottomSheetItem(
-                      title: 'Share in chat',
-                      iconData: Icons.send_outlined,
-                      onTap: () async {
-                        Navigator.of(context).pop();
-                        await sendMomentToUserInChat(
-                            yarnTopic: widget.yarnTopic!);
-                      }),
-                ],
-              ),
-            );
+            // androidBottomSheet(
+            //   context: context,
+            //   child: Column(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       bottomSheetItem(
+            //           title: 'Share in chat',
+            //           iconData: Icons.send_outlined,
+            //           onTap: () async {
+            //             Navigator.of(context).pop();
+            //             await sendMomentToUserInChat(
+            //                 yarnTopic: widget.yarnTopic);
+            //           }),
+            //     ],
+            //   ),
+            // );
           },
           child: Row(
             children: [
@@ -153,32 +139,32 @@ class _TopicActionsState extends State<TopicActions> {
   }
 
   String getCommentCount() {
-    if (widget.yarnTopic!.numberOfComments != null &&
-        widget.yarnTopic!.numberOfComments != 0) {
-      return widget.yarnTopic!.numberOfComments?.toString() ?? "";
+    if (widget.commentDetail!.replyCount != null &&
+        widget.commentDetail!.replyCount != 0) {
+      return widget.commentDetail!.replyCount?.toString() ?? "";
     }
     return "";
   }
 
   String getLikeCount() {
-    if (widget.yarnTopic!.voteCount != null &&
-        widget.yarnTopic!.voteCount != 0) {
-      return widget.yarnTopic!.voteCount?.toString() ?? "";
+    if (widget.commentDetail!.socialLikes != null &&
+        widget.commentDetail!.socialLikes != 0) {
+      return widget.commentDetail!.socialLikes?.toString() ?? "";
     }
     return "";
   }
 
   String getDisLikeCount() {
-    if (widget.yarnTopic!.downVoteCount != null &&
-        widget.yarnTopic!.downVoteCount != 0) {
-      return widget.yarnTopic!.downVoteCount?.toString() ?? "";
+    if (widget.commentDetail!.socialDislikes != null &&
+        widget.commentDetail!.socialDislikes != 0) {
+      return widget.commentDetail!.socialDislikes?.toString() ?? "";
     }
     return "";
   }
 
   Future<void> sendMomentToUserInChat({required YarnTopic yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
-        await ShareInChat().selectShareCustomer(context);
+    await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {

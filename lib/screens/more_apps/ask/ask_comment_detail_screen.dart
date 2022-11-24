@@ -127,6 +127,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
       children: [
         _buildCommentDetailView(),
         _buildTopicTextField(),
+        SizedBox(height: 20,)
       ],
     );
   }
@@ -148,32 +149,35 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
   }
 
   Widget _buildTopicTextField() {
-    return TopicTextField(
-      height: 50,
-      controller: controller,
-      hint: "Leave your thought",
-      yarn: widget.yarnTopic,
-      userImage: userBloc.user.avatar,
-      onPressed: () async {
-        Map<String, dynamic> data = {
-          "comment": controller.text,
-          "author_username": userBloc.user.userName,
-          "is_reply": true
-        };
-        try {
-          ReplyCommentDetails? replyCommentDetail = await AskAuth()
-              .addReplyToComment(widget.commentDetail!.id!, data);
-          if (replyCommentDetail != null) {
-            replyCommentDetailsList.add(replyCommentDetail);
-            controller.clear();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: TopicTextField(
+        height: 50,
+        controller: controller,
+        hint: "Leave your thought",
+        yarn: widget.yarnTopic,
+        userImage: userBloc.user.avatar,
+        onPressed: () async {
+          Map<String, dynamic> data = {
+            "comment": controller.text,
+            "author_username": userBloc.user.userName,
+            "is_reply": true
+          };
+          try {
+            ReplyCommentDetails? replyCommentDetail = await AskAuth()
+                .addReplyToComment(widget.commentDetail!.id!, data);
+            if (replyCommentDetail != null) {
+              replyCommentDetailsList.add(replyCommentDetail);
+              controller.clear();
 
-            if (mounted) setState(() {});
+              if (mounted) setState(() {});
+            }
+          } catch (error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(error.toString())));
           }
-        } catch (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(error.toString())));
-        }
-      },
+        },
+      ),
     );
   }
 }

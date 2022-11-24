@@ -110,7 +110,9 @@ class TopicViewState extends State<TopicView> {
               NavigationUtil.push(
                 context,
                 screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
-              );
+              ).then((value) {
+                _onPostRefresh();
+              });
             },
             child: AskPosts(
               showTag: true,

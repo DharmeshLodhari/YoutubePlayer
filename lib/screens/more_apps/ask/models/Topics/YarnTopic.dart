@@ -2,171 +2,118 @@ import 'dart:io';
 
 class YarnTopic {
   YarnTopic({
-      String? id, 
-      List<String>? tags, 
-      String? authorName, 
-      String? authorAvatar, 
-      String? createdAt, 
-      dynamic updatedAt, 
-      String? title, 
-      String? body,
-      List<Media>? media,
-      String? author, 
-      String? status, 
-      num? numberOfAnswers,
-      List<ViewersAvatars>? viewersAvatars,
-      bool? isQuestion,
-      int? numberOfComments,
-  }){
-    _id = id;
-    _tags = tags;
-    _authorName = authorName;
-    _authorAvatar = authorAvatar;
-    _createdAt = createdAt;
-    _updatedAt = updatedAt;
-    _title = title;
-    _body = body;
-    _media = media;
-    _author = author;
-    _status = status;
-    _numberOfAnswers = numberOfAnswers;
-    _viewersAvatars = viewersAvatars;
-    _isQuestion = isQuestion;
-    _numberOfComments = numberOfComments;
-}
-
+   this.id,
+   this.tags,
+   this.authorName,
+   this.authorAvatar,
+   this.createdAt,
+   this.updatedAt,
+   this.title,
+   this.body,
+   this.media,
+   this.author,
+   this.status,
+   this.numberOfAnswers,
+   this.viewersAvatars,
+   this.isQuestion,
+   this.numberOfComments,
+   this.enablePayme,
+   this.voteCount,
+   this.downVoteCount,
+   this.authorIsVerified,
+  });
   YarnTopic.fromJson(dynamic json) {
-    _id = json['id'];
-    _tags = json['tags'] != null ? json['tags'].cast<String>() : [];
-    _authorName = json['author_name'];
-    _authorAvatar = json['author_avatar'];
-    _createdAt = json['created_at'];
-    _updatedAt = json['updated_at'];
-    _title = json['title'];
-    _body = json['body'];
+    id = json['id'];
+    tags = json['tags'] != null ? json['tags'].cast<String>() : [];
+    authorName = json['author_name'];
+    authorAvatar = json['author_avatar'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    title = json['title'];
+    body = json['body'];
     if (json['media'] != null) {
-      _media = [];
+      media = [];
       json['media'].forEach((v) {
-        _media?.add(Media.fromJson(v));
+        media?.add(Media.fromJson(v));
       });
     }
-    _author = json['author'];
-    _status = json['status'];
-    _numberOfAnswers = json['number_of_answers'];
+    author = json['author'];
+    status = json['status'];
+    numberOfAnswers = json['number_of_answers'];
     if (json['viewers_avatars'] != null) {
-      _viewersAvatars = [];
+      viewersAvatars = [];
       json['viewers_avatars'].forEach((v) {
-        _viewersAvatars?.add(ViewersAvatars.fromJson(v));
+        viewersAvatars?.add(ViewersAvatars.fromJson(v));
       });
     }
-    _isQuestion = json['is_question'];
-    _numberOfComments = json['number_of_comments'];
+    isQuestion = json['is_question'];
+    numberOfComments = json['number_of_comments'];
+    enablePayme = json['enable_payme'];
+    voteCount = json['vote_count'];
+    downVoteCount = json['down_vote_count'];
+    authorIsVerified = json['author_is_verified'];
   }
-  String? _id;
-  List<String>? _tags;
-  String? _authorName;
-  String? _authorAvatar;
-  String? _createdAt;
-  dynamic _updatedAt;
-  String? _title;
-  String? _body;
-  List<Media>? _media;
-  String? _author;
-  String? _status;
-  num? _numberOfAnswers;
-  List<ViewersAvatars>? _viewersAvatars;
-  bool? _isQuestion;
-  int? _numberOfComments;
-YarnTopic copyWith({  String? id,
-  List<String>? tags,
-  String? authorName,
-  String? authorAvatar,
-  String? createdAt,
-  dynamic updatedAt,
-  String? title,
-  String? body,
-  List<Media>? media,
-  String? author,
-  String? status,
-  num? numberOfAnswers,
-  List<ViewersAvatars>? viewersAvatars,
-  bool? isQuestion,
-  int? numberOfComments
-}) => YarnTopic(  id: id ?? _id,
-  tags: tags ?? _tags,
-  authorName: authorName ?? _authorName,
-  authorAvatar: authorAvatar ?? _authorAvatar,
-  createdAt: createdAt ?? _createdAt,
-  updatedAt: updatedAt ?? _updatedAt,
-  title: title ?? _title,
-  body: body ?? _body,
-  media: media ?? _media,
-  author: author ?? _author,
-  status: status ?? _status,
-  numberOfAnswers: numberOfAnswers ?? _numberOfAnswers,
-  viewersAvatars: viewersAvatars ?? _viewersAvatars,
-  isQuestion: isQuestion ?? _isQuestion,
-  numberOfComments: numberOfComments ?? _numberOfComments,
-);
-  String? get id => _id;
-  List<String>? get tags => _tags;
-  String? get authorName => _authorName;
-  String? get authorAvatar => _authorAvatar;
-  String? get createdAt => _createdAt;
-  dynamic get updatedAt => _updatedAt;
-  String? get title => _title;
-  String? get body => _body;
-  List<Media>? get media => _media;
-  String? get author => _author;
-  String? get status => _status;
-  num? get numberOfAnswers => _numberOfAnswers;
-  List<ViewersAvatars>? get viewersAvatars => _viewersAvatars;
-  bool? get isQuestion => _isQuestion;
-  int? get numberOfComments => _numberOfComments;
+
+  String? id;
+  List<String>? tags;
+  String? authorName;
+  String? authorAvatar;
+  String? createdAt;
+  dynamic updatedAt;
+  String? title;
+  String? body;
+  List<Media>? media;
+  String? author;
+  String? status;
+  int? numberOfAnswers;
+  List<ViewersAvatars>? viewersAvatars;
+  bool? isQuestion;
+  int? numberOfComments;
+  bool? enablePayme;
+  int? voteCount;
+  int? downVoteCount;
+  bool? authorIsVerified;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['id'] = _id;
-    map['tags'] = _tags;
-    map['author_name'] = _authorName;
-    map['author_avatar'] = _authorAvatar;
-    map['created_at'] = _createdAt;
-    map['updated_at'] = _updatedAt;
-    map['title'] = _title;
-    map['body'] = _body;
-    if (_media != null) {
-      map['media'] = _media?.map((v) => v.toJson()).toList();
+    map['id'] = id;
+    map['tags'] = tags;
+    map['author_name'] = authorName;
+    map['author_avatar'] = authorAvatar;
+    map['created_at'] = createdAt;
+    map['updated_at'] = updatedAt;
+    map['title'] = title;
+    map['body'] = body;
+    if (media != null) {
+      map['media'] = media?.map((v) => v.toJson()).toList();
     }
-    map['author'] = _author;
-    map['status'] = _status;
-    map['number_of_answers'] = _numberOfAnswers;
-    if (_viewersAvatars != null) {
-      map['viewers_avatars'] = _viewersAvatars?.map((v) => v.toJson()).toList();
+    map['author'] = author;
+    map['status'] = status;
+    map['number_of_answers'] = numberOfAnswers;
+    if (viewersAvatars != null) {
+      map['viewers_avatars'] = viewersAvatars?.map((v) => v.toJson()).toList();
     }
-    map['is_question'] = _isQuestion;
-    map['number_of_comments'] = _numberOfComments;
+    map['is_question'] = isQuestion;
+    map['number_of_comments'] = numberOfComments;
+    map['enable_payme'] = enablePayme;
+    map['vote_count'] = voteCount;
+    map['down_vote_count'] = downVoteCount;
+    map['author_is_verified'] = authorIsVerified;
     return map;
   }
 }
 
 class Media {
-  Media({
-    String? file,}){
-    _file = file;
-  }
+  Media({this.file,});
 
   Media.fromJson(dynamic json) {
-    _file = json['file'];
+    file = json['file'];
   }
-  String? _file;
-  Media copyWith({  String? file,
-  }) => Media(  file: file ?? _file,
-  );
-  String? get file => _file;
+  String? file;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['file'] = _file;
+    map['file'] = file;
     return map;
   }
 
@@ -174,30 +121,20 @@ class Media {
 
 class ViewersAvatars {
   ViewersAvatars({
-    String? username,
-    String? avatar,}){
-    _username = username;
-    _avatar = avatar;
-  }
+    this.username,
+    this.avatar,});
 
   ViewersAvatars.fromJson(dynamic json) {
-    _username = json['username'];
-    _avatar = json['avatar'];
+    username = json['username'];
+    avatar = json['avatar'];
   }
-  String? _username;
-  String? _avatar;
-  ViewersAvatars copyWith({  String? username,
-    String? avatar,
-  }) => ViewersAvatars(  username: username ?? _username,
-    avatar: avatar ?? _avatar,
-  );
-  String? get username => _username;
-  String? get avatar => _avatar;
+  String? username;
+  String? avatar;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['username'] = _username;
-    map['avatar'] = _avatar;
+    map['username'] = username;
+    map['avatar'] = avatar;
     return map;
   }
 

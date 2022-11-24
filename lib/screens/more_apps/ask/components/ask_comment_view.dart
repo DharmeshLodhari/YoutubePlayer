@@ -1,12 +1,10 @@
 import 'package:Slydo/screens/more_apps/ask/components/ask_reply_view.dart';
-import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
+import 'package:Slydo/screens/more_apps/ask/components/topic_action_for_comment.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
-import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/ReplyCommentDetails.dart';
 
@@ -106,7 +104,7 @@ class AskCommentView extends StatelessWidget {
                 SizedBox(height: 15,),
                 _buildCommentDescription(),
                 SizedBox(height: 10,),
-                _buildTopActions(),
+                _buildTopActions(context: context),
               ],
             )
         ),
@@ -156,12 +154,9 @@ class AskCommentView extends StatelessWidget {
     );
   }
 
-  Widget _buildTopActions() {
-    return TopicActions(
-      yarnTopic: yarnTopic!,
-      commentCount: commentDetail!.replyCount! as int,
-      likeCount: commentDetail!.socialLikes != null ? commentDetail!.socialLikes! as int : 0,
-      disLikeCount: commentDetail!.socialDislikes != null ? commentDetail!.socialDislikes! as int : 0,
+  Widget _buildTopActions({required BuildContext context}) {
+    return TopicActionsForComment(
+      commentDetail: commentDetail!,
     );
   }
 

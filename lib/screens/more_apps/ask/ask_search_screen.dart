@@ -50,12 +50,12 @@ class _SearchScreenState extends State<SearchScreen> {
     debugPrint("FILTER VALUE:- $filterValue");
     if (filterValue != null) {
       if (filterValue == "question") {
-        isQuestion = false;
-      } else {
         isQuestion = true;
+      } else {
+        isQuestion = false;
       }
     } else {
-      isQuestion = false;
+      isQuestion = true;
     }
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -187,7 +187,7 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         children: [
           _buildSearchBox(),
-          isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
+          isLoading ? CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),) : SizedBox.shrink(),
           isSearchIsEmpty ? Expanded(
             child: NoItemInList(
               msg: AppLocalization.of(context)!

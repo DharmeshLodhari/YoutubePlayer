@@ -22,12 +22,17 @@ class SlydoAppIconNew {
   static const String? _kFontPkg = null;
 
   static const IconData vector_1 = IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData edit_post = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData delete_post = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData notification = IconData(0xe809, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData filter = IconData(0xe80a, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData question = IconData(0xe80b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData yarn = IconData(0xe80c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData bounty = IconData(0xe80d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData save_post = IconData(0xe80e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData hide_post = IconData(0xe80f, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData super_store = IconData(0xe810, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData hide_commenting = IconData(0xe811, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData home = IconData(0xe812, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData explore = IconData(0xe813, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData chat = IconData(0xe814, fontFamily: _kFontFam, fontPackage: _kFontPkg);

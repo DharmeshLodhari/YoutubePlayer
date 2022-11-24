@@ -483,4 +483,112 @@ class AskAuth extends AuthService {
       return null;
     }
   }
+
+  // ADD LIKE TO YARN
+  Future<int?> addLike(String postId) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url =
+        AppConfig.baseUrl + "/api/v1/social/ask/up-vote/$postId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      int voteCount = 0;
+      var data = json.decode(response.body);
+      voteCount = data['vote_count'];
+      return voteCount;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // ADD DISLIKE TO YARN
+  Future<int?> addDisLike(String postId) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url =
+        AppConfig.baseUrl + "/api/v1/social/ask/down-vote/$postId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      int downVoteCount = 0;
+      var data = json.decode(response.body);
+      downVoteCount = data['down_vote_count'];
+      return downVoteCount;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // ADD LIKE TO YARN
+  Future<int?> addLikeComment(String postId) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url =
+        AppConfig.baseUrl + "/api/v1/social/ask/up-vote/$postId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      int voteCount = 0;
+      var data = json.decode(response.body);
+      voteCount = data['vote_count'];
+      return voteCount;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // ADD DISLIKE TO YARN
+  Future<int?> addDisLikeComment(String postId) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url =
+        AppConfig.baseUrl + "/api/v1/social/ask/down-vote/$postId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      int downVoteCount = 0;
+      var data = json.decode(response.body);
+      downVoteCount = data['down_vote_count'];
+      return downVoteCount;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
 }

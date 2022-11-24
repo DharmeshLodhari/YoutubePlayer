@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
+import 'package:Slydo/screens/more_apps/ask/components/topic_action_for_reply_comment.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -143,11 +143,8 @@ class AskReplyView extends StatelessWidget {
   }
 
   Widget _buildTopActions() {
-    return TopicActions(
-      yarnTopic: yarnTopic!,
-      commentCount: replyCommentDetail!.replyCount != null ? replyCommentDetail!.replyCount as int : 0,
-      disLikeCount: replyCommentDetail!.socialDislikes != null ? replyCommentDetail!.socialDislikes as int : 0,
-      likeCount: replyCommentDetail!.socialLikes != null ? replyCommentDetail!.socialLikes as int : 0,
+    return TopicActionsForReplyComment(
+      replyCommentDetail: replyCommentDetail!,
     );
   }
 }
