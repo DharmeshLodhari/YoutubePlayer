@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/ask/ask_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/util.dart';
 
 class YarnQuestionTileForChat extends StatefulWidget {
@@ -59,27 +63,30 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
     return GestureDetector(
       onTap: () async {
-        // isLoading = true;
-        // if (mounted) setState(() {});
-        //
-        // await MomentsService()
-        //     .getSingleMoment(momentId: yarnQuestionForChatModel.id!)
-        //     .then((momentsModelList) {
-        //   isLoading = false;
-        //   if (mounted) setState(() {});
-        //
-        //   NavigationUtil.push(
-        //     context,
-        //     screen: MomentsDetailsScreen(
-        //       indexOfMoment: 0,
-        //       momentsModelList: [momentsModelList],
-        //     ),
-        //   );
-        // }).catchError((e) {
-        //   isLoading = false;
-        //   if (mounted) setState(() {});
-        //   showToast(message: 'ERROR -> $e');
-        // });
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        await AskAuth()
+            .getSingleTopics(yarnId: yarnQuestionForChatModel.id!)
+            .then((data) {
+              YarnTopic? yarnTopic;
+              if(data != null) {
+                yarnTopic = data['result'];
+              }
+          isLoading = false;
+          if (mounted) setState(() {});
+
+          NavigationUtil.push(
+            context,
+            screen: AskDetailScreen(
+              yarnTopic: yarnTopic,
+            ),
+          );
+        }).catchError((e) {
+          isLoading = false;
+          if (mounted) setState(() {});
+          showToast(message: 'ERROR -> $e');
+        });
       },
       child: Column(
         children: [

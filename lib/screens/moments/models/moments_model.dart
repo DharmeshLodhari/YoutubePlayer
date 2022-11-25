@@ -186,6 +186,35 @@ class MomentsModel {
       isPermanent: json['is_permanent'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = id;
+    map['views'] = views;
+    map['pay_me_label'] = payMeLabel;
+    map['payme_button_color'] = payMeButtonColor;
+    map['enable_payme'] = payMe;
+    map['tags'] = tags;
+    map['enable_like'] = enableLikes;
+    map['enable_commenting'] = enableCommenting;
+    map['likes'] = likes;
+    map['dislikes'] = dislikes;
+    map['media_type'] = mediaType;
+    map['attachment'] = attachment;
+    map['number_of_comments'] = numberOfComments;
+    map['avatar'] = avatar;
+    map['owner_name'] = ownerName;
+    map['media'] = media;
+    map['media_poster'] = mediaPoster;
+    map['gif'] = gif;
+    map['text'] = text;
+    map['owner'] = owner;
+    map['created_at'] = createdAt;
+    map['expire_at'] = expireAt;
+    map['is_public'] = isPublic;
+    map['is_permanent'] = isPermanent;
+    return map;
+  }
 }
 
 class SearchMomentModel extends Equatable {

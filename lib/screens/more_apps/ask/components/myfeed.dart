@@ -113,7 +113,7 @@ class MyFeedViewState extends State<MyFeedView> {
                   onTap: () {
                     NavigationUtil.push(
                       context,
-                      screen: AskDetailScreen(),
+                      screen: AskDetailScreen(yarnTopic: yarnTopicList[index],),
                     );
                   },
                   child: AskPosts(

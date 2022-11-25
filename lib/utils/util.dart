@@ -1154,6 +1154,32 @@ String toTimeAgoLabel({required DateTime dateTime}) {
       : 'just now';
 }
 
+List<ViolationType> violationType = [
+
+  ViolationType(id: 1, type: "Harassment and bullying"),
+  ViolationType(id: 2, type: "Harmful and dangerous content"),
+  ViolationType(id: 3, type: "Threatening Violence"),
+  ViolationType(id: 4, type: "Hate and vulgar language"),
+  ViolationType(id: 5, type: "Nudity and sexual content"),
+  ViolationType(id: 6, type: "Sharing personal information"),
+  ViolationType(id: 7, type: "Prohibited transaction"),
+  ViolationType(id: 8, type: "Impersonation"),
+  ViolationType(id: 9, type: "Copyright violation"),
+  ViolationType(id: 10, type: "Trademark violation"),
+  ViolationType(id: 11, type: "Self-harm or suicide"),
+  ViolationType(id: 12, type: "Spam, deceptive practices and scams"),
+  ViolationType(id: 13, type: "Misinformation"),
+  ViolationType(id: 14, type: "Fake engagement"),
+  ViolationType(id: 15, type: "Violent and graphic content"),
+];
+
+class ViolationType {
+  int? id;
+  String? type;
+  ViolationType({this.id, this.type});
+}
+
+
 List<Map<String, dynamic>> nigeriaStateAndLg = [
   {
     "state": "NationWide",

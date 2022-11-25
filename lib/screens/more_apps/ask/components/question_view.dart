@@ -10,6 +10,7 @@ import '../../../../widget/noItemInList.dart';
 import '../ask_auth.dart';
 import '../ask_detail_screen.dart';
 import '../models/Topics/YarnTopic.dart';
+import 'ask_loader.dart';
 import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
@@ -104,66 +105,62 @@ class QuestionViewState extends State<QuestionView> {
             ),
             controller: _postRefreshController,
             onRefresh: _onPostRefresh,
-            child: !isLoading ? !noList ? ListView.builder(
-              physics: ClampingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
-              itemCount: yarnTopicList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () {
-                    NavigationUtil.push(
-                      context,
-                      screen: AskDetailScreen(yarnTopic: yarnTopicList[index],),
-                    );
-                  },
-                  child: AskPosts(
-                    showTag: true,
-                    onOptionsAction: () {
-                      showModalBottomSheet<void>(
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20)),
-                            ),
-                            color: Colors.white,
-                            margin: EdgeInsets.zero,
-                            child: AskOptions(),
-                          );
-                        },
-                      );
-                    },
-                    isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
-                    yarnTopic: yarnTopicList[index],
-                  ),
-                );
-              },
-            ) : NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ) : Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: greyBorderColor,
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  );
-                },
-              ),
-            ),
+            child: _buildListView(),
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildListView() {
+    print("IS LOADING:- $isLoading");
+    if (isLoading) {
+      return AskLoader();
+    }
+    if (!noList) {
+      return ListView.builder(
+        physics: ClampingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
+        itemCount: yarnTopicList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return InkWell(
+            onTap: () {
+              NavigationUtil.push(
+                context,
+                screen: AskDetailScreen(yarnTopic: yarnTopicList[index],),
+              );
+            },
+            child: AskPosts(
+              showTag: true,
+              onOptionsAction: () {
+                showModalBottomSheet<void>(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                      ),
+                      color: Colors.white,
+                      margin: EdgeInsets.zero,
+                      child: AskOptions(),
+                    );
+                  },
+                );
+              },
+              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+              yarnTopic: yarnTopicList[index],
+            ),
+          );
+        },
+      );
+    }
+    return NoItemInList(
+      msg: AppLocalization.of(context)!.noResultFound,
+    );
+
   }
 
   void _onPostRefresh() async {

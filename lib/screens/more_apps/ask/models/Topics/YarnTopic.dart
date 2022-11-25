@@ -21,6 +21,7 @@ class YarnTopic {
    this.voteCount,
    this.downVoteCount,
    this.authorIsVerified,
+   this.enableCommenting
   });
   YarnTopic.fromJson(dynamic json) {
     id = json['id'];
@@ -52,6 +53,7 @@ class YarnTopic {
     voteCount = json['vote_count'];
     downVoteCount = json['down_vote_count'];
     authorIsVerified = json['author_is_verified'];
+    enableCommenting = json['enable_commenting'];
   }
 
   String? id;
@@ -73,6 +75,7 @@ class YarnTopic {
   int? voteCount;
   int? downVoteCount;
   bool? authorIsVerified;
+  bool? enableCommenting;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -99,6 +102,7 @@ class YarnTopic {
     map['vote_count'] = voteCount;
     map['down_vote_count'] = downVoteCount;
     map['author_is_verified'] = authorIsVerified;
+    map['enable_commenting'] = enableCommenting;
     return map;
   }
 }

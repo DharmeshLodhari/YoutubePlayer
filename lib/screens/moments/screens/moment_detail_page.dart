@@ -26,6 +26,7 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/dialog.dart';
 import '../../../widget/read_more_widget.dart';
 import '../../../widget/rounded_background_icon.dart';
+import '../../more_apps/ask/ask_report_screen.dart';
 import '../../more_apps/messaging/chat/models/ChatConversation.dart';
 import '../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import '../../more_apps/shopping/models/store.dart';
@@ -810,11 +811,32 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
 
     return CustomMomentDetailButton(
         iconEnabled: true,
-        iconData: Icons.share,
+        iconData: Icons.more_horiz_outlined,
         text: "",
         onPressed: () async {
-          await sendMomentToUserInChat(
-              momentsModel: widget.momentsModelList[index]);
+          androidBottomSheet(
+            context: context,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                bottomSheetItem(
+                    title: 'Share in chat',
+                    iconData: Icons.send_outlined,
+                    onTap: () async {
+                      await sendMomentToUserInChat(
+                          momentsModel: widget.momentsModelList[index]);
+                    }),
+                bottomSheetItem(
+                  title: 'Report Moment',
+                  iconData: Icons.report_gmailerrorred_rounded,
+                  onTap: () {
+                    Navigator.pop(context);
+                    NavigationUtil.push(context, screen: AddReportScreen(object: widget.momentsModelList[index].toJson(), type: "moment",));
+                  },
+                ),
+              ],
+            ),
+          );
         });
   }
 

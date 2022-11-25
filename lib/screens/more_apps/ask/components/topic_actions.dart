@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 import '../../../../data/state_notifier.dart';
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/bottom_sheet_item.dart';
@@ -27,19 +28,21 @@ class _TopicActionsState extends State<TopicActions> {
 
 
   Future addLikeToYarnAndQuestion() async {
-    int? voteCount = await AskAuth().addLike(widget.yarnTopic!.id!);
-    if (voteCount != null && voteCount != 0) {
+    Map<String, dynamic>? data = await AskAuth().addLike(widget.yarnTopic!.id!);
+    if (data != null) {
       setState(() {
-        widget.yarnTopic!.voteCount = widget.yarnTopic!.voteCount!+ voteCount;
+        widget.yarnTopic!.voteCount = data['vote_count'];
+        widget.yarnTopic!.downVoteCount = data['down_vote_count'];
       });
     }
   }
 
   Future addDisLikeToYarnAndQuestion() async {
-    int? downVoteCount = await AskAuth().addDisLike(widget.yarnTopic!.id!);
-    if (downVoteCount != null && downVoteCount != 0) {
+    Map<String, dynamic>? data = await AskAuth().addDisLike(widget.yarnTopic!.id!);
+    if (data != null) {
       setState(() {
-        widget.yarnTopic!.downVoteCount = widget.yarnTopic!.downVoteCount!+downVoteCount;
+        widget.yarnTopic!.voteCount = data['vote_count'];
+        widget.yarnTopic!.downVoteCount = data['down_vote_count'];
       });
     }
   }
@@ -140,14 +143,30 @@ class _TopicActionsState extends State<TopicActions> {
             ],
           ),
         ),
-        InkWell(
-          onTap: () {},
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/send_money".toSVG()),
-            ],
-          ),
-        ),
+        if(widget.yarnTopic!.enablePayme!)...[
+          InkWell(
+            onTap: () {
+              Navigator.of(context).pushNamed(
+                Routes.SEND_PAYMENT,
+                arguments: <String, dynamic>{
+                  'recipient': widget.yarnTopic!.author,
+                  'isFromProfile': false,
+                  'isFromChat': false,
+                  'defaultReferenceText':
+                  'Payment from  "${truncateString(
+                    str: widget.yarnTopic!.title!,
+                    lengthToTruncateAt: 8,
+                  )}\" yarn'
+                },
+              );
+            },
+            child: Row(
+              children: [
+                SvgPicture.asset("ask/send_money".toSVG()),
+              ],
+            ),
+          )
+        ],
       ],
     );
   }

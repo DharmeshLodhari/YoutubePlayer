@@ -7,6 +7,7 @@ import '../../../data/state_notifier.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/util.dart';
 import 'ask_auth.dart';
+import 'components/ask_loader.dart';
 import 'components/topic_text_field.dart';
 import 'models/Topics/CommentDetails.dart';
 import 'models/Topics/ReplyCommentDetails.dart';
@@ -142,7 +143,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
             commentDetail: widget.commentDetail,
             replyCommentDetailsList: replyCommentDetailsList,
             openReply: replyCommentDetailsList.isNotEmpty ? true : false,
-          ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),),),
+          ) : AskLoader(),
         ),
       ),
     );
@@ -158,6 +159,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
         yarn: widget.yarnTopic,
         userImage: userBloc.user.avatar,
         onPressed: () async {
+          FocusScope.of(context).unfocus();
           Map<String, dynamic> data = {
             "comment": controller.text,
             "author_username": userBloc.user.userName,

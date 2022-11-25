@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 
 import '../../../../data/state_notifier.dart';
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/bottom_sheet_item.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../ask_auth.dart';
@@ -27,11 +27,23 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
 
 
   Future addLikeToReplyComment() async {
-    await AskAuth().addLike(widget.replyCommentDetail!.id!);
+    Map<String, dynamic>? data = await AskAuth().addLikeComment(widget.replyCommentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.replyCommentDetail!.likes = data['likes'];
+        widget.replyCommentDetail!.disLikes = data['dislikes'];
+      });
+    }
   }
 
   Future addDisLikeToReplyComment() async {
-    await AskAuth().addDisLike(widget.replyCommentDetail!.id!);
+    Map<String, dynamic>? data = await AskAuth().addDisLikeComment(widget.replyCommentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.replyCommentDetail!.likes = data['likes'];
+        widget.replyCommentDetail!.disLikes = data['dislikes'];
+      });
+    }
   }
 
   @override
@@ -60,7 +72,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
         ),
         InkWell(
           onTap: () {
-            // addLikeToReplyComment();
+            addLikeToReplyComment();
           },
           child: Row(
             children: [
@@ -69,7 +81,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
                 width: 6,
               ),
               Text(
-                "",
+                getLikeCount(),
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
@@ -81,7 +93,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
         ),
         InkWell(
           onTap: () {
-            // addDisLikeToReplyComment();
+            addDisLikeToReplyComment();
           },
           child: Row(
             children: [
@@ -90,7 +102,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
                 width: 6,
               ),
               Text(
-                "",
+                getDisLikeCount(),
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
@@ -126,7 +138,21 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
           ),
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              Routes.SEND_PAYMENT,
+              arguments: <String, dynamic>{
+                'recipient': widget.replyCommentDetail!.authorUsername!,
+                'isFromProfile': false,
+                'isFromChat': false,
+                'defaultReferenceText':
+                'Payment from  "${truncateString(
+                  str: widget.replyCommentDetail!.comment!,
+                  lengthToTruncateAt: 8,
+                )}\" comment'
+              },
+            );
+          },
           child: Row(
             children: [
               SvgPicture.asset("ask/send_money".toSVG()),
@@ -146,17 +172,17 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
   }
 
   String getLikeCount() {
-    if (widget.replyCommentDetail!.socialLikes != null &&
-        widget.replyCommentDetail!.socialLikes != 0) {
-      return widget.replyCommentDetail!.socialLikes?.toString() ?? "";
+    if (widget.replyCommentDetail!.likes != null &&
+        widget.replyCommentDetail!.likes != 0) {
+      return widget.replyCommentDetail!.likes?.toString() ?? "";
     }
     return "";
   }
 
   String getDisLikeCount() {
-    if (widget.replyCommentDetail!.socialDislikes != null &&
-        widget.replyCommentDetail!.socialDislikes != 0) {
-      return widget.replyCommentDetail!.socialDislikes?.toString() ?? "";
+    if (widget.replyCommentDetail!.disLikes != null &&
+        widget.replyCommentDetail!.disLikes != 0) {
+      return widget.replyCommentDetail!.disLikes?.toString() ?? "";
     }
     return "";
   }

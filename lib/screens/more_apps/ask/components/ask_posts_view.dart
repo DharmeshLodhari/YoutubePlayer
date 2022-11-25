@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../../../../widget/customized_popup_menu.dart';
+import '../ask_auth.dart';
 import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
 import 'ask_comment_view.dart';
 import 'ask_options.dart';
 
-class AskPosts extends StatelessWidget {
+class AskPosts extends StatefulWidget {
   bool? openComments;
   List<CommentDetails>? commentDetailsList = [];
   bool? showTag;
@@ -32,7 +34,91 @@ class AskPosts extends StatelessWidget {
   });
 
   @override
+  State<AskPosts> createState() => _AskPostsState();
+}
+
+class _AskPostsState extends State<AskPosts> {
+  late CustomizedPopUpMenu menu;
+
+  int selectedMenuItemIndex = 0;
+
+  GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
+
+  String? filterValue;
+
+  bool isPopMenuOpen = false;
+
+  bool isLoading = false;
+  String next = "", previous = "";
+  int count = 0;
+  bool noList = false;
+
+  void getAllComments() async {
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await AskAuth()
+            .getAllComments(next, previous, widget.yarnTopic!.id!);
+
+        if (result == null) {
+          noList = true;
+
+          isLoading = false;
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        count = result['count'];
+        next = result['next'] != null ? result['next'] : "";
+        previous = result['previous'] != null ? result['previous'] : "";
+        var tempList = result['results'];
+        widget.commentDetailsList = [];
+        if (mounted) {
+          setState(() {
+            noList = false;
+            isLoading = false;
+            widget.commentDetailsList!.addAll(tempList);
+          });
+        }
+        debugPrint("YARN TOPICS:- $widget.commentDetailsList");
+      }
+      if (widget.commentDetailsList!.isEmpty) {
+        if (mounted) {
+          setState(() {
+            noList = true;
+          });
+        }
+      }
+      // else if (categoriesNext == null && askCategoriesList.length > 6) {
+      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      //     content:
+      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+      //     duration: Duration(milliseconds: 500),
+      //   ));
+      // }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    menu = CustomizedPopUpMenu(
+      buttonKey: _key,
+      context: context,
+      children: [
+        CustomizedPopUpMenuItem(title: "Latest", value: "latest"),
+        CustomizedPopUpMenuItem(title: "Older", value: "older"),
+        CustomizedPopUpMenuItem(title: "Best", value: "best"),
+      ],
+      selectedIndex: selectedMenuItemIndex,
+      right: 16,
+    );
+    menu.isTitleShow = true;
+    menu.onChange = menuItemSelectionChange;
+    menu.menuState = menuStateChange;
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 12),
         decoration: BoxDecoration(
@@ -43,7 +129,7 @@ class AskPosts extends StatelessWidget {
   }
 
   Widget _buildPostCard({required BuildContext context}) {
-    if (isImages!) {
+    if (widget.isImages!) {
       return _buildWithImagesPostCard(context: context);
     }
     return _buildWithOutImagesPostCard(context: context);
@@ -57,7 +143,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        if (yarnTopic!.isQuestion!) ...[
+        if (widget.yarnTopic!.isQuestion!) ...[
           _buildPostTitle(),
           SizedBox(height: 10),
         ],
@@ -87,7 +173,7 @@ class AskPosts extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        if (yarnTopic!.isQuestion!) ...[
+        if (widget.yarnTopic!.isQuestion!) ...[
           _buildPostTitle(),
           SizedBox(height: 10),
         ],
@@ -112,7 +198,7 @@ class AskPosts extends StatelessWidget {
         InkWell(
           onTap: () {
             Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                arguments: yarnTopic!.authorAvatar!);
+                arguments: widget.yarnTopic!.authorAvatar!);
           },
           child: Container(
             height: 24,
@@ -120,7 +206,7 @@ class AskPosts extends StatelessWidget {
             decoration: BoxDecoration(shape: BoxShape.circle),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl: yarnTopic!.authorAvatar!,
+                imageUrl: widget.yarnTopic!.authorAvatar!,
                 fit: BoxFit.cover,
                 errorWidget: imageErrorWidget,
               ),
@@ -138,16 +224,16 @@ class AskPosts extends StatelessWidget {
                 onTap: () {
                   Navigator.pushNamed(context, Routes.USER_PROFILE,
                       arguments: {
-                        "searchedUserName": yarnTopic!.author
+                        "searchedUserName": widget.yarnTopic!.author
                       });
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   userNameWithVerifiedIcon(
-                      name: yarnTopic!.authorName!, isVerified: false),
+                      name: widget.yarnTopic!.authorName!, isVerified: widget.yarnTopic!.authorIsVerified ?? false),
                   Text(
-                    "@${yarnTopic!.author!}",
+                    "@${widget.yarnTopic!.author!}",
                     style: TextStyle(
                       fontSize: 10,
                       color: HexColor("#3F61DB")
@@ -160,7 +246,7 @@ class AskPosts extends StatelessWidget {
               width: 5,
             ),
               Text(
-              '${getGetYarnQuestionDateTime(yarnTopic!.createdAt!)}',
+              '${getGetYarnQuestionDateTime(widget.yarnTopic!.createdAt!)}',
               overflow: TextOverflow.fade,
               style: TextStyle(
                 color: blackFont,
@@ -185,7 +271,7 @@ class AskPosts extends StatelessWidget {
                   ),
                   color: Colors.white,
                   margin: EdgeInsets.zero,
-                  child: AskOptions(yarnTopic: yarnTopic!,),
+                  child: AskOptions(yarnTopic: widget.yarnTopic!,),
                 );
               },
             );
@@ -201,7 +287,7 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildPostTitle() {
     return Text(
-      yarnTopic!.title!,
+      widget.yarnTopic!.title!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,
@@ -213,7 +299,7 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildPostDescription() {
     return Text(
-      yarnTopic!.body!,
+      widget.yarnTopic!.body!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,
@@ -225,8 +311,8 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildTagsAndViewerRow() {
     List<String> selectedImages = [];
-    if (yarnTopic!.viewersAvatars != null) {
-      for (ViewersAvatars avatars in yarnTopic!.viewersAvatars!) {
+    if (widget.yarnTopic!.viewersAvatars != null) {
+      for (ViewersAvatars avatars in widget.yarnTopic!.viewersAvatars!) {
         selectedImages.add(avatars.avatar!);
       }
     }
@@ -237,7 +323,7 @@ class AskPosts extends StatelessWidget {
           child: Wrap(
             runSpacing: 5,
             spacing: 2,
-            children: yarnTopic!.tags!
+            children: widget.yarnTopic!.tags!
                 .map((e) => Text(
                   "#$e",
                   style: TextStyle(
@@ -256,18 +342,18 @@ class AskPosts extends StatelessWidget {
 
   Widget _buildTopActions({required BuildContext context}) {
     return TopicActions(
-      yarnTopic: yarnTopic!,
+      yarnTopic: widget.yarnTopic!,
     );
   }
 
   Widget _buildImagesRow({required BuildContext context}) {
-    if (yarnTopic!.media!.length == 1) {
+    if (widget.yarnTopic!.media!.length == 1) {
       return _buildSingleImage(context: context);
-    } else if (yarnTopic!.media!.length == 2) {
+    } else if (widget.yarnTopic!.media!.length == 2) {
       return _buildTwoImageRow(context: context);
-    } else if (yarnTopic!.media!.length == 3) {
+    } else if (widget.yarnTopic!.media!.length == 3) {
       return _buildThreeImageRow(context: context);
-    } else if (yarnTopic!.media!.length >= 4) {
+    } else if (widget.yarnTopic!.media!.length >= 4) {
       return _buildFourImageRow(context: context);
     }
     return SizedBox();
@@ -277,7 +363,7 @@ class AskPosts extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: yarnTopic!.media!.first.file!,);
+            arguments: widget.yarnTopic!.media!.first.file!,);
       },
       child: Container(
         width: double.infinity,
@@ -285,7 +371,7 @@ class AskPosts extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: CachedNetworkImage(
-              imageUrl: yarnTopic!.media!.first.file!,
+              imageUrl: widget.yarnTopic!.media!.first.file!,
               fit: BoxFit.cover,
               errorWidget: imageErrorWidget,
             ),
@@ -299,7 +385,7 @@ class AskPosts extends StatelessWidget {
     return Container(
       height: 175,
       child: Row(
-        children: yarnTopic!.media!
+        children: widget.yarnTopic!.media!
             .map((mediaFile) => Expanded(
           child: InkWell(
             onTap: () {
@@ -316,7 +402,7 @@ class AskPosts extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: CachedNetworkImage(
-                  imageUrl: yarnTopic!.media![0].file!,
+                  imageUrl: widget.yarnTopic!.media![0].file!,
                   fit: BoxFit.cover,
                   height: double.infinity,
                   width: double.infinity,
@@ -340,7 +426,7 @@ class AskPosts extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                  arguments: yarnTopic!.media![0].file!);
+                  arguments: widget.yarnTopic!.media![0].file!);
               },
               child: Container(
                 height: (MediaQuery.of(context).size.width - 40) / 2,
@@ -352,7 +438,7 @@ class AskPosts extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: yarnTopic!.media![0].file!,
+                    imageUrl: widget.yarnTopic!.media![0].file!,
                     fit: BoxFit.cover,
                     height: double.infinity,
                     width: double.infinity,
@@ -366,7 +452,7 @@ class AskPosts extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                    arguments: yarnTopic!.media![1].file!);
+                    arguments: widget.yarnTopic!.media![1].file!);
               },
               child: Container(
                 height: (MediaQuery.of(context).size.width - 40) / 2,
@@ -378,7 +464,7 @@ class AskPosts extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: yarnTopic!.media![1].file!,
+                    imageUrl: widget.yarnTopic!.media![1].file!,
                     fit: BoxFit.cover,
                     height: double.infinity,
                     width: double.infinity,
@@ -392,7 +478,7 @@ class AskPosts extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                    arguments: yarnTopic!.media![2].file!);
+                    arguments: widget.yarnTopic!.media![2].file!);
               },
               child: Container(
                 height: (MediaQuery.of(context).size.width - 40) / 2,
@@ -404,7 +490,7 @@ class AskPosts extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: CachedNetworkImage(
-                    imageUrl: yarnTopic!.media![2].file!,
+                    imageUrl: widget.yarnTopic!.media![2].file!,
                     fit: BoxFit.cover,
                     height: double.infinity,
                     width: double.infinity,
@@ -429,7 +515,7 @@ class AskPosts extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: yarnTopic!.media![0].file!);
+                        arguments: widget.yarnTopic!.media![0].file!);
                   },
                   child: Container(
                     height: (MediaQuery.of(context).size.width - 40) / 2,
@@ -441,7 +527,7 @@ class AskPosts extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: CachedNetworkImage(
-                        imageUrl: yarnTopic!.media![0].file!,
+                        imageUrl: widget.yarnTopic!.media![0].file!,
                         fit: BoxFit.cover,
                         height: double.infinity,
                         width: double.infinity,
@@ -455,7 +541,7 @@ class AskPosts extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: yarnTopic!.media![1].file!);
+                        arguments: widget.yarnTopic!.media![1].file!);
                   },
                   child: Container(
                     height: (MediaQuery.of(context).size.width - 40) / 2,
@@ -467,7 +553,7 @@ class AskPosts extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: CachedNetworkImage(
-                        imageUrl: yarnTopic!.media![1].file!,
+                        imageUrl: widget.yarnTopic!.media![1].file!,
                         fit: BoxFit.cover,
                         height: double.infinity,
                         width: double.infinity,
@@ -486,7 +572,7 @@ class AskPosts extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: yarnTopic!.media![2].file!);
+                        arguments: widget.yarnTopic!.media![2].file!);
                   },
                   child: Container(
                     height: (MediaQuery.of(context).size.width - 40) / 2,
@@ -498,7 +584,7 @@ class AskPosts extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: CachedNetworkImage(
-                        imageUrl: yarnTopic!.media![2].file!,
+                        imageUrl: widget.yarnTopic!.media![2].file!,
                         fit: BoxFit.cover,
                         height: double.infinity,
                         width: double.infinity,
@@ -512,7 +598,7 @@ class AskPosts extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: yarnTopic!.media![3].file!);
+                        arguments: widget.yarnTopic!.media![3].file!);
                   },
                   child: Container(
                     height: (MediaQuery.of(context).size.width - 40) / 2,
@@ -524,7 +610,7 @@ class AskPosts extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: CachedNetworkImage(
-                        imageUrl: yarnTopic!.media![3].file!,
+                        imageUrl: widget.yarnTopic!.media![3].file!,
                         fit: BoxFit.cover,
                         height: double.infinity,
                         width: double.infinity,
@@ -542,24 +628,26 @@ class AskPosts extends StatelessWidget {
   }
 
   Widget _buildCommentView({required BuildContext context}) {
-    if (openComments! && commentDetailsList!.isNotEmpty && commentDetailsList != null) {
+    if (widget.openComments! && widget.commentDetailsList!.isNotEmpty && widget.commentDetailsList != null) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          _buildTopActionButton(),
           Divider(
             thickness: 1,
             color: HexColor("#BEC2F4"),
           ),
           Column(
-            children: commentDetailsList!
+            children: widget.commentDetailsList!
                 .map((e) => InkWell(
               onTap: () {
                 NavigationUtil.push(
                   context,
-                  screen: AskCommentDetailScreen(yarnTopic: yarnTopic, commentDetail: e,),
+                  screen: AskCommentDetailScreen(yarnTopic: widget.yarnTopic, commentDetail: e,),
                 );
               },
               child: AskCommentView(
-                yarnTopic: yarnTopic,
+                yarnTopic: widget.yarnTopic,
                 commentDetail: e,
                 openReply: false,
               ),
@@ -569,6 +657,55 @@ class AskPosts extends StatelessWidget {
       );
     }
     return SizedBox();
+  }
+
+  Widget _buildTopActionButton() {
+    return SizedBox(
+      key: _key,
+      //height: 34,
+      width: 108,
+      child: Card(
+        // color: isPopMenuOpen ? navyBlue : iconBtnGrey,
+        elevation: 0,
+        margin: EdgeInsets.only(left: 5, right: 5, top: 5),
+        child: InkWell(
+          onTap: () {
+            if (menu.isMenuOpen) {
+              menu.closeMenu();
+            } else {
+              menu.openMenu();
+            }
+          },
+          child: Row(
+            children: [
+              Text(
+                "Top Comments",
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Icon(
+                Icons.arrow_drop_down_outlined,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+    filterValue = value;
+    getAllComments();
+    setState(() {});
+    // _onRefresh();
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
   }
 
   String getGetYarnQuestionDateTime(String dateTime) {

@@ -121,32 +121,26 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
 
   Widget _buildBody() {
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: usersCategory != null
-            ? _buildCategoryList()
-            : Center(
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),),
-              ),
-      ),
+      padding: EdgeInsets.all(8.0),
+      child: usersCategory != null
+          ? _buildCategoryList()
+          : Center(
+              child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),),
+            ),
     );
   }
 
   Widget _buildCategoryList() {
-    return Column(
-      children: askCategories.map((category) {
-        return Column(
-          children: [
-            CustomizeCategory(
-              askCategory: category,
-              usersCategory: usersCategory,
-            ),
-            Divider(
-              color: HexColor("#EBEDFC"),
-            ),
-          ],
-        );
-      }).toList(),
+    return Container(
+      color: white,
+      child: Column(
+        children: askCategories.map((category) {
+          return CustomizeCategory(
+            askCategory: category,
+            usersCategory: usersCategory,
+          );
+        }).toList(),
+      ),
     );
   }
 }

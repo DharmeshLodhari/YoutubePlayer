@@ -5,6 +5,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'components/ask_loader.dart';
 import 'components/topic_text_field.dart';
 import 'ask_auth.dart';
 import 'components/ask_posts_view.dart';
@@ -141,7 +142,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
               widget.yarnTopic!.media!.isNotEmpty
               ? true
               : false,
-        ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),),),
+        ) : AskLoader(),
       ),
     );
   }
@@ -156,6 +157,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         yarn: widget.yarnTopic,
         userImage: userBloc.user.avatar,
         onPressed: () async {
+          FocusScope.of(context).unfocus();
           Map<String, dynamic> data = {
             "comment": controller.text,
             "author_username": userBloc.user.userName

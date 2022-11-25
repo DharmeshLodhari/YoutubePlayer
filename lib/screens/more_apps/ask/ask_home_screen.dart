@@ -92,7 +92,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         if (mounted) {
           noCategoriesList = false;
           isAskCategoriesLoading = false;
-          askViewModel.askCategories.addAll(tempList);
+          askViewModel.askCategories = tempList;
         }
       }
       if (askViewModel.askCategories.isEmpty) {

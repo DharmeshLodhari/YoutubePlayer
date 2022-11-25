@@ -24,6 +24,8 @@ class ReplyCommentDetails {
     this.socialLikes,
     this.socialDislikes,
     this.replies,
+    this.likes,
+    this.disLikes,
       });
 
   ReplyCommentDetails.fromJson(dynamic json) {
@@ -39,6 +41,8 @@ class ReplyCommentDetails {
     socialLikes = json['social_likes'];
     socialDislikes = json['social_dislikes'];
     replies = json['replies'] != null ? json['replies'].cast<String>() : [];
+    likes = json['likes'];
+    disLikes = json['dislikes'];
   }
   String? id;
   String? authorAvatar;
@@ -49,9 +53,11 @@ class ReplyCommentDetails {
   int? replyCount;
   String? createdAt;
   bool? isApproved;
-  int? socialLikes;
-  int? socialDislikes;
+  String? socialLikes;
+  String? socialDislikes;
   List<String>? replies;
+  int? likes;
+  int? disLikes;
 
 
   Map<String, dynamic> toJson() {
@@ -68,6 +74,8 @@ class ReplyCommentDetails {
     map['social_likes'] = socialLikes;
     map['social_dislikes'] = socialDislikes;
     map['replies'] = replies;
+    map['likes'] = likes;
+    map['dislikes'] = disLikes;
     return map;
   }
 

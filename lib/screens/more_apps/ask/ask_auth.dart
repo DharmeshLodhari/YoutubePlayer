@@ -237,6 +237,33 @@ class AskAuth extends AuthService {
     }
   }
 
+  // Get Single Yarn Question
+  Future<Map<String, dynamic>?> getSingleTopics({String? yarnId}) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    if (yarnId != null) {
+      url = AppConfig.baseUrl + "/api/v1/social/ask/$yarnId";
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      YarnTopic yarnTopic = YarnTopic.fromJson(jsonData);
+
+      Map<String, dynamic> result = {
+        "results": yarnTopic
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // Search Yarns
   Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous,
       {bool isQuestion = false, String? searchText}) async {
@@ -485,7 +512,7 @@ class AskAuth extends AuthService {
   }
 
   // ADD LIKE TO YARN
-  Future<int?> addLike(String postId) async {
+  Future<Map<String, dynamic>?> addLike(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
@@ -500,10 +527,8 @@ class AskAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      int voteCount = 0;
       var data = json.decode(response.body);
-      voteCount = data['vote_count'];
-      return voteCount;
+      return data;
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -512,7 +537,7 @@ class AskAuth extends AuthService {
   }
 
   // ADD DISLIKE TO YARN
-  Future<int?> addDisLike(String postId) async {
+  Future<Map<String, dynamic>?> addDisLike(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
@@ -527,10 +552,8 @@ class AskAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      int downVoteCount = 0;
       var data = json.decode(response.body);
-      downVoteCount = data['down_vote_count'];
-      return downVoteCount;
+      return data;
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -539,11 +562,11 @@ class AskAuth extends AuthService {
   }
 
   // ADD LIKE TO YARN
-  Future<int?> addLikeComment(String postId) async {
+  Future<Map<String, dynamic>?> addLikeComment(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
-        AppConfig.baseUrl + "/api/v1/social/ask/up-vote/$postId/";
+        AppConfig.baseUrl + "/api/v1/social/comments/like/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -554,10 +577,8 @@ class AskAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      int voteCount = 0;
       var data = json.decode(response.body);
-      voteCount = data['vote_count'];
-      return voteCount;
+      return data;
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -566,11 +587,11 @@ class AskAuth extends AuthService {
   }
 
   // ADD DISLIKE TO YARN
-  Future<int?> addDisLikeComment(String postId) async {
+  Future<Map<String, dynamic>?> addDisLikeComment(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     url =
-        AppConfig.baseUrl + "/api/v1/social/ask/down-vote/$postId/";
+        AppConfig.baseUrl + "/api/v1/social/comments/dislike/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -581,10 +602,32 @@ class AskAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      int downVoteCount = 0;
       var data = json.decode(response.body);
-      downVoteCount = data['down_vote_count'];
-      return downVoteCount;
+      return data;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Add Report to YARN
+  Future<bool?> addReport(String postId, Map<String, dynamic> body) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url =
+        AppConfig.baseUrl + "/api/v1/social/ask/report/$postId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
     } else if (response.statusCode == 500) {
       return null;
     } else {

@@ -10,6 +10,7 @@ import '../../../../widget/noItemInList.dart';
 import '../ask_auth.dart';
 import '../ask_detail_screen.dart';
 import '../models/Topics/YarnTopic.dart';
+import 'ask_loader.dart';
 import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
@@ -100,19 +101,28 @@ class TopicViewState extends State<TopicView> {
       ),
       controller: _postRefreshController,
       onRefresh: _onPostRefresh,
-      child: !isLoading ? !noList ? ListView.separated(
+      child: _buildListView(),
+    );
+  }
+
+  Widget _buildListView() {
+    print("IS LOADING:- $isLoading");
+    if (isLoading) {
+      return AskLoader();
+    }
+    if (!noList) {
+      return ListView.separated(
         physics: ClampingScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
         itemCount: yarnTopicList.length,
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
-            onTap: () {
-              NavigationUtil.push(
+            onTap: () async {
+              await NavigationUtil.push(
                 context,
                 screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
-              ).then((value) {
-                _onPostRefresh();
-              });
+              );
+              if(mounted) setState(() {});
             },
             child: AskPosts(
               showTag: true,
@@ -142,26 +152,12 @@ class TopicViewState extends State<TopicView> {
         separatorBuilder: (context, int) {
           return SizedBox(height: 8,);
         },
-      ) : NoItemInList(
-        msg: AppLocalization.of(context)!.noResultFound,
-      ) : Shimmer.fromColors(
-        baseColor: Colors.white,
-        highlightColor: greyBorderColor,
-        child: ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: 2,
-          itemBuilder: (context, index) {
-            return Card(
-              color: Colors.grey,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            );
-          },
-        ),
-      ),
+      );
+    }
+    return NoItemInList(
+      msg: AppLocalization.of(context)!.noResultFound,
     );
+
   }
 
   void _onPostRefresh() async {

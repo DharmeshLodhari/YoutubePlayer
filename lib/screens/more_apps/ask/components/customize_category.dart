@@ -1,6 +1,6 @@
-import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../utils/util.dart';
 import '../models/ask_categories_model.dart';
 import 'customize_category_button.dart';
 
@@ -13,18 +13,27 @@ class CustomizeCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      visualDensity: VisualDensity(vertical: -3, horizontal: 0),
-      title: Text(
-        askCategory!.name!,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
+          title: Text(
+            askCategory!.name!,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          trailing: CustomizeCategoryButton(
+            askCategory: askCategory,
+            usersCategory: usersCategory,
+          ),
         ),
-      ),
-      trailing: CustomizeCategoryButton(
-        askCategory: askCategory,
-        usersCategory: usersCategory,
       ),
     );
   }

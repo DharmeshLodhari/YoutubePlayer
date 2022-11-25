@@ -7,9 +7,10 @@ class CustomizedDropDownField extends StatefulWidget {
   String title;
   Color? titleColor;
   double? borderWidth;
+  FontWeight? fontWeight;
 
   CustomizedDropDownField(
-      {required this.child, required this.title, this.titleColor, this.borderWidth});
+      {required this.child, required this.title, this.titleColor, this.borderWidth, this.fontWeight});
 
   @override
   _CustomizedDropDownFieldState createState() =>
@@ -22,12 +23,15 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
     if (widget.titleColor == null) {
       widget.titleColor = darkGrey;
     }
+    if (widget.fontWeight == null) {
+      widget.fontWeight = FontWeight.normal;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           widget.title,
-          style: TextStyle(color: widget.titleColor, fontSize: 14),
+          style: TextStyle(color: widget.titleColor, fontSize: 14, fontWeight: widget.fontWeight),
         ),
         SizedBox(
           height: 6,

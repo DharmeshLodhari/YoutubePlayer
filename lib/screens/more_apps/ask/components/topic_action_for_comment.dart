@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 
 import '../../../../data/state_notifier.dart';
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/bottom_sheet_item.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../ask_auth.dart';
@@ -26,13 +26,24 @@ class TopicActionsForComment extends StatefulWidget {
 
 class _TopicActionsForCommentState extends State<TopicActionsForComment> {
 
-
   Future addLikeToComment() async {
-    await AskAuth().addLikeComment(widget.commentDetail!.id!);
+    Map<String, dynamic>? data = await AskAuth().addLikeComment(widget.commentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.commentDetail!.likes = data['likes'];
+        widget.commentDetail!.dislike = data['dislikes'];
+      });
+    }
   }
 
   Future addDisLikeToComment() async {
-    await AskAuth().addDisLikeComment(widget.commentDetail!.id!);
+    Map<String, dynamic>? data = await AskAuth().addDisLikeComment(widget.commentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.commentDetail!.likes = data['likes'];
+        widget.commentDetail!.dislike = data['dislikes'];
+      });
+    }
   }
 
   @override
@@ -61,7 +72,7 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
         ),
         InkWell(
           onTap: () {
-            // addLikeToComment();
+            addLikeToComment();
           },
           child: Row(
             children: [
@@ -82,7 +93,7 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
         ),
         InkWell(
           onTap: () {
-            // addDisLikeToComment();
+            addDisLikeToComment();
           },
           child: Row(
             children: [
@@ -127,13 +138,27 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
           ),
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pushNamed(
+              Routes.SEND_PAYMENT,
+              arguments: <String, dynamic>{
+                'recipient': widget.commentDetail!.authorUsername!,
+                'isFromProfile': false,
+                'isFromChat': false,
+                'defaultReferenceText':
+                'Payment from  "${truncateString(
+                  str: widget.commentDetail!.comment!,
+                  lengthToTruncateAt: 8,
+                )}\" comment'
+              },
+            );
+          },
           child: Row(
             children: [
               SvgPicture.asset("ask/send_money".toSVG()),
             ],
           ),
-        ),
+        )
       ],
     );
   }
@@ -147,17 +172,17 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
   }
 
   String getLikeCount() {
-    if (widget.commentDetail!.socialLikes != null &&
-        widget.commentDetail!.socialLikes != 0) {
-      return widget.commentDetail!.socialLikes?.toString() ?? "";
+    if (widget.commentDetail!.likes != null &&
+        widget.commentDetail!.likes != 0) {
+      return widget.commentDetail!.likes?.toString() ?? "";
     }
     return "";
   }
 
   String getDisLikeCount() {
-    if (widget.commentDetail!.socialDislikes != null &&
-        widget.commentDetail!.socialDislikes != 0) {
-      return widget.commentDetail!.socialDislikes?.toString() ?? "";
+    if (widget.commentDetail!.dislike != null &&
+        widget.commentDetail!.dislike != 0) {
+      return widget.commentDetail!.dislike?.toString() ?? "";
     }
     return "";
   }
