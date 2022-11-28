@@ -152,8 +152,10 @@ class AddYarnAndQuestion {
   String? body;
   String? author;
   bool? isQuestion;
+  bool? enablePayme;
+  bool? enableCommenting;
 
-  AddYarnAndQuestion({this.localImages, this.tags, this.categoryId, this.title, this.body, this.isQuestion, this.author});
+  AddYarnAndQuestion({this.localImages, this.tags, this.categoryId, this.title, this.body, this.isQuestion, this.author, this.enablePayme, this.enableCommenting});
 
   Map<String, dynamic> toAddMap() {
     return {
@@ -161,8 +163,10 @@ class AddYarnAndQuestion {
       "title": title,
       "body": body,
       "category": categoryId,
-      "author": null,
+      "author": author,
       "is_question": isQuestion,
+      "enable_payme": enablePayme,
+      "enable_commenting": enableCommenting
     };
   }
 }

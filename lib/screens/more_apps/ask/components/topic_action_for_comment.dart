@@ -8,7 +8,9 @@ import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 
 import '../../../../data/state_notifier.dart';
+import '../../../../locator.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
@@ -51,115 +53,144 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        InkWell(
-          onTap: () {},
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/reply".toSVG()),
-              SizedBox(
-                width: 6,
-              ),
-              Text(
-                getCommentCount(),
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: HexColor("#75818F")
-                ),
-              ),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            addLikeToComment();
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/like".toSVG()),
-              SizedBox(
-                width: 6,
-              ),
-              Text(
-                getLikeCount(),
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: HexColor("#75818F")
-                ),
-              ),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            addDisLikeToComment();
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/dislike".toSVG()),
-              SizedBox(
-                width: 6,
-              ),
-              Text(
-                getDisLikeCount(),
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: HexColor("#75818F")
-                ),
-              ),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            // androidBottomSheet(
-            //   context: context,
-            //   child: Column(
-            //     mainAxisSize: MainAxisSize.min,
-            //     children: [
-            //       bottomSheetItem(
-            //           title: 'Share in chat',
-            //           iconData: Icons.send_outlined,
-            //           onTap: () async {
-            //             Navigator.of(context).pop();
-            //             await sendMomentToUserInChat(
-            //                 yarnTopic: widget.yarnTopic);
-            //           }),
-            //     ],
-            //   ),
-            // );
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/share".toSVG()),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed(
-              Routes.SEND_PAYMENT,
-              arguments: <String, dynamic>{
-                'recipient': widget.commentDetail!.authorUsername!,
-                'isFromProfile': false,
-                'isFromChat': false,
-                'defaultReferenceText':
-                'Payment from  "${truncateString(
-                  str: widget.commentDetail!.comment!,
-                  lengthToTruncateAt: 8,
-                )}\" comment'
-              },
-            );
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/send_money".toSVG()),
-            ],
-          ),
-        )
+        _buildCommentButton(),
+        _buildLikeButton(),
+        _buildDisLike(),
+        _buildShareButton(),
+        _buildPayButton(),
       ],
+    );
+  }
+
+  Widget _buildCommentButton() {
+    return InkWell(
+      onTap: () {},
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/reply".toSVG()),
+          SizedBox(
+            width: 6,
+          ),
+          Text(
+            getCommentCount(),
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLikeButton() {
+    return InkWell(
+      onTap: () {
+        addLikeToComment();
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/like".toSVG()),
+          SizedBox(
+            width: 6,
+          ),
+          Text(
+            getLikeCount(),
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDisLike() {
+    return InkWell(
+      onTap: () {
+        addDisLikeToComment();
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/dislike".toSVG()),
+          SizedBox(
+            width: 6,
+          ),
+          Text(
+            getDisLikeCount(),
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShareButton() {
+    return InkWell(
+      onTap: () {
+        // androidBottomSheet(
+        //   context: context,
+        //   child: Column(
+        //     mainAxisSize: MainAxisSize.min,
+        //     children: [
+        //       bottomSheetItem(
+        //           title: 'Share in chat',
+        //           iconData: Icons.send_outlined,
+        //           onTap: () async {
+        //             Navigator.of(context).pop();
+        //             await sendMomentToUserInChat(
+        //                 yarnTopic: widget.yarnTopic);
+        //           }),
+        //     ],
+        //   ),
+        // );
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/share".toSVG()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPayButton() {
+    return InkWell(
+      onTap: getLoggedInUserName(context) != widget.commentDetail!.authorUsername ? () {
+        if (getIt<AppConfigurationBloc>()
+            .appConfigurationModel
+            ?.enablePayment ==
+            true) {
+          Navigator.of(context).pushNamed(
+            Routes.SEND_PAYMENT,
+            arguments: <String, dynamic>{
+              'recipient': widget.commentDetail!.authorUsername!,
+              'isFromProfile': false,
+              'isFromChat': false,
+              'defaultReferenceText':
+              'Payment from  "${truncateString(
+                str: widget.commentDetail!.comment!,
+                lengthToTruncateAt: 8,
+              )}\" comment'
+            },
+          );
+        } else {
+          showToast(message: 'Payment not available at the moment');
+        }
+      } : () {
+        showToast(message: 'You cannot pay yourself');
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/send_money".toSVG()),
+        ],
+      ),
     );
   }
 

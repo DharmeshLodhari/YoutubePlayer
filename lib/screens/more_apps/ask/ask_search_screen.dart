@@ -9,9 +9,11 @@ import '../../../widget/noItemInList.dart';
 import 'ask_auth.dart';
 import 'components/ask_options.dart';
 import 'models/Topics/YarnTopic.dart';
+import 'models/ask_categories_model.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  AskCategories? askCategory;
+  SearchScreen({Key? key, this.askCategory}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -48,6 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void getYarnTopic() async {
     bool isQuestion = false;
     debugPrint("FILTER VALUE:- $filterValue");
+    String? categoryId;
     if (filterValue != null) {
       if (filterValue == "question") {
         isQuestion = true;
@@ -57,12 +60,16 @@ class _SearchScreenState extends State<SearchScreen> {
     } else {
       isQuestion = true;
     }
+
+    if (widget.askCategory != null) {
+      categoryId = widget.askCategory!.id;
+    }
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getSearchYarns(next, previous, isQuestion: isQuestion, searchText: searchController.text);
+        Map<String, dynamic>? result = await AskAuth().getSearchYarns(next, previous, isQuestion: isQuestion, searchText: searchController.text, categoryId: categoryId);
 
         if (result == null) {
           noList = true;

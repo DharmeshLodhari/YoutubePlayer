@@ -1,10 +1,12 @@
 import 'package:Slydo/screens/more_apps/ask/components/ask_comment_view.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../data/state_notifier.dart';
-import '../../../utils/colors.dart';
+import '../../../locale/app_localization.dart';
 import '../../../utils/util.dart';
 import 'ask_auth.dart';
 import 'components/ask_loader.dart';
@@ -31,6 +33,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
   int count = 0;
   bool noList = false;
   final TextEditingController controller = TextEditingController();
+  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -135,7 +138,14 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
 
   Widget _buildCommentDetailView() {
     return Expanded(
-      child: Container(
+      child: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _postRefreshController,
+        onRefresh: _onPostRefresh,
         child: SingleChildScrollView(
           padding: EdgeInsets.all(10),
           child: !isLoading ? AskCommentView(
@@ -181,5 +191,31 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
         },
       ),
     );
+  }
+
+  void _onPostRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        replyCommentDetailsList = [];
+        if (mounted) setState(() {});
+
+        getAllCommentsDetails();
+        setState(() {
+          _postRefreshController.refreshCompleted();
+        });
+      } else {
+        showToast(
+            message:
+            AppLocalization.of(context)!.internetConnectionNotAvailable);
+        setState(() {
+          _postRefreshController.refreshCompleted();
+        });
+      }
+    });
   }
 }

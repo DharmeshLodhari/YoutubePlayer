@@ -2,9 +2,12 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../locale/app_localization.dart';
 import 'components/ask_loader.dart';
 import 'components/topic_text_field.dart';
 import 'ask_auth.dart';
@@ -28,6 +31,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
   bool noList = false;
   late UserBloc userBloc;
   final TextEditingController controller = TextEditingController();
+  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
 
   @override
   void initState() {
@@ -132,17 +136,26 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
 
   Widget _buildPostAndCommentView() {
     return Expanded(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(10),
-        child: !isLoading ? AskPosts(
-          openComments: commentDetailsList.isNotEmpty ? true : false,
-          commentDetailsList: commentDetailsList,
-          yarnTopic: widget.yarnTopic,
-          isImages: widget.yarnTopic!.media != null &&
-              widget.yarnTopic!.media!.isNotEmpty
-              ? true
-              : false,
-        ) : AskLoader(),
+      child: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: navyBlue,
+        ),
+        controller: _postRefreshController,
+        onRefresh: _onPostRefresh,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(10),
+          child: !isLoading ? AskPosts(
+            openComments: commentDetailsList.isNotEmpty ? true : false,
+            commentDetailsList: commentDetailsList,
+            yarnTopic: widget.yarnTopic,
+            isImages: widget.yarnTopic!.media != null &&
+                widget.yarnTopic!.media!.isNotEmpty
+                ? true
+                : false,
+          ) : AskLoader(),
+        ),
       ),
     );
   }
@@ -169,7 +182,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
               setState(() {
                 widget.yarnTopic!.numberOfComments = widget.yarnTopic!.numberOfComments! + 1;
               });
-              commentDetailsList.insert(0, commentDetails);
+              commentDetailsList.add(commentDetails);
               controller.clear();
 
               if (mounted) setState(() {});
@@ -181,5 +194,31 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         },
       ),
     );
+  }
+
+  void _onPostRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        commentDetailsList = [];
+        if (mounted) setState(() {});
+
+        getAllComments();
+        setState(() {
+          _postRefreshController.refreshCompleted();
+        });
+      } else {
+        showToast(
+            message:
+            AppLocalization.of(context)!.internetConnectionNotAvailable);
+        setState(() {
+          _postRefreshController.refreshCompleted();
+        });
+      }
+    });
   }
 }

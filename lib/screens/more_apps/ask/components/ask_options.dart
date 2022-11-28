@@ -5,6 +5,7 @@ import '../../../../utils/colors.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../utils/util.dart';
+import '../ask_auth.dart';
 import '../ask_report_screen.dart';
 import '../models/Topics/YarnTopic.dart';
 
@@ -17,6 +18,17 @@ class AskOptions extends StatefulWidget {
 }
 
 class _AskOptionsState extends State<AskOptions> {
+
+  Future addUserVisibilityOption(String status) async {
+    bool? data = await AskAuth().addStatusInPost(widget.yarnTopic!.id!, status);
+    if (data != null) {
+      if (data) {
+        showToast(message: "Status Updated Successfully");
+        Navigator.pop(context);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return _buildBody();
@@ -140,7 +152,10 @@ class _AskOptionsState extends State<AskOptions> {
               iconSize: 18,
               width: 12,
               title: 'Save yarn/question',
-              subTitle: 'Add this to you saved items'
+              subTitle: 'Add this to you saved items',
+              onTap: () {
+                addUserVisibilityOption("saved");
+              },
           ),
           SizedBox(
             height: 15,
@@ -150,7 +165,10 @@ class _AskOptionsState extends State<AskOptions> {
               iconSize: 18,
               width: 12,
               title: 'Hide yarn',
-              subTitle: 'See fewer posts like this'
+              subTitle: 'See fewer posts like this',
+              onTap: () {
+                addUserVisibilityOption("hidden");
+              }
           ),
           SizedBox(
             height: 15,
@@ -158,7 +176,10 @@ class _AskOptionsState extends State<AskOptions> {
           _buildTile(
               icon: Icons.report_gmailerrorred_rounded,
               title: 'Not Interested',
-              subTitle: 'Not interested in this yarn'
+              subTitle: 'Not interested in this yarn',
+              onTap: () {
+                addUserVisibilityOption("not-interested");
+              }
           ),
           SizedBox(
             height: 15,

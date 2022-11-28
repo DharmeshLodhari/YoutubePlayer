@@ -1,13 +1,16 @@
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import '../../../data/state_notifier.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/navigation_util.dart';
+import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import 'add_topic_screen.dart';
 import 'ask_auth.dart';
+import 'ask_search_screen.dart';
 import 'ask_viewmodel.dart';
 import 'components/topics_view.dart';
 import 'components/question_view.dart';
@@ -63,18 +66,63 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   }
   
   Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      backgroundColor: HexColor(widget.askCategories!.color!),
+    return SpeedDial(
       child: Icon(
         Icons.add,
         color: Colors.white,
       ),
-      onPressed: () {
-        NavigationUtil.push(
-          context,
-          screen: AddTopicScreen(),
-        );
-      },
+      activeChild: Icon(
+        Icons.close,
+        color: HexColor(widget.askCategories!.color!),
+      ),
+      backgroundColor: HexColor(widget.askCategories!.color!),
+      activeBackgroundColor: HexColor("#FFFFFF"),
+      children: [
+        _buildSpeedDialChild(
+            title: "Ask Question",
+            icon: SlydoAppIconNew.question,
+            onTap: () {
+              NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: false, askCategory: widget.askCategories,));
+            }
+        ),
+        _buildSpeedDialChild(
+            title: "Yarn",
+            icon: SlydoAppIconNew.yarn,
+            onTap: () {
+              NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: true, askCategory: widget.askCategories));
+            }
+        ),
+      ],
+    );
+  }
+
+  SpeedDialChild _buildSpeedDialChild({required String title, required IconData icon, required VoidCallback onTap}) {
+    return SpeedDialChild(
+        onTap: onTap,
+        backgroundColor: HexColor(widget.askCategories!.color!),
+        labelBackgroundColor: HexColor("#FFFFFF"),
+        labelWidget: Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Text(
+              title,
+              style: TextStyle(
+                  color: HexColor("#424242"),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600
+              ),
+            ),
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: 20,
+        )
     );
   }
 
@@ -102,10 +150,18 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
         actions: [
           Row(
             children: [
-              Icon(
-                Icons.search_rounded,
-                color: white,
-                size: 26,
+              InkWell(
+                onTap: () {
+                  NavigationUtil.push(
+                    context,
+                    screen: SearchScreen(askCategory: widget.askCategories,),
+                  );
+                },
+                child: Icon(
+                  Icons.search_rounded,
+                  color: white,
+                  size: 26,
+                ),
               ),
               SizedBox(width: 10),
               !isAddCategory()! ? InkWell(

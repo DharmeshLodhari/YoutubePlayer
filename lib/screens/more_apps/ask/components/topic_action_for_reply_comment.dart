@@ -8,7 +8,9 @@ import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 
 import '../../../../data/state_notifier.dart';
+import '../../../../locator.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
@@ -138,20 +140,29 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
           ),
         ),
         InkWell(
-          onTap: () {
-            Navigator.of(context).pushNamed(
-              Routes.SEND_PAYMENT,
-              arguments: <String, dynamic>{
-                'recipient': widget.replyCommentDetail!.authorUsername!,
-                'isFromProfile': false,
-                'isFromChat': false,
-                'defaultReferenceText':
-                'Payment from  "${truncateString(
-                  str: widget.replyCommentDetail!.comment!,
-                  lengthToTruncateAt: 8,
-                )}\" comment'
-              },
-            );
+          onTap: getLoggedInUserName(context) != widget.replyCommentDetail!.authorUsername ? () {
+            if (getIt<AppConfigurationBloc>()
+                .appConfigurationModel
+                ?.enablePayment ==
+                true) {
+              Navigator.of(context).pushNamed(
+                Routes.SEND_PAYMENT,
+                arguments: <String, dynamic>{
+                  'recipient': widget.replyCommentDetail!.authorUsername!,
+                  'isFromProfile': false,
+                  'isFromChat': false,
+                  'defaultReferenceText':
+                  'Payment from  "${truncateString(
+                    str: widget.replyCommentDetail!.comment!,
+                    lengthToTruncateAt: 8,
+                  )}\" comment'
+                },
+              );
+            } else {
+              showToast(message: 'Payment not available at the moment');
+            }
+          } : () {
+            showToast(message: 'You cannot pay yourself');
           },
           child: Row(
             children: [

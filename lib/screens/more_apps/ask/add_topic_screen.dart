@@ -5,8 +5,6 @@ import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:textfield_tags/textfield_tags.dart';
-
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
@@ -20,8 +18,9 @@ import 'ask_viewmodel.dart';
 
 class AddTopicScreen extends StatefulWidget {
   List<AskCategories>? askCategories;
+  AskCategories? askCategory;
   bool? isYarn = false;
-  AddTopicScreen({this.askCategories, this.isYarn});
+  AddTopicScreen({this.askCategories, this.isYarn, this.askCategory});
 
   @override
   State<AddTopicScreen> createState() => _AddTopicScreenState();
@@ -41,6 +40,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   String askCategory = "";
   List<String> userTags = [];
   late UserBloc userBloc;
+  bool enableCommenting = true;
+  bool enablePayme = false;
 
   @override
   void initState() {
@@ -119,9 +120,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         SizedBox(height: 20,),
         _buildYarnField(),
         SizedBox(height: 20,),
-        _buildTags(model),
-        SizedBox(height: 20,),
+        // _buildTags(model),
+        // SizedBox(height: 20,),
         getCategoryField(),
+        SizedBox(height: 20,),
+        _buildSwitchOptions(),
         SizedBox(height: 50,),
         _buildSubmitButton(),
       ],
@@ -137,9 +140,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         SizedBox(height: 20,),
         _buildTextFiled(),
         SizedBox(height: 20,),
-        _buildTags(model),
-        SizedBox(height: 20,),
+        // _buildTags(model),
+        // SizedBox(height: 20,),
         getCategoryField(),
+        SizedBox(height: 20,),
+        _buildSwitchOptions(),
         // SizedBox(height: 20,),
         // getAmountField(),
         // SizedBox(height: 20,),
@@ -306,64 +311,68 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
-  Widget _buildTags(AskViewModel model) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Tags',
-          style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
-          ),
-        ),
-        SizedBox(height: 7,),
-        Focus(
-          focusNode: textFieldTagFocusNode,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(11),
-              border: Border.all(
-                color: blackFont.withOpacity(0.1),
-                width: 2,
-              ),
-            ),
-            child: TextFieldTags(
-              initialTags: userTags,
-              tagsStyler: textFieldTagStyler,
-              validator: (value) {
-                return null;
-              },
-              textFieldStyler: TextFieldStyler(
-                helperText: '',
-                hintText: '',
-                textFieldBorder: InputBorder.none,
-              ),
-              onTag: (tag) {
-                setState(() {
-                  model.userTags.add(tag);
-                  model.userTags = model.userTags.toSet().toList();
-                  userTags = model.userTags;
-                });
-                model.userTags.removeWhere((tag) => tag.isEmpty);
-                userTags.removeWhere((tag) => tag.isEmpty);
-              },
-              onDelete: (tag) {
-                setState(() {
-                  model.userTags.remove(tag);
-                  userTags.remove(tag);
-                });
-                model.userTags.removeWhere((tag) => tag.isEmpty);
-                userTags.removeWhere((tag) => tag.isEmpty);
-              },
-            ),
-          ),
-        )
-      ],
-    );
-  }
+  // Widget _buildTags(AskViewModel model) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         'Tags',
+  //         style: TextStyle(
+  //           fontSize: 14,
+  //           color: darkGrey,
+  //         ),
+  //       ),
+  //       SizedBox(height: 7,),
+  //       Focus(
+  //         focusNode: textFieldTagFocusNode,
+  //         child: Container(
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(11),
+  //             border: Border.all(
+  //               color: blackFont.withOpacity(0.1),
+  //               width: 2,
+  //             ),
+  //           ),
+  //           child: TextFieldTags(
+  //             initialTags: userTags,
+  //             tagsStyler: textFieldTagStyler,
+  //             validator: (value) {
+  //               return null;
+  //             },
+  //             textFieldStyler: TextFieldStyler(
+  //               helperText: '',
+  //               hintText: '',
+  //               textFieldBorder: InputBorder.none,
+  //             ),
+  //             onTag: (tag) {
+  //               setState(() {
+  //                 model.userTags.add(tag);
+  //                 model.userTags = model.userTags.toSet().toList();
+  //                 userTags = model.userTags;
+  //               });
+  //               model.userTags.removeWhere((tag) => tag.isEmpty);
+  //               userTags.removeWhere((tag) => tag.isEmpty);
+  //             },
+  //             onDelete: (tag) {
+  //               setState(() {
+  //                 model.userTags.remove(tag);
+  //                 userTags.remove(tag);
+  //               });
+  //               model.userTags.removeWhere((tag) => tag.isEmpty);
+  //               userTags.removeWhere((tag) => tag.isEmpty);
+  //             },
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
   Widget getCategoryField() {
+    if (widget.askCategory != null) {
+      selectedAskCategory = widget.askCategory;
+      pressedAskCategory = widget.askCategory;
+    }
     return CustomizedDropDownField(
       title: "Categories",
       borderWidth: 2.0,
@@ -438,6 +447,62 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   //     ),
   //   );
   // }
+
+  Widget _buildSwitchOptions() {
+    return Column(
+      children: [
+        _buildPreviewYarnSwitchOption(
+          title: "Enable Commenting",
+          description: 'Enable this to allow others comment on your post',
+          switchBtn: Switch(
+            value: enableCommenting,
+            onChanged: (value) {
+              setState(() {
+                enableCommenting = value;
+              });
+            },
+          ),
+        ),
+        SizedBox(height: 20,),
+        _buildPreviewYarnSwitchOption(
+          title: "Enable Payment",
+          description: "Enable this to allow other users to support your work by making a donation.",
+          switchBtn: Switch(
+            value: enablePayme,
+            onChanged: (value) {
+              setState(() {
+                enablePayme = value;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPreviewYarnSwitchOption({
+    required String title,
+    required String description,
+    required Switch switchBtn,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(title),
+            SizedBox(height: 30, child: switchBtn),
+          ],
+        ),
+        Text(
+          description,
+          style: TextStyle(
+            color: blackFont.withOpacity(0.5),
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildSubmitButton() {
     return Container(
@@ -667,6 +732,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.categoryId = selectedAskCategory!.id;
     addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
     addYarnAndQuestion.author = userBloc.user.userName;
+    addYarnAndQuestion.enablePayme = enablePayme;
+    addYarnAndQuestion.enableCommenting = enableCommenting;
     debugPrint("USER TAGS:- $userTags");
     debugPrint("USER TAGS:- ${addYarnAndQuestion.tags}");
 

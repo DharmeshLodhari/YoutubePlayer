@@ -266,7 +266,7 @@ class AskAuth extends AuthService {
 
   // Search Yarns
   Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous,
-      {bool isQuestion = false, String? searchText}) async {
+      {bool isQuestion = false, String? searchText, String? categoryId}) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
@@ -274,7 +274,7 @@ class AskAuth extends AuthService {
     }
     if (next == "") {
       url = AppConfig.baseUrl +
-          "/api/v1/social/ask/?question=$isQuestion&search=$searchText";
+          "/api/v1/social/ask/?question=$isQuestion&search=$searchText&categoryId=$categoryId";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -627,6 +627,37 @@ class AskAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // ADD TO STATUS FOR POST
+  Future<bool?> addStatusInPost(
+      String topicId, String status) async {
+
+    Map<String, dynamic> body = {
+      "status": status,
+      "yarn": topicId,
+    };
+
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    url =
+        AppConfig.baseUrl + "/api/v1/social/ask/user-yarn-visibility-options/$topicId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
       return true;
     } else if (response.statusCode == 500) {
       return null;

@@ -6,7 +6,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 import '../../../../data/state_notifier.dart';
+import '../../../../locator.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/bottom_sheet_item.dart';
@@ -52,122 +54,151 @@ class _TopicActionsState extends State<TopicActions> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        InkWell(
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: AskDetailScreen(yarnTopic: widget.yarnTopic),
-            );
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/reply".toSVG()),
-              SizedBox(
-                width: 6,
-              ),
-              Text(
-                getCommentCount(),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: HexColor("#75818F")
-                ),
-              ),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            addLikeToYarnAndQuestion();
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/like".toSVG()),
-              SizedBox(
-                width: 6,
-              ),
-              Text(
-                getLikeCount(),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: HexColor("#75818F")
-                ),
-              ),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            addDisLikeToYarnAndQuestion();
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/dislike".toSVG()),
-              SizedBox(
-                width: 6,
-              ),
-              Text(
-                getDisLikeCount(),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                  color: HexColor("#75818F")
-                ),
-              ),
-            ],
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            androidBottomSheet(
-              context: context,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  bottomSheetItem(
-                      title: 'Share in chat',
-                      iconData: Icons.send_outlined,
-                      onTap: () async {
-                        Navigator.of(context).pop();
-                        await sendMomentToUserInChat(
-                            yarnTopic: widget.yarnTopic!);
-                      }),
-                ],
-              ),
-            );
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/share".toSVG()),
-            ],
-          ),
-        ),
+        _buildCommentButton(),
+        _buildLikeButton(),
+        _buildDisLikeButton(),
+        _buildShareButton(),
         if(widget.yarnTopic!.enablePayme!)...[
-          InkWell(
-            onTap: () {
-              Navigator.of(context).pushNamed(
-                Routes.SEND_PAYMENT,
-                arguments: <String, dynamic>{
-                  'recipient': widget.yarnTopic!.author,
-                  'isFromProfile': false,
-                  'isFromChat': false,
-                  'defaultReferenceText':
-                  'Payment from  "${truncateString(
-                    str: widget.yarnTopic!.title!,
-                    lengthToTruncateAt: 8,
-                  )}\" yarn'
-                },
-              );
-            },
-            child: Row(
-              children: [
-                SvgPicture.asset("ask/send_money".toSVG()),
-              ],
-            ),
-          )
+          _buildPayButton(),
         ],
       ],
+    );
+  }
+
+  Widget _buildCommentButton() {
+    return InkWell(
+      onTap: enableCommenting() ? () {
+        NavigationUtil.push(
+          context,
+          screen: AskDetailScreen(yarnTopic: widget.yarnTopic),
+        );
+      } : null,
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/reply".toSVG()),
+          SizedBox(
+            width: 6,
+          ),
+          Text(
+            getCommentCount(),
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLikeButton() {
+    return InkWell(
+      onTap: () {
+        addLikeToYarnAndQuestion();
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/like".toSVG()),
+          SizedBox(
+            width: 6,
+          ),
+          Text(
+            getLikeCount(),
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDisLikeButton() {
+    return InkWell(
+      onTap: () {
+        addDisLikeToYarnAndQuestion();
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/dislike".toSVG()),
+          SizedBox(
+            width: 6,
+          ),
+          Text(
+            getDisLikeCount(),
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShareButton() {
+    return InkWell(
+      onTap: () {
+        androidBottomSheet(
+          context: context,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              bottomSheetItem(
+                  title: 'Share in chat',
+                  iconData: Icons.send_outlined,
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await sendMomentToUserInChat(
+                        yarnTopic: widget.yarnTopic!);
+                  }),
+            ],
+          ),
+        );
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/share".toSVG()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPayButton() {
+    return InkWell(
+      onTap: getLoggedInUserName(context) != widget.yarnTopic!.author ? () {
+        if (getIt<AppConfigurationBloc>()
+            .appConfigurationModel
+            ?.enablePayment ==
+            true) {
+          Navigator.of(context).pushNamed(
+            Routes.SEND_PAYMENT,
+            arguments: <String, dynamic>{
+              'recipient': widget.yarnTopic!.author,
+              'isFromProfile': false,
+              'isFromChat': false,
+              'defaultReferenceText':
+              'Payment from  "${truncateString(
+                str: widget.yarnTopic!.title!,
+                lengthToTruncateAt: 8,
+              )}\" yarn'
+            },
+          );
+        } else {
+          showToast(message: 'Payment not available at the moment');
+        }
+      } : () {
+        showToast(message: 'You cannot pay yourself');
+      },
+      child: Row(
+        children: [
+          SvgPicture.asset("ask/send_money".toSVG()),
+        ],
+      ),
     );
   }
 
@@ -193,6 +224,10 @@ class _TopicActionsState extends State<TopicActions> {
       return widget.yarnTopic!.downVoteCount?.toString() ?? "";
     }
     return "";
+  }
+
+  bool enableCommenting() {
+    return widget.yarnTopic!.enableCommenting != null && widget.yarnTopic!.enableCommenting!;
   }
 
   Future<void> sendMomentToUserInChat({required YarnTopic yarnTopic}) async {
