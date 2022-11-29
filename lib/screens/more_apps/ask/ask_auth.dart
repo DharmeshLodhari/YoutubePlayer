@@ -8,7 +8,6 @@ import "package:http/http.dart" as http;
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
 import 'models/Topics/CommentDetails.dart';
-import 'models/Topics/ReplyCommentDetails.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 
@@ -264,6 +263,27 @@ class AskAuth extends AuthService {
     }
   }
 
+  // Delete Single Yarn Question
+  Future<bool?> deleteSingleTopics({String? yarnId}) async {
+    debugPrint("CALLING ALL CATEGORIES");
+    String url = "";
+    if (yarnId != null) {
+      url = AppConfig.baseUrl + "/api/v1/social/ask/$yarnId";
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // Search Yarns
   Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous,
       {bool isQuestion = false, String? searchText, String? categoryId}) async {
@@ -374,7 +394,7 @@ class AskAuth extends AuthService {
       String yarnId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$yarnId/";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$yarnId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -400,6 +420,7 @@ class AskAuth extends AuthService {
     String? next,
     String previous,
     String postId,
+    {String? sortBy}
   ) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
@@ -407,7 +428,7 @@ class AskAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$postId/";
+      url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$postId/?sort_by=$sortBy";
     } else {
       url = getSecureUrl(url: next);
     }
@@ -439,8 +460,28 @@ class AskAuth extends AuthService {
     }
   }
 
+  // Delete Single Comment
+  Future<bool?> deleteComment(
+      String postId) async {
+    debugPrint("CALLING ALL COMMENTS");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$postId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // ADD COMMENT TO YARN
-  Future<ReplyCommentDetails?> addReplyToComment(
+  Future<CommentDetails?> addReplyToComment(
       String commentId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
@@ -456,9 +497,9 @@ class AskAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      ReplyCommentDetails replyCommentDetail =
-      ReplyCommentDetails.fromJson(json.decode(response.body));
-      return replyCommentDetail;
+      CommentDetails commentDetail =
+      CommentDetails.fromJson(json.decode(response.body));
+      return commentDetail;
     } else if (response.statusCode == 500) {
       return null;
     } else {
@@ -489,18 +530,18 @@ class AskAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<ReplyCommentDetails> replyCommentDetails = [];
+      List<CommentDetails> commentDetails = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData) {
-        ReplyCommentDetails replyCommentDetail = ReplyCommentDetails.fromJson(item);
-        replyCommentDetails.add(replyCommentDetail);
+        CommentDetails replyCommentDetail = CommentDetails.fromJson(item);
+        commentDetails.add(replyCommentDetail);
       }
 
       Map<String, dynamic> result = {
         // "count": jsonData["count"],
         // "next": jsonData["next"],
         // "previous": jsonData["previous"],
-        "results": replyCommentDetails
+        "results": commentDetails
       };
 
       return result;

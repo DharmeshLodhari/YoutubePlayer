@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import '../../../data/state_notifier.dart';
+import '../../../routes/route_constants.dart';
 import '../../../utils/colors.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
@@ -186,15 +187,23 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                     ),
                   ),
                 ),
-              ) : Container(
-                height: 24,
-                width: 24,
-                decoration: BoxDecoration(shape: BoxShape.circle),
-                child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: userBloc.user.avatar!,
-                    fit: BoxFit.cover,
-                    errorWidget: imageErrorWidget,
+              ) : InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {
+                        "searchedUserName": userBloc.user.userName
+                      });
+                },
+                child: Container(
+                  height: 24,
+                  width: 24,
+                  decoration: BoxDecoration(shape: BoxShape.circle),
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: userBloc.user.avatar!,
+                      fit: BoxFit.cover,
+                      errorWidget: imageErrorWidget,
+                    ),
                   ),
                 ),
               ),

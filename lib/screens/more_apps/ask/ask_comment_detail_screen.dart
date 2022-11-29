@@ -12,7 +12,6 @@ import 'ask_auth.dart';
 import 'components/ask_loader.dart';
 import 'components/topic_text_field.dart';
 import 'models/Topics/CommentDetails.dart';
-import 'models/Topics/ReplyCommentDetails.dart';
 
 class AskCommentDetailScreen extends StatefulWidget {
   YarnTopic? yarnTopic;
@@ -29,7 +28,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
   late UserBloc userBloc;
   bool isLoading = false;
   String next = "", previous = "";
-  List<ReplyCommentDetails> replyCommentDetailsList = [];
+  List<CommentDetails> replyCommentDetailsList = [];
   int count = 0;
   bool noList = false;
   final TextEditingController controller = TextEditingController();
@@ -151,7 +150,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
           child: !isLoading ? AskCommentView(
             yarnTopic: widget.yarnTopic,
             commentDetail: widget.commentDetail,
-            replyCommentDetailsList: replyCommentDetailsList,
+            commentDetailsList: replyCommentDetailsList,
             openReply: replyCommentDetailsList.isNotEmpty ? true : false,
           ) : AskLoader(),
         ),
@@ -176,10 +175,11 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
             "is_reply": true
           };
           try {
-            ReplyCommentDetails? replyCommentDetail = await AskAuth()
+            CommentDetails? commentDetail = await AskAuth()
                 .addReplyToComment(widget.commentDetail!.id!, data);
-            if (replyCommentDetail != null) {
-              replyCommentDetailsList.add(replyCommentDetail);
+            if (commentDetail != null) {
+              widget.commentDetail!.replyCount = widget.commentDetail!.replyCount! + 1;
+              replyCommentDetailsList.add(commentDetail);
               controller.clear();
 
               if (mounted) setState(() {});

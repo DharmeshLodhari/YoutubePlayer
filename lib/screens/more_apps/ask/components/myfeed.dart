@@ -117,9 +117,23 @@ class MyFeedViewState extends State<MyFeedView> {
                     );
                   },
                   child: AskPosts(
-                    showTag: true,
                     onOptionsAction: () {
-
+                      showModalBottomSheet<void>(
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20)),
+                            ),
+                            color: Colors.white,
+                            margin: EdgeInsets.zero,
+                            child: AskOptions(),
+                          );
+                        },
+                      );
                     },
                     isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
                     yarnTopic: yarnTopicList[index],

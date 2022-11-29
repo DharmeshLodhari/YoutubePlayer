@@ -51,14 +51,10 @@ class _SearchScreenState extends State<SearchScreen> {
     bool isQuestion = false;
     debugPrint("FILTER VALUE:- $filterValue");
     String? categoryId;
-    if (filterValue != null) {
-      if (filterValue == "question") {
-        isQuestion = true;
-      } else {
-        isQuestion = false;
-      }
-    } else {
+    if (filterValue == null || filterValue == "question") {
       isQuestion = true;
+    } else {
+      isQuestion = false;
     }
 
     if (widget.askCategory != null) {
@@ -341,7 +337,6 @@ class _SearchScreenState extends State<SearchScreen> {
         itemCount: yarnTopicList.length,
         itemBuilder: (context, index) {
           return AskPosts(
-            showTag: true,
             onOptionsAction: () {
               showModalBottomSheet<void>(
                 backgroundColor: Colors.transparent,

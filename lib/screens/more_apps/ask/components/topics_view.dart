@@ -123,7 +123,6 @@ class TopicViewState extends State<TopicView> {
               if(mounted) setState(() {});
             },
             child: AskPosts(
-              showTag: true,
               onOptionsAction: () {
                 showModalBottomSheet<void>(
                   backgroundColor: Colors.transparent,

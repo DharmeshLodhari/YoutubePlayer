@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:Slydo/screens/more_apps/ask/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +15,9 @@ import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../ask_auth.dart';
-import '../models/Topics/ReplyCommentDetails.dart';
 
 class TopicActionsForReplyComment extends StatefulWidget {
-  ReplyCommentDetails? replyCommentDetail;
+  CommentDetails? replyCommentDetail;
   TopicActionsForReplyComment({this.replyCommentDetail});
 
   @override
@@ -33,7 +32,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
     if (data != null) {
       setState(() {
         widget.replyCommentDetail!.likes = data['likes'];
-        widget.replyCommentDetail!.disLikes = data['dislikes'];
+        widget.replyCommentDetail!.dislike = data['dislikes'];
       });
     }
   }
@@ -43,7 +42,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
     if (data != null) {
       setState(() {
         widget.replyCommentDetail!.likes = data['likes'];
-        widget.replyCommentDetail!.disLikes = data['dislikes'];
+        widget.replyCommentDetail!.dislike = data['dislikes'];
       });
     }
   }
@@ -191,9 +190,9 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
   }
 
   String getDisLikeCount() {
-    if (widget.replyCommentDetail!.disLikes != null &&
-        widget.replyCommentDetail!.disLikes != 0) {
-      return widget.replyCommentDetail!.disLikes?.toString() ?? "";
+    if (widget.replyCommentDetail!.dislike != null &&
+        widget.replyCommentDetail!.dislike != 0) {
+      return widget.replyCommentDetail!.dislike?.toString() ?? "";
     }
     return "";
   }

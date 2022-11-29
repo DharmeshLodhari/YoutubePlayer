@@ -4,6 +4,8 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_screen.dart';
+import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/ask/components/myfeed.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -85,6 +87,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isUserIsSimpleUser = false;
   bool showProductTab = false;
+  bool showYarnTab = false;
   bool showPostsTab = false;
   bool showServiceTab = false;
   bool myMomentsLoading = false;
@@ -159,11 +162,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     int tabCount = 1;
 
     showPostsTab = await getIsShowPost();
+    showYarnTab = await getIsShowYarn();
 
     if (searchedUser?.type?.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
 
       if (showPostsTab) {
+        tabCount++;
+      }
+      if (showYarnTab) {
         tabCount++;
       }
     } else {
@@ -179,6 +186,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       }
 
       if (showPostsTab) {
+        tabCount++;
+      }
+
+      if (showYarnTab) {
         tabCount++;
       }
     }
@@ -198,6 +209,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool get isShrink {
     return (_scrollController?.hasClients ?? false) &&
         (_scrollController?.offset ?? 0) > (150 - kToolbarHeight);
+  }
+
+  Future<bool> getIsShowYarn() async {
+    debugPrint('IS SHOW YARN <-->');
+
+    Map<String, dynamic>? data;
+    try {
+      data = await AskAuth()
+          .getAllTopics("", "", type: "my-topics", isType: false,);
+    } catch (error) {}
+    if (data != null) {
+      debugPrint('IS SHOW YARN ---> $data');
+      int count = data["count"] ?? 0;
+      if (count > 0) return true;
+    }
+
+    return false;
   }
 
   Future<bool> getIsShowProduct() async {
@@ -1283,6 +1311,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (searchedUser?.type?.toLowerCase() == "user") {
       int index = 0;
+      if (showYarnTab) {
+        tabs.add(
+          getTabUI(title: "Yarns", tabIndex: index),
+        );
+        index++;
+      }
       tabs.add(
         getTabUI(title: "Moments", tabIndex: index),
       );
@@ -1299,6 +1333,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       // );
     } else {
       int index = 0;
+      if (showYarnTab) {
+        tabs.add(
+          getTabUI(title: "Yarns", tabIndex: index),
+        );
+        index++;
+      }
       tabs.add(
         getTabUI(title: "Moments", tabIndex: index),
       );
@@ -1344,6 +1384,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     List<Widget> list = [];
 
     if (searchedUser!.type!.toLowerCase() == "user") {
+      if (showYarnTab) {
+        list.add(
+            KeepAlivePage(child: MyFeedView())
+        );
+      }
       list.add(
         KeepAlivePage(
           child: MomentsTab(searchedUser: searchedUser!),
@@ -1362,6 +1407,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       //   ),
       // );
     } else {
+      if (showYarnTab) {
+        list.add(
+            KeepAlivePage(child: MyFeedView())
+        );
+      }
       list.add(
         KeepAlivePage(
           child: MomentsTab(searchedUser: searchedUser!),

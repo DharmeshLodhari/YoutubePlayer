@@ -99,7 +99,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             size: 26,
           ),
           onPressed: () {
-            pickImage();
+            if (selectedImages.length == 4) {
+              showToast(message: "You can select only 4 images or videos");
+            } else {
+              pickImage();
+            }
           },
         ),
       ],
@@ -116,9 +120,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   Widget _buildYarnForm(AskViewModel model) {
     return Column(
       children: [
-        _buildAddImages(),
-        SizedBox(height: 20,),
-        _buildYarnField(),
+        if (selectedImages.isNotEmpty)...[
+          _buildAddImages(),
+          SizedBox(height: 20,),
+        ],
+        _buildTextFiled(),
         SizedBox(height: 20,),
         // _buildTags(model),
         // SizedBox(height: 20,),
@@ -134,8 +140,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   Widget _buildQuestionForm(AskViewModel model) {
     return Column(
       children: [
-        _buildAddImages(),
-        SizedBox(height: 20,),
+        if (selectedImages.isNotEmpty)...[
+          _buildAddImages(),
+          SizedBox(height: 20,),
+        ],
         _buildYarnField(),
         SizedBox(height: 20,),
         _buildTextFiled(),
@@ -161,14 +169,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: selectedImages.length + 1,
+        itemCount: selectedImages.length,
         itemBuilder: (context, index) => Container(
           padding: EdgeInsets.only(right: 6),
-          child: index != selectedImages.length
-              ? showImage(index)
-              : selectedImages.length != imageCount
-              ? addImageButton()
-              : null,
+          child: showImage(index),
         ),
       ),
     );
@@ -281,9 +285,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           height: 7,
         ),
         TopicTextField(
-          height: 140,
+          height: 50,
           controller: yarnController,
-          hint: widget.isYarn! ? "Yarn Something" : 'Ask Something',
+          hint: 'Ask Something',
         ),
       ],
     );
@@ -294,7 +298,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Text',
+          widget.isYarn! ? "Yarn" : 'Text',
           style: TextStyle(
             fontSize: 14,
             color: darkGrey,
@@ -306,6 +310,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         TopicTextField(
           height: 140,
           controller: textController,
+          hint: widget.isYarn! ? "Yarn Something" : "",
         ),
       ],
     );
@@ -727,8 +732,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
     addYarnAndQuestion.localImages = selectedImages.map((file) => File(file.path)).toList();
     addYarnAndQuestion.tags = userTags;
-    addYarnAndQuestion.title = yarnController.text;
-    addYarnAndQuestion.body = !widget.isYarn! ? textController.text : yarnController.text;
+    addYarnAndQuestion.title = widget.isYarn! ? textController.text : yarnController.text;
+    addYarnAndQuestion.body = textController.text;
     addYarnAndQuestion.categoryId = selectedAskCategory!.id;
     addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
     addYarnAndQuestion.author = userBloc.user.userName;
@@ -785,6 +790,7 @@ class TopicTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
+      padding: EdgeInsets.zero,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(11),
         border: Border.all(
@@ -808,7 +814,7 @@ class TopicTextField extends StatelessWidget {
         readOnly: readOnly,
         onTap: onTap,
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(20),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           border: InputBorder.none,
           hintText: hint ?? '',
           hintStyle: const TextStyle(fontSize: 12),

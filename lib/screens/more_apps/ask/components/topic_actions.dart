@@ -58,9 +58,7 @@ class _TopicActionsState extends State<TopicActions> {
         _buildLikeButton(),
         _buildDisLikeButton(),
         _buildShareButton(),
-        if(widget.yarnTopic!.enablePayme!)...[
-          _buildPayButton(),
-        ],
+        _buildPayButton(),
       ],
     );
   }
@@ -171,23 +169,24 @@ class _TopicActionsState extends State<TopicActions> {
   Widget _buildPayButton() {
     return InkWell(
       onTap: getLoggedInUserName(context) != widget.yarnTopic!.author ? () {
-        if (getIt<AppConfigurationBloc>()
-            .appConfigurationModel
-            ?.enablePayment ==
-            true) {
-          Navigator.of(context).pushNamed(
-            Routes.SEND_PAYMENT,
-            arguments: <String, dynamic>{
-              'recipient': widget.yarnTopic!.author,
-              'isFromProfile': false,
-              'isFromChat': false,
-              'defaultReferenceText':
-              'Payment from  "${truncateString(
-                str: widget.yarnTopic!.title!,
-                lengthToTruncateAt: 8,
-              )}\" yarn'
-            },
-          );
+        if (getIt<AppConfigurationBloc>().appConfigurationModel?.enablePayment == true) {
+          if (widget.yarnTopic!.enablePayme!) {
+            Navigator.of(context).pushNamed(
+              Routes.SEND_PAYMENT,
+              arguments: <String, dynamic>{
+                'recipient': widget.yarnTopic!.author,
+                'isFromProfile': false,
+                'isFromChat': false,
+                'defaultReferenceText':
+                'Payment from  "${truncateString(
+                  str: widget.yarnTopic!.title!,
+                  lengthToTruncateAt: 8,
+                )}\" yarn'
+              },
+            );
+          } else {
+            showToast(message: 'Payment not available at the moment');
+          }
         } else {
           showToast(message: 'Payment not available at the moment');
         }
@@ -280,6 +279,6 @@ class _TopicActionsState extends State<TopicActions> {
     };
     await sendDataToSocket(data);
     showToast(
-        message: yarnTopic.isQuestion! ? 'Yarn Shared' : 'Question Shared');
+        message: yarnTopic.isQuestion! ? 'Question Shared' : 'Yarn Shared');
   }
 }

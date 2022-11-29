@@ -4,21 +4,23 @@ import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
-import '../models/Topics/ReplyCommentDetails.dart';
+import 'ask_options.dart';
 
 class AskCommentView extends StatelessWidget {
   YarnTopic? yarnTopic;
   CommentDetails? commentDetail;
-  List<ReplyCommentDetails>? replyCommentDetailsList = [];
+  List<CommentDetails>? commentDetailsList = [];
   bool? openReply = false;
 
   AskCommentView(
       {
       this.yarnTopic,
       this.commentDetail,
-      this.replyCommentDetailsList,
+      this.commentDetailsList,
       this.openReply,
       });
 
@@ -108,13 +110,30 @@ class AskCommentView extends StatelessWidget {
               ],
             )
         ),
-        InkWell(
-          onTap: () {},
+        isComments(context) ? InkWell(
+          onTap: () {
+            showModalBottomSheet<void>(
+              backgroundColor: Colors.transparent,
+              context: context,
+              builder: (BuildContext context) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                  ),
+                  color: Colors.white,
+                  margin: EdgeInsets.zero,
+                  child: AskOptions(commentDetail: commentDetail, isComment: true,),
+                );
+              },
+            );
+          },
           child: Icon(
             Icons.more_horiz_rounded,
             color: Color(0xFF4B545A),
           ),
-        )
+        ) : SizedBox()
       ],
     );
   }
@@ -161,15 +180,15 @@ class AskCommentView extends StatelessWidget {
   }
 
   Widget _buildReplyCommentView({required BuildContext context}) {
-    if (openReply! && replyCommentDetailsList!.isNotEmpty && replyCommentDetailsList != null) {
+    if (openReply! && commentDetailsList!.isNotEmpty && commentDetailsList != null) {
       return Column(
-        children: replyCommentDetailsList!.map((replyCommentDetail) {
+        children: commentDetailsList!.map((replyCommentDetail) {
           return InkWell(
             onTap: () {
-              // NavigationUtil.push(
-              //   context,
-              //   screen: AskCommentDetailScreen(yarnTopic: yarnTopic, commentDetail: commentDetail,),
-              // );
+              NavigationUtil.push(
+                context,
+                screen: AskCommentDetailScreen(yarnTopic: yarnTopic, commentDetail: replyCommentDetail,),
+              );
             },
             child: AskReplyView(
               yarnTopic: yarnTopic,
@@ -181,5 +200,20 @@ class AskCommentView extends StatelessWidget {
       );
     }
     return SizedBox();
+  }
+
+  bool isComments(BuildContext context) {
+    DateTime messageCreatedTime = DateTime.parse(commentDetail!.createdAt!).toLocal();
+
+    DateTime currentTime = DateTime.now();
+    if (getLoggedInUserName(context) == commentDetail!.authorUsername) {
+      if (currentTime.difference(messageCreatedTime) < Duration(minutes: 3)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   }
 }

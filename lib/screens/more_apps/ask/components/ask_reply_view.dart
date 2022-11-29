@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../models/Topics/CommentDetails.dart';
-import '../models/Topics/ReplyCommentDetails.dart';
+import 'ask_options.dart';
 
 class AskReplyView extends StatelessWidget {
   YarnTopic? yarnTopic;
   CommentDetails? commentDetail;
-  ReplyCommentDetails? replyCommentDetail;
+  CommentDetails? replyCommentDetail;
 
   AskReplyView(
       {this.yarnTopic, this.replyCommentDetail, this.commentDetail});
@@ -97,7 +97,24 @@ class AskReplyView extends StatelessWidget {
             )
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            showModalBottomSheet<void>(
+              backgroundColor: Colors.transparent,
+              context: context,
+              builder: (BuildContext context) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                  ),
+                  color: Colors.white,
+                  margin: EdgeInsets.zero,
+                  child: AskOptions(commentDetail: replyCommentDetail, isComment: true,),
+                );
+              },
+            );
+          },
           child: Icon(
             Icons.more_horiz_rounded,
             color: Color(0xFF4B545A),

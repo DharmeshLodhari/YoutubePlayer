@@ -131,7 +131,6 @@ class QuestionViewState extends State<QuestionView> {
               );
             },
             child: AskPosts(
-              showTag: true,
               onOptionsAction: () {
                 showModalBottomSheet<void>(
                   backgroundColor: Colors.transparent,

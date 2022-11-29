@@ -16,7 +16,6 @@ import 'ask_options.dart';
 class AskPosts extends StatefulWidget {
   bool? openComments;
   List<CommentDetails>? commentDetailsList = [];
-  bool? showTag;
   GestureTapCallback? onOptionsAction;
 
   bool? isImages = false;
@@ -26,7 +25,6 @@ class AskPosts extends StatefulWidget {
   AskPosts({
     this.openComments = false,
     this.commentDetailsList,
-    this.showTag = true,
     this.onOptionsAction,
     this.isImages,
     this.yarnTopic,
@@ -54,13 +52,19 @@ class _AskPostsState extends State<AskPosts> {
   bool noList = false;
 
   void getAllComments() async {
+    String selectFilter;
+    if (filterValue == null || filterValue == '-creation_date') {
+      selectFilter = '-creation_date';
+    } else {
+      selectFilter = 'creation_date';
+    }
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await AskAuth()
-            .getAllComments(next, previous, widget.yarnTopic!.id!);
+            .getAllComments(next, previous, widget.yarnTopic!.id!, sortBy: selectFilter);
 
         if (result == null) {
           noList = true;
@@ -109,9 +113,8 @@ class _AskPostsState extends State<AskPosts> {
       buttonKey: _key,
       context: context,
       children: [
-        CustomizedPopUpMenuItem(title: "Latest", value: "latest"),
-        CustomizedPopUpMenuItem(title: "Older", value: "older"),
-        CustomizedPopUpMenuItem(title: "Best", value: "best"),
+        CustomizedPopUpMenuItem(title: "Latest", value: "-creation_date"),
+        CustomizedPopUpMenuItem(title: "Older", value: "creation_date"),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -640,11 +643,12 @@ class _AskPostsState extends State<AskPosts> {
           Column(
             children: widget.commentDetailsList!
                 .map((e) => InkWell(
-              onTap: () {
-                NavigationUtil.push(
+              onTap: () async {
+                await NavigationUtil.push(
                   context,
                   screen: AskCommentDetailScreen(yarnTopic: widget.yarnTopic, commentDetail: e,),
                 );
+                if (mounted) setState(() {});
               },
               child: AskCommentView(
                 yarnTopic: widget.yarnTopic,
