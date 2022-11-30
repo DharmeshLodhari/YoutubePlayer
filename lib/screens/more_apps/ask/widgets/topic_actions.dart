@@ -19,7 +19,6 @@ import '../ask_detail_screen.dart';
 
 class TopicActions extends StatefulWidget {
   YarnTopic? yarnTopic;
-
   TopicActions({this.yarnTopic});
 
   @override
@@ -54,7 +53,9 @@ class _TopicActionsState extends State<TopicActions> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildCommentButton(),
+        if (enableCommenting())...[
+          _buildCommentButton(),
+        ],
         _buildLikeButton(),
         _buildDisLikeButton(),
         _buildShareButton(),

@@ -1,6 +1,8 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:shimmer/shimmer.dart';
+
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
@@ -8,21 +10,22 @@ import '../../../../widget/noItemInList.dart';
 import '../ask_auth.dart';
 import '../ask_detail_screen.dart';
 import '../models/Topics/YarnTopic.dart';
-import 'ask_loader.dart';
 import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
-class TopicView extends StatefulWidget {
+class MyFeedView extends StatefulWidget {
   String? selectedCategory;
-  TopicView({Key? key, this.selectedCategory}) : super(key: key);
+  String? userName;
+  MyFeedView({Key? key, this.selectedCategory, this.userName}) : super(key: key);
+
   @override
-  State<TopicView> createState() => TopicViewState(key: key);
+  State<MyFeedView> createState() => MyFeedViewState(key: key);
 }
 
-class TopicViewState extends State<TopicView> {
-  Key? key;
-  TopicViewState({this.key});
+class MyFeedViewState extends State<MyFeedView> {
 
+  Key? key;
+  MyFeedViewState({this.key});
   bool isLoading = false;
   String next = "", previous = "";
   List<YarnTopic> yarnTopicList = [];
@@ -37,7 +40,8 @@ class TopicViewState extends State<TopicView> {
     super.initState();
   }
 
-  void getYarnTopic({String type = "topic", bool isType = true, String? categoryId}) async {
+  void getYarnTopic({String type = "my-topics", bool isType = false, String? categoryId}) async {
+    debugPrint("USER NAME:- ${widget.userName}");
     if (categoryId != null) {
       selectedId = categoryId;
     }
@@ -46,7 +50,7 @@ class TopicViewState extends State<TopicView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId, userName: widget.userName);
 
         if (result == null) {
           noList = true;
@@ -91,70 +95,68 @@ class TopicViewState extends State<TopicView> {
 
   @override
   Widget build(BuildContext context) {
-    return SmartRefresher(
-      enablePullDown: true,
-      header: WaterDropHeader(
-        complete: Container(),
-        waterDropColor: navyBlue,
-      ),
-      controller: _postRefreshController,
-      onRefresh: _onPostRefresh,
-      child: _buildListView(),
-    );
-  }
-
-  Widget _buildListView() {
-    print("IS LOADING:- $isLoading");
-    if (isLoading) {
-      return AskLoader();
-    }
-    if (!noList) {
-      return ListView.separated(
-        physics: ClampingScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
-        itemCount: yarnTopicList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-            onTap: () async {
-              await NavigationUtil.push(
-                context,
-                screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
-              );
-              if(mounted) setState(() {});
-            },
-            child: AskPosts(
-              onOptionsAction: () {
-                showModalBottomSheet<void>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                      ),
-                      color: Colors.white,
-                      margin: EdgeInsets.zero,
-                      child: AskOptions(),
+    return Column(
+      children: [
+        Expanded(
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _postRefreshController,
+            onRefresh: _onPostRefresh,
+            child: !isLoading ? !noList ? ListView.builder(
+              physics: ClampingScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
+              itemCount: yarnTopicList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return AskPosts(
+                  onOptionsAction: () {
+                    showModalBottomSheet<void>(
+                      backgroundColor: Colors.transparent,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20)),
+                          ),
+                          color: Colors.white,
+                          margin: EdgeInsets.zero,
+                          child: AskOptions(),
+                        );
+                      },
                     );
                   },
+                  isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+                  yarnTopic: yarnTopicList[index],
                 );
               },
-              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
-              yarnTopic: yarnTopicList[index],
+            ) : NoItemInList(
+              msg: AppLocalization.of(context)!.noResultFound,
+            ) : Shimmer.fromColors(
+              baseColor: Colors.white,
+              highlightColor: greyBorderColor,
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: 2,
+                itemBuilder: (context, index) {
+                  return Card(
+                    color: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  );
+                },
+              ),
             ),
-          );
-        },
-        separatorBuilder: (context, int) {
-          return SizedBox(height: 8,);
-        },
-      );
-    }
-    return NoItemInList(
-      msg: AppLocalization.of(context)!.noResultFound,
+          ),
+        ),
+      ],
     );
-
   }
 
   void _onPostRefresh() async {

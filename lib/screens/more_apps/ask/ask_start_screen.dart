@@ -10,7 +10,7 @@ import 'ask_auth.dart';
 import 'ask_home_screen.dart';
 import 'ask_viewmodel.dart';
 import 'models/ask_categories_model.dart';
-import 'components/category_chip.dart';
+import 'widgets/category_chip.dart';
 
 class AskStartScreen extends StatefulWidget {
   @override

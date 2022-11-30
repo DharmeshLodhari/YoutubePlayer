@@ -13,6 +13,8 @@ import '../moments/models/comment_model.dart';
 import '../more_apps/messaging/chat/models/channel_model.dart';
 
 class ChatChannels extends StatefulWidget {
+  String? ownerName;
+  ChatChannels({this.ownerName});
   @override
   State<ChatChannels> createState() => _ChatChannelsState();
 }
@@ -71,7 +73,7 @@ class _ChatChannelsState extends State<ChatChannels> {
     if (mounted) setState(() => _isLoading = true);
 
     MessageAuth()
-        .getChannels(nextUrl: nextPageUrl, searchText: searchTextCtrl.text)
+        .getChannels(nextUrl: nextPageUrl, searchText: searchTextCtrl.text, ownerName: widget.ownerName)
         .then((value) {
       if (mounted) setState(() => _isLoading = false);
 

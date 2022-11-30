@@ -10,11 +10,12 @@ import 'ask_auth.dart';
 import 'ask_search_screen.dart';
 import 'ask_setting_screen.dart';
 import 'ask_viewmodel.dart';
-import 'components/category_chip.dart';
-import 'components/myfeed.dart';
-import 'components/question_view.dart';
-import 'components/topics_view.dart';
+import 'widgets/category_chip.dart';
+import 'widgets/myfeed.dart';
+import 'widgets/question_view.dart';
+import 'widgets/topics_view.dart';
 import 'models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
 
 class AskHomeScreen extends StatefulWidget {
 
@@ -139,22 +140,31 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         _buildSpeedDialChild(
           title: "Ask Question",
           icon: SlydoAppIconNew.question,
-          onTap: () {
-            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: false,)).then((value) {
-              topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
-              questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
-              myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+          onTap: () async {
+            await NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: false,)).then((value) {
+              if (value != null) {
+                if (value == Types.Question) {
+                  updateCurrentAskTapOnHome(i: 1);
+                  _pageViewCtrl.jumpToPage(1);
+                  questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+                }
+              }
             });
           }
         ),
         _buildSpeedDialChild(
           title: "Yarn",
           icon: SlydoAppIconNew.yarn,
-          onTap: () {
-            NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: true,)).then((value) {
-              topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
-              questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
-              myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+          onTap: () async {
+            await NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: true,)).then((value) {
+              if (value != null) {
+                if (value == Types.Yarn) {
+                  updateCurrentAskTapOnHome(i: 0);
+                  _pageViewCtrl.jumpToPage(0);
+                  topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+                }
+              }
+
             });
           }
         ),

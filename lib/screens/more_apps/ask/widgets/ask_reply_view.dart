@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/ask/components/topic_action_for_reply_comment.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/topic_action_for_reply_comment.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -149,7 +149,7 @@ class AskReplyView extends StatelessWidget {
 
   Widget _buildCommentDescription() {
     return Text(
-      replyCommentDetail!.comment!,
+      messageDecoderWithEmoji(replyCommentDetail!.comment!)!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,

@@ -1,6 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../locale/app_localization.dart';
-import 'components/ask_loader.dart';
-import 'components/topic_text_field.dart';
+import 'widgets/ask_loader.dart';
+import 'widgets/topic_text_field.dart';
 import 'ask_auth.dart';
-import 'components/ask_posts_view.dart';
+import 'widgets/ask_posts_view.dart';
 import 'models/Topics/CommentDetails.dart';
 
 class AskDetailScreen extends StatefulWidget {
@@ -32,6 +31,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
   late UserBloc userBloc;
   final TextEditingController controller = TextEditingController();
   RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  bool isAPILoading = false;
 
   @override
   void initState() {
@@ -169,31 +169,40 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         hint: "Leave your thought",
         yarn: widget.yarnTopic,
         userImage: userBloc.user.avatar,
+        isLoading: isAPILoading,
         onPressed: () async {
           FocusScope.of(context).unfocus();
-          Map<String, dynamic> data = {
-            "comment": controller.text,
-            "author_username": userBloc.user.userName
-          };
-          try {
-            CommentDetails? commentDetails = await AskAuth()
-                .addCommentToYarn(widget.yarnTopic!.id!, data);
-            if (commentDetails != null) {
-              setState(() {
-                widget.yarnTopic!.numberOfComments = widget.yarnTopic!.numberOfComments! + 1;
-              });
-              commentDetailsList.add(commentDetails);
-              controller.clear();
-
-              if (mounted) setState(() {});
-            }
-          } catch (error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(error.toString())));
-          }
+          isAPILoading = true;
+          if(mounted) setState(() {});
+          await addComment();
+          isAPILoading = false;
+          if(mounted) setState(() {});
         },
       ),
     );
+  }
+
+  Future addComment() async {
+    Map<String, dynamic> data = {
+      "comment": controller.text,
+      "author_username": userBloc.user.userName
+    };
+    try {
+      CommentDetails? commentDetails = await AskAuth()
+          .addCommentToYarn(widget.yarnTopic!.id!, data);
+      if (commentDetails != null) {
+        setState(() {
+          widget.yarnTopic!.numberOfComments = widget.yarnTopic!.numberOfComments! + 1;
+        });
+        commentDetailsList.add(commentDetails);
+        controller.clear();
+
+        if (mounted) setState(() {});
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())));
+    }
   }
 
   void _onPostRefresh() async {

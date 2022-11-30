@@ -5,7 +5,6 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import '../../../data/state_notifier.dart';
 import '../../../routes/route_constants.dart';
-import '../../../utils/colors.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
@@ -13,8 +12,8 @@ import 'add_topic_screen.dart';
 import 'ask_auth.dart';
 import 'ask_search_screen.dart';
 import 'ask_viewmodel.dart';
-import 'components/topics_view.dart';
-import 'components/question_view.dart';
+import 'widgets/topics_view.dart';
+import 'widgets/question_view.dart';
 
 class AskByCategoryScreen extends StatefulWidget {
   

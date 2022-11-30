@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/ask/components/ask_comment_view.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/ask_comment_view.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +9,8 @@ import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/util.dart';
 import 'ask_auth.dart';
-import 'components/ask_loader.dart';
-import 'components/topic_text_field.dart';
+import 'widgets/ask_loader.dart';
+import 'widgets/topic_text_field.dart';
 import 'models/Topics/CommentDetails.dart';
 
 class AskCommentDetailScreen extends StatefulWidget {
@@ -33,6 +33,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
   bool noList = false;
   final TextEditingController controller = TextEditingController();
   RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  bool isAPILoading = false;
 
   @override
   void initState() {
@@ -167,30 +168,39 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
         hint: "Leave your thought",
         yarn: widget.yarnTopic,
         userImage: userBloc.user.avatar,
+        isLoading: isAPILoading,
         onPressed: () async {
           FocusScope.of(context).unfocus();
-          Map<String, dynamic> data = {
-            "comment": controller.text,
-            "author_username": userBloc.user.userName,
-            "is_reply": true
-          };
-          try {
-            CommentDetails? commentDetail = await AskAuth()
-                .addReplyToComment(widget.commentDetail!.id!, data);
-            if (commentDetail != null) {
-              widget.commentDetail!.replyCount = widget.commentDetail!.replyCount! + 1;
-              replyCommentDetailsList.add(commentDetail);
-              controller.clear();
-
-              if (mounted) setState(() {});
-            }
-          } catch (error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(error.toString())));
-          }
+          isAPILoading = true;
+          if(mounted) setState(() {});
+          await addReplyComment();
+          isAPILoading = false;
+          if(mounted) setState(() {});
         },
       ),
     );
+  }
+
+  Future addReplyComment() async {
+    Map<String, dynamic> data = {
+      "comment": controller.text,
+      "author_username": userBloc.user.userName,
+      "is_reply": true
+    };
+    try {
+      CommentDetails? commentDetail = await AskAuth()
+          .addReplyToComment(widget.commentDetail!.id!, data);
+      if (commentDetail != null) {
+        widget.commentDetail!.replyCount = widget.commentDetail!.replyCount! + 1;
+        replyCommentDetailsList.add(commentDetail);
+        controller.clear();
+
+        if (mounted) setState(() {});
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())));
+    }
   }
 
   void _onPostRefresh() async {

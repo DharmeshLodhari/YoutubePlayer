@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/more_apps/ask/components/topic_actions.dart';
-import 'package:Slydo/screens/more_apps/ask/components/viewer_screen.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/topic_actions.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
@@ -248,15 +248,17 @@ class _AskPostsState extends State<AskPosts> {
             SizedBox(
               width: 5,
             ),
-              Text(
-              '${getGetYarnQuestionDateTime(widget.yarnTopic!.createdAt!)}',
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                color: blackFont,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+              Expanded(
+                child: Text(
+                  '${getGetYarnQuestionDateTime(widget.yarnTopic!.createdAt!)}',
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(
+                    color: blackFont,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
               ],
             )
         ),
@@ -290,7 +292,7 @@ class _AskPostsState extends State<AskPosts> {
 
   Widget _buildPostTitle() {
     return Text(
-      widget.yarnTopic!.title!,
+      messageDecoderWithEmoji(widget.yarnTopic!.title!)!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,
@@ -302,7 +304,7 @@ class _AskPostsState extends State<AskPosts> {
 
   Widget _buildPostDescription() {
     return Text(
-      widget.yarnTopic!.body!,
+      messageDecoderWithEmoji(widget.yarnTopic!.body!)!,
       maxLines: 30,
       style: TextStyle(
         color: blackFont,

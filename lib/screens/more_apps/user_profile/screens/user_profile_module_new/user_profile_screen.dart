@@ -5,7 +5,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_screen.dart';
 import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
-import 'package:Slydo/screens/more_apps/ask/components/myfeed.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -42,8 +42,12 @@ import 'package:uuid/uuid.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
 import '../../../../../utils/navigation_util.dart';
+import '../../../../connection_module/channels.dart';
+import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
+import '../../../messaging/chat/models/channel_model.dart';
+import '../../../messaging/message_auth.dart';
 import '../../models/UserAbout.dart';
 
 // ignore: must_be_immutable
@@ -88,6 +92,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool isUserIsSimpleUser = false;
   bool showProductTab = false;
   bool showYarnTab = false;
+  bool showMomentTab = false;
+  bool showChannelTab = false;
   bool showPostsTab = false;
   bool showServiceTab = false;
   bool myMomentsLoading = false;
@@ -163,6 +169,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     showPostsTab = await getIsShowPost();
     showYarnTab = await getIsShowYarn();
+    showMomentTab = await getIsShowMoment();
+    showChannelTab = await getIsShowChannels();
 
     if (searchedUser?.type?.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
@@ -171,6 +179,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         tabCount++;
       }
       if (showYarnTab) {
+        tabCount++;
+      }
+      if (showMomentTab) {
+        tabCount++;
+      }
+      if (showChannelTab) {
         tabCount++;
       }
     } else {
@@ -190,6 +204,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       }
 
       if (showYarnTab) {
+        tabCount++;
+      }
+      if (showMomentTab) {
+        tabCount++;
+      }
+      if (showChannelTab) {
         tabCount++;
       }
     }
@@ -222,6 +242,40 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     if (data != null) {
       debugPrint('IS SHOW YARN ---> $data');
       int count = data["count"] ?? 0;
+      if (count > 0) return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> getIsShowMoment() async {
+    debugPrint('IS SHOW YARN <-->');
+
+    List<MomentsModel> momentsModel = [];
+    try {
+      momentsModel = await MomentsService()
+          .getMomentsWithOwnerName(ownerName: searchedUserName!);
+    } catch (error) {}
+    if (momentsModel.isNotEmpty) {
+      debugPrint('IS SHOW MOMENTS ---> $momentsModel');
+      int count = momentsModel.length != 0 ? momentsModel.length : 0;
+      if (count > 0) return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> getIsShowChannels() async {
+    debugPrint('IS SHOW CHANNELS <-->');
+
+    BasePaginationModel<List<ChannelModel>>? basePaginationModel;
+    try {
+      basePaginationModel = await MessageAuth()
+          .getChannels(nextUrl: '', searchText: '', ownerName: searchedUserName);
+    } catch (error) {}
+    if (basePaginationModel != null) {
+      debugPrint('IS SHOW CHANNELS ---> $basePaginationModel');
+      int count = basePaginationModel.count;
       if (count > 0) return true;
     }
 
@@ -1317,10 +1371,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
         index++;
       }
-      tabs.add(
-        getTabUI(title: "Moments", tabIndex: index),
-      );
-      index++;
+      if (showChannelTab) {
+        tabs.add(
+          getTabUI(title: "Channels", tabIndex: index),
+        );
+        index++;
+      }
+      if (showMomentTab) {
+        tabs.add(
+          getTabUI(title: "Moments", tabIndex: index),
+        );
+        index++;
+      }
       if (showPostsTab) {
         tabs.add(
           getTabUI(title: "Posts", tabIndex: index),
@@ -1339,9 +1401,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
         index++;
       }
-      tabs.add(
-        getTabUI(title: "Moments", tabIndex: index),
-      );
+      if (showChannelTab) {
+        tabs.add(
+          getTabUI(title: "Channels", tabIndex: index),
+        );
+        index++;
+      }
+      if (showMomentTab) {
+        tabs.add(
+          getTabUI(title: "Moments", tabIndex: index),
+        );
+        index++;
+      }
       index++;
       // tabs.add(
       //   getTabUI(title: "QR code", tabIndex: index),
@@ -1389,11 +1460,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
         );
       }
-      list.add(
-        KeepAlivePage(
-          child: MomentsTab(searchedUser: searchedUser!),
-        ),
-      );
+      if (showChannelTab) {
+        list.add(
+            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName,))
+        );
+      }
+      if (showMomentTab) {
+        list.add(
+          KeepAlivePage(
+            child: MomentsTab(searchedUser: searchedUser!),
+          ),
+        );
+      }
       if (showPostsTab) {
         list.add(
           KeepAlivePage(
@@ -1412,11 +1490,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
         );
       }
-      list.add(
-        KeepAlivePage(
-          child: MomentsTab(searchedUser: searchedUser!),
-        ),
-      );
+      if (showMomentTab) {
+        list.add(
+          KeepAlivePage(
+            child: MomentsTab(searchedUser: searchedUser!),
+          ),
+        );
+      }
       // list.add(
       //   KeepAlivePage(
       //     child: UserQRCodeScreen(user: searchedUser),

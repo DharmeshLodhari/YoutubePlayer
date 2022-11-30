@@ -19,6 +19,7 @@ class TopicTextField extends StatelessWidget {
   final YarnTopic? yarn;
   final String? userImage;
   final VoidCallback? onPressed;
+  final bool? isLoading;
 
   const TopicTextField(
       {Key? key,
@@ -38,7 +39,9 @@ class TopicTextField extends StatelessWidget {
         this.suffix = true,
         this.suffixIcon,
         this.userImage,
-        this.onPressed})
+        this.onPressed,
+        this.isLoading = false,
+      })
       : super(key: key);
 
   @override
@@ -94,7 +97,16 @@ class TopicTextField extends StatelessWidget {
                   suffixIcon: suffixIcon ?? const SizedBox.shrink()),
             ),
           ),
-          IconButton(
+          isLoading! ? Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: Center(
+              child: SizedBox(
+                width: 15,
+                height: 15,
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue), strokeWidth: 2.0,),
+              ),
+            ),
+          ) : IconButton(
             padding: EdgeInsets.zero,
             onPressed: onPressed,
             icon: Icon(

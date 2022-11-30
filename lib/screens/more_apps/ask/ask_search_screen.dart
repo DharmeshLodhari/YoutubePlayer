@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/ask/components/ask_posts_view.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/ask_posts_view.dart';
 import 'package:flutter/material.dart';
 
 import '../../../locale/app_localization.dart';
@@ -7,7 +7,7 @@ import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../widget/customized_popup_menu.dart';
 import '../../../widget/noItemInList.dart';
 import 'ask_auth.dart';
-import 'components/ask_options.dart';
+import 'widgets/ask_options.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 

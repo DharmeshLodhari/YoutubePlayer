@@ -1128,11 +1128,15 @@ class MessageAuth extends AuthService {
   }
 
   Future<BasePaginationModel<List<ChannelModel>>> getChannels(
-      {required String? nextUrl, String? searchText}) async {
+      {required String? nextUrl, String? searchText, String? ownerName}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/channels/";
 
     if (searchText != null && searchText.isNotEmpty) {
       url = url + "?search=$searchText";
+    }
+
+    if (ownerName != null && ownerName.isNotEmpty) {
+      url = url + "?owner=$ownerName";
     }
 
     var headers = await getAuthHeaders();

@@ -1,8 +1,6 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
-
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
@@ -14,18 +12,17 @@ import 'ask_loader.dart';
 import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
-class QuestionView extends StatefulWidget {
+class TopicView extends StatefulWidget {
   String? selectedCategory;
-  QuestionView({Key? key, this.selectedCategory}) : super(key: key);
-
+  TopicView({Key? key, this.selectedCategory}) : super(key: key);
   @override
-  State<QuestionView> createState() => QuestionViewState(key: key);
+  State<TopicView> createState() => TopicViewState(key: key);
 }
 
-class QuestionViewState extends State<QuestionView> {
-
+class TopicViewState extends State<TopicView> {
   Key? key;
-  QuestionViewState({this.key});
+  TopicViewState({this.key});
+
   bool isLoading = false;
   String next = "", previous = "";
   List<YarnTopic> yarnTopicList = [];
@@ -40,7 +37,7 @@ class QuestionViewState extends State<QuestionView> {
     super.initState();
   }
 
-  void getYarnTopic({String type = "question", bool isType = true, String? categoryId}) async {
+  void getYarnTopic({String type = "topic", bool isType = true, String? categoryId}) async {
     if (categoryId != null) {
       selectedId = categoryId;
     }
@@ -94,21 +91,15 @@ class QuestionViewState extends State<QuestionView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _postRefreshController,
-            onRefresh: _onPostRefresh,
-            child: _buildListView(),
-          ),
-        ),
-      ],
+    return SmartRefresher(
+      enablePullDown: true,
+      header: WaterDropHeader(
+        complete: Container(),
+        waterDropColor: navyBlue,
+      ),
+      controller: _postRefreshController,
+      onRefresh: _onPostRefresh,
+      child: _buildListView(),
     );
   }
 
@@ -118,41 +109,36 @@ class QuestionViewState extends State<QuestionView> {
       return AskLoader();
     }
     if (!noList) {
-      return ListView.builder(
+      return ListView.separated(
         physics: ClampingScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
         itemCount: yarnTopicList.length,
         itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-            onTap: () {
-              NavigationUtil.push(
-                context,
-                screen: AskDetailScreen(yarnTopic: yarnTopicList[index],),
+          return AskPosts(
+            onOptionsAction: () {
+              showModalBottomSheet<void>(
+                backgroundColor: Colors.transparent,
+                context: context,
+                builder: (BuildContext context) {
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20)),
+                    ),
+                    color: Colors.white,
+                    margin: EdgeInsets.zero,
+                    child: AskOptions(),
+                  );
+                },
               );
             },
-            child: AskPosts(
-              onOptionsAction: () {
-                showModalBottomSheet<void>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                      ),
-                      color: Colors.white,
-                      margin: EdgeInsets.zero,
-                      child: AskOptions(),
-                    );
-                  },
-                );
-              },
-              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
-              yarnTopic: yarnTopicList[index],
-            ),
+            isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+            yarnTopic: yarnTopicList[index],
           );
+        },
+        separatorBuilder: (context, int) {
+          return SizedBox(height: 8,);
         },
       );
     }

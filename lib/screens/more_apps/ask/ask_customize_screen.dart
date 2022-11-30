@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../utils/util.dart';
 import 'ask_auth.dart';
-import 'components/customize_category.dart';
+import 'widgets/customize_category.dart';
 import 'models/ask_categories_model.dart';
 
 class AskSCustomizeScreen extends StatefulWidget {
