@@ -71,7 +71,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             .then((data) {
               YarnTopic? yarnTopic;
               if(data != null) {
-                yarnTopic = data['result'];
+                yarnTopic = data['results'];
               }
           isLoading = false;
           if (mounted) setState(() {});
@@ -291,23 +291,15 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     userNameWithVerifiedIcon(
-                        name: yarnQuestionForChatModel.authorUsername ?? "", isVerified: false),
+                        name: yarnQuestionForChatModel.authorName ?? "", isVerified: yarnQuestionForChatModel.authorIsVerified ?? false),
                     Text(
-                      "@${yarnQuestionForChatModel.authorName ?? ''}",
+                      "@${yarnQuestionForChatModel.authorUsername ?? ''}",
                       style: TextStyle(
                           fontSize: 10,
                           color: HexColor("#3F61DB")
                       ),
                     ),
                   ],
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Icon(
-                  Icons.verified,
-                  color: HexColor("#3F61DB"),
-                  size: 12,
                 ),
               ],
             )),
@@ -595,6 +587,7 @@ class YarnQuestionForChatModel {
   List? tags;
   List<MediaFile>? media;
   bool? isQuestion;
+  bool? authorIsVerified;
 
   YarnQuestionForChatModel({
     this.id,
@@ -605,7 +598,8 @@ class YarnQuestionForChatModel {
     this.description,
     this.tags,
     this.media,
-    this.isQuestion
+    this.isQuestion,
+    this.authorIsVerified,
   });
 
   factory YarnQuestionForChatModel.fromJson(Map<String, dynamic> json) {
@@ -619,6 +613,7 @@ class YarnQuestionForChatModel {
       tags: json['tags'],
       media: json['image'] != null ? (json['image'] as List<dynamic>).map((e) => MediaFile.fromJson(e as Map<String, dynamic>)).toList() : [],
       isQuestion: json['is_question'],
+      authorIsVerified: json['author_is_verified']
     );
   }
 }

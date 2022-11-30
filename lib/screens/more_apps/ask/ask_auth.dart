@@ -188,7 +188,7 @@ class AskAuth extends AuthService {
 
   // Get all YARN Topics
   Future<Map<String, dynamic>?> getAllTopics(String? next, String previous,
-      {String? type, bool isType = false, String? categoryId}) async {
+      {String? type, bool isType = false, String? categoryId, String? userName}) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
@@ -203,7 +203,7 @@ class AskAuth extends AuthService {
           url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
         }
       } else {
-        url = AppConfig.baseUrl + "/api/v1/social/ask/$type/";
+        url = AppConfig.baseUrl + "/api/v1/social/ask/$type/?username=$userName";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -428,7 +428,12 @@ class AskAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$postId/?sort_by=$sortBy";
+      if (sortBy != null) {
+        url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$postId/?sort_by=$sortBy";
+      } else {
+        url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$postId/";
+      }
+
     } else {
       url = getSecureUrl(url: next);
     }

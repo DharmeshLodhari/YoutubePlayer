@@ -15,7 +15,8 @@ import 'ask_posts_view.dart';
 
 class MyFeedView extends StatefulWidget {
   String? selectedCategory;
-  MyFeedView({Key? key, this.selectedCategory}) : super(key: key);
+  String? userName;
+  MyFeedView({Key? key, this.selectedCategory, this.userName}) : super(key: key);
 
   @override
   State<MyFeedView> createState() => MyFeedViewState(key: key);
@@ -40,6 +41,7 @@ class MyFeedViewState extends State<MyFeedView> {
   }
 
   void getYarnTopic({String type = "my-topics", bool isType = false, String? categoryId}) async {
+    debugPrint("USER NAME:- ${widget.userName}");
     if (categoryId != null) {
       selectedId = categoryId;
     }
@@ -48,7 +50,7 @@ class MyFeedViewState extends State<MyFeedView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId, userName: widget.userName);
 
         if (result == null) {
           noList = true;

@@ -35,7 +35,7 @@ class YarnTopic {
     if (json['media'] != null) {
       media = [];
       json['media'].forEach((v) {
-        media?.add(Media.fromJson(v));
+        media?.add(MediaFiles.fromJson(v));
       });
     }
     author = json['author'];
@@ -64,7 +64,7 @@ class YarnTopic {
   dynamic updatedAt;
   String? title;
   String? body;
-  List<Media>? media;
+  List<MediaFiles>? media;
   String? author;
   String? status;
   int? numberOfAnswers;
@@ -107,10 +107,10 @@ class YarnTopic {
   }
 }
 
-class Media {
-  Media({this.file,});
+class MediaFiles {
+  MediaFiles({this.file,});
 
-  Media.fromJson(dynamic json) {
+  MediaFiles.fromJson(dynamic json) {
     file = json['file'];
   }
   String? file;

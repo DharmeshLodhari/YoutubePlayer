@@ -217,7 +217,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Map<String, dynamic>? data;
     try {
       data = await AskAuth()
-          .getAllTopics("", "", type: "my-topics", isType: false,);
+          .getAllTopics("", "", type: "my-topics", isType: false, userName: arguments['searchedUserName']);
     } catch (error) {}
     if (data != null) {
       debugPrint('IS SHOW YARN ---> $data');
@@ -1386,7 +1386,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     if (searchedUser!.type!.toLowerCase() == "user") {
       if (showYarnTab) {
         list.add(
-            KeepAlivePage(child: MyFeedView())
+            KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
         );
       }
       list.add(
@@ -1409,7 +1409,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     } else {
       if (showYarnTab) {
         list.add(
-            KeepAlivePage(child: MyFeedView())
+            KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
         );
       }
       list.add(

@@ -4,16 +4,22 @@ import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
+import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/CustomBoxShadow.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_dropdown_field.dart';
 import '../../../widget/customized_textform_field.dart';
+// import '../../../widget/image_crop.dart';
 import '../../../widget/image_crop.dart';
+import '../../moments/screens/trimmer_view.dart';
+import '../messaging/chat/utils.dart';
 import 'ask_viewmodel.dart';
 
 class AddTopicScreen extends StatefulWidget {
@@ -42,6 +48,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   late UserBloc userBloc;
   bool enableCommenting = true;
   bool enablePayme = false;
+  String? videoPath;
+  String? imagePath;
+  bool isVideoLoading = false;
+  VideoPlayerController? videoPlayerController;
+  String? generatedVideoThumbnail;
 
   @override
   void initState() {
@@ -169,10 +180,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: selectedImages.length,
+        itemCount: selectedImages.length + 1,
         itemBuilder: (context, index) => Container(
           padding: EdgeInsets.only(right: 6),
-          child: showImage(index),
+          child: index != selectedImages.length
+              ? showImage(index)
+              : selectedImages.length != imageCount
+              ? addImageButton()
+              : null,
         ),
       ),
     );
@@ -558,6 +573,105 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       });
     }
   }
+
+  // pickFileFromMedia() async {
+  //   // final file = await ImagePicker()
+  //   //     .pickImage(source: ImageSource.gallery, imageQuality: 70);
+  //
+  //   // FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+  //   //     allowMultiple: false,
+  //   //     type: FileType.custom,
+  //   //     allowedExtensions: imageExtensions);
+  //
+  //   List<Media>? res = await ImagesPicker.pick(
+  //     count: 1,
+  //     pickType: PickType.all,
+  //     language: Language.System,
+  //     maxTime: 900,
+  //     cropOpt: CropOption(
+  //       // aspectRatio: CropAspectRatio.wh16x9,
+  //       cropType: CropType.rect,
+  //     ),
+  //   );
+  //
+  //   if (res == null || res.isEmpty) return;
+  //   File file = File(res.first.path);
+  //   String? mediaType = getFileTypeByPath(path: file.path);
+  //
+  //   if (mediaType == null) return;
+  //
+  //   if (mediaType == 'image') {
+  //     imagePath = file.path;
+  //     selectedImages.add(PickedFile(imagePath!));
+  //     if (mounted) setState(() {});
+  //
+  //     // String? croppedImagePath = await ImageCrop().cropImage(file.path);
+  //     // if (croppedImagePath != null) {
+  //     //   imagePath = croppedImagePath;
+  //     //   if (mounted) setState(() {});
+  //     // }
+  //   } else if (mediaType == 'video') {
+  //     var videoFilePath =
+  //     await NavigationUtil.push(context, screen: TrimmerView(file: file));
+  //     if (videoFilePath is String) {
+  //       videoPath = videoFilePath;
+  //       setUpVideoPlayer();
+  //       generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
+  //         if (thumbnail != null) {
+  //           generatedVideoThumbnail = thumbnail;
+  //           debugPrint('file path gen -> $generatedVideoThumbnail');
+  //         }
+  //       });
+  //       selectedImages.add(PickedFile(generatedVideoThumbnail!));
+  //       if (mounted) setState(() {});
+  //     } else {
+  //       // showToast(message: 'Error formatting video, please try again');
+  //     }
+  //   }
+  //   debugPrint("SELECTED IMAGES:- $selectedImages");
+  // }
+  //
+  // void setUpVideoPlayer() async {
+  //   isVideoLoading = true;
+  //   if (mounted) setState(() {});
+  //
+  //   // videoPlayerController = VideoPlayerController.file(File(widget.filePath))
+  //   //   ..initialize().then((_) => videoPlayerController?.play())
+  //   //   ..setLooping(false);
+  //
+  //   videoPlayerController = VideoPlayerController.file(
+  //     File(videoPath!),
+  //   );
+  //
+  //   await videoPlayerController?.initialize();
+  //   await videoPlayerController?.setLooping(false);
+  //
+  //   await videoPlayerController?.play();
+  //
+  //   // debugPrint("path=> ${File(widget.filePath)}");
+  //   // videoPlayerController = VideoPlayerController.file(File(widget.filePath));
+  //   // await videoPlayerController!.initialize();
+  //
+  //   // _chewieController = ChewieController(
+  //   //   videoPlayerController: videoPlayerController!,
+  //   //   aspectRatio: videoPlayerController?.value.aspectRatio,
+  //   //   allowedScreenSleep: false,
+  //   //   autoPlay: false,
+  //   //   allowFullScreen: false,
+  //   //   systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+  //   //   // showControls: false,
+  //   //   materialProgressColors: ChewieProgressColors(
+  //   //     playedColor: navyBlue,
+  //   //     handleColor: Colors.white,
+  //   //     backgroundColor: dividerColor,
+  //   //     bufferedColor: Colors.white30,
+  //   //   ),
+  //   //   autoInitialize: true,
+  //   // );
+  //
+  //   isVideoLoading = false;
+  //   if (mounted) setState(() {});
+  // }
 
   void categoryAndroidSheet() {
     widget.askCategories = askCategoriesCopy;
