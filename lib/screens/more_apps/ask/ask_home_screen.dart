@@ -11,7 +11,6 @@ import 'ask_search_screen.dart';
 import 'ask_setting_screen.dart';
 import 'ask_viewmodel.dart';
 import 'widgets/category_chip.dart';
-import 'widgets/myfeed.dart';
 import 'widgets/question_view.dart';
 import 'widgets/topics_view.dart';
 import 'models/ask_categories_model.dart';
@@ -30,8 +29,7 @@ class AskHomeScreen extends StatefulWidget {
 
 class _AskHomeScreenState extends State<AskHomeScreen> {
   GlobalKey<TopicViewState> topicViewStateKey = GlobalKey<TopicViewState>();
-  GlobalKey<TopicViewState> questionViewStateKey = GlobalKey<TopicViewState>();
-  GlobalKey<MyFeedViewState> myFeedViewStateKey = GlobalKey<MyFeedViewState>();
+  GlobalKey<QuestionViewState> questionViewStateKey = GlobalKey<QuestionViewState>();
 
   late PageController _pageViewCtrl;
   int? currentAskTapOnHome = 0;
@@ -142,11 +140,12 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           icon: SlydoAppIconNew.question,
           onTap: () async {
             await NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: false,)).then((value) {
+              debugPrint("THEN VALUE===$value");
               if (value != null) {
                 if (value == Types.Question) {
                   updateCurrentAskTapOnHome(i: 1);
                   _pageViewCtrl.jumpToPage(1);
-                  questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+                  questionViewStateKey.currentState?.onPostRefresh();
                 }
               }
             });
@@ -157,11 +156,12 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           icon: SlydoAppIconNew.yarn,
           onTap: () async {
             await NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: true,)).then((value) {
+              debugPrint("THEN VALUE===$value");
               if (value != null) {
                 if (value == Types.Yarn) {
                   updateCurrentAskTapOnHome(i: 0);
                   _pageViewCtrl.jumpToPage(0);
-                  topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+                  topicViewStateKey.currentState?.onPostRefresh();
                 }
               }
 
@@ -445,7 +445,6 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
       }
       topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
       questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
-      myFeedViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
     });
   }
 }

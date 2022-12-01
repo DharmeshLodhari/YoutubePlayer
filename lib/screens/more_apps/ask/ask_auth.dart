@@ -189,7 +189,8 @@ class AskAuth extends AuthService {
   // Get all YARN Topics
   Future<Map<String, dynamic>?> getAllTopics(String? next, String previous,
       {String? type, bool isType = false, String? categoryId, String? userName}) async {
-    debugPrint("CALLING ALL CATEGORIES");
+    debugPrint("CALLING ALL YARNS");
+    debugPrint("NEXT URL:- $next");
     String url = "";
     if (next == null) {
       return null;
@@ -350,7 +351,9 @@ class AskAuth extends AuthService {
       "category": addYarnAndQuestion.categoryId!,
       "author": addYarnAndQuestion.author!,
       "is_question": jsonEncode(addYarnAndQuestion.isQuestion!),
-      "media_count": jsonEncode(addYarnAndQuestion.localImages!.length)
+      "media_count": jsonEncode(addYarnAndQuestion.localImages!.length),
+      "enable_commenting": jsonEncode(addYarnAndQuestion.enableCommenting!),
+      "enable_payme": jsonEncode(addYarnAndQuestion.enablePayme!),
     });
 
     List<MultipartFile> newList = [];

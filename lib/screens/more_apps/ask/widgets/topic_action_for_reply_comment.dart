@@ -138,7 +138,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
             ],
           ),
         ),
-        InkWell(
+        if (getLoggedInUserName(context) != widget.replyCommentDetail!.authorUsername)...[InkWell(
           onTap: getLoggedInUserName(context) != widget.replyCommentDetail!.authorUsername ? () {
             if (getIt<AppConfigurationBloc>()
                 .appConfigurationModel
@@ -168,7 +168,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
               SvgPicture.asset("ask/send_money".toSVG()),
             ],
           ),
-        ),
+        )],
       ],
     );
   }

@@ -44,52 +44,50 @@ class QuestionViewState extends State<QuestionView> {
     if (categoryId != null) {
       selectedId = categoryId;
     }
-    if (!isLoading) {
-      if (next != null && !isLoading) {
-        isLoading = true;
-        if (mounted) setState(() {});
+    if (next != null && !isLoading) {
+      isLoading = true;
+      if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
+      Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
 
-        if (result == null) {
-          noList = true;
+      if (result == null) {
+        noList = true;
 
+        isLoading = false;
+        if (mounted) {
+          setState(() {});
+        }
+        return;
+      }
+
+      count = result['count'];
+      next = result['next'] != null ? result['next'] : "";
+      previous = result['previous'] != null ? result['previous'] : "";
+      var tempList = result['results'];
+      yarnTopicList = [];
+      if (mounted) {
+        setState(() {
+          noList = false;
           isLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
-        var tempList = result['results'];
-        yarnTopicList = [];
-        if (mounted) {
-          setState(() {
-            noList = false;
-            isLoading = false;
-            yarnTopicList.addAll(tempList);
-          });
-        }
-        debugPrint("YARN TOPICS:- $yarnTopicList");
+          yarnTopicList.addAll(tempList);
+        });
       }
-      if (yarnTopicList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noList = true;
-          });
-        }
-      }
-      // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //     content:
-      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //     duration: Duration(milliseconds: 500),
-      //   ));
-      // }
+      debugPrint("YARN TOPICS:- $yarnTopicList");
     }
+    if (yarnTopicList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          noList = true;
+        });
+      }
+    }
+    // else if (categoriesNext == null && askCategoriesList.length > 6) {
+    //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+    //     content:
+    //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+    //     duration: Duration(milliseconds: 500),
+    //   ));
+    // }
   }
 
   @override
@@ -104,7 +102,7 @@ class QuestionViewState extends State<QuestionView> {
               waterDropColor: navyBlue,
             ),
             controller: _postRefreshController,
-            onRefresh: _onPostRefresh,
+            onRefresh: onPostRefresh,
             child: _buildListView(),
           ),
         ),
@@ -123,27 +121,38 @@ class QuestionViewState extends State<QuestionView> {
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
         itemCount: yarnTopicList.length,
         itemBuilder: (BuildContext context, int index) {
-          return AskPosts(
-            onOptionsAction: () {
-              showModalBottomSheet<void>(
-                backgroundColor: Colors.transparent,
-                context: context,
-                builder: (BuildContext context) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    color: Colors.white,
-                    margin: EdgeInsets.zero,
-                    child: AskOptions(),
-                  );
-                },
-              );
+          return InkWell(
+            onTap: () async {
+              if(yarnTopicList[index].enableCommenting ?? false) {
+                await NavigationUtil.push(
+                  context,
+                  screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+                );
+              }
+              if(mounted) setState(() {});
             },
-            isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
-            yarnTopic: yarnTopicList[index],
+            child: AskPosts(
+              onOptionsAction: () {
+                showModalBottomSheet<void>(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                      ),
+                      color: Colors.white,
+                      margin: EdgeInsets.zero,
+                      child: AskOptions(),
+                    );
+                  },
+                );
+              },
+              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+              yarnTopic: yarnTopicList[index],
+            ),
           );
         },
       );
@@ -154,7 +163,7 @@ class QuestionViewState extends State<QuestionView> {
 
   }
 
-  void _onPostRefresh() async {
+  void onPostRefresh() async {
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||

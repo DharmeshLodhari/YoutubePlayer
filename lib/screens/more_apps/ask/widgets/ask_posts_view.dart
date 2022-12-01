@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/ask/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/ask/widgets/topic_actions.dart';
 import 'package:Slydo/screens/more_apps/ask/widgets/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -291,27 +292,29 @@ class _AskPostsState extends State<AskPosts> {
   }
 
   Widget _buildPostTitle() {
-    return Text(
-      messageDecoderWithEmoji(widget.yarnTopic!.title!)!,
-      maxLines: 30,
-      style: TextStyle(
-        color: blackFont,
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-      ),
-    );
+    return RichTextForTitle(description: messageDecoderWithEmoji(widget.yarnTopic!.title ?? '') ?? '',);
+    // return Text(
+    //   messageDecoderWithEmoji(widget.yarnTopic!.title!)!,
+    //   maxLines: 30,
+    //   style: TextStyle(
+    //     color: blackFont,
+    //     fontSize: 16,
+    //     fontWeight: FontWeight.bold,
+    //   ),
+    // );
   }
 
   Widget _buildPostDescription() {
-    return Text(
-      messageDecoderWithEmoji(widget.yarnTopic!.body!)!,
-      maxLines: 30,
-      style: TextStyle(
-        color: blackFont,
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-      ),
-    );
+    return RichTextForTitle(description: messageDecoderWithEmoji(widget.yarnTopic!.body ?? '') ?? '',);
+    // return Text(
+    //   messageDecoderWithEmoji(widget.yarnTopic!.body!)!,
+    //   maxLines: 30,
+    //   style: TextStyle(
+    //     color: blackFont,
+    //     fontSize: 14,
+    //     fontWeight: FontWeight.w400,
+    //   ),
+    // );
   }
 
   Widget _buildTagsAndViewerRow() {

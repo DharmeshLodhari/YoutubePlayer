@@ -111,27 +111,38 @@ class MyFeedViewState extends State<MyFeedView> {
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
               itemCount: yarnTopicList.length,
               itemBuilder: (BuildContext context, int index) {
-                return AskPosts(
-                  onOptionsAction: () {
-                    showModalBottomSheet<void>(
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20)),
-                          ),
-                          color: Colors.white,
-                          margin: EdgeInsets.zero,
-                          child: AskOptions(),
-                        );
-                      },
-                    );
+                return InkWell(
+                  onTap: () async {
+                    if(yarnTopicList[index].enableCommenting ?? false) {
+                      await NavigationUtil.push(
+                        context,
+                        screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+                      );
+                    }
+                    if(mounted) setState(() {});
                   },
-                  isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
-                  yarnTopic: yarnTopicList[index],
+                  child: AskPosts(
+                    onOptionsAction: () {
+                      showModalBottomSheet<void>(
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20)),
+                            ),
+                            color: Colors.white,
+                            margin: EdgeInsets.zero,
+                            child: AskOptions(),
+                          );
+                        },
+                      );
+                    },
+                    isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+                    yarnTopic: yarnTopicList[index],
+                  ),
                 );
               },
             ) : NoItemInList(

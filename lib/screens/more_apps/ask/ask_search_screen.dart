@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 
 import '../../../locale/app_localization.dart';
 import '../../../utils/colors.dart';
+import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../widget/customized_popup_menu.dart';
 import '../../../widget/noItemInList.dart';
 import 'ask_auth.dart';
+import 'ask_detail_screen.dart';
 import 'widgets/ask_options.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 
 class SearchScreen extends StatefulWidget {
   AskCategories? askCategory;
-  SearchScreen({Key? key, this.askCategory}) : super(key: key);
+  String? searchText;
+  SearchScreen({Key? key, this.askCategory, this.searchText}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -119,6 +122,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
+    if (widget.searchText != null) {
+      searchController.text = widget.searchText ?? '';
+      setState(() {
+        _refreshList();
+      });
+    }
     searchController.addListener(() {
       if (searchController.text.length >= 3) {
         setState(() {
@@ -336,27 +345,38 @@ class _SearchScreenState extends State<SearchScreen> {
       child: ListView.builder(
         itemCount: yarnTopicList.length,
         itemBuilder: (context, index) {
-          return AskPosts(
-            onOptionsAction: () {
-              showModalBottomSheet<void>(
-                backgroundColor: Colors.transparent,
-                context: context,
-                builder: (BuildContext context) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    color: Colors.white,
-                    margin: EdgeInsets.zero,
-                    child: AskOptions(),
-                  );
-                },
-              );
+          return InkWell(
+            onTap: () async {
+              if(yarnTopicList[index].enableCommenting ?? false) {
+                await NavigationUtil.push(
+                  context,
+                  screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+                );
+              }
+              if(mounted) setState(() {});
             },
-            isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
-            yarnTopic: yarnTopicList[index],
+            child: AskPosts(
+              onOptionsAction: () {
+                showModalBottomSheet<void>(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                      ),
+                      color: Colors.white,
+                      margin: EdgeInsets.zero,
+                      child: AskOptions(),
+                    );
+                  },
+                );
+              },
+              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+              yarnTopic: yarnTopicList[index],
+            ),
           );
         },
       ),

@@ -1139,6 +1139,8 @@ class MessageAuth extends AuthService {
       url = url + "?owner=$ownerName";
     }
 
+    debugPrint("URL:- $url");
+
     var headers = await getAuthHeaders();
 
     var response = await httpGet(url, headers: headers);

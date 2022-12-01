@@ -57,7 +57,10 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
         _buildLikeButton(),
         _buildDisLike(),
         _buildShareButton(),
-        _buildPayButton(),
+        if (getLoggedInUserName(context) != widget.commentDetail!.authorUsername)...[
+          _buildPayButton(),
+        ]
+
       ],
     );
   }

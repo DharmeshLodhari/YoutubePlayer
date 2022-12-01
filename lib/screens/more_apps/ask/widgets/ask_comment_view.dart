@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/more_apps/ask/widgets/ask_reply_view.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/ask/widgets/topic_action_for_comment.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -162,15 +163,16 @@ class AskCommentView extends StatelessWidget {
   }
 
   Widget _buildCommentDescription() {
-    return Text(
-      messageDecoderWithEmoji(commentDetail!.comment!)!,
-      maxLines: 30,
-      style: TextStyle(
-        color: blackFont,
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-      ),
-    );
+    return RichTextForTitle(description: messageDecoderWithEmoji(commentDetail!.comment ?? '') ?? '',);
+    // return Text(
+    //   messageDecoderWithEmoji(commentDetail!.comment!)!,
+    //   maxLines: 30,
+    //   style: TextStyle(
+    //     color: blackFont,
+    //     fontSize: 14,
+    //     fontWeight: FontWeight.w400,
+    //   ),
+    // );
   }
 
   Widget _buildTopActions({required BuildContext context}) {

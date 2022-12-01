@@ -1490,6 +1490,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
         );
       }
+      if (showChannelTab) {
+        list.add(
+            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName,))
+        );
+      }
       if (showMomentTab) {
         list.add(
           KeepAlivePage(

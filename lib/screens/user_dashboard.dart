@@ -76,13 +76,13 @@ class _UserDashboardState extends State<UserDashboard> {
     super.initState();
   }
 
-  Future<UsersCategories> getUserCategories() async {
+  Future<UsersCategories?> getUserCategories() async {
     Map<String, dynamic>? result = await AskAuth().getUsersCategories();
     UsersCategories? usersCategory;
     if (result != null) {
       usersCategory = result['results'];
     }
-    return usersCategory!;
+    return usersCategory;
   }
 
   @override
@@ -607,7 +607,7 @@ class _UserDashboardState extends State<UserDashboard> {
               if (userCategories != null) {
                 var data = jsonDecode(userCategories.userSelectedCategory!);
                 if(data == null && data.length != 3) {
-                  UsersCategories userCategory = await getUserCategories();
+                  UsersCategories? userCategory = await getUserCategories();
                   if (userCategory != null) {
                     if (userCategory.categories!.length <= 3) {
                       NavigationUtil.push(
@@ -633,8 +633,8 @@ class _UserDashboardState extends State<UserDashboard> {
                   );
                 }
               } else {
-                UsersCategories userCategory = await getUserCategories();
-                if (userCategory.categories!.length <= 3) {
+                UsersCategories? userCategory = await getUserCategories();
+                if (userCategory != null && (userCategory.categories?.length ?? 0) <= 3) {
                   NavigationUtil.push(
                     context,
                     screen: AskStartScreen(),

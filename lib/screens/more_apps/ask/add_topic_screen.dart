@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
@@ -7,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
@@ -21,6 +23,7 @@ import '../../../widget/image_crop.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
 import 'ask_viewmodel.dart';
+import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
 
 class AddTopicScreen extends StatefulWidget {
   List<AskCategories>? askCategories;
@@ -39,6 +42,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
   List<PickedFile> selectedImages = [];
+  List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
   AskCategories? selectedAskCategory;
   AskCategories? pressedAskCategory;
@@ -53,6 +57,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   bool isVideoLoading = false;
   VideoPlayerController? videoPlayerController;
   String? generatedVideoThumbnail;
+  bool isAPILoading = false;
 
   @override
   void initState() {
@@ -113,6 +118,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             if (selectedImages.length == 4) {
               showToast(message: "You can select only 4 images or videos");
             } else {
+              // pickFileFromMedia();
               pickImage();
             }
           },
@@ -193,6 +199,25 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
+  // Widget _buildAddImages() {
+  //   return Container(
+  //     height: 100,
+  //     child: ListView.builder(
+  //       controller: _scrollController,
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: selectedImagesList.length + 1,
+  //       itemBuilder: (context, index) => Container(
+  //         padding: EdgeInsets.only(right: 6),
+  //         child: index != selectedImagesList.length
+  //             ? showImage(index)
+  //             : selectedImagesList.length != imageCount
+  //             ? addImageButton()
+  //             : null,
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget addImageButton() {
     return CustomBoxShadow(
       child: Card(
@@ -223,7 +248,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               ],
             ),
             onTap: () {
-              pickImage();
+              if (selectedImages.length == 4) {
+                showToast(message: "You can select only 4 images or videos");
+              } else {
+                pickImage();
+                // pickFileFromMedia();
+              }
             },
           ),
         ),
@@ -275,6 +305,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               ),
               onPressed: () {
                 setState(() {
+                  selectedImagesList.removeAt(index);
                   selectedImages.removeAt(index);
                 });
               },
@@ -284,6 +315,66 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       ),
     );
   }
+
+  // Widget showImage(int index) {
+  //   return Container(
+  //     height: 100,
+  //     child: Stack(
+  //       children: <Widget>[
+  //         Card(
+  //           elevation: 2,
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //           ),
+  //           shadowColor: dividerColor,
+  //           margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+  //           child: Container(
+  //             width: 100,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10),
+  //               image: selectedImagesList[index]['mediaType'] == 'image' ? DecorationImage(
+  //                   image: FileImage(
+  //                     File(selectedImagesList[index]['file'].path),
+  //                   ),
+  //                   fit: BoxFit.fill) : DecorationImage(
+  //                   image: MemoryImage(
+  //                     selectedImagesList[index]['file'],
+  //                   ),
+  //                   fit: BoxFit.fill
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Positioned(
+  //           right: 0,
+  //           top: 0,
+  //           child: IconButton(
+  //             padding: EdgeInsets.only(right: 6, top: 6),
+  //             alignment: Alignment.topRight,
+  //             icon: Container(
+  //               padding: EdgeInsets.all(2.0),
+  //               decoration: BoxDecoration(
+  //                 color: iconBtnGrey,
+  //                 borderRadius: BorderRadius.circular(5),
+  //               ),
+  //               child: Icon(
+  //                 SlydoAppIcon.remove,
+  //                 color: blackFont,
+  //                 size: 15,
+  //               ),
+  //             ),
+  //             onPressed: () {
+  //               setState(() {
+  //                 selectedImagesList.removeAt(index);
+  //                 selectedImages.removeAt(index);
+  //               });
+  //             },
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildYarnField() {
     return Column(
@@ -534,8 +625,13 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         textColor: Colors.white,
         backgroundColor: navyBlue,
         text: "Submit",
-        onPressed: () async {
-          addYarnAndQuestion();
+        isLoading: isAPILoading,
+        onPressed: isAPILoading ? () {} : () async {
+          isAPILoading = true;
+          if (mounted) setState(() {});
+          await addYarnAndQuestion();
+          isAPILoading = false;
+          if (mounted) setState(() {});
         },
       ),
     );
@@ -574,104 +670,109 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     }
   }
 
-  // pickFileFromMedia() async {
-  //   // final file = await ImagePicker()
-  //   //     .pickImage(source: ImageSource.gallery, imageQuality: 70);
-  //
-  //   // FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
-  //   //     allowMultiple: false,
-  //   //     type: FileType.custom,
-  //   //     allowedExtensions: imageExtensions);
-  //
-  //   List<Media>? res = await ImagesPicker.pick(
-  //     count: 1,
-  //     pickType: PickType.all,
-  //     language: Language.System,
-  //     maxTime: 900,
-  //     cropOpt: CropOption(
-  //       // aspectRatio: CropAspectRatio.wh16x9,
-  //       cropType: CropType.rect,
-  //     ),
-  //   );
-  //
-  //   if (res == null || res.isEmpty) return;
-  //   File file = File(res.first.path);
-  //   String? mediaType = getFileTypeByPath(path: file.path);
-  //
-  //   if (mediaType == null) return;
-  //
-  //   if (mediaType == 'image') {
-  //     imagePath = file.path;
-  //     selectedImages.add(PickedFile(imagePath!));
-  //     if (mounted) setState(() {});
-  //
-  //     // String? croppedImagePath = await ImageCrop().cropImage(file.path);
-  //     // if (croppedImagePath != null) {
-  //     //   imagePath = croppedImagePath;
-  //     //   if (mounted) setState(() {});
-  //     // }
-  //   } else if (mediaType == 'video') {
-  //     var videoFilePath =
-  //     await NavigationUtil.push(context, screen: TrimmerView(file: file));
-  //     if (videoFilePath is String) {
-  //       videoPath = videoFilePath;
-  //       setUpVideoPlayer();
-  //       generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
-  //         if (thumbnail != null) {
-  //           generatedVideoThumbnail = thumbnail;
-  //           debugPrint('file path gen -> $generatedVideoThumbnail');
-  //         }
-  //       });
-  //       selectedImages.add(PickedFile(generatedVideoThumbnail!));
-  //       if (mounted) setState(() {});
-  //     } else {
-  //       // showToast(message: 'Error formatting video, please try again');
-  //     }
-  //   }
-  //   debugPrint("SELECTED IMAGES:- $selectedImages");
-  // }
-  //
-  // void setUpVideoPlayer() async {
-  //   isVideoLoading = true;
-  //   if (mounted) setState(() {});
-  //
-  //   // videoPlayerController = VideoPlayerController.file(File(widget.filePath))
-  //   //   ..initialize().then((_) => videoPlayerController?.play())
-  //   //   ..setLooping(false);
-  //
-  //   videoPlayerController = VideoPlayerController.file(
-  //     File(videoPath!),
-  //   );
-  //
-  //   await videoPlayerController?.initialize();
-  //   await videoPlayerController?.setLooping(false);
-  //
-  //   await videoPlayerController?.play();
-  //
-  //   // debugPrint("path=> ${File(widget.filePath)}");
-  //   // videoPlayerController = VideoPlayerController.file(File(widget.filePath));
-  //   // await videoPlayerController!.initialize();
-  //
-  //   // _chewieController = ChewieController(
-  //   //   videoPlayerController: videoPlayerController!,
-  //   //   aspectRatio: videoPlayerController?.value.aspectRatio,
-  //   //   allowedScreenSleep: false,
-  //   //   autoPlay: false,
-  //   //   allowFullScreen: false,
-  //   //   systemOverlaysAfterFullScreen: SystemUiOverlay.values,
-  //   //   // showControls: false,
-  //   //   materialProgressColors: ChewieProgressColors(
-  //   //     playedColor: navyBlue,
-  //   //     handleColor: Colors.white,
-  //   //     backgroundColor: dividerColor,
-  //   //     bufferedColor: Colors.white30,
-  //   //   ),
-  //   //   autoInitialize: true,
-  //   // );
-  //
-  //   isVideoLoading = false;
-  //   if (mounted) setState(() {});
-  // }
+  pickFileFromMedia() async {
+
+    List<Media>? res = await ImagesPicker.pick(
+      count: 1,
+      pickType: PickType.all,
+      language: Language.System,
+      maxTime: 900,
+      cropOpt: CropOption(
+        cropType: CropType.rect,
+      ),
+    );
+
+    if (res == null || res.isEmpty) return;
+    File file = File(res.first.path);
+    String? mediaType = getFileTypeByPath(path: file.path);
+
+    if (mediaType == null) return;
+
+    if (mediaType == 'image') {
+      imagePath = file.path;
+      selectedImagesList.add({
+        'mediaType': mediaType,
+        'file': PickedFile(imagePath!),
+      });
+      selectedImages.add(PickedFile(imagePath!));
+      if (mounted) setState(() {});
+
+    } else if (mediaType == 'video') {
+      var videoFilePath =
+      await NavigationUtil.push(context, screen: TrimmerView(file: file));
+      if (videoFilePath is String) {
+        videoPath = videoFilePath;
+        Uint8List? uInt8List = await getVideoThumbnail(videoPath!);
+        // setUpVideoPlayer();
+        // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
+        //   if (thumbnail != null) {
+        //     generatedVideoThumbnail = thumbnail;
+        //     debugPrint('file path gen -> $generatedVideoThumbnail');
+        //   }
+        // });
+        selectedImagesList.add({
+          'mediaType': mediaType,
+          'file': uInt8List,
+        });
+        selectedImages.add(PickedFile(videoPath!));
+        if (mounted) setState(() {});
+      }
+    }
+    debugPrint("SELECTED IMAGES:- $selectedImages");
+  }
+
+  Future<Uint8List?> getVideoThumbnail(String videoPath) async {
+    final uInt8list = await VideoThumbnail.thumbnailData(
+      video: videoPath,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth:
+      512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      quality: 25,
+    );
+    return uInt8list;
+  }
+
+  void setUpVideoPlayer() async {
+    isVideoLoading = true;
+    if (mounted) setState(() {});
+
+    // videoPlayerController = VideoPlayerController.file(File(widget.filePath))
+    //   ..initialize().then((_) => videoPlayerController?.play())
+    //   ..setLooping(false);
+
+    videoPlayerController = VideoPlayerController.file(
+      File(videoPath!),
+    );
+
+    await videoPlayerController?.initialize();
+    await videoPlayerController?.setLooping(false);
+
+    await videoPlayerController?.play();
+
+    // debugPrint("path=> ${File(widget.filePath)}");
+    // videoPlayerController = VideoPlayerController.file(File(widget.filePath));
+    // await videoPlayerController!.initialize();
+
+    // _chewieController = ChewieController(
+    //   videoPlayerController: videoPlayerController!,
+    //   aspectRatio: videoPlayerController?.value.aspectRatio,
+    //   allowedScreenSleep: false,
+    //   autoPlay: false,
+    //   allowFullScreen: false,
+    //   systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+    //   // showControls: false,
+    //   materialProgressColors: ChewieProgressColors(
+    //     playedColor: navyBlue,
+    //     handleColor: Colors.white,
+    //     backgroundColor: dividerColor,
+    //     bufferedColor: Colors.white30,
+    //   ),
+    //   autoInitialize: true,
+    // );
+
+    isVideoLoading = false;
+    if (mounted) setState(() {});
+  }
 
   void categoryAndroidSheet() {
     widget.askCategories = askCategoriesCopy;
@@ -857,7 +958,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     debugPrint("USER TAGS:- ${addYarnAndQuestion.tags}");
 
     await AskAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
-      Navigator.pop(context);
+      if (widget.isYarn!) {
+        Navigator.pop(context, Types.Yarn);
+      } else if (!widget.isYarn!) {
+        Navigator.pop(context, Types.Question);
+      }
       showToast(
           message: widget.isYarn! ? "Yarn add successfully" : "Question add successfully");
     }).catchError((error) {

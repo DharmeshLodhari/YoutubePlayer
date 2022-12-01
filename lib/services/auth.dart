@@ -575,6 +575,7 @@ class AuthService {
     if (result) {
       count = count - 1;
       if (count != 0) {
+        // Map<String, dynamic> headers = await getAuthHeaders();
         return await httpGet(url, headers: headers, count: count);
       }
     }
