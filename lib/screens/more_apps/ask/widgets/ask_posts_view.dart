@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/ask/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/ask/widgets/topic_actions.dart';
 import 'package:Slydo/screens/more_apps/ask/widgets/viewer_screen.dart';
@@ -7,11 +9,13 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/customized_popup_menu.dart';
+import '../../messaging/chat/utils.dart';
 import '../ask_auth.dart';
 import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
 import 'ask_comment_view.dart';
+import 'ask_media_render.dart';
 import 'ask_options.dart';
 
 class AskPosts extends StatefulWidget {
@@ -355,284 +359,7 @@ class _AskPostsState extends State<AskPosts> {
   }
 
   Widget _buildImagesRow({required BuildContext context}) {
-    if (widget.yarnTopic!.media!.length == 1) {
-      return _buildSingleImage(context: context);
-    } else if (widget.yarnTopic!.media!.length == 2) {
-      return _buildTwoImageRow(context: context);
-    } else if (widget.yarnTopic!.media!.length == 3) {
-      return _buildThreeImageRow(context: context);
-    } else if (widget.yarnTopic!.media!.length >= 4) {
-      return _buildFourImageRow(context: context);
-    }
-    return SizedBox();
-  }
-
-  Widget _buildSingleImage({required BuildContext context}) {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: widget.yarnTopic!.media!.first.file!,);
-      },
-      child: Container(
-        width: double.infinity,
-        child: Container(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: CachedNetworkImage(
-              imageUrl: widget.yarnTopic!.media!.first.file!,
-              fit: BoxFit.cover,
-              errorWidget: imageErrorWidget,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTwoImageRow({required BuildContext context}) {
-    return Container(
-      height: 175,
-      child: Row(
-        children: widget.yarnTopic!.media!
-            .map((mediaFile) => Expanded(
-          child: InkWell(
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                  arguments: mediaFile.file!);
-            },
-            child: Container(
-              height: (MediaQuery.of(context).size.width - 40) / 2,
-              width: (MediaQuery.of(context).size.width - 40) / 2,
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  imageUrl: widget.yarnTopic!.media![0].file!,
-                  fit: BoxFit.cover,
-                  height: double.infinity,
-                  width: double.infinity,
-                  errorWidget: imageErrorWidget,
-                ),
-              ),
-            ),
-          ),
-        ),)
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _buildThreeImageRow({required BuildContext context}) {
-    return Container(
-      height: 175,
-      child: Row(
-        children: [
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                  arguments: widget.yarnTopic!.media![0].file!);
-              },
-              child: Container(
-                height: (MediaQuery.of(context).size.width - 40) / 2,
-                width: (MediaQuery.of(context).size.width - 40) / 2,
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.yarnTopic!.media![0].file!,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                    errorWidget: imageErrorWidget,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                    arguments: widget.yarnTopic!.media![1].file!);
-              },
-              child: Container(
-                height: (MediaQuery.of(context).size.width - 40) / 2,
-                width: (MediaQuery.of(context).size.width - 40) / 2,
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.yarnTopic!.media![1].file!,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                    errorWidget: imageErrorWidget,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                    arguments: widget.yarnTopic!.media![2].file!);
-              },
-              child: Container(
-                height: (MediaQuery.of(context).size.width - 40) / 2,
-                width: (MediaQuery.of(context).size.width - 40) / 2,
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.yarnTopic!.media![2].file!,
-                    fit: BoxFit.cover,
-                    height: double.infinity,
-                    width: double.infinity,
-                    errorWidget: imageErrorWidget,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFourImageRow({required BuildContext context}) {
-    return Container(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: widget.yarnTopic!.media![0].file!);
-                  },
-                  child: Container(
-                    height: (MediaQuery.of(context).size.width - 40) / 2,
-                    width: (MediaQuery.of(context).size.width - 40) / 2,
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.yarnTopic!.media![0].file!,
-                        fit: BoxFit.cover,
-                        height: double.infinity,
-                        width: double.infinity,
-                        errorWidget: imageErrorWidget,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: widget.yarnTopic!.media![1].file!);
-                  },
-                  child: Container(
-                    height: (MediaQuery.of(context).size.width - 40) / 2,
-                    width: (MediaQuery.of(context).size.width - 40) / 2,
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.yarnTopic!.media![1].file!,
-                        fit: BoxFit.cover,
-                        height: double.infinity,
-                        width: double.infinity,
-                        errorWidget: imageErrorWidget,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          SizedBox(height: 8,),
-          Row(
-            children: [
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: widget.yarnTopic!.media![2].file!);
-                  },
-                  child: Container(
-                    height: (MediaQuery.of(context).size.width - 40) / 2,
-                    width: (MediaQuery.of(context).size.width - 40) / 2,
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.yarnTopic!.media![2].file!,
-                        fit: BoxFit.cover,
-                        height: double.infinity,
-                        width: double.infinity,
-                        errorWidget: imageErrorWidget,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: widget.yarnTopic!.media![3].file!);
-                  },
-                  child: Container(
-                    height: (MediaQuery.of(context).size.width - 40) / 2,
-                    width: (MediaQuery.of(context).size.width - 40) / 2,
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.yarnTopic!.media![3].file!,
-                        fit: BoxFit.cover,
-                        height: double.infinity,
-                        width: double.infinity,
-                        errorWidget: imageErrorWidget,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
-    );
+    return AskMediaRender(yarnTopic: widget.yarnTopic,);
   }
 
   Widget _buildCommentView({required BuildContext context}) {
@@ -717,7 +444,4 @@ class _AskPostsState extends State<AskPosts> {
     setState(() {});
   }
 
-  String getGetYarnQuestionDateTime(String dateTime) {
-    return toTimeAgoLabel(dateTime: DateTime.parse(dateTime));
-  }
 }

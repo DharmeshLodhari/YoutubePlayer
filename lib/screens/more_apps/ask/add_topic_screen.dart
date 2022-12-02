@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
@@ -18,7 +17,6 @@ import '../../../widget/CustomBoxShadow.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_dropdown_field.dart';
 import '../../../widget/customized_textform_field.dart';
-// import '../../../widget/image_crop.dart';
 import '../../../widget/image_crop.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
@@ -118,8 +116,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             if (selectedImages.length == 4) {
               showToast(message: "You can select only 4 images or videos");
             } else {
-              // pickFileFromMedia();
-              pickImage();
+              pickFileFromMedia();
+              // pickImage();
             }
           },
         ),
@@ -180,43 +178,43 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
-  Widget _buildAddImages() {
-    return Container(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: selectedImages.length + 1,
-        itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
-          child: index != selectedImages.length
-              ? showImage(index)
-              : selectedImages.length != imageCount
-              ? addImageButton()
-              : null,
-        ),
-      ),
-    );
-  }
-
   // Widget _buildAddImages() {
   //   return Container(
   //     height: 100,
   //     child: ListView.builder(
   //       controller: _scrollController,
   //       scrollDirection: Axis.horizontal,
-  //       itemCount: selectedImagesList.length + 1,
+  //       itemCount: selectedImages.length + 1,
   //       itemBuilder: (context, index) => Container(
   //         padding: EdgeInsets.only(right: 6),
-  //         child: index != selectedImagesList.length
+  //         child: index != selectedImages.length
   //             ? showImage(index)
-  //             : selectedImagesList.length != imageCount
+  //             : selectedImages.length != imageCount
   //             ? addImageButton()
   //             : null,
   //       ),
   //     ),
   //   );
   // }
+
+  Widget _buildAddImages() {
+    return Container(
+      height: 100,
+      child: ListView.builder(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: selectedImagesList.length + 1,
+        itemBuilder: (context, index) => Container(
+          padding: EdgeInsets.only(right: 6),
+          child: index != selectedImagesList.length
+              ? showImage(index)
+              : selectedImagesList.length != imageCount
+              ? addImageButton()
+              : null,
+        ),
+      ),
+    );
+  }
 
   Widget addImageButton() {
     return CustomBoxShadow(
@@ -251,67 +249,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               if (selectedImages.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
-                pickImage();
-                // pickFileFromMedia();
+                // pickImage();
+                pickFileFromMedia();
               }
             },
           ),
         ),
-      ),
-    );
-  }
-
-  Widget showImage(int index) {
-    return Container(
-      height: 100,
-      child: Stack(
-        children: <Widget>[
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: FileImage(
-                      File(selectedImages[index].path),
-                    ),
-                    fit: BoxFit.fill),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: IconButton(
-              padding: EdgeInsets.only(right: 6, top: 6),
-              alignment: Alignment.topRight,
-              icon: Container(
-                padding: EdgeInsets.all(2.0),
-                decoration: BoxDecoration(
-                  color: iconBtnGrey,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Icon(
-                  SlydoAppIcon.remove,
-                  color: blackFont,
-                  size: 15,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  selectedImagesList.removeAt(index);
-                  selectedImages.removeAt(index);
-                });
-              },
-            ),
-          )
-        ],
       ),
     );
   }
@@ -332,16 +275,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   //             width: 100,
   //             decoration: BoxDecoration(
   //               borderRadius: BorderRadius.circular(10),
-  //               image: selectedImagesList[index]['mediaType'] == 'image' ? DecorationImage(
+  //               image: DecorationImage(
   //                   image: FileImage(
-  //                     File(selectedImagesList[index]['file'].path),
+  //                     File(selectedImages[index].path),
   //                   ),
-  //                   fit: BoxFit.fill) : DecorationImage(
-  //                   image: MemoryImage(
-  //                     selectedImagesList[index]['file'],
-  //                   ),
-  //                   fit: BoxFit.fill
-  //               ),
+  //                   fit: BoxFit.fill),
   //             ),
   //           ),
   //         ),
@@ -375,6 +313,66 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   //     ),
   //   );
   // }
+
+  Widget showImage(int index) {
+    return Container(
+      height: 100,
+      child: Stack(
+        children: <Widget>[
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            shadowColor: dividerColor,
+            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: selectedImagesList[index]['mediaType'] == 'image' ? DecorationImage(
+                    image: FileImage(
+                      File(selectedImagesList[index]['file'].path),
+                    ),
+                    fit: BoxFit.fill) : DecorationImage(
+                    image: MemoryImage(
+                      selectedImagesList[index]['file'],
+                    ),
+                    fit: BoxFit.fill
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            child: IconButton(
+              padding: EdgeInsets.only(right: 6, top: 6),
+              alignment: Alignment.topRight,
+              icon: Container(
+                padding: EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: iconBtnGrey,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(
+                  SlydoAppIcon.remove,
+                  color: blackFont,
+                  size: 15,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  selectedImagesList.removeAt(index);
+                  selectedImages.removeAt(index);
+                });
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   Widget _buildYarnField() {
     return Column(
@@ -702,7 +700,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
-        Uint8List? uInt8List = await getVideoThumbnail(videoPath!);
+        Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
         //   if (thumbnail != null) {
@@ -719,17 +717,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       }
     }
     debugPrint("SELECTED IMAGES:- $selectedImages");
-  }
-
-  Future<Uint8List?> getVideoThumbnail(String videoPath) async {
-    final uInt8list = await VideoThumbnail.thumbnailData(
-      video: videoPath,
-      imageFormat: ImageFormat.JPEG,
-      maxWidth:
-      512, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
-      quality: 25,
-    );
-    return uInt8list;
   }
 
   void setUpVideoPlayer() async {

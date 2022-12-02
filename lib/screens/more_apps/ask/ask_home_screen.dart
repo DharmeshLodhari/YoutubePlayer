@@ -1,4 +1,5 @@
 import 'package:Slydo/screens/more_apps/ask/ask_by_category_screen.dart';
+import 'package:Slydo/screens/more_apps/ask/ask_notification_screen.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -268,7 +269,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           onTap: () {
             NavigationUtil.push(
               context,
-              screen: AskSettingsScreen(),
+              screen: AskNotification(),
             );
           },
           icon: SlydoAppIconNew.notification,

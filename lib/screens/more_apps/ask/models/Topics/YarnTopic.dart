@@ -34,6 +34,7 @@ class YarnTopic {
     body = json['body'];
     if (json['media'] != null) {
       media = [];
+      //media!.add(MediaFiles(file: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
       json['media'].forEach((v) {
         media?.add(MediaFiles.fromJson(v));
       });
@@ -112,12 +113,18 @@ class MediaFiles {
 
   MediaFiles.fromJson(dynamic json) {
     file = json['file'];
+    imagePoster = json['image_poster'];
+    mediaType = json['type'];
   }
   String? file;
+  String? imagePoster;
+  String? mediaType;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['file'] = file;
+    map['image_poster'] = imagePoster;
+    map['type'] = mediaType;
     return map;
   }
 
