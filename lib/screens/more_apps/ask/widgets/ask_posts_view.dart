@@ -58,10 +58,10 @@ class _AskPostsState extends State<AskPosts> {
 
   void getAllComments() async {
     String selectFilter;
-    if (filterValue == null || filterValue == '-creation_date') {
-      selectFilter = '-creation_date';
+    if (filterValue == null || filterValue == '-created_at') {
+      selectFilter = '-created_at';
     } else {
-      selectFilter = 'creation_date';
+      selectFilter = 'created_at';
     }
     if (!isLoading) {
       if (next != null && !isLoading) {
