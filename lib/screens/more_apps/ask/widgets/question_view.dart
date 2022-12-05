@@ -4,6 +4,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../../../../widget/LoadingIndicator.dart';
 import '../../../../widget/noItemInList.dart';
 import '../ask_auth.dart';
 import '../ask_detail_screen.dart';
@@ -31,10 +32,18 @@ class QuestionViewState extends State<QuestionView> {
   bool noList = false;
   RefreshController _postRefreshController = RefreshController(initialRefresh: false);
   String? selectedId;
+  ScrollController _questionScrollController = new ScrollController();
 
   @override
   void initState() {
     getYarnTopic(categoryId: widget.selectedCategory);
+    _questionScrollController.addListener(() {
+      if (_questionScrollController.position.pixels ==
+          _questionScrollController.position.maxScrollExtent &&
+          _questionScrollController.position.pixels != 0) {
+        getYarnTopic(categoryId: widget.selectedCategory);
+      }
+    });
     super.initState();
   }
 
@@ -62,7 +71,7 @@ class QuestionViewState extends State<QuestionView> {
       next = result['next'] != null ? result['next'] : "";
       previous = result['previous'] != null ? result['previous'] : "";
       var tempList = result['results'];
-      yarnTopicList = [];
+      // yarnTopicList = [];
       if (mounted) {
         setState(() {
           noList = false;
@@ -110,15 +119,19 @@ class QuestionViewState extends State<QuestionView> {
 
   Widget _buildListView() {
     print("IS LOADING:- $isLoading");
-    if (isLoading) {
-      return AskLoader();
-    }
+    // if (isLoading) {
+    //   return AskLoader();
+    // }
     if (!noList) {
       return ListView.builder(
         physics: ClampingScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
-        itemCount: yarnTopicList.length,
+        controller: _questionScrollController,
+        itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
+          if (index == yarnTopicList.length) {
+            return _buildReviewIndicator();
+          }
           return InkWell(
             onTap: () async {
               if(yarnTopicList[index].enableCommenting ?? false) {
@@ -159,6 +172,13 @@ class QuestionViewState extends State<QuestionView> {
       msg: AppLocalization.of(context)!.noResultFound,
     );
 
+  }
+
+  Widget _buildReviewIndicator() {
+    return new Opacity(
+      opacity: isLoading ? 1.0 : 00,
+      child: isLoading ? AskLoader() : Container(),
+    );
   }
 
   void onPostRefresh() async {

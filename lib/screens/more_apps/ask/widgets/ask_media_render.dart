@@ -44,7 +44,8 @@ class _AskMediaRenderState extends State<AskMediaRender> {
     return _buildCommonImageView(
       imageUrl: widget.yarnTopic!.media!.first.file ?? '',
       mediaType: widget.yarnTopic!.media!.first.mediaType ?? '',
-      imagePoster: widget.yarnTopic!.media!.first.imagePoster ?? ''
+      imagePoster: widget.yarnTopic!.media!.first.imagePoster ?? '',
+      isSingleImage: true
     );
   }
 
@@ -128,7 +129,7 @@ class _AskMediaRenderState extends State<AskMediaRender> {
     );
   }
 
-  Widget _buildCommonImageView({required String imageUrl, required String mediaType,String? imagePoster}) {
+  Widget _buildCommonImageView({required String imageUrl, required String mediaType,String? imagePoster, bool isSingleImage = false}) {
     return InkWell(
       onTap: () {
         if (mediaType == 'video') {
@@ -141,7 +142,18 @@ class _AskMediaRenderState extends State<AskMediaRender> {
             arguments: imageUrl,);
         }
       },
-      child: Container(
+      child: _buildSingleAndMultiImageView(
+        imageUrl: imageUrl,
+        mediaType: mediaType,
+        imagePoster: imagePoster,
+        isSingleImage: isSingleImage
+      ),
+    );
+  }
+
+  Widget _buildSingleAndMultiImageView({required String imageUrl, required String mediaType,String? imagePoster, required bool isSingleImage}) {
+    if (isSingleImage) {
+      return Container(
         width: double.infinity,
         child: Container(
           child: Stack(
@@ -172,6 +184,43 @@ class _AskMediaRenderState extends State<AskMediaRender> {
               ]
             ],
           ),
+        ),
+      );
+    }
+    return Container(
+      height: (MediaQuery.of(context).size.width - 40) / 2,
+      width: (MediaQuery.of(context).size.width - 40) / 2,
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      child: Container(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: double.infinity,
+                errorWidget: imageErrorWidget,
+              ),
+            ),
+            if (mediaType == 'video')...[
+              IconButton(
+                onPressed: () {
+                  NavigationUtil.push(
+                    context,
+                    screen: ViewAskMedia(arguments: {"type": mediaType, "file": imageUrl, "poster": imagePoster},),
+                  );
+                },
+                icon: Icon(
+                  Icons.play_circle_outline_rounded,
+                  size: 30,
+                ),
+                color: Colors.white,
+              ),
+            ]
+          ],
         ),
       ),
     );

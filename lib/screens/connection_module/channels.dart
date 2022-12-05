@@ -14,7 +14,8 @@ import '../more_apps/messaging/chat/models/channel_model.dart';
 
 class ChatChannels extends StatefulWidget {
   String? ownerName;
-  ChatChannels({this.ownerName});
+  bool? isSearch;
+  ChatChannels({this.ownerName, this.isSearch});
   @override
   State<ChatChannels> createState() => _ChatChannelsState();
 }
@@ -120,26 +121,28 @@ class _ChatChannelsState extends State<ChatChannels> {
       },
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: CustomizedTextFormField(
-              hasBorder: true,
-              hintText: 'Search by name',
-              controller: searchTextCtrl,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  SlydoAppIcon.search,
-                  color: darkGrey,
-                  size: 16,
+          if (!(widget.isSearch ?? false))...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: CustomizedTextFormField(
+                hasBorder: true,
+                hintText: 'Search by name',
+                controller: searchTextCtrl,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    SlydoAppIcon.search,
+                    color: darkGrey,
+                    size: 16,
+                  ),
+                  onPressed: () {
+                    _onRefresh();
+                    FocusScope.of(context).unfocus();
+                  },
                 ),
-                onPressed: () {
-                  _onRefresh();
-                  FocusScope.of(context).unfocus();
-                },
               ),
             ),
-          ),
-          SizedBox(height: 6),
+            SizedBox(height: 6),
+          ],
           noItemInList
               ? Expanded(
                   child: NoItemInList(

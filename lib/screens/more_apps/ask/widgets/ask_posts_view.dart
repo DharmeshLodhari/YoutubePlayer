@@ -118,8 +118,8 @@ class _AskPostsState extends State<AskPosts> {
       buttonKey: _key,
       context: context,
       children: [
-        CustomizedPopUpMenuItem(title: "Latest", value: "-creation_date"),
-        CustomizedPopUpMenuItem(title: "Older", value: "creation_date"),
+        CustomizedPopUpMenuItem(title: "Latest", value: "-created_at"),
+        CustomizedPopUpMenuItem(title: "Older", value: "created_at"),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,

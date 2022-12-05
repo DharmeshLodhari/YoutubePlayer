@@ -445,6 +445,7 @@ class AskAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    debugPrint("COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200) {
       List<CommentDetails> commentsDetails = [];
       var jsonData = json.decode(response.body);

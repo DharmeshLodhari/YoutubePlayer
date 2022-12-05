@@ -1462,7 +1462,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       }
       if (showChannelTab) {
         list.add(
-            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName,))
+            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName, isSearch: true,))
         );
       }
       if (showMomentTab) {
@@ -1492,7 +1492,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       }
       if (showChannelTab) {
         list.add(
-            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName,))
+            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName, isSearch: true,))
         );
       }
       if (showMomentTab) {
