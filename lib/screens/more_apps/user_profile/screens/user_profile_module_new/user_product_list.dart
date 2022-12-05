@@ -134,7 +134,7 @@ class _UserProductListState extends State<UserProductList> {
         key: _productScaffoldKey,
         body: Container(
           color: lightGrey,
-          padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+          padding: EdgeInsets.symmetric(horizontal: 4),
           child: SmartRefresher(
             enablePullDown: true,
             header: WaterDropHeader(
@@ -196,6 +196,7 @@ class _UserProductListState extends State<UserProductList> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: GridView.builder(
               shrinkWrap: true,
+              padding: EdgeInsets.zero,
               controller: _productScrollController,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

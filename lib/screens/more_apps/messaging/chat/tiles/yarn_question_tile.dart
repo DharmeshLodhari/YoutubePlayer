@@ -287,19 +287,22 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         Expanded(
             child: Row(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    userNameWithVerifiedIcon(
-                        name: yarnQuestionForChatModel.authorName ?? "", isVerified: yarnQuestionForChatModel.authorIsVerified ?? false),
-                    Text(
-                      "@${yarnQuestionForChatModel.authorUsername ?? ''}",
-                      style: TextStyle(
-                          fontSize: 10,
-                          color: HexColor("#3F61DB")
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      userNameWithVerifiedIcon(
+                          name: yarnQuestionForChatModel.authorName ?? "", isVerified: yarnQuestionForChatModel.authorIsVerified ?? false),
+                      Text(
+                        "@${yarnQuestionForChatModel.authorUsername ?? ''}",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: HexColor("#3F61DB")
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             )),

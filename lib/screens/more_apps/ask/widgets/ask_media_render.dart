@@ -155,6 +155,13 @@ class _AskMediaRenderState extends State<AskMediaRender> {
     if (isSingleImage) {
       return Container(
         width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(width: 2.0, color: HexColor("E5E5E5"))
+        ),
+        constraints: BoxConstraints(
+          maxHeight: 450
+        ),
         child: Container(
           child: Stack(
             alignment: Alignment.center,
@@ -192,6 +199,10 @@ class _AskMediaRenderState extends State<AskMediaRender> {
       width: (MediaQuery.of(context).size.width - 40) / 2,
       padding: EdgeInsets.symmetric(horizontal: 5),
       child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(width: 2.0, color: HexColor("E5E5E5"))
+        ),
         child: Stack(
           alignment: Alignment.center,
           children: [

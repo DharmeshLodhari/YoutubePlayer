@@ -152,7 +152,7 @@ class ViewersAvatars {
 }
 
 class AddYarnAndQuestion {
-  List<File>? localImages;
+  List<AddMediaForYarn>? localImages;
   List<String>? tags;
   String? categoryId;
   String? title;
@@ -176,4 +176,12 @@ class AddYarnAndQuestion {
       "enable_commenting": enableCommenting
     };
   }
+}
+
+class AddMediaForYarn {
+  File? mediaFile;
+  String? mediaType;
+  String? mediaPoster;
+
+  AddMediaForYarn({this.mediaFile, this.mediaType, this.mediaPoster});
 }

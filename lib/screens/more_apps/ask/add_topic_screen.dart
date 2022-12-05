@@ -40,6 +40,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
   List<PickedFile> selectedImages = [];
+  List<AddMediaForYarn> selectedMedia = [];
   List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
   AskCategories? selectedAskCategory;
@@ -420,6 +421,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
+  // Widget _buildUserNameContainer() {
+  //   return Container();
+  // }
+
   // Widget _buildTags(AskViewModel model) {
   //   return Column(
   //     crossAxisAlignment: CrossAxisAlignment.start,
@@ -693,6 +698,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         'file': PickedFile(imagePath!),
       });
       selectedImages.add(PickedFile(imagePath!));
+      selectedMedia.add(AddMediaForYarn(mediaFile: File(imagePath!), mediaType: mediaType));
       if (mounted) setState(() {});
 
     } else if (mediaType == 'video') {
@@ -701,6 +707,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       if (videoFilePath is String) {
         videoPath = videoFilePath;
         Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
+        String? thumbnailImage = await generateThumbNailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
         //   if (thumbnail != null) {
@@ -711,8 +718,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         selectedImagesList.add({
           'mediaType': mediaType,
           'file': uInt8List,
+          'imagePoster': thumbnailImage,
         });
         selectedImages.add(PickedFile(videoPath!));
+        selectedMedia.add(AddMediaForYarn(mediaFile: File(videoPath!), mediaType: mediaType, mediaPoster: thumbnailImage));
         if (mounted) setState(() {});
       }
     }
@@ -932,7 +941,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   Future<void> addYarnAndQuestion() async {
     AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
-    addYarnAndQuestion.localImages = selectedImages.map((file) => File(file.path)).toList();
+    addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
     addYarnAndQuestion.title = widget.isYarn! ? textController.text : yarnController.text;
     addYarnAndQuestion.body = textController.text;
@@ -941,8 +950,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.author = userBloc.user.userName;
     addYarnAndQuestion.enablePayme = enablePayme;
     addYarnAndQuestion.enableCommenting = enableCommenting;
-    debugPrint("USER TAGS:- $userTags");
-    debugPrint("USER TAGS:- ${addYarnAndQuestion.tags}");
 
     await AskAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
       if (widget.isYarn!) {

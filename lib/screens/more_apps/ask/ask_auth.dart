@@ -357,14 +357,26 @@ class AskAuth extends AuthService {
     });
 
     List<MultipartFile> newList = [];
-
+    debugPrint("MEDIA LENGTH::: ${addYarnAndQuestion.localImages!.length}");
     for (int i = 0; i < addYarnAndQuestion.localImages!.length; i++) {
-      // Add fields
-      request.fields["mediafile_$i"] = addYarnAndQuestion.localImages![i].path;
+      debugPrint("MEDIA TYPE::: ${addYarnAndQuestion.localImages![i].mediaType}");
+      var multipartFile;
+      if (addYarnAndQuestion.localImages![i].mediaType == 'image') {
+        // Add fields
+        request.fields["mediafile_$i"] = addYarnAndQuestion.localImages![i].mediaFile!.path;
+        // Create multipart using filepath, string or bytes
+        multipartFile = await http.MultipartFile.fromPath(
+            "mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
+      } else if (addYarnAndQuestion.localImages![i].mediaType == 'video') {
+        // Add fields
+        request.fields["mediafile_$i"] = addYarnAndQuestion.localImages![i].mediaFile!.path;
+        // Create multipart using filepath, string or bytes
+        multipartFile = await http.MultipartFile.fromPath("mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
+        // Add Poster Fields
+        request.fields["mediaposter_$i"] = addYarnAndQuestion.localImages![i].mediaPoster ?? '';
+      }
 
-      // Create multipart using filepath, string or bytes
-      var multipartFile = await http.MultipartFile.fromPath(
-          "mediafile_$i", addYarnAndQuestion.localImages![i].path);
+
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -373,6 +385,7 @@ class AskAuth extends AuthService {
     // Add multipart to request
     request.files.addAll(newList);
     debugPrint('REQUEST FIELDS ---> ${request.fields}');
+    debugPrint('REQUEST FILES ---> ${request.files}');
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();

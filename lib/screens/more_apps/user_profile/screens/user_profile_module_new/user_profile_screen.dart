@@ -14,6 +14,7 @@ import 'package:Slydo/screens/more_apps/user_post/user_post_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/following_and_follwers_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_channel_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
@@ -171,24 +172,33 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     showYarnTab = await getIsShowYarn();
     showMomentTab = await getIsShowMoment();
     showChannelTab = await getIsShowChannels();
-
+    if (showYarnTab) {
+      tabCount++;
+    }
+    if (showMomentTab) {
+      tabCount++;
+    }
+    if (showChannelTab) {
+      tabCount++;
+    }
     if (searchedUser?.type?.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
-
       if (showPostsTab) {
         tabCount++;
       }
-      if (showYarnTab) {
-        tabCount++;
-      }
-      if (showMomentTab) {
-        tabCount++;
-      }
-      if (showChannelTab) {
-        tabCount++;
-      }
+
     } else {
-      tabCount = 3;
+      debugPrint("TAB COUNT:- $tabCount");
+      if (tabCount == 2) {
+        tabCount = 3;
+      } else if (tabCount == 3) {
+        tabCount = 4;
+      } else if (tabCount == 4) {
+        tabCount = 5;
+      } else {
+        tabCount = 3;
+      }
+
       showProductTab = await getIsShowProduct();
       showServiceTab = await getIsShowService();
 
@@ -200,16 +210,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       }
 
       if (showPostsTab) {
-        tabCount++;
-      }
-
-      if (showYarnTab) {
-        tabCount++;
-      }
-      if (showMomentTab) {
-        tabCount++;
-      }
-      if (showChannelTab) {
         tabCount++;
       }
     }
@@ -1413,7 +1413,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
         index++;
       }
-      index++;
       // tabs.add(
       //   getTabUI(title: "QR code", tabIndex: index),
       // );
@@ -1453,25 +1452,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   List<Widget> getTabViewLayout() {
     List<Widget> list = [];
-
+    if (showYarnTab) {
+      list.add(
+          KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
+      );
+    }
+    if (showChannelTab) {
+      list.add(
+          KeepAlivePage(child: UserChannelsList(ownerName: searchedUserName, isSearch: true,))
+      );
+    }
+    if (showMomentTab) {
+      list.add(
+        KeepAlivePage(
+          child: MomentsTab(searchedUser: searchedUser!),
+        ),
+      );
+    }
     if (searchedUser!.type!.toLowerCase() == "user") {
-      if (showYarnTab) {
-        list.add(
-            KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
-        );
-      }
-      if (showChannelTab) {
-        list.add(
-            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName, isSearch: true,))
-        );
-      }
-      if (showMomentTab) {
-        list.add(
-          KeepAlivePage(
-            child: MomentsTab(searchedUser: searchedUser!),
-          ),
-        );
-      }
       if (showPostsTab) {
         list.add(
           KeepAlivePage(
@@ -1485,23 +1483,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       //   ),
       // );
     } else {
-      if (showYarnTab) {
-        list.add(
-            KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
-        );
-      }
-      if (showChannelTab) {
-        list.add(
-            KeepAlivePage(child: ChatChannels(ownerName: searchedUserName, isSearch: true,))
-        );
-      }
-      if (showMomentTab) {
-        list.add(
-          KeepAlivePage(
-            child: MomentsTab(searchedUser: searchedUser!),
-          ),
-        );
-      }
       // list.add(
       //   KeepAlivePage(
       //     child: UserQRCodeScreen(user: searchedUser),

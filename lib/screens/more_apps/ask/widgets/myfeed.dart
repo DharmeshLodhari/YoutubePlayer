@@ -108,7 +108,7 @@ class MyFeedViewState extends State<MyFeedView> {
             onRefresh: _onPostRefresh,
             child: !isLoading ? !noList ? ListView.builder(
               physics: ClampingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
+              padding: EdgeInsets.symmetric(horizontal: 8),
               itemCount: yarnTopicList.length,
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(

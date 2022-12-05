@@ -25,7 +25,7 @@ class TopicViewState extends State<TopicView> {
   TopicViewState({this.key});
 
   bool isLoading = false;
-  String next = "", previous = "";
+  String? next = "", previous = "";
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
@@ -56,7 +56,7 @@ class TopicViewState extends State<TopicView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous ?? '',type: type, isType: isType, categoryId: categoryId);
 
         if (result == null) {
           noList = true;
@@ -69,8 +69,8 @@ class TopicViewState extends State<TopicView> {
         }
 
         count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
+        next = result['next'];
+        previous = result['previous'];
         var tempList = result['results'];
         // yarnTopicList = [];
         if (mounted) {
@@ -82,20 +82,20 @@ class TopicViewState extends State<TopicView> {
         }
         debugPrint("YARN TOPICS:- $yarnTopicList");
       }
-      if (yarnTopicList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noList = true;
-          });
-        }
+    }
+    if (yarnTopicList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          noList = true;
+        });
       }
-      // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //     content:
-      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //     duration: Duration(milliseconds: 500),
-      //   ));
-      // }
+    }
+    else if (next == null && yarnTopicList.length > 6) {
+      // _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+      //   content:
+      //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+      //   duration: Duration(milliseconds: 500),
+      // ));
     }
   }
 

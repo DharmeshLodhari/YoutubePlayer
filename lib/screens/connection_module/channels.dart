@@ -13,9 +13,7 @@ import '../moments/models/comment_model.dart';
 import '../more_apps/messaging/chat/models/channel_model.dart';
 
 class ChatChannels extends StatefulWidget {
-  String? ownerName;
-  bool? isSearch;
-  ChatChannels({this.ownerName, this.isSearch});
+  ChatChannels();
   @override
   State<ChatChannels> createState() => _ChatChannelsState();
 }
@@ -74,7 +72,7 @@ class _ChatChannelsState extends State<ChatChannels> {
     if (mounted) setState(() => _isLoading = true);
 
     MessageAuth()
-        .getChannels(nextUrl: nextPageUrl, searchText: searchTextCtrl.text, ownerName: widget.ownerName)
+        .getChannels(nextUrl: nextPageUrl, searchText: searchTextCtrl.text)
         .then((value) {
       if (mounted) setState(() => _isLoading = false);
 
@@ -121,28 +119,26 @@ class _ChatChannelsState extends State<ChatChannels> {
       },
       child: Column(
         children: [
-          if (!(widget.isSearch ?? false))...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: CustomizedTextFormField(
-                hasBorder: true,
-                hintText: 'Search by name',
-                controller: searchTextCtrl,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    SlydoAppIcon.search,
-                    color: darkGrey,
-                    size: 16,
-                  ),
-                  onPressed: () {
-                    _onRefresh();
-                    FocusScope.of(context).unfocus();
-                  },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: CustomizedTextFormField(
+              hasBorder: true,
+              hintText: 'Search by name',
+              controller: searchTextCtrl,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  SlydoAppIcon.search,
+                  color: darkGrey,
+                  size: 16,
                 ),
+                onPressed: () {
+                  _onRefresh();
+                  FocusScope.of(context).unfocus();
+                },
               ),
             ),
-            SizedBox(height: 6),
-          ],
+          ),
+          SizedBox(height: 6),
           noItemInList
               ? Expanded(
                   child: NoItemInList(

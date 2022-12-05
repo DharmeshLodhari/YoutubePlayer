@@ -26,7 +26,7 @@ class QuestionViewState extends State<QuestionView> {
   Key? key;
   QuestionViewState({this.key});
   bool isLoading = false;
-  String next = "", previous = "";
+  String? next = "", previous = "";
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
@@ -51,35 +51,37 @@ class QuestionViewState extends State<QuestionView> {
     if (categoryId != null) {
       selectedId = categoryId;
     }
-    if (next != null && !isLoading) {
-      isLoading = true;
-      if (mounted) setState(() {});
+    if (!isLoading) {
+      if (next != null && !isLoading) {
+        isLoading = true;
+        if (mounted) setState(() {});
 
-      Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId);
+        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous ?? '',type: type, isType: isType, categoryId: categoryId);
 
-      if (result == null) {
-        noList = true;
+        if (result == null) {
+          noList = true;
 
-        isLoading = false;
-        if (mounted) {
-          setState(() {});
-        }
-        return;
-      }
-
-      count = result['count'];
-      next = result['next'] != null ? result['next'] : "";
-      previous = result['previous'] != null ? result['previous'] : "";
-      var tempList = result['results'];
-      // yarnTopicList = [];
-      if (mounted) {
-        setState(() {
-          noList = false;
           isLoading = false;
-          yarnTopicList.addAll(tempList);
-        });
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        count = result['count'];
+        next = result['next'];
+        previous = result['previous'];
+        var tempList = result['results'];
+        // yarnTopicList = [];
+        if (mounted) {
+          setState(() {
+            noList = false;
+            isLoading = false;
+            yarnTopicList.addAll(tempList);
+          });
+        }
+        debugPrint("YARN TOPICS:- $yarnTopicList");
       }
-      debugPrint("YARN TOPICS:- $yarnTopicList");
     }
     if (yarnTopicList.isEmpty) {
       if (mounted) {

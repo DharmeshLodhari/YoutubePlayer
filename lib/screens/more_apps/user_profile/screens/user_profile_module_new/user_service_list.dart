@@ -140,9 +140,10 @@ class _UserServiceListState extends State<UserServiceList> {
     return serviceNext == "" && isServiceLoading
         ? SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
             child: GridView.builder(
               shrinkWrap: true,
+              padding: EdgeInsets.zero,
               controller: _serviceScrollController,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
