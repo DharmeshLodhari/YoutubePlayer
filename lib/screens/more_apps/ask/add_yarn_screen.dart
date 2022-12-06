@@ -53,7 +53,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   List<String> userTags = [];
   late UserBloc userBloc;
   bool enableCommenting = true;
-  bool enablePayme = false;
+  bool enablePayMe = false;
   String? videoPath;
   String? imagePath;
   bool isVideoLoading = false;
@@ -145,7 +145,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             height: 20,
           ),
         ],
-        _buildTextFiled(),
+        _buildTextField(),
         if (isMentionName) ...[
           _buildUserNameContainer(),
         ],
@@ -175,7 +175,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         SizedBox(
           height: 20,
         ),
-        _buildTextFiled(),
+        _buildTextField(),
         SizedBox(
           height: 20,
         ),
@@ -418,7 +418,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
-  Widget _buildTextFiled() {
+  Widget _buildTextField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -467,17 +467,17 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   }
 
   Widget _buildUserNameContainer() {
-    print("SERACHED STRING  ${searchString}");
     return AskMentionView(
       searchText: searchString,
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
           textController.text = textController.text.replaceRange(
-            (textController.text.length - (searchString?.length ?? 0)),
-            textController.text.length,
-            tappedUser,
-          );
+                (textController.text.length - (searchString?.length ?? 0)),
+                textController.text.length,
+                tappedUser,
+              ) +
+              " ";
           textController.selection = TextSelection.fromPosition(TextPosition(
             offset: textController.text.length,
           ));
@@ -655,10 +655,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           description:
               "Enable this to allow other users to support your work by making a donation.",
           switchBtn: Switch(
-            value: enablePayme,
+            value: enablePayMe,
             onChanged: (value) {
               setState(() {
-                enablePayme = value;
+                enablePayMe = value;
               });
             },
           ),
@@ -1027,7 +1027,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.categoryId = selectedAskCategory!.id;
     addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
     addYarnAndQuestion.author = userBloc.user.userName;
-    addYarnAndQuestion.enablePayme = enablePayme;
+    addYarnAndQuestion.enablePayme = enablePayMe;
     addYarnAndQuestion.enableCommenting = enableCommenting;
 
     await AskAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
