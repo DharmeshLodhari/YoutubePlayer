@@ -24,7 +24,7 @@ class AskDetailScreen extends StatefulWidget {
 
 class _AskDetailScreenState extends State<AskDetailScreen> {
   bool isLoading = false;
-  String next = "", previous = "";
+  String? next = "", previous = "";
   List<CommentDetails> commentDetailsList = [];
   int count = 0;
   bool noList = false;
@@ -32,10 +32,18 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
   final TextEditingController controller = TextEditingController();
   RefreshController _postRefreshController = RefreshController(initialRefresh: false);
   bool isAPILoading = false;
+  ScrollController _commentScrollController = new ScrollController();
 
   @override
   void initState() {
     getAllComments();
+    _commentScrollController.addListener(() {
+      if (_commentScrollController.position.pixels ==
+          _commentScrollController.position.maxScrollExtent &&
+          _commentScrollController.position.pixels != 0) {
+        getAllComments();
+      }
+    });
     super.initState();
   }
 
@@ -46,7 +54,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await AskAuth()
-            .getAllComments(next, previous, widget.yarnTopic!.id!);
+            .getAllComments(next, previous ?? '', widget.yarnTopic!.id!);
 
         if (result == null) {
           noList = true;
@@ -59,10 +67,10 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         }
 
         count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
+        next = result['next'];
+        previous = result['previous'];
         var tempList = result['results'];
-        commentDetailsList = [];
+        //commentDetailsList = [];
         if (mounted) {
           setState(() {
             noList = false;
@@ -72,21 +80,21 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         }
         debugPrint("YARN TOPICS:- $commentDetailsList");
       }
-      if (commentDetailsList.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noList = true;
-          });
-        }
-      }
-      // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //     content:
-      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //     duration: Duration(milliseconds: 500),
-      //   ));
-      // }
     }
+    if (commentDetailsList.isEmpty) {
+      if (mounted) {
+        setState(() {
+          noList = true;
+        });
+      }
+    }
+    // else if (categoriesNext == null && askCategoriesList.length > 6) {
+    //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
+    //     content:
+    //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+    //     duration: Duration(milliseconds: 500),
+    //   ));
+    // }
   }
 
   @override
@@ -145,6 +153,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         controller: _postRefreshController,
         onRefresh: _onPostRefresh,
         child: SingleChildScrollView(
+          controller: _commentScrollController,
           padding: EdgeInsets.all(10),
           child: !isLoading ? AskPosts(
             openComments: commentDetailsList.isNotEmpty ? true : false,

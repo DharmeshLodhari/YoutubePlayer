@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/ask/widgets/ask_mention_view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
@@ -20,6 +22,7 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/image_crop.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
+import '../user_profile/models/user.dart';
 import 'ask_viewmodel.dart';
 import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
 
@@ -57,6 +60,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   VideoPlayerController? videoPlayerController;
   String? generatedVideoThumbnail;
   bool isAPILoading = false;
+  bool isMentionName = false;
+  String? searchString;
 
   @override
   void initState() {
@@ -65,6 +70,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     askCategoriesCopy = widget.askCategories;
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,8 +148,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         ],
         _buildTextFiled(),
         SizedBox(height: 20,),
-        // _buildTags(model),
-        // SizedBox(height: 20,),
+        if (isMentionName)...[
+          _buildUserNameContainer(),
+          SizedBox(height: 20,),
+        ],
         getCategoryField(),
         SizedBox(height: 20,),
         _buildSwitchOptions(),
@@ -164,15 +172,13 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         SizedBox(height: 20,),
         _buildTextFiled(),
         SizedBox(height: 20,),
-        // _buildTags(model),
-        // SizedBox(height: 20,),
+        if (isMentionName)...[
+          _buildUserNameContainer(),
+          SizedBox(height: 20,),
+        ],
         getCategoryField(),
         SizedBox(height: 20,),
         _buildSwitchOptions(),
-        // SizedBox(height: 20,),
-        // getAmountField(),
-        // SizedBox(height: 20,),
-        // _buildExpiresField(),
         SizedBox(height: 50,),
         _buildSubmitButton(),
       ],
@@ -416,14 +422,28 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           height: 140,
           controller: textController,
           hint: widget.isYarn! ? "Yarn Something" : "",
+          onChanged: (value) {
+            if (value.contains('@')) {
+              if (!isMentionName) isMentionName = true;
+              List<String> mentionString = getAllMentions(value);
+              debugPrint("MENTION STRING=== $mentionString");
+              if (mentionString.isNotEmpty) {
+                debugPrint("SUB STRING STRING=== ${mentionString.last.substring(1)}");
+                searchString = mentionString.last.substring(1);
+              }
+            } else {
+              if (isMentionName) isMentionName = false;
+            }
+            if (mounted) setState(() {});
+          },
         ),
       ],
     );
   }
 
-  // Widget _buildUserNameContainer() {
-  //   return Container();
-  // }
+  Widget _buildUserNameContainer() {
+    return AskMentionView(searchText: searchString, key: UniqueKey(),);
+  }
 
   // Widget _buildTags(AskViewModel model) {
   //   return Column(
@@ -980,6 +1000,7 @@ class TopicTextField extends StatelessWidget {
   final VoidCallback? onTap;
   final bool suffix;
   final Widget? suffixIcon;
+  final ValueChanged<String>? onChanged;
 
   const TopicTextField({
     Key? key,
@@ -994,6 +1015,7 @@ class TopicTextField extends StatelessWidget {
       width: 0,
       height: 0,
     ),
+    this.onChanged,
     this.onTap,
     this.suffix = true,
     this.suffixIcon,
@@ -1026,6 +1048,7 @@ class TopicTextField extends StatelessWidget {
         minLines: 1,
         readOnly: readOnly,
         onTap: onTap,
+        onChanged: onChanged,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           border: InputBorder.none,

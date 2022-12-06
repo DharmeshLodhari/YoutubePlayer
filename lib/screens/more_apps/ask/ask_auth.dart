@@ -7,6 +7,7 @@ import "package:http/http.dart" as http;
 
 import '../../../data/environment.dart';
 import '../../../utils/util.dart';
+import '../user_profile/models/user.dart';
 import 'models/Topics/CommentDetails.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
@@ -357,10 +358,12 @@ class AskAuth extends AuthService {
     });
 
     List<MultipartFile> newList = [];
+    List<MultipartFile> thumbnailList = [];
     debugPrint("MEDIA LENGTH::: ${addYarnAndQuestion.localImages!.length}");
     for (int i = 0; i < addYarnAndQuestion.localImages!.length; i++) {
       debugPrint("MEDIA TYPE::: ${addYarnAndQuestion.localImages![i].mediaType}");
       var multipartFile;
+      var thumbnailImage;
       if (addYarnAndQuestion.localImages![i].mediaType == 'image') {
         // Add fields
         request.fields["mediafile_$i"] = addYarnAndQuestion.localImages![i].mediaFile!.path;
@@ -374,16 +377,20 @@ class AskAuth extends AuthService {
         multipartFile = await http.MultipartFile.fromPath("mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
         // Add Poster Fields
         request.fields["mediaposter_$i"] = addYarnAndQuestion.localImages![i].mediaPoster ?? '';
+
+        thumbnailImage = await http.MultipartFile.fromPath("mediaposter_$i", addYarnAndQuestion.localImages![i].mediaPoster ?? '');
       }
 
 
 
       // Add multipart to newList
       newList.add(multipartFile);
+      thumbnailList.add(thumbnailImage);
     }
 
     // Add multipart to request
     request.files.addAll(newList);
+    request.files.addAll(thumbnailList);
     debugPrint('REQUEST FIELDS ---> ${request.fields}');
     debugPrint('REQUEST FILES ---> ${request.files}');
 
@@ -726,6 +733,41 @@ class AskAuth extends AuthService {
       return null;
     } else {
       return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> searchUser(String? next, String? previous, String searchText) async {
+    String url = AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchText;
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = next;
+    }
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers)
+        .timeout(timeOutDuration, onTimeout: () => timeOutFunction());
+
+    print('SEARCH USER ::: ${response.body}');
+    if (response.statusCode == 200) {
+      List<CustomerProfile> customerProfiles = [];
+      var jsonData = json.decode(response.body);
+
+      for(var item in jsonData['results']) {
+        CustomerProfile customerProfile = CustomerProfile.fromJson(item);
+        customerProfiles.add(customerProfile);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": customerProfiles,
+      };
+      return result;
+    } else {
+      var jsonData = json.decode(response.body);
+      throw jsonData;
     }
   }
 }

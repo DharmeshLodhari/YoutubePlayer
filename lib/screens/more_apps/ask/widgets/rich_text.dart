@@ -5,6 +5,7 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/navigation_util.dart';
 import '../ask_search_screen.dart';
+import '../utils/utils.dart';
 
 class RichTextForTitle extends StatelessWidget {
   String? description;
@@ -97,42 +98,5 @@ class RichTextForTitle extends StatelessWidget {
       }
     });
     return RichText(text: TextSpan(children: textSpans));
-  }
-
-  List<String> getAllHashtags(String text) {
-    final regexp = RegExp(r'\#[a-zA-Z0-9._-]+\b()');
-
-    List<String> hashtags = [];
-
-    regexp.allMatches(text).forEach((element) {
-      if (element.group(0) != null) {
-        hashtags.add(element.group(0).toString());
-      }
-    });
-
-    return hashtags;
-  }
-
-  List<String> getAllMentions(String text) {
-    final regexp = RegExp(r'\@[a-zA-Z0-9._-]+\b()');
-
-    List<String> mentions = [];
-    List<String> filterMention = [];
-
-    regexp.allMatches(text).forEach((element) {
-      if (element.group(0) != null) {
-        mentions.add(element.group(0).toString());
-      }
-    });
-
-    for (var mention in mentions) {
-      String removeDot = mention.trim();
-      while (removeDot.endsWith(".")) {
-        removeDot = removeDot.substring(0, removeDot.length - 1);
-      }
-      filterMention.add(removeDot);
-    }
-
-    return filterMention;
   }
 }

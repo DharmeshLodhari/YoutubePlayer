@@ -504,7 +504,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       "type": "chatroom_message",
     };
     await sendDataToSocket(data);
-    showToast(message: 'Moment Shared');
+    showToast(message: 'Post Shared');
   }
 
   Widget shareBtn() {
