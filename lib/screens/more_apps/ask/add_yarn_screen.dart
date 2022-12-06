@@ -446,13 +446,19 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     List<String> listOfWords = value.split(" ");
 
     if (listOfWords.isNotEmpty) {
-      if (listOfWords.last.contains("@") && !value.endsWith(" ")) {
+      if ((listOfWords.last.contains("@") &&
+          !value.endsWith(" ") &&
+          !value.endsWith("@"))) {
         isMentionName = true;
         List<String> mentionString = getAllMentions(value);
 
         if (mentionString.isNotEmpty) {
           searchString = mentionString.last.substring(1);
         }
+      } else if (value.endsWith("@")) {
+        isMentionName = true;
+
+        searchString = "";
       } else {
         isMentionName = false;
       }
@@ -461,6 +467,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   }
 
   Widget _buildUserNameContainer() {
+    print("SERACHED STRING  ${searchString}");
     return AskMentionView(
       searchText: searchString,
       key: UniqueKey(),
@@ -474,6 +481,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           textController.selection = TextSelection.fromPosition(TextPosition(
             offset: textController.text.length,
           ));
+          searchString = "";
+          if (mounted) setState(() {});
         }
       },
     );
