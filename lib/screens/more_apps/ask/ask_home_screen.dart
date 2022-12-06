@@ -1,24 +1,24 @@
 import 'package:Slydo/screens/more_apps/ask/ask_by_category_screen.dart';
 import 'package:Slydo/screens/more_apps/ask/ask_notification_screen.dart';
+import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
+
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
-import 'add_topic_screen.dart';
+import 'add_yarn_screen.dart';
 import 'ask_auth.dart';
 import 'ask_search_screen.dart';
 import 'ask_setting_screen.dart';
 import 'ask_viewmodel.dart';
+import 'models/ask_categories_model.dart';
 import 'widgets/category_chip.dart';
 import 'widgets/question_view.dart';
 import 'widgets/topics_view.dart';
-import 'models/ask_categories_model.dart';
-import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
 
 class AskHomeScreen extends StatefulWidget {
-
   List<AskCategories>? askCategories;
   List<AskCategories>? selectedCategories;
 
@@ -30,7 +30,8 @@ class AskHomeScreen extends StatefulWidget {
 
 class _AskHomeScreenState extends State<AskHomeScreen> {
   GlobalKey<TopicViewState> topicViewStateKey = GlobalKey<TopicViewState>();
-  GlobalKey<QuestionViewState> questionViewStateKey = GlobalKey<QuestionViewState>();
+  GlobalKey<QuestionViewState> questionViewStateKey =
+      GlobalKey<QuestionViewState>();
 
   late PageController _pageViewCtrl;
   int? currentAskTapOnHome = 0;
@@ -137,43 +138,51 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
       activeBackgroundColor: HexColor("#FFFFFF"),
       children: [
         _buildSpeedDialChild(
-          title: "Ask Question",
-          icon: SlydoAppIconNew.question,
-          onTap: () async {
-            await NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: false,)).then((value) {
-              debugPrint("THEN VALUE===$value");
-              if (value != null) {
-                if (value == Types.Question) {
-                  updateCurrentAskTapOnHome(i: 1);
-                  _pageViewCtrl.jumpToPage(1);
-                  questionViewStateKey.currentState?.onPostRefresh();
+            title: "Ask Question",
+            icon: SlydoAppIconNew.question,
+            onTap: () async {
+              await NavigationUtil.push(context,
+                  screen: AddTopicScreen(
+                    askCategories: askViewModel.askCategories,
+                    isYarn: false,
+                  )).then((value) {
+                debugPrint("THEN VALUE===$value");
+                if (value != null) {
+                  if (value == Types.Question) {
+                    updateCurrentAskTapOnHome(i: 1);
+                    _pageViewCtrl.jumpToPage(1);
+                    questionViewStateKey.currentState?.onPostRefresh();
+                  }
                 }
-              }
-            });
-          }
-        ),
+              });
+            }),
         _buildSpeedDialChild(
-          title: "Yarn",
-          icon: SlydoAppIconNew.yarn,
-          onTap: () async {
-            await NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: true,)).then((value) {
-              debugPrint("THEN VALUE===$value");
-              if (value != null) {
-                if (value == Types.Yarn) {
-                  updateCurrentAskTapOnHome(i: 0);
-                  _pageViewCtrl.jumpToPage(0);
-                  topicViewStateKey.currentState?.onPostRefresh();
+            title: "Yarn",
+            icon: SlydoAppIconNew.yarn,
+            onTap: () async {
+              await NavigationUtil.push(context,
+                  screen: AddTopicScreen(
+                    askCategories: askViewModel.askCategories,
+                    isYarn: true,
+                  )).then((value) {
+                debugPrint("THEN VALUE===$value");
+                if (value != null) {
+                  if (value == Types.Yarn) {
+                    updateCurrentAskTapOnHome(i: 0);
+                    _pageViewCtrl.jumpToPage(0);
+                    topicViewStateKey.currentState?.onPostRefresh();
+                  }
                 }
-              }
-
-            });
-          }
-        ),
+              });
+            }),
       ],
     );
   }
 
-  SpeedDialChild _buildSpeedDialChild({required String title, required IconData icon, required VoidCallback onTap}) {
+  SpeedDialChild _buildSpeedDialChild(
+      {required String title,
+      required IconData icon,
+      required VoidCallback onTap}) {
     return SpeedDialChild(
         onTap: onTap,
         backgroundColor: HexColor("#3F61DB"),
@@ -190,8 +199,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
               style: TextStyle(
                   color: HexColor("#424242"),
                   fontSize: 12,
-                  fontWeight: FontWeight.w600
-              ),
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -199,49 +207,47 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           icon,
           color: Colors.white,
           size: 20,
-        )
-    );
+        ));
   }
 
   Widget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
-      title: Text(
-        'YARN',
-        style: TextStyle(
-          fontSize: 21,
-          fontWeight: FontWeight.w700,
-          color: blackFont,
+        backgroundColor: Colors.white,
+        title: Text(
+          'YARN',
+          style: TextStyle(
+            fontSize: 21,
+            fontWeight: FontWeight.w700,
+            color: blackFont,
+          ),
         ),
-      ),
-      titleSpacing: 0,
-      actions: [
-        _buildAppBarActions()
-      ],
-      elevation: 0,
-      leading: IconButton(
-        padding: EdgeInsets.zero,
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        color: navyBlue,
-      )
-    );
+        titleSpacing: 0,
+        actions: [_buildAppBarActions()],
+        elevation: 0,
+        leading: IconButton(
+          padding: EdgeInsets.zero,
+          icon: Icon(
+            Icons.keyboard_arrow_left,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          color: navyBlue,
+        ));
   }
 
-  Widget _buildIconButton({GestureTapCallback? onTap, IconData? icon, Color? iconColor, double? iconSize}) {
+  Widget _buildIconButton(
+      {GestureTapCallback? onTap,
+      IconData? icon,
+      Color? iconColor,
+      double? iconSize}) {
     return InkWell(
       onTap: onTap,
       child: Container(
         height: 34,
         width: 34,
         decoration: BoxDecoration(
-          color: Color(0xFFFBFBFF),
-          borderRadius: BorderRadius.circular(3)
-        ),
+            color: Color(0xFFFBFBFF), borderRadius: BorderRadius.circular(3)),
         child: Icon(
           icon,
           color: iconColor,
@@ -285,8 +291,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
               );
             },
             icon: Icons.settings,
-            iconColor: blackFont
-        ),
+            iconColor: blackFont),
         SizedBox(width: 10),
       ],
     );
@@ -296,10 +301,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6),
       child: Column(
-        children: [
-          _buildCategoryAndTabs(),
-          _buildPageView()
-        ],
+        children: [_buildCategoryAndTabs(), _buildPageView()],
       ),
     );
   }
@@ -325,7 +327,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           ),
           ...List.generate(
             askViewModel.askCategories.length,
-                (i) {
+            (i) {
               return Row(
                 children: [
                   SizedBox(
@@ -333,11 +335,17 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                   ),
                   CategoryChip(
                     onTap: () {
-                      NavigationUtil.push(context, screen: AskByCategoryScreen(askCategories: askViewModel.askCategories[i],));
+                      NavigationUtil.push(context,
+                          screen: AskByCategoryScreen(
+                            askCategories: askViewModel.askCategories[i],
+                          ));
                     },
                     title: askViewModel.askCategories[i].name,
-                    categoryColor: HexColor(askViewModel.askCategories[i].color!).withOpacity(0.1),
-                    selectedCategoryTextColor: HexColor(askViewModel.askCategories[i].color!),
+                    categoryColor:
+                        HexColor(askViewModel.askCategories[i].color!)
+                            .withOpacity(0.1),
+                    selectedCategoryTextColor:
+                        HexColor(askViewModel.askCategories[i].color!),
                   )
                 ],
               );
@@ -361,17 +369,15 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
               },
               pageNum: 0,
               title: 'Yarns',
-              currentTapIndex: currentAskTapOnHome
-          ),
+              currentTapIndex: currentAskTapOnHome),
           pageViewTabItem(
               onPageTap: () {
-               updateCurrentAskTapOnHome(i: 1);
+                updateCurrentAskTapOnHome(i: 1);
                 _pageViewCtrl.jumpToPage(1);
               },
               pageNum: 1,
               title: 'Questions',
-              currentTapIndex: currentAskTapOnHome
-          ),
+              currentTapIndex: currentAskTapOnHome),
           // pageViewTabItem(
           //     onPageTap: () {
           //       updateCurrentAskTapOnHome(i: 2);
@@ -394,8 +400,14 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         },
         controller: _pageViewCtrl,
         children: [
-          TopicView(key: topicViewStateKey, selectedCategory: selectedCategoryId,),
-          QuestionView(key: questionViewStateKey, selectedCategory: selectedCategoryId,),
+          TopicView(
+            key: topicViewStateKey,
+            selectedCategory: selectedCategoryId,
+          ),
+          QuestionView(
+            key: questionViewStateKey,
+            selectedCategory: selectedCategoryId,
+          ),
           // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),
@@ -442,10 +454,12 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
       if (selectedCategoryId == categoryId) {
         selectedCategoryId = null;
       } else {
-        selectedCategoryId =  categoryId;
+        selectedCategoryId = categoryId;
       }
-      topicViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
-      questionViewStateKey.currentState?.getYarnTopic(categoryId: selectedCategoryId);
+      topicViewStateKey.currentState
+          ?.getYarnTopic(categoryId: selectedCategoryId);
+      questionViewStateKey.currentState
+          ?.getYarnTopic(categoryId: selectedCategoryId);
     });
   }
 }

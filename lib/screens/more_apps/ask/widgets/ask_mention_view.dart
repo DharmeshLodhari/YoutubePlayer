@@ -1,37 +1,51 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../utils/util.dart';
 import '../../user_profile/models/user.dart';
 import '../ask_auth.dart';
 
 class AskMentionView extends StatefulWidget {
-  String? searchText;
-  AskMentionView({Key? key, this.searchText}) : super(key: key);
+  final String? searchText;
+  final Function(String?) onTap;
+
+  AskMentionView({
+    required this.onTap,
+    required this.searchText,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<AskMentionView> createState() => _AskMentionViewState();
 }
 
 class _AskMentionViewState extends State<AskMentionView> {
-
   bool isLoading = false, noList = false;
   String? next = '', previous = '', subString;
   int? count = 0;
   List<CustomerProfile> customerProfiles = [];
   ScrollController _userScrollController = new ScrollController();
 
-
   @override
   void initState() {
     getSearchUser(widget.searchText ?? '');
     _userScrollController.addListener(() {
       if (_userScrollController.position.pixels ==
-          _userScrollController.position.maxScrollExtent &&
+              _userScrollController.position.maxScrollExtent &&
           _userScrollController.position.pixels != 0) {
         getSearchUser(widget.searchText ?? '');
       }
     });
     super.initState();
+  }
+
+  void cleanList() {
+    next = '';
+    previous = '';
+    noList = true;
+    count = 0;
+    customerProfiles.clear();
+    if (mounted) setState(() {});
   }
 
   @override
@@ -47,9 +61,9 @@ class _AskMentionViewState extends State<AskMentionView> {
         height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: HexColor("#E9E9E9"))
-        ),
+            border: Border.all(color: HexColor("#E9E9E9"))),
         child: ListView.builder(
+          padding: EdgeInsets.zero,
           itemCount: customerProfiles.length,
           itemBuilder: (context, index) {
             return _buildUserListTile(customerProfiles[index]);
@@ -60,57 +74,45 @@ class _AskMentionViewState extends State<AskMentionView> {
   }
 
   Widget _buildUserListTile(CustomerProfile customerProfile) {
-    return Container(
-      color: white,
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            // child: Row(
-            //   children: [
-            //     getUserLeading(customerProfile),
-            //     SizedBox(width: 10,),
-            //     Column(
-            //       children: [
-            //         userNameWithVerifiedIcon(
-            //             name: customerProfile.fullName!,
-            //             isVerified: customerProfile.isVerified,
-            //             textStyle: TextStyle(
-            //               fontSize: 10,
-            //               color: blackFont,
-            //             )
-            //         ),
-            //         Text(
-            //           "@${customerProfile.userName ?? ''}",
-            //           maxLines: 1,
-            //           style: TextStyle(color: blackFont, fontSize: 12, fontWeight: FontWeight.w600),
-            //         ),
-            //       ],
-            //     )
-            //   ],
-            // ),
-            child: ListTile(
-              onTap: () {
-              },
-              dense: true,
-              title: userNameWithVerifiedIcon(
-                  name: customerProfile.fullName!,
-                  isVerified: customerProfile.isVerified,
-                  textStyle: TextStyle(
-                    fontSize: 10,
-                    color: blackFont,
-                  )
-              ),
-              subtitle: Text(
-                "@${customerProfile.userName ?? ''}",
-                maxLines: 1,
-                style: TextStyle(color: blackFont, fontSize: 12, fontWeight: FontWeight.w600),
-              ),
-              leading: getUserLeading(customerProfile),
+    return InkWell(
+      onTap: () {
+        widget.onTap(customerProfile.userName ?? null);
+        cleanList();
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: white,
+        ),
+        child: Row(
+          children: [
+            getUserLeading(customerProfile),
+            SizedBox(
+              width: 10,
             ),
-          ),
-        ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                userNameWithVerifiedIcon(
+                    name: customerProfile.fullName!,
+                    isVerified: customerProfile.isVerified,
+                    textStyle: TextStyle(
+                      fontSize: 10,
+                      color: blackFont,
+                    )),
+                Text(
+                  "@${customerProfile.userName ?? ''}",
+                  maxLines: 1,
+                  style: TextStyle(
+                      color: blackFont,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -128,7 +130,9 @@ class _AskMentionViewState extends State<AskMentionView> {
           border: Border.all(color: borderColor, width: 2)),
       child: ClipOval(
         child: CachedNetworkImage(
-          imageUrl: customerProfile.avatar == "" ? defaultImage : customerProfile.avatar!,
+          imageUrl: customerProfile.avatar == ""
+              ? defaultImage
+              : customerProfile.avatar!,
           colorBlendMode: BlendMode.darken,
           fit: BoxFit.cover,
           errorWidget: imageErrorWidget,
@@ -153,7 +157,8 @@ class _AskMentionViewState extends State<AskMentionView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().searchUser(next, previous ?? '',searchText);
+        Map<String, dynamic>? result =
+            await AskAuth().searchUser(next, previous ?? '', searchText);
 
         debugPrint("RESULTS:- $result");
         if (result == null) {
@@ -189,8 +194,7 @@ class _AskMentionViewState extends State<AskMentionView> {
           previous = "";
         });
       }
-    }
-    else if (next == null && customerProfiles.length > 6) {
+    } else if (next == null && customerProfiles.length > 6) {
       // _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
       //   content:
       //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),

@@ -1,15 +1,17 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
 import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/ask/widgets/ask_mention_view.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
@@ -22,9 +24,7 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/image_crop.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
-import '../user_profile/models/user.dart';
 import 'ask_viewmodel.dart';
-import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
 
 class AddTopicScreen extends StatefulWidget {
   List<AskCategories>? askCategories;
@@ -71,7 +71,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -81,9 +80,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       body: Consumer<AskViewModel>(builder: (context, model, child) {
         return ListView(
           padding: EdgeInsets.all(15),
-          children: [
-            _buildYarnOrQuestionForm(model)
-          ],
+          children: [_buildYarnOrQuestionForm(model)],
         );
       }),
     );
@@ -131,55 +128,71 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       ],
     );
   }
-  
+
   Widget _buildYarnOrQuestionForm(AskViewModel model) {
     if (widget.isYarn!) {
       return _buildYarnForm(model);
     }
     return _buildQuestionForm(model);
   }
-  
+
   Widget _buildYarnForm(AskViewModel model) {
     return Column(
       children: [
-        if (selectedImages.isNotEmpty)...[
+        if (selectedImages.isNotEmpty) ...[
           _buildAddImages(),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
         ],
         _buildTextFiled(),
-        SizedBox(height: 20,),
-        if (isMentionName)...[
+        if (isMentionName) ...[
           _buildUserNameContainer(),
-          SizedBox(height: 20,),
         ],
         getCategoryField(),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         _buildSwitchOptions(),
-        SizedBox(height: 50,),
+        SizedBox(
+          height: 50,
+        ),
         _buildSubmitButton(),
       ],
     );
   }
-  
+
   Widget _buildQuestionForm(AskViewModel model) {
     return Column(
       children: [
-        if (selectedImages.isNotEmpty)...[
+        if (selectedImages.isNotEmpty) ...[
           _buildAddImages(),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
         ],
         _buildYarnField(),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         _buildTextFiled(),
-        SizedBox(height: 20,),
-        if (isMentionName)...[
+        SizedBox(
+          height: 20,
+        ),
+        if (isMentionName) ...[
           _buildUserNameContainer(),
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
         ],
         getCategoryField(),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         _buildSwitchOptions(),
-        SizedBox(height: 50,),
+        SizedBox(
+          height: 50,
+        ),
         _buildSubmitButton(),
       ],
     );
@@ -216,8 +229,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           child: index != selectedImagesList.length
               ? showImage(index)
               : selectedImagesList.length != imageCount
-              ? addImageButton()
-              : null,
+                  ? addImageButton()
+                  : null,
         ),
       ),
     );
@@ -337,16 +350,17 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               width: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: selectedImagesList[index]['mediaType'] == 'image' ? DecorationImage(
-                    image: FileImage(
-                      File(selectedImagesList[index]['file'].path),
-                    ),
-                    fit: BoxFit.fill) : DecorationImage(
-                    image: MemoryImage(
-                      selectedImagesList[index]['file'],
-                    ),
-                    fit: BoxFit.fill
-                ),
+                image: selectedImagesList[index]['mediaType'] == 'image'
+                    ? DecorationImage(
+                        image: FileImage(
+                          File(selectedImagesList[index]['file'].path),
+                        ),
+                        fit: BoxFit.fill)
+                    : DecorationImage(
+                        image: MemoryImage(
+                          selectedImagesList[index]['file'],
+                        ),
+                        fit: BoxFit.fill),
               ),
             ),
           ),
@@ -422,27 +436,47 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           height: 140,
           controller: textController,
           hint: widget.isYarn! ? "Yarn Something" : "",
-          onChanged: (value) {
-            if (value.contains('@')) {
-              if (!isMentionName) isMentionName = true;
-              List<String> mentionString = getAllMentions(value);
-              debugPrint("MENTION STRING=== $mentionString");
-              if (mentionString.isNotEmpty) {
-                debugPrint("SUB STRING STRING=== ${mentionString.last.substring(1)}");
-                searchString = mentionString.last.substring(1);
-              }
-            } else {
-              if (isMentionName) isMentionName = false;
-            }
-            if (mounted) setState(() {});
-          },
+          onChanged: onValueChange,
         ),
       ],
     );
   }
 
+  void onValueChange(String value) {
+    List<String> listOfWords = value.split(" ");
+
+    if (listOfWords.isNotEmpty) {
+      if (listOfWords.last.contains("@") && !value.endsWith(" ")) {
+        isMentionName = true;
+        List<String> mentionString = getAllMentions(value);
+
+        if (mentionString.isNotEmpty) {
+          searchString = mentionString.last.substring(1);
+        }
+      } else {
+        isMentionName = false;
+      }
+    }
+    if (mounted) setState(() {});
+  }
+
   Widget _buildUserNameContainer() {
-    return AskMentionView(searchText: searchString, key: UniqueKey(),);
+    return AskMentionView(
+      searchText: searchString,
+      key: UniqueKey(),
+      onTap: (String? tappedUser) {
+        if (tappedUser != null) {
+          textController.text = textController.text.replaceRange(
+            (textController.text.length - (searchString?.length ?? 0)),
+            textController.text.length,
+            tappedUser,
+          );
+          textController.selection = TextSelection.fromPosition(TextPosition(
+            offset: textController.text.length,
+          ));
+        }
+      },
+    );
   }
 
   // Widget _buildTags(AskViewModel model) {
@@ -507,25 +541,32 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       selectedAskCategory = widget.askCategory;
       pressedAskCategory = widget.askCategory;
     }
-    return CustomizedDropDownField(
-      title: "Categories",
-      borderWidth: 2.0,
-      child: ListTile(
-        dense: true,
-        title: Text(
-          selectedAskCategory != null ? selectedAskCategory!.name! : "",
-          style: TextStyle(
-              color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+    return Column(
+      children: [
+        SizedBox(
+          height: 20,
         ),
-        trailing: Icon(
-          Icons.keyboard_arrow_down,
-          color: darkGrey,
+        CustomizedDropDownField(
+          title: "Categories",
+          borderWidth: 2.0,
+          child: ListTile(
+            dense: true,
+            title: Text(
+              selectedAskCategory != null ? selectedAskCategory!.name! : "",
+              style: TextStyle(
+                  color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: darkGrey,
+            ),
+            onTap: () {
+              categoryAndroidSheet();
+              // selectItemCategory();
+            },
+          ),
         ),
-        onTap: () {
-          categoryAndroidSheet();
-          // selectItemCategory();
-        },
-      ),
+      ],
     );
   }
 
@@ -597,10 +638,13 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             },
           ),
         ),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         _buildPreviewYarnSwitchOption(
           title: "Enable Payment",
-          description: "Enable this to allow other users to support your work by making a donation.",
+          description:
+              "Enable this to allow other users to support your work by making a donation.",
           switchBtn: Switch(
             value: enablePayme,
             onChanged: (value) {
@@ -642,20 +686,22 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 24),
-      constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 60),
+      constraints:
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 60),
       child: CurvedButton(
         textColor: Colors.white,
         backgroundColor: navyBlue,
         text: "Submit",
         isLoading: isAPILoading,
-        onPressed: isAPILoading ? () {} : () async {
-          isAPILoading = true;
-          if (mounted) setState(() {});
-          await addYarnAndQuestion();
-          isAPILoading = false;
-          if (mounted) setState(() {});
-        },
+        onPressed: isAPILoading
+            ? () {}
+            : () async {
+                isAPILoading = true;
+                if (mounted) setState(() {});
+                await addYarnAndQuestion();
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
       ),
     );
   }
@@ -664,18 +710,18 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(AppLocalization.of(context)!.selectTheImageSource),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.camera),
-              onPressed: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.gallery),
-              onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            )
-          ],
-        ));
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
 
     if (imageSource != null) {
       ImagePicker().pickImage(source: imageSource).then((value) async {
@@ -694,7 +740,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   }
 
   pickFileFromMedia() async {
-
     List<Media>? res = await ImagesPicker.pick(
       count: 1,
       pickType: PickType.all,
@@ -718,16 +763,17 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         'file': PickedFile(imagePath!),
       });
       selectedImages.add(PickedFile(imagePath!));
-      selectedMedia.add(AddMediaForYarn(mediaFile: File(imagePath!), mediaType: mediaType));
+      selectedMedia.add(
+          AddMediaForYarn(mediaFile: File(imagePath!), mediaType: mediaType));
       if (mounted) setState(() {});
-
     } else if (mediaType == 'video') {
       var videoFilePath =
-      await NavigationUtil.push(context, screen: TrimmerView(file: file));
+          await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
         Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-        String? thumbnailImage = await generateThumbNailFromVideo(videoPath: videoPath!);
+        String? thumbnailImage =
+            await generateThumbNailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
         //   if (thumbnail != null) {
@@ -741,7 +787,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           'imagePoster': thumbnailImage,
         });
         selectedImages.add(PickedFile(videoPath!));
-        selectedMedia.add(AddMediaForYarn(mediaFile: File(videoPath!), mediaType: mediaType, mediaPoster: thumbnailImage));
+        selectedMedia.add(AddMediaForYarn(
+            mediaFile: File(videoPath!),
+            mediaType: mediaType,
+            mediaPoster: thumbnailImage));
         if (mounted) setState(() {});
       }
     }
@@ -807,11 +856,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                     if (value.toString().isNotEmpty) {
                       widget.askCategories = askCategoriesCopy!
                           .where((element) => element.name!
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(
-                              () {}); // To upgrade the product categories in the bottom sheet.
+                          () {}); // To upgrade the product categories in the bottom sheet.
                     } else {
                       widget.askCategories = askCategoriesCopy;
                       changeState(() {});
@@ -963,7 +1012,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
-    addYarnAndQuestion.title = widget.isYarn! ? textController.text : yarnController.text;
+    addYarnAndQuestion.title =
+        widget.isYarn! ? textController.text : yarnController.text;
     addYarnAndQuestion.body = textController.text;
     addYarnAndQuestion.categoryId = selectedAskCategory!.id;
     addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
@@ -978,14 +1028,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         Navigator.pop(context, Types.Question);
       }
       showToast(
-          message: widget.isYarn! ? "Yarn add successfully" : "Question add successfully");
+          message: widget.isYarn!
+              ? "Yarn add successfully"
+              : "Question add successfully");
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
     });
-
   }
-
 }
 
 class TopicTextField extends StatelessWidget {
@@ -1050,7 +1100,8 @@ class TopicTextField extends StatelessWidget {
         onTap: onTap,
         onChanged: onChanged,
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           border: InputBorder.none,
           hintText: hint ?? '',
           hintStyle: const TextStyle(fontSize: 12),

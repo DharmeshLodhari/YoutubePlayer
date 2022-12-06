@@ -3,23 +3,23 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../routes/route_constants.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
-import 'add_topic_screen.dart';
+import 'add_yarn_screen.dart';
 import 'ask_auth.dart';
 import 'ask_search_screen.dart';
 import 'ask_viewmodel.dart';
-import 'widgets/topics_view.dart';
 import 'widgets/question_view.dart';
+import 'widgets/topics_view.dart';
 
 class AskByCategoryScreen extends StatefulWidget {
-  
   AskCategories? askCategories;
   AskByCategoryScreen({this.askCategories});
-  
+
   @override
   State<AskByCategoryScreen> createState() => _AskByCategoryScreenState();
 }
@@ -46,7 +46,8 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   }
 
   Future<UsersCategories?> saveUserCategories(String categoryId) async {
-    Map<String, dynamic>? result = await AskAuth().saveUsersSingleCategories(categoryId);
+    Map<String, dynamic>? result =
+        await AskAuth().saveUsersSingleCategories(categoryId);
     setState(() {
       usersCategory = result!['results'];
     });
@@ -64,7 +65,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
       body: _buildBody(),
     );
   }
-  
+
   Widget _buildFloatingActionButton() {
     return SpeedDial(
       child: Icon(
@@ -82,21 +83,31 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
             title: "Ask Question",
             icon: SlydoAppIconNew.question,
             onTap: () {
-              NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: false, askCategory: widget.askCategories,));
-            }
-        ),
+              NavigationUtil.push(context,
+                  screen: AddTopicScreen(
+                    askCategories: askViewModel.askCategories,
+                    isYarn: false,
+                    askCategory: widget.askCategories,
+                  ));
+            }),
         _buildSpeedDialChild(
             title: "Yarn",
             icon: SlydoAppIconNew.yarn,
             onTap: () {
-              NavigationUtil.push(context, screen: AddTopicScreen(askCategories: askViewModel.askCategories, isYarn: true, askCategory: widget.askCategories));
-            }
-        ),
+              NavigationUtil.push(context,
+                  screen: AddTopicScreen(
+                      askCategories: askViewModel.askCategories,
+                      isYarn: true,
+                      askCategory: widget.askCategories));
+            }),
       ],
     );
   }
 
-  SpeedDialChild _buildSpeedDialChild({required String title, required IconData icon, required VoidCallback onTap}) {
+  SpeedDialChild _buildSpeedDialChild(
+      {required String title,
+      required IconData icon,
+      required VoidCallback onTap}) {
     return SpeedDialChild(
         onTap: onTap,
         backgroundColor: HexColor(widget.askCategories!.color!),
@@ -113,8 +124,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
               style: TextStyle(
                   color: HexColor("#424242"),
                   fontSize: 12,
-                  fontWeight: FontWeight.w600
-              ),
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -122,16 +132,15 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
           icon,
           color: Colors.white,
           size: 20,
-        )
-    );
+        ));
   }
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
       preferredSize: Size.fromHeight(80.0),
       child: AppBar(
-        backgroundColor: HexColor(widget.askCategories!.color!)
-            .withOpacity(0.8),
+        backgroundColor:
+            HexColor(widget.askCategories!.color!).withOpacity(0.8),
         titleSpacing: 0,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -154,7 +163,9 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                 onTap: () {
                   NavigationUtil.push(
                     context,
-                    screen: SearchScreen(askCategory: widget.askCategories,),
+                    screen: SearchScreen(
+                      askCategory: widget.askCategories,
+                    ),
                   );
                 },
                 child: Icon(
@@ -164,48 +175,50 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                 ),
               ),
               SizedBox(width: 10),
-              !isAddCategory()! ? InkWell(
-                onTap: () {
-                  saveUserCategories(widget.askCategories!.id!);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: white,
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
-                    child: Text(
-                      'Add',
-                      style: TextStyle(
-                        color: blackFont,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+              !isAddCategory()!
+                  ? InkWell(
+                      onTap: () {
+                        saveUserCategories(widget.askCategories!.id!);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: white,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          child: Text(
+                            'Add',
+                            style: TextStyle(
+                              color: blackFont,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  : InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.USER_PROFILE,
+                            arguments: {
+                              "searchedUserName": userBloc.user.userName
+                            });
+                      },
+                      child: Container(
+                        height: 24,
+                        width: 24,
+                        decoration: BoxDecoration(shape: BoxShape.circle),
+                        child: ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: userBloc.user.avatar!,
+                            fit: BoxFit.cover,
+                            errorWidget: imageErrorWidget,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ) : InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {
-                        "searchedUserName": userBloc.user.userName
-                      });
-                },
-                child: Container(
-                  height: 24,
-                  width: 24,
-                  decoration: BoxDecoration(shape: BoxShape.circle),
-                  child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: userBloc.user.avatar!,
-                      fit: BoxFit.cover,
-                      errorWidget: imageErrorWidget,
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(width: 17),
             ],
           ),
@@ -267,8 +280,12 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
               },
               controller: _pageViewCtrl,
               children: [
-                TopicView(selectedCategory: widget.askCategories!.id!,),
-                QuestionView(selectedCategory: widget.askCategories!.id!,),
+                TopicView(
+                  selectedCategory: widget.askCategories!.id!,
+                ),
+                QuestionView(
+                  selectedCategory: widget.askCategories!.id!,
+                ),
               ],
             ),
           ),
@@ -296,7 +313,9 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
         child: Text(
           title,
           style: TextStyle(
-            color: currentTapIndex == pageNum ? HexColor(widget.askCategories!.color!) : blackFont,
+            color: currentTapIndex == pageNum
+                ? HexColor(widget.askCategories!.color!)
+                : blackFont,
             fontSize: 14,
             fontWeight:
                 currentTapIndex == pageNum ? FontWeight.w600 : FontWeight.w400,
