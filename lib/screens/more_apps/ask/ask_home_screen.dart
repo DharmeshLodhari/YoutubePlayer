@@ -341,11 +341,9 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                           ));
                     },
                     title: askViewModel.askCategories[i].name,
-                    categoryColor:
-                        HexColor(askViewModel.askCategories[i].color!)
-                            .withOpacity(0.1),
-                    selectedCategoryTextColor:
-                        HexColor(askViewModel.askCategories[i].color!),
+                    categoryColor: HexColor("#D0D0D0"),
+                    selectedCategoryTextColor: HexColor("#000000"),
+                    borderColor: HexColor("#B7B7B7"),
                   )
                 ],
               );

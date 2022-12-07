@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class CategoryChip extends StatelessWidget {
-  CategoryChip({Key? key, this.onTap, this.title, this.categoryColor, this.selectedCategoryTextColor}) : super(key: key);
+  CategoryChip({Key? key, this.onTap, this.title, this.categoryColor, this.selectedCategoryTextColor, this.borderColor}) : super(key: key);
 
   GestureTapCallback? onTap;
   Color? categoryColor;
   String? title;
   Color? selectedCategoryTextColor;
+  Color? borderColor;
 
 
   @override
@@ -18,6 +19,7 @@ class CategoryChip extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: categoryColor,
+          border: Border.all(color: borderColor ?? Color(0xFF000000)),
         ),
         child: Text(
           title!,

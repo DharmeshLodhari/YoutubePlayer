@@ -159,9 +159,9 @@ class _AskMediaRenderState extends State<AskMediaRender> {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(width: 2.0, color: HexColor("E5E5E5"))
         ),
-        constraints: BoxConstraints(
-          maxHeight: 450
-        ),
+        // constraints: BoxConstraints(
+        //   maxHeight: 300
+        // ),
         child: Container(
           child: Stack(
             alignment: Alignment.center,

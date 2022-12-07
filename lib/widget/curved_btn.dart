@@ -17,6 +17,7 @@ class CurvedButton extends StatelessWidget {
   double borderRadius;
   bool isLoading;
   bool isPaymentBtn;
+  double fontSize;
 
   CurvedButton(
       {this.text,
@@ -27,6 +28,7 @@ class CurvedButton extends StatelessWidget {
       this.height = 42,
       this.isPaymentBtn = false,
       this.borderRadius = 7,
+      this.fontSize = 16,
       this.isLoading = false});
 
   @override
@@ -61,7 +63,7 @@ class CurvedButton extends StatelessWidget {
                 text!,
                 style: TextStyle(
                     color: textColor,
-                    fontSize: 16.0,
+                    fontSize: fontSize,
                     fontWeight: FontWeight.w600),
               ),
         color: backgroundColor,
