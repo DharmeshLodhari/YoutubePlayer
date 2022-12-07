@@ -26,7 +26,7 @@ class CustomizeCategory extends StatelessWidget {
             askCategory!.name!,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
           trailing: CustomizeCategoryButton(

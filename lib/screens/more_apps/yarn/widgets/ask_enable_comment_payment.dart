@@ -8,11 +8,26 @@ class AskEnableCommentAndPayment extends StatefulWidget {
 
   final String? title, image;
   final Widget? icon;
-  final Color? baseColor;
-  final Color? highLightColor;
+  // Text Color
+  final Color? baseTextColor, highLightTextColor;
+  // Border Color
+  final Color? baseBorderColor, highLightBorderColor;
+  // BackGround Color
+  final Color? baseBGColor, highLightBGColor;
   final Function(bool?) onTap;
 
-  AskEnableCommentAndPayment({Key? key, this.title, this.image, this.icon, this.baseColor, this.highLightColor, required this.onTap}) : super(key: key);
+  AskEnableCommentAndPayment({
+    Key? key,
+    this.title,
+    this.image,
+    this.icon,
+    this.baseTextColor,
+    this.highLightTextColor,
+    this.baseBorderColor,
+    this.highLightBorderColor,
+    this.baseBGColor,
+    this.highLightBGColor,
+    required this.onTap}) : super(key: key);
 
   @override
   State<AskEnableCommentAndPayment> createState() => _AskEnableCommentAndPaymentState();
@@ -37,8 +52,8 @@ class _AskEnableCommentAndPaymentState extends State<AskEnableCommentAndPayment>
       child: Container(
         padding: EdgeInsets.all(4),
         decoration: BoxDecoration(
-            color: isSelected ? widget.highLightColor : widget.baseColor,
-            border: Border.all(color: isSelected ? widget.highLightColor ?? Color(0xFFFFFFFF) : widget.baseColor ?? Color(0xFFFFFFFF)),
+            color: isSelected ? widget.highLightBGColor : widget.baseBGColor,
+            border: Border.all(color: isSelected ? widget.highLightBorderColor ?? Color(0xFFFFFFFF) : widget.baseBorderColor ?? Color(0xFFFFFFFF)),
             borderRadius: BorderRadius.circular(15)
         ),
         child: Row(
@@ -47,7 +62,7 @@ class _AskEnableCommentAndPaymentState extends State<AskEnableCommentAndPayment>
               widget.title ?? '',
               style: TextStyle(
                   fontSize: 10,
-                  color: isSelected ? widget.highLightColor : widget.baseColor
+                  color: isSelected ? widget.highLightTextColor : widget.baseTextColor
               ),
             ),
             SizedBox(width: 4,),
@@ -55,7 +70,7 @@ class _AskEnableCommentAndPaymentState extends State<AskEnableCommentAndPayment>
               "${widget.image}".toSVG(),
               height: 20,
               width: 20,
-              color: isSelected ? widget.highLightColor : widget.baseColor,
+              color: isSelected ? widget.highLightTextColor : widget.baseTextColor,
             ),
             SizedBox(width: 4,),
             Container(
@@ -63,10 +78,10 @@ class _AskEnableCommentAndPaymentState extends State<AskEnableCommentAndPayment>
               width: 15,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: isSelected ? widget.highLightColor ?? Color(0xFFFFFFFF) : widget.baseColor ?? Color(0xFFFFFFFF), width: isSelected ? 2 : 1),
-                color: isSelected ? widget.highLightColor : HexColor("#FFFFFF"),
+                border: Border.all(color: isSelected ? widget.highLightTextColor ?? Color(0xFFFFFFFF) : widget.baseTextColor ?? Color(0xFFFFFFFF), width: isSelected ? 2 : 1),
+                color: isSelected ? widget.highLightBGColor : HexColor("#FFFFFF"),
               ),
-              child: isSelected ? Icon(Icons.check_outlined, color: widget.highLightColor,size: 8,) : null,
+              child: isSelected ? Icon(Icons.check_outlined, color: widget.highLightTextColor,size: 8,) : null,
             ),
           ],
         ),

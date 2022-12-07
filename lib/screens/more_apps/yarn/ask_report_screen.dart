@@ -60,23 +60,33 @@ class _AddReportScreenState extends State<AddReportScreen> {
       title: Text(
         "Report",
         style: TextStyle(
-          fontSize: 21,
-          fontWeight: FontWeight.w700,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
           color: blackFont,
         ),
       ),
       elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 26,
-        ),
-        onPressed: () {
+      titleSpacing: 0,
+      leading: InkWell(
+        onTap: () {
           Navigator.pop(context);
         },
-      ),
+        child: Icon(
+          Icons.keyboard_arrow_left,
+          color: Colors.black,
+          size: 26,
+        ),
+      )
+      // IconButton(
+      //   icon: Icon(
+      //     Icons.keyboard_arrow_left,
+      //     color: navyBlue,
+      //     size: 26,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pop(context);
+      //   },
+      // ),
     );
   }
 
@@ -89,15 +99,15 @@ class _AddReportScreenState extends State<AddReportScreen> {
       children: [
         _buildInfoText(),
         SizedBox(
-          height: 40,
+          height: 25,
         ),
         getCategoryField(),
         SizedBox(
-          height: 40,
+          height: 25,
         ),
         _buildTextFiled(),
         SizedBox(
-          height: 90,
+          height: 30,
         ),
         _buildSubmitButton(),
       ],
@@ -105,9 +115,16 @@ class _AddReportScreenState extends State<AddReportScreen> {
   }
 
   Widget _buildInfoText() {
-    return Text(
-      "Do you think this is an inappropriate content? Please let us know!",
-      style: TextStyle(fontSize: 14, color: blackFont),
+    return Container(
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: HexColor("#FFE3AB")
+      ),
+      child: Text(
+        "Do you think this is an inappropriate content? Please let us know!",
+        style: TextStyle(fontSize: 14, color: HexColor("#553C08")),
+      ),
     );
   }
 
@@ -162,9 +179,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
       children: [
         Container(
           alignment: Alignment.center,
-          constraints:
-              BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 230),
           child: OutlineCurvedButton(
+            width: MediaQuery.of(context).size.width - 230,
             textColor: navyBlue,
             text: "Cancel",
             onPressed: () {
@@ -174,10 +190,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
         ),
         Container(
           alignment: Alignment.center,
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width - 230,
-          ),
           child: CurvedButton(
+            width: MediaQuery.of(context).size.width - 230,
             textColor: Colors.white,
             backgroundColor: navyBlue,
             text: "Submit",
