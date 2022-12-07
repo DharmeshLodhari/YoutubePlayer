@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +22,10 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/image_crop.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
+import 'ask_auth.dart';
 import 'ask_viewmodel.dart';
+import 'models/Topics/YarnTopic.dart';
+import 'models/ask_categories_model.dart';
 
 class AddTopicScreen extends StatefulWidget {
   List<AskCategories>? askCategories;
@@ -78,9 +79,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
       body: Consumer<AskViewModel>(builder: (context, model, child) {
-        return ListView(
-          padding: EdgeInsets.all(15),
-          children: [_buildYarnOrQuestionForm(model)],
+        return Column(
+          children: [
+            _buildYarnOrQuestionForm(model)
+          ],
         );
       }),
     );
@@ -89,42 +91,29 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
+      shape: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
       title: Text(
-        widget.isYarn! ? "Create Yarn" : "Ask Question",
+        widget.isYarn! ? "Yarn" : "Question",
         style: TextStyle(
-          fontSize: 21,
-          fontWeight: FontWeight.w700,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
           color: blackFont,
         ),
       ),
       elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        icon: Icon(
+      titleSpacing: 0,
+      leading: InkWell(
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+        child: Icon(
           Icons.keyboard_arrow_left,
-          color: navyBlue,
+          color: HexColor("#292929"),
           size: 26,
         ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
       ),
       actions: [
-        IconButton(
-          icon: Icon(
-            Icons.add_photo_alternate_rounded,
-            color: HexColor("#000000"),
-            size: 26,
-          ),
-          onPressed: () {
-            if (selectedImages.length == 4) {
-              showToast(message: "You can select only 4 images or videos");
-            } else {
-              pickFileFromMedia();
-              // pickImage();
-            }
-          },
-        ),
+        _buildSubmitButton(),
       ],
     );
   }
@@ -138,26 +127,32 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   Widget _buildYarnForm(AskViewModel model) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildQuestionFiled(),
+        SizedBox(height: 10,),
+        _buildTextField(),
+        if (isMentionName) ...[
+          _buildUserNameContainer(),
+        ],
+        SizedBox(height: 10,),
         if (selectedImages.isNotEmpty) ...[
           _buildAddImages(),
           SizedBox(
             height: 20,
           ),
         ],
-        _buildTextField(),
-        if (isMentionName) ...[
-          _buildUserNameContainer(),
-        ],
-        getCategoryField(),
-        SizedBox(
-          height: 20,
-        ),
-        _buildSwitchOptions(),
-        SizedBox(
-          height: 50,
-        ),
-        _buildSubmitButton(),
+        _buildRowForMedia(),
+
+        // getCategoryField(),
+        // SizedBox(
+        //   height: 20,
+        // ),
+        // _buildSwitchOptions(),
+        // SizedBox(
+        //   height: 50,
+        // ),
+        // _buildSubmitButton(),
       ],
     );
   }
@@ -198,6 +193,214 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
+  Widget _buildRowForMedia() {
+    return Container(
+      height: 54,
+      decoration: BoxDecoration(
+          border: Border(
+              top: BorderSide(color: HexColor("#D9D9D9"))
+          )
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.only(left: 8),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: () {
+                if (selectedImages.length == 4) {
+                  showToast(message: "You can select only 4 images or videos");
+                } else {
+                  pickFileFromMedia();
+                  // pickImage();
+                }
+              },
+              child: Icon(
+                Icons.add_photo_alternate_rounded,
+                color: HexColor("#000000"),
+                size: 26,
+              ),
+            ),
+            SizedBox(width: 8,),
+            InkWell(
+              onTap: () {},
+              child: Icon(
+                Icons.gif_box_outlined,
+                color: HexColor("#000000"),
+                size: 26,
+              ),
+            ),
+            SizedBox(width: 8,),
+            _buildCategory(),
+            SizedBox(width: 4,),
+            _buildEnableComment(),
+            SizedBox(width: 4,),
+            _buildEnablePayme(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnableComment() {
+    return InkWell(
+      onTap: () {
+        if (enableCommenting) {
+          enableCommenting = false;
+        } else {
+          enableCommenting = true;
+        }
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.all(4),
+        decoration: BoxDecoration(
+            color: enableCommenting ? HexColor("#000000") : HexColor("#F8F8F8"),
+            border: Border.all(color: enableCommenting ? HexColor("#000000") : HexColor("#E9E9E9")),
+            borderRadius: BorderRadius.circular(15)
+        ),
+        child: Row(
+          children: [
+            Text(
+              "enable comment",
+              style: TextStyle(
+                  fontSize: 10,
+                  color: enableCommenting ? HexColor("#FFFFFF") : HexColor("#ACAEB4")
+              ),
+            ),
+            SizedBox(width: 4,),
+            SvgPicture.asset(
+              "ask/reply".toSVG(),
+              height: 20,
+              width: 20,
+              color: enableCommenting ? HexColor("#FFFFFF") : HexColor("#ACAEB4"),
+            ),
+            SizedBox(width: 4,),
+            Container(
+              height: 15,
+              width: 15,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: enableCommenting ? HexColor("#FFFFFF") : HexColor("#ACAEB4"), width: enableCommenting ? 2 : 1),
+                color: enableCommenting ? HexColor("#000000") : HexColor("#FFFFFF"),
+              ),
+              child: enableCommenting ? Icon(Icons.check_outlined, color: HexColor("#FFFFFF"),size: 8,) : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnablePayme() {
+    return InkWell(
+      onTap: () {
+        if (enablePayMe) {
+          enablePayMe = false;
+        } else {
+          enablePayMe = true;
+        }
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.all(4),
+        decoration: BoxDecoration(
+            color: enablePayMe ? HexColor("#D9E1FA") : HexColor("#F8F8F8"),
+            border: Border.all(color: enablePayMe ? HexColor("#BBCBFF") : HexColor("#E9E9E9")),
+            borderRadius: BorderRadius.circular(15)
+        ),
+        child: Row(
+          children: [
+            Text(
+              "enable payment",
+              style: TextStyle(
+                  fontSize: 10,
+                  color: enablePayMe ? HexColor("#3F61DB") : HexColor("#ACAEB4")
+              ),
+            ),
+            SizedBox(width: 4,),
+            SvgPicture.asset(
+              "ask/send_money".toSVG(),
+              height: 20,
+              width: 20,
+              color: enablePayMe ? HexColor("#3F61DB") : HexColor("#ACAEB4"),
+            ),
+            SizedBox(width: 4,),
+            Container(
+              height: 15,
+              width: 15,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: enablePayMe ? HexColor("#3F61DB") : HexColor("#ACAEB4"), width: enablePayMe ? 2 : 1),
+                color: enablePayMe ? HexColor("#F0F3FD") : HexColor("#F0F3FD"),
+              ),
+              child: enablePayMe ? Icon(Icons.check_outlined, color: HexColor("#3F61DB"),size: 8,) : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategory() {
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        padding: EdgeInsets.all(4),
+        decoration: BoxDecoration(
+            color: HexColor("#F8F8F8"),
+            border: Border.all(color: HexColor("#E9E9E9")),
+            borderRadius: BorderRadius.circular(15)
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "select category",
+              style: TextStyle(
+                  fontSize: 10,
+                  color: HexColor("#ACAEB4")
+              ),
+            ),
+            SizedBox(width: 4,),
+            Icon(Icons.expand_more_outlined, color: HexColor("#ACAEB4"),size: 12,),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuestionFiled() {
+    return Container(
+      height: 45,
+      padding: EdgeInsets.only(left: 16),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
+      ),
+      child: TextField(
+        style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: HexColor("#151515")
+        ),
+        decoration: InputDecoration(
+          hintText: "Ask a Question",
+          hintStyle: TextStyle(
+            fontSize: 12,
+            color: HexColor("#7A7A7A"),
+            fontWeight: FontWeight.w400,
+          ),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          focusedErrorBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
   // Widget _buildAddImages() {
   //   return Container(
   //     height: 100,
@@ -229,8 +432,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           child: index != selectedImagesList.length
               ? showImage(index)
               : selectedImagesList.length != imageCount
-                  ? addImageButton()
-                  : null,
+              ? addImageButton()
+              : null,
         ),
       ),
     );
@@ -352,15 +555,15 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                 borderRadius: BorderRadius.circular(10),
                 image: selectedImagesList[index]['mediaType'] == 'image'
                     ? DecorationImage(
-                        image: FileImage(
-                          File(selectedImagesList[index]['file'].path),
-                        ),
-                        fit: BoxFit.fill)
+                    image: FileImage(
+                      File(selectedImagesList[index]['file'].path),
+                    ),
+                    fit: BoxFit.fill)
                     : DecorationImage(
-                        image: MemoryImage(
-                          selectedImagesList[index]['file'],
-                        ),
-                        fit: BoxFit.fill),
+                    image: MemoryImage(
+                      selectedImagesList[index]['file'],
+                    ),
+                    fit: BoxFit.fill),
               ),
             ),
           ),
@@ -419,26 +622,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   }
 
   Widget _buildTextField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.isYarn! ? "Yarn" : 'Text',
-          style: TextStyle(
-            fontSize: 14,
-            color: darkGrey,
-          ),
-        ),
-        SizedBox(
-          height: 7,
-        ),
-        TopicTextField(
-          height: 140,
-          controller: textController,
-          hint: widget.isYarn! ? "Yarn Something" : "",
-          onChanged: onValueChange,
-        ),
-      ],
+    return TopicTextField(
+      controller: textController,
+      hint: widget.isYarn! ? "Yarn Something" : "",
+      onChanged: onValueChange,
     );
   }
 
@@ -473,10 +660,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
           textController.text = textController.text.replaceRange(
-                (textController.text.length - (searchString?.length ?? 0)),
-                textController.text.length,
-                tappedUser,
-              ) +
+            (textController.text.length - (searchString?.length ?? 0)),
+            textController.text.length,
+            tappedUser,
+          ) +
               " ";
           textController.selection = TextSelection.fromPosition(TextPosition(
             offset: textController.text.length,
@@ -653,7 +840,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         _buildPreviewYarnSwitchOption(
           title: "Enable Payment",
           description:
-              "Enable this to allow other users to support your work by making a donation.",
+          "Enable this to allow other users to support your work by making a donation.",
           switchBtn: Switch(
             value: enablePayMe,
             onChanged: (value) {
@@ -696,21 +883,24 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 24),
       constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 60),
+      BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 240),
       child: CurvedButton(
+        height: 32,
         textColor: Colors.white,
         backgroundColor: navyBlue,
         text: "Submit",
+        fontSize: 10,
+        borderRadius: 20,
         isLoading: isAPILoading,
         onPressed: isAPILoading
             ? () {}
             : () async {
-                isAPILoading = true;
-                if (mounted) setState(() {});
-                await addYarnAndQuestion();
-                isAPILoading = false;
-                if (mounted) setState(() {});
-              },
+          isAPILoading = true;
+          if (mounted) setState(() {});
+          await addYarnAndQuestion();
+          isAPILoading = false;
+          if (mounted) setState(() {});
+        },
       ),
     );
   }
@@ -719,18 +909,18 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context)!.selectTheImageSource),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text(AppLocalization.of(context)!.camera),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text(AppLocalization.of(context)!.gallery),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
+          title: Text(AppLocalization.of(context)!.selectTheImageSource),
+          actions: <Widget>[
+            MaterialButton(
+              child: Text(AppLocalization.of(context)!.camera),
+              onPressed: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            MaterialButton(
+              child: Text(AppLocalization.of(context)!.gallery),
+              onPressed: () => Navigator.pop(context, ImageSource.gallery),
+            )
+          ],
+        ));
 
     if (imageSource != null) {
       ImagePicker().pickImage(source: imageSource).then((value) async {
@@ -777,12 +967,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       if (mounted) setState(() {});
     } else if (mediaType == 'video') {
       var videoFilePath =
-          await NavigationUtil.push(context, screen: TrimmerView(file: file));
+      await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
         Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
         String? thumbnailImage =
-            await generateThumbNailFromVideo(videoPath: videoPath!);
+        await generateThumbNailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
         //   if (thumbnail != null) {
@@ -865,11 +1055,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                     if (value.toString().isNotEmpty) {
                       widget.askCategories = askCategoriesCopy!
                           .where((element) => element.name!
-                              .toLowerCase()
-                              .startsWith(value.toString().toLowerCase()))
+                          .toLowerCase()
+                          .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(
-                          () {}); // To upgrade the product categories in the bottom sheet.
+                              () {}); // To upgrade the product categories in the bottom sheet.
                     } else {
                       widget.askCategories = askCategoriesCopy;
                       changeState(() {});
@@ -1022,7 +1212,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
     addYarnAndQuestion.title =
-        widget.isYarn! ? textController.text : yarnController.text;
+    widget.isYarn! ? textController.text : yarnController.text;
     addYarnAndQuestion.body = textController.text;
     addYarnAndQuestion.categoryId = selectedAskCategory!.id;
     addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
@@ -1110,7 +1300,7 @@ class TopicTextField extends StatelessWidget {
         onChanged: onChanged,
         decoration: InputDecoration(
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           border: InputBorder.none,
           hintText: hint ?? '',
           hintStyle: const TextStyle(fontSize: 12),
