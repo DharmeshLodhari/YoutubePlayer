@@ -7,11 +7,11 @@ import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../widget/customized_popup_menu.dart';
 import '../../../widget/noItemInList.dart';
-import 'ask_auth.dart';
-import 'ask_detail_screen.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 import 'widgets/ask_options.dart';
+import 'yarn_auth.dart';
+import 'yarn_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   AskCategories? askCategory;
@@ -67,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getSearchYarns(
+        Map<String, dynamic>? result = await YarnAuth().getSearchYarns(
             next, previous,
             isQuestion: isQuestion,
             searchText: searchController.text,

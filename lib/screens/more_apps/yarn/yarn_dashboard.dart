@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/more_apps/yarn/ask_by_category_screen.dart';
-import 'package:Slydo/screens/more_apps/yarn/ask_notification_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
@@ -9,77 +9,76 @@ import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import 'add_yarn_screen.dart';
-import 'ask_auth.dart';
 import 'ask_search_screen.dart';
-import 'ask_setting_screen.dart';
-import 'ask_viewmodel.dart';
 import 'models/ask_categories_model.dart';
 import 'widgets/category_chip.dart';
 import 'widgets/question_view.dart';
 import 'widgets/topics_view.dart';
+import 'yarn_auth.dart';
+import 'yarn_dashboard_bloc.dart';
+import 'yarn_setting_screen.dart';
 
-class AskHomeScreen extends StatefulWidget {
+class YarnDashboard extends StatefulWidget {
   List<AskCategories>? askCategories;
   List<AskCategories>? selectedCategories;
 
-  AskHomeScreen({this.askCategories, this.selectedCategories});
+  YarnDashboard({this.askCategories, this.selectedCategories});
 
   @override
-  State<AskHomeScreen> createState() => _AskHomeScreenState();
+  State<YarnDashboard> createState() => _YarnDashboardState();
 }
 
-class _AskHomeScreenState extends State<AskHomeScreen> {
+class _YarnDashboardState extends State<YarnDashboard> {
   GlobalKey<TopicViewState> topicViewStateKey = GlobalKey<TopicViewState>();
   GlobalKey<QuestionViewState> questionViewStateKey =
       GlobalKey<QuestionViewState>();
 
-  late PageController _pageViewCtrl;
+  late PageController _pageViewController;
   int? currentAskTapOnHome = 0;
-  bool isAskCategoriesLoading = false;
+  bool isCategoriesLoading = false;
   String? categoriesNext = "";
   String? categoriesPrevious = "";
   bool noCategoriesList = false;
   int? categoryCount = 0;
   String? selectedCategoryId;
-  late AskViewModel askViewModel;
+  late YarnDashboardBloc askViewModel;
 
-  List<Color> categoryColors = [
-    Color(0xFFF07097),
-    Color(0xFF030F36),
-    Color(0xFF8829C1),
-    Color(0xFF8B008B),
-    Color(0xFF3F61DB),
-    Color(0xFFB22727),
-    Color(0xFFFFCC00),
-    Color(0xFF8B008B),
-    Color(0xFFFFA500),
-    Color(0xFF46CE7C),
-    Color(0xFF964B00),
-    Color(0xFFF35B46),
-    Color(0xFF243A73),
-  ];
+  // List<Color> categoryColors = [
+  //   Color(0xFFF07097),
+  //   Color(0xFF030F36),
+  //   Color(0xFF8829C1),
+  //   Color(0xFF8B008B),
+  //   Color(0xFF3F61DB),
+  //   Color(0xFFB22727),
+  //   Color(0xFFFFCC00),
+  //   Color(0xFF8B008B),
+  //   Color(0xFFFFA500),
+  //   Color(0xFF46CE7C),
+  //   Color(0xFF964B00),
+  //   Color(0xFFF35B46),
+  //   Color(0xFF243A73),
+  // ];
 
   @override
   void initState() {
-    // Future.microtask(() => context.read<AskViewModel>().init());
-    _pageViewCtrl = PageController(initialPage: 0);
+    _pageViewController = PageController(initialPage: 0);
     getAskCategoriesList();
     super.initState();
   }
 
   void getAskCategoriesList() async {
-    if (!isAskCategoriesLoading) {
-      if (categoriesNext != null && !isAskCategoriesLoading) {
-        isAskCategoriesLoading = true;
+    if (!isCategoriesLoading) {
+      if (categoriesNext != null && !isCategoriesLoading) {
+        isCategoriesLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth()
+        Map<String, dynamic>? result = await YarnAuth()
             .getAllCategories(categoriesNext, categoriesPrevious!);
 
         if (result == null) {
           noCategoriesList = true;
 
-          isAskCategoriesLoading = false;
+          isCategoriesLoading = false;
           if (mounted) {
             setState(() {});
           }
@@ -92,7 +91,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         var tempList = result['results'];
         if (mounted) {
           noCategoriesList = false;
-          isAskCategoriesLoading = false;
+          isCategoriesLoading = false;
           askViewModel.askCategories = tempList;
         }
       }
@@ -115,7 +114,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    askViewModel = Provider.of<AskViewModel>(context, listen: false);
+    askViewModel = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: _buildFloatingActionButton(),
@@ -150,7 +149,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                 if (value != null) {
                   if (value == Types.Question) {
                     updateCurrentAskTapOnHome(i: 1);
-                    _pageViewCtrl.jumpToPage(1);
+                    _pageViewController.jumpToPage(1);
                     questionViewStateKey.currentState?.onPostRefresh();
                   }
                 }
@@ -169,7 +168,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
                 if (value != null) {
                   if (value == Types.Yarn) {
                     updateCurrentAskTapOnHome(i: 0);
-                    _pageViewCtrl.jumpToPage(0);
+                    _pageViewController.jumpToPage(0);
                     topicViewStateKey.currentState?.onPostRefresh();
                   }
                 }
@@ -275,7 +274,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           onTap: () {
             NavigationUtil.push(
               context,
-              screen: AskNotification(),
+              screen: YarnNotification(),
             );
           },
           icon: SlydoAppIconNew.notification,
@@ -287,7 +286,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
             onTap: () {
               NavigationUtil.push(
                 context,
-                screen: AskSettingsScreen(),
+                screen: YarnSettingsScreen(),
               );
             },
             icon: Icons.settings,
@@ -363,7 +362,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           pageViewTabItem(
               onPageTap: () {
                 updateCurrentAskTapOnHome(i: 0);
-                _pageViewCtrl.jumpToPage(0);
+                _pageViewController.jumpToPage(0);
               },
               pageNum: 0,
               title: 'Yarns',
@@ -371,7 +370,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
           pageViewTabItem(
               onPageTap: () {
                 updateCurrentAskTapOnHome(i: 1);
-                _pageViewCtrl.jumpToPage(1);
+                _pageViewController.jumpToPage(1);
               },
               pageNum: 1,
               title: 'Questions',
@@ -396,7 +395,7 @@ class _AskHomeScreenState extends State<AskHomeScreen> {
         onPageChanged: (currentPage) {
           updateCurrentAskTapOnHome(i: currentPage);
         },
-        controller: _pageViewCtrl,
+        controller: _pageViewController,
         children: [
           TopicView(
             key: topicViewStateKey,

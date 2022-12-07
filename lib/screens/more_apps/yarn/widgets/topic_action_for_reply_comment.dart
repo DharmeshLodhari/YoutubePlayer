@@ -15,7 +15,7 @@ import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
-import '../ask_auth.dart';
+import '../yarn_auth.dart';
 
 class TopicActionsForReplyComment extends StatefulWidget {
   CommentDetails? replyCommentDetail;
@@ -30,7 +30,7 @@ class _TopicActionsForReplyCommentState
     extends State<TopicActionsForReplyComment> {
   Future addLikeToReplyComment() async {
     Map<String, dynamic>? data =
-        await AskAuth().addLikeComment(widget.replyCommentDetail!.id!);
+        await YarnAuth().addLikeComment(widget.replyCommentDetail!.id!);
     if (data != null) {
       setState(() {
         widget.replyCommentDetail!.likes = data['likes'];
@@ -41,7 +41,7 @@ class _TopicActionsForReplyCommentState
 
   Future addDisLikeToReplyComment() async {
     Map<String, dynamic>? data =
-        await AskAuth().addDisLikeComment(widget.replyCommentDetail!.id!);
+        await YarnAuth().addDisLikeComment(widget.replyCommentDetail!.id!);
     if (data != null) {
       setState(() {
         widget.replyCommentDetail!.likes = data['likes'];

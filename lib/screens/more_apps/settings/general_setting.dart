@@ -9,7 +9,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/ask_setting_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_setting_screen.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/logout_helper.dart';
 import 'package:Slydo/utils/global_key.dart';
@@ -116,7 +116,7 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     onTap: () {
                       NavigationUtil.push(
                         context,
-                        screen: AskSettingsScreen(),
+                        screen: YarnSettingsScreen(),
                       );
                     }),
                 getSettingsTile(

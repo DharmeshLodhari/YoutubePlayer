@@ -1,17 +1,16 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/ask_loader.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/ask_posts_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/topic_text_field.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-import '../../../locale/app_localization.dart';
-import 'ask_auth.dart';
-import 'models/Topics/CommentDetails.dart';
-import 'widgets/ask_loader.dart';
-import 'widgets/ask_posts_view.dart';
-import 'widgets/topic_text_field.dart';
 
 class AskDetailScreen extends StatefulWidget {
   YarnTopic? yarnTopic;
@@ -54,7 +53,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth()
+        Map<String, dynamic>? result = await YarnAuth()
             .getAllComments(next, previous ?? '', widget.yarnTopic!.id!);
 
         if (result == null) {
@@ -201,7 +200,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
     };
     try {
       CommentDetails? commentDetails =
-          await AskAuth().addCommentToYarn(widget.yarnTopic!.id!, data);
+          await YarnAuth().addCommentToYarn(widget.yarnTopic!.id!, data);
       if (commentDetails != null) {
         setState(() {
           widget.yarnTopic!.numberOfComments =

@@ -17,8 +17,8 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -234,7 +234,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     Map<String, dynamic>? data;
     try {
-      data = await AskAuth().getAllTopics("", "",
+      data = await YarnAuth().getAllTopics("", "",
           type: "my-topics",
           isType: false,
           userName: arguments['searchedUserName']);

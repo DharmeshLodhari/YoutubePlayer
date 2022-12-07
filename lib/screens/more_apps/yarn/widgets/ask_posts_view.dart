@@ -9,10 +9,10 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/customized_popup_menu.dart';
-import '../ask_auth.dart';
 import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
+import '../yarn_auth.dart';
 import 'ask_comment_view.dart';
 import 'ask_media_render.dart';
 import 'ask_options.dart';
@@ -67,7 +67,7 @@ class _AskPostsState extends State<AskPosts> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllComments(
+        Map<String, dynamic>? result = await YarnAuth().getAllComments(
             next, previous, widget.yarnTopic!.id!,
             sortBy: selectFilter);
 

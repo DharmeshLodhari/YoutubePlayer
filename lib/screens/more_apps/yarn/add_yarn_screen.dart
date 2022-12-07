@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
@@ -24,7 +24,7 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/image_crop.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
-import 'ask_viewmodel.dart';
+import 'yarn_dashboard_bloc.dart';
 
 class AddTopicScreen extends StatefulWidget {
   List<AskCategories>? askCategories;
@@ -65,7 +65,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   @override
   void initState() {
-    Future.microtask(() => context.read<AskViewModel>().init());
+    Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
     super.initState();
@@ -77,7 +77,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: Consumer<AskViewModel>(builder: (context, model, child) {
+      body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
         return ListView(
           padding: EdgeInsets.all(15),
           children: [_buildYarnOrQuestionForm(model)],
@@ -129,14 +129,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
-  Widget _buildYarnOrQuestionForm(AskViewModel model) {
+  Widget _buildYarnOrQuestionForm(YarnDashboardBloc model) {
     if (widget.isYarn!) {
       return _buildYarnForm(model);
     }
     return _buildQuestionForm(model);
   }
 
-  Widget _buildYarnForm(AskViewModel model) {
+  Widget _buildYarnForm(YarnDashboardBloc model) {
     return Column(
       children: [
         if (selectedImages.isNotEmpty) ...[
@@ -162,7 +162,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
-  Widget _buildQuestionForm(AskViewModel model) {
+  Widget _buildQuestionForm(YarnDashboardBloc model) {
     return Column(
       children: [
         if (selectedImages.isNotEmpty) ...[
@@ -1030,7 +1030,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.enablePayme = enablePayMe;
     addYarnAndQuestion.enableCommenting = enableCommenting;
 
-    await AskAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
+    await YarnAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
       if (widget.isYarn!) {
         Navigator.pop(context, Types.Yarn);
       } else if (!widget.isYarn!) {

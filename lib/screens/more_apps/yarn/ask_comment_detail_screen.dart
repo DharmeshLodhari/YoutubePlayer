@@ -8,10 +8,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/util.dart';
-import 'ask_auth.dart';
 import 'models/Topics/CommentDetails.dart';
 import 'widgets/ask_loader.dart';
 import 'widgets/topic_text_field.dart';
+import 'yarn_auth.dart';
 
 class AskCommentDetailScreen extends StatefulWidget {
   YarnTopic? yarnTopic;
@@ -47,7 +47,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth()
+        Map<String, dynamic>? result = await YarnAuth()
             .getAllReply(next, previous, widget.commentDetail!.id!);
 
         if (result == null) {
@@ -193,7 +193,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
     };
     try {
       CommentDetails? commentDetail =
-          await AskAuth().addReplyToComment(widget.commentDetail!.id!, data);
+          await YarnAuth().addReplyToComment(widget.commentDetail!.id!, data);
       if (commentDetail != null) {
         widget.commentDetail!.replyCount =
             widget.commentDetail!.replyCount! + 1;

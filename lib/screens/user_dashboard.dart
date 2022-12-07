@@ -10,9 +10,9 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/ask_home_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -77,7 +77,7 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 
   Future<UsersCategories?> getUserCategories() async {
-    Map<String, dynamic>? result = await AskAuth().getUsersCategories();
+    Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
     UsersCategories? usersCategory;
     if (result != null) {
       usersCategory = result['results'];
@@ -618,7 +618,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     } else {
                       NavigationUtil.push(
                         context,
-                        screen: AskHomeScreen(),
+                        screen: YarnDashboard(),
                       );
                     }
                   } else {
@@ -630,7 +630,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 } else {
                   NavigationUtil.push(
                     context,
-                    screen: AskHomeScreen(),
+                    screen: YarnDashboard(),
                   );
                 }
               } else {
@@ -644,7 +644,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 } else {
                   NavigationUtil.push(
                     context,
-                    screen: AskHomeScreen(),
+                    screen: YarnDashboard(),
                   );
                 }
               }

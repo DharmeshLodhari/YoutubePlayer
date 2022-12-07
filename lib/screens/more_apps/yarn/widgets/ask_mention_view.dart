@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../utils/util.dart';
 import '../../user_profile/models/user.dart';
-import '../ask_auth.dart';
+import '../yarn_auth.dart';
 
 class AskMentionView extends StatefulWidget {
   final String? searchText;
@@ -158,7 +158,7 @@ class _AskMentionViewState extends State<AskMentionView> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result =
-            await AskAuth().searchUser(next, previous ?? '', searchText);
+            await YarnAuth().searchUser(next, previous ?? '', searchText);
 
         debugPrint("RESULTS:- $result");
         if (result == null) {

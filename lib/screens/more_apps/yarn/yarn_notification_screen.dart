@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 import '../../../utils/colors.dart';
 
-class AskNotification extends StatefulWidget {
-  const AskNotification({Key? key}) : super(key: key);
+class YarnNotification extends StatefulWidget {
+  const YarnNotification({Key? key}) : super(key: key);
 
   @override
-  State<AskNotification> createState() => _AskNotificationState();
+  State<YarnNotification> createState() => _YarnNotificationState();
 }
 
-class _AskNotificationState extends State<AskNotification> {
+class _YarnNotificationState extends State<YarnNotification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
