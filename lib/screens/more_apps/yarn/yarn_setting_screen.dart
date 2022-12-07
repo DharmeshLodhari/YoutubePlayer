@@ -20,21 +20,22 @@ class YarnSettingsScreen extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 26,
-        ),
-        onPressed: () {
+      leading: InkWell(
+        onTap: () {
           Navigator.pop(context);
         },
+        child: Icon(
+          Icons.keyboard_arrow_left,
+          color: Colors.black,
+          size: 26,
+        ),
       ),
+      titleSpacing: 0,
       title: Text(
-        "Settings",
+        "Yarn Settings",
         style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
             color: HexColor("#030F36")),
       ),
     );
@@ -65,8 +66,8 @@ class YarnSettingsScreen extends StatelessWidget {
           title: Text(
             "Customize your interest",
             style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
               color: Colors.black,
             ),
           ),
@@ -92,8 +93,8 @@ class YarnSettingsScreen extends StatelessWidget {
           title: Text(
             "Push Notification",
             style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
               color: Colors.black,
             ),
           ),

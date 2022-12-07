@@ -98,24 +98,23 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
       title: Text(
         'Customize your interest',
         style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
           color: blackFont,
         ),
       ),
       elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        padding: EdgeInsets.zero,
-        icon: Icon(
-          Icons.keyboard_arrow_left,
-          color: navyBlue,
-          size: 26,
-        ),
-        onPressed: () {
+      titleSpacing: 0,
+      leading: InkWell(
+        onTap: () {
           Navigator.pop(context);
         },
-      ),
+        child: Icon(
+          Icons.keyboard_arrow_left,
+          color: Colors.black,
+          size: 26,
+        ),
+      )
     );
   }
 

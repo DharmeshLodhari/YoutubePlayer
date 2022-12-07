@@ -99,10 +99,10 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
       child: !isLoading
           ? Container(
               height: 25,
-              width: 60,
+              width: isAdd ? 77 : 58,
               decoration: BoxDecoration(
                   color: isAdd ? Colors.white : HexColor("#3F61DB"),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: HexColor("#3F61DB"),
                   )),

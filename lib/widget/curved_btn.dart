@@ -93,12 +93,14 @@ class CurvedButton extends StatelessWidget {
 
 // ignore: must_be_immutable
 class OutlineCurvedButton extends StatelessWidget {
+  double? width;
   String? text = "Button";
   Color? backgroundColor = Colors.transparent;
   Color? textColor = navyBlue;
   Function? onPressed = () {};
 
   OutlineCurvedButton({
+    this.width,
     this.text,
     this.textColor,
     this.backgroundColor,
@@ -108,7 +110,7 @@ class OutlineCurvedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: width ?? 100.w,
       height: 42,
       child: MaterialButton(
         shape: OutlineInputBorder(
