@@ -1,16 +1,18 @@
 import 'dart:convert';
+
 import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../widget/curved_btn.dart';
-import 'ask_auth.dart';
-import 'ask_home_screen.dart';
-import 'ask_viewmodel.dart';
 import 'models/ask_categories_model.dart';
 import 'widgets/category_chip.dart';
+import 'yarn_auth.dart';
+import 'yarn_dashboard.dart';
+import 'yarn_dashboard_bloc.dart';
 
 class AskStartScreen extends StatefulWidget {
   @override
@@ -18,7 +20,6 @@ class AskStartScreen extends StatefulWidget {
 }
 
 class _AskStartScreenState extends State<AskStartScreen> {
-
   bool isAskCategoriesLoading = false;
   String? categoriesNext = "";
   String? categoriesPrevious = "";
@@ -26,7 +27,8 @@ class _AskStartScreenState extends State<AskStartScreen> {
   int? categoryCount = 0;
   // List<AskCategories> askCategoriesList = [];
   // List<AskCategories> selectedAskCategoriesList = [];
-  final GlobalKey<ScaffoldMessengerState> _askCategoriesScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _askCategoriesScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
   DatabaseHelper _db = DatabaseHelper();
 
@@ -46,10 +48,9 @@ class _AskStartScreenState extends State<AskStartScreen> {
     Color(0xFF243A73),
   ];
 
-
   @override
   void initState() {
-    Future.microtask(() => context.read<AskViewModel>().init());
+    Future.microtask(() => context.read<YarnDashboardBloc>().init());
     getAskCategoriesList();
     super.initState();
   }
@@ -60,7 +61,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
         isAskCategoriesLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth()
+        Map<String, dynamic>? result = await YarnAuth()
             .getAllCategories(categoriesNext, categoriesPrevious!);
 
         if (result == null) {
@@ -80,11 +81,13 @@ class _AskStartScreenState extends State<AskStartScreen> {
         if (mounted) {
           noCategoriesList = false;
           isAskCategoriesLoading = false;
-          context.read<AskViewModel>().setAskCategories(tempList);
+          context.read<YarnDashboardBloc>().setAskCategories(tempList);
           //askCategoriesList.addAll(tempList);
         }
       }
-      if (Provider.of<AskViewModel>(context, listen: false).askCategories.isEmpty) {
+      if (Provider.of<YarnDashboardBloc>(context, listen: false)
+          .askCategories
+          .isEmpty) {
         if (mounted) {
           setState(() {
             noCategoriesList = true;
@@ -102,101 +105,101 @@ class _AskStartScreenState extends State<AskStartScreen> {
   }
 
   Future<void> saveUsersCategories(String body) async {
-    Map<String, dynamic>? result = await AskAuth().saveUsersCategories(body);
+    Map<String, dynamic>? result = await YarnAuth().saveUsersCategories(body);
     UsersCategories usersCategories = result!['results'] as UsersCategories;
-    UserCategoriesStructure userCategoriesStructure = UserCategoriesStructure(userId: userBloc.user.uuid, userSelectedCategory: jsonEncode(usersCategories.categories));
+    UserCategoriesStructure userCategoriesStructure = UserCategoriesStructure(
+        userId: userBloc.user.uuid,
+        userSelectedCategory: jsonEncode(usersCategories.categories));
     _db.saveUserSelectedYarnCategories(userCategoriesStructure);
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    return Consumer<AskViewModel>(
-      builder: (context, model, child) {
-        return ScaffoldMessenger(
-          key: _askCategoriesScaffoldMessengerKey,
-          child: Scaffold(
+    return Consumer<YarnDashboardBloc>(builder: (context, model, child) {
+      return ScaffoldMessenger(
+        key: _askCategoriesScaffoldMessengerKey,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.keyboard_arrow_left,
-                  color: navyBlue,
-                  size: 26,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(
+                Icons.keyboard_arrow_left,
+                color: navyBlue,
+                size: 26,
               ),
-            ),
-            body: ListView(
-              padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
-              children: [
-                SizedBox(
-                  height: 15,
-                ),
-                _buildTitleAndDescription(
-                    title: 'What topic are you interested in?',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                _buildTitleAndDescription(
-                    title: 'Select 3 or more categories to continue. We’ll use this to recommend topics you may like.',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                _buildCategoryList(model),
-                SizedBox(
-                  height: 65,
-                ),
-                _buildSaveButton(model),
-              ],
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
           ),
-        );
-      }
-    );
+          body: ListView(
+            padding: EdgeInsets.only(left: 26, right: 26, bottom: 20),
+            children: [
+              SizedBox(
+                height: 15,
+              ),
+              _buildTitleAndDescription(
+                  title: 'What topic are you interested in?',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700),
+              SizedBox(
+                height: 15,
+              ),
+              _buildTitleAndDescription(
+                  title:
+                      'Select 3 or more categories to continue. We’ll use this to recommend topics you may like.',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400),
+              SizedBox(
+                height: 30,
+              ),
+              _buildCategoryList(model),
+              SizedBox(
+                height: 65,
+              ),
+              _buildSaveButton(model),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
-  Widget _buildTitleAndDescription({String? title, double? fontSize, FontWeight? fontWeight}) {
+  Widget _buildTitleAndDescription(
+      {String? title, double? fontSize, FontWeight? fontWeight}) {
     return Text(
       title!,
       style: TextStyle(fontSize: fontSize, fontWeight: fontWeight),
     );
   }
 
-  Widget _buildCategoryList(AskViewModel model) {
+  Widget _buildCategoryList(YarnDashboardBloc model) {
     if (!isAskCategoriesLoading) {
       return Wrap(
         runSpacing: 30,
         spacing: 15,
-        children: model.askCategories
-            .map(
-                (e) {
-                  // int random = Random().nextInt(model.categoryColors.length-1);
-                  return CategoryChip(
-                    onTap: () {
-                      model.onSelectedAskCategories(e.id!);
-                    },
-                    title: e.name!,
-                    categoryColor: HexColor(e.color!).withOpacity(0.1),
-                    selectedCategoryTextColor: HexColor(e.color!),
-                  );
-                }).toList(),
+        children: model.askCategories.map((e) {
+          // int random = Random().nextInt(model.categoryColors.length-1);
+          return CategoryChip(
+            onTap: () {
+              model.onSelectedAskCategories(e.id!);
+            },
+            title: e.name!,
+            categoryColor: HexColor(e.color!).withOpacity(0.1),
+            selectedCategoryTextColor: HexColor(e.color!),
+          );
+        }).toList(),
       );
     }
-    return Center(child: CircularProgressIndicator(),);
+    return Center(
+      child: CircularProgressIndicator(),
+    );
   }
 
-  Widget _buildSaveButton(AskViewModel model) {
+  Widget _buildSaveButton(YarnDashboardBloc model) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -204,14 +207,13 @@ class _AskStartScreenState extends State<AskStartScreen> {
         Container(
           alignment: Alignment.center,
           padding: EdgeInsets.symmetric(horizontal: 24),
-          constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width - 60),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 60),
           child: CurvedButton(
             height: 50,
             textColor: Colors.white,
             backgroundColor: navyBlue,
-            text:
-            "${model.selectedAskCategories.length} out of 3 selected",
+            text: "${model.selectedAskCategories.length} out of 3 selected",
             onPressed: () async {
               if (model.selectedAskCategories.isEmpty) {
                 showToast(message: "Please select minimum 3 categories");
@@ -219,10 +221,11 @@ class _AskStartScreenState extends State<AskStartScreen> {
                 if (model.selectedAskCategories.length < 3) {
                   showToast(message: "Please select more then 3 categories");
                 } else {
-                  await saveUsersCategories(jsonEncode({"categories": model.selectedAskCategories}));
+                  await saveUsersCategories(
+                      jsonEncode({"categories": model.selectedAskCategories}));
                   NavigationUtil.push(
                     context,
-                    screen: AskHomeScreen(askCategories: model.askCategories),
+                    screen: YarnDashboard(askCategories: model.askCategories),
                   ).then((value) => Navigator.of(context).pop());
                 }
               }
@@ -231,7 +234,6 @@ class _AskStartScreenState extends State<AskStartScreen> {
               //   context,
               //   screen: AskHomeScreen(askCategories: model.askCategories),
               // );
-
             },
           ),
         ),

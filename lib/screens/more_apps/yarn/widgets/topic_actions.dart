@@ -16,8 +16,8 @@ import '../../../../utils/util.dart';
 import '../../../../widget/bottom_sheet_item.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
-import '../ask_auth.dart';
-import '../ask_detail_screen.dart';
+import '../yarn_auth.dart';
+import '../yarn_detail_screen.dart';
 
 class TopicActions extends StatefulWidget {
   YarnTopic? yarnTopic;
@@ -29,7 +29,8 @@ class TopicActions extends StatefulWidget {
 
 class _TopicActionsState extends State<TopicActions> {
   Future addLikeToYarnAndQuestion() async {
-    Map<String, dynamic>? data = await AskAuth().addLike(widget.yarnTopic!.id!);
+    Map<String, dynamic>? data =
+        await YarnAuth().addLike(widget.yarnTopic!.id!);
     if (data != null) {
       setState(() {
         widget.yarnTopic!.voteCount = data['vote_count'];
@@ -40,7 +41,7 @@ class _TopicActionsState extends State<TopicActions> {
 
   Future addDisLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data =
-        await AskAuth().addDisLike(widget.yarnTopic!.id!);
+        await YarnAuth().addDisLike(widget.yarnTopic!.id!);
     if (data != null) {
       setState(() {
         widget.yarnTopic!.voteCount = data['vote_count'];

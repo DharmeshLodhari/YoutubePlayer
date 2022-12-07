@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../../../utils/colors.dart';
 import '../../../../utils/util.dart';
-import '../ask_auth.dart';
 import '../models/ask_categories_model.dart';
+import '../yarn_auth.dart';
 
 class CustomizeCategoryButton extends StatefulWidget {
   AskCategories? askCategory;
   UsersCategories? usersCategory;
-  CustomizeCategoryButton({Key? key, this.askCategory, this.usersCategory}) : super(key: key);
+  CustomizeCategoryButton({Key? key, this.askCategory, this.usersCategory})
+      : super(key: key);
 
   @override
-  State<CustomizeCategoryButton> createState() => _CustomizeCategoryButtonState();
+  State<CustomizeCategoryButton> createState() =>
+      _CustomizeCategoryButtonState();
 }
 
 class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
-
   bool isAdd = false;
   bool isLoading = false;
 
@@ -42,7 +43,8 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
 
   Future<UsersCategories?> saveUserCategories(String categoryId) async {
     try {
-      Map<String, dynamic>? result = await AskAuth().saveUsersSingleCategories(categoryId);
+      Map<String, dynamic>? result =
+          await YarnAuth().saveUsersSingleCategories(categoryId);
       if (result != null) {
         setState(() {
           widget.usersCategory = result['results'];
@@ -63,7 +65,7 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
   Future<UsersCategories?> deleteUserCategories(String categoryId) async {
     try {
       Map<String, dynamic>? result =
-      await AskAuth().deleteUsersSingleCategories(categoryId);
+          await YarnAuth().deleteUsersSingleCategories(categoryId);
       if (result != null) {
         setState(() {
           widget.usersCategory = result['results'];
@@ -94,27 +96,39 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
           await saveUserCategories(widget.askCategory!.id!);
         }
       },
-      child: !isLoading ? Container(
-        height: 25,
-        width: 60,
-        decoration: BoxDecoration(
-            color: isAdd ? Colors.white : HexColor("#3F61DB"),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: HexColor("#3F61DB"),
-            )),
-        child: Center(
-          child: Text(
-            isAdd ? "Remove" : "Add",
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: isAdd ? HexColor("#3F61DB") : Colors.white,
-            ),
-          ),
-        ),
-      ) : Container(height: 25,
-          width: 60, child: Center(child: SizedBox(height: 18, width: 18, child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue), strokeWidth: 2.0,),))),
+      child: !isLoading
+          ? Container(
+              height: 25,
+              width: 60,
+              decoration: BoxDecoration(
+                  color: isAdd ? Colors.white : HexColor("#3F61DB"),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: HexColor("#3F61DB"),
+                  )),
+              child: Center(
+                child: Text(
+                  isAdd ? "Remove" : "Add",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isAdd ? HexColor("#3F61DB") : Colors.white,
+                  ),
+                ),
+              ),
+            )
+          : Container(
+              height: 25,
+              width: 60,
+              child: Center(
+                  child: SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
+                  strokeWidth: 2.0,
+                ),
+              ))),
     );
   }
 }

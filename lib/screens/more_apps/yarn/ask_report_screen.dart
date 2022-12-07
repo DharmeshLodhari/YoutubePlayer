@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_dropdown_field.dart';
 import '../../../widget/customized_textform_field.dart';
-import 'ask_auth.dart';
-import 'ask_viewmodel.dart';
+import 'yarn_auth.dart';
+import 'yarn_dashboard_bloc.dart';
 
 class AddReportScreen extends StatefulWidget {
   Map<String, dynamic>? object;
@@ -19,7 +20,6 @@ class AddReportScreen extends StatefulWidget {
 }
 
 class _AddReportScreenState extends State<AddReportScreen> {
-
   final textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
   // ScrollController _scrollController = ScrollController();
@@ -32,7 +32,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
 
   @override
   void initState() {
-    Future.microtask(() => context.read<AskViewModel>().init());
+    Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();
     violationTypes = violationType;
     violationTypeCopy = violationTypes;
@@ -45,12 +45,10 @@ class _AddReportScreenState extends State<AddReportScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: Consumer<AskViewModel>(builder: (context, model, child) {
+      body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
         return ListView(
           padding: EdgeInsets.all(15),
-          children: [
-            _buildYarnOrQuestionForm(model)
-          ],
+          children: [_buildYarnOrQuestionForm(model)],
         );
       }),
     );
@@ -82,19 +80,25 @@ class _AddReportScreenState extends State<AddReportScreen> {
     );
   }
 
-  Widget _buildYarnOrQuestionForm(AskViewModel model) {
+  Widget _buildYarnOrQuestionForm(YarnDashboardBloc model) {
     return _buildYarnForm(model);
   }
 
-  Widget _buildYarnForm(AskViewModel model) {
+  Widget _buildYarnForm(YarnDashboardBloc model) {
     return Column(
       children: [
         _buildInfoText(),
-        SizedBox(height: 40,),
+        SizedBox(
+          height: 40,
+        ),
         getCategoryField(),
-        SizedBox(height: 40,),
+        SizedBox(
+          height: 40,
+        ),
         _buildTextFiled(),
-        SizedBox(height: 90,),
+        SizedBox(
+          height: 90,
+        ),
         _buildSubmitButton(),
       ],
     );
@@ -103,10 +107,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
   Widget _buildInfoText() {
     return Text(
       "Do you think this is an inappropriate content? Please let us know!",
-      style: TextStyle(
-        fontSize: 14,
-        color: blackFont
-      ),
+      style: TextStyle(fontSize: 14, color: blackFont),
     );
   }
 
@@ -117,10 +118,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
         Text(
           'Tell us more (Optional)',
           style: TextStyle(
-            fontSize: 14,
-            color: blackFont,
-            fontWeight: FontWeight.w600
-          ),
+              fontSize: 14, color: blackFont, fontWeight: FontWeight.w600),
         ),
         SizedBox(
           height: 7,
@@ -164,8 +162,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
       children: [
         Container(
           alignment: Alignment.center,
-          constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width - 230),
+          constraints:
+              BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 230),
           child: OutlineCurvedButton(
             textColor: navyBlue,
             text: "Cancel",
@@ -177,7 +175,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
         Container(
           alignment: Alignment.center,
           constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width - 230,
+            maxWidth: MediaQuery.of(context).size.width - 230,
           ),
           child: CurvedButton(
             textColor: Colors.white,
@@ -207,10 +205,11 @@ class _AddReportScreenState extends State<AddReportScreen> {
                     if (value.toString().isNotEmpty) {
                       violationTypes = violationTypeCopy
                           .where((element) => element.type!
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
-                      changeState(() {}); // To upgrade the product categories in the bottom sheet.
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
                     } else {
                       violationTypes = violationTypeCopy;
                       changeState(() {});
@@ -293,7 +292,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
       "reported_by": userBloc.user.userName,
       "report": textController.text
     };
-    await AskAuth().addReport(widget.object!['id'], data).then((value) {
+    await YarnAuth().addReport(widget.object!['id'], data).then((value) {
       if (value != null) {
         if (value == true) {
           Navigator.pop(context);
@@ -304,9 +303,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
       debugPrint(error.toString());
       showToast(message: error.toString());
     });
-
   }
-
 }
 
 class TopicTextField extends StatelessWidget {

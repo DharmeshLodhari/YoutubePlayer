@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
 import 'ask_customize_screen.dart';
 
-class AskSettingsScreen extends StatelessWidget {
-  const AskSettingsScreen({Key? key}) : super(key: key);
+class YarnSettingsScreen extends StatelessWidget {
+  const YarnSettingsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +33,9 @@ class AskSettingsScreen extends StatelessWidget {
       title: Text(
         "Settings",
         style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-          color: HexColor("#030F36")
-        ),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: HexColor("#030F36")),
       ),
     );
   }

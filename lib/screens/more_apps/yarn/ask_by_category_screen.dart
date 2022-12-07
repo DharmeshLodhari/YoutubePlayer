@@ -11,11 +11,11 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
 import 'add_yarn_screen.dart';
-import 'ask_auth.dart';
 import 'ask_search_screen.dart';
-import 'ask_viewmodel.dart';
 import 'widgets/question_view.dart';
 import 'widgets/topics_view.dart';
+import 'yarn_auth.dart';
+import 'yarn_dashboard_bloc.dart';
 
 class AskByCategoryScreen extends StatefulWidget {
   AskCategories? askCategories;
@@ -29,7 +29,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   late PageController _pageViewCtrl;
   UsersCategories? usersCategory;
   late UserBloc userBloc;
-  late AskViewModel askViewModel;
+  late YarnDashboardBloc askViewModel;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   }
 
   Future<UsersCategories?> getUserCategories() async {
-    Map<String, dynamic>? result = await AskAuth().getUsersCategories();
+    Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
     setState(() {
       usersCategory = result!['results'];
     });
@@ -48,7 +48,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
 
   Future<UsersCategories?> saveUserCategories(String categoryId) async {
     Map<String, dynamic>? result =
-        await AskAuth().saveUsersSingleCategories(categoryId);
+        await YarnAuth().saveUsersSingleCategories(categoryId);
     setState(() {
       usersCategory = result!['results'];
     });
@@ -58,7 +58,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    askViewModel = Provider.of<AskViewModel>(context);
+    askViewModel = Provider.of<YarnDashboardBloc>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: _buildFloatingActionButton(),
@@ -260,7 +260,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                       },
                       pageNum: 0,
                       title: 'Yarn',
-                      currentTapIndex: askViewModel.currentAskTapOnHome),
+                      currentTapIndex: askViewModel.currentTabIndex),
                   pageViewTabItem(
                       onPageTap: () {
                         askViewModel.updateCurrentAskTapOnHome(i: 1);
@@ -268,7 +268,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
                       },
                       pageNum: 1,
                       title: 'Questions',
-                      currentTapIndex: askViewModel.currentAskTapOnHome),
+                      currentTapIndex: askViewModel.currentTabIndex),
                 ],
               ),
               SizedBox(height: 7),

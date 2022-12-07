@@ -3,23 +3,23 @@ import 'dart:math';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:flutter/cupertino.dart';
 
-class AskViewModel extends ChangeNotifier {
-  int? currentAskTapOnHome = 0;
+class YarnDashboardBloc extends ChangeNotifier {
+  int? currentTabIndex = 0;
   String? categoryToAskOn = '';
   String? newlySelectedCategory = '';
-  List<AskCategories> _askCategories = [];
-  List<AskCategories> get askCategories => _askCategories;
+  List<AskCategories> _yarnCategories = [];
+  List<AskCategories> get askCategories => _yarnCategories;
   List<String> _selectedAskCategories = [];
   List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length - 1);
 
   set askCategories(List<AskCategories> cat) {
-    _askCategories = cat;
+    _yarnCategories = cat;
     notifyListeners();
   }
 
   void setAskCategories(List<AskCategories> cat) {
-    _askCategories = cat;
+    _yarnCategories = cat;
     notifyListeners();
   }
 
@@ -71,7 +71,7 @@ class AskViewModel extends ChangeNotifier {
   List<String> userTags = [];
 
   void init() {
-    currentAskTapOnHome = 0;
+    currentTabIndex = 0;
     _selectedAskCategories = [];
     userTags = [];
     notifyListeners();
@@ -100,7 +100,7 @@ class AskViewModel extends ChangeNotifier {
   }
 
   void updateCurrentAskTapOnHome({int? i}) {
-    currentAskTapOnHome = i;
+    currentTabIndex = i;
     notifyListeners();
   }
 

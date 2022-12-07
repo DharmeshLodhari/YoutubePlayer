@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../../../utils/util.dart';
-import 'ask_auth.dart';
-import 'widgets/customize_category.dart';
 import 'models/ask_categories_model.dart';
+import 'widgets/customize_category.dart';
+import 'yarn_auth.dart';
 
 class AskSCustomizeScreen extends StatefulWidget {
   @override
@@ -10,7 +11,6 @@ class AskSCustomizeScreen extends StatefulWidget {
 }
 
 class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
-
   bool isAskCategoriesLoading = false;
   String? categoriesNext = "";
   String? categoriesPrevious = "";
@@ -28,7 +28,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
   }
 
   Future<UsersCategories?> getUserCategories() async {
-    Map<String, dynamic>? result = await AskAuth().getUsersCategories();
+    Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
     setState(() {
       usersCategory = result!['results'];
     });
@@ -41,7 +41,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
         isAskCategoriesLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth()
+        Map<String, dynamic>? result = await YarnAuth()
             .getAllCategories(categoriesNext, categoriesPrevious!);
 
         if (result == null) {
@@ -125,7 +125,9 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
       child: usersCategory != null
           ? _buildCategoryList()
           : Center(
-              child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
+              ),
             ),
     );
   }

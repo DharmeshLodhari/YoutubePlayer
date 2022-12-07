@@ -7,23 +7,23 @@ import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/noItemInList.dart';
-import '../ask_auth.dart';
-import '../ask_detail_screen.dart';
 import '../models/Topics/YarnTopic.dart';
+import '../yarn_auth.dart';
+import '../yarn_detail_screen.dart';
 import 'ask_options.dart';
 import 'ask_posts_view.dart';
 
 class MyFeedView extends StatefulWidget {
   String? selectedCategory;
   String? userName;
-  MyFeedView({Key? key, this.selectedCategory, this.userName}) : super(key: key);
+  MyFeedView({Key? key, this.selectedCategory, this.userName})
+      : super(key: key);
 
   @override
   State<MyFeedView> createState() => MyFeedViewState(key: key);
 }
 
 class MyFeedViewState extends State<MyFeedView> {
-
   Key? key;
   MyFeedViewState({this.key});
   bool isLoading = false;
@@ -31,7 +31,8 @@ class MyFeedViewState extends State<MyFeedView> {
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
-  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  RefreshController _postRefreshController =
+      RefreshController(initialRefresh: false);
   String? selectedId;
 
   @override
@@ -40,7 +41,10 @@ class MyFeedViewState extends State<MyFeedView> {
     super.initState();
   }
 
-  void getYarnTopic({String type = "my-topics", bool isType = false, String? categoryId}) async {
+  void getYarnTopic(
+      {String type = "my-topics",
+      bool isType = false,
+      String? categoryId}) async {
     debugPrint("USER NAME:- ${widget.userName}");
     if (categoryId != null) {
       selectedId = categoryId;
@@ -50,7 +54,12 @@ class MyFeedViewState extends State<MyFeedView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous,type: type, isType: isType, categoryId: categoryId, userName: widget.userName);
+        Map<String, dynamic>? result = await YarnAuth().getAllTopics(
+            next, previous,
+            type: type,
+            isType: isType,
+            categoryId: categoryId,
+            userName: widget.userName);
 
         if (result == null) {
           noList = true;
@@ -106,64 +115,73 @@ class MyFeedViewState extends State<MyFeedView> {
             ),
             controller: _postRefreshController,
             onRefresh: _onPostRefresh,
-            child: !isLoading ? !noList ? ListView.builder(
-              physics: ClampingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              itemCount: yarnTopicList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () async {
-                    if(yarnTopicList[index].enableCommenting ?? false) {
-                      await NavigationUtil.push(
-                        context,
-                        screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
-                      );
-                    }
-                    if(mounted) setState(() {});
-                  },
-                  child: AskPosts(
-                    onOptionsAction: () {
-                      showModalBottomSheet<void>(
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20)),
+            child: !isLoading
+                ? !noList
+                    ? ListView.builder(
+                        physics: ClampingScrollPhysics(),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        itemCount: yarnTopicList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return InkWell(
+                            onTap: () async {
+                              if (yarnTopicList[index].enableCommenting ??
+                                  false) {
+                                await NavigationUtil.push(
+                                  context,
+                                  screen: AskDetailScreen(
+                                      yarnTopic: yarnTopicList[index]),
+                                );
+                              }
+                              if (mounted) setState(() {});
+                            },
+                            child: AskPosts(
+                              onOptionsAction: () {
+                                showModalBottomSheet<void>(
+                                  backgroundColor: Colors.transparent,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            topRight: Radius.circular(20)),
+                                      ),
+                                      color: Colors.white,
+                                      margin: EdgeInsets.zero,
+                                      child: AskOptions(),
+                                    );
+                                  },
+                                );
+                              },
+                              isImages: yarnTopicList[index].media != null &&
+                                      yarnTopicList[index].media!.isNotEmpty
+                                  ? true
+                                  : false,
+                              yarnTopic: yarnTopicList[index],
                             ),
-                            color: Colors.white,
-                            margin: EdgeInsets.zero,
-                            child: AskOptions(),
                           );
                         },
-                      );
-                    },
-                    isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
-                    yarnTopic: yarnTopicList[index],
-                  ),
-                );
-              },
-            ) : NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ) : Shimmer.fromColors(
-              baseColor: Colors.white,
-              highlightColor: greyBorderColor,
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 2,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      )
+                    : NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      )
+                : Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: greyBorderColor,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: 2,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
           ),
         ),
       ],
@@ -188,12 +206,11 @@ class MyFeedViewState extends State<MyFeedView> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         setState(() {
           _postRefreshController.refreshCompleted();
         });
       }
     });
   }
-
 }

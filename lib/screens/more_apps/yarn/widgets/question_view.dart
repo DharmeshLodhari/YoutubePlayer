@@ -1,14 +1,14 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/LoadingIndicator.dart';
 import '../../../../widget/noItemInList.dart';
-import '../ask_auth.dart';
-import '../ask_detail_screen.dart';
 import '../models/Topics/YarnTopic.dart';
+import '../yarn_auth.dart';
+import '../yarn_detail_screen.dart';
 import 'ask_loader.dart';
 import 'ask_options.dart';
 import 'ask_posts_view.dart';
@@ -22,7 +22,6 @@ class QuestionView extends StatefulWidget {
 }
 
 class QuestionViewState extends State<QuestionView> {
-
   Key? key;
   QuestionViewState({this.key});
   bool isLoading = false;
@@ -30,7 +29,8 @@ class QuestionViewState extends State<QuestionView> {
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
-  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  RefreshController _postRefreshController =
+      RefreshController(initialRefresh: false);
   String? selectedId;
   ScrollController _questionScrollController = new ScrollController();
 
@@ -39,7 +39,7 @@ class QuestionViewState extends State<QuestionView> {
     getYarnTopic(categoryId: widget.selectedCategory);
     _questionScrollController.addListener(() {
       if (_questionScrollController.position.pixels ==
-          _questionScrollController.position.maxScrollExtent &&
+              _questionScrollController.position.maxScrollExtent &&
           _questionScrollController.position.pixels != 0) {
         getYarnTopic(categoryId: widget.selectedCategory);
       }
@@ -47,7 +47,10 @@ class QuestionViewState extends State<QuestionView> {
     super.initState();
   }
 
-  void getYarnTopic({String type = "question", bool isType = true, String? categoryId}) async {
+  void getYarnTopic(
+      {String type = "question",
+      bool isType = true,
+      String? categoryId}) async {
     if (categoryId != null) {
       selectedId = categoryId;
     }
@@ -56,7 +59,9 @@ class QuestionViewState extends State<QuestionView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous ?? '',type: type, isType: isType, categoryId: categoryId);
+        Map<String, dynamic>? result = await YarnAuth().getAllTopics(
+            next, previous ?? '',
+            type: type, isType: isType, categoryId: categoryId);
 
         if (result == null) {
           noList = true;
@@ -136,13 +141,13 @@ class QuestionViewState extends State<QuestionView> {
           }
           return InkWell(
             onTap: () async {
-              if(yarnTopicList[index].enableCommenting ?? false) {
+              if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
                   screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
                 );
               }
-              if(mounted) setState(() {});
+              if (mounted) setState(() {});
             },
             child: AskPosts(
               onOptionsAction: () {
@@ -163,7 +168,10 @@ class QuestionViewState extends State<QuestionView> {
                   },
                 );
               },
-              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+              isImages: yarnTopicList[index].media != null &&
+                      yarnTopicList[index].media!.isNotEmpty
+                  ? true
+                  : false,
               yarnTopic: yarnTopicList[index],
             ),
           );
@@ -173,7 +181,6 @@ class QuestionViewState extends State<QuestionView> {
     return NoItemInList(
       msg: AppLocalization.of(context)!.noResultFound,
     );
-
   }
 
   Widget _buildReviewIndicator() {
@@ -201,12 +208,11 @@ class QuestionViewState extends State<QuestionView> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         setState(() {
           _postRefreshController.refreshCompleted();
         });
       }
     });
   }
-
 }

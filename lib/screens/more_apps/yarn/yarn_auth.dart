@@ -12,7 +12,7 @@ import 'models/Topics/CommentDetails.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 
-class AskAuth extends AuthService {
+class YarnAuth extends AuthService {
   AskCategories createAskCategories(Map<String, dynamic> item) {
     AskCategories categories = AskCategories();
     categories.id = item['id'];
@@ -189,7 +189,10 @@ class AskAuth extends AuthService {
 
   // Get all YARN Topics
   Future<Map<String, dynamic>?> getAllTopics(String? next, String previous,
-      {String? type, bool isType = false, String? categoryId, String? userName}) async {
+      {String? type,
+      bool isType = false,
+      String? categoryId,
+      String? userName}) async {
     debugPrint("CALLING ALL YARNS");
     debugPrint("NEXT URL:- $next");
     String url = "";
@@ -205,7 +208,8 @@ class AskAuth extends AuthService {
           url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
         }
       } else {
-        url = AppConfig.baseUrl + "/api/v1/social/ask/$type/?username=$userName";
+        url =
+            AppConfig.baseUrl + "/api/v1/social/ask/$type/?username=$userName";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -254,9 +258,7 @@ class AskAuth extends AuthService {
       var jsonData = json.decode(response.body);
       YarnTopic yarnTopic = YarnTopic.fromJson(jsonData);
 
-      Map<String, dynamic> result = {
-        "results": yarnTopic
-      };
+      Map<String, dynamic> result = {"results": yarnTopic};
       return result;
     } else if (response.statusCode == 500) {
       return null;
@@ -361,27 +363,31 @@ class AskAuth extends AuthService {
     List<MultipartFile> thumbnailList = [];
     debugPrint("MEDIA LENGTH::: ${addYarnAndQuestion.localImages!.length}");
     for (int i = 0; i < addYarnAndQuestion.localImages!.length; i++) {
-      debugPrint("MEDIA TYPE::: ${addYarnAndQuestion.localImages![i].mediaType}");
+      debugPrint(
+          "MEDIA TYPE::: ${addYarnAndQuestion.localImages![i].mediaType}");
       var multipartFile;
       var thumbnailImage;
       if (addYarnAndQuestion.localImages![i].mediaType == 'image') {
         // Add fields
-        request.fields["mediafile_$i"] = addYarnAndQuestion.localImages![i].mediaFile!.path;
+        request.fields["mediafile_$i"] =
+            addYarnAndQuestion.localImages![i].mediaFile!.path;
         // Create multipart using filepath, string or bytes
         multipartFile = await http.MultipartFile.fromPath(
             "mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
       } else if (addYarnAndQuestion.localImages![i].mediaType == 'video') {
         // Add fields
-        request.fields["mediafile_$i"] = addYarnAndQuestion.localImages![i].mediaFile!.path;
+        request.fields["mediafile_$i"] =
+            addYarnAndQuestion.localImages![i].mediaFile!.path;
         // Create multipart using filepath, string or bytes
-        multipartFile = await http.MultipartFile.fromPath("mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
+        multipartFile = await http.MultipartFile.fromPath(
+            "mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
         // Add Poster Fields
-        request.fields["mediaposter_$i"] = addYarnAndQuestion.localImages![i].mediaPoster ?? '';
+        request.fields["mediaposter_$i"] =
+            addYarnAndQuestion.localImages![i].mediaPoster ?? '';
 
-        thumbnailImage = await http.MultipartFile.fromPath("mediaposter_$i", addYarnAndQuestion.localImages![i].mediaPoster ?? '');
+        thumbnailImage = await http.MultipartFile.fromPath("mediaposter_$i",
+            addYarnAndQuestion.localImages![i].mediaPoster ?? '');
       }
-
-
 
       // Add multipart to newList
       newList.add(multipartFile);
@@ -440,11 +446,8 @@ class AskAuth extends AuthService {
 
   // Get all Comment
   Future<Map<String, dynamic>?> getAllComments(
-    String? next,
-    String previous,
-    String postId,
-    {String? sortBy}
-  ) async {
+      String? next, String previous, String postId,
+      {String? sortBy}) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
     if (next == null) {
@@ -452,11 +455,11 @@ class AskAuth extends AuthService {
     }
     if (next == "") {
       if (sortBy != null) {
-        url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$postId/?sort_by=$sortBy";
+        url = AppConfig.baseUrl +
+            "/api/v1/social/ask/yarn-comments/$postId/?sort_by=$sortBy";
       } else {
         url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$postId/";
       }
-
     } else {
       url = getSecureUrl(url: next);
     }
@@ -465,7 +468,8 @@ class AskAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
-    debugPrint("COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    debugPrint(
+        "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200) {
       List<CommentDetails> commentsDetails = [];
       var jsonData = json.decode(response.body);
@@ -490,8 +494,7 @@ class AskAuth extends AuthService {
   }
 
   // Delete Single Comment
-  Future<bool?> deleteComment(
-      String postId) async {
+  Future<bool?> deleteComment(String postId) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
     url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$postId/";
@@ -514,8 +517,8 @@ class AskAuth extends AuthService {
       String commentId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url =
-        AppConfig.baseUrl + "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
+    url = AppConfig.baseUrl +
+        "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
@@ -527,7 +530,7 @@ class AskAuth extends AuthService {
 
     if (response.statusCode == 200) {
       CommentDetails commentDetail =
-      CommentDetails.fromJson(json.decode(response.body));
+          CommentDetails.fromJson(json.decode(response.body));
       return commentDetail;
     } else if (response.statusCode == 500) {
       return null;
@@ -585,13 +588,11 @@ class AskAuth extends AuthService {
   Future<Map<String, dynamic>?> addLike(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url =
-        AppConfig.baseUrl + "/api/v1/social/ask/up-vote/$postId/";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/up-vote/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
-    var response =
-    await httpPost(url, headers: headers);
+    var response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -610,13 +611,11 @@ class AskAuth extends AuthService {
   Future<Map<String, dynamic>?> addDisLike(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url =
-        AppConfig.baseUrl + "/api/v1/social/ask/down-vote/$postId/";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/down-vote/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
-    var response =
-    await httpPost(url, headers: headers);
+    var response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -635,13 +634,11 @@ class AskAuth extends AuthService {
   Future<Map<String, dynamic>?> addLikeComment(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url =
-        AppConfig.baseUrl + "/api/v1/social/comments/like/$postId/";
+    url = AppConfig.baseUrl + "/api/v1/social/comments/like/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
-    var response =
-    await httpPost(url, headers: headers);
+    var response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -660,13 +657,11 @@ class AskAuth extends AuthService {
   Future<Map<String, dynamic>?> addDisLikeComment(String postId) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url =
-        AppConfig.baseUrl + "/api/v1/social/comments/dislike/$postId/";
+    url = AppConfig.baseUrl + "/api/v1/social/comments/dislike/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
-    var response =
-    await httpPost(url, headers: headers);
+    var response = await httpPost(url, headers: headers);
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -685,13 +680,12 @@ class AskAuth extends AuthService {
   Future<bool?> addReport(String postId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url =
-        AppConfig.baseUrl + "/api/v1/social/ask/report/$postId/";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/report/$postId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
     var response =
-    await httpPost(url, headers: headers, body: jsonEncode(body));
+        await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -706,9 +700,7 @@ class AskAuth extends AuthService {
   }
 
   // ADD TO STATUS FOR POST
-  Future<bool?> addStatusInPost(
-      String topicId, String status) async {
-
+  Future<bool?> addStatusInPost(String topicId, String status) async {
     Map<String, dynamic> body = {
       "status": status,
       "yarn": topicId,
@@ -716,13 +708,13 @@ class AskAuth extends AuthService {
 
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
-    url =
-        AppConfig.baseUrl + "/api/v1/social/ask/user-yarn-visibility-options/$topicId/";
+    url = AppConfig.baseUrl +
+        "/api/v1/social/ask/user-yarn-visibility-options/$topicId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
     var response =
-    await httpPost(url, headers: headers, body: jsonEncode(body));
+        await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -736,8 +728,10 @@ class AskAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> searchUser(String? next, String? previous, String searchText) async {
-    String url = AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchText;
+  Future<Map<String, dynamic>?> searchUser(
+      String? next, String? previous, String searchText) async {
+    String url =
+        AppConfig.baseUrl + "/api/v1/search/users/?search=" + searchText;
     if (next == null) {
       return null;
     }
@@ -753,7 +747,7 @@ class AskAuth extends AuthService {
       List<CustomerProfile> customerProfiles = [];
       var jsonData = json.decode(response.body);
 
-      for(var item in jsonData['results']) {
+      for (var item in jsonData['results']) {
         CustomerProfile customerProfile = CustomerProfile.fromJson(item);
         customerProfiles.add(customerProfile);
       }

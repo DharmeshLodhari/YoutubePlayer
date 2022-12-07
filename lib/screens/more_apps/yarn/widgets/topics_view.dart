@@ -1,14 +1,14 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
-import '../../../../widget/LoadingIndicator.dart';
 import '../../../../widget/noItemInList.dart';
-import '../ask_auth.dart';
-import '../ask_detail_screen.dart';
 import '../models/Topics/YarnTopic.dart';
+import '../yarn_auth.dart';
+import '../yarn_detail_screen.dart';
 import 'ask_loader.dart';
 import 'ask_options.dart';
 import 'ask_posts_view.dart';
@@ -29,7 +29,8 @@ class TopicViewState extends State<TopicView> {
   List<YarnTopic> yarnTopicList = [];
   int count = 0;
   bool noList = false;
-  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  RefreshController _postRefreshController =
+      RefreshController(initialRefresh: false);
   String? selectedId;
   ScrollController _topicScrollController = new ScrollController();
 
@@ -38,7 +39,7 @@ class TopicViewState extends State<TopicView> {
     getYarnTopic(categoryId: widget.selectedCategory);
     _topicScrollController.addListener(() {
       if (_topicScrollController.position.pixels ==
-          _topicScrollController.position.maxScrollExtent &&
+              _topicScrollController.position.maxScrollExtent &&
           _topicScrollController.position.pixels != 0) {
         getYarnTopic(categoryId: widget.selectedCategory);
       }
@@ -46,7 +47,8 @@ class TopicViewState extends State<TopicView> {
     super.initState();
   }
 
-  void getYarnTopic({String type = "topic", bool isType = true, String? categoryId}) async {
+  void getYarnTopic(
+      {String type = "topic", bool isType = true, String? categoryId}) async {
     if (categoryId != null) {
       selectedId = categoryId;
     }
@@ -56,7 +58,9 @@ class TopicViewState extends State<TopicView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getAllTopics(next, previous ?? '',type: type, isType: isType, categoryId: categoryId);
+        Map<String, dynamic>? result = await YarnAuth().getAllTopics(
+            next, previous ?? '',
+            type: type, isType: isType, categoryId: categoryId);
 
         if (result == null) {
           noList = true;
@@ -89,8 +93,7 @@ class TopicViewState extends State<TopicView> {
           noList = true;
         });
       }
-    }
-    else if (next == null && yarnTopicList.length > 6) {
+    } else if (next == null && yarnTopicList.length > 6) {
       // _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
       //   content:
       //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -130,13 +133,13 @@ class TopicViewState extends State<TopicView> {
           }
           return InkWell(
             onTap: () async {
-              if(yarnTopicList[index].enableCommenting ?? false) {
+              if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
                   screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
                 );
               }
-              if(mounted) setState(() {});
+              if (mounted) setState(() {});
             },
             child: AskPosts(
               onOptionsAction: () {
@@ -157,20 +160,24 @@ class TopicViewState extends State<TopicView> {
                   },
                 );
               },
-              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+              isImages: yarnTopicList[index].media != null &&
+                      yarnTopicList[index].media!.isNotEmpty
+                  ? true
+                  : false,
               yarnTopic: yarnTopicList[index],
             ),
           );
         },
         separatorBuilder: (context, int) {
-          return SizedBox(height: 8,);
+          return SizedBox(
+            height: 8,
+          );
         },
       );
     }
     return NoItemInList(
       msg: AppLocalization.of(context)!.noResultFound,
     );
-
   }
 
   Widget _buildReviewIndicator() {
@@ -198,12 +205,11 @@ class TopicViewState extends State<TopicView> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         setState(() {
           _postRefreshController.refreshCompleted();
         });
       }
     });
   }
-
 }

@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/ask_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -68,7 +68,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        await AskAuth()
+        await YarnAuth()
             .getSingleTopics(yarnId: yarnQuestionForChatModel.id!)
             .then((data) {
           YarnTopic? yarnTopic;
