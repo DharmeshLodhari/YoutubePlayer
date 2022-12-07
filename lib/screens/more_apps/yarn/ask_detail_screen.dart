@@ -1,5 +1,5 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../locale/app_localization.dart';
-import 'widgets/ask_loader.dart';
-import 'widgets/topic_text_field.dart';
 import 'ask_auth.dart';
-import 'widgets/ask_posts_view.dart';
 import 'models/Topics/CommentDetails.dart';
+import 'widgets/ask_loader.dart';
+import 'widgets/ask_posts_view.dart';
+import 'widgets/topic_text_field.dart';
 
 class AskDetailScreen extends StatefulWidget {
   YarnTopic? yarnTopic;
@@ -30,7 +30,8 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
   bool noList = false;
   late UserBloc userBloc;
   final TextEditingController controller = TextEditingController();
-  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  RefreshController _postRefreshController =
+      RefreshController(initialRefresh: false);
   bool isAPILoading = false;
   ScrollController _commentScrollController = new ScrollController();
 
@@ -39,7 +40,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
     getAllComments();
     _commentScrollController.addListener(() {
       if (_commentScrollController.position.pixels ==
-          _commentScrollController.position.maxScrollExtent &&
+              _commentScrollController.position.maxScrollExtent &&
           _commentScrollController.position.pixels != 0) {
         getAllComments();
       }
@@ -155,15 +156,17 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         child: SingleChildScrollView(
           controller: _commentScrollController,
           padding: EdgeInsets.all(10),
-          child: !isLoading ? AskPosts(
-            openComments: commentDetailsList.isNotEmpty ? true : false,
-            commentDetailsList: commentDetailsList,
-            yarnTopic: widget.yarnTopic,
-            isImages: widget.yarnTopic!.media != null &&
-                widget.yarnTopic!.media!.isNotEmpty
-                ? true
-                : false,
-          ) : AskLoader(),
+          child: !isLoading
+              ? AskPosts(
+                  openComments: commentDetailsList.isNotEmpty ? true : false,
+                  commentDetailsList: commentDetailsList,
+                  yarnTopic: widget.yarnTopic,
+                  isImages: widget.yarnTopic!.media != null &&
+                          widget.yarnTopic!.media!.isNotEmpty
+                      ? true
+                      : false,
+                )
+              : AskLoader(),
         ),
       ),
     );
@@ -182,10 +185,10 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         onPressed: () async {
           FocusScope.of(context).unfocus();
           isAPILoading = true;
-          if(mounted) setState(() {});
+          if (mounted) setState(() {});
           await addComment();
           isAPILoading = false;
-          if(mounted) setState(() {});
+          if (mounted) setState(() {});
         },
       ),
     );
@@ -197,11 +200,12 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
       "author_username": userBloc.user.userName
     };
     try {
-      CommentDetails? commentDetails = await AskAuth()
-          .addCommentToYarn(widget.yarnTopic!.id!, data);
+      CommentDetails? commentDetails =
+          await AskAuth().addCommentToYarn(widget.yarnTopic!.id!, data);
       if (commentDetails != null) {
         setState(() {
-          widget.yarnTopic!.numberOfComments = widget.yarnTopic!.numberOfComments! + 1;
+          widget.yarnTopic!.numberOfComments =
+              widget.yarnTopic!.numberOfComments! + 1;
         });
         commentDetailsList.add(commentDetails);
         controller.clear();
@@ -209,8 +213,8 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
         if (mounted) setState(() {});
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 
@@ -232,7 +236,7 @@ class _AskDetailScreenState extends State<AskDetailScreen> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         setState(() {
           _postRefreshController.refreshCompleted();
         });

@@ -4,8 +4,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/moments_screen.dart';
-import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
-import 'package:Slydo/screens/more_apps/ask/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
@@ -19,6 +17,8 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -43,7 +43,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
 import '../../../../../utils/navigation_util.dart';
-import '../../../../connection_module/channels.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
@@ -186,7 +185,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       if (showPostsTab) {
         tabCount++;
       }
-
     } else {
       debugPrint("TAB COUNT:- $tabCount");
       if (tabCount == 2) {
@@ -236,8 +234,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     Map<String, dynamic>? data;
     try {
-      data = await AskAuth()
-          .getAllTopics("", "", type: "my-topics", isType: false, userName: arguments['searchedUserName']);
+      data = await AskAuth().getAllTopics("", "",
+          type: "my-topics",
+          isType: false,
+          userName: arguments['searchedUserName']);
     } catch (error) {}
     if (data != null) {
       debugPrint('IS SHOW YARN ---> $data');
@@ -270,8 +270,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     BasePaginationModel<List<ChannelModel>>? basePaginationModel;
     try {
-      basePaginationModel = await MessageAuth()
-          .getChannels(nextUrl: '', searchText: '', ownerName: searchedUserName);
+      basePaginationModel = await MessageAuth().getChannels(
+          nextUrl: '', searchText: '', ownerName: searchedUserName);
     } catch (error) {}
     if (basePaginationModel != null) {
       debugPrint('IS SHOW CHANNELS ---> $basePaginationModel');
@@ -1453,14 +1453,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   List<Widget> getTabViewLayout() {
     List<Widget> list = [];
     if (showYarnTab) {
-      list.add(
-          KeepAlivePage(child: MyFeedView(userName: searchedUserName,))
-      );
+      list.add(KeepAlivePage(
+          child: MyFeedView(
+        userName: searchedUserName,
+      )));
     }
     if (showChannelTab) {
-      list.add(
-          KeepAlivePage(child: UserChannelsList(ownerName: searchedUserName, isSearch: true,))
-      );
+      list.add(KeepAlivePage(
+          child: UserChannelsList(
+        ownerName: searchedUserName,
+        isSearch: true,
+      )));
     }
     if (showMomentTab) {
       list.add(

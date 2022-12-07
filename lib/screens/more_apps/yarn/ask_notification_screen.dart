@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/ask/widgets/notification_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/notification_view.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/colors.dart';

@@ -26,10 +26,10 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/dialog.dart';
 import '../../../widget/read_more_widget.dart';
 import '../../../widget/rounded_background_icon.dart';
-import '../../more_apps/ask/ask_report_screen.dart';
 import '../../more_apps/messaging/chat/models/ChatConversation.dart';
 import '../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import '../../more_apps/shopping/models/store.dart';
+import '../../more_apps/yarn/ask_report_screen.dart';
 import '../../post_detail_page.dart';
 import '../models/comment_model.dart';
 import '../models/moments_model.dart';
@@ -39,7 +39,6 @@ import 'create_moment_screen.dart';
 import 'moments_service.dart';
 
 late CachedVideoPlayerController _controller;
-
 
 class MomentsDetailsScreen extends StatefulWidget {
   String? nextPageUrl;
@@ -305,7 +304,12 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                       }
                     }
                   }
-                  videoPlayerManager.togglePlay(index: verticalScrollIndex, url: widget.momentsModelList![verticalScrollIndex][horizoallyPageIndex!].media);
+                  videoPlayerManager.togglePlay(
+                      index: verticalScrollIndex,
+                      url: widget
+                          .momentsModelList![verticalScrollIndex]
+                              [horizoallyPageIndex!]
+                          .media);
                 },
                 itemBuilder: (context, index) {
                   return SizedBox(
@@ -318,7 +322,11 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                             setState(() {
                               horizoallyPageIndex = pageViewIndex;
                             });
-                            videoPlayerManager.togglePlay(index: pageViewIndex, url: widget.momentsModelList![index][pageViewIndex].media);
+                            videoPlayerManager.togglePlay(
+                                index: pageViewIndex,
+                                url: widget
+                                    .momentsModelList![index][pageViewIndex]
+                                    .media);
                           },
                           videoPlayerManager: videoPlayerManager,
                         ),
@@ -394,7 +402,10 @@ class MediaRendererPageView extends StatefulWidget {
   final List<MomentsModel> momentsModelList;
   final VideoPlayerManager videoPlayerManager;
   const MediaRendererPageView(
-      {Key? key, required this.onPageChanged, required this.momentsModelList, required this.videoPlayerManager})
+      {Key? key,
+      required this.onPageChanged,
+      required this.momentsModelList,
+      required this.videoPlayerManager})
       : super(key: key);
 
   @override
@@ -672,7 +683,8 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                         InkWell(
                           onTap: () {
                             Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                                arguments: widget.momentsModelList[index].avatar);
+                                arguments:
+                                    widget.momentsModelList[index].avatar);
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
@@ -831,7 +843,11 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                   iconData: Icons.report_gmailerrorred_rounded,
                   onTap: () {
                     Navigator.pop(context);
-                    NavigationUtil.push(context, screen: AddReportScreen(object: widget.momentsModelList[index].toJson(), type: "moment",));
+                    NavigationUtil.push(context,
+                        screen: AddReportScreen(
+                          object: widget.momentsModelList[index].toJson(),
+                          type: "moment",
+                        ));
                   },
                 ),
               ],
@@ -1459,18 +1475,19 @@ class _VideoDisplayState extends State<VideoDisplay> {
 }
 
 class VideoPlayerManager {
-
   late CachedVideoPlayerController _controller;
   int? activeIndex;
 
   init(String url) async {
     _controller = CachedVideoPlayerController.network(
       url,
-    )..initialize()..setLooping(true).then((value) async {
-      await play();
-    }).catchError((e) {
-      showToast(message: 'Unable to display moment');
-    });
+    )
+      ..initialize()
+      ..setLooping(true).then((value) async {
+        await play();
+      }).catchError((e) {
+        showToast(message: 'Unable to display moment');
+      });
   }
 
   play() async {
@@ -1495,7 +1512,6 @@ class VideoPlayerManager {
     await pause();
     await _controller.dispose();
   }
-
 }
 
 void commentSheet(BuildContext context, String momentID,

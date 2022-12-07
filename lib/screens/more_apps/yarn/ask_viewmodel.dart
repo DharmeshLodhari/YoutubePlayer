@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:flutter/cupertino.dart';
 
 class AskViewModel extends ChangeNotifier {
@@ -11,9 +11,9 @@ class AskViewModel extends ChangeNotifier {
   List<AskCategories> get askCategories => _askCategories;
   List<String> _selectedAskCategories = [];
   List<String> get selectedAskCategories => _selectedAskCategories;
-  int get random => Random().nextInt(categoryColors.length-1);
+  int get random => Random().nextInt(categoryColors.length - 1);
 
-  set askCategories (List<AskCategories> cat) {
+  set askCategories(List<AskCategories> cat) {
     _askCategories = cat;
     notifyListeners();
   }

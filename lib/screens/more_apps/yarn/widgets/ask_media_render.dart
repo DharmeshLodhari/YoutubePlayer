@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
-import 'package:Slydo/screens/more_apps/ask/widgets/view_ask_media.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/view_ask_media.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,6 @@ class AskMediaRender extends StatefulWidget {
 }
 
 class _AskMediaRenderState extends State<AskMediaRender> {
-
   @override
   void initState() {
     super.initState();
@@ -42,11 +41,10 @@ class _AskMediaRenderState extends State<AskMediaRender> {
 
   Widget _buildSingleImageView() {
     return _buildCommonImageView(
-      imageUrl: widget.yarnTopic!.media!.first.file ?? '',
-      mediaType: widget.yarnTopic!.media!.first.mediaType ?? '',
-      imagePoster: widget.yarnTopic!.media!.first.imagePoster ?? '',
-      isSingleImage: true
-    );
+        imageUrl: widget.yarnTopic!.media!.first.file ?? '',
+        mediaType: widget.yarnTopic!.media!.first.mediaType ?? '',
+        imagePoster: widget.yarnTopic!.media!.first.imagePoster ?? '',
+        isSingleImage: true);
   }
 
   Widget _buildTwoImageView() {
@@ -56,10 +54,9 @@ class _AskMediaRenderState extends State<AskMediaRender> {
         children: widget.yarnTopic!.media!.map((mediaFile) {
           return Expanded(
             child: _buildCommonImageView(
-              imageUrl: mediaFile.file ?? '',
-              mediaType: mediaFile.mediaType ?? '',
-              imagePoster: mediaFile.imagePoster ?? ''
-            ),
+                imageUrl: mediaFile.file ?? '',
+                mediaType: mediaFile.mediaType ?? '',
+                imagePoster: mediaFile.imagePoster ?? ''),
           );
         }).toList(),
       ),
@@ -73,10 +70,9 @@ class _AskMediaRenderState extends State<AskMediaRender> {
         children: widget.yarnTopic!.media!.map((mediaFile) {
           return Expanded(
             child: _buildCommonImageView(
-              imageUrl: mediaFile.file ?? '',
-              mediaType: mediaFile.mediaType ?? '',
-              imagePoster: mediaFile.imagePoster ?? ''
-            ),
+                imageUrl: mediaFile.file ?? '',
+                mediaType: mediaFile.mediaType ?? '',
+                imagePoster: mediaFile.imagePoster ?? ''),
           );
         }).toList(),
       ),
@@ -91,36 +87,34 @@ class _AskMediaRenderState extends State<AskMediaRender> {
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic!.media![0].file ?? '' ,
+                    imageUrl: widget.yarnTopic!.media![0].file ?? '',
                     mediaType: widget.yarnTopic!.media![0].mediaType ?? '',
-                    imagePoster: widget.yarnTopic!.media![0].imagePoster ?? ''
-                ),
+                    imagePoster: widget.yarnTopic!.media![0].imagePoster ?? ''),
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic!.media![1].file ?? '' ,
+                    imageUrl: widget.yarnTopic!.media![1].file ?? '',
                     mediaType: widget.yarnTopic!.media![1].mediaType ?? '',
-                    imagePoster: widget.yarnTopic!.media![1].imagePoster ?? ''
-                ),
+                    imagePoster: widget.yarnTopic!.media![1].imagePoster ?? ''),
               ),
             ],
           ),
-          SizedBox(height: 8,),
+          SizedBox(
+            height: 8,
+          ),
           Row(
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic!.media![2].file ?? '' ,
+                    imageUrl: widget.yarnTopic!.media![2].file ?? '',
                     mediaType: widget.yarnTopic!.media![2].mediaType ?? '',
-                    imagePoster: widget.yarnTopic!.media![2].imagePoster ?? ''
-                ),
+                    imagePoster: widget.yarnTopic!.media![2].imagePoster ?? ''),
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic!.media![3].file ?? '' ,
+                    imageUrl: widget.yarnTopic!.media![3].file ?? '',
                     mediaType: widget.yarnTopic!.media![3].mediaType ?? '',
-                    imagePoster: widget.yarnTopic!.media![3].imagePoster ?? ''
-                ),
+                    imagePoster: widget.yarnTopic!.media![3].imagePoster ?? ''),
               ),
             ],
           ),
@@ -129,36 +123,50 @@ class _AskMediaRenderState extends State<AskMediaRender> {
     );
   }
 
-  Widget _buildCommonImageView({required String imageUrl, required String mediaType,String? imagePoster, bool isSingleImage = false}) {
+  Widget _buildCommonImageView(
+      {required String imageUrl,
+      required String mediaType,
+      String? imagePoster,
+      bool isSingleImage = false}) {
     return InkWell(
       onTap: () {
         if (mediaType == 'video') {
           NavigationUtil.push(
             context,
-            screen: ViewAskMedia(arguments: {"type": mediaType, "file": imageUrl, "poster": imagePoster},),
+            screen: ViewAskMedia(
+              arguments: {
+                "type": mediaType,
+                "file": imageUrl,
+                "poster": imagePoster
+              },
+            ),
           );
         } else {
-          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: imageUrl,);
+          Navigator.of(context).pushNamed(
+            Routes.PHOTO_VIEWER,
+            arguments: imageUrl,
+          );
         }
       },
       child: _buildSingleAndMultiImageView(
-        imageUrl: imageUrl,
-        mediaType: mediaType,
-        imagePoster: imagePoster,
-        isSingleImage: isSingleImage
-      ),
+          imageUrl: imageUrl,
+          mediaType: mediaType,
+          imagePoster: imagePoster,
+          isSingleImage: isSingleImage),
     );
   }
 
-  Widget _buildSingleAndMultiImageView({required String imageUrl, required String mediaType,String? imagePoster, required bool isSingleImage}) {
+  Widget _buildSingleAndMultiImageView(
+      {required String imageUrl,
+      required String mediaType,
+      String? imagePoster,
+      required bool isSingleImage}) {
     if (isSingleImage) {
       return Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(width: 2.0, color: HexColor("E5E5E5"))
-        ),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(width: 2.0, color: HexColor("E5E5E5"))),
         // constraints: BoxConstraints(
         //   maxHeight: 300
         // ),
@@ -174,12 +182,18 @@ class _AskMediaRenderState extends State<AskMediaRender> {
                   errorWidget: imageErrorWidget,
                 ),
               ),
-              if (mediaType == 'video')...[
+              if (mediaType == 'video') ...[
                 IconButton(
                   onPressed: () {
                     NavigationUtil.push(
                       context,
-                      screen: ViewAskMedia(arguments: {"type": mediaType, "file": imageUrl, "poster": imagePoster},),
+                      screen: ViewAskMedia(
+                        arguments: {
+                          "type": mediaType,
+                          "file": imageUrl,
+                          "poster": imagePoster
+                        },
+                      ),
                     );
                   },
                   icon: Icon(
@@ -201,8 +215,7 @@ class _AskMediaRenderState extends State<AskMediaRender> {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(width: 2.0, color: HexColor("E5E5E5"))
-        ),
+            border: Border.all(width: 2.0, color: HexColor("E5E5E5"))),
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -216,12 +229,18 @@ class _AskMediaRenderState extends State<AskMediaRender> {
                 errorWidget: imageErrorWidget,
               ),
             ),
-            if (mediaType == 'video')...[
+            if (mediaType == 'video') ...[
               IconButton(
                 onPressed: () {
                   NavigationUtil.push(
                     context,
-                    screen: ViewAskMedia(arguments: {"type": mediaType, "file": imageUrl, "poster": imagePoster},),
+                    screen: ViewAskMedia(
+                      arguments: {
+                        "type": mediaType,
+                        "file": imageUrl,
+                        "poster": imagePoster
+                      },
+                    ),
                   );
                 },
                 icon: Icon(

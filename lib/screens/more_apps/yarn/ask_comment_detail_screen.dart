@@ -1,5 +1,5 @@
-import 'package:Slydo/screens/more_apps/ask/widgets/ask_comment_view.dart';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/ask_comment_view.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,9 +9,9 @@ import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/util.dart';
 import 'ask_auth.dart';
+import 'models/Topics/CommentDetails.dart';
 import 'widgets/ask_loader.dart';
 import 'widgets/topic_text_field.dart';
-import 'models/Topics/CommentDetails.dart';
 
 class AskCommentDetailScreen extends StatefulWidget {
   YarnTopic? yarnTopic;
@@ -24,7 +24,6 @@ class AskCommentDetailScreen extends StatefulWidget {
 }
 
 class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
-
   late UserBloc userBloc;
   bool isLoading = false;
   String next = "", previous = "";
@@ -32,7 +31,8 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
   int count = 0;
   bool noList = false;
   final TextEditingController controller = TextEditingController();
-  RefreshController _postRefreshController = RefreshController(initialRefresh: false);
+  RefreshController _postRefreshController =
+      RefreshController(initialRefresh: false);
   bool isAPILoading = false;
 
   @override
@@ -131,7 +131,9 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
       children: [
         _buildCommentDetailView(),
         _buildTopicTextField(),
-        SizedBox(height: 20,)
+        SizedBox(
+          height: 20,
+        )
       ],
     );
   }
@@ -148,12 +150,14 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
         onRefresh: _onPostRefresh,
         child: SingleChildScrollView(
           padding: EdgeInsets.all(10),
-          child: !isLoading ? AskCommentView(
-            yarnTopic: widget.yarnTopic,
-            commentDetail: widget.commentDetail,
-            commentDetailsList: replyCommentDetailsList,
-            openReply: replyCommentDetailsList.isNotEmpty ? true : false,
-          ) : AskLoader(),
+          child: !isLoading
+              ? AskCommentView(
+                  yarnTopic: widget.yarnTopic,
+                  commentDetail: widget.commentDetail,
+                  commentDetailsList: replyCommentDetailsList,
+                  openReply: replyCommentDetailsList.isNotEmpty ? true : false,
+                )
+              : AskLoader(),
         ),
       ),
     );
@@ -172,10 +176,10 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
         onPressed: () async {
           FocusScope.of(context).unfocus();
           isAPILoading = true;
-          if(mounted) setState(() {});
+          if (mounted) setState(() {});
           await addReplyComment();
           isAPILoading = false;
-          if(mounted) setState(() {});
+          if (mounted) setState(() {});
         },
       ),
     );
@@ -188,18 +192,19 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
       "is_reply": true
     };
     try {
-      CommentDetails? commentDetail = await AskAuth()
-          .addReplyToComment(widget.commentDetail!.id!, data);
+      CommentDetails? commentDetail =
+          await AskAuth().addReplyToComment(widget.commentDetail!.id!, data);
       if (commentDetail != null) {
-        widget.commentDetail!.replyCount = widget.commentDetail!.replyCount! + 1;
+        widget.commentDetail!.replyCount =
+            widget.commentDetail!.replyCount! + 1;
         replyCommentDetailsList.add(commentDetail);
         controller.clear();
 
         if (mounted) setState(() {});
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 
@@ -221,7 +226,7 @@ class _AskCommentDetailScreenState extends State<AskCommentDetailScreen> {
       } else {
         showToast(
             message:
-            AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
         setState(() {
           _postRefreshController.refreshCompleted();
         });

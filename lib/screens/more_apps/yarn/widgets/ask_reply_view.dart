@@ -1,8 +1,9 @@
-import 'package:Slydo/screens/more_apps/ask/widgets/rich_text.dart';
-import 'package:Slydo/screens/more_apps/ask/widgets/topic_action_for_reply_comment.dart';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/topic_action_for_reply_comment.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../models/Topics/CommentDetails.dart';
@@ -13,8 +14,7 @@ class AskReplyView extends StatelessWidget {
   CommentDetails? commentDetail;
   CommentDetails? replyCommentDetail;
 
-  AskReplyView(
-      {this.yarnTopic, this.replyCommentDetail, this.commentDetail});
+  AskReplyView({this.yarnTopic, this.replyCommentDetail, this.commentDetail});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,6 @@ class AskReplyView extends StatelessWidget {
     );
   }
 
-
   Widget _buildUserInfoRow({required BuildContext context}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,9 +44,7 @@ class AskReplyView extends StatelessWidget {
               child: Container(
                 height: 24,
                 width: 24,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle
-                ),
+                decoration: BoxDecoration(shape: BoxShape.circle),
                 child: ClipOval(
                   child: CachedNetworkImage(
                     imageUrl: replyCommentDetail!.authorAvatar!,
@@ -64,39 +61,40 @@ class AskReplyView extends StatelessWidget {
         ),
         Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.pushNamed(context, Routes.USER_PROFILE,
-                        arguments: {
-                          "searchedUserName": replyCommentDetail!.authorUsername!
-                        });
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      userNameWithVerifiedIcon(
-                          name: replyCommentDetail!.authorName!, isVerified: false),
-                      Text(
-                        "@${replyCommentDetail!.authorUsername!}",
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: HexColor("#3F61DB")
-                        ),
-                      ),
-                    ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": replyCommentDetail!.authorUsername!
+                });
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  userNameWithVerifiedIcon(
+                      name: replyCommentDetail!.authorName!, isVerified: false),
+                  Text(
+                    "@${replyCommentDetail!.authorUsername!}",
+                    style: TextStyle(fontSize: 10, color: HexColor("#3F61DB")),
                   ),
-                ),
-                SizedBox(height: 3,),
-                _buildRepliedText(),
-                SizedBox(height: 15,),
-                _buildCommentDescription(),
-                SizedBox(height: 10,),
-                _buildTopActions(),
-              ],
-            )
-        ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 3,
+            ),
+            _buildRepliedText(),
+            SizedBox(
+              height: 15,
+            ),
+            _buildCommentDescription(),
+            SizedBox(
+              height: 10,
+            ),
+            _buildTopActions(),
+          ],
+        )),
         InkWell(
           onTap: () {
             showModalBottomSheet<void>(
@@ -111,7 +109,10 @@ class AskReplyView extends StatelessWidget {
                   ),
                   color: Colors.white,
                   margin: EdgeInsets.zero,
-                  child: AskOptions(commentDetail: replyCommentDetail, isComment: true,),
+                  child: AskOptions(
+                    commentDetail: replyCommentDetail,
+                    isComment: true,
+                  ),
                 );
               },
             );
@@ -127,29 +128,24 @@ class AskReplyView extends StatelessWidget {
 
   Widget _buildRepliedText() {
     return RichText(
-      text: TextSpan(
-          children: [
-            TextSpan(
-              text: "Replying to ",
-              style: TextStyle(
-                  fontSize: 10,
-                  color: HexColor("#030F36")
-              ),
-            ),
-            TextSpan(
-              text: "@${commentDetail!.authorUsername}",
-              style: TextStyle(
-                  fontSize: 10,
-                  color: HexColor("#3F61DB")
-              ),
-            ),
-          ]
-      ),
+      text: TextSpan(children: [
+        TextSpan(
+          text: "Replying to ",
+          style: TextStyle(fontSize: 10, color: HexColor("#030F36")),
+        ),
+        TextSpan(
+          text: "@${commentDetail!.authorUsername}",
+          style: TextStyle(fontSize: 10, color: HexColor("#3F61DB")),
+        ),
+      ]),
     );
   }
 
   Widget _buildCommentDescription() {
-    return RichTextForTitle(description: messageDecoderWithEmoji(replyCommentDetail!.comment ?? '') ?? '',);
+    return RichTextForTitle(
+      description:
+          messageDecoderWithEmoji(replyCommentDetail!.comment ?? '') ?? '',
+    );
     // return Text(
     //   messageDecoderWithEmoji(replyCommentDetail!.comment!)!,
     //   maxLines: 30,

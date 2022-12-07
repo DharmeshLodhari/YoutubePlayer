@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
-import 'package:Slydo/screens/more_apps/ask/models/ask_categories_model.dart';
-import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
-import 'package:Slydo/screens/more_apps/ask/widgets/ask_mention_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';

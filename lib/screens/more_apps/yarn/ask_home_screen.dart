@@ -1,6 +1,6 @@
-import 'package:Slydo/screens/more_apps/ask/ask_by_category_screen.dart';
-import 'package:Slydo/screens/more_apps/ask/ask_notification_screen.dart';
-import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_by_category_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_notification_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';

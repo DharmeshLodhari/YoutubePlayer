@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
+
 import '../../../../data/state_notifier.dart';
 import '../../../../locator.dart';
 import '../../../../routes/route_constants.dart';
@@ -26,8 +28,6 @@ class TopicActions extends StatefulWidget {
 }
 
 class _TopicActionsState extends State<TopicActions> {
-
-
   Future addLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data = await AskAuth().addLike(widget.yarnTopic!.id!);
     if (data != null) {
@@ -39,7 +39,8 @@ class _TopicActionsState extends State<TopicActions> {
   }
 
   Future addDisLikeToYarnAndQuestion() async {
-    Map<String, dynamic>? data = await AskAuth().addDisLike(widget.yarnTopic!.id!);
+    Map<String, dynamic>? data =
+        await AskAuth().addDisLike(widget.yarnTopic!.id!);
     if (data != null) {
       setState(() {
         widget.yarnTopic!.voteCount = data['vote_count'];
@@ -53,13 +54,13 @@ class _TopicActionsState extends State<TopicActions> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (enableCommenting())...[
+        if (enableCommenting()) ...[
           _buildCommentButton(),
         ],
         _buildLikeButton(),
         _buildDisLikeButton(),
         _buildShareButton(),
-        if(widget.yarnTopic!.enablePayme!)...[
+        if (widget.yarnTopic!.enablePayme!) ...[
           _buildPayButton(),
         ],
       ],
@@ -68,12 +69,14 @@ class _TopicActionsState extends State<TopicActions> {
 
   Widget _buildCommentButton() {
     return InkWell(
-      onTap: enableCommenting() ? () {
-        NavigationUtil.push(
-          context,
-          screen: AskDetailScreen(yarnTopic: widget.yarnTopic),
-        );
-      } : null,
+      onTap: enableCommenting()
+          ? () {
+              NavigationUtil.push(
+                context,
+                screen: AskDetailScreen(yarnTopic: widget.yarnTopic),
+              );
+            }
+          : null,
       child: Row(
         children: [
           SvgPicture.asset("ask/reply".toSVG()),
@@ -85,8 +88,7 @@ class _TopicActionsState extends State<TopicActions> {
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")
-            ),
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -109,8 +111,7 @@ class _TopicActionsState extends State<TopicActions> {
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")
-            ),
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -133,8 +134,7 @@ class _TopicActionsState extends State<TopicActions> {
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")
-            ),
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -154,8 +154,7 @@ class _TopicActionsState extends State<TopicActions> {
                   iconData: Icons.send_outlined,
                   onTap: () async {
                     Navigator.of(context).pop();
-                    await sendMomentToUserInChat(
-                        yarnTopic: widget.yarnTopic!);
+                    await sendMomentToUserInChat(yarnTopic: widget.yarnTopic!);
                   }),
             ],
           ),
@@ -171,30 +170,31 @@ class _TopicActionsState extends State<TopicActions> {
 
   Widget _buildPayButton() {
     return InkWell(
-      onTap: getLoggedInUserName(context) != widget.yarnTopic!.author ? () {
-        if (getIt<AppConfigurationBloc>()
-            .appConfigurationModel
-            ?.enablePayment ==
-            true) {
-          Navigator.of(context).pushNamed(
-            Routes.SEND_PAYMENT,
-            arguments: <String, dynamic>{
-              'recipient': widget.yarnTopic!.author,
-              'isFromProfile': false,
-              'isFromChat': false,
-              'defaultReferenceText':
-              'Payment from  "${truncateString(
-                str: widget.yarnTopic!.title!,
-                lengthToTruncateAt: 8,
-              )}\" yarn'
+      onTap: getLoggedInUserName(context) != widget.yarnTopic!.author
+          ? () {
+              if (getIt<AppConfigurationBloc>()
+                      .appConfigurationModel
+                      ?.enablePayment ==
+                  true) {
+                Navigator.of(context).pushNamed(
+                  Routes.SEND_PAYMENT,
+                  arguments: <String, dynamic>{
+                    'recipient': widget.yarnTopic!.author,
+                    'isFromProfile': false,
+                    'isFromChat': false,
+                    'defaultReferenceText': 'Payment from  "${truncateString(
+                      str: widget.yarnTopic!.title!,
+                      lengthToTruncateAt: 8,
+                    )}\" yarn'
+                  },
+                );
+              } else {
+                showToast(message: 'Payment not available at the moment');
+              }
+            }
+          : () {
+              showToast(message: 'You cannot pay yourself');
             },
-          );
-        } else {
-          showToast(message: 'Payment not available at the moment');
-        }
-      } : () {
-        showToast(message: 'You cannot pay yourself');
-      },
       child: Row(
         children: [
           SvgPicture.asset("ask/send_money".toSVG()),
@@ -228,7 +228,8 @@ class _TopicActionsState extends State<TopicActions> {
   }
 
   bool enableCommenting() {
-    return widget.yarnTopic!.enableCommenting != null && widget.yarnTopic!.enableCommenting!;
+    return widget.yarnTopic!.enableCommenting != null &&
+        widget.yarnTopic!.enableCommenting!;
   }
 
   Future<void> sendMomentToUserInChat({required YarnTopic yarnTopic}) async {

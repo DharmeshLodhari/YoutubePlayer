@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/CommentDetails.dart';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,14 +22,15 @@ class TopicActionsForReplyComment extends StatefulWidget {
   TopicActionsForReplyComment({this.replyCommentDetail});
 
   @override
-  State<TopicActionsForReplyComment> createState() => _TopicActionsForReplyCommentState();
+  State<TopicActionsForReplyComment> createState() =>
+      _TopicActionsForReplyCommentState();
 }
 
-class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyComment> {
-
-
+class _TopicActionsForReplyCommentState
+    extends State<TopicActionsForReplyComment> {
   Future addLikeToReplyComment() async {
-    Map<String, dynamic>? data = await AskAuth().addLikeComment(widget.replyCommentDetail!.id!);
+    Map<String, dynamic>? data =
+        await AskAuth().addLikeComment(widget.replyCommentDetail!.id!);
     if (data != null) {
       setState(() {
         widget.replyCommentDetail!.likes = data['likes'];
@@ -38,7 +40,8 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
   }
 
   Future addDisLikeToReplyComment() async {
-    Map<String, dynamic>? data = await AskAuth().addDisLikeComment(widget.replyCommentDetail!.id!);
+    Map<String, dynamic>? data =
+        await AskAuth().addDisLikeComment(widget.replyCommentDetail!.id!);
     if (data != null) {
       setState(() {
         widget.replyCommentDetail!.likes = data['likes'];
@@ -65,8 +68,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: HexColor("#75818F")
-                ),
+                    color: HexColor("#75818F")),
               ),
             ],
           ),
@@ -86,8 +88,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: HexColor("#75818F")
-                ),
+                    color: HexColor("#75818F")),
               ),
             ],
           ),
@@ -107,8 +108,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
                 style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
-                    color: HexColor("#75818F")
-                ),
+                    color: HexColor("#75818F")),
               ),
             ],
           ),
@@ -138,37 +138,44 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
             ],
           ),
         ),
-        if (getLoggedInUserName(context) != widget.replyCommentDetail!.authorUsername)...[InkWell(
-          onTap: getLoggedInUserName(context) != widget.replyCommentDetail!.authorUsername ? () {
-            if (getIt<AppConfigurationBloc>()
-                .appConfigurationModel
-                ?.enablePayment ==
-                true) {
-              Navigator.of(context).pushNamed(
-                Routes.SEND_PAYMENT,
-                arguments: <String, dynamic>{
-                  'recipient': widget.replyCommentDetail!.authorUsername!,
-                  'isFromProfile': false,
-                  'isFromChat': false,
-                  'defaultReferenceText':
-                  'Payment from  "${truncateString(
-                    str: widget.replyCommentDetail!.comment!,
-                    lengthToTruncateAt: 8,
-                  )}\" comment'
-                },
-              );
-            } else {
-              showToast(message: 'Payment not available at the moment');
-            }
-          } : () {
-            showToast(message: 'You cannot pay yourself');
-          },
-          child: Row(
-            children: [
-              SvgPicture.asset("ask/send_money".toSVG()),
-            ],
-          ),
-        )],
+        if (getLoggedInUserName(context) !=
+            widget.replyCommentDetail!.authorUsername) ...[
+          InkWell(
+            onTap: getLoggedInUserName(context) !=
+                    widget.replyCommentDetail!.authorUsername
+                ? () {
+                    if (getIt<AppConfigurationBloc>()
+                            .appConfigurationModel
+                            ?.enablePayment ==
+                        true) {
+                      Navigator.of(context).pushNamed(
+                        Routes.SEND_PAYMENT,
+                        arguments: <String, dynamic>{
+                          'recipient':
+                              widget.replyCommentDetail!.authorUsername!,
+                          'isFromProfile': false,
+                          'isFromChat': false,
+                          'defaultReferenceText':
+                              'Payment from  "${truncateString(
+                            str: widget.replyCommentDetail!.comment!,
+                            lengthToTruncateAt: 8,
+                          )}\" comment'
+                        },
+                      );
+                    } else {
+                      showToast(message: 'Payment not available at the moment');
+                    }
+                  }
+                : () {
+                    showToast(message: 'You cannot pay yourself');
+                  },
+            child: Row(
+              children: [
+                SvgPicture.asset("ask/send_money".toSVG()),
+              ],
+            ),
+          )
+        ],
       ],
     );
   }
@@ -199,7 +206,7 @@ class _TopicActionsForReplyCommentState extends State<TopicActionsForReplyCommen
 
   Future<void> sendMomentToUserInChat({required YarnTopic yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
-    await ShareInChat().selectShareCustomer(context);
+        await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {

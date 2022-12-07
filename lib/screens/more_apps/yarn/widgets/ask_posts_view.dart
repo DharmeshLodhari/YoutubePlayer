@@ -1,15 +1,14 @@
-import 'dart:typed_data';
-import 'package:Slydo/screens/more_apps/ask/utils/utils.dart';
-import 'package:Slydo/screens/more_apps/ask/widgets/rich_text.dart';
-import 'package:Slydo/screens/more_apps/ask/widgets/topic_actions.dart';
-import 'package:Slydo/screens/more_apps/ask/widgets/viewer_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/topic_actions.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/customized_popup_menu.dart';
-import '../../messaging/chat/utils.dart';
 import '../ask_auth.dart';
 import '../ask_comment_detail_screen.dart';
 import '../models/Topics/CommentDetails.dart';
@@ -68,8 +67,9 @@ class _AskPostsState extends State<AskPosts> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth()
-            .getAllComments(next, previous, widget.yarnTopic!.id!, sortBy: selectFilter);
+        Map<String, dynamic>? result = await AskAuth().getAllComments(
+            next, previous, widget.yarnTopic!.id!,
+            sortBy: selectFilter);
 
         if (result == null) {
           noList = true;
@@ -225,27 +225,23 @@ class _AskPostsState extends State<AskPosts> {
           width: 10,
         ),
         Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {
-                        "searchedUserName": widget.yarnTopic!.author
-                      });
+            child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, Routes.USER_PROFILE,
+                    arguments: {"searchedUserName": widget.yarnTopic!.author});
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   userNameWithVerifiedIcon(
-                      name: widget.yarnTopic!.authorName!, isVerified: widget.yarnTopic!.authorIsVerified ?? false),
+                      name: widget.yarnTopic!.authorName!,
+                      isVerified: widget.yarnTopic!.authorIsVerified ?? false),
                   Text(
                     "@${widget.yarnTopic!.author!}",
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: HexColor("#3F61DB")
-                    ),
+                    style: TextStyle(fontSize: 10, color: HexColor("#3F61DB")),
                   ),
                 ],
               ),
@@ -253,20 +249,19 @@ class _AskPostsState extends State<AskPosts> {
             SizedBox(
               width: 5,
             ),
-              Expanded(
-                child: Text(
-                  '${getGetYarnQuestionDateTime(widget.yarnTopic!.createdAt!)}',
-                  overflow: TextOverflow.fade,
-                  style: TextStyle(
-                    color: blackFont,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+            Expanded(
+              child: Text(
+                '${getGetYarnQuestionDateTime(widget.yarnTopic!.createdAt!)}',
+                overflow: TextOverflow.fade,
+                style: TextStyle(
+                  color: blackFont,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
-              )
-              ],
+              ),
             )
-        ),
+          ],
+        )),
         InkWell(
           onTap: () {
             showModalBottomSheet<void>(
@@ -281,7 +276,9 @@ class _AskPostsState extends State<AskPosts> {
                   ),
                   color: Colors.white,
                   margin: EdgeInsets.zero,
-                  child: AskOptions(yarnTopic: widget.yarnTopic!,),
+                  child: AskOptions(
+                    yarnTopic: widget.yarnTopic!,
+                  ),
                 );
               },
             );
@@ -296,7 +293,9 @@ class _AskPostsState extends State<AskPosts> {
   }
 
   Widget _buildPostTitle() {
-    return RichTextForTitle(description: messageDecoderWithEmoji(widget.yarnTopic!.title ?? '') ?? '',);
+    return RichTextForTitle(
+      description: messageDecoderWithEmoji(widget.yarnTopic!.title ?? '') ?? '',
+    );
     // return Text(
     //   messageDecoderWithEmoji(widget.yarnTopic!.title!)!,
     //   maxLines: 30,
@@ -309,7 +308,9 @@ class _AskPostsState extends State<AskPosts> {
   }
 
   Widget _buildPostDescription() {
-    return RichTextForTitle(description: messageDecoderWithEmoji(widget.yarnTopic!.body ?? '') ?? '',);
+    return RichTextForTitle(
+      description: messageDecoderWithEmoji(widget.yarnTopic!.body ?? '') ?? '',
+    );
     // return Text(
     //   messageDecoderWithEmoji(widget.yarnTopic!.body!)!,
     //   maxLines: 30,
@@ -337,12 +338,12 @@ class _AskPostsState extends State<AskPosts> {
             spacing: 2,
             children: widget.yarnTopic!.tags!
                 .map((e) => Text(
-                  "#$e",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: HexColor("#3F61DB"),
-                  ),
-                ))
+                      "#$e",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: HexColor("#3F61DB"),
+                      ),
+                    ))
                 .toList(),
           ),
         ),
@@ -359,11 +360,15 @@ class _AskPostsState extends State<AskPosts> {
   }
 
   Widget _buildImagesRow({required BuildContext context}) {
-    return AskMediaRender(yarnTopic: widget.yarnTopic,);
+    return AskMediaRender(
+      yarnTopic: widget.yarnTopic,
+    );
   }
 
   Widget _buildCommentView({required BuildContext context}) {
-    if (widget.openComments! && widget.commentDetailsList!.isNotEmpty && widget.commentDetailsList != null) {
+    if (widget.openComments! &&
+        widget.commentDetailsList!.isNotEmpty &&
+        widget.commentDetailsList != null) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -375,19 +380,23 @@ class _AskPostsState extends State<AskPosts> {
           Column(
             children: widget.commentDetailsList!
                 .map((e) => InkWell(
-              onTap: () async {
-                await NavigationUtil.push(
-                  context,
-                  screen: AskCommentDetailScreen(yarnTopic: widget.yarnTopic, commentDetail: e,),
-                );
-                if (mounted) setState(() {});
-              },
-              child: AskCommentView(
-                yarnTopic: widget.yarnTopic,
-                commentDetail: e,
-                openReply: false,
-              ),
-            )).toList(),
+                      onTap: () async {
+                        await NavigationUtil.push(
+                          context,
+                          screen: AskCommentDetailScreen(
+                            yarnTopic: widget.yarnTopic,
+                            commentDetail: e,
+                          ),
+                        );
+                        if (mounted) setState(() {});
+                      },
+                      child: AskCommentView(
+                        yarnTopic: widget.yarnTopic,
+                        commentDetail: e,
+                        openReply: false,
+                      ),
+                    ))
+                .toList(),
           ),
         ],
       );
@@ -443,5 +452,4 @@ class _AskPostsState extends State<AskPosts> {
     isPopMenuOpen = isOpen;
     setState(() {});
   }
-
 }

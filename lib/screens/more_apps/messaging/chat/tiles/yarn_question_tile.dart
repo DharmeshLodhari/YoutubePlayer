@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/screens/more_apps/ask/ask_auth.dart';
-import 'package:Slydo/screens/more_apps/ask/ask_detail_screen.dart';
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_detail_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,8 @@ class YarnQuestionTileForChat extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<YarnQuestionTileForChat> createState() => _YarnQuestionTileForChatState();
+  State<YarnQuestionTileForChat> createState() =>
+      _YarnQuestionTileForChatState();
 }
 
 class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
@@ -33,8 +35,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   @override
   void initState() {
     super.initState();
-    yarnQuestionForChatModel =
-        YarnQuestionForChatModel.fromJson(jsonDecode(widget.message!['meta_data']));
+    yarnQuestionForChatModel = YarnQuestionForChatModel.fromJson(
+        jsonDecode(widget.message!['meta_data']));
 
     // if (momentForChatModel.video != null) {
     //   isLoading = true;
@@ -69,10 +71,10 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         await AskAuth()
             .getSingleTopics(yarnId: yarnQuestionForChatModel.id!)
             .then((data) {
-              YarnTopic? yarnTopic;
-              if(data != null) {
-                yarnTopic = data['results'];
-              }
+          YarnTopic? yarnTopic;
+          if (data != null) {
+            yarnTopic = data['results'];
+          }
           isLoading = false;
           if (mounted) setState(() {});
 
@@ -92,7 +94,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         children: [
           Row(
             mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               isSend ? Container() : Container(width: 20),
@@ -105,8 +107,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 decoration: BoxDecoration(
                   color: widget.chatConversation!.isGroupConversation!
                       ? isSend
-                      ? Colors.transparent
-                      : Colors.white
+                          ? Colors.transparent
+                          : Colors.white
                       : Colors.transparent,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(!isSend ? 0 : 10),
@@ -118,13 +120,13 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 padding: EdgeInsets.symmetric(
                     horizontal: widget.chatConversation!.isGroupConversation!
                         ? isSend
-                        ? 0
-                        : 8
+                            ? 0
+                            : 8
                         : 0,
                     vertical: widget.chatConversation!.isGroupConversation!
                         ? isSend
-                        ? 0
-                        : 8
+                            ? 0
+                            : 8
                         : 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -132,29 +134,29 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                   children: [
                     widget.chatConversation!.isGroupConversation!
                         ? widget.message!['author'] != userBloc.user.userName
-                        ? Column(
-                      children: [
-                        Text(
-                          widget.message!['author_full_name'] ??
-                              widget.message!['author'],
-                          style: TextStyle(
-                              color: isSend ? Colors.white : navyBlue,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                      ],
-                    )
+                            ? Column(
+                                children: [
+                                  Text(
+                                    widget.message!['author_full_name'] ??
+                                        widget.message!['author'],
+                                    style: TextStyle(
+                                        color: isSend ? Colors.white : navyBlue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  SizedBox(
+                                    height: 4,
+                                  ),
+                                ],
+                              )
+                            : Container(
+                                height: 0,
+                                width: 0,
+                              )
                         : Container(
-                      height: 0,
-                      width: 0,
-                    )
-                        : Container(
-                      height: 0,
-                      width: 0,
-                    ),
+                            height: 0,
+                            width: 0,
+                          ),
                     Card(
                       margin: EdgeInsets.zero,
                       elevation: 0,
@@ -162,7 +164,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                           borderRadius: BorderRadius.circular(10)),
                       child: Container(
                         decoration: decorateBox(color: Colors.white),
-                        padding: EdgeInsets.only(right: 10, top: 10, left: 10, bottom: 4),
+                        padding: EdgeInsets.only(
+                            right: 10, top: 10, left: 10, bottom: 4),
                         child: _buildPostCard(),
                       ),
                     ),
@@ -171,13 +174,13 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               ),
               isSend
                   ? Container(
-                width: 20,
-                child: isSend
-                    ? Center(
-                  child: getMessageTick(message: widget.message!),
-                )
-                    : Container(),
-              )
+                      width: 20,
+                      child: isSend
+                          ? Center(
+                              child: getMessageTick(message: widget.message!),
+                            )
+                          : Container(),
+                    )
                   : Container(),
             ],
           ),
@@ -186,13 +189,13 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
           ),
           Row(
             mainAxisAlignment:
-            isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
+                isSend ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
               isSend
                   ? Container()
                   : SizedBox(
-                width: 20,
-              ),
+                      width: 20,
+                    ),
               Text(
                 formatTime(widget.message!['created_at']),
                 style: TextStyle(
@@ -200,8 +203,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               ),
               isSend
                   ? SizedBox(
-                width: 20,
-              )
+                      width: 20,
+                    )
                   : Container(),
             ],
           ),
@@ -225,7 +228,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        if (yarnQuestionForChatModel.isQuestion ?? false)...[
+        if (yarnQuestionForChatModel.isQuestion ?? false) ...[
           _buildPostTitle(),
           SizedBox(
             height: 10,
@@ -236,7 +239,9 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
           height: 10,
         ),
         _buildImagesRow(context: context),
-        SizedBox(height: 6,),
+        SizedBox(
+          height: 6,
+        ),
       ],
     );
   }
@@ -286,26 +291,25 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         ),
         Expanded(
             child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      userNameWithVerifiedIcon(
-                          name: yarnQuestionForChatModel.authorName ?? "", isVerified: yarnQuestionForChatModel.authorIsVerified ?? false),
-                      Text(
-                        "@${yarnQuestionForChatModel.authorUsername ?? ''}",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 10,
-                            color: HexColor("#3F61DB")
-                        ),
-                      ),
-                    ],
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  userNameWithVerifiedIcon(
+                      name: yarnQuestionForChatModel.authorName ?? "",
+                      isVerified:
+                          yarnQuestionForChatModel.authorIsVerified ?? false),
+                  Text(
+                    "@${yarnQuestionForChatModel.authorUsername ?? ''}",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 10, color: HexColor("#3F61DB")),
                   ),
-                ),
-              ],
-            )),
+                ],
+              ),
+            ),
+          ],
+        )),
       ],
     );
   }
@@ -340,15 +344,17 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     return Wrap(
       runSpacing: 5,
       spacing: 2,
-      children: yarnQuestionForChatModel.tags != null ? yarnQuestionForChatModel.tags!
-          .map((e) => Text(
-        "#$e",
-        style: TextStyle(
-          fontSize: 12,
-          color: HexColor("#3F61DB"),
-        ),
-      ))
-          .toList() : [],
+      children: yarnQuestionForChatModel.tags != null
+          ? yarnQuestionForChatModel.tags!
+              .map((e) => Text(
+                    "#$e",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: HexColor("#3F61DB"),
+                    ),
+                  ))
+              .toList()
+          : [],
     );
   }
 
@@ -386,26 +392,28 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       height: 175,
       child: Row(
         children: yarnQuestionForChatModel.media!
-            .map((mediaFile) => Expanded(
-          child: Container(
-            height: (MediaQuery.of(context).size.width - 40) / 2,
-            width: (MediaQuery.of(context).size.width - 40) / 2,
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
-                imageUrl: yarnQuestionForChatModel.media![0].file!,
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: double.infinity,
-                errorWidget: imageErrorWidget,
+            .map(
+              (mediaFile) => Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.width - 40) / 2,
+                  width: (MediaQuery.of(context).size.width - 40) / 2,
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      imageUrl: yarnQuestionForChatModel.media![0].file!,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      errorWidget: imageErrorWidget,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),)
+            )
             .toList(),
       ),
     );
@@ -529,7 +537,9 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               )
             ],
           ),
-          SizedBox(height: 8,),
+          SizedBox(
+            height: 8,
+          ),
           Row(
             children: [
               Expanded(
@@ -607,28 +617,30 @@ class YarnQuestionForChatModel {
 
   factory YarnQuestionForChatModel.fromJson(Map<String, dynamic> json) {
     return YarnQuestionForChatModel(
-      id: json['id'],
-      authorAvatar: json['author_avatar'],
-      authorUsername: json['author_username'],
-      authorName: json['author_name'],
-      title: json['title'],
-      description: json['description'],
-      tags: json['tags'],
-      media: json['image'] != null ? (json['image'] as List<dynamic>).map((e) => MediaFile.fromJson(e as Map<String, dynamic>)).toList() : [],
-      isQuestion: json['is_question'],
-      authorIsVerified: json['author_is_verified']
-    );
+        id: json['id'],
+        authorAvatar: json['author_avatar'],
+        authorUsername: json['author_username'],
+        authorName: json['author_name'],
+        title: json['title'],
+        description: json['description'],
+        tags: json['tags'],
+        media: json['image'] != null
+            ? (json['image'] as List<dynamic>)
+                .map((e) => MediaFile.fromJson(e as Map<String, dynamic>))
+                .toList()
+            : [],
+        isQuestion: json['is_question'],
+        authorIsVerified: json['author_is_verified']);
   }
 }
 
 class MediaFile {
   String? file;
   MediaFile({
-    this.file,});
+    this.file,
+  });
 
   factory MediaFile.fromJson(Map<String, dynamic> json) {
-    return MediaFile(
-      file: json['file']
-    );
+    return MediaFile(file: json['file']);
   }
 }

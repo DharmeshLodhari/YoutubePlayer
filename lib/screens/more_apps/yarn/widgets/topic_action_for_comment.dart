@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Slydo/screens/more_apps/ask/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,34 +17,37 @@ import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../ask_auth.dart';
 import '../models/Topics/CommentDetails.dart';
 
-class TopicActionsForNotification extends StatefulWidget {
-  TopicActionsForNotification();
+class TopicActionsForComment extends StatefulWidget {
+  CommentDetails? commentDetail;
+
+  TopicActionsForComment({this.commentDetail});
 
   @override
-  State<TopicActionsForNotification> createState() => _TopicActionsForNotificationState();
+  State<TopicActionsForComment> createState() => _TopicActionsForCommentState();
 }
 
-class _TopicActionsForNotificationState extends State<TopicActionsForNotification> {
+class _TopicActionsForCommentState extends State<TopicActionsForComment> {
+  Future addLikeToComment() async {
+    Map<String, dynamic>? data =
+        await AskAuth().addLikeComment(widget.commentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.commentDetail!.likes = data['likes'];
+        widget.commentDetail!.dislike = data['dislikes'];
+      });
+    }
+  }
 
-  // Future addLikeToComment() async {
-  //   Map<String, dynamic>? data = await AskAuth().addLikeComment(widget.commentDetail!.id!);
-  //   if (data != null) {
-  //     setState(() {
-  //       widget.commentDetail!.likes = data['likes'];
-  //       widget.commentDetail!.dislike = data['dislikes'];
-  //     });
-  //   }
-  // }
-  //
-  // Future addDisLikeToComment() async {
-  //   Map<String, dynamic>? data = await AskAuth().addDisLikeComment(widget.commentDetail!.id!);
-  //   if (data != null) {
-  //     setState(() {
-  //       widget.commentDetail!.likes = data['likes'];
-  //       widget.commentDetail!.dislike = data['dislikes'];
-  //     });
-  //   }
-  // }
+  Future addDisLikeToComment() async {
+    Map<String, dynamic>? data =
+        await AskAuth().addDisLikeComment(widget.commentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.commentDetail!.likes = data['likes'];
+        widget.commentDetail!.dislike = data['dislikes'];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +58,10 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
         _buildLikeButton(),
         _buildDisLike(),
         _buildShareButton(),
-        _buildPayButton(),
+        if (getLoggedInUserName(context) !=
+            widget.commentDetail!.authorUsername) ...[
+          _buildPayButton(),
+        ]
       ],
     );
   }
@@ -74,8 +80,7 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")
-            ),
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -85,7 +90,7 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
   Widget _buildLikeButton() {
     return InkWell(
       onTap: () {
-        // addLikeToComment();
+        addLikeToComment();
       },
       child: Row(
         children: [
@@ -98,8 +103,7 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")
-            ),
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -109,7 +113,7 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
   Widget _buildDisLike() {
     return InkWell(
       onTap: () {
-        // addDisLikeToComment();
+        addDisLikeToComment();
       },
       child: Row(
         children: [
@@ -122,8 +126,7 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
             style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")
-            ),
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -160,30 +163,32 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
 
   Widget _buildPayButton() {
     return InkWell(
-      // onTap: getLoggedInUserName(context) != widget.commentDetail!.authorUsername ? () {
-      //   if (getIt<AppConfigurationBloc>()
-      //       .appConfigurationModel
-      //       ?.enablePayment ==
-      //       true) {
-      //     Navigator.of(context).pushNamed(
-      //       Routes.SEND_PAYMENT,
-      //       arguments: <String, dynamic>{
-      //         'recipient': widget.commentDetail!.authorUsername!,
-      //         'isFromProfile': false,
-      //         'isFromChat': false,
-      //         'defaultReferenceText':
-      //         'Payment from  "${truncateString(
-      //           str: widget.commentDetail!.comment!,
-      //           lengthToTruncateAt: 8,
-      //         )}\" comment'
-      //       },
-      //     );
-      //   } else {
-      //     showToast(message: 'Payment not available at the moment');
-      //   }
-      // } : () {
-      //   showToast(message: 'You cannot pay yourself');
-      // },
+      onTap: getLoggedInUserName(context) !=
+              widget.commentDetail!.authorUsername
+          ? () {
+              if (getIt<AppConfigurationBloc>()
+                      .appConfigurationModel
+                      ?.enablePayment ==
+                  true) {
+                Navigator.of(context).pushNamed(
+                  Routes.SEND_PAYMENT,
+                  arguments: <String, dynamic>{
+                    'recipient': widget.commentDetail!.authorUsername!,
+                    'isFromProfile': false,
+                    'isFromChat': false,
+                    'defaultReferenceText': 'Payment from  "${truncateString(
+                      str: widget.commentDetail!.comment!,
+                      lengthToTruncateAt: 8,
+                    )}\" comment'
+                  },
+                );
+              } else {
+                showToast(message: 'Payment not available at the moment');
+              }
+            }
+          : () {
+              showToast(message: 'You cannot pay yourself');
+            },
       child: Row(
         children: [
           SvgPicture.asset("ask/send_money".toSVG()),
@@ -193,32 +198,32 @@ class _TopicActionsForNotificationState extends State<TopicActionsForNotificatio
   }
 
   String getCommentCount() {
-    // if (widget.commentDetail!.replyCount != null &&
-    //     widget.commentDetail!.replyCount != 0) {
-    //   return widget.commentDetail!.replyCount?.toString() ?? "";
-    // }
+    if (widget.commentDetail!.replyCount != null &&
+        widget.commentDetail!.replyCount != 0) {
+      return widget.commentDetail!.replyCount?.toString() ?? "";
+    }
     return "";
   }
 
   String getLikeCount() {
-    // if (widget.commentDetail!.likes != null &&
-    //     widget.commentDetail!.likes != 0) {
-    //   return widget.commentDetail!.likes?.toString() ?? "";
-    // }
+    if (widget.commentDetail!.likes != null &&
+        widget.commentDetail!.likes != 0) {
+      return widget.commentDetail!.likes?.toString() ?? "";
+    }
     return "";
   }
 
   String getDisLikeCount() {
-    // if (widget.commentDetail!.dislike != null &&
-    //     widget.commentDetail!.dislike != 0) {
-    //   return widget.commentDetail!.dislike?.toString() ?? "";
-    // }
+    if (widget.commentDetail!.dislike != null &&
+        widget.commentDetail!.dislike != 0) {
+      return widget.commentDetail!.dislike?.toString() ?? "";
+    }
     return "";
   }
 
   Future<void> sendMomentToUserInChat({required YarnTopic yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
-    await ShareInChat().selectShareCustomer(context);
+        await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {

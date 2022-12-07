@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/ask/widgets/ask_posts_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/ask_posts_view.dart';
 import 'package:flutter/material.dart';
 
 import '../../../locale/app_localization.dart';
@@ -9,9 +9,9 @@ import '../../../widget/customized_popup_menu.dart';
 import '../../../widget/noItemInList.dart';
 import 'ask_auth.dart';
 import 'ask_detail_screen.dart';
-import 'widgets/ask_options.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
+import 'widgets/ask_options.dart';
 
 class SearchScreen extends StatefulWidget {
   AskCategories? askCategory;
@@ -23,7 +23,6 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-
   TextEditingController searchController = TextEditingController();
   GlobalKey _key = LabeledGlobalKey("messageListPopUpMenu");
   late CustomizedPopUpMenu menu;
@@ -68,7 +67,11 @@ class _SearchScreenState extends State<SearchScreen> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await AskAuth().getSearchYarns(next, previous, isQuestion: isQuestion, searchText: searchController.text, categoryId: categoryId);
+        Map<String, dynamic>? result = await AskAuth().getSearchYarns(
+            next, previous,
+            isQuestion: isQuestion,
+            searchText: searchController.text,
+            categoryId: categoryId);
 
         if (result == null) {
           noList = true;
@@ -153,14 +156,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     menu = CustomizedPopUpMenu(
       buttonKey: _key,
       context: context,
       children: [
         CustomizedPopUpMenuItem(title: "Question", value: "question"),
-        CustomizedPopUpMenuItem(
-            title: "Yarn", value: "yarn"),
+        CustomizedPopUpMenuItem(title: "Yarn", value: "yarn"),
       ],
       selectedIndex: selectedMenuItemIndex,
       right: 16,
@@ -168,7 +169,6 @@ class _SearchScreenState extends State<SearchScreen> {
     menu.isTitleShow = true;
     menu.onChange = menuItemSelectionChange;
     menu.menuState = menuStateChange;
-
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -182,9 +182,7 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(
-          Icons.keyboard_arrow_left
-        ),
+        icon: Icon(Icons.keyboard_arrow_left),
         color: navyBlue,
         onPressed: () {
           Navigator.of(context).pop();
@@ -199,19 +197,26 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         children: [
           _buildSearchBox(),
-          isLoading ? CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(navyBlue),) : SizedBox.shrink(),
-          isSearchIsEmpty ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!
-                  .pleaseTypeSomethingToGetResult,
-              isResult: false,
-            ),
-          ) : noList
+          isLoading
+              ? CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
+                )
+              : SizedBox.shrink(),
+          isSearchIsEmpty
               ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ),
-          ) :  _buildPostList(),
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!
+                        .pleaseTypeSomethingToGetResult,
+                    isResult: false,
+                  ),
+                )
+              : noList
+                  ? Expanded(
+                      child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      ),
+                    )
+                  : _buildPostList(),
         ],
       ),
     );
@@ -347,13 +352,13 @@ class _SearchScreenState extends State<SearchScreen> {
         itemBuilder: (context, index) {
           return InkWell(
             onTap: () async {
-              if(yarnTopicList[index].enableCommenting ?? false) {
+              if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
                   screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
                 );
               }
-              if(mounted) setState(() {});
+              if (mounted) setState(() {});
             },
             child: AskPosts(
               onOptionsAction: () {
@@ -374,7 +379,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   },
                 );
               },
-              isImages: yarnTopicList[index].media != null && yarnTopicList[index].media!.isNotEmpty ? true : false,
+              isImages: yarnTopicList[index].media != null &&
+                      yarnTopicList[index].media!.isNotEmpty
+                  ? true
+                  : false,
               yarnTopic: yarnTopicList[index],
             ),
           );
@@ -382,5 +390,4 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
-
 }
