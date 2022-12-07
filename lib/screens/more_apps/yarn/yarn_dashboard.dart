@@ -1,5 +1,6 @@
-import 'package:Slydo/screens/more_apps/yarn/ask_by_category_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -11,16 +12,14 @@ import '../../../utils/util.dart';
 import 'add_yarn_screen.dart';
 import 'ask_search_screen.dart';
 import 'models/ask_categories_model.dart';
-import 'widgets/category_chip.dart';
 import 'widgets/question_view.dart';
 import 'widgets/topics_view.dart';
-import 'yarn_auth.dart';
 import 'yarn_dashboard_bloc.dart';
 import 'yarn_setting_screen.dart';
 
 class YarnDashboard extends StatefulWidget {
-  List<AskCategories>? askCategories;
-  List<AskCategories>? selectedCategories;
+  final List<AskCategories>? askCategories;
+  final List<AskCategories>? selectedCategories;
 
   YarnDashboard({this.askCategories, this.selectedCategories});
 
@@ -34,87 +33,19 @@ class _YarnDashboardState extends State<YarnDashboard> {
       GlobalKey<QuestionViewState>();
 
   late PageController _pageViewController;
-  int? currentAskTapOnHome = 0;
-  bool isCategoriesLoading = false;
-  String? categoriesNext = "";
-  String? categoriesPrevious = "";
-  bool noCategoriesList = false;
-  int? categoryCount = 0;
+  int currentAskTapOnHome = 0;
   String? selectedCategoryId;
-  late YarnDashboardBloc askViewModel;
-
-  // List<Color> categoryColors = [
-  //   Color(0xFFF07097),
-  //   Color(0xFF030F36),
-  //   Color(0xFF8829C1),
-  //   Color(0xFF8B008B),
-  //   Color(0xFF3F61DB),
-  //   Color(0xFFB22727),
-  //   Color(0xFFFFCC00),
-  //   Color(0xFF8B008B),
-  //   Color(0xFFFFA500),
-  //   Color(0xFF46CE7C),
-  //   Color(0xFF964B00),
-  //   Color(0xFFF35B46),
-  //   Color(0xFF243A73),
-  // ];
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
-    getAskCategoriesList();
     super.initState();
-  }
-
-  void getAskCategoriesList() async {
-    if (!isCategoriesLoading) {
-      if (categoriesNext != null && !isCategoriesLoading) {
-        isCategoriesLoading = true;
-        if (mounted) setState(() {});
-
-        Map<String, dynamic>? result = await YarnAuth()
-            .getAllCategories(categoriesNext, categoriesPrevious!);
-
-        if (result == null) {
-          noCategoriesList = true;
-
-          isCategoriesLoading = false;
-          if (mounted) {
-            setState(() {});
-          }
-          return;
-        }
-
-        categoryCount = result['count'];
-        categoriesNext = result['next'];
-        categoriesPrevious = result['previous'];
-        var tempList = result['results'];
-        if (mounted) {
-          noCategoriesList = false;
-          isCategoriesLoading = false;
-          askViewModel.askCategories = tempList;
-        }
-      }
-      if (askViewModel.askCategories.isEmpty) {
-        if (mounted) {
-          setState(() {
-            noCategoriesList = true;
-          });
-        }
-      }
-      // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //     content:
-      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //     duration: Duration(milliseconds: 500),
-      //   ));
-      // }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    askViewModel = Provider.of<YarnDashboardBloc>(context, listen: false);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: _buildFloatingActionButton(),
@@ -131,9 +62,9 @@ class _YarnDashboardState extends State<YarnDashboard> {
       ),
       activeChild: Icon(
         Icons.close,
-        color: HexColor("#3F61DB"),
+        color: yarnBlack,
       ),
-      backgroundColor: HexColor("#3F61DB"),
+      backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
       children: [
         _buildSpeedDialChild(
@@ -142,13 +73,13 @@ class _YarnDashboardState extends State<YarnDashboard> {
             onTap: () async {
               await NavigationUtil.push(context,
                   screen: AddTopicScreen(
-                    askCategories: askViewModel.askCategories,
+                    askCategories: yarnDashboardBloc.yarnCategories,
                     isYarn: false,
                   )).then((value) {
                 debugPrint("THEN VALUE===$value");
                 if (value != null) {
                   if (value == Types.Question) {
-                    updateCurrentAskTapOnHome(i: 1);
+                    updateCurrentAskTapOnHome(index: 1);
                     _pageViewController.jumpToPage(1);
                     questionViewStateKey.currentState?.onPostRefresh();
                   }
@@ -161,13 +92,13 @@ class _YarnDashboardState extends State<YarnDashboard> {
             onTap: () async {
               await NavigationUtil.push(context,
                   screen: AddTopicScreen(
-                    askCategories: askViewModel.askCategories,
+                    askCategories: yarnDashboardBloc.yarnCategories,
                     isYarn: true,
                   )).then((value) {
                 debugPrint("THEN VALUE===$value");
                 if (value != null) {
                   if (value == Types.Yarn) {
-                    updateCurrentAskTapOnHome(i: 0);
+                    updateCurrentAskTapOnHome(index: 0);
                     _pageViewController.jumpToPage(0);
                     topicViewStateKey.currentState?.onPostRefresh();
                   }
@@ -184,7 +115,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
       required VoidCallback onTap}) {
     return SpeedDialChild(
         onTap: onTap,
-        backgroundColor: HexColor("#3F61DB"),
+        backgroundColor: yarnBlack,
         labelBackgroundColor: HexColor("#FFFFFF"),
         labelWidget: Card(
           elevation: 2,
@@ -211,28 +142,34 @@ class _YarnDashboardState extends State<YarnDashboard> {
 
   Widget _buildAppBar() {
     return AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'YARN',
-          style: TextStyle(
-            fontSize: 21,
-            fontWeight: FontWeight.w700,
-            color: blackFont,
-          ),
+      backgroundColor: Colors.white,
+      title: Text(
+        'Yarn',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: yarnBlack,
+          height: 1.3,
         ),
-        titleSpacing: 0,
-        actions: [_buildAppBarActions()],
-        elevation: 0,
-        leading: IconButton(
-          padding: EdgeInsets.zero,
-          icon: Icon(
-            Icons.keyboard_arrow_left,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          color: navyBlue,
-        ));
+      ),
+      centerTitle: false,
+      titleSpacing: 0,
+      shadowColor: greySecondaryYarn,
+      actions: [_buildAppBarActions()],
+      elevation: 0.5,
+      leading: IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(
+          Icons.arrow_back_ios_rounded,
+          color: yarnBlack,
+          size: 14,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        color: yarnBlack,
+      ),
+    );
   }
 
   Widget _buildIconButton(
@@ -246,7 +183,9 @@ class _YarnDashboardState extends State<YarnDashboard> {
         height: 34,
         width: 34,
         decoration: BoxDecoration(
-            color: Color(0xFFFBFBFF), borderRadius: BorderRadius.circular(3)),
+          color: white,
+          borderRadius: BorderRadius.circular(3),
+        ),
         child: Icon(
           icon,
           color: iconColor,
@@ -297,95 +236,38 @@ class _YarnDashboardState extends State<YarnDashboard> {
   }
 
   Widget _buildBody() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6),
-      child: Column(
-        children: [_buildCategoryAndTabs(), _buildPageView()],
-      ),
+    return Column(
+      children: [
+        SizedBox(
+          height: 16,
+        ),
+        _buildCategoryAndTabs(),
+        _buildPageView(),
+      ],
     );
   }
 
   Widget _buildCategoryAndTabs() {
     return Column(
       children: [
-        _buildCategoryChip(),
-        SizedBox(height: 17),
-        _buildPageViewTabs(),
-        SizedBox(height: 7),
-      ],
-    );
-  }
-
-  Widget _buildCategoryChip() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          SizedBox(
-            width: 7,
-          ),
-          ...List.generate(
-            askViewModel.askCategories.length,
-            (i) {
-              return Row(
-                children: [
-                  SizedBox(
-                    width: 5,
-                  ),
-                  CategoryChip(
-                    onTap: () {
-                      NavigationUtil.push(context,
-                          screen: AskByCategoryScreen(
-                            askCategories: askViewModel.askCategories[i],
-                          ));
-                    },
-                    title: askViewModel.askCategories[i].name,
-                    categoryColor: HexColor("#D0D0D0"),
-                    selectedCategoryTextColor: HexColor("#000000"),
-                    borderColor: HexColor("#B7B7B7"),
-                  )
-                ],
-              );
+        YarnCategorySelection(),
+        SizedBox(height: 14),
+        YarnTabSelection(
+            onTap: (index) {
+              currentAskTapOnHome = index;
+              _pageViewController.jumpToPage(currentAskTapOnHome);
+              if (mounted) setState(() {});
             },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPageViewTabs() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          pageViewTabItem(
-              onPageTap: () {
-                updateCurrentAskTapOnHome(i: 0);
-                _pageViewController.jumpToPage(0);
-              },
-              pageNum: 0,
-              title: 'Yarns',
-              currentTapIndex: currentAskTapOnHome),
-          pageViewTabItem(
-              onPageTap: () {
-                updateCurrentAskTapOnHome(i: 1);
-                _pageViewController.jumpToPage(1);
-              },
-              pageNum: 1,
-              title: 'Questions',
-              currentTapIndex: currentAskTapOnHome),
-          // pageViewTabItem(
-          //     onPageTap: () {
-          //       updateCurrentAskTapOnHome(i: 2);
-          //       _pageViewCtrl.jumpToPage(2);
-          //     },
-          //     pageNum: 2,
-          //     title: 'My Feeds',
-          //     currentTapIndex: currentAskTapOnHome
-          // ),
-        ],
-      ),
+            currentIndex: currentAskTapOnHome),
+        SizedBox(
+          height: 16,
+        ),
+        Divider(
+          height: 0,
+          thickness: 0.5,
+          color: greySecondaryYarn,
+        )
+      ],
     );
   }
 
@@ -393,7 +275,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
     return Expanded(
       child: PageView(
         onPageChanged: (currentPage) {
-          updateCurrentAskTapOnHome(i: currentPage);
+          updateCurrentAskTapOnHome(index: currentPage);
         },
         controller: _pageViewController,
         children: [
@@ -440,9 +322,9 @@ class _YarnDashboardState extends State<YarnDashboard> {
     );
   }
 
-  void updateCurrentAskTapOnHome({int? i}) {
+  void updateCurrentAskTapOnHome({required int index}) {
     setState(() {
-      currentAskTapOnHome = i;
+      currentAskTapOnHome = index;
     });
   }
 

@@ -34,6 +34,10 @@ Color eyeGrey = HexColor("#A5ADB6");
 Color starYellow = HexColor("#FFAB00");
 Color graphWitheBackground = HexColor("#F3F3F3");
 Color selectedListItemBackgroundBlue = HexColor("#F8F9FF");
+Color yarnBlack = HexColor("#151515");
+
+Color greyBackground = HexColor("#F1F3F4");
+Color greySecondaryYarn = HexColor("#D9D9D9");
 
 Color boxShadow = Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);

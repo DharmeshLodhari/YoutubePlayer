@@ -17,15 +17,15 @@ import 'widgets/topics_view.dart';
 import 'yarn_auth.dart';
 import 'yarn_dashboard_bloc.dart';
 
-class AskByCategoryScreen extends StatefulWidget {
+class YarnCategoryScreen extends StatefulWidget {
   AskCategories? askCategories;
-  AskByCategoryScreen({this.askCategories});
+  YarnCategoryScreen({this.askCategories});
 
   @override
-  State<AskByCategoryScreen> createState() => _AskByCategoryScreenState();
+  State<YarnCategoryScreen> createState() => _YarnCategoryScreenState();
 }
 
-class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
+class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   late PageController _pageViewCtrl;
   UsersCategories? usersCategory;
   late UserBloc userBloc;
@@ -86,7 +86,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
             onTap: () {
               NavigationUtil.push(context,
                   screen: AddTopicScreen(
-                    askCategories: askViewModel.askCategories,
+                    askCategories: askViewModel.yarnCategories,
                     isYarn: false,
                     askCategory: widget.askCategories,
                   ));
@@ -97,7 +97,7 @@ class _AskByCategoryScreenState extends State<AskByCategoryScreen> {
             onTap: () {
               NavigationUtil.push(context,
                   screen: AddTopicScreen(
-                      askCategories: askViewModel.askCategories,
+                      askCategories: askViewModel.yarnCategories,
                       isYarn: true,
                       askCategory: widget.askCategories));
             }),

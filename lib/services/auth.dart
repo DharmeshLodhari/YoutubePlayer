@@ -541,7 +541,7 @@ class AuthService {
         // {detail: Given token not valid for any token type, code: token_not_valid, messages: [{status_code: 423}]}
 
         debugPrint(
-            "Token Black List ===> ${response.statusCode}  ${response.body}");
+            "Token EXPIRE ===> ${response.statusCode}  ${response.body}");
 
         try {
           if (jsonData["messages"][0]["status_code"] == 423 ||
@@ -556,6 +556,20 @@ class AuthService {
       }
     }
     return false;
+  }
+
+  Future<Map<String, dynamic>> generateNewHeaders(
+      Map<String, dynamic>? oldHeaders) async {
+    Map<String, dynamic> headers = {};
+    if (oldHeaders != null && oldHeaders.isNotEmpty) {
+      headers.addAll(oldHeaders);
+      Jwt jwt = await fetchNewToken();
+      String bearer = "Bearer ${jwt.access ?? ""}";
+      headers["Authorization"] = bearer;
+      log("NEW TOKEN GENERATED :- ${headers["Authorization"]}");
+    }
+
+    return headers;
   }
 
   Future<Response> httpGet(
@@ -575,8 +589,8 @@ class AuthService {
     if (result) {
       count = count - 1;
       if (count != 0) {
-        // Map<String, dynamic> headers = await getAuthHeaders();
-        return await httpGet(url, headers: headers, count: count);
+        Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
+        return await httpGet(url, headers: newHeaders, count: count);
       }
     }
     // var utf8runs = response.body.runes.toList();
@@ -599,9 +613,12 @@ class AuthService {
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
     bool result = await isTokenExpire(response);
     if (result) {
+      Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
+
       count = count - 1;
       if (count != 0) {
-        return await httpPost(url, headers: headers, body: body, count: count);
+        return await httpPost(url,
+            headers: newHeaders, body: body, count: count);
       }
     }
 
@@ -623,9 +640,11 @@ class AuthService {
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
     bool result = await isTokenExpire(response);
     if (result) {
+      Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
       count = count - 1;
       if (count != 0) {
-        return await httpPatch(url, headers: headers, body: body, count: count);
+        return await httpPatch(url,
+            headers: newHeaders, body: body, count: count);
       }
     }
 
@@ -650,9 +669,11 @@ class AuthService {
     /// WE WILL CALL THIS API API_CALL_RETRY_COUNT number of time to ensure token expire issue is not face by user
     bool result = await isTokenExpire(response);
     if (result) {
+      Map<String, dynamic> newHeaders = await generateNewHeaders(headers);
+
       count = count - 1;
       if (count != 0) {
-        return await httpDelete(url, headers: headers, count: count);
+        return await httpDelete(url, headers: newHeaders, count: count);
       }
     }
 

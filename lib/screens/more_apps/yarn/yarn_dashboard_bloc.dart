@@ -8,12 +8,12 @@ class YarnDashboardBloc extends ChangeNotifier {
   String? categoryToAskOn = '';
   String? newlySelectedCategory = '';
   List<AskCategories> _yarnCategories = [];
-  List<AskCategories> get askCategories => _yarnCategories;
+  List<AskCategories> get yarnCategories => _yarnCategories;
   List<String> _selectedAskCategories = [];
   List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length - 1);
 
-  set askCategories(List<AskCategories> cat) {
+  set yarnCategories(List<AskCategories> cat) {
     _yarnCategories = cat;
     notifyListeners();
   }
@@ -23,8 +23,12 @@ class YarnDashboardBloc extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addCategories(List<AskCategories> cat) {
+    _yarnCategories.addAll(cat);
+    notifyListeners();
+  }
+
   void onSelectedAskCategories(String c) {
-    print("SELECTED CATEGORIES:- $c");
     if (_selectedAskCategories.contains(c)) {
       _selectedAskCategories.remove(c);
       notifyListeners();

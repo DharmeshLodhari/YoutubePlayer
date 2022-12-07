@@ -86,7 +86,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
         }
       }
       if (Provider.of<YarnDashboardBloc>(context, listen: false)
-          .askCategories
+          .yarnCategories
           .isEmpty) {
         if (mounted) {
           setState(() {
@@ -181,7 +181,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
       return Wrap(
         runSpacing: 30,
         spacing: 15,
-        children: model.askCategories.map((e) {
+        children: model.yarnCategories.map((e) {
           // int random = Random().nextInt(model.categoryColors.length-1);
           return CategoryChip(
             onTap: () {
@@ -225,7 +225,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
                       jsonEncode({"categories": model.selectedAskCategories}));
                   NavigationUtil.push(
                     context,
-                    screen: YarnDashboard(askCategories: model.askCategories),
+                    screen: YarnDashboard(askCategories: model.yarnCategories),
                   ).then((value) => Navigator.of(context).pop());
                 }
               }
