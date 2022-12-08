@@ -88,6 +88,7 @@ class MyFeedViewState extends State<MyFeedView> {
       if (yarnTopicList.isEmpty) {
         if (mounted) {
           setState(() {
+
             noList = true;
           });
         }
@@ -148,7 +149,9 @@ class MyFeedViewState extends State<MyFeedView> {
                                       ),
                                       color: Colors.white,
                                       margin: EdgeInsets.zero,
-                                      child: YarnOptions(),
+                                      child: YarnOptions(
+                                        yarnTopic: yarnTopicList[index],
+                                      ),
                                     );
                                   },
                                 );
@@ -197,6 +200,7 @@ class MyFeedViewState extends State<MyFeedView> {
 
         getYarnTopic(categoryId: selectedId);
         setState(() {
+
           _postRefreshController.refreshCompleted();
         });
       } else {

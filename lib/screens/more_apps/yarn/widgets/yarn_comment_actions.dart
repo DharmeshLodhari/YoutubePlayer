@@ -44,11 +44,12 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(child: _buildActionableList()),
         _buildShareButton(),
         SizedBox(
-          width: 32,
+          width: 18,
         ),
         _buildPayButton(),
         SizedBox(
@@ -91,7 +92,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "ask/reply".toSVG(),
+            "yarn/yarn_comment".toSVG(),
             color: darkGreyYarn,
           ),
           SizedBox(
@@ -162,8 +163,8 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       },
       child: Row(
         children: [
-          Icon(
-            Icons.repeat,
+          SvgPicture.asset(
+            "yarn/re_share".toSVG(),
             color: darkGreyYarn,
           ),
           SizedBox(
@@ -202,8 +203,8 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       // child: SvgPicture.asset("ask/share".toSVG()),
       child: Column(
         children: [
-          Icon(
-            Icons.ios_share_rounded,
+          SvgPicture.asset(
+            "yarn/share".toSVG(),
             color: darkGreyYarn,
           ),
           SizedBox(
@@ -254,7 +255,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
             height: 2,
           ),
           SvgPicture.asset(
-            "ask/send_money".toSVG(),
+            "yarn/send_money".toSVG(),
             // color: !isPayMeEnable ? Colors.transparent : null,
           ),
         ],

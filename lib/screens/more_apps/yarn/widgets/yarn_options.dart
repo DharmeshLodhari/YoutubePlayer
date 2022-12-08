@@ -1,8 +1,16 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:Slydo/utils/extensions.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../../data/state_notifier.dart';
 import '../../../../utils/navigation_util.dart';
-import '../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../utils/util.dart';
+import '../../messaging/chat/models/ChatConversation.dart';
+import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../ask_report_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
@@ -12,7 +20,8 @@ class YarnOptions extends StatefulWidget {
   Yarn? yarnTopic;
   YarnComment? commentDetail;
   bool? isComment;
-  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false});
+  bool? isShareOption;
+  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false, this.isShareOption = false});
   @override
   State<YarnOptions> createState() => _YarnOptionsState();
 }
@@ -30,7 +39,7 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future deleteYarnAndQuestion() async {
-    bool isQuestion = widget.yarnTopic!.isQuestion!;
+    bool isQuestion = widget.yarnTopic!.isQuestion;
     bool? data =
         await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
     if (data != null && data) {
@@ -64,6 +73,7 @@ class _YarnOptionsState extends State<YarnOptions> {
       padding: EdgeInsets.only(bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+
         children: [
           SizedBox(
             height: 10,
@@ -86,10 +96,13 @@ class _YarnOptionsState extends State<YarnOptions> {
           if (isMyYarnQuestion()) ...[
             _buildMoreOptionForOwner()
           ] else ...[
-            _buildMoreOptionForOther()
-          ],
-          if (widget.isComment! && widget.commentDetail != null) ...[
-            _buildMoreOptionForComments()
+            if ((widget.isComment ?? false) && widget.commentDetail != null)...[
+              _buildMoreOptionForComments()
+            ] else if (widget.isShareOption ?? false)...[
+              _buildMoreOptionForShare()
+            ] else...[
+              _buildMoreOptionForOther()
+            ]
           ],
         ],
       ),
@@ -104,9 +117,9 @@ class _YarnOptionsState extends State<YarnOptions> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.yarnTopic!.isQuestion!) ...[
+        if (widget.yarnTopic!.isQuestion) ...[
           _buildTile(
-              icon: Icons.verified_outlined,
+              icon: "yarn/bookmark",
               title: 'Accept Answer ',
               subTitle:
                   'Once you accept this answer, your bounty \nreward will be sent to this user.'),
@@ -114,8 +127,7 @@ class _YarnOptionsState extends State<YarnOptions> {
           if (currentTime.difference(messageCreatedTime) <
               Duration(minutes: 1)) ...[
             _buildTile(
-                icon: SlydoAppIconNew.edit_post,
-                iconSize: 18,
+                icon: "yarn/bookmark",
                 width: 12,
                 title: 'Edit',
                 subTitle: 'Edit yarn'),
@@ -125,8 +137,7 @@ class _YarnOptionsState extends State<YarnOptions> {
           height: 15,
         ),
         _buildTile(
-            icon: SlydoAppIconNew.hide_commenting,
-            iconSize: 18,
+            icon: "yarn/hide",
             width: 12,
             title: 'Turn off commenting',
             subTitle: 'Disable commenting on this post.'),
@@ -134,11 +145,10 @@ class _YarnOptionsState extends State<YarnOptions> {
           height: 15,
         ),
         _buildTile(
-            icon: SlydoAppIconNew.delete_post,
-            iconSize: 18,
+            icon: "yarn/delete",
             width: 12,
             title: 'Delete',
-            subTitle: widget.yarnTopic!.isQuestion!
+            subTitle: widget.yarnTopic!.isQuestion
                 ? 'Delete this question'
                 : 'Delete this yarn',
             onTap: () {
@@ -153,8 +163,7 @@ class _YarnOptionsState extends State<YarnOptions> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildTile(
-          icon: SlydoAppIconNew.save_post,
-          iconSize: 18,
+          icon: "yarn/bookmark",
           width: 12,
           title: 'Save yarn/question',
           subTitle: 'Add this to you saved items',
@@ -166,8 +175,7 @@ class _YarnOptionsState extends State<YarnOptions> {
           height: 15,
         ),
         _buildTile(
-            icon: SlydoAppIconNew.hide_post,
-            iconSize: 18,
+            icon: "yarn/hide",
             width: 12,
             title: 'Hide yarn',
             subTitle: 'See fewer posts like this',
@@ -178,7 +186,7 @@ class _YarnOptionsState extends State<YarnOptions> {
           height: 15,
         ),
         _buildTile(
-            icon: Icons.report_gmailerrorred_rounded,
+            icon: "yarn/not_interested",
             title: 'Not Interested',
             subTitle: 'Not interested in this yarn',
             onTap: () {
@@ -188,7 +196,7 @@ class _YarnOptionsState extends State<YarnOptions> {
           height: 15,
         ),
         _buildTile(
-            icon: Icons.report_gmailerrorred_rounded,
+            icon: "yarn/report",
             title: 'Report yarn',
             subTitle: 'I’m concerned about this post',
             onTap: () {
@@ -209,8 +217,7 @@ class _YarnOptionsState extends State<YarnOptions> {
       children: [
         if (isComments()) ...[
           _buildTile(
-              icon: SlydoAppIconNew.delete_post,
-              iconSize: 18,
+              icon: "yarn/delete",
               title: 'Delete',
               subTitle: 'Delete this comment',
               onTap: () {
@@ -218,7 +225,7 @@ class _YarnOptionsState extends State<YarnOptions> {
               }),
         ] else ...[
           _buildTile(
-              icon: Icons.report_gmailerrorred_rounded,
+              icon: "yarn/report",
               title: 'Report comment',
               subTitle: 'I’m concerned about this post',
               onTap: () {
@@ -234,9 +241,43 @@ class _YarnOptionsState extends State<YarnOptions> {
     );
   }
 
+  Widget _buildMoreOptionForShare() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildTile(
+          icon: "yarn/copy",
+          title: "Copy Link",
+          width: 12,
+          onTap: () {}
+        ),
+        _buildTile(
+            icon: "yarn/send",
+            title: "Send To",
+            width: 12,
+            onTap: () async {
+              Navigator.of(context).pop();
+              await sendMomentToUserInChat(yarnTopic: widget.yarnTopic!);
+            }
+        ),
+        _buildTile(
+            icon: "yarn/share",
+            title: "Share Via",
+            width: 12,
+            onTap: () {}
+        ),
+        _buildTile(
+            icon: "yarn/report",
+            title: "Repost to Feed",
+            width: 12,
+            onTap: () {}
+        ),
+      ],
+    );
+  }
+
   Widget _buildTile(
-      {IconData? icon,
-      double? iconSize,
+      {String? icon,
       double? width,
       String? title,
       String? subTitle,
@@ -247,10 +288,15 @@ class _YarnOptionsState extends State<YarnOptions> {
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: iconSize ?? 24,
+            SvgPicture.asset(
+              "$icon".toSVG(),
+              height: 20,
+              width: 20,
             ),
+            // Icon(
+            //   icon,
+            //   size: iconSize ?? 24,
+            // ),
             SizedBox(
               width: width ?? 10,
             ),
@@ -258,7 +304,7 @@ class _YarnOptionsState extends State<YarnOptions> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title!,
+                  title ?? "",
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 14,
@@ -266,7 +312,7 @@ class _YarnOptionsState extends State<YarnOptions> {
                   ),
                 ),
                 Text(
-                  subTitle!,
+                  subTitle ?? "",
                   style: TextStyle(
                     color: HexColor("#75818F"),
                     fontSize: 10,
@@ -287,5 +333,59 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   bool isComments() {
     return getLoggedInUserName(context) == widget.commentDetail!.authorUsername;
+  }
+
+  Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
+    List<ChatConversation?> listOfRecipient =
+    await ShareInChat().selectShareCustomer(context);
+    debugPrint("Selected users = ${listOfRecipient.length}");
+
+    listOfRecipient.forEach((recipient) {
+      addMomentPostToChat(recipientUser: recipient!, yarnTopic: yarnTopic);
+    });
+  }
+
+  Future<void> addMomentPostToChat({
+    required ChatConversation recipientUser,
+    required Yarn yarnTopic,
+    String? url,
+  }) async {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    Map<String, dynamic> metaData = {
+      "id": yarnTopic.id,
+      "author_avatar": yarnTopic.authorAvatar,
+      "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
+      "author_username": yarnTopic.author,
+      "title": messageDecoderWithEmoji(yarnTopic.title),
+      "description": yarnTopic.body,
+      "tags": yarnTopic.tags,
+      "image": yarnTopic.media,
+      "is_question": yarnTopic.isQuestion,
+      "author_is_verified": yarnTopic.authorIsVerified,
+    };
+
+    // switch (yarnTopic.mediaType) {
+    //   case "image":
+    //     metaData.addAll({"image": momentsModel.media});
+    //     break;
+    //   case "video":
+    //     metaData.addAll({"image": momentsModel.mediaPoster});
+    //     break;
+    // }
+
+    Map<String, dynamic> data = {
+      "meta_data": jsonEncode(metaData),
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": 'yarn',
+      "kind": "yarn",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+    await sendDataToSocket(data);
+    showToast(
+        message: yarnTopic.isQuestion ? 'Question Shared' : 'Yarn Shared');
   }
 }

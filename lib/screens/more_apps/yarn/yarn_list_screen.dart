@@ -151,7 +151,9 @@ class YarnListScreenState extends State<YarnListScreen> {
                       ),
                       color: Colors.white,
                       margin: EdgeInsets.zero,
-                      child: YarnOptions(),
+                      child: YarnOptions(
+                        yarnTopic: yarnTopicList[index],
+                      ),
                     );
                   },
                 );

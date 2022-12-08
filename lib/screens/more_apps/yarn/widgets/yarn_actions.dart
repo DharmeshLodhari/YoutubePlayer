@@ -7,6 +7,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_options.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
@@ -88,7 +89,7 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "ask/reply".toSVG(),
+            "yarn/yarn_comment".toSVG(),
             color: darkGreyYarn,
           ),
           SizedBox(
@@ -112,8 +113,10 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "ask/like".toSVG(),
+            "yarn/like".toSVG(),
             color: darkGreyYarn,
+            height: 16,
+            width: 16,
           ),
           SizedBox(
             width: 6,
@@ -136,8 +139,10 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "ask/dislike".toSVG(),
+            "yarn/unlike".toSVG(),
             color: darkGreyYarn,
+            height: 16,
+            width: 16,
           ),
           SizedBox(
             width: 6,
@@ -159,8 +164,8 @@ class _YarnActionsState extends State<YarnActions> {
       },
       child: Row(
         children: [
-          Icon(
-            Icons.repeat,
+          SvgPicture.asset(
+            "yarn/re_share".toSVG(),
             color: darkGreyYarn,
           ),
           SizedBox(
@@ -179,27 +184,31 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildShareButton() {
     return InkWell(
       onTap: () {
-        androidBottomSheet(
+        showModalBottomSheet<void>(
+          backgroundColor: Colors.transparent,
           context: context,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              bottomSheetItem(
-                  title: 'Share in chat',
-                  iconData: Icons.send_outlined,
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    await sendMomentToUserInChat(yarnTopic: widget.yarn);
-                  }),
-            ],
-          ),
+          builder: (BuildContext context) {
+            return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: YarnOptions(
+                isShareOption: true,
+                yarnTopic: widget.yarn,
+              ),
+            );
+          },
         );
       },
       // child: SvgPicture.asset("ask/share".toSVG()),
       child: Column(
         children: [
-          Icon(
-            Icons.ios_share_rounded,
+          SvgPicture.asset(
+            "yarn/share".toSVG(),
             color: darkGreyYarn,
           ),
           SizedBox(
@@ -251,7 +260,7 @@ class _YarnActionsState extends State<YarnActions> {
             height: 2,
           ),
           SvgPicture.asset(
-            "ask/send_money".toSVG(),
+            "yarn/send_money".toSVG(),
             color: !isPayMeEnable ? Colors.transparent : null,
           ),
         ],
@@ -284,60 +293,6 @@ class _YarnActionsState extends State<YarnActions> {
   bool enableCommenting() {
     return widget.yarn.enableCommenting != null &&
         widget.yarn.enableCommenting!;
-  }
-
-  Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
-    List<ChatConversation?> listOfRecipient =
-        await ShareInChat().selectShareCustomer(context);
-    debugPrint("Selected users = ${listOfRecipient.length}");
-
-    listOfRecipient.forEach((recipient) {
-      addMomentPostToChat(recipientUser: recipient!, yarnTopic: yarnTopic);
-    });
-  }
-
-  Future<void> addMomentPostToChat({
-    required ChatConversation recipientUser,
-    required Yarn yarnTopic,
-    String? url,
-  }) async {
-    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
-
-    Map<String, dynamic> metaData = {
-      "id": yarnTopic.id,
-      "author_avatar": yarnTopic.authorAvatar,
-      "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
-      "author_username": yarnTopic.author,
-      "title": messageDecoderWithEmoji(yarnTopic.title),
-      "description": yarnTopic.body,
-      "tags": yarnTopic.tags,
-      "image": yarnTopic.media,
-      "is_question": yarnTopic.isQuestion,
-      "author_is_verified": yarnTopic.authorIsVerified,
-    };
-
-    // switch (yarnTopic.mediaType) {
-    //   case "image":
-    //     metaData.addAll({"image": momentsModel.media});
-    //     break;
-    //   case "video":
-    //     metaData.addAll({"image": momentsModel.mediaPoster});
-    //     break;
-    // }
-
-    Map<String, dynamic> data = {
-      "meta_data": jsonEncode(metaData),
-      "check_id": Uuid().v4(),
-      "conversation_id": recipientUser.conversationId,
-      "author": userBloc.user.userName,
-      "message": 'yarn',
-      "kind": "yarn",
-      "created_at": DateTime.now().toUtc().toString(),
-      "type": "chatroom_message",
-    };
-    await sendDataToSocket(data);
-    showToast(
-        message: yarnTopic.isQuestion ? 'Question Shared' : 'Yarn Shared');
   }
 
   Future addLikeToYarnAndQuestion() async {

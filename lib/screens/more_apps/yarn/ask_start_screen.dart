@@ -123,11 +123,21 @@ class _AskStartScreenState extends State<AskStartScreen> {
           backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: Colors.white,
+            shape: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
             elevation: 0,
+            title: Text(
+              "Yarn",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: HexColor("#030F36"),
+              ),
+            ),
+            titleSpacing: 0,
             leading: IconButton(
               icon: Icon(
                 Icons.keyboard_arrow_left,
-                color: navyBlue,
+                color: HexColor("#292929"),
                 size: 26,
               ),
               onPressed: () {
@@ -142,16 +152,16 @@ class _AskStartScreenState extends State<AskStartScreen> {
                 height: 15,
               ),
               _buildTitleAndDescription(
-                  title: 'What topic are you interested in?',
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700),
+                  title: 'What are you interested?',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
               SizedBox(
                 height: 15,
               ),
               _buildTitleAndDescription(
                   title:
-                      'Select 3 or more categories to continue. We’ll use this to recommend topics you may like.',
-                  fontSize: 14,
+                      'Select 3 or more interest to continue. We’ll use this to recommend topics you may like.',
+                  fontSize: 12,
                   fontWeight: FontWeight.w400),
               SizedBox(
                 height: 30,
@@ -188,8 +198,10 @@ class _AskStartScreenState extends State<AskStartScreen> {
               model.onSelectedAskCategories(e.id!);
             },
             title: e.name!,
-            categoryColor: HexColor(e.color!).withOpacity(0.1),
-            selectedCategoryTextColor: HexColor(e.color!),
+            categoryColor: model.selectedAskCategories.contains(e.id!) ? HexColor("#D9DFF8") : HexColor("#CCCCCC"),
+            selectedCategoryTextColor: model.selectedAskCategories.contains(e.id!) ? HexColor("#3F61DB") : HexColor("#000000"),
+            borderColor: model.selectedAskCategories.contains(e.id!) ? HexColor("#D9DFF8") : HexColor("#CCCCCC"),
+            isIconShow: model.selectedAskCategories.contains(e.id!),
           );
         }).toList(),
       );
@@ -213,6 +225,7 @@ class _AskStartScreenState extends State<AskStartScreen> {
             height: 50,
             textColor: Colors.white,
             backgroundColor: navyBlue,
+            borderRadius: 50,
             text: "${model.selectedAskCategories.length} out of 3 selected",
             onPressed: () async {
               if (model.selectedAskCategories.isEmpty) {

@@ -5,7 +5,9 @@ import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
@@ -221,22 +223,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                   // pickImage();
                 }
               },
-              child: Icon(
-                Icons.add_photo_alternate_rounded,
-                color: HexColor("#000000"),
-                size: 26,
-              ),
+              child: SvgPicture.asset("yarn/images".toSVG())
             ),
             SizedBox(
               width: 8,
             ),
             InkWell(
               onTap: () {},
-              child: Icon(
-                Icons.gif_box_outlined,
-                color: HexColor("#000000"),
-                size: 26,
-              ),
+              child: SvgPicture.asset("yarn/yarn_gif".toSVG())
             ),
             SizedBox(
               width: 8,
@@ -263,7 +257,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         if (mounted) setState(() {});
       },
       title: enableCommenting ? "comment enabled" : "enable comment",
-      image: "ask/reply",
+      image: "yarn/yarn_comment",
       baseBGColor: HexColor("#F8F8F8"),
       baseBorderColor: HexColor("#E9E9E9"),
       baseTextColor: HexColor("#ACAEB4"),
@@ -280,7 +274,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         if (mounted) setState(() {});
       },
       title: enablePayMe ? "payment enabled" : "enable payment",
-      image: "ask/send_money",
+      image: "yarn/send_money",
       baseBGColor: HexColor("#F8F8F8"),
       baseBorderColor: HexColor("#E9E9E9"),
       baseTextColor: HexColor("#ACAEB4"),
@@ -315,7 +309,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     //         ),
     //         SizedBox(width: 4,),
     //         SvgPicture.asset(
-    //           "ask/send_money".toSVG(),
+    //           "yarn/send_money".toSVG(),
     //           height: 20,
     //           width: 20,
     //           color: enablePayMe ? HexColor("#3F61DB") : HexColor("#ACAEB4"),

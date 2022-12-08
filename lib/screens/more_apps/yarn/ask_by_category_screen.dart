@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
@@ -30,6 +31,11 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   UsersCategories? usersCategory;
   late UserBloc userBloc;
   late YarnDashboardBloc askViewModel;
+  int currentAskTapOnHome = 0;
+  GlobalKey<YarnListScreenState> topicViewStateKey =
+  GlobalKey<YarnListScreenState>();
+  GlobalKey<QuestionListScreenState> questionViewStateKey =
+  GlobalKey<QuestionListScreenState>();
 
   @override
   void initState() {
@@ -77,7 +83,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
         Icons.close,
         color: HexColor(widget.askCategories!.color!),
       ),
-      backgroundColor: HexColor(widget.askCategories!.color!),
+      backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
       children: [
         _buildSpeedDialChild(
@@ -140,8 +146,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
     return PreferredSize(
       preferredSize: Size.fromHeight(80.0),
       child: AppBar(
-        backgroundColor:
-            HexColor(widget.askCategories!.color!).withOpacity(0.8),
+        backgroundColor: Colors.white,
         titleSpacing: 0,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -152,7 +157,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
               style: TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.w700,
-                color: white,
+                color: yarnBlack,
               ),
             ),
           ],
@@ -171,7 +176,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
                 },
                 child: Icon(
                   Icons.search_rounded,
-                  color: white,
+                  color: yarnBlack,
                   size: 26,
                 ),
               ),
@@ -228,7 +233,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
         leading: IconButton(
           icon: Icon(
             Icons.keyboard_arrow_left,
-            color: white,
+            color: yarnBlack,
             size: 26,
           ),
           onPressed: () {
@@ -240,59 +245,66 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   }
 
   Widget _buildBody() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 6,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      children: [
+        SizedBox(
+          height: 16,
+        ),
+        _buildCategoryAndTabs(),
+        _buildPageView(),
+      ],
+    );
+  }
+
+  Widget _buildCategoryAndTabs() {
+    return Column(
+      children: [
+        YarnTabSelection(
+          onTap: (index) {
+            currentAskTapOnHome = index;
+            _pageViewCtrl.jumpToPage(currentAskTapOnHome);
+            if (mounted) setState(() {});
+          },
+          currentIndex: currentAskTapOnHome,
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Divider(
+          height: 0,
+          thickness: 0.5,
+          color: greySecondaryYarn,
+        )
+      ],
+    );
+  }
+
+  Widget _buildPageView() {
+    return Expanded(
+      child: PageView(
+        onPageChanged: (currentPage) {
+          updateCurrentAskTapOnHome(index: currentPage);
+        },
+        controller: _pageViewCtrl,
         children: [
-          Column(
-            children: [
-              SizedBox(height: 17),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  pageViewTabItem(
-                      onPageTap: () {
-                        askViewModel.updateCurrentAskTapOnHome(i: 0);
-                        _pageViewCtrl.jumpToPage(0);
-                      },
-                      pageNum: 0,
-                      title: 'Yarn',
-                      currentTapIndex: askViewModel.currentTabIndex),
-                  pageViewTabItem(
-                      onPageTap: () {
-                        askViewModel.updateCurrentAskTapOnHome(i: 1);
-                        _pageViewCtrl.jumpToPage(1);
-                      },
-                      pageNum: 1,
-                      title: 'Questions',
-                      currentTapIndex: askViewModel.currentTabIndex),
-                ],
-              ),
-              SizedBox(height: 7),
-            ],
+          YarnListScreen(
+            key: topicViewStateKey,
+            selectedCategory: widget.askCategories!.id,
           ),
-          Expanded(
-            child: PageView(
-              onPageChanged: (currentPage) {
-                askViewModel.updateCurrentAskTapOnHome(i: currentPage);
-              },
-              controller: _pageViewCtrl,
-              children: [
-                YarnListScreen(
-                  selectedCategory: widget.askCategories!.id!,
-                ),
-                QuestionListScreen(
-                  selectedCategory: widget.askCategories!.id!,
-                ),
-              ],
-            ),
+          QuestionListScreen(
+            key: questionViewStateKey,
+            selectedCategory: widget.askCategories!.id,
           ),
+          // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),
     );
+  }
+
+  void updateCurrentAskTapOnHome({required int index}) {
+    setState(() {
+      currentAskTapOnHome = index;
+    });
   }
 
   Widget pageViewTabItem(

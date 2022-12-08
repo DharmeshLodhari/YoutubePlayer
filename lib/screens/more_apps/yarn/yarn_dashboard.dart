@@ -2,9 +2,11 @@ import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/navigation_util.dart';
@@ -92,13 +94,20 @@ class _YarnDashboardState extends State<YarnDashboard> {
             screen: SearchScreen(),
           );
         },
-        icon: Icon(
-          Icons.search_rounded,
-          color: yarnBlack,
-          size: 26,
-        ),
+        height: 20,
+        width: 20,
+        icon: SvgPicture.asset(
+          "yarn/search".toSVG(),
+          height: 12,
+          width: 12,
+        )
+        // icon: Icon(
+        //   Icons.search_rounded,
+        //   color: yarnBlack,
+        //   size: 26,
+        // ),
       ),
-      SizedBox(width: 10),
+      SizedBox(width: 15),
       RoundedBackgroundIcon(
         backgroundColor: Colors.transparent,
         onTap: () {
@@ -107,11 +116,18 @@ class _YarnDashboardState extends State<YarnDashboard> {
             screen: YarnNotification(),
           );
         },
-        icon: Icon(
-          SlydoAppIconNew.notification,
-          color: yarnBlack,
-          size: 22,
-        ),
+        height: 20,
+        width: 20,
+        icon: SvgPicture.asset(
+            "yarn/notification".toSVG(),
+          height: 12,
+          width: 12,
+        )
+        // Icon(
+        //   SlydoAppIconNew.notification,
+        //   color: yarnBlack,
+        //   size: 22,
+        // ),
       ),
       SizedBox(width: 10),
       RoundedBackgroundIcon(
@@ -122,11 +138,18 @@ class _YarnDashboardState extends State<YarnDashboard> {
             screen: YarnSettingsScreen(),
           );
         },
-        icon: Icon(
-          Icons.settings,
-          color: yarnBlack,
-          size: 26,
-        ),
+        height: 20,
+        width: 20,
+        icon: SvgPicture.asset(
+          "yarn/setting".toSVG(),
+          height: 12,
+          width: 12,
+        )
+        // Icon(
+        //   Icons.settings,
+        //   color: yarnBlack,
+        //   size: 26,
+        // ),
       ),
       SizedBox(width: 10),
     ];

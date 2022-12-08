@@ -180,7 +180,7 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
           return;
         }
 
-        count = result['count'];
+        count = result['count'] ?? 0;
         next = result['next'] != null ? result['next'] : "";
         previous = result['previous'] != null ? result['previous'] : "";
         var tempList = result['results'];

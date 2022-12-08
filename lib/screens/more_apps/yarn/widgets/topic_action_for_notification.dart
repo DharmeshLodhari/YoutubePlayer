@@ -179,7 +179,7 @@ class _TopicActionsForNotificationState
       // },
       child: Row(
         children: [
-          SvgPicture.asset("ask/send_money".toSVG()),
+          SvgPicture.asset("yarn/send_money".toSVG()),
         ],
       ),
     );

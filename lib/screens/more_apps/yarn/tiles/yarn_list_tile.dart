@@ -33,7 +33,7 @@ class _YarnTileState extends State<YarnTile> {
 
   @override
   void initState() {
-    if (widget.yarn.media != null && (widget.yarn.media?.isNotEmpty ?? false)) {
+    if (widget.yarn.media != null && (widget.yarn.media.isNotEmpty ?? false)) {
       isMediaPresent = true;
     }
     super.initState();

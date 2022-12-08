@@ -374,7 +374,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       color: Colors.white,
                       margin: EdgeInsets.zero,
-                      child: YarnOptions(),
+                      child: YarnOptions(
+                        yarnTopic: yarnTopicList[index],
+                      ),
                     );
                   },
                 );
