@@ -124,7 +124,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (widget.isYarn ?? false) ...[
+          if (!(widget.isYarn ?? false)) ...[
             _buildQuestionFiled(),
           ],
           Expanded(
@@ -852,22 +852,22 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
     addYarnAndQuestion.title =
-        widget.isYarn! ? textController.text : yarnController.text;
+        !(widget.isYarn ?? false) ? textController.text : yarnController.text;
     addYarnAndQuestion.body = textController.text;
     addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
-    addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
+    addYarnAndQuestion.isQuestion = !(widget.isYarn ?? false) ? false : true;
     addYarnAndQuestion.author = userBloc.user.userName;
     addYarnAndQuestion.enablePayme = enablePayMe;
     addYarnAndQuestion.enableCommenting = enableCommenting;
 
     await YarnAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
-      if (widget.isYarn!) {
+      if (!(widget.isYarn ?? true)) {
         Navigator.pop(context, Types.Yarn);
-      } else if (!widget.isYarn!) {
+      } else if (!(widget.isYarn ?? false)) {
         Navigator.pop(context, Types.Question);
       }
       showToast(
-          message: widget.isYarn!
+          message: widget.isYarn ?? false
               ? "Yarn add successfully"
               : "Question add successfully");
     }).catchError((error) {
