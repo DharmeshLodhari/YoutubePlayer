@@ -234,7 +234,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     Map<String, dynamic>? data;
     try {
-      data = await YarnAuth().getAllTopics("", "",
+      data = await YarnAuth().getAllYarn("", "",
           type: "my-topics",
           isType: false,
           userName: arguments['searchedUserName']);

@@ -167,7 +167,9 @@ class _HomeState extends State<Home> {
                 _appBar(),
                 flexibleSpace(flex: 2),
                 _displayUserInfo(),
-                SizedBox(height: 15,),
+                SizedBox(
+                  height: 15,
+                ),
                 _displayUserName(),
                 flexibleSpace(),
                 _displayPaymentButtons(),
@@ -189,15 +191,15 @@ class _HomeState extends State<Home> {
       centerTitle: false,
       leading: InkWell(
         onTap: () {
-          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-              arguments: userBloc.user.avatar);
+          Navigator.of(context)
+              .pushNamed(Routes.PHOTO_VIEWER, arguments: userBloc.user.avatar);
         },
         child: Container(
           height: 48,
           width: 48,
           padding: EdgeInsets.all(3),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+              shape: BoxShape.circle,
               border: Border.all(color: borderColor, width: 1)),
           child: ClipOval(
             child: CachedNetworkImage(
@@ -211,9 +213,7 @@ class _HomeState extends State<Home> {
       title: InkWell(
         onTap: () {
           Navigator.pushNamed(context, Routes.USER_PROFILE,
-              arguments: {
-                "searchedUserName": userBloc.user.userName
-              });
+              arguments: {"searchedUserName": userBloc.user.userName});
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,7 +225,10 @@ class _HomeState extends State<Home> {
             userNameWithVerifiedIcon(
               name: userBloc.user.displayName()!,
               isVerified: userBloc.user.isVerified,
-              textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: HexColor("#151515")),
+              textStyle: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: HexColor("#151515")),
             ),
           ],
         ),
@@ -253,7 +256,11 @@ class _HomeState extends State<Home> {
                 height: 34,
                 width: 34,
                 child: InkWell(
-                  child: Icon(SlydoAppIcon.search, size: 16, color: HexColor("#151515"),),
+                  child: Icon(
+                    SlydoAppIcon.search,
+                    size: 16,
+                    color: HexColor("#151515"),
+                  ),
                   onTap: () async {
                     await Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
 
@@ -330,36 +337,30 @@ class _HomeState extends State<Home> {
 
   Widget _displayUserInfo() {
     return Card(
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),side: BorderSide(color: Color(0xFFF3F3F3), width: 2)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Color(0xFFF3F3F3), width: 2)),
       margin: EdgeInsets.zero,
       elevation: 0.0,
       child: Container(
-        decoration: decorateBox(borderRadius: 20, borderColor: HexColor("#F3F3F3")),
+        decoration:
+            decorateBox(borderRadius: 20, borderColor: HexColor("#F3F3F3")),
         child: Container(
           margin: EdgeInsets.all(13),
           key: tutorialQrCodeKey,
           child: CustomPaint(
             painter: QrPainter(
-                data: "https://api.slydo.co/api/v1/user/customer/${userBloc.user.userName!}",
+                data:
+                    "https://api.slydo.co/api/v1/user/customer/${userBloc.user.userName!}",
                 options: QrOptions(
                     shapes: QrShapes(
-                        darkPixel: QrPixelShapeCircle(
-                            radiusFraction: .8
-
-                        ),
-                        frame: QrFrameShapeRoundCorners(
-                            cornerFraction: .25
-                        ),
-                        ball: QrBallShapeRoundCorners(
-                            cornerFraction: .25
-                        )
-                    ),
+                        darkPixel: QrPixelShapeCircle(radiusFraction: .8),
+                        frame: QrFrameShapeRoundCorners(cornerFraction: .25),
+                        ball: QrBallShapeRoundCorners(cornerFraction: .25)),
                     colors: QrColors(
-                        light : QrColorSolid(Color.fromARGB(0, 0, 0, 0))
-                    )
-                )),
-            size: Size(MediaQuery.of(context).size.width / 1.7, MediaQuery.of(context).size.width / 1.7),
+                        light: QrColorSolid(Color.fromARGB(0, 0, 0, 0))))),
+            size: Size(MediaQuery.of(context).size.width / 1.7,
+                MediaQuery.of(context).size.width / 1.7),
           ),
         ),
       ),
@@ -370,24 +371,22 @@ class _HomeState extends State<Home> {
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
-            arguments: {
-              "searchedUserName": userBloc.user.userName
-            });
+            arguments: {"searchedUserName": userBloc.user.userName});
       },
       child: Column(
         children: [
           userNameWithVerifiedIcon(
             name: userBloc.user.displayName()!,
             isVerified: userBloc.user.isVerified,
-            textStyle: TextStyle(fontSize: 16, color: HexColor("#151515"), fontWeight: FontWeight.bold),
+            textStyle: TextStyle(
+                fontSize: 16,
+                color: HexColor("#151515"),
+                fontWeight: FontWeight.bold),
           ),
           Text(
             "Scan to pay @${userBloc.user.userName!}",
             maxLines: 1,
-            style: TextStyle(
-                fontSize: 12,
-              color: HexColor("#B8B6B6")
-            ),
+            style: TextStyle(fontSize: 12, color: HexColor("#B8B6B6")),
           ),
         ],
       ),
@@ -476,12 +475,11 @@ class _HomeState extends State<Home> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                height: 50,
-                width: 50,
-                child: SvgPicture.asset(
+                  height: 50,
+                  width: 50,
+                  child: SvgPicture.asset(
                     "send_payment".toSVG(),
-                )
-              ),
+                  )),
               SizedBox(
                 width: 12,
               ),

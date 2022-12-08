@@ -36,8 +36,10 @@ class ConnectionList extends StatefulWidget {
 }
 
 class _ConnectionListState extends State<ConnectionList> {
-  final GlobalKey<ScaffoldState> _scaffoldContactsListKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerContactsListKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _scaffoldContactsListKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerContactsListKey =
+      new GlobalKey<ScaffoldMessengerState>();
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";

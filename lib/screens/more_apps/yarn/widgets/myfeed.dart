@@ -8,10 +8,10 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/noItemInList.dart';
 import '../models/Topics/YarnTopic.dart';
+import '../tiles/yarn_list_tile.dart';
 import '../yarn_auth.dart';
 import '../yarn_detail_screen.dart';
-import 'ask_options.dart';
-import 'ask_posts_view.dart';
+import 'yarn_options.dart';
 
 class MyFeedView extends StatefulWidget {
   String? selectedCategory;
@@ -28,7 +28,7 @@ class MyFeedViewState extends State<MyFeedView> {
   MyFeedViewState({this.key});
   bool isLoading = false;
   String next = "", previous = "";
-  List<YarnTopic> yarnTopicList = [];
+  List<Yarn> yarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController _postRefreshController =
@@ -54,7 +54,7 @@ class MyFeedViewState extends State<MyFeedView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllTopics(
+        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous,
             type: type,
             isType: isType,
@@ -128,13 +128,13 @@ class MyFeedViewState extends State<MyFeedView> {
                                   false) {
                                 await NavigationUtil.push(
                                   context,
-                                  screen: AskDetailScreen(
-                                      yarnTopic: yarnTopicList[index]),
+                                  screen: YarnDetailScreen(
+                                      yarn: yarnTopicList[index]),
                                 );
                               }
                               if (mounted) setState(() {});
                             },
-                            child: AskPosts(
+                            child: YarnTile(
                               onOptionsAction: () {
                                 showModalBottomSheet<void>(
                                   backgroundColor: Colors.transparent,
@@ -148,16 +148,12 @@ class MyFeedViewState extends State<MyFeedView> {
                                       ),
                                       color: Colors.white,
                                       margin: EdgeInsets.zero,
-                                      child: AskOptions(),
+                                      child: YarnOptions(),
                                     );
                                   },
                                 );
                               },
-                              isImages: yarnTopicList[index].media != null &&
-                                      yarnTopicList[index].media!.isNotEmpty
-                                  ? true
-                                  : false,
-                              yarnTopic: yarnTopicList[index],
+                              yarn: yarnTopicList[index],
                             ),
                           );
                         },

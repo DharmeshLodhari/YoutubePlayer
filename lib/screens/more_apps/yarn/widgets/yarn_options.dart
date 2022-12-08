@@ -8,16 +8,16 @@ import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
 import '../yarn_auth.dart';
 
-class AskOptions extends StatefulWidget {
-  YarnTopic? yarnTopic;
-  CommentDetails? commentDetail;
+class YarnOptions extends StatefulWidget {
+  Yarn? yarnTopic;
+  YarnComment? commentDetail;
   bool? isComment;
-  AskOptions({this.yarnTopic, this.commentDetail, this.isComment = false});
+  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false});
   @override
-  State<AskOptions> createState() => _AskOptionsState();
+  State<YarnOptions> createState() => _YarnOptionsState();
 }
 
-class _AskOptionsState extends State<AskOptions> {
+class _YarnOptionsState extends State<YarnOptions> {
   Future addUserVisibilityOption(String status) async {
     bool? data =
         await YarnAuth().addStatusInPost(widget.yarnTopic!.id!, status);

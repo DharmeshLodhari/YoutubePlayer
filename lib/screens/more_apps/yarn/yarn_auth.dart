@@ -188,7 +188,7 @@ class YarnAuth extends AuthService {
   }
 
   // Get all YARN Topics
-  Future<Map<String, dynamic>?> getAllTopics(String? next, String previous,
+  Future<Map<String, dynamic>?> getAllYarn(String? next, String previous,
       {String? type,
       bool isType = false,
       String? categoryId,
@@ -220,11 +220,11 @@ class YarnAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<YarnTopic> yarnTopics = [];
+      List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
       debugPrint("GET DATA:- $jsonData");
       for (var item in jsonData["results"]) {
-        YarnTopic yarnTopic = YarnTopic.fromJson(item);
+        Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
       }
 
@@ -256,7 +256,7 @@ class YarnAuth extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      YarnTopic yarnTopic = YarnTopic.fromJson(jsonData);
+      Yarn yarnTopic = Yarn.fromJson(jsonData);
 
       Map<String, dynamic> result = {"results": yarnTopic};
       return result;
@@ -308,10 +308,10 @@ class YarnAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<YarnTopic> yarnTopics = [];
+      List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        YarnTopic yarnTopic = YarnTopic.fromJson(item);
+        Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
       }
 
@@ -419,7 +419,7 @@ class YarnAuth extends AuthService {
 
   // {"comment":"xyz","author_username:""};
   // ADD COMMENT TO YARN
-  Future<CommentDetails?> addCommentToYarn(
+  Future<YarnComment?> addCommentToYarn(
       String yarnId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
@@ -434,8 +434,8 @@ class YarnAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      CommentDetails commentDetails =
-          CommentDetails.fromJson(json.decode(response.body));
+      YarnComment commentDetails =
+          YarnComment.fromJson(json.decode(response.body));
       return commentDetails;
     } else if (response.statusCode == 500) {
       return Future.error("Please try again later !!");
@@ -471,10 +471,10 @@ class YarnAuth extends AuthService {
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200) {
-      List<CommentDetails> commentsDetails = [];
+      List<YarnComment> commentsDetails = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        CommentDetails commentsDetail = CommentDetails.fromJson(item);
+        YarnComment commentsDetail = YarnComment.fromJson(item);
         commentsDetails.add(commentsDetail);
       }
 
@@ -513,7 +513,7 @@ class YarnAuth extends AuthService {
   }
 
   // ADD COMMENT TO YARN
-  Future<CommentDetails?> addReplyToComment(
+  Future<YarnComment?> addReplyToComment(
       String commentId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
@@ -529,8 +529,8 @@ class YarnAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      CommentDetails commentDetail =
-          CommentDetails.fromJson(json.decode(response.body));
+      YarnComment commentDetail =
+          YarnComment.fromJson(json.decode(response.body));
       return commentDetail;
     } else if (response.statusCode == 500) {
       return null;
@@ -541,18 +541,21 @@ class YarnAuth extends AuthService {
 
   // Get all Reply
   Future<Map<String, dynamic>?> getAllReply(
-    String? next,
-    String previous,
-    String commentId,
-  ) async {
+      String? next, String previous, String commentId,
+      {String? sortBy}) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl +
-          "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
+      if (sortBy != null) {
+        url = AppConfig.baseUrl +
+            "/api/v1/social/ask/reply-a-yarn-comment/$commentId/?sort_by=$sortBy";
+      } else {
+        url = AppConfig.baseUrl +
+            "/api/v1/social/ask/reply-a-yarn-comment/$commentId/";
+      }
     } else {
       url = getSecureUrl(url: next);
     }
@@ -562,10 +565,10 @@ class YarnAuth extends AuthService {
     var response = await httpGet(url, headers: headers);
 
     if (response.statusCode == 200) {
-      List<CommentDetails> commentDetails = [];
+      List<YarnComment> commentDetails = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData) {
-        CommentDetails replyCommentDetail = CommentDetails.fromJson(item);
+        YarnComment replyCommentDetail = YarnComment.fromJson(item);
         commentDetails.add(replyCommentDetail);
       }
 

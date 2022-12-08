@@ -377,7 +377,8 @@ class _UpgradeUserProfileState extends State<UpgradeUserProfile> {
               },
               cancelCallBack: () {
                 Navigator.pop(context);
-                _upgradeMessengerProfileScaffold.currentState!.showSnackBar(SnackBar(
+                _upgradeMessengerProfileScaffold.currentState!
+                    .showSnackBar(SnackBar(
                   content: Text(AppLocalization.of(context)!.invalidPassword),
                 ));
               });

@@ -56,7 +56,8 @@ class _SearchUsersProductAndServiceState
   TextEditingController searchItemTextController = TextEditingController();
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey = GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+      GlobalKey<ScaffoldMessengerState>();
   GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
   //pagination variables

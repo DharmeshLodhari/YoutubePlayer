@@ -2,52 +2,52 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../locale/app_localization.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../utils/util.dart';
-import '../../../../widget/noItemInList.dart';
-import '../models/Topics/YarnTopic.dart';
-import '../yarn_auth.dart';
-import '../yarn_detail_screen.dart';
-import 'ask_loader.dart';
-import 'ask_options.dart';
-import 'ask_posts_view.dart';
+import '../../../locale/app_localization.dart';
+import '../../../utils/navigation_util.dart';
+import '../../../utils/util.dart';
+import '../../../widget/noItemInList.dart';
+import 'models/Topics/YarnTopic.dart';
+import 'tiles/yarn_list_tile.dart';
+import 'widgets/yarn_options.dart';
+import 'widgets/yarn_shimmer.dart';
+import 'yarn_auth.dart';
+import 'yarn_detail_screen.dart';
 
-class TopicView extends StatefulWidget {
-  String? selectedCategory;
-  TopicView({Key? key, this.selectedCategory}) : super(key: key);
+class YarnListScreen extends StatefulWidget {
+  final String? selectedCategory;
+  YarnListScreen({Key? key, this.selectedCategory}) : super(key: key);
   @override
-  State<TopicView> createState() => TopicViewState(key: key);
+  State<YarnListScreen> createState() => YarnListScreenState(key: key);
 }
 
-class TopicViewState extends State<TopicView> {
+class YarnListScreenState extends State<YarnListScreen> {
   Key? key;
-  TopicViewState({this.key});
+  YarnListScreenState({this.key});
 
   bool isLoading = false;
   String? next = "", previous = "";
-  List<YarnTopic> yarnTopicList = [];
+  List<Yarn> yarnTopicList = [];
   int count = 0;
   bool noList = false;
-  RefreshController _postRefreshController =
+  RefreshController refreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
-  ScrollController _topicScrollController = new ScrollController();
+  ScrollController _scrollController = new ScrollController();
 
   @override
   void initState() {
-    getYarnTopic(categoryId: widget.selectedCategory);
-    _topicScrollController.addListener(() {
-      if (_topicScrollController.position.pixels ==
-              _topicScrollController.position.maxScrollExtent &&
-          _topicScrollController.position.pixels != 0) {
-        getYarnTopic(categoryId: widget.selectedCategory);
+    getYarnList(categoryId: widget.selectedCategory);
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getYarnList(categoryId: widget.selectedCategory);
       }
     });
     super.initState();
   }
 
-  void getYarnTopic(
+  void getYarnList(
       {String type = "topic", bool isType = true, String? categoryId}) async {
     if (categoryId != null) {
       selectedId = categoryId;
@@ -58,7 +58,7 @@ class TopicViewState extends State<TopicView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllTopics(
+        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
             type: type, isType: isType, categoryId: categoryId);
 
@@ -110,38 +110,34 @@ class TopicViewState extends State<TopicView> {
         complete: Container(),
         waterDropColor: navyBlue,
       ),
-      controller: _postRefreshController,
-      onRefresh: onPostRefresh,
+      controller: refreshController,
+      onRefresh: onRefresh,
       child: _buildListView(),
     );
   }
 
   Widget _buildListView() {
-    print("IS LOADING:- $isLoading");
-    // if (isLoading) {
-    //   return AskLoader();
-    // }
     if (!noList) {
       return ListView.separated(
         physics: ClampingScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 22),
-        controller: _topicScrollController,
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        controller: _scrollController,
         itemCount: yarnTopicList.length + 1,
         itemBuilder: (BuildContext context, int index) {
           if (index == yarnTopicList.length) {
-            return _buildReviewIndicator();
+            return _buildLoadingIndicator();
           }
           return InkWell(
             onTap: () async {
               if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
-                  screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+                  screen: YarnDetailScreen(yarn: yarnTopicList[index]),
                 );
               }
               if (mounted) setState(() {});
             },
-            child: AskPosts(
+            child: YarnTile(
               onOptionsAction: () {
                 showModalBottomSheet<void>(
                   backgroundColor: Colors.transparent,
@@ -155,22 +151,27 @@ class TopicViewState extends State<TopicView> {
                       ),
                       color: Colors.white,
                       margin: EdgeInsets.zero,
-                      child: AskOptions(),
+                      child: YarnOptions(),
                     );
                   },
                 );
               },
-              isImages: yarnTopicList[index].media != null &&
-                      yarnTopicList[index].media!.isNotEmpty
-                  ? true
-                  : false,
-              yarnTopic: yarnTopicList[index],
+              yarn: yarnTopicList[index],
             ),
           );
         },
         separatorBuilder: (context, int) {
-          return SizedBox(
-            height: 8,
+          return Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                height: 0,
+                thickness: 0.5,
+                color: greySecondaryYarn,
+              ),
+            ],
           );
         },
       );
@@ -180,14 +181,14 @@ class TopicViewState extends State<TopicView> {
     );
   }
 
-  Widget _buildReviewIndicator() {
+  Widget _buildLoadingIndicator() {
     return Opacity(
       opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? AskLoader() : Container(),
+      child: isLoading ? YarnShimmer() : Container(),
     );
   }
 
-  void onPostRefresh() async {
+  void onRefresh() async {
     Connectivity().checkConnectivity().then((value) {
       var connectionResult = value;
       if (connectionResult == ConnectivityResult.wifi ||
@@ -198,16 +199,16 @@ class TopicViewState extends State<TopicView> {
         yarnTopicList = [];
         if (mounted) setState(() {});
 
-        getYarnTopic(categoryId: selectedId);
+        getYarnList(categoryId: selectedId);
         setState(() {
-          _postRefreshController.refreshCompleted();
+          refreshController.refreshCompleted();
         });
       } else {
         showToast(
             message:
                 AppLocalization.of(context)!.internetConnectionNotAvailable);
         setState(() {
-          _postRefreshController.refreshCompleted();
+          refreshController.refreshCompleted();
         });
       }
     });

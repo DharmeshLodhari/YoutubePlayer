@@ -9,7 +9,8 @@ class CustomizeCategory extends StatelessWidget {
   UsersCategories? usersCategory;
   bool? isAdd = false;
   GestureTapCallback? onTap;
-  CustomizeCategory({this.askCategory, this.isAdd, this.onTap, this.usersCategory});
+  CustomizeCategory(
+      {this.askCategory, this.isAdd, this.onTap, this.usersCategory});
 
   @override
   Widget build(BuildContext context) {

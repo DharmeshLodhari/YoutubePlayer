@@ -18,7 +18,8 @@ class ContractTransactionHistory extends StatefulWidget {
 class _ContractTransactionHistoryState
     extends State<ContractTransactionHistory> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";

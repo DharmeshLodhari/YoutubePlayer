@@ -28,8 +28,10 @@ class MessageList extends StatefulWidget {
 }
 
 class _MessageListState extends State<MessageList> {
-  final GlobalKey<ScaffoldState> _scaffoldMessageKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerMessageKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _scaffoldMessageKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerMessageKey =
+      new GlobalKey<ScaffoldMessengerState>();
   final _messageAuth = MessageAuth();
   SlidableController? slidableController;
   int? count = 0;

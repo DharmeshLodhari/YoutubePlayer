@@ -893,21 +893,17 @@ class RouteGenerator {
 
       case Routes.SUPER_HUB:
         return PageTransition(
-          child: SuperHub(),
-          type: PageTransitionType.bottomToTop,
-          curve: Curves.ease,
-          settings: settings
-        );
-
-
+            child: SuperHub(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
 
       case Routes.SEARCH_SERVICES:
         return PageTransition(
             child: SearchServices(),
             type: PageTransitionType.bottomToTop,
             curve: Curves.ease,
-            settings: settings
-        );
+            settings: settings);
 
       /// Movie Route
 

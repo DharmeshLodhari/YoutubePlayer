@@ -27,8 +27,10 @@ class OrdersList extends StatefulWidget {
 }
 
 class _OrdersListState extends State<OrdersList> {
-  final GlobalKey<ScaffoldState> _scaffoldOrderListKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerOrderListKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _scaffoldOrderListKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerOrderListKey =
+      new GlobalKey<ScaffoldMessengerState>();
   final _auth = ShoppingAuthService();
   SlidableController? _slideController;
   int? count = 0;

@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_comment_detail_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -17,70 +20,87 @@ import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../yarn_auth.dart';
 
-class TopicActionsForComment extends StatefulWidget {
-  CommentDetails? commentDetail;
+class YarnCommentActions extends StatefulWidget {
+  final YarnComment comment;
+  final Yarn yarn;
 
-  TopicActionsForComment({this.commentDetail});
+  YarnCommentActions({
+    required this.comment,
+    required this.yarn,
+  });
 
   @override
-  State<TopicActionsForComment> createState() => _TopicActionsForCommentState();
+  State<YarnCommentActions> createState() => _YarnCommentActionsState();
 }
 
-class _TopicActionsForCommentState extends State<TopicActionsForComment> {
-  Future addLikeToComment() async {
-    Map<String, dynamic>? data =
-        await YarnAuth().addLikeComment(widget.commentDetail!.id!);
-    if (data != null) {
-      setState(() {
-        widget.commentDetail!.likes = data['likes'];
-        widget.commentDetail!.dislike = data['dislikes'];
-      });
-    }
-  }
-
-  Future addDisLikeToComment() async {
-    Map<String, dynamic>? data =
-        await YarnAuth().addDisLikeComment(widget.commentDetail!.id!);
-    if (data != null) {
-      setState(() {
-        widget.commentDetail!.likes = data['likes'];
-        widget.commentDetail!.dislike = data['dislikes'];
-      });
-    }
+class _YarnCommentActionsState extends State<YarnCommentActions> {
+  int retweetCount = 1;
+  @override
+  void initState() {
+    retweetCount = Random().nextInt(200);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildCommentButton(),
-        _buildLikeButton(),
-        _buildDisLike(),
+        Expanded(child: _buildActionableList()),
         _buildShareButton(),
-        if (getLoggedInUserName(context) !=
-            widget.commentDetail!.authorUsername) ...[
-          _buildPayButton(),
-        ]
+        SizedBox(
+          width: 32,
+        ),
+        _buildPayButton(),
+        SizedBox(
+          width: 16,
+        )
       ],
+    );
+  }
+
+  Widget _buildActionableList() {
+    List<Widget> finalActionList = [];
+
+    finalActionList.addAll([
+      Expanded(child: _buildCommentButton()),
+      Expanded(child: _buildLikeButton()),
+      Expanded(child: _buildDisLikeButton()),
+      Expanded(child: _buildRetweetButton()),
+    ]);
+
+    if (finalActionList.length == 3) {
+      finalActionList.add(Expanded(child: Container()));
+    }
+
+    return Row(
+      children: finalActionList,
     );
   }
 
   Widget _buildCommentButton() {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        NavigationUtil.push(
+          context,
+          screen: YarnCommentDetailScreen(
+            yarn: widget.yarn,
+            yarnComment: widget.comment,
+          ),
+        );
+      },
       child: Row(
         children: [
-          SvgPicture.asset("ask/reply".toSVG()),
+          SvgPicture.asset(
+            "ask/reply".toSVG(),
+            color: darkGreyYarn,
+          ),
           SizedBox(
             width: 6,
           ),
           Text(
             getCommentCount(),
             style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")),
+                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
           ),
         ],
       ),
@@ -94,39 +114,65 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
       },
       child: Row(
         children: [
-          SvgPicture.asset("ask/like".toSVG()),
+          SvgPicture.asset(
+            "ask/like".toSVG(),
+            color: darkGreyYarn,
+          ),
           SizedBox(
             width: 6,
           ),
           Text(
             getLikeCount(),
             style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")),
+                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDisLike() {
+  Widget _buildDisLikeButton() {
     return InkWell(
       onTap: () {
         addDisLikeToComment();
       },
       child: Row(
         children: [
-          SvgPicture.asset("ask/dislike".toSVG()),
+          SvgPicture.asset(
+            "ask/dislike".toSVG(),
+            color: darkGreyYarn,
+          ),
           SizedBox(
             width: 6,
           ),
           Text(
             getDisLikeCount(),
             style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: HexColor("#75818F")),
+                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRetweetButton() {
+    return InkWell(
+      onTap: () {
+        // addDisLikeToYarnAndQuestion();
+      },
+      child: Row(
+        children: [
+          Icon(
+            Icons.repeat,
+            color: darkGreyYarn,
+          ),
+          SizedBox(
+            width: 6,
+          ),
+          Text(
+            "$retweetCount",
+            style: TextStyle(
+                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
           ),
         ],
       ),
@@ -153,19 +199,31 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
         //   ),
         // );
       },
-      child: Row(
+      // child: SvgPicture.asset("ask/share".toSVG()),
+      child: Column(
         children: [
-          SvgPicture.asset("ask/share".toSVG()),
+          Icon(
+            Icons.ios_share_rounded,
+            color: darkGreyYarn,
+          ),
+          SizedBox(
+            height: 2,
+          )
         ],
       ),
     );
   }
 
   Widget _buildPayButton() {
+    bool isPayMeEnable = false;
+    if (widget.comment.enablePayMe ?? false) {
+      isPayMeEnable = true;
+    }
+
     return InkWell(
-      onTap: getLoggedInUserName(context) !=
-              widget.commentDetail!.authorUsername
+      onTap: getLoggedInUserName(context) != widget.comment.authorUsername
           ? () {
+              if (!isPayMeEnable) return;
               if (getIt<AppConfigurationBloc>()
                       .appConfigurationModel
                       ?.enablePayment ==
@@ -173,11 +231,11 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
                 Navigator.of(context).pushNamed(
                   Routes.SEND_PAYMENT,
                   arguments: <String, dynamic>{
-                    'recipient': widget.commentDetail!.authorUsername!,
+                    'recipient': widget.comment.authorUsername!,
                     'isFromProfile': false,
                     'isFromChat': false,
                     'defaultReferenceText': 'Payment from  "${truncateString(
-                      str: widget.commentDetail!.comment!,
+                      str: widget.comment.comment!,
                       lengthToTruncateAt: 8,
                     )}\" comment'
                   },
@@ -187,41 +245,45 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
               }
             }
           : () {
+              if (!isPayMeEnable) return;
               showToast(message: 'You cannot pay yourself');
             },
-      child: Row(
+      child: Column(
         children: [
-          SvgPicture.asset("ask/send_money".toSVG()),
+          SizedBox(
+            height: 2,
+          ),
+          SvgPicture.asset(
+            "ask/send_money".toSVG(),
+            // color: !isPayMeEnable ? Colors.transparent : null,
+          ),
         ],
       ),
     );
   }
 
   String getCommentCount() {
-    if (widget.commentDetail!.replyCount != null &&
-        widget.commentDetail!.replyCount != 0) {
-      return widget.commentDetail!.replyCount?.toString() ?? "";
+    if (widget.comment.replyCount != null && widget.comment.replyCount != 0) {
+      return widget.comment.replyCount?.toString() ?? "";
     }
     return "";
   }
 
   String getLikeCount() {
-    if (widget.commentDetail!.likes != null &&
-        widget.commentDetail!.likes != 0) {
-      return widget.commentDetail!.likes?.toString() ?? "";
+    if (widget.comment.likes != null && widget.comment.likes != 0) {
+      return widget.comment.likes?.toString() ?? "";
     }
     return "";
   }
 
   String getDisLikeCount() {
-    if (widget.commentDetail!.dislike != null &&
-        widget.commentDetail!.dislike != 0) {
-      return widget.commentDetail!.dislike?.toString() ?? "";
+    if (widget.comment.dislike != null && widget.comment.dislike != 0) {
+      return widget.comment.dislike?.toString() ?? "";
     }
     return "";
   }
 
-  Future<void> sendMomentToUserInChat({required YarnTopic yarnTopic}) async {
+  Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
@@ -233,7 +295,7 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
 
   Future<void> addMomentPostToChat({
     required ChatConversation recipientUser,
-    required YarnTopic yarnTopic,
+    required Yarn yarnTopic,
     String? url,
   }) async {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
@@ -271,6 +333,28 @@ class _TopicActionsForCommentState extends State<TopicActionsForComment> {
     };
     await sendDataToSocket(data);
     showToast(
-        message: yarnTopic.isQuestion! ? 'Yarn Shared' : 'Question Shared');
+        message: yarnTopic.isQuestion ? 'Yarn Shared' : 'Question Shared');
+  }
+
+  Future addLikeToComment() async {
+    Map<String, dynamic>? data =
+        await YarnAuth().addLikeComment(widget.comment.id!);
+    if (data != null) {
+      setState(() {
+        widget.comment.likes = data['likes'];
+        widget.comment.dislike = data['dislikes'];
+      });
+    }
+  }
+
+  Future addDisLikeToComment() async {
+    Map<String, dynamic>? data =
+        await YarnAuth().addDisLikeComment(widget.comment.id!);
+    if (data != null) {
+      setState(() {
+        widget.comment.likes = data['likes'];
+        widget.comment.dislike = data['dislikes'];
+      });
+    }
   }
 }

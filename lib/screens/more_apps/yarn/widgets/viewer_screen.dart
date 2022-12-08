@@ -214,13 +214,13 @@ class ViewerArranger extends StatelessWidget {
           color: Colors.black,
           child: Center(
               child: Text(
-                "+$count",
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              )),
+            "+$count",
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          )),
         ),
       ),
     );

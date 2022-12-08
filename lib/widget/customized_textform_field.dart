@@ -213,7 +213,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: greyBorderColor,
-                      width: widget.borderWidth != null ? widget.borderWidth! : 1.0,
+                      width: widget.borderWidth != null
+                          ? widget.borderWidth!
+                          : 1.0,
                     ),
                   )
                 : null,
@@ -222,7 +224,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: greyBorderColor,
-                      width: widget.borderWidth != null ? widget.borderWidth! : 1.0,
+                      width: widget.borderWidth != null
+                          ? widget.borderWidth!
+                          : 1.0,
                     ),
                   )
                 : null,
@@ -231,7 +235,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: navyBlue,
-                      width: widget.borderWidth != null ? widget.borderWidth! : 1.0,
+                      width: widget.borderWidth != null
+                          ? widget.borderWidth!
+                          : 1.0,
                     ),
                   )
                 : null,
@@ -240,7 +246,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: greyBorderColor,
-                      width: widget.borderWidth != null ? widget.borderWidth! : 1.0,
+                      width: widget.borderWidth != null
+                          ? widget.borderWidth!
+                          : 1.0,
                     ),
                   )
                 : null,
@@ -249,7 +257,9 @@ class _CustomizedTextFormFieldState extends State<CustomizedTextFormField> {
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: greyBorderColor,
-                      width: widget.borderWidth != null ? widget.borderWidth! : 1.0,
+                      width: widget.borderWidth != null
+                          ? widget.borderWidth!
+                          : 1.0,
                     ),
                   )
                 : null,

@@ -43,7 +43,8 @@ class _SuperStoreState extends State<SuperStore> {
   String? productPrevious = "";
   late BasketBloc basketBloc;
 
-  final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);

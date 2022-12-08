@@ -56,38 +56,38 @@ class _AddReportScreenState extends State<AddReportScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
-      title: Text(
-        "Report",
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: blackFont,
+        backgroundColor: Colors.white,
+        title: Text(
+          "Report",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: blackFont,
+          ),
         ),
-      ),
-      elevation: 0,
-      titleSpacing: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Icon(
-          Icons.keyboard_arrow_left,
-          color: Colors.black,
-          size: 26,
-        ),
-      )
-      // IconButton(
-      //   icon: Icon(
-      //     Icons.keyboard_arrow_left,
-      //     color: navyBlue,
-      //     size: 26,
-      //   ),
-      //   onPressed: () {
-      //     Navigator.pop(context);
-      //   },
-      // ),
-    );
+        elevation: 0,
+        titleSpacing: 0,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.keyboard_arrow_left,
+            color: Colors.black,
+            size: 26,
+          ),
+        )
+        // IconButton(
+        //   icon: Icon(
+        //     Icons.keyboard_arrow_left,
+        //     color: navyBlue,
+        //     size: 26,
+        //   ),
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
+        );
   }
 
   Widget _buildYarnOrQuestionForm(YarnDashboardBloc model) {
@@ -118,9 +118,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: HexColor("#FFE3AB")
-      ),
+          borderRadius: BorderRadius.circular(10), color: HexColor("#FFE3AB")),
       child: Text(
         "Do you think this is an inappropriate content? Please let us know!",
         style: TextStyle(fontSize: 14, color: HexColor("#553C08")),

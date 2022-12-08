@@ -1,14 +1,7 @@
-import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_textfield.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_comment_list.dart';
-import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_comment_reply_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
@@ -16,19 +9,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class YarnDetailScreen extends StatefulWidget {
-  final Yarn yarn;
+import '../../../data/state_notifier.dart';
+import '../../../locale/app_localization.dart';
+import '../../../utils/util.dart';
+import 'models/Topics/CommentDetails.dart';
+import 'widgets/yarn_comment_textfield.dart';
+import 'widgets/yarn_shimmer.dart';
+import 'yarn_auth.dart';
 
-  YarnDetailScreen({required this.yarn});
+class YarnCommentDetailScreen extends StatefulWidget {
+  final Yarn yarn;
+  final YarnComment yarnComment;
+
+  YarnCommentDetailScreen({required this.yarn, required this.yarnComment});
 
   @override
-  State<YarnDetailScreen> createState() => _YarnDetailScreenState();
+  State<YarnCommentDetailScreen> createState() =>
+      _YarnCommentDetailScreenState();
 }
 
-class _YarnDetailScreenState extends State<YarnDetailScreen> {
+class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
+  late UserBloc userBloc;
   bool isLoading = false;
 
-  late UserBloc userBloc;
   final TextEditingController controller = TextEditingController();
   RefreshController _postRefreshController =
       RefreshController(initialRefresh: false);
@@ -42,10 +45,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return ColorfulSafeArea(
       color: Colors.white,
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _buildAppBar(),
-        body: _buildBody(),
-      ),
+          backgroundColor: Colors.white,
+          appBar: _buildAppBar(),
+          body: _buildBody()),
     );
   }
 
@@ -53,7 +55,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        !widget.yarn.isQuestion ? "Yarn" : "Question",
+        "Thread",
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -108,13 +110,13 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   Widget _buildBody() {
     return Column(
       children: [
-        _buildPostAndCommentView(),
-        _buildTopicTextFiled(),
+        _buildCommentDetailView(),
+        _buildTopicTextField(),
       ],
     );
   }
 
-  Widget _buildPostAndCommentView() {
+  Widget _buildCommentDetailView() {
     return Expanded(
       child: SmartRefresher(
         enablePullDown: true,
@@ -125,7 +127,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         controller: _postRefreshController,
         onRefresh: _onPostRefresh,
         child: SingleChildScrollView(
-          controller: _commentScrollController,
+          padding: EdgeInsets.all(10),
           child: !isLoading ? _buildMain() : YarnShimmer(),
         ),
       ),
@@ -137,20 +139,22 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
-          child: YarnTile(
+          child: YarnCommentTile(
             yarn: widget.yarn,
+            yarnComment: widget.yarnComment,
           ),
         ),
-        YarnCommentList(
+        YarnCommentReplyList(
           key: yarnCommentScreenKey,
           yarn: widget.yarn,
+          yarnComment: widget.yarnComment,
           commentScrollController: _commentScrollController,
         ),
       ],
     );
   }
 
-  Widget _buildTopicTextFiled() {
+  Widget _buildTopicTextField() {
     return YarnCommentTextField(
       height: 50,
       controller: controller,
@@ -162,29 +166,27 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         FocusScope.of(context).unfocus();
         isAPILoading = true;
         if (mounted) setState(() {});
-        await addComment();
+        await addReplyComment();
         isAPILoading = false;
         if (mounted) setState(() {});
       },
     );
   }
 
-  Future addComment() async {
+  Future addReplyComment() async {
     Map<String, dynamic> data = {
       "comment": controller.text,
-      "author_username": userBloc.user.userName
+      "author_username": userBloc.user.userName,
+      "is_reply": true
     };
     try {
-      YarnComment? commentDetails =
-          await YarnAuth().addCommentToYarn(widget.yarn.id!, data);
-      if (commentDetails != null) {
-        setState(() {
-          widget.yarn.numberOfComments = widget.yarn.numberOfComments! + 1;
-        });
-        // commentDetailsList.add(commentDetails);
-        yarnCommentScreenKey = GlobalKey<ScaffoldState>();
-
+      YarnComment? commentDetail =
+          await YarnAuth().addReplyToComment(widget.yarnComment.id!, data);
+      if (commentDetail != null) {
+        widget.yarnComment.replyCount = widget.yarnComment.replyCount! + 1;
+        // replyCommentDetailsList.add(commentDetail);
         controller.clear();
+        yarnCommentScreenKey = GlobalKey<ScaffoldState>();
 
         if (mounted) setState(() {});
       }

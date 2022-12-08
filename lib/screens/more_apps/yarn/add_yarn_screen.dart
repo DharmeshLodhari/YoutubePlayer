@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
@@ -9,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
@@ -78,9 +80,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       appBar: _buildAppBar(),
       body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
         return Column(
-          children: [
-            _buildYarnForm(model)
-          ],
+          children: [_buildYarnForm(model)],
         );
       }),
     );
@@ -122,7 +122,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (widget.isYarn ?? false)...[
+          if (widget.isYarn ?? false) ...[
             _buildQuestionFiled(),
           ],
           Expanded(
@@ -152,8 +152,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: HexColor("#151515")
-      ),
+          color: HexColor("#151515")),
       onChanged: onValueChange,
       decoration: InputDecoration(
         hintText: "Leave your thought",
@@ -184,8 +183,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: HexColor("#151515")
-        ),
+            color: HexColor("#151515")),
         decoration: InputDecoration(
           hintText: "Ask a Question",
           hintStyle: TextStyle(
@@ -208,10 +206,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return Container(
       height: 54,
       decoration: BoxDecoration(
-          border: Border(
-              top: BorderSide(color: HexColor("#D9D9D9"))
-          )
-      ),
+          border: Border(top: BorderSide(color: HexColor("#D9D9D9")))),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.only(left: 8),
@@ -232,7 +227,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                 size: 26,
               ),
             ),
-            SizedBox(width: 8,),
+            SizedBox(
+              width: 8,
+            ),
             InkWell(
               onTap: () {},
               child: Icon(
@@ -241,11 +238,17 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                 size: 26,
               ),
             ),
-            SizedBox(width: 8,),
+            SizedBox(
+              width: 8,
+            ),
             _buildCategory(),
-            SizedBox(width: 4,),
+            SizedBox(
+              width: 4,
+            ),
             _buildEnableComment(),
-            SizedBox(width: 4,),
+            SizedBox(
+              width: 4,
+            ),
             _buildEnablePayme(),
           ],
         ),
@@ -257,7 +260,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return AskEnableCommentAndPayment(
       onTap: (value) {
         enableCommenting = value ?? false;
-        if(mounted) setState(() {});
+        if (mounted) setState(() {});
       },
       title: enableCommenting ? "comment enabled" : "enable comment",
       image: "ask/reply",
@@ -274,7 +277,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return AskEnableCommentAndPayment(
       onTap: (value) {
         enablePayMe = value ?? false;
-        if(mounted) setState(() {});
+        if (mounted) setState(() {});
       },
       title: enablePayMe ? "payment enabled" : "enable payment",
       image: "ask/send_money",
@@ -344,20 +347,19 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         decoration: BoxDecoration(
             color: HexColor("#F8F8F8"),
             border: Border.all(color: HexColor("#E9E9E9")),
-            borderRadius: BorderRadius.circular(15)
-        ),
+            borderRadius: BorderRadius.circular(15)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "select category",
-              style: TextStyle(
-                  fontSize: 10,
-                  color: HexColor("#ACAEB4")
-              ),
+              style: TextStyle(fontSize: 10, color: HexColor("#ACAEB4")),
             ),
-            SizedBox(width: 4,),
-            Icon(Icons.expand_more_outlined, color: HexColor("#ACAEB4"),size: 12),
+            SizedBox(
+              width: 4,
+            ),
+            Icon(Icons.expand_more_outlined,
+                color: HexColor("#ACAEB4"), size: 12),
           ],
         ),
       ),
@@ -373,9 +375,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         itemCount: selectedImagesList.length + 1,
         itemBuilder: (context, index) => Container(
           padding: EdgeInsets.only(right: 6),
-          child: index == 0
-              ? addImageButton()
-              : showImage(index),
+          child: index == 0 ? addImageButton() : showImage(index),
         ),
       ),
     );
@@ -385,15 +385,16 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return CustomBoxShadow(
       child: Card(
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
         shadowColor: boxShadowTwo,
         margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
         child: Container(
           width: 100,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: HexColor("#E9E9E9"), width: 1.5)
-          ),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: HexColor("#E9E9E9"), width: 1.5)),
           child: InkWell(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -433,9 +434,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           Card(
             elevation: 2,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)
-            ),
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
             shadowColor: dividerColor,
             margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
             child: Container(
@@ -443,17 +443,17 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
-                image: selectedImagesList[index -1]['mediaType'] == 'image'
+                image: selectedImagesList[index - 1]['mediaType'] == 'image'
                     ? DecorationImage(
-                    image: FileImage(
-                      File(selectedImagesList[index-1]['file'].path),
-                    ),
-                    fit: BoxFit.fill)
+                        image: FileImage(
+                          File(selectedImagesList[index - 1]['file'].path),
+                        ),
+                        fit: BoxFit.fill)
                     : DecorationImage(
-                    image: MemoryImage(
-                      selectedImagesList[index-1]['file'],
-                    ),
-                    fit: BoxFit.fill),
+                        image: MemoryImage(
+                          selectedImagesList[index - 1]['file'],
+                        ),
+                        fit: BoxFit.fill),
               ),
             ),
           ),
@@ -463,8 +463,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             child: InkWell(
               onTap: () {
                 setState(() {
-                  selectedImagesList.removeAt(index-1);
-                  selectedImages.removeAt(index-1);
+                  selectedImagesList.removeAt(index - 1);
+                  selectedImages.removeAt(index - 1);
                 });
               },
               child: Container(
@@ -472,9 +472,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                 width: 25,
                 margin: EdgeInsets.only(right: 6, top: 6),
                 decoration: BoxDecoration(
-                    color: HexColor("#000000"),
-                    shape: BoxShape.circle
-                ),
+                    color: HexColor("#000000"), shape: BoxShape.circle),
                 child: Icon(
                   Icons.close_outlined,
                   color: white,
@@ -519,10 +517,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
           textController.text = textController.text.replaceRange(
-            (textController.text.length - (searchString?.length ?? 0)),
-            textController.text.length,
-            tappedUser,
-          ) +
+                (textController.text.length - (searchString?.length ?? 0)),
+                textController.text.length,
+                tappedUser,
+              ) +
               " ";
           textController.selection = TextSelection.fromPosition(TextPosition(
             offset: textController.text.length,
@@ -573,7 +571,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 24),
       constraints:
-      BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 240),
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 240),
       child: CurvedButton(
         height: 32,
         textColor: Colors.white,
@@ -585,12 +583,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         onPressed: isAPILoading
             ? () {}
             : () async {
-          isAPILoading = true;
-          if (mounted) setState(() {});
-          await addYarnAndQuestion();
-          isAPILoading = false;
-          if (mounted) setState(() {});
-        },
+                isAPILoading = true;
+                if (mounted) setState(() {});
+                await addYarnAndQuestion();
+                isAPILoading = false;
+                if (mounted) setState(() {});
+              },
       ),
     );
   }
@@ -599,18 +597,18 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     final imageSource = await showDialog<ImageSource>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(AppLocalization.of(context)!.selectTheImageSource),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.camera),
-              onPressed: () => Navigator.pop(context, ImageSource.camera),
-            ),
-            MaterialButton(
-              child: Text(AppLocalization.of(context)!.gallery),
-              onPressed: () => Navigator.pop(context, ImageSource.gallery),
-            )
-          ],
-        ));
+              title: Text(AppLocalization.of(context)!.selectTheImageSource),
+              actions: <Widget>[
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.camera),
+                  onPressed: () => Navigator.pop(context, ImageSource.camera),
+                ),
+                MaterialButton(
+                  child: Text(AppLocalization.of(context)!.gallery),
+                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                )
+              ],
+            ));
 
     if (imageSource != null) {
       ImagePicker().pickImage(source: imageSource).then((value) async {
@@ -657,12 +655,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       if (mounted) setState(() {});
     } else if (mediaType == 'video') {
       var videoFilePath =
-      await NavigationUtil.push(context, screen: TrimmerView(file: file));
+          await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
         Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
         String? thumbnailImage =
-        await generateThumbNailFromVideo(videoPath: videoPath!);
+            await generateThumbNailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
         //   if (thumbnail != null) {
@@ -703,11 +701,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                     if (value.toString().isNotEmpty) {
                       widget.askCategories = askCategoriesCopy!
                           .where((element) => element.name!
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(
-                              () {}); // To upgrade the product categories in the bottom sheet.
+                          () {}); // To upgrade the product categories in the bottom sheet.
                     } else {
                       widget.askCategories = askCategoriesCopy;
                       changeState(() {});
@@ -860,9 +858,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
     addYarnAndQuestion.title =
-    widget.isYarn! ? textController.text : yarnController.text;
+        widget.isYarn! ? textController.text : yarnController.text;
     addYarnAndQuestion.body = textController.text;
-    addYarnAndQuestion.categoryId = selectedAskCategory!.id;
+    addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
     addYarnAndQuestion.isQuestion = !widget.isYarn! ? true : false;
     addYarnAndQuestion.author = userBloc.user.userName;
     addYarnAndQuestion.enablePayme = enablePayMe;
@@ -1001,7 +999,7 @@ class TopicTextField extends StatelessWidget {
         onChanged: onChanged,
         decoration: InputDecoration(
           contentPadding:
-          const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           border: InputBorder.none,
           hintText: hint ?? '',
           hintStyle: const TextStyle(fontSize: 12),

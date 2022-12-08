@@ -16,11 +16,11 @@ class AskCategories {
   }
 
   Map toJson() => {
-    "id": id,
-    "name": name,
-    "color": color,
-    "image": image,
-  };
+        "id": id,
+        "name": name,
+        "color": color,
+        "image": image,
+      };
 }
 
 class UsersCategories {
@@ -42,10 +42,10 @@ class UsersCategories {
   }
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "owner": owner,
-    "categories": categories!.map((v) => v.toJson()).toList(),
-  };
+        "id": id,
+        "owner": owner,
+        "categories": categories!.map((v) => v.toJson()).toList(),
+      };
 }
 
 class UserCategoriesStructure {
@@ -60,7 +60,7 @@ class UserCategoriesStructure {
   }
 
   Map<String, dynamic> toJson() => {
-    "user_id": userId,
-    "categories": userSelectedCategory,
-  };
+        "user_id": userId,
+        "categories": userSelectedCategory,
+      };
 }

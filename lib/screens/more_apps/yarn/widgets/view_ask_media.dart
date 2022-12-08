@@ -109,30 +109,30 @@ class _ViewAskMediaState extends State<ViewAskMedia> {
         children: [
           Expanded(
               child: Stack(
-                children: [
-                  getMediaItem(),
-                  Positioned(
-                    top: 4,
-                    left: 4,
-                    child: InkWell(
-                      child: ClipOval(
-                        child: Container(
-                          height: 36,
-                          width: 36,
-                          child: Icon(
-                            Icons.arrow_back_ios_rounded,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
+            children: [
+              getMediaItem(),
+              Positioned(
+                top: 4,
+                left: 4,
+                child: InkWell(
+                  child: ClipOval(
+                    child: Container(
+                      height: 36,
+                      width: 36,
+                      child: Icon(
+                        Icons.arrow_back_ios_rounded,
+                        color: Colors.white,
+                        size: 18,
                       ),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
                     ),
                   ),
-                ],
-              )),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
+          )),
         ],
       ),
     );
@@ -142,21 +142,21 @@ class _ViewAskMediaState extends State<ViewAskMedia> {
     if (type == "image") {
       return ClipRect(
           child: PhotoView(
-            imageProvider: NetworkImage(url!),
-          ));
+        imageProvider: NetworkImage(url!),
+      ));
     }
     if (type == "video") {
       return isLoading
           ? Container(
-        child: Center(
-          child: CircularLoadingIndicator(),
-        ),
-      )
+              child: Center(
+                child: CircularLoadingIndicator(),
+              ),
+            )
           : Chewie(
-        controller: _chewieController!,
-        posterUrl: poster ?? "",
-        titleName: "",
-      );
+              controller: _chewieController!,
+              posterUrl: poster ?? "",
+              titleName: "",
+            );
     } else {
       return Container();
     }

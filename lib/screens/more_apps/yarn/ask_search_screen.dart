@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/yarn/widgets/ask_posts_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:flutter/material.dart';
 
 import '../../../locale/app_localization.dart';
@@ -9,7 +9,7 @@ import '../../../widget/customized_popup_menu.dart';
 import '../../../widget/noItemInList.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
-import 'widgets/ask_options.dart';
+import 'widgets/yarn_options.dart';
 import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
 
@@ -31,7 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool isPopMenuOpen = false;
   bool isLoading = false;
   String next = "", previous = "";
-  List<YarnTopic> yarnTopicList = [];
+  List<Yarn> yarnTopicList = [];
   int count = 0;
   bool noList = false;
   bool isSearchIsEmpty = false;
@@ -355,12 +355,12 @@ class _SearchScreenState extends State<SearchScreen> {
               if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
-                  screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+                  screen: YarnDetailScreen(yarn: yarnTopicList[index]),
                 );
               }
               if (mounted) setState(() {});
             },
-            child: AskPosts(
+            child: YarnTile(
               onOptionsAction: () {
                 showModalBottomSheet<void>(
                   backgroundColor: Colors.transparent,
@@ -374,16 +374,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       color: Colors.white,
                       margin: EdgeInsets.zero,
-                      child: AskOptions(),
+                      child: YarnOptions(),
                     );
                   },
                 );
               },
-              isImages: yarnTopicList[index].media != null &&
-                      yarnTopicList[index].media!.isNotEmpty
-                  ? true
-                  : false,
-              yarnTopic: yarnTopicList[index],
+              yarn: yarnTopicList[index],
             ),
           );
         },

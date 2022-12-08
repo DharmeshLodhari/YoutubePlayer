@@ -27,8 +27,11 @@ class SelectUserForGroup extends StatefulWidget {
 }
 
 class _SelectUserForGroupState extends State<SelectUserForGroup> {
-  final GlobalKey<ScaffoldState> _scaffoldSelectUserForGroupKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSelectUserForGroupKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _scaffoldSelectUserForGroupKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState>
+      _scaffoldMessengerSelectUserForGroupKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
@@ -318,7 +321,8 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && connectionList.length > 6) {
-        _scaffoldMessengerSelectUserForGroupKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerSelectUserForGroupKey.currentState!
+            .showSnackBar(SnackBar(
           content: Text(
               AppLocalization.of(context)?.youHaveReachedBottomOfTheList ?? ""),
           duration: Duration(milliseconds: 500),

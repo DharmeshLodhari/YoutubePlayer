@@ -98,32 +98,31 @@ class MomentsModel {
   String? payMeButtonColor;
   bool? isPermanent;
 
-  MomentsModel({
-    this.id,
-    this.views = 0,
-    this.payMe = true,
-    this.tags,
-    this.mediaPoster,
-    this.enableLikes = false,
-    this.enableCommenting = false,
-    this.payMeButtonColor,
-    this.payMeLabel,
-    this.likes,
-    this.dislikes,
-    this.attachment,
-    this.numberOfComments,
-    this.mediaType,
-    this.avatar,
-    this.ownerName,
-    this.media,
-    this.gif,
-    this.text,
-    this.owner,
-    this.createdAt,
-    this.expireAt,
-    this.isPublic,
-    this.isPermanent = false
-  });
+  MomentsModel(
+      {this.id,
+      this.views = 0,
+      this.payMe = true,
+      this.tags,
+      this.mediaPoster,
+      this.enableLikes = false,
+      this.enableCommenting = false,
+      this.payMeButtonColor,
+      this.payMeLabel,
+      this.likes,
+      this.dislikes,
+      this.attachment,
+      this.numberOfComments,
+      this.mediaType,
+      this.avatar,
+      this.ownerName,
+      this.media,
+      this.gif,
+      this.text,
+      this.owner,
+      this.createdAt,
+      this.expireAt,
+      this.isPublic,
+      this.isPermanent = false});
 
   // factory MomentsModel.fromExploreMoments(ExploreMomentsModel exploreMomentsModel) {
   //

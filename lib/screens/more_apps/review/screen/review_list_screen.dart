@@ -37,7 +37,8 @@ class _ReviewListScreenState extends State<ReviewListScreen> {
   Service? service;
   double rating = 0.0;
 
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {

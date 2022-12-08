@@ -34,8 +34,10 @@ class PaymentRequestList extends StatefulWidget {
 }
 
 class _PaymentRequestListState extends State<PaymentRequestList> {
-  final GlobalKey<ScaffoldState> _scaffoldPaymentListKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerPaymentListKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _scaffoldPaymentListKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerPaymentListKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   final _auth = PaymentAndBankingAuth();
   SlidableController? _slideController;

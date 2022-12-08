@@ -1,5 +1,5 @@
-class CommentDetails {
-  CommentDetails({
+class YarnComment {
+  YarnComment({
     this.id,
     this.authorAvatar,
     this.comment,
@@ -14,9 +14,10 @@ class CommentDetails {
     this.socialDislikes,
     this.likes,
     this.dislike,
-});
+    this.enablePayMe,
+  });
 
-  CommentDetails.fromJson(dynamic json) {
+  YarnComment.fromJson(dynamic json) {
     id = json['id'];
     authorAvatar = json['author_avatar'];
     comment = json['comment'];
@@ -29,8 +30,9 @@ class CommentDetails {
     replies = json['replies'] != null ? json['replies'].cast<String>() : [];
     socialLikes = json['social_likes'];
     socialDislikes = json['social_dislikes'];
-    likes =  json['likes'] != null ? json['likes'] : 0;
+    likes = json['likes'] != null ? json['likes'] : 0;
     dislike = json['dislikes'] != null ? json['dislikes'] : 0;
+    enablePayMe = json['enable_payme'] != null ? json['enable_payme'] : false;
   }
   String? id;
   String? authorAvatar;
@@ -46,6 +48,7 @@ class CommentDetails {
   List<String>? replies;
   String? socialLikes;
   String? socialDislikes;
+  bool? enablePayMe;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -65,5 +68,4 @@ class CommentDetails {
     map['dislikes'] = dislike;
     return map;
   }
-
 }

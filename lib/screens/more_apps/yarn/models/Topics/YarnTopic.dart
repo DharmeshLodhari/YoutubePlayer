@@ -1,29 +1,30 @@
 import 'dart:io';
 
-class YarnTopic {
-  YarnTopic({
-   this.id,
-   this.tags,
-   this.authorName,
-   this.authorAvatar,
-   this.createdAt,
-   this.updatedAt,
-   this.title,
-   this.body,
-   this.media,
-   this.author,
-   this.status,
-   this.numberOfAnswers,
-   this.viewersAvatars,
-   this.isQuestion,
-   this.numberOfComments,
-   this.enablePayme,
-   this.voteCount,
-   this.downVoteCount,
-   this.authorIsVerified,
-   this.enableCommenting
-  });
-  YarnTopic.fromJson(dynamic json) {
+class Yarn {
+  Yarn(
+      {this.id,
+      this.tags,
+      this.authorName,
+      this.authorAvatar,
+      this.createdAt,
+      this.updatedAt,
+      this.title,
+      this.body,
+      this.media = const [],
+      this.author,
+      this.status,
+      this.numberOfAnswers,
+      this.viewersAvatars,
+      this.isQuestion = false,
+      this.numberOfComments,
+      this.enablePayMe,
+      this.voteCount,
+      this.downVoteCount,
+      this.authorIsVerified,
+      this.enableCommenting,
+      this.category = "Technology"});
+
+  Yarn.fromJson(dynamic json) {
     id = json['id'];
     tags = json['tags'] != null ? json['tags'].cast<String>() : [];
     authorName = json['author_name'];
@@ -36,7 +37,7 @@ class YarnTopic {
       media = [];
       //media!.add(MediaFiles(file: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
       json['media'].forEach((v) {
-        media?.add(MediaFiles.fromJson(v));
+        media.add(MediaFiles.fromJson(v));
       });
     }
     author = json['author'];
@@ -48,13 +49,14 @@ class YarnTopic {
         viewersAvatars?.add(ViewersAvatars.fromJson(v));
       });
     }
-    isQuestion = json['is_question'];
+    isQuestion = json['is_question'] ?? false;
     numberOfComments = json['number_of_comments'];
-    enablePayme = json['enable_payme'];
+    enablePayMe = json['enable_payme'];
     voteCount = json['vote_count'];
     downVoteCount = json['down_vote_count'];
     authorIsVerified = json['author_is_verified'];
     enableCommenting = json['enable_commenting'];
+    category = json['category'] ?? "Technology";
   }
 
   String? id;
@@ -65,18 +67,19 @@ class YarnTopic {
   dynamic updatedAt;
   String? title;
   String? body;
-  List<MediaFiles>? media;
+  List<MediaFiles> media = [];
   String? author;
   String? status;
   int? numberOfAnswers;
   List<ViewersAvatars>? viewersAvatars;
-  bool? isQuestion;
+  bool isQuestion = false;
   int? numberOfComments;
-  bool? enablePayme;
+  bool? enablePayMe;
   int? voteCount;
   int? downVoteCount;
   bool? authorIsVerified;
   bool? enableCommenting;
+  String category = "Technology";
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -88,9 +91,9 @@ class YarnTopic {
     map['updated_at'] = updatedAt;
     map['title'] = title;
     map['body'] = body;
-    if (media != null) {
-      map['media'] = media?.map((v) => v.toJson()).toList();
-    }
+
+    map['media'] = media.map((v) => v.toJson()).toList();
+
     map['author'] = author;
     map['status'] = status;
     map['number_of_answers'] = numberOfAnswers;
@@ -99,17 +102,20 @@ class YarnTopic {
     }
     map['is_question'] = isQuestion;
     map['number_of_comments'] = numberOfComments;
-    map['enable_payme'] = enablePayme;
+    map['enable_payme'] = enablePayMe;
     map['vote_count'] = voteCount;
     map['down_vote_count'] = downVoteCount;
     map['author_is_verified'] = authorIsVerified;
     map['enable_commenting'] = enableCommenting;
+    map['category'] = category;
     return map;
   }
 }
 
 class MediaFiles {
-  MediaFiles({this.file,});
+  MediaFiles({
+    this.file,
+  });
 
   MediaFiles.fromJson(dynamic json) {
     file = json['file'];
@@ -127,13 +133,13 @@ class MediaFiles {
     map['type'] = mediaType;
     return map;
   }
-
 }
 
 class ViewersAvatars {
   ViewersAvatars({
     this.username,
-    this.avatar,});
+    this.avatar,
+  });
 
   ViewersAvatars.fromJson(dynamic json) {
     username = json['username'];
@@ -148,7 +154,6 @@ class ViewersAvatars {
     map['avatar'] = avatar;
     return map;
   }
-
 }
 
 class AddYarnAndQuestion {
@@ -162,7 +167,16 @@ class AddYarnAndQuestion {
   bool? enablePayme;
   bool? enableCommenting;
 
-  AddYarnAndQuestion({this.localImages, this.tags, this.categoryId, this.title, this.body, this.isQuestion, this.author, this.enablePayme, this.enableCommenting});
+  AddYarnAndQuestion(
+      {this.localImages,
+      this.tags,
+      this.categoryId,
+      this.title,
+      this.body,
+      this.isQuestion,
+      this.author,
+      this.enablePayme,
+      this.enableCommenting});
 
   Map<String, dynamic> toAddMap() {
     return {

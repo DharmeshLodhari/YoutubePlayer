@@ -56,7 +56,8 @@ class _SearchModuleState extends State<SearchModule> {
   TextEditingController searchItemTextController = TextEditingController();
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey = GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   //pagination variables
   int? count = 0;
@@ -614,7 +615,7 @@ class _SearchModuleState extends State<SearchModule> {
       } else if (next == null && results.length > 6) {
         _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
           content:
-          Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(

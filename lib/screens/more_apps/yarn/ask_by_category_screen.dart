@@ -12,10 +12,10 @@ import 'package:provider/provider.dart';
 
 import 'add_yarn_screen.dart';
 import 'ask_search_screen.dart';
-import 'widgets/question_view.dart';
-import 'widgets/topics_view.dart';
+import 'question_list_screen.dart';
 import 'yarn_auth.dart';
 import 'yarn_dashboard_bloc.dart';
+import 'yarn_list_screen.dart';
 
 class YarnCategoryScreen extends StatefulWidget {
   AskCategories? askCategories;
@@ -281,10 +281,10 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
               },
               controller: _pageViewCtrl,
               children: [
-                TopicView(
+                YarnListScreen(
                   selectedCategory: widget.askCategories!.id!,
                 ),
-                QuestionView(
+                QuestionListScreen(
                   selectedCategory: widget.askCategories!.id!,
                 ),
               ],

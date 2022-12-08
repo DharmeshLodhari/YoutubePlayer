@@ -36,8 +36,10 @@ class _UserProductListState extends State<UserProductList> {
   String? productPrevious = "";
   List<Product> productList = [];
   ScrollController _productScrollController = new ScrollController();
-  final GlobalKey<ScaffoldState> _productScaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _productMessengerScaffoldKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _productScaffoldKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _productMessengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
   RefreshController _productsRefreshController =
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
@@ -153,7 +155,8 @@ class _UserProductListState extends State<UserProductList> {
                         child: GridView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
                             mainAxisExtent: 180,
                             mainAxisSpacing: 16,
                             crossAxisSpacing: 15,

@@ -56,7 +56,7 @@ class _YarnTabSelectionState extends State<YarnTabSelection> {
         margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         padding: EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(60),
           shape: BoxShape.rectangle,
           color: currentIndex == tabIndex ? yarnBlack : Colors.transparent,
         ),

@@ -2,6 +2,7 @@ import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
@@ -11,26 +12,21 @@ import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import 'add_yarn_screen.dart';
 import 'ask_search_screen.dart';
-import 'models/ask_categories_model.dart';
-import 'widgets/question_view.dart';
-import 'widgets/topics_view.dart';
+import 'question_list_screen.dart';
 import 'yarn_dashboard_bloc.dart';
+import 'yarn_list_screen.dart';
 import 'yarn_setting_screen.dart';
 
 class YarnDashboard extends StatefulWidget {
-  final List<AskCategories>? askCategories;
-  final List<AskCategories>? selectedCategories;
-
-  YarnDashboard({this.askCategories, this.selectedCategories});
-
   @override
   State<YarnDashboard> createState() => _YarnDashboardState();
 }
 
 class _YarnDashboardState extends State<YarnDashboard> {
-  GlobalKey<TopicViewState> topicViewStateKey = GlobalKey<TopicViewState>();
-  GlobalKey<QuestionViewState> questionViewStateKey =
-      GlobalKey<QuestionViewState>();
+  GlobalKey<YarnListScreenState> topicViewStateKey =
+      GlobalKey<YarnListScreenState>();
+  GlobalKey<QuestionListScreenState> questionViewStateKey =
+      GlobalKey<QuestionListScreenState>();
 
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
@@ -52,6 +48,153 @@ class _YarnDashboardState extends State<YarnDashboard> {
       appBar: _buildAppBar() as PreferredSizeWidget,
       body: _buildBody(),
     );
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      title: Text(
+        'Yarn',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: yarnBlack,
+          height: 1.3,
+        ),
+      ),
+      centerTitle: false,
+      titleSpacing: 0,
+      shadowColor: greySecondaryYarn,
+      actions: _buildAppBarActions(),
+      elevation: 0.5,
+      leading: IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(
+          Icons.arrow_back_ios_rounded,
+          color: yarnBlack,
+          size: 14,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        color: yarnBlack,
+      ),
+    );
+  }
+
+  List<Widget> _buildAppBarActions() {
+    return [
+      RoundedBackgroundIcon(
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: SearchScreen(),
+          );
+        },
+        icon: Icon(
+          Icons.search_rounded,
+          color: yarnBlack,
+          size: 26,
+        ),
+      ),
+      SizedBox(width: 10),
+      RoundedBackgroundIcon(
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: YarnNotification(),
+          );
+        },
+        icon: Icon(
+          SlydoAppIconNew.notification,
+          color: yarnBlack,
+          size: 22,
+        ),
+      ),
+      SizedBox(width: 10),
+      RoundedBackgroundIcon(
+        backgroundColor: Colors.transparent,
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: YarnSettingsScreen(),
+          );
+        },
+        icon: Icon(
+          Icons.settings,
+          color: yarnBlack,
+          size: 26,
+        ),
+      ),
+      SizedBox(width: 10),
+    ];
+  }
+
+  Widget _buildBody() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 16,
+        ),
+        _buildCategoryAndTabs(),
+        _buildPageView(),
+      ],
+    );
+  }
+
+  Widget _buildCategoryAndTabs() {
+    return Column(
+      children: [
+        YarnCategorySelection(),
+        SizedBox(height: 14),
+        YarnTabSelection(
+          onTap: (index) {
+            currentAskTapOnHome = index;
+            _pageViewController.jumpToPage(currentAskTapOnHome);
+            if (mounted) setState(() {});
+          },
+          currentIndex: currentAskTapOnHome,
+        ),
+        SizedBox(
+          height: 16,
+        ),
+        Divider(
+          height: 0,
+          thickness: 0.5,
+          color: greySecondaryYarn,
+        )
+      ],
+    );
+  }
+
+  Widget _buildPageView() {
+    return Expanded(
+      child: PageView(
+        onPageChanged: (currentPage) {
+          updateCurrentAskTapOnHome(index: currentPage);
+        },
+        controller: _pageViewController,
+        children: [
+          YarnListScreen(
+            key: topicViewStateKey,
+            selectedCategory: selectedCategoryId,
+          ),
+          QuestionListScreen(
+            key: questionViewStateKey,
+            selectedCategory: selectedCategoryId,
+          ),
+          // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
+        ],
+      ),
+    );
+  }
+
+  void updateCurrentAskTapOnHome({required int index}) {
+    setState(() {
+      currentAskTapOnHome = index;
+    });
   }
 
   Widget _buildFloatingActionButton() {
@@ -100,7 +243,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
                   if (value == Types.Yarn) {
                     updateCurrentAskTapOnHome(index: 0);
                     _pageViewController.jumpToPage(0);
-                    topicViewStateKey.currentState?.onPostRefresh();
+                    topicViewStateKey.currentState?.onRefresh();
                   }
                 }
               });
@@ -109,10 +252,11 @@ class _YarnDashboardState extends State<YarnDashboard> {
     );
   }
 
-  SpeedDialChild _buildSpeedDialChild(
-      {required String title,
-      required IconData icon,
-      required VoidCallback onTap}) {
+  SpeedDialChild _buildSpeedDialChild({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return SpeedDialChild(
         onTap: onTap,
         backgroundColor: yarnBlack,
@@ -138,207 +282,5 @@ class _YarnDashboardState extends State<YarnDashboard> {
           color: Colors.white,
           size: 20,
         ));
-  }
-
-  Widget _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      title: Text(
-        'Yarn',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: yarnBlack,
-          height: 1.3,
-        ),
-      ),
-      centerTitle: false,
-      titleSpacing: 0,
-      shadowColor: greySecondaryYarn,
-      actions: [_buildAppBarActions()],
-      elevation: 0.5,
-      leading: IconButton(
-        padding: EdgeInsets.zero,
-        icon: Icon(
-          Icons.arrow_back_ios_rounded,
-          color: yarnBlack,
-          size: 14,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        color: yarnBlack,
-      ),
-    );
-  }
-
-  Widget _buildIconButton(
-      {GestureTapCallback? onTap,
-      IconData? icon,
-      Color? iconColor,
-      double? iconSize}) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        height: 34,
-        width: 34,
-        decoration: BoxDecoration(
-          color: white,
-          borderRadius: BorderRadius.circular(3),
-        ),
-        child: Icon(
-          icon,
-          color: iconColor,
-          size: iconSize ?? 26,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAppBarActions() {
-    return Row(
-      children: [
-        _buildIconButton(
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: SearchScreen(),
-            );
-          },
-          icon: Icons.search_rounded,
-          iconColor: blackFont,
-        ),
-        SizedBox(width: 10),
-        _buildIconButton(
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: YarnNotification(),
-            );
-          },
-          icon: SlydoAppIconNew.notification,
-          iconColor: blackFont,
-          iconSize: 22,
-        ),
-        SizedBox(width: 10),
-        _buildIconButton(
-            onTap: () {
-              NavigationUtil.push(
-                context,
-                screen: YarnSettingsScreen(),
-              );
-            },
-            icon: Icons.settings,
-            iconColor: blackFont),
-        SizedBox(width: 10),
-      ],
-    );
-  }
-
-  Widget _buildBody() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 16,
-        ),
-        _buildCategoryAndTabs(),
-        _buildPageView(),
-      ],
-    );
-  }
-
-  Widget _buildCategoryAndTabs() {
-    return Column(
-      children: [
-        YarnCategorySelection(),
-        SizedBox(height: 14),
-        YarnTabSelection(
-            onTap: (index) {
-              currentAskTapOnHome = index;
-              _pageViewController.jumpToPage(currentAskTapOnHome);
-              if (mounted) setState(() {});
-            },
-            currentIndex: currentAskTapOnHome),
-        SizedBox(
-          height: 16,
-        ),
-        Divider(
-          height: 0,
-          thickness: 0.5,
-          color: greySecondaryYarn,
-        )
-      ],
-    );
-  }
-
-  Widget _buildPageView() {
-    return Expanded(
-      child: PageView(
-        onPageChanged: (currentPage) {
-          updateCurrentAskTapOnHome(index: currentPage);
-        },
-        controller: _pageViewController,
-        children: [
-          TopicView(
-            key: topicViewStateKey,
-            selectedCategory: selectedCategoryId,
-          ),
-          QuestionView(
-            key: questionViewStateKey,
-            selectedCategory: selectedCategoryId,
-          ),
-          // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
-        ],
-      ),
-    );
-  }
-
-  Widget pageViewTabItem(
-      {required int pageNum,
-      required String title,
-      int? currentTapIndex,
-      Function? onPageTap}) {
-    return InkWell(
-      onTap: () => onPageTap!(),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          shape: BoxShape.rectangle,
-          color: currentTapIndex == pageNum
-              ? navyBlue.withOpacity(0.1)
-              : Colors.white,
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: currentTapIndex == pageNum ? navyBlue : blackFont,
-            fontSize: 14,
-            fontWeight:
-                currentTapIndex == pageNum ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void updateCurrentAskTapOnHome({required int index}) {
-    setState(() {
-      currentAskTapOnHome = index;
-    });
-  }
-
-  void selectCategory(String categoryId) {
-    setState(() {
-      if (selectedCategoryId == categoryId) {
-        selectedCategoryId = null;
-      } else {
-        selectedCategoryId = categoryId;
-      }
-      topicViewStateKey.currentState
-          ?.getYarnTopic(categoryId: selectedCategoryId);
-      questionViewStateKey.currentState
-          ?.getYarnTopic(categoryId: selectedCategoryId);
-    });
   }
 }

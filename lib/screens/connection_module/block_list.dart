@@ -25,8 +25,10 @@ class BlockedList extends StatefulWidget {
 }
 
 class _BlockedListState extends State<BlockedList> {
-  final GlobalKey<ScaffoldState> _scaffoldBlockListKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldBlockMessengerListKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldBlockMessengerListKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   SlidableController? _slideController;
   int? count = 0;

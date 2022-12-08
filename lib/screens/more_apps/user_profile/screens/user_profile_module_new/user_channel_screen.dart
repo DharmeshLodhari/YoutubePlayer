@@ -101,24 +101,24 @@ class _UserChannelsListState extends State<UserChannelsList> {
         children: [
           noItemInList
               ? Expanded(
-              child: NoItemInList(
-                  msg: AppLocalization.of(context)!.noChannels))
+                  child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noChannels))
               : Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 5),
-              physics: ClampingScrollPhysics(),
-              controller: _scrollCtrl,
-              itemCount: channelModelList.length + 1,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == channelModelList.length) {
-                  return buildLoadingIndicator(isLoading: _isLoading);
-                } else {
-                  return CustomSlydoChannelCard(
-                      channelModel: channelModelList[index]);
-                }
-              },
-            ),
-          ),
+                  child: ListView.builder(
+                    padding: EdgeInsets.only(top: 5),
+                    physics: ClampingScrollPhysics(),
+                    controller: _scrollCtrl,
+                    itemCount: channelModelList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == channelModelList.length) {
+                        return buildLoadingIndicator(isLoading: _isLoading);
+                      } else {
+                        return CustomSlydoChannelCard(
+                            channelModel: channelModelList[index]);
+                      }
+                    },
+                  ),
+                ),
         ],
       ),
     );

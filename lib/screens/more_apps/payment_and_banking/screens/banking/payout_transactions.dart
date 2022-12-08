@@ -16,7 +16,8 @@ class PayoutTransactions extends StatefulWidget {
 
 class _PayoutTransactionsState extends State<PayoutTransactions> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users transactions
   int? count = 0;

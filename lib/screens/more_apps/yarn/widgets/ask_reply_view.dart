@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../models/Topics/CommentDetails.dart';
-import 'ask_options.dart';
+import 'yarn_options.dart';
 
 class AskReplyView extends StatelessWidget {
-  YarnTopic? yarnTopic;
-  CommentDetails? commentDetail;
-  CommentDetails? replyCommentDetail;
+  Yarn? yarnTopic;
+  YarnComment? commentDetail;
+  YarnComment? replyCommentDetail;
 
   AskReplyView({this.yarnTopic, this.replyCommentDetail, this.commentDetail});
 
@@ -109,7 +109,7 @@ class AskReplyView extends StatelessWidget {
                   ),
                   color: Colors.white,
                   margin: EdgeInsets.zero,
-                  child: AskOptions(
+                  child: YarnOptions(
                     commentDetail: replyCommentDetail,
                     isComment: true,
                   ),

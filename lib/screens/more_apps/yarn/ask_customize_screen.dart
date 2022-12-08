@@ -94,28 +94,27 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: Colors.white,
-      title: Text(
-        'Customize your interest',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: blackFont,
+        backgroundColor: Colors.white,
+        title: Text(
+          'Customize your interest',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: blackFont,
+          ),
         ),
-      ),
-      elevation: 0,
-      titleSpacing: 0,
-      leading: InkWell(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Icon(
-          Icons.keyboard_arrow_left,
-          color: Colors.black,
-          size: 26,
-        ),
-      )
-    );
+        elevation: 0,
+        titleSpacing: 0,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.keyboard_arrow_left,
+            color: Colors.black,
+            size: 26,
+          ),
+        ));
   }
 
   Widget _buildBody() {

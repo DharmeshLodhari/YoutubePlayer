@@ -1075,7 +1075,8 @@ class _SendPaymentState extends State<SendPayment> {
                 },
                 cancelCallBack: () {
                   Navigator.pop(context);
-                  _sendPaymentScaffoldMessenger.currentState!.showSnackBar(SnackBar(
+                  _sendPaymentScaffoldMessenger.currentState!
+                      .showSnackBar(SnackBar(
                     content: Text(AppLocalization.of(context)!.invalidPassword),
                   ));
                 });

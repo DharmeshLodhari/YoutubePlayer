@@ -39,7 +39,8 @@ class _SearchServicesState extends State<SearchServices> {
   List<Service> products = [];
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey = GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
 
@@ -67,7 +68,7 @@ class _SearchServicesState extends State<SearchServices> {
     getCategories();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+              _scrollController.position.maxScrollExtent &&
           _scrollController.position.pixels != 0) {
         if (next != null) {
           getList();
@@ -116,7 +117,7 @@ class _SearchServicesState extends State<SearchServices> {
         }
 
         Map<String, dynamic>? result =
-        await ShoppingAuthService().searchServiceInServices(
+            await ShoppingAuthService().searchServiceInServices(
           next,
           previous,
           filterOptions: SearchItemWithFilterModelForSuperStore(
@@ -241,21 +242,21 @@ class _SearchServicesState extends State<SearchServices> {
       actions: <Widget>[
         products.isNotEmpty
             ? RoundedBackgroundIcon(
-          height: 34,
-          width: 34,
-          icon: Icon(
-            SlydoAppIcon.filter,
-            size: 16,
-            color: blackFont,
-          ),
-          onTap: () {
-            setState(() {
-              showSortByBox = !showSortByBox;
-            });
-          },
-          backgroundColor: iconBtnGrey,
-          enableMargin: true,
-        )
+                height: 34,
+                width: 34,
+                icon: Icon(
+                  SlydoAppIcon.filter,
+                  size: 16,
+                  color: blackFont,
+                ),
+                onTap: () {
+                  setState(() {
+                    showSortByBox = !showSortByBox;
+                  });
+                },
+                backgroundColor: iconBtnGrey,
+                enableMargin: true,
+              )
             : SizedBox.shrink(),
         SizedBox(width: 16),
       ],
@@ -273,32 +274,32 @@ class _SearchServicesState extends State<SearchServices> {
           isLoading ? CircularProgressIndicator() : SizedBox.shrink(),
           isSearchIsEmpty
               ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!
-                  .pleaseTypeSomethingToGetResult,
-              isResult: false,
-            ),
-          )
-              : noItemInList
-              ? Expanded(
-            child: NoItemInList(
-              msg: AppLocalization.of(context)!.noResultFound,
-            ),
-          )
-              : Expanded(
-            child: ListView(
-                children: products
-                    .map(
-                      (product) => Container(
-                    padding: EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 16),
-                    child: ShoppingTileWithHeartWithService(
-                      service: product,
-                    ),
+                  child: NoItemInList(
+                    msg: AppLocalization.of(context)!
+                        .pleaseTypeSomethingToGetResult,
+                    isResult: false,
                   ),
                 )
-                    .toList()),
-          ),
+              : noItemInList
+                  ? Expanded(
+                      child: NoItemInList(
+                        msg: AppLocalization.of(context)!.noResultFound,
+                      ),
+                    )
+                  : Expanded(
+                      child: ListView(
+                          children: products
+                              .map(
+                                (product) => Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
+                                  child: ShoppingTileWithHeartWithService(
+                                    service: product,
+                                  ),
+                                ),
+                              )
+                              .toList()),
+                    ),
         ],
       ),
     );
@@ -397,7 +398,8 @@ class _SearchServicesState extends State<SearchServices> {
               ),
               onPressed: () async {
                 FocusScope.of(context).unfocus();
-                await Future.delayed(Duration(milliseconds: 100)).then((value) => showFilterProductSheet());
+                await Future.delayed(Duration(milliseconds: 100))
+                    .then((value) => showFilterProductSheet());
               },
             ),
             hintText: "Search anything",
@@ -451,51 +453,51 @@ class _SearchServicesState extends State<SearchServices> {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomSheetSetState) =>
                 Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20)),
-                  ),
-                  color: Colors.white,
-                  margin: EdgeInsets.zero,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          "Filter",
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: blackFont),
-                        ),
-                        SizedBox(height: 40),
-                        getCategoryField(bottomSheetSetState),
-                        SizedBox(height: 8),
-                        getPikedCategoryNames(),
-                        SizedBox(height: 20),
-                        getProductRatingSelection(bottomSheetSetState),
-                        SizedBox(height: 24),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom),
-                          child: getPriceRange(bottomSheetSetState),
-                        ),
-                        SizedBox(height: 20),
-                        SizedBox(height: 50),
-                        Row(
-                          children: [
-                            Expanded(child: getClearAllBtn()),
-                            SizedBox(width: 20),
-                            Expanded(child: getFilterSubmitBtn()),
-                          ],
-                        ),
-                        SizedBox(height: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Filter",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: blackFont),
+                    ),
+                    SizedBox(height: 40),
+                    getCategoryField(bottomSheetSetState),
+                    SizedBox(height: 8),
+                    getPikedCategoryNames(),
+                    SizedBox(height: 20),
+                    getProductRatingSelection(bottomSheetSetState),
+                    SizedBox(height: 24),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom),
+                      child: getPriceRange(bottomSheetSetState),
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(height: 50),
+                    Row(
+                      children: [
+                        Expanded(child: getClearAllBtn()),
+                        SizedBox(width: 20),
+                        Expanded(child: getFilterSubmitBtn()),
                       ],
                     ),
-                  ),
+                    SizedBox(height: 10),
+                  ],
                 ),
+              ),
+            ),
           );
         });
   }
@@ -506,7 +508,9 @@ class _SearchServicesState extends State<SearchServices> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedServicesCategory != null ? selectedServicesCategory!.name : "",
+          selectedServicesCategory != null
+              ? selectedServicesCategory!.name
+              : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -529,17 +533,17 @@ class _SearchServicesState extends State<SearchServices> {
         children: pickedCategoryList
             .map(
               (e) => Container(
-            margin: EdgeInsets.all(6),
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                color: greyBorderColor,
-                borderRadius: BorderRadius.circular(12)),
-            child: Text(
-              e,
-              style: TextStyle(color: blackFont),
-            ),
-          ),
-        )
+                margin: EdgeInsets.all(6),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                    color: greyBorderColor,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text(
+                  e,
+                  style: TextStyle(color: blackFont),
+                ),
+              ),
+            )
             .toList(),
       ),
     );
@@ -564,11 +568,11 @@ class _SearchServicesState extends State<SearchServices> {
                     if (value.toString().isNotEmpty) {
                       servicesCategories = servicesCategoriesCopy!
                           .where((element) => element.name
-                          .toLowerCase()
-                          .startsWith(value.toString().toLowerCase()))
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
                           .toList();
                       changeState(
-                              () {}); // To upgrade the product categories in the bottom sheet.
+                          () {}); // To upgrade the product categories in the bottom sheet.
                     } else {
                       servicesCategories = servicesCategoriesCopy;
                       changeState(() {});
@@ -691,7 +695,9 @@ class _SearchServicesState extends State<SearchServices> {
       child: ListTile(
         dense: true,
         title: Text(
-          selectedServicesCategory != null ? selectedServicesCategory!.name : "",
+          selectedServicesCategory != null
+              ? selectedServicesCategory!.name
+              : "",
           style: TextStyle(
               color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -835,7 +841,7 @@ class _SearchServicesState extends State<SearchServices> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color:
-          isSelected ? selectedListItemBackgroundBlue : HexColor("F8F9FA"),
+              isSelected ? selectedListItemBackgroundBlue : HexColor("F8F9FA"),
         ),
         child: Row(
           children: [
@@ -878,7 +884,7 @@ class _SearchServicesState extends State<SearchServices> {
               child: CustomizedTextFormField(
                 labelText: 'From',
                 initialValue:
-                minAmount == null ? '' : (minAmount! ~/ 100).toString(),
+                    minAmount == null ? '' : (minAmount! ~/ 100).toString(),
                 onChanged: (value) {
                   minAmount = int.parse(value) * 100;
                 },
@@ -890,7 +896,7 @@ class _SearchServicesState extends State<SearchServices> {
               child: CustomizedTextFormField(
                 labelText: 'To',
                 initialValue:
-                maxAmount == null ? '' : (maxAmount! ~/ 100).toString(),
+                    maxAmount == null ? '' : (maxAmount! ~/ 100).toString(),
                 onChanged: (value) {
                   maxAmount = int.parse(value) * 100;
                 },

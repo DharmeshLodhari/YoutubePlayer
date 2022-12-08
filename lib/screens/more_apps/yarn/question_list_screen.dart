@@ -2,31 +2,31 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../locale/app_localization.dart';
-import '../../../../utils/navigation_util.dart';
-import '../../../../utils/util.dart';
-import '../../../../widget/noItemInList.dart';
-import '../models/Topics/YarnTopic.dart';
-import '../yarn_auth.dart';
-import '../yarn_detail_screen.dart';
-import 'ask_loader.dart';
-import 'ask_options.dart';
-import 'ask_posts_view.dart';
+import '../../../locale/app_localization.dart';
+import '../../../utils/navigation_util.dart';
+import '../../../utils/util.dart';
+import '../../../widget/noItemInList.dart';
+import 'models/Topics/YarnTopic.dart';
+import 'tiles/yarn_list_tile.dart';
+import 'widgets/yarn_options.dart';
+import 'widgets/yarn_shimmer.dart';
+import 'yarn_auth.dart';
+import 'yarn_detail_screen.dart';
 
-class QuestionView extends StatefulWidget {
-  String? selectedCategory;
-  QuestionView({Key? key, this.selectedCategory}) : super(key: key);
+class QuestionListScreen extends StatefulWidget {
+  final String? selectedCategory;
+  QuestionListScreen({Key? key, this.selectedCategory}) : super(key: key);
 
   @override
-  State<QuestionView> createState() => QuestionViewState(key: key);
+  State<QuestionListScreen> createState() => QuestionListScreenState(key: key);
 }
 
-class QuestionViewState extends State<QuestionView> {
+class QuestionListScreenState extends State<QuestionListScreen> {
   Key? key;
-  QuestionViewState({this.key});
+  QuestionListScreenState({this.key});
   bool isLoading = false;
   String? next = "", previous = "";
-  List<YarnTopic> yarnTopicList = [];
+  List<Yarn> yarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController _postRefreshController =
@@ -59,7 +59,7 @@ class QuestionViewState extends State<QuestionView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllTopics(
+        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
             type: type, isType: isType, categoryId: categoryId);
 
@@ -144,12 +144,12 @@ class QuestionViewState extends State<QuestionView> {
               if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
-                  screen: AskDetailScreen(yarnTopic: yarnTopicList[index]),
+                  screen: YarnDetailScreen(yarn: yarnTopicList[index]),
                 );
               }
               if (mounted) setState(() {});
             },
-            child: AskPosts(
+            child: YarnTile(
               onOptionsAction: () {
                 showModalBottomSheet<void>(
                   backgroundColor: Colors.transparent,
@@ -163,16 +163,12 @@ class QuestionViewState extends State<QuestionView> {
                       ),
                       color: Colors.white,
                       margin: EdgeInsets.zero,
-                      child: AskOptions(),
+                      child: YarnOptions(),
                     );
                   },
                 );
               },
-              isImages: yarnTopicList[index].media != null &&
-                      yarnTopicList[index].media!.isNotEmpty
-                  ? true
-                  : false,
-              yarnTopic: yarnTopicList[index],
+              yarn: yarnTopicList[index],
             ),
           );
         },
@@ -186,7 +182,7 @@ class QuestionViewState extends State<QuestionView> {
   Widget _buildReviewIndicator() {
     return new Opacity(
       opacity: isLoading ? 1.0 : 00,
-      child: isLoading ? AskLoader() : Container(),
+      child: isLoading ? YarnShimmer() : Container(),
     );
   }
 

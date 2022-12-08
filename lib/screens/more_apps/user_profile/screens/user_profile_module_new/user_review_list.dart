@@ -29,7 +29,8 @@ class _UserReviewListState extends State<UserReviewList> {
 
   bool noReviewInList = false;
   GlobalKey<ScaffoldState> _reviewScaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey<ScaffoldMessengerState> _reviewMessengerScaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  GlobalKey<ScaffoldMessengerState> _reviewMessengerScaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
   RefreshController _reviewRefreshController =
       RefreshController(initialRefresh: false);
 

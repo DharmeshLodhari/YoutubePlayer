@@ -71,19 +71,21 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         await YarnAuth()
             .getSingleTopics(yarnId: yarnQuestionForChatModel.id!)
             .then((data) {
-          YarnTopic? yarnTopic;
+          Yarn? yarnTopic;
           if (data != null) {
             yarnTopic = data['results'];
           }
           isLoading = false;
           if (mounted) setState(() {});
 
-          NavigationUtil.push(
-            context,
-            screen: AskDetailScreen(
-              yarnTopic: yarnTopic,
-            ),
-          );
+          if (yarnTopic != null) {
+            NavigationUtil.push(
+              context,
+              screen: YarnDetailScreen(
+                yarn: yarnTopic,
+              ),
+            );
+          }
         }).catchError((e) {
           isLoading = false;
           if (mounted) setState(() {});

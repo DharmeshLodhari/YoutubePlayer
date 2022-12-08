@@ -24,7 +24,8 @@ class BankAccountList extends StatefulWidget {
 
 class _BankAccountListState extends State<BankAccountList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   // Get list of users bank account
   final _auth = PaymentAndBankingAuth();

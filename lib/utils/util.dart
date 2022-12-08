@@ -814,6 +814,7 @@ Widget userNameWithVerifiedIcon({
   required String name,
   required bool? isVerified,
   int lengthToTruncateAt = 25,
+  double verifiedIconSize = 18,
   TextStyle? textStyle,
   Color? verifiedIconColor,
 }) {
@@ -837,7 +838,7 @@ Widget userNameWithVerifiedIcon({
               ? Icon(
                   Icons.verified_rounded,
                   color: verifiedIconColor ?? navyBlue,
-                  size: 18,
+                  size: verifiedIconSize,
                 )
               : SizedBox.shrink(),
         ),
@@ -1155,7 +1156,6 @@ String toTimeAgoLabel({required DateTime dateTime}) {
 }
 
 List<ViolationType> violationType = [
-
   ViolationType(id: 1, type: "Harassment and bullying"),
   ViolationType(id: 2, type: "Harmful and dangerous content"),
   ViolationType(id: 3, type: "Threatening Violence"),
@@ -1178,7 +1178,6 @@ class ViolationType {
   String? type;
   ViolationType({this.id, this.type});
 }
-
 
 List<Map<String, dynamic>> nigeriaStateAndLg = [
   {

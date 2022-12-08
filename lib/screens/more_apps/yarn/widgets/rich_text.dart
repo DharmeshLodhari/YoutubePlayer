@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
@@ -40,12 +40,15 @@ class RichTextForTitle extends StatelessWidget {
           text: '$removeDot$addSpace',
           style: TextStyle(
             color: navyBlue,
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w400,
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              NavigationUtil.push(context, screen: SearchScreen(searchText: removeDot,));
+              NavigationUtil.push(context,
+                  screen: SearchScreen(
+                    searchText: removeDot,
+                  ));
             },
         ));
         if (removedString != '') {
@@ -53,7 +56,7 @@ class RichTextForTitle extends StatelessWidget {
             text: '$removedString ',
             style: TextStyle(
               color: blackFont,
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.w400,
             ),
           ));
@@ -68,33 +71,33 @@ class RichTextForTitle extends StatelessWidget {
           text: '$removeDot$addSpace',
           style: TextStyle(
             color: navyBlue,
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: FontWeight.w400,
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () {
               Navigator.pushNamed(context, Routes.USER_PROFILE,
-                  arguments: {
-                    "searchedUserName": removeDot.substring(1)
-                  });
+                  arguments: {"searchedUserName": removeDot.substring(1)});
             },
         ));
         if (removedString != '') {
           textSpans.add(TextSpan(
-            text: '$removedString ',
-            style: TextStyle(
-              color: blackFont,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            )
-          ));
+              text: '$removedString ',
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              )));
         }
       } else {
-        textSpans.add(TextSpan(text: '$value ', style: TextStyle(
-          color: blackFont,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-        ),));
+        textSpans.add(TextSpan(
+          text: '$value ',
+          style: TextStyle(
+            color: blackFont,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+        ));
       }
     });
     return RichText(text: TextSpan(children: textSpans));

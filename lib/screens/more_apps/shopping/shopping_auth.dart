@@ -517,8 +517,7 @@ class ShoppingAuthService extends AuthService {
       if (otherDeals == true) {
         url = AppConfig.baseUrl + "/api/v1/services/";
       } else {
-        url =
-            AppConfig.baseUrl + "/api/v1/services/";
+        url = AppConfig.baseUrl + "/api/v1/services/";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -1357,7 +1356,6 @@ class ShoppingAuthService extends AuthService {
       return Future.value(<ServiceCategory>[]);
     }
   }
-
 }
 
 class ShoppingCartModelFromQrCode {

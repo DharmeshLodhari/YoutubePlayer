@@ -24,8 +24,10 @@ class UserServiceList extends StatefulWidget {
 }
 
 class _UserServiceListState extends State<UserServiceList> {
-  final GlobalKey<ScaffoldState> _serviceScaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<ScaffoldMessengerState> _serviceScaffoldMessengerKey = new GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldState> _serviceScaffoldKey =
+      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _serviceScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   // this variable responsible for service pagination
   int? serviceCount = 0;
@@ -100,7 +102,8 @@ class _UserServiceListState extends State<UserServiceList> {
                         child: GridView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
                             mainAxisExtent: 180,
                             mainAxisSpacing: 16,
                             crossAxisSpacing: 15,

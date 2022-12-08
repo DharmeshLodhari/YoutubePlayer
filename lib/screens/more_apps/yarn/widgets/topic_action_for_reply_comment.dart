@@ -18,7 +18,7 @@ import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../yarn_auth.dart';
 
 class TopicActionsForReplyComment extends StatefulWidget {
-  CommentDetails? replyCommentDetail;
+  YarnComment? replyCommentDetail;
   TopicActionsForReplyComment({this.replyCommentDetail});
 
   @override
@@ -204,7 +204,7 @@ class _TopicActionsForReplyCommentState
     return "";
   }
 
-  Future<void> sendMomentToUserInChat({required YarnTopic yarnTopic}) async {
+  Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
@@ -216,7 +216,7 @@ class _TopicActionsForReplyCommentState
 
   Future<void> addMomentPostToChat({
     required ChatConversation recipientUser,
-    required YarnTopic yarnTopic,
+    required Yarn yarnTopic,
     String? url,
   }) async {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);

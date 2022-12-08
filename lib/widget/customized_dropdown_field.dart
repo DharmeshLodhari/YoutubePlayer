@@ -10,7 +10,11 @@ class CustomizedDropDownField extends StatefulWidget {
   FontWeight? fontWeight;
 
   CustomizedDropDownField(
-      {required this.child, required this.title, this.titleColor, this.borderWidth, this.fontWeight});
+      {required this.child,
+      required this.title,
+      this.titleColor,
+      this.borderWidth,
+      this.fontWeight});
 
   @override
   _CustomizedDropDownFieldState createState() =>
@@ -31,7 +35,10 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
       children: <Widget>[
         Text(
           widget.title,
-          style: TextStyle(color: widget.titleColor, fontSize: 14, fontWeight: widget.fontWeight),
+          style: TextStyle(
+              color: widget.titleColor,
+              fontSize: 14,
+              fontWeight: widget.fontWeight),
         ),
         SizedBox(
           height: 6,
@@ -41,7 +48,10 @@ class _CustomizedDropDownFieldState extends State<CustomizedDropDownField> {
           color: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: greyBorderColor, width: widget.borderWidth != null ? widget.borderWidth! : 1.0)),
+              side: BorderSide(
+                  color: greyBorderColor,
+                  width:
+                      widget.borderWidth != null ? widget.borderWidth! : 1.0)),
           margin: EdgeInsets.all(0),
           borderOnForeground: true,
           child: DropdownButtonHideUnderline(

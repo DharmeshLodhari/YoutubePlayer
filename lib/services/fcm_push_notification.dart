@@ -406,10 +406,13 @@ class PushNotificationService {
       } else if (payload.toString().contains('/moment/')) {
         debugPrint('FRANK MOMENT ---> ${notification["data"]}');
         MomentsModel momentsModel = MomentsModel.fromJson(notification['data']);
-        NavigationUtil.push(context!, screen: MomentsDetailsScreen(
-          indexOfMoment: 0,
-          momentsModelList: [[momentsModel]],
-        ));
+        NavigationUtil.push(context!,
+            screen: MomentsDetailsScreen(
+              indexOfMoment: 0,
+              momentsModelList: [
+                [momentsModel]
+              ],
+            ));
       }
     } catch (error) {
       print("new error:- $error");
