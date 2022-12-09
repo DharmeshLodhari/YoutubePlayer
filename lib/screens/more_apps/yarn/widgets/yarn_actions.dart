@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_options.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
@@ -91,6 +89,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/yarn_comment".toSVG(),
             color: darkGreyYarn,
+            height: 13,
+            width: 13,
           ),
           SizedBox(
             width: 6,
@@ -115,8 +115,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/like".toSVG(),
             color: darkGreyYarn,
-            height: 16,
-            width: 16,
+            height: 13,
+            width: 13,
           ),
           SizedBox(
             width: 6,
@@ -141,8 +141,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/unlike".toSVG(),
             color: darkGreyYarn,
-            height: 16,
-            width: 16,
+            height: 13,
+            width: 13,
           ),
           SizedBox(
             width: 6,
@@ -167,6 +167,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/re_share".toSVG(),
             color: darkGreyYarn,
+            height: 13,
+            width: 13,
           ),
           SizedBox(
             width: 6,
@@ -184,24 +186,20 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildShareButton() {
     return InkWell(
       onTap: () {
-        showModalBottomSheet<void>(
-          backgroundColor: Colors.transparent,
+        androidBottomSheet(
           context: context,
-          builder: (BuildContext context) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20)),
-              ),
-              color: Colors.white,
-              margin: EdgeInsets.zero,
-              child: YarnOptions(
-                isShareOption: true,
-                yarnTopic: widget.yarn,
-              ),
-            );
-          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              bottomSheetItem(
+                  title: 'Share in chat',
+                  iconData: Icons.send_outlined,
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await sendMomentToUserInChat(yarnTopic: widget.yarn);
+                  }),
+            ],
+          ),
         );
       },
       // child: SvgPicture.asset("ask/share".toSVG()),
@@ -210,6 +208,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/share".toSVG(),
             color: darkGreyYarn,
+            height: 13,
+            width: 13,
           ),
           SizedBox(
             height: 2,
@@ -262,6 +262,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/send_money".toSVG(),
             color: !isPayMeEnable ? Colors.transparent : null,
+            height: 13,
+            width: 13,
           ),
         ],
       ),
@@ -291,8 +293,11 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   bool enableCommenting() {
-    return widget.yarn.enableCommenting != null &&
-        widget.yarn.enableCommenting!;
+    if (widget.yarn.enableCommenting != null && (widget.yarn.enableCommenting ?? false)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future addLikeToYarnAndQuestion() async {
@@ -313,5 +318,60 @@ class _YarnActionsState extends State<YarnActions> {
         widget.yarn.downVoteCount = data['down_vote_count'];
       });
     }
+  }
+
+  Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
+    List<ChatConversation?> listOfRecipient =
+    await ShareInChat().selectShareCustomer(context);
+    debugPrint("Selected users = ${listOfRecipient.length}");
+
+    listOfRecipient.forEach((recipient) {
+      addMomentPostToChat(recipientUser: recipient!, yarnTopic: yarnTopic);
+    });
+  }
+
+  Future<void> addMomentPostToChat({
+    required ChatConversation recipientUser,
+    required Yarn yarnTopic,
+    String? url,
+  }) async {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    Map<String, dynamic> metaData = yarnTopic.toJson();
+    // {
+    //   "id": yarnTopic.id,
+    //   "author_avatar": yarnTopic.authorAvatar,
+    //   "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
+    //   "author_username": yarnTopic.author,
+    //   "title": messageDecoderWithEmoji(yarnTopic.title),
+    //   "description": yarnTopic.body,
+    //   "tags": yarnTopic.tags,
+    //   "image": yarnTopic.media,
+    //   "is_question": yarnTopic.isQuestion,
+    //   "author_is_verified": yarnTopic.authorIsVerified,
+    // };
+
+    // switch (yarnTopic.mediaType) {
+    //   case "image":
+    //     metaData.addAll({"image": momentsModel.media});
+    //     break;
+    //   case "video":
+    //     metaData.addAll({"image": momentsModel.mediaPoster});
+    //     break;
+    // }
+
+    Map<String, dynamic> data = {
+      "meta_data": jsonEncode(metaData),
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": 'yarn',
+      "kind": "yarn",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+    await sendDataToSocket(data);
+    showToast(
+        message: yarnTopic.isQuestion ? 'Question Shared' : 'Yarn Shared');
   }
 }

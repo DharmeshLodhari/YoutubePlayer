@@ -1,14 +1,12 @@
-import 'dart:ui';
-
-class AskCategories {
+class YarnCategories {
   String? id;
   String? name;
   String? color;
   String? image;
 
-  AskCategories({this.id, this.name, this.color, this.image});
+  YarnCategories({this.id, this.name, this.color, this.image});
 
-  AskCategories.fromJson(object) {
+  YarnCategories.fromJson(object) {
     this.id = object['id'];
     this.name = object['name'];
     this.color = object['color'];
@@ -26,7 +24,7 @@ class AskCategories {
 class UsersCategories {
   String? id;
   String? owner;
-  List<AskCategories>? categories;
+  List<YarnCategories>? categories;
 
   UsersCategories({this.id, this.owner, this.categories});
 
@@ -36,7 +34,7 @@ class UsersCategories {
     if (object["categories"] != null) {
       categories = [];
       object["categories"].forEach((v) {
-        categories!.add(AskCategories.fromJson(v));
+        categories!.add(YarnCategories.fromJson(v));
       });
     }
   }

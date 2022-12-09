@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -116,74 +117,85 @@ class MyFeedViewState extends State<MyFeedView> {
             ),
             controller: _postRefreshController,
             onRefresh: _onPostRefresh,
-            child: !isLoading
-                ? !noList
-                    ? ListView.builder(
-                        physics: ClampingScrollPhysics(),
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        itemCount: yarnTopicList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return InkWell(
-                            onTap: () async {
-                              if (yarnTopicList[index].enableCommenting ??
-                                  false) {
-                                await NavigationUtil.push(
-                                  context,
-                                  screen: YarnDetailScreen(
-                                      yarn: yarnTopicList[index]),
-                                );
-                              }
-                              if (mounted) setState(() {});
-                            },
-                            child: YarnTile(
-                              onOptionsAction: () {
-                                showModalBottomSheet<void>(
-                                  backgroundColor: Colors.transparent,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20),
-                                            topRight: Radius.circular(20)),
-                                      ),
-                                      color: Colors.white,
-                                      margin: EdgeInsets.zero,
-                                      child: YarnOptions(
-                                        yarnTopic: yarnTopicList[index],
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              yarn: yarnTopicList[index],
-                            ),
-                          );
-                        },
-                      )
-                    : NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      )
-                : Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+            child: _buildListView(),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildListView() {
+    if (!noList) {
+      return ListView.separated(
+        physics: ClampingScrollPhysics(),
+        padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        itemCount: yarnTopicList.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == yarnTopicList.length) {
+            return _buildLoadingIndicator();
+          }
+          return InkWell(
+            onTap: () async {
+              if (yarnTopicList[index].enableCommenting ??
+                  false) {
+                await NavigationUtil.push(
+                  context,
+                  screen: YarnDetailScreen(
+                      yarn: yarnTopicList[index]),
+                );
+              }
+              if (mounted) setState(() {});
+            },
+            child: YarnTile(
+              onOptionsAction: () {
+                showModalBottomSheet<void>(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                      ),
+                      color: Colors.white,
+                      margin: EdgeInsets.zero,
+                      child: YarnOptions(
+                        yarnTopic: yarnTopicList[index],
+                      ),
+                    );
+                  },
+                );
+              },
+              yarn: yarnTopicList[index],
+            ),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Divider(
+                height: 0,
+                thickness: 0.5,
+                color: greySecondaryYarn,
+              ),
+            ],
+          );
+        },
+      );
+    }
+    return NoItemInList(
+      msg: AppLocalization.of(context)!.noResultFound,
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Opacity(
+      opacity: isLoading ? 1.0 : 00,
+      child: isLoading ? YarnShimmer() : Container(),
     );
   }
 

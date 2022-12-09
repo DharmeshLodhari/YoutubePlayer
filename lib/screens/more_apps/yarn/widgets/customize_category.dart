@@ -5,7 +5,7 @@ import '../models/ask_categories_model.dart';
 import 'customize_category_button.dart';
 
 class CustomizeCategory extends StatelessWidget {
-  AskCategories? askCategory;
+  YarnCategories? askCategory;
   UsersCategories? usersCategory;
   bool? isAdd = false;
   GestureTapCallback? onTap;

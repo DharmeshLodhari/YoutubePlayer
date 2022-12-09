@@ -16,7 +16,7 @@ class _AskSCustomizeScreenState extends State<AskSCustomizeScreen> {
   String? categoriesPrevious = "";
   bool noCategoriesList = false;
   int? categoryCount = 0;
-  List<AskCategories> askCategories = [];
+  List<YarnCategories> askCategories = [];
   UsersCategories? usersCategory;
   bool isCategoryLoading = false;
 

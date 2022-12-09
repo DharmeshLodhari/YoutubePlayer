@@ -7,23 +7,23 @@ class YarnDashboardBloc extends ChangeNotifier {
   int? currentTabIndex = 0;
   String? categoryToAskOn = '';
   String? newlySelectedCategory = '';
-  List<AskCategories> _yarnCategories = [];
-  List<AskCategories> get yarnCategories => _yarnCategories;
+  List<YarnCategories> _yarnCategories = [];
+  List<YarnCategories> get yarnCategories => _yarnCategories;
   List<String> _selectedAskCategories = [];
   List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length - 1);
 
-  set yarnCategories(List<AskCategories> cat) {
+  set yarnCategories(List<YarnCategories> cat) {
     _yarnCategories = cat;
     notifyListeners();
   }
 
-  void setAskCategories(List<AskCategories> cat) {
+  void setAskCategories(List<YarnCategories> cat) {
     _yarnCategories = cat;
     notifyListeners();
   }
 
-  void addCategories(List<AskCategories> cat) {
+  void addCategories(List<YarnCategories> cat) {
     _yarnCategories.addAll(cat);
     notifyListeners();
   }

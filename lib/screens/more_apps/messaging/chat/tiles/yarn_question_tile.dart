@@ -10,8 +10,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/util.dart';
+import '../../../yarn/utils/utils.dart';
+import '../../../yarn/widgets/rich_text.dart';
+import '../../../yarn/widgets/viewer_screen.dart';
+import '../../../yarn/widgets/yarn_actions.dart';
+import '../../../yarn/widgets/yarn_media_renderer.dart';
+import '../../../yarn/widgets/yarn_options.dart';
 
 class YarnQuestionTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
@@ -29,15 +36,17 @@ class YarnQuestionTileForChat extends StatefulWidget {
 class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   late UserBloc userBloc;
   late YarnQuestionForChatModel yarnQuestionForChatModel;
+  late Yarn yarn;
   // VideoPlayerController? _mainVideoController;
   bool isLoading = false;
+  bool isMediaPresent = false;
+  bool isNewModel = false;
 
   @override
   void initState() {
     super.initState();
-    yarnQuestionForChatModel = YarnQuestionForChatModel.fromJson(
-        jsonDecode(widget.message!['meta_data']));
 
+    checkModel();
     // if (momentForChatModel.video != null) {
     //   isLoading = true;
     //   if (mounted) setState(() {});
@@ -49,6 +58,25 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     //       if (mounted) setState(() {});
     //     });
     // }
+  }
+
+  void checkModel() {
+    try {
+      yarnQuestionForChatModel = YarnQuestionForChatModel();
+      yarn = Yarn.fromJson(jsonDecode(widget.message!['meta_data']));
+      if (yarn.media.isNotEmpty) {
+        isMediaPresent = true;
+      }
+      isNewModel = true;
+      if (mounted) setState(() {});
+      debugPrint("TRY:- $yarnQuestionForChatModel");
+    } catch (error) {
+      debugPrint("ERROR:- $error");
+      // yarnQuestionForChatModel = YarnQuestionForChatModel.fromJson(jsonDecode(widget.message!['meta_data']));
+      // isNewModel = false;
+      // if (mounted) setState(() {});
+      debugPrint("CATCH:- $yarn");
+    }
   }
 
   @override
@@ -113,10 +141,10 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                           : Colors.white
                       : Colors.transparent,
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(!isSend ? 0 : 10),
-                    bottomRight: Radius.circular(isSend ? 0 : 10),
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(!isSend ? 0 : 20),
+                    bottomRight: Radius.circular(isSend ? 0 : 20),
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -163,12 +191,12 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                       margin: EdgeInsets.zero,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(20)),
                       child: Container(
                         decoration: decorateBox(color: Colors.white),
                         padding: EdgeInsets.only(
                             right: 10, top: 10, left: 10, bottom: 4),
-                        child: _buildPostCard(),
+                        child: _buildMainCard(),
                       ),
                     ),
                   ],
@@ -215,14 +243,15 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
-  Widget _buildPostCard() {
-    if (yarnQuestionForChatModel.media != null) {
-      return _buildWithImagesPostCard();
+  Widget _buildMainCard() {
+    if (isNewModel) {
+      return _buildMain();
+    } else {
+      return _buildPostCard();
     }
-    return _buildWithOutImagesPostCard();
   }
 
-  Widget _buildWithImagesPostCard() {
+  Widget _buildPostCard() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -240,31 +269,12 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        _buildImagesRow(context: context),
-        SizedBox(
-          height: 6,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildWithOutImagesPostCard() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildUserInfoRow(),
-        SizedBox(
-          height: 10,
-        ),
-        if (yarnQuestionForChatModel.isQuestion ?? false) ...[
-          _buildPostTitle(),
-          SizedBox(height: 10),
-        ],
-        _buildPostDescription(),
-        SizedBox(
-          height: 10,
-        ),
-        _buildTagsAndViewerRow(),
+        if (yarnQuestionForChatModel.media != null)...[
+          _buildImagesRow(context: context),
+          SizedBox(
+            height: 6,
+          ),
+        ]
       ],
     );
   }
@@ -339,24 +349,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
-    );
-  }
-
-  Widget _buildTagsAndViewerRow() {
-    return Wrap(
-      runSpacing: 5,
-      spacing: 2,
-      children: yarnQuestionForChatModel.tags != null
-          ? yarnQuestionForChatModel.tags!
-              .map((e) => Text(
-                    "#$e",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: HexColor("#3F61DB"),
-                    ),
-                  ))
-              .toList()
-          : [],
     );
   }
 
@@ -588,6 +580,220 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMain() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildUserInfoRowNew(),
+        SizedBox(
+          height: 10,
+        ),
+        if (yarn.isQuestion) ...[
+          _buildPostTitleNew(),
+          SizedBox(height: 8),
+        ],
+        _buildPostDescriptionNew(),
+        SizedBox(
+          height: 10,
+        ),
+        _buildTagsAndViewerRow(),
+        if (isMediaPresent) ...[
+          _buildImagesRowNew(),
+          SizedBox(
+            height: 8,
+          ),
+        ],
+        _buildTopActions(),
+      ],
+    );
+  }
+
+  Widget _buildUserInfoRowNew() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 4,
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildUserAvatar(),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.USER_PROFILE,
+                      arguments: {"searchedUserName": yarn.author});
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          messageDecoderWithEmoji(
+                              yarn.authorName ?? "") ??
+                              "",
+                          style: TextStyle(fontSize: 12, color: yarnBlack),
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        ClipOval(
+                          child: Container(
+                            height: 4,
+                            width: 4,
+                            color: yarnBlack,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Expanded(
+                          child: Text(
+                            yarn.createdAt != null ? '${getGetYarnQuestionDateTime(yarn.createdAt!)}' : "",
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(fontSize: 12, color: yarnBlack),
+                          ),
+                        )
+                      ],
+                    ),
+                    userNameWithVerifiedIcon(
+                      name: "@${yarn.author!}",
+                      isVerified: yarn.authorIsVerified ?? false,
+                      verifiedIconSize: 16,
+                      textStyle: TextStyle(
+                        color: yarnBlack,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      verifiedIconColor: verifyBlue,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                showModalBottomSheet<void>(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                      ),
+                      color: Colors.white,
+                      margin: EdgeInsets.zero,
+                      child: YarnOptions(
+                        yarnTopic: yarn,
+                      ),
+                    );
+                  },
+                );
+              },
+              child: Icon(
+                Icons.more_horiz_rounded,
+                color: darkGreyYarn,
+              ),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUserAvatar() {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+            arguments: yarn.authorAvatar!);
+      },
+      child: Container(
+        height: 36,
+        width: 36,
+        decoration: BoxDecoration(shape: BoxShape.circle),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: yarn.authorAvatar!,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPostTitleNew() {
+    return RichTextForTitle(
+      description: messageDecoderWithEmoji(yarn.title ?? '') ?? '',
+    );
+  }
+
+  Widget _buildPostDescriptionNew() {
+    return RichTextForTitle(
+      description: messageDecoderWithEmoji(yarn.body ?? '') ?? '',
+    );
+  }
+
+  Widget _buildTagsAndViewerRow() {
+    List<String> selectedImages = [];
+    if (yarn.viewersAvatars != null) {
+      for (ViewersAvatars avatars in yarn.viewersAvatars!) {
+        selectedImages.add(avatars.avatar!);
+      }
+    }
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Wrap(
+                runSpacing: 5,
+                spacing: 2,
+                children: yarn.tags!
+                    .map((e) => Text(
+                  "#$e",
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: navyBlue,
+                      fontWeight: FontWeight.w500),
+                ))
+                    .toList(),
+              ),
+            ),
+            SizedBox(
+              width: 70,
+              child: ViewerArranger(selectedImages: selectedImages),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 10,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTopActions() {
+    return YarnActions(
+      yarn: yarn,
+    );
+  }
+
+  Widget _buildImagesRowNew() {
+    return YarnMediaRender(
+      yarnTopic: yarn,
     );
   }
 }

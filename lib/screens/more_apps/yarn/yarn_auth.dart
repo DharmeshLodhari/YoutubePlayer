@@ -13,8 +13,8 @@ import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 
 class YarnAuth extends AuthService {
-  AskCategories createAskCategories(Map<String, dynamic> item) {
-    AskCategories categories = AskCategories();
+  YarnCategories createAskCategories(Map<String, dynamic> item) {
+    YarnCategories categories = YarnCategories();
     categories.id = item['id'];
     categories.name = item['name'];
     categories.color = item['color'];
@@ -45,10 +45,10 @@ class YarnAuth extends AuthService {
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     if (response.statusCode == 200) {
-      List<AskCategories> askCategories = [];
+      List<YarnCategories> askCategories = [];
       var jsonData = json.decode(response.body);
       for (var item in jsonData["results"]) {
-        AskCategories categories = createAskCategories(item);
+        YarnCategories categories = createAskCategories(item);
         askCategories.add(categories);
       }
 

@@ -20,6 +20,7 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -31,6 +32,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -339,37 +341,41 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     double? height;
 
     if (bioLength == 0) {
-      if (hasAddress && hasContact) {
-        height = 380;
-      } else if (hasAddress || hasContact) {
-        height = 360;
-      } else {
-        height = 340;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 380;
+      // } else if (hasAddress || hasContact) {
+      //   height = 360;
+      // } else {
+      //   height = 340;
+      // }
+      height = 340;
     } else if (bioLength <= 50) {
-      if (hasAddress && hasContact) {
-        height = 420;
-      } else if (hasAddress || hasContact) {
-        height = 400;
-      } else {
-        height = 380;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 350;
+      // } else if (hasAddress || hasContact) {
+      //   height = 400;
+      // } else {
+      //   height = 380;
+      // }
+      height = 350;
     } else if (bioLength <= 100) {
-      if (hasAddress && hasContact) {
-        height = 460;
-      } else if (hasAddress || hasContact) {
-        height = 460;
-      } else {
-        height = 400;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 460;
+      // } else if (hasAddress || hasContact) {
+      //   height = 460;
+      // } else {
+      //   height = 400;
+      // }
+      height = 380;
     } else if (bioLength <= 200) {
-      if (hasAddress && hasContact) {
-        height = 460;
-      } else if (hasAddress || hasContact) {
-        height = 480;
-      } else {
-        height = 460;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 460;
+      // } else if (hasAddress || hasContact) {
+      //   height = 480;
+      // } else {
+      //   height = 460;
+      // }
+      height = 420;
     }
 
     debugPrint('GET HEIGHT -> $height');
@@ -699,7 +705,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget getUserDetails() {
     Color borderColor = getUserTypeColor(user: searchedUser!);
     return Positioned(
-      top: 160,
+      top: 170,
       left: 20,
       right: 0,
       child: Column(
@@ -751,52 +757,72 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       : getUserProfilePic(),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  width: MediaQuery.of(context).size.width - 116,
-                  padding:
-                      const EdgeInsets.only(top: 40.0, left: 10, right: 10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            getActionOnUsersBtn(),
-                            getFollowUnFollowBtn(),
-                          ],
-                        ),
-                      ),
-                    ],
+              // Expanded(
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width - 116,
+              //     padding:
+              //         const EdgeInsets.only(top: 40.0, left: 10, right: 10),
+              //     child: Column(
+              //       mainAxisSize: MainAxisSize.min,
+              //       crossAxisAlignment: CrossAxisAlignment.stretch,
+              //       children: [
+              //         Align(
+              //           alignment: Alignment.centerRight,
+              //           child: Row(
+              //             mainAxisSize: MainAxisSize.min,
+              //             children: [
+              //               getActionOnUsersBtn(),
+              //               getFollowUnFollowBtn(),
+              //             ],
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: userNameWithVerifiedIcon(
+                      name: searchedUser!.displayName()!,
+                      isVerified: searchedUser!.isVerified,
+                    ),
                   ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '@${searchedUser!.userName!}',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          fontSize: 14.0, color: darkGrey, fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    getActionOnUsersBtn(),
+                    getFollowUnFollowBtn(),
+                  ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: 4),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: userNameWithVerifiedIcon(
-              name: searchedUser!.displayName()!,
-              isVerified: searchedUser!.isVerified,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '@${searchedUser!.userName!}',
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontSize: 14.0, color: darkGrey, fontWeight: FontWeight.w400),
-            ),
-          ),
           SizedBox(height: 12),
           getUserBioStringWidget(),
-          displayUserAddress(),
-          getContact(),
+          // displayUserAddress(),
+          // getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
           getFollowUnFollowWidget(),
@@ -904,9 +930,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         SizedBox(height: 8),
         Row(
           children: [
-            Icon(Icons.calendar_month_rounded, size: 16),
+            //Icon(Icons.calendar_month_rounded, size: 16),
+            SvgPicture.asset("yarn/calendar".toSVG()),
             SizedBox(width: 12),
-            Text('${getDate(searchedUser!.dateJoined!)}'),
+            Text('${getDate(searchedUser!.dateJoined!)}', style: TextStyle(color: HexColor("78797A"), fontSize: 10, fontWeight: FontWeight.w400),),
           ],
         ),
       ],
@@ -992,7 +1019,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty)
       return SizedBox.shrink();
     return Container(
-      margin: EdgeInsets.only(right: 4),
+      margin: EdgeInsets.only(right: 6),
       width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1068,7 +1095,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget getUserProfilePic() {
     return CircleAvatar(
-      radius: 35,
+      radius: 25,
       backgroundImage: CachedNetworkImageProvider(
         searchedUser!.avatar!,
 
@@ -1329,7 +1356,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
           color: _tabController?.index == tabIndex
-              ? navyBlue.withOpacity(0.1)
+              ? navyBlue
               : Colors.white,
         ),
         child: Text(
@@ -1337,11 +1364,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           maxLines: 1,
           overflow: TextOverflow.visible,
           style: TextStyle(
-            color: _tabController?.index == tabIndex ? navyBlue : blackFont,
+            color: _tabController?.index == tabIndex ? white : HexColor("#78797A"),
             fontSize: 14,
-            fontWeight: _tabController?.index == tabIndex
-                ? FontWeight.w600
-                : FontWeight.w400,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ),

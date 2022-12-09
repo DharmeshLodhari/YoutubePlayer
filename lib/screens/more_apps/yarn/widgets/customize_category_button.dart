@@ -6,7 +6,7 @@ import '../models/ask_categories_model.dart';
 import '../yarn_auth.dart';
 
 class CustomizeCategoryButton extends StatefulWidget {
-  AskCategories? askCategory;
+  YarnCategories? askCategory;
   UsersCategories? usersCategory;
   CustomizeCategoryButton({Key? key, this.askCategory, this.usersCategory})
       : super(key: key);
@@ -30,7 +30,7 @@ class _CustomizeCategoryButtonState extends State<CustomizeCategoryButton> {
     setState(() {
       isAdd = false;
     });
-    for (AskCategories cat in widget.usersCategory!.categories ?? []) {
+    for (YarnCategories cat in widget.usersCategory!.categories ?? []) {
       if (cat.id == widget.askCategory!.id) {
         setState(() {
           isAdd = true;

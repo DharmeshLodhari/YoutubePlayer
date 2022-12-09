@@ -93,7 +93,7 @@ class _YarnOptionsState extends State<YarnOptions> {
           SizedBox(
             height: 15,
           ),
-          if (isMyYarnQuestion()) ...[
+          if (isMyYarnQuestion() && !(widget.isShareOption ?? false) && (!(widget.isComment ?? false) && widget.commentDetail != null)) ...[
             _buildMoreOptionForOwner()
           ] else ...[
             if ((widget.isComment ?? false) && widget.commentDetail != null)...[
@@ -352,18 +352,19 @@ class _YarnOptionsState extends State<YarnOptions> {
   }) async {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
-      "id": yarnTopic.id,
-      "author_avatar": yarnTopic.authorAvatar,
-      "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
-      "author_username": yarnTopic.author,
-      "title": messageDecoderWithEmoji(yarnTopic.title),
-      "description": yarnTopic.body,
-      "tags": yarnTopic.tags,
-      "image": yarnTopic.media,
-      "is_question": yarnTopic.isQuestion,
-      "author_is_verified": yarnTopic.authorIsVerified,
-    };
+    Map<String, dynamic> metaData = yarnTopic.toJson();
+    // {
+    //   "id": yarnTopic.id,
+    //   "author_avatar": yarnTopic.authorAvatar,
+    //   "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
+    //   "author_username": yarnTopic.author,
+    //   "title": messageDecoderWithEmoji(yarnTopic.title),
+    //   "description": yarnTopic.body,
+    //   "tags": yarnTopic.tags,
+    //   "image": yarnTopic.media,
+    //   "is_question": yarnTopic.isQuestion,
+    //   "author_is_verified": yarnTopic.authorIsVerified,
+    // };
 
     // switch (yarnTopic.mediaType) {
     //   case "image":

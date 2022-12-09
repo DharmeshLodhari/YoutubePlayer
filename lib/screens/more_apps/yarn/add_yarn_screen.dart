@@ -30,8 +30,8 @@ import 'models/ask_categories_model.dart';
 import 'yarn_dashboard_bloc.dart';
 
 class AddTopicScreen extends StatefulWidget {
-  List<AskCategories>? askCategories;
-  AskCategories? askCategory;
+  List<YarnCategories>? askCategories;
+  YarnCategories? askCategory;
   bool? isYarn = false;
   AddTopicScreen({this.askCategories, this.isYarn, this.askCategory});
 
@@ -49,9 +49,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   List<AddMediaForYarn> selectedMedia = [];
   List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
-  AskCategories? selectedAskCategory;
-  AskCategories? pressedAskCategory;
-  List<AskCategories>? askCategoriesCopy;
+  YarnCategories? selectedAskCategory;
+  YarnCategories? pressedAskCategory;
+  List<YarnCategories>? askCategoriesCopy;
   String askCategory = "";
   List<String> userTags = [];
   late UserBloc userBloc;
@@ -346,7 +346,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "select category",
+              selectedAskCategory != null ? (selectedAskCategory!.name ?? "select category") : "select category",
               style: TextStyle(fontSize: 10, color: HexColor("#ACAEB4")),
             ),
             SizedBox(
@@ -712,7 +712,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                     shrinkWrap: true,
                     itemCount: widget.askCategories!.length,
                     itemBuilder: (context, index) {
-                      AskCategories category = widget.askCategories![index];
+                      YarnCategories category = widget.askCategories![index];
                       if (selectedAskCategory == category) {
                         return Container(
                           color: selectedListItemBackgroundBlue,
@@ -851,23 +851,22 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
-    addYarnAndQuestion.title =
-        !(widget.isYarn ?? false) ? textController.text : yarnController.text;
+    addYarnAndQuestion.title = widget.isYarn == true ? textController.text : yarnController.text;
     addYarnAndQuestion.body = textController.text;
     addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
-    addYarnAndQuestion.isQuestion = !(widget.isYarn ?? false) ? false : true;
+    addYarnAndQuestion.isQuestion = widget.isYarn == true ? false : true;
     addYarnAndQuestion.author = userBloc.user.userName;
     addYarnAndQuestion.enablePayme = enablePayMe;
     addYarnAndQuestion.enableCommenting = enableCommenting;
 
     await YarnAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
-      if (!(widget.isYarn ?? true)) {
+      if (widget.isYarn == true) {
         Navigator.pop(context, Types.Yarn);
-      } else if (!(widget.isYarn ?? false)) {
+      } else if (widget.isYarn == false) {
         Navigator.pop(context, Types.Question);
       }
       showToast(
-          message: widget.isYarn ?? false
+          message: widget.isYarn == true
               ? "Yarn add successfully"
               : "Question add successfully");
     }).catchError((error) {

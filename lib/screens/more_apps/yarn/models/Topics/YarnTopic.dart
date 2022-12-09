@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import '../ask_categories_model.dart';
+
 class Yarn {
   Yarn(
       {this.id,
@@ -22,25 +24,45 @@ class Yarn {
       this.downVoteCount,
       this.authorIsVerified,
       this.enableCommenting,
-      this.category = "Technology"});
+      this.category});
 
   Yarn.fromJson(dynamic json) {
     id = json['id'];
     tags = json['tags'] != null ? json['tags'].cast<String>() : [];
+    if (json['category'] != null) {
+      category = YarnCategories.fromJson(json['category']);
+    }
     authorName = json['author_name'];
     authorAvatar = json['author_avatar'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     title = json['title'];
-    body = json['body'];
+    if (json['body'] == null) {
+      if (json['description'] != null) {
+        body = json['description'];
+      }
+    } else {
+      body = json['body'];
+    }
+
     if (json['media'] != null) {
       media = [];
-      //media!.add(MediaFiles(file: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
       json['media'].forEach((v) {
         media.add(MediaFiles.fromJson(v));
       });
+    } else if (json['image'] != null) {
+      media = [];
+      json['image'].forEach((v) {
+        media.add(MediaFiles.fromJson(v));
+      });
     }
-    author = json['author'];
+    if (json['author'] == null) {
+      if (json['author_username'] != null) {
+        author = json['author_username'];
+      }
+    } else {
+      author = json['author'];
+    }
     status = json['status'];
     numberOfAnswers = json['number_of_answers'];
     if (json['viewers_avatars'] != null) {
@@ -56,11 +78,11 @@ class Yarn {
     downVoteCount = json['down_vote_count'];
     authorIsVerified = json['author_is_verified'];
     enableCommenting = json['enable_commenting'];
-    category = json['category'] ?? "Technology";
   }
 
   String? id;
   List<String>? tags;
+  YarnCategories? category;
   String? authorName;
   String? authorAvatar;
   String? createdAt;
@@ -79,7 +101,6 @@ class Yarn {
   int? downVoteCount;
   bool? authorIsVerified;
   bool? enableCommenting;
-  String category = "Technology";
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

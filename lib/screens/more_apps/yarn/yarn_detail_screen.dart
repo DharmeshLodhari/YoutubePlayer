@@ -66,10 +66,14 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       shadowColor: greySecondaryYarn,
       elevation: 0.5,
       actions: [
-        _buildProfileImage(),
-        SizedBox(
-          width: 16,
-        )
+        Row(
+          children: [
+            _buildProfileImage(),
+            SizedBox(
+              width: 16,
+            )
+          ],
+        ),
       ],
       leading: IconButton(
         padding: EdgeInsets.zero,
@@ -92,12 +96,14 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": userBloc.user.userName});
       },
-      child: ClipOval(
-        child: Container(
-          height: 35,
-          width: 35,
+      child: Container(
+        height: 35,
+        width: 35,
+        decoration: BoxDecoration(shape: BoxShape.circle),
+        child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: userBloc.user.avatar ?? "",
+            imageUrl: userBloc.user.avatar!,
+            fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
           ),
         ),

@@ -19,7 +19,7 @@ import 'yarn_dashboard_bloc.dart';
 import 'yarn_list_screen.dart';
 
 class YarnCategoryScreen extends StatefulWidget {
-  AskCategories? askCategories;
+  YarnCategories? askCategories;
   YarnCategoryScreen({this.askCategories});
 
   @override

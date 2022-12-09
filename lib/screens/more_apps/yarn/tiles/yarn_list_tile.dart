@@ -209,7 +209,7 @@ class _YarnTileState extends State<YarnTile> {
         color: yarnBlack,
       ),
       child: Text(
-        widget.yarn.category ?? "",
+        widget.yarn.category!.name ?? "",
         style:
             TextStyle(color: white, fontSize: 9, fontWeight: FontWeight.w600),
       ),
