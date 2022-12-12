@@ -526,7 +526,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
-                  verifiedIconColor: Colors.white,
+                  verifiedIconColor: verifyBlue,
                 )
               : Stack(
                   clipBehavior: Clip.none,
@@ -791,18 +791,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: userNameWithVerifiedIcon(
-                      name: searchedUser!.displayName()!,
-                      isVerified: searchedUser!.isVerified,
-                    ),
+                    child: Text(
+                      messageDecoderWithEmoji(searchedUser!.displayName() ?? "") ?? "",
+                      style: TextStyle(fontSize: 12, color: yarnBlack),
+                    )
                   ),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      '@${searchedUser!.userName!}',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          fontSize: 14.0, color: darkGrey, fontWeight: FontWeight.w400),
+                    child: userNameWithVerifiedIcon(
+                      name: "@${searchedUser!.userName ?? ''}",
+                      isVerified: searchedUser!.isVerified,
+                      textStyle: TextStyle(
+                        fontSize: 12,
+                        color: HexColor("#151515"),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      verifiedIconColor: verifyBlue,
+                      verifiedIconSize: 15
                     ),
                   ),
                 ],
@@ -868,18 +873,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           });
         },
         child: Container(
+          height: 30,
+          width: 80,
           margin: EdgeInsets.symmetric(vertical: 8),
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: greyBorderColor, width: 2)),
-          child: Text(
-            'Following',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
+              border: Border.all(color: HexColor("#292929"), width: 1)),
+          child: Center(
+            child: Text(
+              'Following',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
@@ -905,17 +914,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         });
       },
       child: Container(
+        height: 30,
+        width: 80,
         margin: EdgeInsets.symmetric(vertical: 8),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: greyBorderColor, width: 2)),
-        child: Text(
-          'Follow',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+            border: Border.all(color: HexColor("#292929"), width: 1)),
+        child: Center(
+          child: Text(
+            'Follow',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
@@ -1159,13 +1172,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
+  // Widget getAddMailIcon() {}
+
   Widget getAddConnectionIcon() {
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
           color: greyBorderColor,
         ),
-        borderRadius: BorderRadius.circular(10),
+        shape: BoxShape.circle
       ),
       child: RoundedBackgroundIcon(
         height: 34,
@@ -1289,24 +1304,26 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: greyBorderColor,
+          color: HexColor("#292929"),
         ),
-        borderRadius: BorderRadius.circular(10),
+       shape: BoxShape.circle
       ),
       child: RoundedBackgroundIcon(
-        height: 34,
-        width: 34,
-        icon: Icon(
-          SlydoAppIcon.text_message,
-          size: 16,
-          color: blackFont,
+        height: 30,
+        width: 30,
+        image: SvgPicture.asset(
+          "yarn/chat_icon".toSVG(),
+          height: 20,
+          width: 20,
+          color: HexColor("#292929"),
         ),
         onTap: () {
           Navigator.pushNamed(context, '/chat-screen',
               arguments: {"recipientUserName": searchedUser!.userName});
         },
         backgroundColor: lightGrey.withOpacity(0.1),
-        enableMargin: false,
+        enableMargin: true,
+        margin: 8,
       ),
     );
   }

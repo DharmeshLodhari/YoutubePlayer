@@ -35,6 +35,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   bool isAPILoading = false;
   ScrollController _commentScrollController = new ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
+  bool? enableComment = false, enablePayment = false;
 
   @override
   Widget build(BuildContext context) {
@@ -164,6 +165,16 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       yarn: widget.yarn,
       userImage: userBloc.user.avatar,
       isLoading: isAPILoading,
+      enableComment: enableComment,
+      onTapEnableComment: (value) {
+        enableComment = value;
+        if (mounted) setState(() {});
+      },
+      enablePayment: enablePayment,
+      onTapEnablePayment: (value) {
+        enablePayment = value;
+        if (mounted) setState(() {});
+      },
       onPressed: () async {
         FocusScope.of(context).unfocus();
         isAPILoading = true;

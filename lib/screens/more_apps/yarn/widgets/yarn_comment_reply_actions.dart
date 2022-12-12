@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_comment_detail_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
-import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -17,25 +16,41 @@ import '../../../../services/app_config_bloc.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
-import '../models/Topics/CommentDetails.dart';
 import '../yarn_auth.dart';
 
-class YarnCommentActions extends StatefulWidget {
-  final YarnComment comment;
-  final Yarn yarn;
-  final bool isCommentDetail;
-
-  YarnCommentActions({
-    required this.comment,
-    required this.yarn,
-    this.isCommentDetail = false,
-  });
+class YarnCommentReplyActions extends StatefulWidget {
+  YarnComment? replyCommentDetail;
+  YarnCommentReplyActions({this.replyCommentDetail});
 
   @override
-  State<YarnCommentActions> createState() => _YarnCommentActionsState();
+  State<YarnCommentReplyActions> createState() =>
+      _YarnCommentReplyActionsState();
 }
 
-class _YarnCommentActionsState extends State<YarnCommentActions> {
+class _YarnCommentReplyActionsState
+    extends State<YarnCommentReplyActions> {
+  Future addLikeToReplyComment() async {
+    Map<String, dynamic>? data =
+        await YarnAuth().addLikeComment(widget.replyCommentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.replyCommentDetail!.likes = data['likes'];
+        widget.replyCommentDetail!.dislike = data['dislikes'];
+      });
+    }
+  }
+
+  Future addDisLikeToReplyComment() async {
+    Map<String, dynamic>? data =
+        await YarnAuth().addDisLikeComment(widget.replyCommentDetail!.id!);
+    if (data != null) {
+      setState(() {
+        widget.replyCommentDetail!.likes = data['likes'];
+        widget.replyCommentDetail!.dislike = data['dislikes'];
+      });
+    }
+  }
+
   int retweetCount = 1;
   @override
   void initState() {
@@ -50,13 +65,10 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       children: [
         Expanded(child: _buildActionableList()),
         _buildShareButton(),
-        SizedBox(
-          width: 18,
-        ),
-        _buildPayButton(),
-        SizedBox(
-          width: 16,
-        )
+        if (getLoggedInUserName(context) !=
+            widget.replyCommentDetail!.authorUsername) ...[
+          _buildPayButton()
+        ],
       ],
     );
   }
@@ -74,7 +86,6 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     if (finalActionList.length == 3) {
       finalActionList.add(Expanded(child: Container()));
     }
-
     return Row(
       children: finalActionList,
     );
@@ -82,32 +93,19 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
 
   Widget _buildCommentButton() {
     return InkWell(
-      onTap: () {
-        if (!widget.isCommentDetail) {
-          NavigationUtil.push(
-            context,
-            screen: YarnCommentDetailScreen(
-              yarn: widget.yarn,
-              yarnComment: widget.comment,
-            ),
-          );
-        }
-      },
+      onTap: () {},
       child: Row(
         children: [
-          SvgPicture.asset(
-            "yarn/yarn_comment".toSVG(),
-            color: darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
+          SvgPicture.asset("ask/reply".toSVG()),
           SizedBox(
             width: 6,
           ),
           Text(
             getCommentCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -117,23 +115,20 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   Widget _buildLikeButton() {
     return InkWell(
       onTap: () {
-        addLikeToComment();
+        addLikeToReplyComment();
       },
       child: Row(
         children: [
-          SvgPicture.asset(
-            "yarn/like".toSVG(),
-            color: darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
+          SvgPicture.asset("ask/like".toSVG()),
           SizedBox(
             width: 6,
           ),
           Text(
             getLikeCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -143,23 +138,20 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   Widget _buildDisLikeButton() {
     return InkWell(
       onTap: () {
-        addDisLikeToComment();
+        addDisLikeToReplyComment();
       },
       child: Row(
         children: [
-          SvgPicture.asset(
-            "yarn/unlike".toSVG(),
-            color: darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
+          SvgPicture.asset("ask/dislike".toSVG()),
           SizedBox(
             width: 6,
           ),
           Text(
             getDisLikeCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: HexColor("#75818F")),
           ),
         ],
       ),
@@ -212,91 +204,76 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
         //   ),
         // );
       },
-      // child: SvgPicture.asset("ask/share".toSVG()),
-      child: Column(
+      child: Row(
         children: [
           SvgPicture.asset(
-            "yarn/share".toSVG(),
-            color: darkGreyYarn,
+              "ask/share".toSVG(),
             height: 17,
             width: 17,
           ),
-          SizedBox(
-            height: 2,
-          )
         ],
       ),
     );
   }
 
   Widget _buildPayButton() {
-    bool isPayMeEnable = false;
-    if (widget.comment.enablePayMe ?? false) {
-      isPayMeEnable = true;
-    }
-
     return InkWell(
-      onTap: getLoggedInUserName(context) != widget.comment.authorUsername
+      onTap: getLoggedInUserName(context) !=
+          widget.replyCommentDetail!.authorUsername
           ? () {
-              if (!isPayMeEnable) return;
-              if (getIt<AppConfigurationBloc>()
-                      .appConfigurationModel
-                      ?.enablePayment ==
-                  true) {
-                Navigator.of(context).pushNamed(
-                  Routes.SEND_PAYMENT,
-                  arguments: <String, dynamic>{
-                    'recipient': widget.comment.authorUsername!,
-                    'isFromProfile': false,
-                    'isFromChat': false,
-                    'defaultReferenceText': 'Payment from  "${truncateString(
-                      str: widget.comment.comment!,
-                      lengthToTruncateAt: 8,
-                    )}\" comment'
-                  },
-                );
-              } else {
-                showToast(message: 'Payment not available at the moment');
-              }
-            }
-          : () {
-              if (!isPayMeEnable) return;
-              showToast(message: 'You cannot pay yourself');
+        if (getIt<AppConfigurationBloc>()
+            .appConfigurationModel
+            ?.enablePayment ==
+            true) {
+          Navigator.of(context).pushNamed(
+            Routes.SEND_PAYMENT,
+            arguments: <String, dynamic>{
+              'recipient':
+              widget.replyCommentDetail!.authorUsername!,
+              'isFromProfile': false,
+              'isFromChat': false,
+              'defaultReferenceText':
+              'Payment from  "${truncateString(
+                str: widget.replyCommentDetail!.comment!,
+                lengthToTruncateAt: 8,
+              )}\" comment'
             },
-      child: Column(
+          );
+        } else {
+          showToast(message: 'Payment not available at the moment');
+        }
+      }
+          : () {
+        showToast(message: 'You cannot pay yourself');
+      },
+      child: Row(
         children: [
-          SizedBox(
-            height: 2,
-          ),
-          SvgPicture.asset(
-            "yarn/send_money".toSVG(),
-            color: darkGreyYarn,
-            height: 13,
-            width: 13,
-            // color: !isPayMeEnable ? Colors.transparent : null,
-          ),
+          SvgPicture.asset("yarn/send_money".toSVG()),
         ],
       ),
     );
   }
 
   String getCommentCount() {
-    if (widget.comment.replyCount != null && widget.comment.replyCount != 0) {
-      return widget.comment.replyCount?.toString() ?? "";
+    if (widget.replyCommentDetail!.replyCount != null &&
+        widget.replyCommentDetail!.replyCount != 0) {
+      return widget.replyCommentDetail!.replyCount?.toString() ?? "";
     }
     return "";
   }
 
   String getLikeCount() {
-    if (widget.comment.likes != null && widget.comment.likes != 0) {
-      return widget.comment.likes?.toString() ?? "";
+    if (widget.replyCommentDetail!.likes != null &&
+        widget.replyCommentDetail!.likes != 0) {
+      return widget.replyCommentDetail!.likes?.toString() ?? "";
     }
     return "";
   }
 
   String getDisLikeCount() {
-    if (widget.comment.dislike != null && widget.comment.dislike != 0) {
-      return widget.comment.dislike?.toString() ?? "";
+    if (widget.replyCommentDetail!.dislike != null &&
+        widget.replyCommentDetail!.dislike != 0) {
+      return widget.replyCommentDetail!.dislike?.toString() ?? "";
     }
     return "";
   }
@@ -352,27 +329,5 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     await sendDataToSocket(data);
     showToast(
         message: yarnTopic.isQuestion ? 'Yarn Shared' : 'Question Shared');
-  }
-
-  Future addLikeToComment() async {
-    Map<String, dynamic>? data =
-        await YarnAuth().addLikeComment(widget.comment.id!);
-    if (data != null) {
-      setState(() {
-        widget.comment.likes = data['likes'];
-        widget.comment.dislike = data['dislikes'];
-      });
-    }
-  }
-
-  Future addDisLikeToComment() async {
-    Map<String, dynamic>? data =
-        await YarnAuth().addDisLikeComment(widget.comment.id!);
-    if (data != null) {
-      setState(() {
-        widget.comment.likes = data['likes'];
-        widget.comment.dislike = data['dislikes'];
-      });
-    }
   }
 }

@@ -9,6 +9,7 @@ import '../../../data/environment.dart';
 import '../../../utils/util.dart';
 import '../user_profile/models/user.dart';
 import 'models/Topics/CommentDetails.dart';
+import 'models/Topics/Notifications.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
 
@@ -765,6 +766,77 @@ class YarnAuth extends AuthService {
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
+    }
+  }
+
+  // ADD REYARN TO YARN
+  Future<YarnComment?> addReYarn(
+      String commentId, Map<String, dynamic> body) async {
+    debugPrint("CALLING REYARN");
+    String url = "";
+    url = AppConfig.baseUrl +
+        "/api/v1/social/ask/reyarn/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+    await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      YarnComment commentDetail =
+      YarnComment.fromJson(json.decode(response.body));
+      return commentDetail;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Get all Comment
+  Future<Map<String, dynamic>?> getAllNotification(
+      String? next, String previous) async {
+    debugPrint("CALLING ALL NOTIFICATION");
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url = AppConfig.baseUrl +
+          "/api/v1/social/ask/notifications/";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      List<Notifications> notifications = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData["results"]) {
+        Notifications notification = Notifications.fromJson(item);
+        notifications.add(notification);
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": notifications
+      };
+
+      return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
     }
   }
 }

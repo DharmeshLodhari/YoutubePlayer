@@ -18,25 +18,29 @@ class YarnCommentTile extends StatelessWidget {
   final YarnComment yarnComment;
   List<YarnComment>? commentDetailsList = [];
   final bool? openReply;
+  final bool? isCommentDetail;
 
   YarnCommentTile({
     required this.yarn,
     required this.yarnComment,
     this.commentDetailsList,
     this.openReply = false,
+    this.isCommentDetail = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        NavigationUtil.push(
-          context,
-          screen: YarnCommentDetailScreen(
-            yarn: yarn,
-            yarnComment: yarnComment,
-          ),
-        );
+        if (!(isCommentDetail ?? false)) {
+          NavigationUtil.push(
+            context,
+            screen: YarnCommentDetailScreen(
+              yarn: yarn,
+              yarnComment: yarnComment,
+            ),
+          );
+        }
       },
       child: Container(
         padding: EdgeInsets.only(top: 12),
@@ -242,6 +246,7 @@ class YarnCommentTile extends StatelessWidget {
     return YarnCommentActions(
       comment: yarnComment,
       yarn: yarn,
+      isCommentDetail: isCommentDetail ?? false,
     );
   }
 

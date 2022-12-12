@@ -208,8 +208,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/share".toSVG(),
             color: darkGreyYarn,
-            height: 13,
-            width: 13,
+            height: 17,
+            width: 17,
           ),
           SizedBox(
             height: 2,

@@ -38,6 +38,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   bool isAPILoading = false;
   ScrollController _commentScrollController = new ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
+  bool? enableComment = false, enablePayment = false;
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +69,14 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       shadowColor: greySecondaryYarn,
       elevation: 0.5,
       actions: [
-        _buildProfileImage(),
-        SizedBox(
-          width: 16,
-        )
+        Row(
+          children: [
+            _buildProfileImage(),
+            SizedBox(
+              width: 16,
+            )
+          ],
+        ),
       ],
       leading: IconButton(
         padding: EdgeInsets.zero,
@@ -94,12 +99,14 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
         Navigator.pushNamed(context, Routes.USER_PROFILE,
             arguments: {"searchedUserName": userBloc.user.userName});
       },
-      child: ClipOval(
-        child: Container(
-          height: 35,
-          width: 35,
+      child: Container(
+        height: 35,
+        width: 35,
+        decoration: BoxDecoration(shape: BoxShape.circle),
+        child: ClipOval(
           child: CachedNetworkImage(
             imageUrl: userBloc.user.avatar ?? "",
+            fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
           ),
         ),
@@ -142,6 +149,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
           child: YarnCommentTile(
             yarn: widget.yarn,
             yarnComment: widget.yarnComment,
+            isCommentDetail: true,
           ),
         ),
         YarnCommentReplyList(
@@ -162,6 +170,16 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       yarn: widget.yarn,
       userImage: userBloc.user.avatar,
       isLoading: isAPILoading,
+      enableComment: enableComment,
+      onTapEnableComment: (value) {
+        enableComment = value;
+        if (mounted) setState(() {});
+      },
+      enablePayment: enablePayment,
+      onTapEnablePayment: (value) {
+        enablePayment = value;
+        if (mounted) setState(() {});
+      },
       onPressed: () async {
         FocusScope.of(context).unfocus();
         isAPILoading = true;

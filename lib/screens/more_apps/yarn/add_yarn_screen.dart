@@ -282,53 +282,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       highLightBorderColor: HexColor("#BBCBFF"),
       highLightTextColor: HexColor("#3F61DB"),
     );
-    // return InkWell(
-    //   onTap: () {
-    //     if (enablePayMe) {
-    //       enablePayMe = false;
-    //     } else {
-    //       enablePayMe = true;
-    //     }
-    //     if (mounted) setState(() {});
-    //   },
-    //   child: Container(
-    //     padding: EdgeInsets.all(4),
-    //     decoration: BoxDecoration(
-    //         color: enablePayMe ? HexColor("#D9E1FA") : HexColor("#F8F8F8"),
-    //         border: Border.all(color: enablePayMe ? HexColor("#BBCBFF") : HexColor("#E9E9E9")),
-    //         borderRadius: BorderRadius.circular(15)
-    //     ),
-    //     child: Row(
-    //       children: [
-    //         Text(
-    //           "enable payment",
-    //           style: TextStyle(
-    //               fontSize: 10,
-    //               color: enablePayMe ? HexColor("#3F61DB") : HexColor("#ACAEB4")
-    //           ),
-    //         ),
-    //         SizedBox(width: 4,),
-    //         SvgPicture.asset(
-    //           "yarn/send_money".toSVG(),
-    //           height: 20,
-    //           width: 20,
-    //           color: enablePayMe ? HexColor("#3F61DB") : HexColor("#ACAEB4"),
-    //         ),
-    //         SizedBox(width: 4,),
-    //         Container(
-    //           height: 15,
-    //           width: 15,
-    //           decoration: BoxDecoration(
-    //             shape: BoxShape.circle,
-    //             border: Border.all(color: enablePayMe ? HexColor("#3F61DB") : HexColor("#ACAEB4"), width: enablePayMe ? 2 : 1),
-    //             color: enablePayMe ? HexColor("#F0F3FD") : HexColor("#F0F3FD"),
-    //           ),
-    //           child: enablePayMe ? Icon(Icons.check_outlined, color: HexColor("#3F61DB"),size: 8,) : null,
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   Widget _buildCategory() {

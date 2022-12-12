@@ -11,6 +11,7 @@ class RoundedBackgroundIcon extends StatelessWidget {
   Function? onTap;
   bool enableMargin;
   double borderRadius;
+  double margin;
 
   RoundedBackgroundIcon(
       {this.key,
@@ -21,7 +22,9 @@ class RoundedBackgroundIcon extends StatelessWidget {
       this.width = 34,
       this.borderRadius = 10,
       this.onTap,
-      this.enableMargin = false});
+      this.enableMargin = false,
+      this.margin = 10,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class RoundedBackgroundIcon extends StatelessWidget {
           color: backgroundColor,
           elevation: 0,
           margin: enableMargin
-              ? EdgeInsets.symmetric(vertical: 10)
+              ? EdgeInsets.symmetric(vertical: margin)
               : EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
