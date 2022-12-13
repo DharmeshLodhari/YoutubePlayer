@@ -160,7 +160,7 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildRetweetButton() {
     return InkWell(
       onTap: () {
-        // addDisLikeToYarnAndQuestion();
+        addReYarn();
       },
       child: Row(
         children: [
@@ -317,6 +317,17 @@ class _YarnActionsState extends State<YarnActions> {
         widget.yarn.voteCount = data['vote_count'];
         widget.yarn.downVoteCount = data['down_vote_count'];
       });
+    }
+  }
+
+  Future addReYarn() async {
+    Map<String, dynamic> body = {
+      "reyarn": widget.yarn.id,
+    };
+    debugPrint("BODY DATA:- $body");
+    bool? data = await YarnAuth().addReYarn(body);
+    if (data != null && data) {
+      showToast(message: "Re yarn added successfully");
     }
   }
 

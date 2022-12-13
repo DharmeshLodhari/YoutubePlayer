@@ -1,4 +1,3 @@
-import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
@@ -12,34 +11,30 @@ import '../models/Topics/YarnTopic.dart';
 import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 
-class YarnTile extends StatefulWidget {
+class ReYarnTile extends StatefulWidget {
   final GestureTapCallback? onOptionsAction;
 
   final Yarn yarn;
   final Color? backGroundColor;
 
-  YarnTile({
+  ReYarnTile({
     required this.yarn,
     this.onOptionsAction,
     this.backGroundColor,
   });
 
   @override
-  State<YarnTile> createState() => _YarnTileState();
+  State<ReYarnTile> createState() => _ReYarnTileState();
 }
 
-class _YarnTileState extends State<YarnTile> {
+class _ReYarnTileState extends State<ReYarnTile> {
   /// variables for yarn tile render TYPE
   bool isMediaPresent = false;
-  bool isReYarnPresent = false;
 
   @override
   void initState() {
-    if (widget.yarn.media.isNotEmpty) {
+    if (widget.yarn.media != null && (widget.yarn.media.isNotEmpty ?? false)) {
       isMediaPresent = true;
-    }
-    if (widget.yarn.reYarn != null) {
-      isReYarnPresent = true;
     }
     super.initState();
   }
@@ -47,7 +42,11 @@ class _YarnTileState extends State<YarnTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: greySecondaryYarn)
+      ),
       child: _buildMain(),
     );
   }
@@ -64,26 +63,15 @@ class _YarnTileState extends State<YarnTile> {
           _buildPostTitle(),
           SizedBox(height: 8),
         ],
-        if (widget.yarn.body != null)...[
-          _buildPostDescription(),
-          SizedBox(
-            height: 10,
-          ),
-        ],
+        _buildPostDescription(),
+        SizedBox(
+          height: 10,
+        ),
         _buildTagsAndViewerRow(),
-        if (isReYarnPresent && widget.yarn.reYarn != null)...[
-          _buildReYarnTile(),
-          SizedBox(
-            height: 8,
-          ),
-        ],
         if (isMediaPresent) ...[
           _buildImagesRow(),
-          SizedBox(
-            height: 8,
-          ),
         ],
-        _buildTopActions(),
+        // _buildTopActions(),
       ],
     );
   }
@@ -95,12 +83,12 @@ class _YarnTileState extends State<YarnTile> {
         SizedBox(
           height: 4,
         ),
-        if (widget.yarn.category != null)...[
-          _buildCategoryTypeChip(),
-          SizedBox(
-            height: 8,
-          ),
-        ],
+        // if (widget.yarn.category != null)...[
+        //   _buildCategoryTypeChip(),
+        //   SizedBox(
+        //     height: 8,
+        //   ),
+        // ],
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -122,7 +110,7 @@ class _YarnTileState extends State<YarnTile> {
                       children: [
                         Text(
                           messageDecoderWithEmoji(
-                                  widget.yarn.authorName ?? "") ??
+                              widget.yarn.authorName ?? "") ??
                               "",
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
@@ -216,24 +204,24 @@ class _YarnTileState extends State<YarnTile> {
     );
   }
 
-  Widget _buildCategoryTypeChip() {
-    if (widget.yarn.category != null) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: yarnBlack,
-        ),
-        child: Text(
-          widget.yarn.category!.name ?? "",
-          style:
-          TextStyle(color: white, fontSize: 9, fontWeight: FontWeight.w600),
-        ),
-      );
-    } else {
-      return SizedBox();
-    }
-  }
+  // Widget _buildCategoryTypeChip() {
+  //   if (widget.yarn.category != null) {
+  //     return Container(
+  //       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+  //       decoration: BoxDecoration(
+  //         borderRadius: BorderRadius.circular(20),
+  //         color: yarnBlack,
+  //       ),
+  //       child: Text(
+  //         widget.yarn.category!.name ?? "",
+  //         style:
+  //         TextStyle(color: white, fontSize: 9, fontWeight: FontWeight.w600),
+  //       ),
+  //     );
+  //   } else {
+  //     return SizedBox();
+  //   }
+  // }
 
   Widget _buildPostTitle() {
     return RichTextForTitle(
@@ -265,12 +253,12 @@ class _YarnTileState extends State<YarnTile> {
                 spacing: 2,
                 children: widget.yarn.tags!
                     .map((e) => Text(
-                          "#$e",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: navyBlue,
-                              fontWeight: FontWeight.w500),
-                        ))
+                  "#$e",
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: navyBlue,
+                      fontWeight: FontWeight.w500),
+                ))
                     .toList(),
               ),
             ),
@@ -287,17 +275,11 @@ class _YarnTileState extends State<YarnTile> {
     );
   }
 
-  Widget _buildReYarnTile() {
-    return ReYarnTile(
-      yarn: widget.yarn.reYarn ?? Yarn(),
-    );
-  }
-
-  Widget _buildTopActions() {
-    return YarnActions(
-      yarn: widget.yarn,
-    );
-  }
+  // Widget _buildTopActions() {
+  //   return YarnActions(
+  //     yarn: widget.yarn,
+  //   );
+  // }
 
   Widget _buildImagesRow() {
     return YarnMediaRender(

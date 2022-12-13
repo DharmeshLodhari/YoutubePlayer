@@ -388,11 +388,11 @@ class YarnAuth extends AuthService {
 
         thumbnailImage = await http.MultipartFile.fromPath("mediaposter_$i",
             addYarnAndQuestion.localImages![i].mediaPoster ?? '');
+        thumbnailList.add(thumbnailImage);
       }
 
       // Add multipart to newList
       newList.add(multipartFile);
-      thumbnailList.add(thumbnailImage);
     }
 
     // Add multipart to request
@@ -770,8 +770,7 @@ class YarnAuth extends AuthService {
   }
 
   // ADD REYARN TO YARN
-  Future<YarnComment?> addReYarn(
-      String commentId, Map<String, dynamic> body) async {
+  Future<bool?> addReYarn(Map<String, dynamic> body) async {
     debugPrint("CALLING REYARN");
     String url = "";
     url = AppConfig.baseUrl +
@@ -785,10 +784,8 @@ class YarnAuth extends AuthService {
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-    if (response.statusCode == 200) {
-      YarnComment commentDetail =
-      YarnComment.fromJson(json.decode(response.body));
-      return commentDetail;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
     } else if (response.statusCode == 500) {
       return null;
     } else {

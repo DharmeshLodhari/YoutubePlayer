@@ -78,6 +78,12 @@ class Yarn {
     downVoteCount = json['down_vote_count'];
     authorIsVerified = json['author_is_verified'];
     enableCommenting = json['enable_commenting'];
+    isSensitiveContent = json['is_sensitive_content'];
+    isAdultContent = json['is_adult_content'];
+    ageRestriction = json['age_restriction'];
+    if (json['reyarn'] != null) {
+      reYarn = Yarn.fromJson(json['reyarn']);
+    }
   }
 
   String? id;
@@ -101,6 +107,10 @@ class Yarn {
   int? downVoteCount;
   bool? authorIsVerified;
   bool? enableCommenting;
+  bool? isSensitiveContent;
+  bool? isAdultContent;
+  int? ageRestriction;
+  Yarn? reYarn;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -129,6 +139,12 @@ class Yarn {
     map['author_is_verified'] = authorIsVerified;
     map['enable_commenting'] = enableCommenting;
     map['category'] = category;
+    map['is_sensitive_content'] = isSensitiveContent;
+    map['is_adult_content'] = isAdultContent;
+    map['age_restriction'] = ageRestriction;
+    if (reYarn != null) {
+      map['reyarn'] = reYarn!.toJson();
+    }
     return map;
   }
 }

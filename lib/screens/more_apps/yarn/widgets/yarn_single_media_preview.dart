@@ -117,25 +117,36 @@ class YarnSingleMediaPreview extends StatelessWidget {
             ),
             if (mediaType == 'video') ...[
               Center(
-                child: IconButton(
-                  onPressed: () {
-                    NavigationUtil.push(
-                      context,
-                      screen: ViewAskMedia(
-                        arguments: {
-                          "type": mediaType,
-                          "file": imageUrl,
-                          "poster": imagePoster
-                        },
+                  child: InkWell(
+                    onTap: () {
+                      NavigationUtil.push(
+                        context,
+                        screen: ViewAskMedia(
+                          arguments: {
+                            "type": mediaType,
+                            "file": imageUrl,
+                            "poster": imagePoster
+                          },
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      //padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: white,
+                          shape: BoxShape.circle
                       ),
-                    );
-                  },
-                  icon: Icon(
-                    Icons.play_circle_outline_rounded,
-                    size: 30,
+                      child: Center(
+                        child: Icon(
+                          Icons.play_circle_rounded,
+                          size: 40,
+                          color: HexColor("#4060DB"),
+                        ),
+                      ),
+                    ),
                   ),
-                  color: Colors.white,
-                ),
               ),
             ]
           ],
