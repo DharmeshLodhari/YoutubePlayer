@@ -2,8 +2,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:shimmer/shimmer.dart';
-
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
@@ -28,7 +26,7 @@ class MyFeedViewState extends State<MyFeedView> {
   Key? key;
   MyFeedViewState({this.key});
   bool isLoading = false;
-  String next = "", previous = "";
+  String? next = "", previous = "";
   List<Yarn> yarnTopicList = [];
   int count = 0;
   bool noList = false;
@@ -56,7 +54,7 @@ class MyFeedViewState extends State<MyFeedView> {
         if (mounted) setState(() {});
 
         Map<String, dynamic>? result = await YarnAuth().getAllYarn(
-            next, previous,
+            next, previous ?? "",
             type: type,
             isType: isType,
             categoryId: categoryId,
@@ -73,10 +71,9 @@ class MyFeedViewState extends State<MyFeedView> {
         }
 
         count = result['count'];
-        next = result['next'] != null ? result['next'] : "";
-        previous = result['previous'] != null ? result['previous'] : "";
+        next = result['next'];
+        previous = result['previous'];
         var tempList = result['results'];
-        yarnTopicList = [];
         if (mounted) {
           setState(() {
             noList = false;
