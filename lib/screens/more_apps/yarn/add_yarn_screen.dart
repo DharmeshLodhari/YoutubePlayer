@@ -150,6 +150,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   Widget _buildTextField() {
     return TextField(
+      // keyboardType: TextInputType.multiline,
+      maxLines: null,
+      minLines: 1,
       controller: textController,
       style: TextStyle(
           fontSize: 12,

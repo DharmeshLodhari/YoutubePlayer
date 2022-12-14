@@ -132,9 +132,13 @@ class YarnCommentTile extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    messageDecoderWithEmoji(yarnComment.authorName ?? "") ?? "",
-                    style: TextStyle(fontSize: 12, color: yarnBlack),
+                  Flexible(
+                    child: Text(
+                      messageDecoderWithEmoji(yarnComment.authorName ?? "") ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 12, color: yarnBlack),
+                    ),
                   ),
                   SizedBox(
                     width: 4,
@@ -156,15 +160,13 @@ class YarnCommentTile extends StatelessWidget {
                   SizedBox(
                     width: 4,
                   ),
-                  Expanded(
-                    child: Text(
-                      '${getGetYarnQuestionDateTime(yarnComment.createdAt!)}',
-                      overflow: TextOverflow.fade,
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: yarnBlack,
-                          fontWeight: FontWeight.w500),
-                    ),
+                  Text(
+                    '${getGetYarnQuestionDateTime(yarnComment.createdAt!)}',
+                    overflow: TextOverflow.fade,
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: yarnBlack,
+                        fontWeight: FontWeight.w500),
                   )
                 ],
               ),

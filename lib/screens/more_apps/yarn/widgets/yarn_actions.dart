@@ -174,7 +174,7 @@ class _YarnActionsState extends State<YarnActions> {
             width: 6,
           ),
           Text(
-            "$retweetCount",
+            getReYarnCount(),
             style: TextStyle(
                 fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
           ),
@@ -288,6 +288,13 @@ class _YarnActionsState extends State<YarnActions> {
   String getDisLikeCount() {
     if (widget.yarn.downVoteCount != null && widget.yarn.downVoteCount != 0) {
       return widget.yarn.downVoteCount?.toString() ?? "";
+    }
+    return "";
+  }
+
+  String getReYarnCount() {
+    if (widget.yarn.numberOfReYarn != null && widget.yarn.numberOfReYarn != 0) {
+      return widget.yarn.numberOfReYarn?.toString() ?? "";
     }
     return "";
   }

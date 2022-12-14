@@ -1,7 +1,6 @@
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +8,6 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../models/Topics/YarnTopic.dart';
 import '../widgets/yarn_media_renderer.dart';
-import '../widgets/yarn_options.dart';
 
 class ReYarnTile extends StatefulWidget {
   final GestureTapCallback? onOptionsAction;
@@ -33,7 +31,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
 
   @override
   void initState() {
-    if (widget.yarn.media != null && (widget.yarn.media.isNotEmpty ?? false)) {
+    if ((widget.yarn.media.isNotEmpty)) {
       isMediaPresent = true;
     }
     super.initState();
@@ -151,32 +149,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
                 ),
               ),
             ),
-            InkWell(
-              onTap: () {
-                showModalBottomSheet<void>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                      ),
-                      color: Colors.white,
-                      margin: EdgeInsets.zero,
-                      child: YarnOptions(
-                        yarnTopic: widget.yarn,
-                      ),
-                    );
-                  },
-                );
-              },
-              child: Icon(
-                Icons.more_horiz_rounded,
-                color: darkGreyYarn,
-              ),
-            )
           ],
         ),
       ],

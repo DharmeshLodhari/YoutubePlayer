@@ -9,7 +9,9 @@ import '../utils/utils.dart';
 
 class RichTextForTitle extends StatelessWidget {
   String? description;
-  RichTextForTitle({Key? key, this.description}) : super(key: key);
+  double? fontSize;
+  FontWeight? fontWeight;
+  RichTextForTitle({Key? key, this.description, this.fontSize = 12, this.fontWeight = FontWeight.w400}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +42,8 @@ class RichTextForTitle extends StatelessWidget {
           text: '$removeDot$addSpace',
           style: TextStyle(
             color: navyBlue,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () {
@@ -56,8 +58,8 @@ class RichTextForTitle extends StatelessWidget {
             text: '$removedString ',
             style: TextStyle(
               color: blackFont,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
             ),
           ));
         }
@@ -71,8 +73,8 @@ class RichTextForTitle extends StatelessWidget {
           text: '$removeDot$addSpace',
           style: TextStyle(
             color: navyBlue,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () {
@@ -85,8 +87,8 @@ class RichTextForTitle extends StatelessWidget {
               text: '$removedString ',
               style: TextStyle(
                 color: blackFont,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
+                fontSize: fontSize,
+                fontWeight: fontWeight,
               )));
         }
       } else {
@@ -94,8 +96,8 @@ class RichTextForTitle extends StatelessWidget {
           text: '$value ',
           style: TextStyle(
             color: blackFont,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
           ),
         ));
       }

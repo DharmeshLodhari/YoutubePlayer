@@ -81,6 +81,7 @@ class Yarn {
     isSensitiveContent = json['is_sensitive_content'];
     isAdultContent = json['is_adult_content'];
     ageRestriction = json['age_restriction'];
+    numberOfReYarn = json['numbers_of_reyarn'];
     if (json['reyarn'] != null) {
       reYarn = Yarn.fromJson(json['reyarn']);
     }
@@ -111,6 +112,7 @@ class Yarn {
   bool? isAdultContent;
   int? ageRestriction;
   Yarn? reYarn;
+  int? numberOfReYarn;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -142,6 +144,7 @@ class Yarn {
     map['is_sensitive_content'] = isSensitiveContent;
     map['is_adult_content'] = isAdultContent;
     map['age_restriction'] = ageRestriction;
+    map['numbers_of_reyarn'] = numberOfReYarn;
     if (reYarn != null) {
       map['reyarn'] = reYarn!.toJson();
     }

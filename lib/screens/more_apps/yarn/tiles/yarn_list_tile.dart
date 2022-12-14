@@ -60,10 +60,6 @@ class _YarnTileState extends State<YarnTile> {
         SizedBox(
           height: 10,
         ),
-        if (widget.yarn.isQuestion) ...[
-          _buildPostTitle(),
-          SizedBox(height: 8),
-        ],
         if (widget.yarn.body != null)...[
           _buildPostDescription(),
           SizedBox(
@@ -100,6 +96,10 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 8,
           ),
+        ],
+        if (widget.yarn.isQuestion) ...[
+          _buildPostTitle(),
+          SizedBox(height: 8),
         ],
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +238,8 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildPostTitle() {
     return RichTextForTitle(
       description: messageDecoderWithEmoji(widget.yarn.title ?? '') ?? '',
+      fontSize: 12,
+      fontWeight: FontWeight.w600,
     );
   }
 
