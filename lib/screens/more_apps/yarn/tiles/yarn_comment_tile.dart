@@ -193,6 +193,7 @@ class YarnCommentTile extends StatelessWidget {
                         color: Colors.white,
                         margin: EdgeInsets.zero,
                         child: YarnOptions(
+                          yarnTopic: yarn,
                           commentDetail: yarnComment,
                           isComment: true,
                         ),

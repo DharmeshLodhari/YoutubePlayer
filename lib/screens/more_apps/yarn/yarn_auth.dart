@@ -273,7 +273,7 @@ class YarnAuth extends AuthService {
     debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (yarnId != null) {
-      url = AppConfig.baseUrl + "/api/v1/social/ask/$yarnId";
+      url = AppConfig.baseUrl + "/api/v1/social/ask/$yarnId/";
     }
     debugPrint(url);
 
@@ -348,9 +348,12 @@ class YarnAuth extends AuthService {
     //   request.fields[k] = jsonEncode(v);
     // });
 
+    if (addYarnAndQuestion.isQuestion ?? false) {
+      request.fields["title"] = addYarnAndQuestion.title!;
+    }
+
     request.fields.addAll({
       "tags": jsonEncode(addYarnAndQuestion.tags),
-      "title": addYarnAndQuestion.title!,
       "body": addYarnAndQuestion.body!,
       "category": addYarnAndQuestion.categoryId!,
       "author": addYarnAndQuestion.author!,
@@ -773,13 +776,12 @@ class YarnAuth extends AuthService {
   Future<bool?> addReYarn(Map<String, dynamic> body) async {
     debugPrint("CALLING REYARN");
     String url = "";
-    url = AppConfig.baseUrl +
-        "/api/v1/social/ask/reyarn/";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/reyarn/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
     var response =
-    await httpPost(url, headers: headers, body: jsonEncode(body));
+        await httpPost(url, headers: headers, body: jsonEncode(body));
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -802,8 +804,7 @@ class YarnAuth extends AuthService {
       return null;
     }
     if (next == "") {
-      url = AppConfig.baseUrl +
-          "/api/v1/social/ask/notifications/";
+      url = AppConfig.baseUrl + "/api/v1/social/ask/notifications/";
     } else {
       url = getSecureUrl(url: next);
     }

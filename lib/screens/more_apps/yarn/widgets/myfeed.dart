@@ -144,27 +144,14 @@ class MyFeedViewState extends State<MyFeedView> {
               if (mounted) setState(() {});
             },
             child: YarnTile(
-              onOptionsAction: () {
-                showModalBottomSheet<void>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                      ),
-                      color: Colors.white,
-                      margin: EdgeInsets.zero,
-                      child: YarnOptions(
-                        yarnTopic: yarnTopicList[index],
-                      ),
-                    );
-                  },
-                );
-              },
               yarn: yarnTopicList[index],
+              onDeleteYarn: (Yarn yarn) {
+                int index = yarnTopicList.indexWhere((element) => element.id == yarn.id);
+                if (index != -1) {
+                  yarnTopicList.removeAt(index);
+                  if (mounted) setState(() {});
+                }
+              },
             ),
           );
         },

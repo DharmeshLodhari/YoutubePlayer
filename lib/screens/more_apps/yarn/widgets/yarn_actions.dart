@@ -334,8 +334,9 @@ class _YarnActionsState extends State<YarnActions> {
     debugPrint("BODY DATA:- $body");
     bool? data = await YarnAuth().addReYarn(body);
     if (data != null && data) {
+      showToast(message: "Re yarn added successfully");
+      widget.yarn.numberOfReYarn = (widget.yarn.numberOfReYarn ?? 0) + 1;
       if (mounted) setState(() {});
-      // showToast(message: "Re yarn added successfully");
     }
   }
 

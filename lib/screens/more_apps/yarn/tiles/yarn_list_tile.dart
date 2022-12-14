@@ -13,15 +13,14 @@ import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 
 class YarnTile extends StatefulWidget {
-  final GestureTapCallback? onOptionsAction;
-
   final Yarn yarn;
+  Function(Yarn)? onDeleteYarn;
   final Color? backGroundColor;
 
   YarnTile({
     required this.yarn,
-    this.onOptionsAction,
     this.backGroundColor,
+    this.onDeleteYarn,
   });
 
   @override
@@ -179,6 +178,9 @@ class _YarnTileState extends State<YarnTile> {
                       margin: EdgeInsets.zero,
                       child: YarnOptions(
                         yarnTopic: widget.yarn,
+                        onDeleteYarn: (Yarn yarn) {
+                          widget.onDeleteYarn!(yarn);
+                        },
                       ),
                     );
                   },

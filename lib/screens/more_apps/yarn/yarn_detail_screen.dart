@@ -146,6 +146,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: YarnTile(
             yarn: widget.yarn,
+            onDeleteYarn: (Yarn yarn) {
+              Navigator.of(context).pop();
+            },
           ),
         ),
         YarnCommentList(

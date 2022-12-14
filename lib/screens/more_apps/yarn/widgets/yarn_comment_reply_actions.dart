@@ -80,7 +80,7 @@ class _YarnCommentReplyActionsState
       Expanded(child: _buildCommentButton()),
       Expanded(child: _buildLikeButton()),
       Expanded(child: _buildDisLikeButton()),
-      Expanded(child: _buildRetweetButton()),
+      //Expanded(child: _buildRetweetButton()),
     ]);
 
     if (finalActionList.length == 3) {
@@ -158,31 +158,31 @@ class _YarnCommentReplyActionsState
     );
   }
 
-  Widget _buildRetweetButton() {
-    return InkWell(
-      onTap: () {
-        // addDisLikeToYarnAndQuestion();
-      },
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            "yarn/re_share".toSVG(),
-            color: darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            "$retweetCount",
-            style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildRetweetButton() {
+  //   return InkWell(
+  //     onTap: () {
+  //       // addDisLikeToYarnAndQuestion();
+  //     },
+  //     child: Row(
+  //       children: [
+  //         SvgPicture.asset(
+  //           "yarn/re_share".toSVG(),
+  //           color: darkGreyYarn,
+  //           height: 13,
+  //           width: 13,
+  //         ),
+  //         SizedBox(
+  //           width: 6,
+  //         ),
+  //         Text(
+  //           "$retweetCount",
+  //           style: TextStyle(
+  //               fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildShareButton() {
     return InkWell(

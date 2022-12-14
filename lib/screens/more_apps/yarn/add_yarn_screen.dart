@@ -807,7 +807,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
-    addYarnAndQuestion.title = widget.isYarn == true ? textController.text : yarnController.text;
+    addYarnAndQuestion.title = yarnController.text;
     addYarnAndQuestion.body = textController.text;
     addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
     addYarnAndQuestion.isQuestion = widget.isYarn == true ? false : true;

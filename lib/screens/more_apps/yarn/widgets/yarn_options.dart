@@ -21,7 +21,8 @@ class YarnOptions extends StatefulWidget {
   YarnComment? commentDetail;
   bool? isComment;
   bool? isShareOption;
-  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false, this.isShareOption = false});
+  Function(Yarn)? onDeleteYarn;
+  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false, this.isShareOption = false, this.onDeleteYarn});
   @override
   State<YarnOptions> createState() => _YarnOptionsState();
 }
@@ -47,6 +48,9 @@ class _YarnOptionsState extends State<YarnOptions> {
           message: isQuestion
               ? "Question Deleted Successfully"
               : "Yarn Deleted Successfully");
+      if (widget.yarnTopic != null) {
+        widget.onDeleteYarn!(widget.yarnTopic!);
+      }
       Navigator.pop(context);
     }
   }
@@ -93,13 +97,11 @@ class _YarnOptionsState extends State<YarnOptions> {
           SizedBox(
             height: 15,
           ),
-          if (isMyYarnQuestion() && !(widget.isShareOption ?? false) && (!(widget.isComment ?? false) && widget.commentDetail != null)) ...[
+          if (isMyYarnQuestion() && (widget.isComment ?? false) && widget.commentDetail == null) ...[
             _buildMoreOptionForOwner()
           ] else ...[
             if ((widget.isComment ?? false) && widget.commentDetail != null)...[
               _buildMoreOptionForComments()
-            ] else if (widget.isShareOption ?? false)...[
-              _buildMoreOptionForShare()
             ] else...[
               _buildMoreOptionForOther()
             ]
@@ -241,40 +243,40 @@ class _YarnOptionsState extends State<YarnOptions> {
     );
   }
 
-  Widget _buildMoreOptionForShare() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildTile(
-          icon: "yarn/copy",
-          title: "Copy Link",
-          width: 12,
-          onTap: () {}
-        ),
-        _buildTile(
-            icon: "yarn/send",
-            title: "Send To",
-            width: 12,
-            onTap: () async {
-              Navigator.of(context).pop();
-              await sendMomentToUserInChat(yarnTopic: widget.yarnTopic!);
-            }
-        ),
-        _buildTile(
-            icon: "yarn/share",
-            title: "Share Via",
-            width: 12,
-            onTap: () {}
-        ),
-        _buildTile(
-            icon: "yarn/report",
-            title: "Repost to Feed",
-            width: 12,
-            onTap: () {}
-        ),
-      ],
-    );
-  }
+  // Widget _buildMoreOptionForShare() {
+  //   return Column(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       _buildTile(
+  //         icon: "yarn/copy",
+  //         title: "Copy Link",
+  //         width: 12,
+  //         onTap: () {}
+  //       ),
+  //       _buildTile(
+  //           icon: "yarn/send",
+  //           title: "Send To",
+  //           width: 12,
+  //           onTap: () async {
+  //             Navigator.of(context).pop();
+  //             await sendMomentToUserInChat(yarnTopic: widget.yarnTopic!);
+  //           }
+  //       ),
+  //       _buildTile(
+  //           icon: "yarn/share",
+  //           title: "Share Via",
+  //           width: 12,
+  //           onTap: () {}
+  //       ),
+  //       _buildTile(
+  //           icon: "yarn/report",
+  //           title: "Repost to Feed",
+  //           width: 12,
+  //           onTap: () {}
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildTile(
       {String? icon,
