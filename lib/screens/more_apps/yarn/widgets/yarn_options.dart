@@ -22,7 +22,8 @@ class YarnOptions extends StatefulWidget {
   bool? isComment;
   bool? isShareOption;
   Function(Yarn)? onDeleteYarn;
-  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false, this.isShareOption = false, this.onDeleteYarn});
+  Function(YarnComment)? onDeleteComment;
+  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false, this.isShareOption = false, this.onDeleteYarn, this.onDeleteComment});
   @override
   State<YarnOptions> createState() => _YarnOptionsState();
 }
@@ -59,6 +60,9 @@ class _YarnOptionsState extends State<YarnOptions> {
     bool? data = await YarnAuth().deleteComment(widget.commentDetail!.id!);
     if (data != null && data) {
       showToast(message: "Comment deleted successfully");
+      if (widget.commentDetail != null) {
+        widget.onDeleteComment!(widget.commentDetail!);
+      }
       Navigator.pop(context);
     }
   }
@@ -97,18 +101,25 @@ class _YarnOptionsState extends State<YarnOptions> {
           SizedBox(
             height: 15,
           ),
-          if (isMyYarnQuestion() && (widget.isComment ?? false) && widget.commentDetail == null) ...[
-            _buildMoreOptionForOwner()
-          ] else ...[
-            if ((widget.isComment ?? false) && widget.commentDetail != null)...[
-              _buildMoreOptionForComments()
-            ] else...[
-              _buildMoreOptionForOther()
-            ]
-          ],
+          ..._buildMoreOptionList(),
         ],
       ),
     );
+  }
+
+  List<Widget> _buildMoreOptionList() {
+    final List<Widget> widgetList = [];
+    if (isMyYarnQuestion()) {
+      debugPrint("IS MY YARN QUESTION TRUE");
+      if ((widget.isComment ?? true) && widget.commentDetail != null) {
+        widgetList.add(_buildMoreOptionForComments());
+      } else {
+        widgetList.add(_buildMoreOptionForOwner());
+      }
+    } else {
+      widgetList.add(_buildMoreOptionForOther());
+    }
+    return widgetList;
   }
 
   Widget _buildMoreOptionForOwner() {
@@ -330,11 +341,27 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   bool isMyYarnQuestion() {
-    return getLoggedInUserName(context) == widget.yarnTopic!.author;
+    if (widget.yarnTopic != null) {
+      debugPrint("IS MY YARN QUESTION");
+      return getLoggedInUserName(context) == widget.yarnTopic!.author;
+    } else if (widget.commentDetail != null) {
+      debugPrint("IS MY COMMENTS");
+      return getLoggedInUserName(context) == widget.commentDetail!.authorUsername;
+    }
+    debugPrint("NOTHING");
+    return false;
   }
 
   bool isComments() {
-    return getLoggedInUserName(context) == widget.commentDetail!.authorUsername;
+    if (widget.commentDetail != null) {
+      debugPrint("IS MY COMMENTS");
+      return getLoggedInUserName(context) == widget.commentDetail!.authorUsername;
+    } else if (widget.yarnTopic != null) {
+      debugPrint("IS MY YARN QUESTION");
+      return getLoggedInUserName(context) == widget.yarnTopic!.author;
+    }
+    debugPrint("NOTHING");
+    return false;
   }
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {

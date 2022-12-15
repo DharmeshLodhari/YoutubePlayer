@@ -696,6 +696,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                       margin: EdgeInsets.zero,
                       child: YarnOptions(
                         yarnTopic: yarn,
+                        isComment: false,
                       ),
                     );
                   },

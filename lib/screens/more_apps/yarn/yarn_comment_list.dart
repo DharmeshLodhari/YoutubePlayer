@@ -100,6 +100,13 @@ class _YarnCommentListState extends State<YarnCommentList> {
                             yarn: widget.yarn,
                             yarnComment: yarnComment,
                             openReply: false,
+                            onDeleteComment: (YarnComment yarnCmt) {
+                              int index = yarnComments.indexWhere((element) => element.id == yarnCmt.id);
+                              if (index != -1) {
+                                yarnComments.removeAt(index);
+                              }
+                              if (mounted) setState(() {});
+                            },
                           ),
                         ),
                         SizedBox(

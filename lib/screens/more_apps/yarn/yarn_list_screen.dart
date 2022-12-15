@@ -8,7 +8,6 @@ import '../../../utils/util.dart';
 import '../../../widget/noItemInList.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'tiles/yarn_list_tile.dart';
-import 'widgets/yarn_options.dart';
 import 'widgets/yarn_shimmer.dart';
 import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
@@ -145,6 +144,10 @@ class YarnListScreenState extends State<YarnListScreen> {
                   yarnTopicList.removeAt(index);
                   if (mounted) setState(() {});
                 }
+              },
+              onReYarn: (Yarn yarn) {
+                yarnTopicList.insert(0, yarn);
+                if (mounted) setState(() {});
               },
             ),
           );

@@ -24,7 +24,10 @@ class Yarn {
       this.downVoteCount,
       this.authorIsVerified,
       this.enableCommenting,
-      this.category});
+      this.category,
+      this.attachment,
+      this.attachmentType,
+      });
 
   Yarn.fromJson(dynamic json) {
     id = json['id'];
@@ -85,6 +88,12 @@ class Yarn {
     if (json['reyarn'] != null) {
       reYarn = Yarn.fromJson(json['reyarn']);
     }
+    if (json['attachment'] != null) {
+      if (json['attachment']['product'] != null) {
+        attachmentType = 'product';
+        attachment = json['attachment']['product'];
+      }
+    }
   }
 
   String? id;
@@ -113,6 +122,8 @@ class Yarn {
   int? ageRestriction;
   Yarn? reYarn;
   int? numberOfReYarn;
+  Map<String, dynamic>? attachment;
+  String? attachmentType;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -206,6 +217,7 @@ class AddYarnAndQuestion {
   bool? isQuestion;
   bool? enablePayme;
   bool? enableCommenting;
+  Map<String, dynamic>? attachment;
 
   AddYarnAndQuestion(
       {this.localImages,
@@ -227,7 +239,8 @@ class AddYarnAndQuestion {
       "author": author,
       "is_question": isQuestion,
       "enable_payme": enablePayme,
-      "enable_commenting": enableCommenting
+      "enable_commenting": enableCommenting,
+      "attachment": attachment,
     };
   }
 }

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 class Product {
   String? id;
   String? name;
+  String? type;
+  String? webUrl;
   String? description;
   String? shortDescription;
   String? price;
@@ -29,6 +31,8 @@ class Product {
   Product(
       {this.id,
       this.name,
+      this.type,
+      this.webUrl,
       this.enableInSuperStore,
       this.description,
       this.shortDescription,
@@ -62,6 +66,23 @@ class Product {
       "is_available": this.isAvailable,
       "available_from": this.availableFrom,
       "enable_in_superstore": this.enableInSuperStore,
+    };
+  }
+
+  Map toJson() {
+    return {
+      "id": this.id,
+      "name": this.name,
+      "description": this.description,
+      "short_description": this.shortDescription,
+      "price": this.price,
+      "condition": this.condition,
+      "category": this.category,
+      "manufacturer": this.manufacturer,
+      "is_available": this.isAvailable,
+      "available_from": this.availableFrom.toString(),
+      "enable_in_superstore": this.enableInSuperStore,
+      "cover": this.cover,
     };
   }
 
@@ -108,7 +129,7 @@ class Product {
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "",
       pictureMap: object["pictureMap"] ?? [],
-      rating: formatRating(object['rating'] ?? 0.0),
+      rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
     );
     // id = object["id"].toString();
@@ -134,6 +155,34 @@ class Product {
     // rating = formatRating(object['rating'] ?? 0.0);
     // canRate = object["can_rate"] ?? false;
   }
+
+  // Map<String, dynamic> toJson() {
+  //   final map = <String, dynamic>{};
+  //   map['id'] = id;
+  //   map['name'] = name;
+  //   map['type'] = type;
+  //   map['cover'] = cover;
+  //   map['price'] = price;
+  //   map['rating'] = rating;
+  //   map['seller'] = seller;
+  //   map['qr_code'] = qrCode;
+  //   map['web_url'] = webUrl;
+  //   map['category'] = category;
+  //   map['currency'] = currency;
+  //   // if (pictures != null) {
+  //   //   map['pictures'] = pictures?.map((v) => v.toJson()).toList();
+  //   // }
+  //   map['condition'] = condition;
+  //   map['description'] = description;
+  //   map['is_available'] = isAvailable;
+  //   map['manufacturer'] = manufacturer;
+  //   map['seller_avatar'] = sellerAvatar;
+  //   map['available_from'] = availableFrom;
+  //   map['seller_fullname'] = sellerFullName;
+  //   map['short_description'] = shortDescription;
+  //   map['enable_in_superstore'] = enableInSuperStore;
+  //   return map;
+  // }
 
   String? getMerchantUserName() {
     return this.seller;

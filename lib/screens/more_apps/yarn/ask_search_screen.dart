@@ -369,6 +369,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   if (mounted) setState(() {});
                 }
               },
+              onReYarn: (Yarn yarn) {
+                yarnTopicList.insert(0, yarn);
+                if(mounted) setState(() {});
+              },
             ),
           );
         },

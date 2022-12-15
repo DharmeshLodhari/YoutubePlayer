@@ -19,6 +19,7 @@ class YarnCommentTile extends StatelessWidget {
   List<YarnComment>? commentDetailsList = [];
   final bool? openReply;
   final bool? isCommentDetail;
+  final Function(YarnComment)? onDeleteComment;
 
   YarnCommentTile({
     required this.yarn,
@@ -26,6 +27,7 @@ class YarnCommentTile extends StatelessWidget {
     this.commentDetailsList,
     this.openReply = false,
     this.isCommentDetail = false,
+    this.onDeleteComment,
   });
 
   @override
@@ -193,9 +195,11 @@ class YarnCommentTile extends StatelessWidget {
                         color: Colors.white,
                         margin: EdgeInsets.zero,
                         child: YarnOptions(
-                          yarnTopic: yarn,
                           commentDetail: yarnComment,
                           isComment: true,
+                          onDeleteComment: (YarnComment yarnComment) {
+                            onDeleteComment!(yarnComment);
+                          },
                         ),
                       );
                     },

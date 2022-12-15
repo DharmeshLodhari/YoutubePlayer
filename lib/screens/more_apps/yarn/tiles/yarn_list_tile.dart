@@ -1,4 +1,6 @@
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
@@ -15,12 +17,14 @@ import '../widgets/yarn_options.dart';
 class YarnTile extends StatefulWidget {
   final Yarn yarn;
   Function(Yarn)? onDeleteYarn;
+  Function(Yarn)? onReYarn;
   final Color? backGroundColor;
 
   YarnTile({
     required this.yarn,
     this.backGroundColor,
     this.onDeleteYarn,
+    this.onReYarn,
   });
 
   @override
@@ -31,6 +35,7 @@ class _YarnTileState extends State<YarnTile> {
   /// variables for yarn tile render TYPE
   bool isMediaPresent = false;
   bool isReYarnPresent = false;
+  bool isAttachmentPresent = false;
 
   @override
   void initState() {
@@ -39,6 +44,9 @@ class _YarnTileState extends State<YarnTile> {
     }
     if (widget.yarn.reYarn != null) {
       isReYarnPresent = true;
+    }
+    if (widget.yarn.attachment != null) {
+      isAttachmentPresent = true;
     }
     super.initState();
   }
@@ -68,6 +76,12 @@ class _YarnTileState extends State<YarnTile> {
         _buildTagsAndViewerRow(),
         if (isReYarnPresent && widget.yarn.reYarn != null)...[
           _buildReYarnTile(),
+          SizedBox(
+            height: 8,
+          ),
+        ],
+        if (isAttachmentPresent && widget.yarn.attachment != null)...[
+          _buildAttachment(),
           SizedBox(
             height: 8,
           ),
@@ -178,6 +192,7 @@ class _YarnTileState extends State<YarnTile> {
                       margin: EdgeInsets.zero,
                       child: YarnOptions(
                         yarnTopic: widget.yarn,
+                        isComment: false,
                         onDeleteYarn: (Yarn yarn) {
                           widget.onDeleteYarn!(yarn);
                         },
@@ -300,7 +315,21 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildTopActions() {
     return YarnActions(
       yarn: widget.yarn,
+      onReYarnAdded: (Yarn yarn) {
+        widget.onReYarn!(yarn);
+      },
     );
+  }
+
+  Widget _buildAttachment() {
+    Widget childWidget;
+    if (widget.yarn.attachmentType == 'product') {
+      Product product = Product.fromJson(widget.yarn.attachment);
+      childWidget = YarnProductTile(product: product,);
+    } else {
+      childWidget = SizedBox();
+    }
+    return childWidget;
   }
 
   Widget _buildImagesRow() {

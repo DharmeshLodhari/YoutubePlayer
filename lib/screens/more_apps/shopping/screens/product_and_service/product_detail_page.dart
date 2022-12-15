@@ -31,6 +31,8 @@ import 'package:uuid/uuid.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/item_display_card.dart';
 import '../../../user_profile/user_auth.dart';
+import '../../../yarn/models/Topics/YarnTopic.dart';
+import '../../../yarn/yarn_auth.dart';
 import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -369,7 +371,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
     list.add(
       bottomSheetItem(
-        isLast: true,
         title: "Share in Chat",
         iconData: SlydoAppIcon.text_message,
         onTap: () async {
@@ -379,7 +380,29 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       ),
     );
 
+    list.add(
+      bottomSheetItem(
+        isLast: true,
+        title: "Share As A Yarn",
+        iconData: Icons.question_mark_outlined,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     return list;
+  }
+
+  Future shareAsYarn() async {
+    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    yarn.body = product?.name ?? "";
+    yarn.attachment = {"product": product?.toJson().cast<String, dynamic>() ?? {}};
+    bool data = await YarnAuth().addYarnAndQuestion(yarn);
+    if (data) {
+      showToast(message: "Share in Yarn successfully created");
+    }
   }
 
   void sendItemToUsersInChat() async {

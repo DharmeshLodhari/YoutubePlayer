@@ -152,6 +152,10 @@ class MyFeedViewState extends State<MyFeedView> {
                   if (mounted) setState(() {});
                 }
               },
+              onReYarn: (Yarn yarn) {
+                yarnTopicList.insert(0, yarn);
+                if(mounted) setState(() {});
+              },
             ),
           );
         },
