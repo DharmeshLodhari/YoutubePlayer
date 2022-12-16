@@ -301,7 +301,8 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   bool enableCommenting() {
-    if (widget.yarn.enableCommenting != null && (widget.yarn.enableCommenting ?? false)) {
+    if (widget.yarn.enableCommenting != null &&
+        (widget.yarn.enableCommenting ?? false)) {
       return true;
     } else {
       return false;
@@ -344,7 +345,7 @@ class _YarnActionsState extends State<YarnActions> {
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
-    await ShareInChat().selectShareCustomer(context);
+        await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {
