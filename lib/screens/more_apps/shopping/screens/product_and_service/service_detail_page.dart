@@ -370,7 +370,6 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       ),
     );
 
-
     list.add(
       bottomSheetItem(
         isLast: true,
@@ -386,11 +385,12 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     return list;
   }
 
-
   Future shareAsYarn() async {
     AddYarnAndQuestion yarn = AddYarnAndQuestion();
     yarn.body = service?.name ?? "";
-    yarn.attachment = {"service": service?.toJson().cast<String, dynamic>() ?? {}};
+    yarn.attachment = {
+      "service": service?.toJson().cast<String, dynamic>() ?? {}
+    };
     bool data = await YarnAuth().addYarnAndQuestion(yarn);
     if (data) {
       showToast(message: "Share in Yarn successfully created");

@@ -73,7 +73,8 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    if (userBloc!.user.userName == widget.post!.authorUsername) {
+    if (widget.post != null &&
+        userBloc!.user.userName == widget.post!.authorUsername) {
       isAuthor = true;
     }
 
@@ -170,7 +171,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                   ),
                                   SizedBox(width: 8),
                                   userNameWithVerifiedIcon(
-                                    name: widget.post!.authorName!,
+                                    name: widget.post?.authorName ?? '',
                                     isVerified: false,
                                     textStyle: TextStyle(
                                       fontWeight: FontWeight.w600,
@@ -280,9 +281,9 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                           CustomChip(
                             color: greyBorderColor,
                             textColor: blackFont,
-                            text: widget.post!.readTime == 0
+                            text: widget.post?.readTime == 0
                                 ? '1 min read'
-                                : '${widget.post!.readTime} min read',
+                                : '${widget.post?.readTime ?? 3} min read',
                             padding: EdgeInsets.all(4),
                           ),
                           SizedBox(width: 8),
