@@ -211,7 +211,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                       horizontal: 4, vertical: 4),
                                 ),
                               ),
-                        Center(child: SvgPicture.asset('play_icon'.toSVG())),
+                        // Center(child: SvgPicture.asset('play_icon'.toSVG())),
                       ],
                     ),
                     Container(

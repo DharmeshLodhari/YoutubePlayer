@@ -489,6 +489,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Future shareAsYarn() async {
     AddYarnAndQuestion yarn = AddYarnAndQuestion();
     yarn.body = userPost?.title ?? "";
+    yarn.enableCommenting = true;
+    yarn.enablePayme = true;
     yarn.attachment = {
       "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
     };

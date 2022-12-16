@@ -790,25 +790,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      messageDecoderWithEmoji(searchedUser!.displayName() ?? "") ?? "",
-                      style: TextStyle(fontSize: 12, color: yarnBlack),
-                    )
-                  ),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        messageDecoderWithEmoji(
+                                searchedUser!.displayName() ?? "") ??
+                            "",
+                        style: TextStyle(fontSize: 12, color: yarnBlack),
+                      )),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: userNameWithVerifiedIcon(
-                      name: "@${searchedUser!.userName ?? ''}",
-                      isVerified: searchedUser!.isVerified,
-                      textStyle: TextStyle(
-                        fontSize: 12,
-                        color: HexColor("#151515"),
-                        fontWeight: FontWeight.w500,
-                      ),
-                      verifiedIconColor: verifyBlue,
-                      verifiedIconSize: 15
-                    ),
+                        name: "@${searchedUser!.userName ?? ''}",
+                        isVerified: searchedUser!.isVerified,
+                        textStyle: TextStyle(
+                          fontSize: 12,
+                          color: HexColor("#151515"),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        verifiedIconColor: verifyBlue,
+                        verifiedIconSize: 15),
                   ),
                 ],
               ),
@@ -946,7 +946,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             //Icon(Icons.calendar_month_rounded, size: 16),
             SvgPicture.asset("yarn/calendar".toSVG()),
             SizedBox(width: 12),
-            Text('${getDate(searchedUser!.dateJoined!)}', style: TextStyle(color: HexColor("78797A"), fontSize: 10, fontWeight: FontWeight.w400),),
+            Text(
+              '${getDate(searchedUser!.dateJoined!)}',
+              style: TextStyle(
+                  color: HexColor("78797A"),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400),
+            ),
           ],
         ),
       ],
@@ -1177,11 +1183,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget getAddConnectionIcon() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(
-          color: greyBorderColor,
-        ),
-        shape: BoxShape.circle
-      ),
+          border: Border.all(
+            color: greyBorderColor,
+          ),
+          shape: BoxShape.circle),
       child: RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -1303,11 +1308,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget chatIcon() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(
-          color: HexColor("#292929"),
-        ),
-       shape: BoxShape.circle
-      ),
+          border: Border.all(
+            color: HexColor("#292929"),
+          ),
+          shape: BoxShape.circle),
       child: RoundedBackgroundIcon(
         height: 30,
         width: 30,
@@ -1372,16 +1376,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
-          color: _tabController?.index == tabIndex
-              ? navyBlue
-              : Colors.white,
+          color: _tabController?.index == tabIndex ? navyBlue : Colors.white,
         ),
         child: Text(
           title,
           maxLines: 1,
           overflow: TextOverflow.visible,
           style: TextStyle(
-            color: _tabController?.index == tabIndex ? white : HexColor("#78797A"),
+            color:
+                _tabController?.index == tabIndex ? white : HexColor("#78797A"),
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
