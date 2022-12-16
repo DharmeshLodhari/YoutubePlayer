@@ -113,9 +113,7 @@ class UserPost {
     map['tag_line'] = tagLine;
     map['dislikes'] = dislikes;
     map['created_at'] = createdAt?.toIso8601String();
-
     map['modified_at'] = modifiedAt?.toIso8601String();
-
     map['enable_like'] = enableLike;
     map['is_published'] = isPublished;
     map['author_avatar'] = authorAvatar;

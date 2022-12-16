@@ -26,7 +26,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
-
+import '../../../yarn/models/Topics/YarnTopic.dart';
+import '../../../yarn/yarn_auth.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../user_profile/user_auth.dart';
@@ -369,7 +370,31 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       ),
     );
 
+
+    list.add(
+      bottomSheetItem(
+        isLast: true,
+        title: "Share As A Yarn",
+        iconData: Icons.newspaper,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     return list;
+  }
+
+
+  Future shareAsYarn() async {
+    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    yarn.body = service?.name ?? "";
+    yarn.attachment = {"service": service?.toJson().cast<String, dynamic>() ?? {}};
+    bool data = await YarnAuth().addYarnAndQuestion(yarn);
+    if (data) {
+      showToast(message: "Share in Yarn successfully created");
+    }
   }
 
   void sendItemToUsersInChat() async {

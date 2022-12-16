@@ -384,7 +384,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: Icons.question_mark_outlined,
+        iconData: Icons.newspaper,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();

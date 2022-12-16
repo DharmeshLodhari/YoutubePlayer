@@ -34,6 +34,9 @@ import 'more_apps/user_post/models/user_post.dart';
 import 'more_apps/user_post/tile/user_post_tile.dart';
 import 'more_apps/user_post/user_post_auth.dart';
 import 'more_apps/user_profile/models/user.dart';
+import 'more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'more_apps/yarn/yarn_auth.dart';
+
 
 class PostDetailPage extends StatefulWidget {
   final String? postId;
@@ -50,6 +53,7 @@ class PostDetailPage extends StatefulWidget {
   @override
   State<PostDetailPage> createState() => _PostDetailPageState();
 }
+
 
 class _PostDetailPageState extends State<PostDetailPage> {
   // UserPost? userPost;
@@ -430,8 +434,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
     }
 
-    if (userPost != null &&
-        userBloc.user.userName == userPost!.authorUsername!) {
+    if (userPost != null && userBloc.user.userName == userPost!.authorUsername!) {
       list.add(
         bottomSheetItem(
           title: AppLocalization.of(context)!.deletePost,
@@ -469,8 +472,32 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
     }
 
+    list.add(
+      bottomSheetItem(
+        isLast: true,
+        title: "Share As A Yarn",
+        iconData: Icons.newspaper,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     return list;
   }
+
+
+  Future shareAsYarn() async {
+    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    yarn.body = userPost?.title ?? "";
+    yarn.attachment = {"blog": userPost?.toJson().cast<String, dynamic>() ?? {}};
+    bool data = await YarnAuth().addYarnAndQuestion(yarn);
+    if (data) {
+      showToast(message: "Share in Yarn successfully created");
+    }
+  }
+
 
   sendPostToUserInChat() async {
     List<ChatConversation?> listOfRecipient =
@@ -523,6 +550,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 }
 
+
 class PostDetailPageScaffoldBody extends StatefulWidget {
   final int? views;
   UserPost userPost;
@@ -568,6 +596,7 @@ class PostDetailPageScaffoldBody extends StatefulWidget {
   State<PostDetailPageScaffoldBody> createState() =>
       _PostDetailPageScaffoldBodyState();
 }
+
 
 class _PostDetailPageScaffoldBodyState
     extends State<PostDetailPageScaffoldBody> {
@@ -995,10 +1024,12 @@ class _PostDetailPageScaffoldBodyState
   }
 }
 
+
 String formatDate(DateTime dateTime) {
   DateFormat dateFormat = DateFormat("MMM dd");
   return dateFormat.format(dateTime);
 }
+
 
 class SimilarPostsForBlog extends StatefulWidget {
   final String postID;
@@ -1009,6 +1040,7 @@ class SimilarPostsForBlog extends StatefulWidget {
   @override
   _SimilarPostsForBlogState createState() => _SimilarPostsForBlogState();
 }
+
 
 class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
   Future<List<UserPost>>? getSimilarPostFuture;
@@ -1072,3 +1104,4 @@ class _SimilarPostsForBlogState extends State<SimilarPostsForBlog> {
     );
   }
 }
+

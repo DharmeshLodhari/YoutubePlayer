@@ -89,7 +89,15 @@ class Yarn {
       reYarn = Yarn.fromJson(json['reyarn']);
     }
     if (json['attachment'] != null) {
-      if (json['attachment']['product'] != null) {
+      if (json['attachment']['service'] != null) {
+        attachmentType = 'service';
+        attachment = json['attachment']['service'];
+      }
+      else if (json['attachment']['blog'] != null) {
+        attachmentType = 'blog';
+        attachment = json['attachment']['blog'];
+      }
+      else if (json['attachment']['product'] != null) {
         attachmentType = 'product';
         attachment = json['attachment']['product'];
       }
