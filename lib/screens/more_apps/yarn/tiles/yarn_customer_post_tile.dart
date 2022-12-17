@@ -85,18 +85,26 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                     Positioned(
                       top: 120,
                       left: 22,
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(width: 3, color: white)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.cover,
-                            imageUrl: widget.customerProfile?.avatar ?? '',
-                            errorWidget: imageErrorWidget,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, Routes.USER_PROFILE, arguments: {
+                            "searchedUserName": widget.customerProfile?.userName
+                          });
+                        },
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(width: 3, color: white)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: widget.customerProfile?.avatar ?? '',
+                              errorWidget: imageErrorWidget,
+                            ),
                           ),
                         ),
                       ),
@@ -106,79 +114,87 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                 SizedBox(height: 40),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 22),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  messageDecoderWithEmoji(
-                                          widget.customerProfile?.fullName ??
-                                              "") ??
-                                      '',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color: blackFont,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, Routes.USER_PROFILE,
+                          arguments: {
+                            "searchedUserName": widget.customerProfile?.userName
+                          });
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    messageDecoderWithEmoji(
+                                            widget.customerProfile?.fullName ??
+                                                "") ??
+                                        '',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: blackFont,
+                                    ),
+                                    maxLines: 2,
+                                    softWrap: true,
+                                    overflow: TextOverflow.clip,
                                   ),
-                                  maxLines: 2,
-                                  softWrap: true,
-                                  overflow: TextOverflow.clip,
-                                ),
-                                SizedBox(height: 4),
-                                userNameWithVerifiedIcon(
-                                    name:
-                                        '@${widget.customerProfile?.displayName() ?? ""}',
-                                    isVerified:
-                                        widget.customerProfile?.isVerified,
-                                    textStyle: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 11,
-                                        color: blackFont))
-                              ],
+                                  SizedBox(height: 4),
+                                  userNameWithVerifiedIcon(
+                                      name:
+                                          '@${widget.customerProfile?.displayName() ?? ""}',
+                                      isVerified:
+                                          widget.customerProfile?.isVerified,
+                                      textStyle: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                          color: blackFont))
+                                ],
+                              ),
                             ),
-                          ),
-                          SvgPicture.asset('circle_chat'.toSVG()),
-                          SizedBox(width: 7),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 7),
-                            decoration: BoxDecoration(
-                                color: blackFont,
-                                borderRadius: BorderRadius.circular(17)),
-                            child: Text(
-                              'Following',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 11,
-                                  color: white),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                        ],
-                      ),
-                      SizedBox(height: 11),
-                      Text(
-                        messageDecoderWithEmoji(
-                                widget.customerProfile?.bio ?? '') ??
-                            '',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 11,
-                            color: blackFont),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 16),
-                    ],
+                            SvgPicture.asset('circle_chat'.toSVG()),
+                            SizedBox(width: 7),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 7),
+                              decoration: BoxDecoration(
+                                  color: blackFont,
+                                  borderRadius: BorderRadius.circular(17)),
+                              child: Text(
+                                'Following',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 11,
+                                    color: white),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 11),
+                        Text(
+                          messageDecoderWithEmoji(
+                                  widget.customerProfile?.bio ?? '') ??
+                              '',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 11,
+                              color: blackFont),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 )
               ],
