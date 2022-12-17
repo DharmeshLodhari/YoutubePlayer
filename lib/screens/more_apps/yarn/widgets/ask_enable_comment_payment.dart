@@ -72,16 +72,19 @@ class _AskEnableCommentAndPaymentState
             SizedBox(
               width: 4,
             ),
-            SvgPicture.asset(
-              "${widget.image}".toSVG(),
-              height: 20,
-              width: 20,
-              color:
-                  isSelected ? widget.highLightTextColor : widget.baseTextColor,
-            ),
-            SizedBox(
-              width: 4,
-            ),
+            if (widget.image != null)
+              SvgPicture.asset(
+                "${widget.image}".toSVG(),
+                height: 20,
+                width: 20,
+                color: isSelected
+                    ? widget.highLightTextColor
+                    : widget.baseTextColor,
+              ),
+            if (widget.image != null)
+              SizedBox(
+                width: 4,
+              ),
             Container(
               height: 15,
               width: 15,

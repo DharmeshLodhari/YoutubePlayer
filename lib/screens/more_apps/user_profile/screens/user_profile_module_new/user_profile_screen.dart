@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -17,6 +18,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
@@ -51,6 +53,7 @@ import '../../../../moments/screens/moments_service.dart';
 import '../../../messaging/chat/models/channel_model.dart';
 import '../../../messaging/message_auth.dart';
 import '../../../yarn/models/Topics/YarnTopic.dart';
+import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../models/UserAbout.dart';
 
 // ignore: must_be_immutable
@@ -1883,7 +1886,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Future shareAsYarn() async {
-    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    /*  AddYarnAndQuestion yarn = AddYarnAndQuestion();
     yarn.title = 'This is the title';
     yarn.body = 'This is the body';
     yarn.enableCommenting = true;
@@ -1894,7 +1897,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     bool data = await YarnAuth().addYarnAndQuestion(yarn);
     if (data) {
       showToast(message: "Share in Yarn successfully created");
-    }
+    } */
+
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params
+                ..attachment = {
+                  "profile":
+                      searchedUser?.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
   }
 }
 

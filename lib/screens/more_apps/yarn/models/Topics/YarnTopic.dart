@@ -227,6 +227,9 @@ class AddYarnAndQuestion {
   bool? enablePayme;
   bool? enableCommenting;
   Map<String, dynamic>? attachment;
+  bool? isSensitiveContent;
+  bool? isAdultContent;
+  int? ageRestriction;
 
   AddYarnAndQuestion(
       {this.localImages,
@@ -237,19 +240,27 @@ class AddYarnAndQuestion {
       this.isQuestion,
       this.author,
       this.enablePayme,
-      this.enableCommenting});
+      this.enableCommenting,
+      this.attachment,
+      this.isSensitiveContent = false,
+      this.isAdultContent = false,
+      this.ageRestriction});
 
   Map<String, dynamic> toAddMap() {
     return {
-      "tags": tags,
-      "title": title,
-      "body": body,
-      "category": categoryId,
-      "author": author,
-      "is_question": isQuestion,
-      "enable_payme": enablePayme,
-      "enable_commenting": enableCommenting,
-      "attachment": attachment,
+      if (tags != null) "tags": tags,
+      if (title != null) "title": title,
+      if (body != null) "body": body,
+      if (categoryId != null) "category": categoryId,
+      if (author != null) "author": author,
+      if (isQuestion != null) "is_question": isQuestion,
+      if (enablePayme != null) "enable_payme": enablePayme,
+      if (enableCommenting != null) "enable_commenting": enableCommenting,
+      if (attachment != null) "attachment": attachment,
+      if (isSensitiveContent != null)
+        "is_sensitive_content": isSensitiveContent,
+      if (isAdultContent != null) "is_adult_content": isAdultContent,
+      if (ageRestriction != null) "age_restriction": ageRestriction
     };
   }
 }
