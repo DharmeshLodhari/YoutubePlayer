@@ -3,31 +3,31 @@ import 'dart:io';
 import '../ask_categories_model.dart';
 
 class Yarn {
-  Yarn(
-      {this.id,
-      this.tags,
-      this.authorName,
-      this.authorAvatar,
-      this.createdAt,
-      this.updatedAt,
-      this.title,
-      this.body,
-      this.media = const [],
-      this.author,
-      this.status,
-      this.numberOfAnswers,
-      this.viewersAvatars,
-      this.isQuestion = false,
-      this.numberOfComments,
-      this.enablePayMe,
-      this.voteCount,
-      this.downVoteCount,
-      this.authorIsVerified,
-      this.enableCommenting,
-      this.category,
-      this.attachment,
-      this.attachmentType,
-      });
+  Yarn({
+    this.id,
+    this.tags,
+    this.authorName,
+    this.authorAvatar,
+    this.createdAt,
+    this.updatedAt,
+    this.title,
+    this.body,
+    this.media = const [],
+    this.author,
+    this.status,
+    this.numberOfAnswers,
+    this.viewersAvatars,
+    this.isQuestion = false,
+    this.numberOfComments,
+    this.enablePayMe,
+    this.voteCount,
+    this.downVoteCount,
+    this.authorIsVerified,
+    this.enableCommenting,
+    this.category,
+    this.attachment,
+    this.attachmentType,
+  });
 
   Yarn.fromJson(dynamic json) {
     id = json['id'];
@@ -92,14 +92,15 @@ class Yarn {
       if (json['attachment']['service'] != null) {
         attachmentType = 'service';
         attachment = json['attachment']['service'];
-      }
-      else if (json['attachment']['blog'] != null) {
+      } else if (json['attachment']['blog'] != null) {
         attachmentType = 'blog';
         attachment = json['attachment']['blog'];
-      }
-      else if (json['attachment']['product'] != null) {
+      } else if (json['attachment']['product'] != null) {
         attachmentType = 'product';
         attachment = json['attachment']['product'];
+      } else if (json['attachment']['profile'] != null) {
+        attachmentType = 'profile';
+        attachment = json['attachment']['profile'];
       }
     }
   }

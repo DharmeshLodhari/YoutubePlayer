@@ -50,6 +50,7 @@ import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
 import '../../../messaging/chat/models/channel_model.dart';
 import '../../../messaging/message_auth.dart';
+import '../../../yarn/models/Topics/YarnTopic.dart';
 import '../../models/UserAbout.dart';
 
 // ignore: must_be_immutable
@@ -1723,6 +1724,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
 
+    list.add(
+      bottomSheetItem(
+        title: "Share As A Yarn",
+        iconData: SlydoAppIcon.text_message,
+        isLast: searchedUser!.userName == userBloc.user.userName,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     if (searchedUser!.userName != userBloc.user.userName) {
       if (searchedUser?.type?.toLowerCase() != "user") {
         list.add(
@@ -1868,6 +1881,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     await sendDataToSocket(data);
   }
+
+  Future shareAsYarn() async {
+    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    yarn.title = 'This is the title';
+    yarn.body = 'This is the body';
+    yarn.enableCommenting = true;
+    yarn.enablePayme = true;
+    yarn.attachment = {
+      "profile": searchedUser?.toJson().cast<String, dynamic>() ?? {}
+    };
+    bool data = await YarnAuth().addYarnAndQuestion(yarn);
+    if (data) {
+      showToast(message: "Share in Yarn successfully created");
+    }
+  }
 }
 
 class GetFullAddressWidget extends StatefulWidget {
@@ -1888,6 +1916,7 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
   @override
   void initState() {
     super.initState();
+
     UserAbout? userAbout =
         Provider.of<UserBloc>(context, listen: false).userAbout;
 

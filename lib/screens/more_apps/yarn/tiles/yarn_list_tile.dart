@@ -1,5 +1,7 @@
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_user_post_tile.dart';
@@ -341,6 +343,14 @@ class _YarnTileState extends State<YarnTile> {
       UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (widget.yarn.attachmentType == 'profile') {
+      CustomerProfile customerProfile =
+          CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+      childWidget = YarnCustomerPostTile(
+        customerProfile: customerProfile,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
