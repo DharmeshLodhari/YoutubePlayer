@@ -116,4 +116,5 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
       }
     }
   }
+
 }

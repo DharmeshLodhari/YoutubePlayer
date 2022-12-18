@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
@@ -40,6 +41,8 @@ import 'moments/screens/moments_screen.dart';
 import 'moments/screens/moments_service.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'more_apps/yarn/yarn_auth.dart';
+import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'super_store/super_store.dart';
 
 // ignore: must_be_immutable
@@ -61,6 +64,7 @@ class _DashboardState extends State<Dashboard> {
   var arguments;
   List<Widget>? screens;
   late BasketBloc basketBloc;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   MainSocketProvider? mainSocketProvider;
   StreamSubscription? streamSubscription;
@@ -89,8 +93,9 @@ class _DashboardState extends State<Dashboard> {
         }
       });
     }
-
     super.initState();
+
+    getAllCategories();
 
     PushNotificationService().initialize();
     ListRefresher().initialize();
@@ -101,6 +106,15 @@ class _DashboardState extends State<Dashboard> {
     // checkNotificationToNavigate();
     MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
+  }
+
+  /// Handles fetching of all categories
+  void getAllCategories() async {
+    Map<String, dynamic>? result = await YarnAuth().getAllCategories("", "");
+
+    if (result != null && mounted) {
+      yarnDashboardBloc.addCategories(result['results']);
+    }
   }
 
   void fetchConnections() async {
@@ -378,6 +392,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     _dashboardBloc = Provider.of<DashboardBloc>(context);

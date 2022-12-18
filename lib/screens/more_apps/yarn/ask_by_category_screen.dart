@@ -33,9 +33,9 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   late YarnDashboardBloc askViewModel;
   int currentAskTapOnHome = 0;
   GlobalKey<YarnListScreenState> topicViewStateKey =
-  GlobalKey<YarnListScreenState>();
+      GlobalKey<YarnListScreenState>();
   GlobalKey<QuestionListScreenState> questionViewStateKey =
-  GlobalKey<QuestionListScreenState>();
+      GlobalKey<QuestionListScreenState>();
 
   @override
   void initState() {

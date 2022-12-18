@@ -16,6 +16,7 @@ import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
 import '../utils/enums.dart';
+import '../utils/navigation_util.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
 import '../utils/video_player_controller/chewie_player.dart';
@@ -35,7 +36,10 @@ import 'more_apps/user_post/tile/user_post_tile.dart';
 import 'more_apps/user_post/user_post_auth.dart';
 import 'more_apps/user_profile/models/user.dart';
 import 'more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'more_apps/yarn/models/share_as_yarn_model.dart';
+import 'more_apps/yarn/share_as_a_yarn_screen.dart';
 import 'more_apps/yarn/yarn_auth.dart';
+import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 
 class PostDetailPage extends StatefulWidget {
   final String? postId;
@@ -70,6 +74,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   UserPost? userPost;
   late Future<UserPost?> getPostFuture;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -185,6 +190,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -487,7 +493,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   Future shareAsYarn() async {
-    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    /*   AddYarnAndQuestion yarn = AddYarnAndQuestion();
     yarn.body = userPost?.title ?? "";
     yarn.enableCommenting = true;
     yarn.enablePayme = true;
@@ -497,7 +503,23 @@ class _PostDetailPageState extends State<PostDetailPage> {
     bool data = await YarnAuth().addYarnAndQuestion(yarn);
     if (data) {
       showToast(message: "Share in Yarn successfully created");
-    }
+    } */
+
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..body = userPost?.title ?? "";
+              params
+                ..attachment = {
+                  "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
   }
 
   sendPostToUserInChat() async {

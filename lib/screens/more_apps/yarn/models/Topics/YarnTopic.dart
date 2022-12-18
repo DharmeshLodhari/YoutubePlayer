@@ -27,6 +27,10 @@ class Yarn {
     this.category,
     this.attachment,
     this.attachmentType,
+    this.userUpvoted = false,
+    this.userReyarned = false,
+    this.userSupported = false,
+    this.userDownVoted = false,
   });
 
   Yarn.fromJson(dynamic json) {
@@ -103,6 +107,10 @@ class Yarn {
         attachment = json['attachment']['profile'];
       }
     }
+    userUpvoted = json['user_upvoted'];
+    userReyarned = json['user_reyarned'];
+    userSupported = json['user_supported'];
+    userDownVoted = json['user_down_voted'];
   }
 
   String? id;
@@ -133,6 +141,10 @@ class Yarn {
   int? numberOfReYarn;
   Map<String, dynamic>? attachment;
   String? attachmentType;
+  bool userUpvoted = false;
+  bool userReyarned = false;
+  bool userSupported = false;
+  bool userDownVoted = false;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -168,6 +180,10 @@ class Yarn {
     if (reYarn != null) {
       map['reyarn'] = reYarn!.toJson();
     }
+    map['user_upvoted'] = userUpvoted;
+    map['user_reyarned'] = userReyarned;
+    map['user_supported'] = userSupported;
+    map['user_down_voted'] = userDownVoted;
     return map;
   }
 }

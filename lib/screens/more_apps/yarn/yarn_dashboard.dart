@@ -87,70 +87,70 @@ class _YarnDashboardState extends State<YarnDashboard> {
   List<Widget> _buildAppBarActions() {
     return [
       RoundedBackgroundIcon(
-        backgroundColor: Colors.transparent,
-        onTap: () {
-          NavigationUtil.push(
-            context,
-            screen: SearchScreen(),
-          );
-        },
-        height: 20,
-        width: 20,
-        icon: SvgPicture.asset(
-          "yarn/search".toSVG(),
-          height: 12,
-          width: 12,
-        )
-        // icon: Icon(
-        //   Icons.search_rounded,
-        //   color: yarnBlack,
-        //   size: 26,
-        // ),
-      ),
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: SearchScreen(),
+            );
+          },
+          height: 20,
+          width: 20,
+          icon: SvgPicture.asset(
+            "yarn/search".toSVG(),
+            height: 12,
+            width: 12,
+          )
+          // icon: Icon(
+          //   Icons.search_rounded,
+          //   color: yarnBlack,
+          //   size: 26,
+          // ),
+          ),
       SizedBox(width: 15),
       RoundedBackgroundIcon(
-        backgroundColor: Colors.transparent,
-        onTap: () {
-          NavigationUtil.push(
-            context,
-            screen: YarnNotification(),
-          );
-        },
-        height: 20,
-        width: 20,
-        icon: SvgPicture.asset(
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: YarnNotification(),
+            );
+          },
+          height: 20,
+          width: 20,
+          icon: SvgPicture.asset(
             "yarn/notification".toSVG(),
-          height: 12,
-          width: 12,
-        )
-        // Icon(
-        //   SlydoAppIconNew.notification,
-        //   color: yarnBlack,
-        //   size: 22,
-        // ),
-      ),
+            height: 12,
+            width: 12,
+          )
+          // Icon(
+          //   SlydoAppIconNew.notification,
+          //   color: yarnBlack,
+          //   size: 22,
+          // ),
+          ),
       SizedBox(width: 10),
       RoundedBackgroundIcon(
-        backgroundColor: Colors.transparent,
-        onTap: () {
-          NavigationUtil.push(
-            context,
-            screen: YarnSettingsScreen(),
-          );
-        },
-        height: 20,
-        width: 20,
-        icon: SvgPicture.asset(
-          "yarn/setting".toSVG(),
-          height: 12,
-          width: 12,
-        )
-        // Icon(
-        //   Icons.settings,
-        //   color: yarnBlack,
-        //   size: 26,
-        // ),
-      ),
+          backgroundColor: Colors.transparent,
+          onTap: () {
+            NavigationUtil.push(
+              context,
+              screen: YarnSettingsScreen(),
+            );
+          },
+          height: 20,
+          width: 20,
+          icon: SvgPicture.asset(
+            "yarn/setting".toSVG(),
+            height: 12,
+            width: 12,
+          )
+          // Icon(
+          //   Icons.settings,
+          //   color: yarnBlack,
+          //   size: 26,
+          // ),
+          ),
       SizedBox(width: 10),
     ];
   }

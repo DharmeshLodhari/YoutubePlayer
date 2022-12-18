@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:validators/validators.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../data/state_notifier.dart';
@@ -40,12 +42,14 @@ class ShareAsAyarnScreen extends StatefulWidget {
   List<ShareAsYarnModel>? shareAsYarnModel;
   YarnCategories? askCategory;
   bool? isYarn = false;
+  bool isShare = true;
   Function(AddYarnAndQuestion params) callback;
   ShareAsAyarnScreen(
       {this.askCategories,
       this.shareAsYarnModel,
       this.isYarn,
       this.askCategory,
+      this.isShare = true,
       required this.callback});
 
   @override
@@ -425,37 +429,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     );
   }
 
-  Widget _buildQuestionFiled() {
-    return Container(
-      height: 45,
-      padding: EdgeInsets.only(left: 16),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
-      ),
-      child: TextField(
-        controller: yarnController,
-        style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: HexColor("#151515")),
-        decoration: InputDecoration(
-          hintText: "Ask a Question",
-          hintStyle: TextStyle(
-            fontSize: 12,
-            color: HexColor("#7A7A7A"),
-            fontWeight: FontWeight.w400,
-          ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          focusedErrorBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          disabledBorder: InputBorder.none,
-        ),
-      ),
-    );
-  }
-
   Widget _buildRowForContents() {
     return Container(
       margin: EdgeInsets.only(bottom: 10),
@@ -463,6 +436,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            _buildRatingCategory(),
+            SizedBox(width: 8),
             _buildEnableViewerAdvice(),
             SizedBox(width: 8),
             _buildEnableAdultsOnly(),
@@ -482,35 +457,30 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           padding: EdgeInsets.only(left: 8),
           child: Row(
             children: [
-              InkWell(
-                  onTap: () {
-                    if (selectedImages.length == 4) {
-                      showToast(
-                          message: "You can select only 4 images or videos");
-                    } else {
-                      pickFileFromMedia();
-                      // pickImage();
-                    }
-                  },
-                  child: SvgPicture.asset("yarn/images".toSVG())),
-              SizedBox(
-                width: 8,
-              ),
-              InkWell(
-                  onTap: () {
-                    _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
-                    getGIFs(isRandom: true);
-                    if (mounted) setState(() {});
-                  },
-                  child: SvgPicture.asset("yarn/yarn_gif".toSVG())),
+              if (!widget.isShare)
+                InkWell(
+                    onTap: () {
+                      if (selectedImages.length == 4) {
+                        showToast(
+                            message: "You can select only 4 images or videos");
+                      } else {
+                        pickFileFromMedia();
+                        // pickImage();
+                      }
+                    },
+                    child: SvgPicture.asset("yarn/images".toSVG())),
+              if (!widget.isShare) SizedBox(width: 8),
+              if (!widget.isShare)
+                InkWell(
+                    onTap: () {
+                      _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+                      getGIFs(isRandom: true);
+                      if (mounted) setState(() {});
+                    },
+                    child: SvgPicture.asset("yarn/yarn_gif".toSVG())),
+              if (!widget.isShare) SizedBox(width: 8),
+              _buildCategory(),
               SizedBox(width: 8),
-              if (widget.askCategories != null &&
-                  widget.askCategories!.isNotEmpty)
-                _buildCategory(),
-              if (widget.shareAsYarnModel != null &&
-                  widget.shareAsYarnModel!.isNotEmpty)
-                _buildRatingCategory(),
-              SizedBox(width: 4),
               if (widget.askCategories != null &&
                   widget.askCategories!.isNotEmpty)
                 SizedBox(width: 4),
@@ -994,7 +964,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         builder: (context, changeState) {
           return SizedBox(
             height: MediaQuery.of(context).size.height * 0.75,
-            child: Column(
+            child: Wrap(
               children: [
                 CustomizedTextFormField(
                   hintText: 'Search category',

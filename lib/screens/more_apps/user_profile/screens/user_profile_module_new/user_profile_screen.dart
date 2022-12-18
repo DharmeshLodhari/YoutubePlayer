@@ -55,6 +55,7 @@ import '../../../messaging/chat/models/channel_model.dart';
 import '../../../messaging/message_auth.dart';
 import '../../../yarn/models/Topics/YarnTopic.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../models/UserAbout.dart';
 
 // ignore: must_be_immutable
@@ -109,6 +110,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool isInRequestList = false;
   bool isLoadingFollowingAction = false;
   bool isLoadingFriendRequest = false;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -417,6 +419,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     if (isLoading) {
       return Scaffold(
@@ -1902,6 +1905,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     NavigationUtil.push(context,
         screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             callback: (params) async {
               params

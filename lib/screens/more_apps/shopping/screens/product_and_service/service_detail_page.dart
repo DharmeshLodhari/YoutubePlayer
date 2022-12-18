@@ -27,10 +27,13 @@ import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 import '../../../yarn/models/Topics/YarnTopic.dart';
+import '../../../yarn/models/share_as_yarn_model.dart';
+import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../user_profile/user_auth.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -77,6 +80,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   String? serviceId;
   bool serviceIsLoading = false;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -204,6 +208,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     isValidCustomer = userBloc.user.userName != service!.provider;
     return WillPopScope(
       onWillPop: () async {
@@ -386,7 +391,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Future shareAsYarn() async {
-    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    /*  AddYarnAndQuestion yarn = AddYarnAndQuestion();
     yarn.body = service?.name ?? "";
     yarn.attachment = {
       "service": service?.toJson().cast<String, dynamic>() ?? {}
@@ -394,7 +399,23 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     bool data = await YarnAuth().addYarnAndQuestion(yarn);
     if (data) {
       showToast(message: "Share in Yarn successfully created");
-    }
+    } */
+
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..body = service?.name ?? "";
+              params
+                ..attachment = {
+                  "service": service?.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
   }
 
   void sendItemToUsersInChat() async {

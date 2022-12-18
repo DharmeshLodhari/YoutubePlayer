@@ -32,7 +32,10 @@ import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/item_display_card.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../../yarn/models/Topics/YarnTopic.dart';
+import '../../../yarn/models/share_as_yarn_model.dart';
+import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
 
 // ignore: must_be_immutable
@@ -80,6 +83,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   String? productId;
   bool productIsLoading = false;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -212,7 +216,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     }
     basketBloc = Provider.of<BasketBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
-
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     isValidCustomer = userBloc?.user.userName != product!.seller;
@@ -396,13 +400,31 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future shareAsYarn() async {
-    AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    /*    AddYarnAndQuestion yarn = AddYarnAndQuestion();
     yarn.body = product?.name ?? "";
-    yarn.attachment = {"product": product?.toJson().cast<String, dynamic>() ?? {}};
+    yarn.attachment = {
+      "product": product?.toJson().cast<String, dynamic>() ?? {}
+    };
     bool data = await YarnAuth().addYarnAndQuestion(yarn);
     if (data) {
       showToast(message: "Share in Yarn successfully created");
-    }
+    } */
+
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..body = product?.name ?? "";
+              params
+                ..attachment = {
+                  "product": product?.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
   }
 
   void sendItemToUsersInChat() async {
