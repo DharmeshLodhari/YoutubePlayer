@@ -41,6 +41,8 @@ Color greySecondaryYarn = HexColor("#D9D9D9");
 Color darkGreyYarn = HexColor("#808080");
 Color lightGreyYarn = HexColor("#E5E5E5");
 Color verifyBlue = HexColor("#4aadf4");
+Color red = HexColor("#FF3F3F");
+Color deepblue = HexColor("#4060DB");
 
 Color boxShadow = Color.fromARGB(51, 50, 55, 140);
 Color boxShadowTwo = HexColor("#32378C").withOpacity(0.07);

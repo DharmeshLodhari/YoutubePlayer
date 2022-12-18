@@ -114,8 +114,10 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "yarn/like".toSVG(),
-            color: darkGreyYarn,
+            widget.yarn.userUpvoted
+                ? "yarn/likeAfter".toSVG()
+                : "yarn/likeBefore".toSVG(),
+            color: widget.yarn.userUpvoted ? red : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -125,7 +127,9 @@ class _YarnActionsState extends State<YarnActions> {
           Text(
             getLikeCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: widget.yarn.userUpvoted ? red : darkGreyYarn),
           ),
         ],
       ),
@@ -140,8 +144,10 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "yarn/unlike".toSVG(),
-            color: darkGreyYarn,
+            widget.yarn.userDownVoted
+                ? "yarn/unlikeAfter".toSVG()
+                : "yarn/unlikeBefore".toSVG(),
+            color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -151,7 +157,9 @@ class _YarnActionsState extends State<YarnActions> {
           Text(
             getDisLikeCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn),
           ),
         ],
       ),
@@ -167,7 +175,7 @@ class _YarnActionsState extends State<YarnActions> {
         children: [
           SvgPicture.asset(
             "yarn/re_share".toSVG(),
-            color: darkGreyYarn,
+            color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -177,7 +185,9 @@ class _YarnActionsState extends State<YarnActions> {
           Text(
             getReYarnCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn),
           ),
         ],
       ),
@@ -262,7 +272,11 @@ class _YarnActionsState extends State<YarnActions> {
           ),
           SvgPicture.asset(
             "yarn/send_money".toSVG(),
-            color: !isPayMeEnable ? Colors.transparent : null,
+            color: !isPayMeEnable
+                ? Colors.transparent
+                : widget.yarn.userSupported
+                    ? deepblue
+                    : null,
             height: 13,
             width: 13,
           ),
