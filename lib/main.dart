@@ -39,6 +39,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:logger/logger.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -51,6 +52,8 @@ late List<CameraDescription> cameras;
 final getStorage = GetStorage(appFeaturesKey);
 
 String appVersion = '';
+
+final logger = Logger();
 
 void main() async {
   await GetStorage.init();

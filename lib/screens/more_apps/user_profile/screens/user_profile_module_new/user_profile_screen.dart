@@ -46,6 +46,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
+import '../../../../../main.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';

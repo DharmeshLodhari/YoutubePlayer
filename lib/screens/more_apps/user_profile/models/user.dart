@@ -299,7 +299,7 @@ class CustomerProfile {
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     data['bio'] = this.bio;
-    data['wallpaper'] = this.wallpaper;
+    data['wallpaper'] = this.userAbout?.wallpaper;
     data['conversation_id'] = this.conversationId;
     data['status'] = this.status.name;
     data['uuid'] = this.uuid;
