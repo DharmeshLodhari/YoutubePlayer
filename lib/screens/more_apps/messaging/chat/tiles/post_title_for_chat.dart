@@ -14,6 +14,7 @@ import 'package:video_player/video_player.dart';
 import '../../../../../utils/enums.dart';
 import '../../../../../utils/util.dart';
 import '../../../user_post/models/user_post.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 
 class PostTileForChat extends StatefulWidget {
   Map<String, dynamic>? message;
@@ -33,6 +34,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
   late PostForChatModel postForChatModel;
   ChewieController? _chewieMainController;
   VideoPlayerController? _mainVideoController;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -71,6 +73,7 @@ class _PostTileForChatState extends State<PostTileForChat> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     bool isSend = widget.message!["author"] == userBloc.user.userName;
 

@@ -10,6 +10,11 @@ import 'package:provider/provider.dart';
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../screens/more_apps/shopping/shopping_auth.dart';
+import '../screens/more_apps/yarn/models/share_as_yarn_model.dart';
+import '../screens/more_apps/yarn/share_as_a_yarn_screen.dart';
+import '../screens/more_apps/yarn/yarn_auth.dart';
+import '../screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import '../utils/navigation_util.dart';
 import '../utils/slydo_app_icon_icons.dart';
 import 'bottom_sheet_item.dart';
 
@@ -33,6 +38,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   late BasketBloc basketBloc;
   bool showAddToCartButton = true;
   final _auth = ShoppingAuthService();
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -43,6 +49,7 @@ class _DisplayProductState extends State<DisplayProduct> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     return GestureDetector(
       onTap: () {
@@ -234,7 +241,37 @@ class _DisplayProductState extends State<DisplayProduct> {
       ),
     );
 
+    list.add(
+      bottomSheetItem(
+        isLast: true,
+        title: "Share As A Yarn",
+        iconData: Icons.newspaper,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     return list;
+  }
+
+  void shareAsYarn() {
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..body = widget.product.name ?? "";
+              params
+                ..attachment = {
+                  "product": widget.product.toJson().cast<String, dynamic>()
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
   }
 
   Widget getMenuIcon() {
@@ -424,6 +461,7 @@ class _DisplayServiceState extends State<DisplayService> {
   late BasketBloc basketBloc;
   bool showAddToCartButton = true;
   final _auth = ShoppingAuthService();
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -435,7 +473,7 @@ class _DisplayServiceState extends State<DisplayService> {
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
-
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     return GestureDetector(
       onTap: () {
         if (showAddToCartButton == false) {
@@ -729,6 +767,18 @@ class _DisplayServiceState extends State<DisplayService> {
       ),
     );
 
+    list.add(
+      bottomSheetItem(
+        isLast: true,
+        title: "Share As A Yarn",
+        iconData: Icons.newspaper,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     return list;
   }
 
@@ -779,5 +829,24 @@ class _DisplayServiceState extends State<DisplayService> {
     } else {
       showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
     }
+  }
+
+  void shareAsYarn() {
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..body = widget.service.name ?? "";
+              params
+                ..attachment = {
+                  "service":
+                      widget.service.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
   }
 }

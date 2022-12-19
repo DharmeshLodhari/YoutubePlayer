@@ -27,8 +27,7 @@ class YarnCommentReplyActions extends StatefulWidget {
       _YarnCommentReplyActionsState();
 }
 
-class _YarnCommentReplyActionsState
-    extends State<YarnCommentReplyActions> {
+class _YarnCommentReplyActionsState extends State<YarnCommentReplyActions> {
   Future addLikeToReplyComment() async {
     Map<String, dynamic>? data =
         await YarnAuth().addLikeComment(widget.replyCommentDetail!.id!);
@@ -66,9 +65,7 @@ class _YarnCommentReplyActionsState
         Expanded(child: _buildActionableList()),
         _buildShareButton(),
         if (getLoggedInUserName(context) !=
-            widget.replyCommentDetail!.authorUsername) ...[
-          _buildPayButton()
-        ],
+            widget.replyCommentDetail!.authorUsername) ...[_buildPayButton()],
       ],
     );
   }
@@ -207,7 +204,7 @@ class _YarnCommentReplyActionsState
       child: Row(
         children: [
           SvgPicture.asset(
-              "ask/share".toSVG(),
+            "ask/share".toSVG(),
             height: 17,
             width: 17,
           ),
@@ -219,33 +216,31 @@ class _YarnCommentReplyActionsState
   Widget _buildPayButton() {
     return InkWell(
       onTap: getLoggedInUserName(context) !=
-          widget.replyCommentDetail!.authorUsername
+              widget.replyCommentDetail!.authorUsername
           ? () {
-        if (getIt<AppConfigurationBloc>()
-            .appConfigurationModel
-            ?.enablePayment ==
-            true) {
-          Navigator.of(context).pushNamed(
-            Routes.SEND_PAYMENT,
-            arguments: <String, dynamic>{
-              'recipient':
-              widget.replyCommentDetail!.authorUsername!,
-              'isFromProfile': false,
-              'isFromChat': false,
-              'defaultReferenceText':
-              'Payment from  "${truncateString(
-                str: widget.replyCommentDetail!.comment!,
-                lengthToTruncateAt: 8,
-              )}\" comment'
-            },
-          );
-        } else {
-          showToast(message: 'Payment not available at the moment');
-        }
-      }
+              if (getIt<AppConfigurationBloc>()
+                      .appConfigurationModel
+                      ?.enablePayment ==
+                  true) {
+                Navigator.of(context).pushNamed(
+                  Routes.SEND_PAYMENT,
+                  arguments: <String, dynamic>{
+                    'recipient': widget.replyCommentDetail!.authorUsername!,
+                    'isFromProfile': false,
+                    'isFromChat': false,
+                    'defaultReferenceText': 'Payment from  "${truncateString(
+                      str: widget.replyCommentDetail!.comment!,
+                      lengthToTruncateAt: 8,
+                    )}\" comment'
+                  },
+                );
+              } else {
+                showToast(message: 'Payment not available at the moment');
+              }
+            }
           : () {
-        showToast(message: 'You cannot pay yourself');
-      },
+              showToast(message: 'You cannot pay yourself');
+            },
       child: Row(
         children: [
           SvgPicture.asset("yarn/send_money".toSVG()),

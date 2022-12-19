@@ -61,6 +61,8 @@ dependencies:
   animated_fractionally_sized_box: ^2.0.1
   custom_qr_generator: ^0.1.0
   modal_progress_hud_nsn: ^0.3.0
+  # Adding this logger for easy debuggin
+  logger: ^1.1.0
 #  charts_flutter: ^0.11.0
   charts_flutter:
     git:

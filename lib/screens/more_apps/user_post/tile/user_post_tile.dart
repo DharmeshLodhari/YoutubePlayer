@@ -16,11 +16,16 @@ import 'package:video_player/video_player.dart';
 
 import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
+import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/video_player_controller/chewie_player.dart';
 import '../../../../widget/bottom_sheet_item.dart';
 import '../../../../widget/dialog.dart';
 import '../../../../widget/rounded_background_icon.dart';
+import '../../yarn/models/share_as_yarn_model.dart';
+import '../../yarn/share_as_a_yarn_screen.dart';
+import '../../yarn/yarn_auth.dart';
+import '../../yarn/yarn_dashboard_bloc.dart';
 
 class PostTile extends StatefulWidget {
   UserPost? post;
@@ -46,6 +51,7 @@ class _PostTileState extends State<PostTile> {
   bool isSelected = false;
   ChewieController? _chewieMainController;
   VideoPlayerController? _mainVideoController;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -72,6 +78,7 @@ class _PostTileState extends State<PostTile> {
 
   @override
   Widget build(BuildContext context) {
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     userBloc = Provider.of<UserBloc>(context);
     if (userBloc!.user.userName == widget.post!.authorUsername) {
       isAuthor = true;
@@ -352,6 +359,18 @@ class _PostTileState extends State<PostTile> {
       ),
     );
 
+    list.add(
+      bottomSheetItem(
+        isLast: true,
+        title: "Share As A Yarn",
+        iconData: Icons.newspaper,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     if (userBloc!.user.userName == widget.post!.authorUsername!) {
       list.add(
         bottomSheetItem(
@@ -403,6 +422,24 @@ class _PostTileState extends State<PostTile> {
     }
 
     return list;
+  }
+
+  void shareAsYarn() {
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..body = widget.post?.title ?? "";
+              params
+                ..attachment = {
+                  "blog": widget.post?.toJson().cast<String, dynamic>() ?? {}
+                };
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
   }
 
   Widget _buildLikeUnLikeReportTile() {
