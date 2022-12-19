@@ -7,6 +7,7 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -181,16 +182,16 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                           ],
                         ),
                         SizedBox(height: 11),
-                        Text(
-                          messageDecoderWithEmoji(
-                                  widget.customerProfile?.bio ?? '') ??
-                              '',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 11,
-                              color: blackFont),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                        Linkify(
+                          onOpen: (_) {},
+                          text: widget.customerProfile?.bio == null
+                              ? ''
+                              : messageDecoderWithEmoji(
+                                      "${widget.customerProfile?.bio}" "") ??
+                                  "",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontSize: 14),
+                          maxLines: 6,
                         ),
                         SizedBox(height: 16),
                       ],

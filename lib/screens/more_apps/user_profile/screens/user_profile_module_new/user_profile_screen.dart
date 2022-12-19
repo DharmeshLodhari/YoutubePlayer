@@ -1056,9 +1056,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             onOpen: _onOpen,
             text: searchedUser?.bio == null
                 ? ''
-                : messageDecoderWithEmoji("${searchedUser?.bio}"
-                        "") ??
-                    "",
+                : messageDecoderWithEmoji("${searchedUser?.bio}" "") ?? "",
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 14),
             maxLines: 6,
@@ -1908,11 +1906,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
             callback: (params) async {
-              params
-                ..attachment = {
-                  "profile":
-                      searchedUser?.toJson().cast<String, dynamic>() ?? {}
-                };
+              params..attachment = {"profile": searchedUser?.toJson()};
               bool data = await YarnAuth().addYarnAndQuestion(params);
               if (data) {
                 showToast(message: "Share in Yarn successfully created");
