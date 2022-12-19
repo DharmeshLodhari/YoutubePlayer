@@ -6,7 +6,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/routes/route_generator.dart';
 import 'package:Slydo/screens/moments/moments_bloc.dart';
-import 'package:Slydo/screens/more_apps/ask/ask_viewmodel.dart';
 import 'package:Slydo/screens/more_apps/bus/bus_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/contract_bloc.dart';
 import 'package:Slydo/screens/more_apps/business/bloc/invoice_bloc.dart';
@@ -21,6 +20,7 @@ import 'package:Slydo/screens/more_apps/property/property_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/checkout_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_dashboard_bloc.dart';
 import 'package:Slydo/screens/more_apps/train/train_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/app_life_cycle.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
@@ -39,6 +39,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:logger/logger.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -51,6 +52,8 @@ late List<CameraDescription> cameras;
 final getStorage = GetStorage(appFeaturesKey);
 
 String appVersion = '';
+
+final logger = Logger();
 
 void main() async {
   await GetStorage.init();
@@ -225,6 +228,9 @@ List<ChangeNotifierProvider> providersList = [
   ChangeNotifierProvider<RefreshBlocForConnectionDashboard>.value(
     value: RefreshBlocForConnectionDashboard(),
   ),
+  ChangeNotifierProvider<RefreshBlocForConnectionList>.value(
+    value: RefreshBlocForConnectionList(),
+  ),
   ChangeNotifierProvider<BasketBloc>.value(
     value: BasketBloc(),
   ),
@@ -311,8 +317,8 @@ List<ChangeNotifierProvider> providersList = [
   ChangeNotifierProvider<MomentsBloc>.value(
     value: MomentsBloc(),
   ),
-  ChangeNotifierProvider<AskViewModel>.value(
-    value: AskViewModel(),
+  ChangeNotifierProvider<YarnDashboardBloc>.value(
+    value: YarnDashboardBloc(),
   ),
   ChangeNotifierProvider<ConnectionRequestListBloc>.value(
     value: ConnectionRequestListBloc(),

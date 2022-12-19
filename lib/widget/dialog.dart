@@ -56,7 +56,7 @@ import 'cutomized_alert/customized_alert_for_nudge.dart';
 // }
 //
 Future<bool?> showDialogBoxWithImage({
-  BuildContext? context,
+  required BuildContext context,
   String? title,
   String? description,
   String? actionOne,
@@ -80,14 +80,14 @@ Future<bool?> showDialogBoxWithImage({
     buttons: [
       DialogButton(
         onPressed: () =>
-            Navigator.pop(context!, firstActionPrimary ? true : false),
+            Navigator.pop(context, firstActionPrimary ? true : false),
         textColor: actionOneTextColor,
         text: actionOne,
         backgroundColor: actionOneBgColor,
       ),
       DialogButton(
         onPressed: () =>
-            Navigator.pop(context!, firstActionPrimary ? false : true),
+            Navigator.pop(context, firstActionPrimary ? false : true),
         textColor: actionTwoTextColor,
         text: actionTwo,
         backgroundColor: actionTwoBgColor,
@@ -97,7 +97,7 @@ Future<bool?> showDialogBoxWithImage({
 }
 
 Future<bool?> showDialogBoxWithImageWithOneAction({
-  BuildContext? context,
+  required BuildContext context,
   String? title,
   String? description,
   String? actionOne,
@@ -116,7 +116,7 @@ Future<bool?> showDialogBoxWithImageWithOneAction({
     ),
     buttons: [
       DialogButton(
-        onPressed: () => Navigator.pop(context!, true),
+        onPressed: () => Navigator.pop(context, true),
         textColor: actionOneTextColor,
         text: actionOne,
         backgroundColor: actionOneBgColor,

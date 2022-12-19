@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -12,11 +13,16 @@ import 'package:Slydo/screens/more_apps/user_post/user_post_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/following_and_follwers_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_channel_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
+import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -28,6 +34,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -39,9 +46,16 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
+import '../../../../../main.dart';
 import '../../../../../utils/navigation_util.dart';
+import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
+import '../../../messaging/chat/models/channel_model.dart';
+import '../../../messaging/message_auth.dart';
+import '../../../yarn/models/Topics/YarnTopic.dart';
+import '../../../yarn/share_as_a_yarn_screen.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../models/UserAbout.dart';
 
 // ignore: must_be_immutable
@@ -85,6 +99,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isUserIsSimpleUser = false;
   bool showProductTab = false;
+  bool showYarnTab = false;
+  bool showMomentTab = false;
+  bool showChannelTab = false;
   bool showPostsTab = false;
   bool showServiceTab = false;
   bool myMomentsLoading = false;
@@ -92,6 +109,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isInRequestList = false;
   bool isLoadingFollowingAction = false;
+  bool isLoadingFriendRequest = false;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -132,6 +151,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     selectedIndexStream.close();
     _scrollController?.removeListener(_scrollListener);
     _scrollController?.dispose();
+    _tabController?.dispose();
   }
 
   Future<void> getSearchedUser({bool load = true}) async {
@@ -157,15 +177,35 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     int tabCount = 1;
 
     showPostsTab = await getIsShowPost();
-
-    if (searchedUser!.type!.toLowerCase() == "user") {
+    showYarnTab = await getIsShowYarn();
+    showMomentTab = await getIsShowMoment();
+    showChannelTab = await getIsShowChannels();
+    if (showYarnTab) {
+      tabCount++;
+    }
+    if (showMomentTab) {
+      tabCount++;
+    }
+    if (showChannelTab) {
+      tabCount++;
+    }
+    if (searchedUser?.type?.toLowerCase() == "user") {
       isUserIsSimpleUser = true;
-
       if (showPostsTab) {
         tabCount++;
       }
     } else {
-      tabCount = 3;
+      debugPrint("TAB COUNT:- $tabCount");
+      if (tabCount == 2) {
+        tabCount = 3;
+      } else if (tabCount == 3) {
+        tabCount = 4;
+      } else if (tabCount == 4) {
+        tabCount = 5;
+      } else {
+        tabCount = 3;
+      }
+
       showProductTab = await getIsShowProduct();
       showServiceTab = await getIsShowService();
 
@@ -196,6 +236,59 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool get isShrink {
     return (_scrollController?.hasClients ?? false) &&
         (_scrollController?.offset ?? 0) > (150 - kToolbarHeight);
+  }
+
+  Future<bool> getIsShowYarn() async {
+    debugPrint('IS SHOW YARN <-->');
+
+    Map<String, dynamic>? data;
+    try {
+      data = await YarnAuth().getAllYarn("", "",
+          type: "my-topics",
+          isType: false,
+          userName: arguments['searchedUserName']);
+    } catch (error) {}
+    if (data != null) {
+      debugPrint('IS SHOW YARN ---> $data');
+      int count = data["count"] ?? 0;
+      if (count > 0) return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> getIsShowMoment() async {
+    debugPrint('IS SHOW YARN <-->');
+
+    List<MomentsModel> momentsModel = [];
+    try {
+      momentsModel = await MomentsService()
+          .getMomentsWithOwnerName(ownerName: searchedUserName!);
+    } catch (error) {}
+    if (momentsModel.isNotEmpty) {
+      debugPrint('IS SHOW MOMENTS ---> $momentsModel');
+      int count = momentsModel.length != 0 ? momentsModel.length : 0;
+      if (count > 0) return true;
+    }
+
+    return false;
+  }
+
+  Future<bool> getIsShowChannels() async {
+    debugPrint('IS SHOW CHANNELS <-->');
+
+    BasePaginationModel<List<ChannelModel>>? basePaginationModel;
+    try {
+      basePaginationModel = await MessageAuth().getChannels(
+          nextUrl: '', searchText: '', ownerName: searchedUserName);
+    } catch (error) {}
+    if (basePaginationModel != null) {
+      debugPrint('IS SHOW CHANNELS ---> $basePaginationModel');
+      int count = basePaginationModel.count;
+      if (count > 0) return true;
+    }
+
+    return false;
   }
 
   Future<bool> getIsShowProduct() async {
@@ -235,7 +328,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Map<String, dynamic>? data;
     try {
       data = await UserPostAuth()
-          .listUserPosts(next: '', userName: searchedUser!.userName);
+          .listUserPosts(next: '', userName: searchedUser?.userName);
     } catch (error) {}
     if (data != null) {
       debugPrint('IS SHOW POST ---> $data');
@@ -255,37 +348,41 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     double? height;
 
     if (bioLength == 0) {
-      if (hasAddress && hasContact) {
-        height = 380;
-      } else if (hasAddress || hasContact) {
-        height = 360;
-      } else {
-        height = 340;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 380;
+      // } else if (hasAddress || hasContact) {
+      //   height = 360;
+      // } else {
+      //   height = 340;
+      // }
+      height = 340;
     } else if (bioLength <= 50) {
-      if (hasAddress && hasContact) {
-        height = 420;
-      } else if (hasAddress || hasContact) {
-        height = 400;
-      } else {
-        height = 380;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 350;
+      // } else if (hasAddress || hasContact) {
+      //   height = 400;
+      // } else {
+      //   height = 380;
+      // }
+      height = 350;
     } else if (bioLength <= 100) {
-      if (hasAddress && hasContact) {
-        height = 460;
-      } else if (hasAddress || hasContact) {
-        height = 460;
-      } else {
-        height = 400;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 460;
+      // } else if (hasAddress || hasContact) {
+      //   height = 460;
+      // } else {
+      //   height = 400;
+      // }
+      height = 380;
     } else if (bioLength <= 200) {
-      if (hasAddress && hasContact) {
-        height = 460;
-      } else if (hasAddress || hasContact) {
-        height = 480;
-      } else {
-        height = 460;
-      }
+      // if (hasAddress && hasContact) {
+      //   height = 460;
+      // } else if (hasAddress || hasContact) {
+      //   height = 480;
+      // } else {
+      //   height = 460;
+      // }
+      height = 420;
     }
 
     debugPrint('GET HEIGHT -> $height');
@@ -301,8 +398,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
     debugPrint("is In Request List -");
 
-    if (_userBloc.user.userName != searchedUser!.userName) {
-      UserAuth().checkInRequest(searchedUser!.userName).then((value) {
+    if (_userBloc.user.userName != searchedUser?.userName) {
+      UserAuth().checkInRequest(searchedUser?.userName).then((value) {
         if (mounted) {
           setState(() {
             debugPrint("is In Request List : $isInRequestList");
@@ -322,6 +419,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     if (isLoading) {
       return Scaffold(
@@ -389,10 +487,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget getAppbar(BuildContext context) {
     bool hasAddress =
-        searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
-            searchedUser!.userAbout!.userAddress!.addressLine1!.isNotEmpty;
+        searchedUser?.userAbout?.userAddress?.addressLine1 != null &&
+            (searchedUser?.userAbout?.userAddress?.addressLine1?.isNotEmpty ??
+                false);
     bool hasContact = searchedUser?.userAbout?.contact != null &&
-        searchedUser!.userAbout!.contact.isNotEmpty;
+        (searchedUser?.userAbout?.contact.isNotEmpty ?? false);
 
     return SliverOverlapAbsorber(
       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -435,7 +534,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
-                  verifiedIconColor: Colors.white,
+                  verifiedIconColor: verifyBlue,
                 )
               : Stack(
                   clipBehavior: Clip.none,
@@ -614,7 +713,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget getUserDetails() {
     Color borderColor = getUserTypeColor(user: searchedUser!);
     return Positioned(
-      top: 160,
+      top: 170,
       left: 20,
       right: 0,
       child: Column(
@@ -666,52 +765,77 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       : getUserProfilePic(),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  width: MediaQuery.of(context).size.width - 116,
-                  padding:
-                      const EdgeInsets.only(top: 40.0, left: 10, right: 10),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            getActionOnUsersBtn(),
-                            getFollowUnFollowBtn(),
-                          ],
+              // Expanded(
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width - 116,
+              //     padding:
+              //         const EdgeInsets.only(top: 40.0, left: 10, right: 10),
+              //     child: Column(
+              //       mainAxisSize: MainAxisSize.min,
+              //       crossAxisAlignment: CrossAxisAlignment.stretch,
+              //       children: [
+              //         Align(
+              //           alignment: Alignment.centerRight,
+              //           child: Row(
+              //             mainAxisSize: MainAxisSize.min,
+              //             children: [
+              //               getActionOnUsersBtn(),
+              //               getFollowUnFollowBtn(),
+              //             ],
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        messageDecoderWithEmoji(
+                                searchedUser!.displayName() ?? "") ??
+                            "",
+                        style: TextStyle(fontSize: 12, color: yarnBlack),
+                      )),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: userNameWithVerifiedIcon(
+                        name: "@${searchedUser!.userName ?? ''}",
+                        isVerified: searchedUser!.isVerified,
+                        textStyle: TextStyle(
+                          fontSize: 12,
+                          color: HexColor("#151515"),
+                          fontWeight: FontWeight.w500,
                         ),
-                      ),
-                    ],
+                        verifiedIconColor: verifyBlue,
+                        verifiedIconSize: 15),
                   ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    getActionOnUsersBtn(),
+                    getFollowUnFollowBtn(),
+                  ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: 4),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: userNameWithVerifiedIcon(
-              name: searchedUser!.displayName()!,
-              isVerified: searchedUser!.isVerified,
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              '@${searchedUser!.userName!}',
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontSize: 14.0, color: darkGrey, fontWeight: FontWeight.w400),
-            ),
-          ),
           SizedBox(height: 12),
           getUserBioStringWidget(),
-          displayUserAddress(),
-          getContact(),
+          // displayUserAddress(),
+          // getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
           getFollowUnFollowWidget(),
@@ -757,18 +881,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           });
         },
         child: Container(
+          height: 30,
+          width: 80,
           margin: EdgeInsets.symmetric(vertical: 8),
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
               color: blackFont,
               borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: greyBorderColor, width: 2)),
-          child: Text(
-            'Following',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
+              border: Border.all(color: HexColor("#292929"), width: 1)),
+          child: Center(
+            child: Text(
+              'Following',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
@@ -794,17 +922,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         });
       },
       child: Container(
+        height: 30,
+        width: 80,
         margin: EdgeInsets.symmetric(vertical: 8),
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: greyBorderColor, width: 2)),
-        child: Text(
-          'Follow',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.black,
-            fontWeight: FontWeight.w600,
+            border: Border.all(color: HexColor("#292929"), width: 1)),
+        child: Center(
+          child: Text(
+            'Follow',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
@@ -819,9 +951,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         SizedBox(height: 8),
         Row(
           children: [
-            Icon(Icons.calendar_month_rounded, size: 16),
+            //Icon(Icons.calendar_month_rounded, size: 16),
+            SvgPicture.asset("yarn/calendar".toSVG()),
             SizedBox(width: 12),
-            Text('${getDate(searchedUser!.dateJoined!)}'),
+            Text(
+              '${getDate(searchedUser!.dateJoined!)}',
+              style: TextStyle(
+                  color: HexColor("78797A"),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400),
+            ),
           ],
         ),
       ],
@@ -841,51 +980,73 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getFollowUnFollowWidget() {
-    if (searchedUser!.following != null && searchedUser!.followers != null) {
-      return InkWell(
-        onTap: () {
-          NavigationUtil.push(
-            context,
-            screen:
-                FollowingAndFollowersList(userName: searchedUser!.userName!),
-          );
-        },
-        child: Row(
-          children: [
-            Text(
-              getFormattedViewCount(
-                  noOfViews: searchedUser!.following!,
-                  addViewText: false,
-                  showZeroViews: true),
-              style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+    if (searchedUser?.following != null && searchedUser?.followers != null) {
+      return Row(
+        children: [
+          InkWell(
+            onTap: () {
+              if (searchedUser?.userName != null) {
+                NavigationUtil.push(
+                  context,
+                  screen: FollowingAndFollowersList(
+                      userName: searchedUser?.userName ?? ""),
+                );
+              }
+            },
+            child: Row(
+              children: [
+                Text(
+                  getFormattedViewCount(
+                      noOfViews: searchedUser?.following ?? 0,
+                      addViewText: false,
+                      showZeroViews: true),
+                  style:
+                      TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 2),
+                Text('Following'),
+              ],
             ),
-            SizedBox(width: 2),
-            Text('Following'),
-            SizedBox(width: 30),
-            Text(
-              getFormattedViewCount(
-                  noOfViews: searchedUser!.followers!,
-                  addViewText: false,
-                  showZeroViews: true),
-              style: TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(width: 30),
+          InkWell(
+            onTap: () {
+              if (searchedUser?.userName != null) {
+                NavigationUtil.push(
+                  context,
+                  screen: FollowingAndFollowersList(
+                      userName: searchedUser?.userName ?? "", index: 1),
+                );
+              }
+            },
+            child: Row(
+              children: [
+                Text(
+                  getFormattedViewCount(
+                      noOfViews: searchedUser!.followers!,
+                      addViewText: false,
+                      showZeroViews: true),
+                  style:
+                      TextStyle(color: blackFont, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 2),
+                Text(
+                  searchedUser!.followers! > 1 ? 'Followers' : 'Follower',
+                ),
+              ],
             ),
-            SizedBox(width: 2),
-            Text(
-              searchedUser!.followers! > 1 ? 'Followers' : 'Follower',
-            ),
-          ],
-        ),
+          ),
+        ],
       );
     }
     return SizedBox.shrink();
   }
 
   Widget getUserBioStringWidget() {
-    print(searchedUser?.bio);
     if (searchedUser?.bio == null || searchedUser!.bio!.isEmpty)
       return SizedBox.shrink();
     return Container(
-      margin: EdgeInsets.only(right: 4),
+      margin: EdgeInsets.only(right: 6),
       width: MediaQuery.of(context).size.width,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -895,9 +1056,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             onOpen: _onOpen,
             text: searchedUser?.bio == null
                 ? ''
-                : messageDecoderWithEmoji(searchedUser!.bio!)!,
+                : messageDecoderWithEmoji("${searchedUser?.bio}" "") ?? "",
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 14),
+            maxLines: 6,
           ),
           SizedBox(height: 8),
         ],
@@ -958,7 +1120,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget getUserProfilePic() {
     return CircleAvatar(
-      radius: 35,
+      radius: 25,
       backgroundImage: CachedNetworkImageProvider(
         searchedUser!.avatar!,
 
@@ -1022,14 +1184,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
+  // Widget getAddMailIcon() {}
+
   Widget getAddConnectionIcon() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(
-          color: greyBorderColor,
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
+          border: Border.all(
+            color: greyBorderColor,
+          ),
+          shape: BoxShape.circle),
       child: RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -1041,25 +1204,38 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           color: isInRequestList ? mateRed : blackFont,
         ),
         onTap: () {
+          isLoadingFriendRequest = true;
+          if (mounted) setState(() {});
+
           if (isInRequestList) {
             UserAuth()
                 .cancelOrRejectContactRequest(searchedUser!)
-                .then((value) {
+                .then((value) async {
               if (value) {
                 showToast(message: "Friend request Canceled");
               } else {
                 showToast(message: "Friend request Canceled unsuccessfully");
               }
-              getSearchedUser();
+              await getSearchedUser(load: false);
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            }).catchError((error) {
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
             });
           } else {
-            UserAuth().makeContactRequest(searchedUser!).then((value) {
+            UserAuth().makeContactRequest(searchedUser!).then((value) async {
               if (value) {
                 showToast(message: "Friend Request Sent !!");
               } else {
                 showToast(message: "Request Not Sent.. ");
               }
-              getSearchedUser();
+              await getSearchedUser(load: false);
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            }).catchError((error) {
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
             });
           }
         },
@@ -1070,6 +1246,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget getActionOnUsersBtn() {
+    if (isLoadingFriendRequest) {
+      return Row(
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularLoadingIndicator(),
+          ),
+          SizedBox(width: 24),
+        ],
+      );
+    }
+
     if (searchedUser!.userName != userBloc.user.userName) {
       if (searchedUser!.conversationId != "") {
         return Row(
@@ -1125,25 +1314,26 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget chatIcon() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(
-          color: greyBorderColor,
-        ),
-        borderRadius: BorderRadius.circular(10),
-      ),
+          border: Border.all(
+            color: HexColor("#292929"),
+          ),
+          shape: BoxShape.circle),
       child: RoundedBackgroundIcon(
-        height: 34,
-        width: 34,
-        icon: Icon(
-          SlydoAppIcon.text_message,
-          size: 16,
-          color: blackFont,
+        height: 30,
+        width: 30,
+        image: SvgPicture.asset(
+          "yarn/chat_icon".toSVG(),
+          height: 20,
+          width: 20,
+          color: HexColor("#292929"),
         ),
         onTap: () {
           Navigator.pushNamed(context, '/chat-screen',
               arguments: {"recipientUserName": searchedUser!.userName});
         },
         backgroundColor: lightGrey.withOpacity(0.1),
-        enableMargin: false,
+        enableMargin: true,
+        margin: 8,
       ),
     );
   }
@@ -1192,20 +1382,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
-          color: _tabController?.index == tabIndex
-              ? navyBlue.withOpacity(0.1)
-              : Colors.white,
+          color: _tabController?.index == tabIndex ? navyBlue : Colors.white,
         ),
         child: Text(
           title,
           maxLines: 1,
           overflow: TextOverflow.visible,
           style: TextStyle(
-            color: _tabController?.index == tabIndex ? navyBlue : blackFont,
+            color:
+                _tabController?.index == tabIndex ? white : HexColor("#78797A"),
             fontSize: 14,
-            fontWeight: _tabController?.index == tabIndex
-                ? FontWeight.w600
-                : FontWeight.w400,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ),
@@ -1229,10 +1416,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (searchedUser?.type?.toLowerCase() == "user") {
       int index = 0;
-      tabs.add(
-        getTabUI(title: "Moments", tabIndex: index),
-      );
-      index++;
+      if (showYarnTab) {
+        tabs.add(
+          getTabUI(title: "Yarns", tabIndex: index),
+        );
+        index++;
+      }
+      if (showChannelTab) {
+        tabs.add(
+          getTabUI(title: "Channels", tabIndex: index),
+        );
+        index++;
+      }
+      if (showMomentTab) {
+        tabs.add(
+          getTabUI(title: "Moments", tabIndex: index),
+        );
+        index++;
+      }
       if (showPostsTab) {
         tabs.add(
           getTabUI(title: "Posts", tabIndex: index),
@@ -1245,10 +1446,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       // );
     } else {
       int index = 0;
-      tabs.add(
-        getTabUI(title: "Moments", tabIndex: index),
-      );
-      index++;
+      if (showYarnTab) {
+        tabs.add(
+          getTabUI(title: "Yarns", tabIndex: index),
+        );
+        index++;
+      }
+      if (showChannelTab) {
+        tabs.add(
+          getTabUI(title: "Channels", tabIndex: index),
+        );
+        index++;
+      }
+      if (showMomentTab) {
+        tabs.add(
+          getTabUI(title: "Moments", tabIndex: index),
+        );
+        index++;
+      }
       // tabs.add(
       //   getTabUI(title: "QR code", tabIndex: index),
       // );
@@ -1288,13 +1503,27 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   List<Widget> getTabViewLayout() {
     List<Widget> list = [];
-
-    if (searchedUser!.type!.toLowerCase() == "user") {
+    if (showYarnTab) {
+      list.add(KeepAlivePage(
+          child: MyFeedView(
+        userName: searchedUserName,
+      )));
+    }
+    if (showChannelTab) {
+      list.add(KeepAlivePage(
+          child: UserChannelsList(
+        ownerName: searchedUserName,
+        isSearch: true,
+      )));
+    }
+    if (showMomentTab) {
       list.add(
         KeepAlivePage(
           child: MomentsTab(searchedUser: searchedUser!),
         ),
       );
+    }
+    if (searchedUser!.type!.toLowerCase() == "user") {
       if (showPostsTab) {
         list.add(
           KeepAlivePage(
@@ -1308,11 +1537,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       //   ),
       // );
     } else {
-      list.add(
-        KeepAlivePage(
-          child: MomentsTab(searchedUser: searchedUser!),
-        ),
-      );
       // list.add(
       //   KeepAlivePage(
       //     child: UserQRCodeScreen(user: searchedUser),
@@ -1505,6 +1729,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
 
+    list.add(
+      bottomSheetItem(
+        title: "Share As A Yarn",
+        iconData: SlydoAppIcon.text_message,
+        isLast: searchedUser!.userName == userBloc.user.userName,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     if (searchedUser!.userName != userBloc.user.userName) {
       if (searchedUser?.type?.toLowerCase() != "user") {
         list.add(
@@ -1620,11 +1856,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
-    Map<String, dynamic> itemData = searchedUser!.toJsonToSendInToChat();
+    Map<String, dynamic> itemData = searchedUser?.toJsonToSendInToChat() ?? {};
 
-    listOfRecipient.forEach((recipient) {
-      addUserProfileToChat(itemData: itemData, recipientUser: recipient!);
-    });
+    if (listOfRecipient != null && listOfRecipient.isNotEmpty) {
+      for (ChatConversation? recipient in listOfRecipient) {
+        if (recipient != null) {
+          addUserProfileToChat(itemData: itemData, recipientUser: recipient);
+        }
+      }
+    }
   }
 
   void addUserProfileToChat(
@@ -1646,6 +1886,33 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     await sendDataToSocket(data);
   }
+
+  Future shareAsYarn() async {
+    /*  AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    yarn.title = 'This is the title';
+    yarn.body = 'This is the body';
+    yarn.enableCommenting = true;
+    yarn.enablePayme = true;
+    yarn.attachment = {
+      "profile": searchedUser?.toJson().cast<String, dynamic>() ?? {}
+    };
+    bool data = await YarnAuth().addYarnAndQuestion(yarn);
+    if (data) {
+      showToast(message: "Share in Yarn successfully created");
+    } */
+
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..attachment = {"profile": searchedUser?.toJson()};
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
+  }
 }
 
 class GetFullAddressWidget extends StatefulWidget {
@@ -1666,6 +1933,7 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
   @override
   void initState() {
     super.initState();
+
     UserAbout? userAbout =
         Provider.of<UserBloc>(context, listen: false).userAbout;
 
@@ -1829,7 +2097,8 @@ class _MomentsTabState extends State<MomentsTab> {
       } else {
         showToast(
             message:
-                AppLocalization.of(context)!.internetConnectionNotAvailable);
+                AppLocalization.of(context)?.internetConnectionNotAvailable ??
+                    "");
         _refreshController.refreshCompleted();
       }
     });

@@ -56,6 +56,8 @@ class _SearchModuleState extends State<SearchModule> {
   TextEditingController searchItemTextController = TextEditingController();
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   //pagination variables
   int? count = 0;
@@ -267,12 +269,15 @@ class _SearchModuleState extends State<SearchModule> {
 
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
-        key: _scaffoldSearchKey,
-        resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: tabViews(),
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerSearchKey,
+        child: Scaffold(
+          key: _scaffoldSearchKey,
+          resizeToAvoidBottomInset: true,
+          backgroundColor: Colors.white,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: tabViews(),
+        ),
       ),
     );
   }
@@ -608,11 +613,21 @@ class _SearchModuleState extends State<SearchModule> {
           setState(() {});
         }
       } else if (next == null && results.length > 6) {
-        _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
         ));
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content:
+        //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        //   duration: Duration(milliseconds: 500),
+        // ));
+        // _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
+        //   content:
+        //       Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        //   duration: Duration(milliseconds: 500),
+        // ));
       }
     }
   }

@@ -21,38 +21,33 @@ class _TrimmerViewState extends State<TrimmerView> {
   bool _isPlaying = false;
   bool _progressVisibility = false;
 
-  Future<String?> _saveVideo() async {
-    setState(() {
-      _progressVisibility = true;
-    });
+  Future<void> _saveVideo() async {
+    _progressVisibility = true;
+    if (mounted) setState(() {});
 
-    String? _value;
-
-    await _trimmer
-        .saveTrimmedVideo(
-            startValue: _startValue,
-            endValue: _endValue,
-            // ffmpegCommand:
-            //     '-vf "fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0',
-            onSave: (String? outputPath) {
-              print('OUTPUT PATH: $outputPath');
-              _value = outputPath;
-            })
-        .then((value) {
-      print('OUTPUT PATH');
-
-      setState(() {
+    await _trimmer.saveTrimmedVideo(
+      startValue: _startValue,
+      endValue: _endValue,
+      onSave: (String? outputPath) async {
         _progressVisibility = false;
-      });
-    }).catchError((e) {
-      print('ON ERROR -> ${e.toString()}');
-    });
+        if (mounted) setState(() {});
 
-    return _value;
+        // final snackBar = SnackBar(content: Text('Video Saved successfully'));
+        //
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        // await Future.delayed(Duration(milliseconds: 500));
+
+        Navigator.pop(context, outputPath);
+      },
+      // ffmpegCommand:'-vf "fps=10,scale=480:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0',
+    );
   }
 
   void _loadVideo() {
-    _trimmer.loadVideo(videoFile: widget.file);
+    _trimmer.loadVideo(
+      videoFile: widget.file,
+    );
   }
 
   @override
@@ -66,7 +61,22 @@ class _TrimmerViewState extends State<TrimmerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Video Trimmer"),
+        title: Text(
+          "Video Trimmer",
+        ),
+        actions: [
+          IconButton(
+            onPressed: _progressVisibility == true
+                ? null
+                : () async {
+                    await _saveVideo();
+                  },
+            icon: Icon(
+              Icons.check_rounded,
+              size: 32,
+            ),
+          )
+        ],
       ),
       body: Builder(
         builder: (context) => Center(
@@ -83,20 +93,10 @@ class _TrimmerViewState extends State<TrimmerView> {
                     backgroundColor: Colors.red,
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: _progressVisibility
-                      ? null
-                      : () async {
-                          _saveVideo().then((outputPath) {
-                            final snackBar = SnackBar(
-                                content: Text('Video Saved successfully'));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              snackBar,
-                            );
-                          });
-                        },
-                  child: Text("SAVE"),
-                ),
+                // ElevatedButton(
+                //   onPressed: _progressVisibility ? null : () async {},
+                //   child: Text("SAVE"),
+                // ),
                 Expanded(
                   child: VideoViewer(trimmer: _trimmer),
                 ),
@@ -105,7 +105,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                     trimmer: _trimmer,
                     viewerHeight: 50.0,
                     viewerWidth: MediaQuery.of(context).size.width,
-                    maxVideoLength: Duration(seconds: 10),
+                    maxVideoLength: Duration(seconds: 30),
                     onChangeStart: (value) {
                       _startValue = value;
                     },

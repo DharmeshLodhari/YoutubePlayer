@@ -6,6 +6,7 @@ import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/moments/screens/trimmer_view.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_group_action_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_action_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
@@ -29,6 +30,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_c
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/gif_image_tile_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/location_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/moment_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/text_message_render_for_chat_screen.dart';
@@ -45,6 +47,7 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/user_tile.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/location_service.dart';
 import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -66,6 +69,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:images_picker/images_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:path_provider/path_provider.dart';
@@ -83,6 +87,7 @@ import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
 import '../tiles/post_title_for_chat.dart';
+import '../tiles/yarn_question_tile.dart';
 
 class ChatScreenGroupMessage extends StatefulWidget {
   final arguments;
@@ -230,6 +235,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   bool isUserNudging = false;
   AppConfigurationModel? appConfigurationModel;
 
+  /// CHAT SYNCHRONIZER
+  Duration _chatSynchronizeTime = Duration(seconds: 2);
+  Timer? _chatSynchronizerTimer;
+
   @override
   void initState() {
     messageListController = GroupedItemScrollController();
@@ -269,7 +278,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     /// by adding observer in this screen we can listen the app life cycle state
     /// on this screen by this method
     // lib/screens/more_apps/messaging/chat/screens/chat_screen.dart:294
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   void checkNetworkConnectivity() async {
@@ -306,7 +315,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     getUserStatus();
     setUserStatusTimer();
     initializeSocket();
-    await setUpAudioRecorder();
+
     chatShakeDetection = Provider.of<ChatShakeDetection>(
         myGlobals.scaffoldKey.currentContext!,
         listen: false);
@@ -316,6 +325,16 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     ChatUserManager().clearChatUserMessageCount(
         conversationId: chatConversation!.conversationId);
+
+    // setupSynchronizer();
+  }
+
+  void setupSynchronizer() {
+    _chatSynchronizerTimer =
+        Timer.periodic(_chatSynchronizeTime, (timer) async {
+      if (mounted)
+        await ChatMessageSynchronizer().syncMessages(fetchFresh: true);
+    });
   }
 
   void setUserStatusTimer() {
@@ -545,6 +564,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     messageController?.dispose();
     messageFocus?.dispose();
+
+    if (_chatSynchronizerTimer?.isActive ?? false) {
+      _chatSynchronizerTimer?.cancel();
+    }
   }
 
   @override
@@ -918,8 +941,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             message:
                 "${messageData['meta_data']['author']} has deleted this group !!");
 
-        Navigator.popUntil(
-            context, ModalRoute.withName(Routes.FRIENDS_DASHBOARD));
+        if (mounted)
+          Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
         return;
       } else if (messageData['meta_data']['action'] == "remove_user") {
         List users = messageData['meta_data']['users'];
@@ -933,8 +956,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
               message:
                   "${messageData['meta_data']['author']} has removed you from group !!");
 
-          Navigator.popUntil(
-              context, ModalRoute.withName(Routes.FRIENDS_DASHBOARD));
+          if (mounted)
+            Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
           return;
         }
       }
@@ -2128,6 +2151,8 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () async {
+        await setUpAudioRecorder();
+
         await getAudioPermission();
 
         if (isAudioRecording) {
@@ -2661,53 +2686,75 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     showMoreAction = false;
     if (mounted) setState(() {});
 
-    List<String> allowedExtensions =
-        imageExtensions + videoExtensions + audioExtensions;
+    // List<String> allowedExtensions =
+    //     imageExtensions + videoExtensions + audioExtensions;
+    //
+    // FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
+    //     allowMultiple: false,
+    //     type: FileType.custom,
+    //     allowedExtensions: allowedExtensions);
 
-    FilePickerResult? pickedMedia = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        type: FileType.custom,
-        allowedExtensions: allowedExtensions);
+    List<Media>? res = await ImagesPicker.pick(
+      count: 1,
+      pickType: PickType.all,
+      language: Language.System,
+      maxTime: 900,
+      cropOpt: CropOption(
+        // aspectRatio: CropAspectRatio.wh16x9,
+        cropType: CropType.rect,
+      ),
+    );
 
-    if (pickedMedia != null) {
-      File file = File(pickedMedia.files.single.path!);
-      String mediaType = getFileType(pickedMedia);
+    if (res == null || res.isEmpty) return;
+    File? file;
+    file = File(res.first.path);
+    String? mediaType = getFileTypeByPath(path: file.path);
 
-      // int sizeInBytes = file.lengthSync();
-      //
-      // int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
-      //
-      // if (sizeInMb > maxVideoFileSize) {
-      //   showToast(message: 'File is too large');
-      //   return;
-      // }
-
-      if (mediaType == "") {
-        setupShakeDetector();
-        return;
-      }
-
-      Object? result = await Navigator.of(context).pushNamed(
-        Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
-        arguments: {
-          "data": {
-            "conversation": chatConversation!.conversationId,
-            "author": userBloc!.user.userName,
-          },
-          "media": file,
-          "message": messageController!.text.trim(),
-          "mediaType": mediaType
-        },
-      ).catchError((error) {
-        debugPrint("Error: = = = = $error");
-      });
+    if (mediaType == null) {
       setupShakeDetector();
-
-      if (result == null) return;
-
-      messageController!.text = "";
-      debugPrint("Result:- $result");
+      return;
     }
+
+    if (mediaType == 'video') {
+      var videoFilePath =
+          await NavigationUtil.push(context, screen: TrimmerView(file: file));
+      if (videoFilePath is String) {
+        file = File(videoFilePath);
+      }
+    }
+
+    // File file = File(pickedMedia.files.single.path!);
+    // String mediaType = getFileType(pickedMedia);
+
+    // int sizeInBytes = file.lengthSync();
+    //
+    // int sizeInMb = (sizeInBytes / (1024 * 1024)).toInt();
+    //
+    // if (sizeInMb > maxVideoFileSize) {
+    //   showToast(message: 'File is too large');
+    //   return;
+    // }
+
+    Object? result = await Navigator.of(context).pushNamed(
+      Routes.SEND_MEDIA_TO_CHAT_MESSAGE,
+      arguments: {
+        "data": {
+          "conversation": chatConversation!.conversationId,
+          "author": userBloc!.user.userName,
+        },
+        "media": file,
+        "message": messageController!.text.trim(),
+        "mediaType": mediaType
+      },
+    ).catchError((error) {
+      debugPrint("Error: = = = = $error");
+    });
+    setupShakeDetector();
+
+    if (result == null) return;
+
+    messageController!.text = "";
+    debugPrint("Result:- $result");
   }
 
   void addDocumentFileToMessage() async {
@@ -3130,7 +3177,14 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         finalUI = renderPostUI(
             message: messageData, chatConversation: chatConversation);
         break;
-
+      case "moment":
+        finalUI = renderMomentUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
+      case "yarn":
+        finalUI = renderYarnUI(
+            message: messageData, chatConversation: chatConversation);
+        break;
       case "payment-contract":
         finalUI = renderPaymentContractUI(
             message: messageData, chatConversation: chatConversation);
@@ -3761,6 +3815,24 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget renderPostUI(
       {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
     return PostTileForChat(
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderMomentUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return MomentTileForChat(
+      key: ValueKey(message?["id"]),
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderYarnUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return YarnQuestionTileForChat(
+      key: ValueKey(message?["id"]),
       message: message,
       chatConversation: chatConversation,
     );

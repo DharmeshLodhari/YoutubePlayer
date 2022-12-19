@@ -69,7 +69,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
         child: ListTile(
           dense: true,
           title: userNameWithVerifiedIcon(
-            name: widget.user!.fullName!,
+            name: _buildName() ?? "",
             isVerified: widget.user!.isVerified!,
           ),
           subtitle: getSubtitle(context),
@@ -83,6 +83,13 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
       ),
     );
     return tile;
+  }
+
+  String? _buildName() {
+    if (widget.user?.nickName != null && widget.user?.nickName != "") {
+      return widget.user?.nickName;
+    }
+    return widget.user?.fullName;
   }
 
   Widget getSubtitle(BuildContext context) {

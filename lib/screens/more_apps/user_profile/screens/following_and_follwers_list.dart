@@ -12,7 +12,9 @@ import '../user_auth.dart';
 
 class FollowingAndFollowersList extends StatefulWidget {
   final String userName;
-  const FollowingAndFollowersList({Key? key, required this.userName})
+  final int index;
+  const FollowingAndFollowersList(
+      {Key? key, required this.userName, this.index = 0})
       : super(key: key);
 
   @override
@@ -21,8 +23,14 @@ class FollowingAndFollowersList extends StatefulWidget {
 }
 
 class _FollowingAndFollowersListState extends State<FollowingAndFollowersList> {
-  int currentIndex = 0;
+  late int currentIndex;
   late AppLocalization appLocalization;
+
+  @override
+  void initState() {
+    currentIndex = widget.index;
+    super.initState();
+  }
 
   Widget appBar() {
     return AppBar(

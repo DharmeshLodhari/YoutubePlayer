@@ -17,6 +17,12 @@ class GroupDetailModel {
   String? description;
   bool? isVerified;
 
+  bool? isPublicGroup;
+  int? ageRestriction;
+  int? groupSubscriptionFees;
+  int? maxAllowedUser;
+  String? groupSubscriptionCurrency;
+
   GroupDetailModel(
       {this.adminUsers = const [],
       this.avatar,
@@ -31,34 +37,45 @@ class GroupDetailModel {
       this.username,
       this.owner,
       this.isVerified = false,
-      this.description});
+      this.description,
+      this.isPublicGroup = false,
+      this.groupSubscriptionCurrency,
+      this.maxAllowedUser,
+      this.groupSubscriptionFees,
+      this.ageRestriction});
 
   factory GroupDetailModel.fromJson(Map<String, dynamic> json) {
     return GroupDetailModel(
-        adminUsers: json['admin_users'] != null
-            ? new List<String>.from(json['admin_users'])
-            : [],
-        avatar: json['avatar'],
-        blockedParticipants: json['blocked_participants'] != null
-            ? new List<String>.from(json['blocked_participants'])
-            : [],
-        conversationId: json['conversation_id'],
-        fullName: json['full_name'],
-        createdAt: json['created_at'],
-        isGroupConversation: json['is_group_conversation'],
-        mutedParticipants: json['muted_participants'] != null
-            ? new List<String>.from(json['muted_participants'])
-            : [],
-        participants: json['participants'] != null
-            ? (json['participants'] as List)
-                .map((i) => Participant.fromJson(i))
-                .toList()
-            : [],
-        type: json['type'],
-        username: json['username'],
-        owner: json['owner'],
-        isVerified: json['is_verified'],
-        description: json['description'] ?? "");
+      adminUsers: json['admin_users'] != null
+          ? new List<String>.from(json['admin_users'])
+          : [],
+      avatar: json['avatar'],
+      blockedParticipants: json['blocked_participants'] != null
+          ? new List<String>.from(json['blocked_participants'])
+          : [],
+      conversationId: json['conversation_id'],
+      fullName: json['full_name'],
+      createdAt: json['created_at'],
+      isGroupConversation: json['is_group_conversation'],
+      mutedParticipants: json['muted_participants'] != null
+          ? new List<String>.from(json['muted_participants'])
+          : [],
+      participants: json['participants'] != null
+          ? (json['participants'] as List)
+              .map((i) => Participant.fromJson(i))
+              .toList()
+          : [],
+      type: json['type'],
+      username: json['username'],
+      owner: json['owner'],
+      isVerified: json['is_verified'],
+      description: json['description'] ?? "",
+      isPublicGroup: json["is_public_group"],
+      ageRestriction: json["age_restriction"],
+      groupSubscriptionFees: json["group_subscription_fee"],
+      maxAllowedUser: json["group_max_allowed_users"],
+      groupSubscriptionCurrency: json["group_subscription_currency"],
+    );
   }
 
   factory GroupDetailModel.fromChatConversation(

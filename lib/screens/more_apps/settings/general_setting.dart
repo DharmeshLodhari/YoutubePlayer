@@ -3,23 +3,28 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/chat_message_settings.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_auth.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/user_kyc.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_setting_screen.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/logout_helper.dart';
+import 'package:Slydo/utils/global_key.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/BottomSheetItemWithCheck.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../routes/route_constants.dart';
-import '../payment_and_banking/screens/banking/user_kyc.dart';
 
 class GeneralSettingScreen extends StatefulWidget {
   @override
@@ -107,6 +112,14 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                 getCurrencyTile(),
                 getLanguageTile(),
                 getSettingsTile(
+                    title: "Yarn Settings",
+                    onTap: () {
+                      NavigationUtil.push(
+                        context,
+                        screen: YarnSettingsScreen(),
+                      );
+                    }),
+                getSettingsTile(
                     title: "Terms & Conditions",
                     onTap: () async {
                       try {
@@ -163,6 +176,11 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
                     onTap: () async {
                       Navigator.of(context).pushNamed(Routes.CHANGE_PASSWORD);
                     }),
+                getSettingsTile(
+                    title: "Deactivate Account",
+                    onTap: () async {
+                      deactivateAccountDialogue();
+                    }),
                 getLogoutTile(),
               ],
             ),
@@ -174,6 +192,62 @@ class _GeneralSettingScreenState extends State<GeneralSettingScreen> {
         ),
       ],
     );
+  }
+
+  void deactivateAccountDialogue() async {
+    bool? result = await showDialogBox(
+      context: context,
+      actionOneTextColor: white,
+      actionOneBgColor: mateRed,
+      actionTwoTextColor: blackFont,
+      actionTwoBgColor: greyBorderColor,
+      title: 'Deactivate Account',
+      actionTwoText: "Cancel",
+      actionOneText: "Yes",
+      description: 'are sure they want to deactivate your account?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Icon(SlydoAppIcon.delete),
+      ),
+    );
+    if (result != null && result) {
+      bool? result1 = await showDialogBox(
+        context: myGlobals.navigationKey.currentContext!,
+        actionOneTextColor: white,
+        actionOneBgColor: mateRed,
+        actionTwoTextColor: blackFont,
+        actionTwoBgColor: greyBorderColor,
+        title: 'Deactivate Account',
+        actionTwoText: "Cancel",
+        actionOneText: "Deactivate",
+        description:
+            'all your transaction will still be Available But your account will be deactivated?',
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          enableMargin: false,
+          width: 90,
+          height: 90,
+          image: Icon(SlydoAppIcon.delete),
+        ),
+      );
+
+      if (result1 != null && result1) {
+        debugPrint("USER HAS REQUESTED ACCOUNT DEACTIVATION $result1");
+        await deactivateAccount();
+      }
+    }
+  }
+
+  Future<void> deactivateAccount() async {
+    bool result = await UserAuth().deactivateUserAccount();
+    if (result) {
+      showDialog(
+          context: (context),
+          builder: (context) => Center(child: CircularLoadingIndicator()),
+          barrierDismissible: false);
+      await LogoutHelper().logoutUser();
+    }
   }
 
   Widget _infoTile() {

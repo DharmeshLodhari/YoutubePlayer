@@ -1,7 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/screens/shopping/shopping_tile.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/customized_textform_field.dart';
@@ -40,6 +39,8 @@ class _SearchProductState extends State<SearchProduct> {
   List<Product> products = [];
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   bool isLoading = false;
 
@@ -166,7 +167,7 @@ class _SearchProductState extends State<SearchProduct> {
           setState(() {});
         }
       } else if (next == null && products.length > 6) {
-        _scaffoldSearchKey.currentState!.showSnackBar(
+        _scaffoldMessengerSearchKey.currentState!.showSnackBar(
           SnackBar(
             content: Text(
                 AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
@@ -204,11 +205,14 @@ class _SearchProductState extends State<SearchProduct> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldSearchKey,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: scaffoldBody(),
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerSearchKey,
+      child: Scaffold(
+        key: _scaffoldSearchKey,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: scaffoldBody(),
+      ),
     );
   }
 

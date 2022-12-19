@@ -49,6 +49,7 @@ class _SendPaymentState extends State<SendPayment> {
   final _auth = PaymentAndBankingAuth();
   final _formKey = GlobalKey<FormState>();
   final _sendPaymentScaffold = GlobalKey<ScaffoldState>();
+  final _sendPaymentScaffoldMessenger = GlobalKey<ScaffoldMessengerState>();
   CustomerProfile? _payee;
   late UserBloc userBloc;
   late CustomerProfileBloc customerProfileBloc;
@@ -226,12 +227,15 @@ class _SendPaymentState extends State<SendPayment> {
         customerProfileBloc.customer = null;
         return true;
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        key: _sendPaymentScaffold,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+      child: ScaffoldMessenger(
+        key: _sendPaymentScaffoldMessenger,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          key: _sendPaymentScaffold,
+          resizeToAvoidBottomInset: true,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+        ),
       ),
     );
   }
@@ -1071,7 +1075,8 @@ class _SendPaymentState extends State<SendPayment> {
                 },
                 cancelCallBack: () {
                   Navigator.pop(context);
-                  _sendPaymentScaffold.currentState!.showSnackBar(SnackBar(
+                  _sendPaymentScaffoldMessenger.currentState!
+                      .showSnackBar(SnackBar(
                     content: Text(AppLocalization.of(context)!.invalidPassword),
                   ));
                 });

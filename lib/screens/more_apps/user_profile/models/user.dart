@@ -236,7 +236,7 @@ class CustomerProfile {
         nickName: json['nickname'] ?? json['name'] ?? "",
         type: json['type'] ?? json['account_type'] ?? "user",
         conversationId: json['conversation_id'] ?? "",
-        status: json['status'] ?? UserStatus.UNKNOWN,
+        status: UserStatus.UNKNOWN,
         rating: json['rating'] ?? 0.0);
     if (json['default_currency'] != null) {
       profile.defaultCurrency = json['default_currency'] ?? "NGN";
@@ -298,8 +298,10 @@ class CustomerProfile {
     data['avatar'] = this.avatar;
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
+    data['bio'] = this.bio;
+    data['wallpaper'] = this.userAbout?.wallpaper;
     data['conversation_id'] = this.conversationId;
-    data['status'] = this.status;
+    data['status'] = this.status.name;
     data['uuid'] = this.uuid;
     data['default_currency'] = this.defaultCurrency;
     data['is_verified'] = this.isVerified;

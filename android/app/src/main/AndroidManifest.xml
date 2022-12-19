@@ -57,12 +57,16 @@
 <!--                <action android:name="android.intent.action.MEDIA_BUTTON" />-->
 <!--            </intent-filter>-->
 <!--        </receiver>-->
-        <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+<!--        <activity-->
+<!--            android:name="com.yalantis.ucrop.UCropActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>-->
+        <activity android:name="com.android.camera.CropImage"/>
+        <activity android:name="com.yalantis.ucrop.UCropActivity"/>
 
-    <!-- notification icon starts-->
+
+
+        <!-- notification icon starts-->
 
         <!-- notification icon-->
         <meta-data

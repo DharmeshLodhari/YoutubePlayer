@@ -6,6 +6,7 @@ class CreateMomentModel {
   bool enablePayMe;
   bool enableLike;
   bool enableCommenting;
+  bool isPermanent;
   String? mediaPoster;
   List<String>? userTags;
   String? payMeLabel;
@@ -19,6 +20,7 @@ class CreateMomentModel {
     this.payMeLabel = 'Pay Me',
     this.enableLike = false,
     this.enableCommenting = false,
+    this.isPermanent = false,
     this.enablePayMe = false,
     this.mediaPoster,
     this.userTags,

@@ -110,6 +110,8 @@ class MomentsService extends AuthService {
       url = AppConfig.baseUrl + "/api/v1/social/moments/user/$ownerName/";
     }
 
+    debugPrint("MY MOMENTS URL ::: $url");
+
     final headers = await getAuthHeaders();
 
     Response response = await httpGet(url, headers: headers);
@@ -145,7 +147,7 @@ class MomentsService extends AuthService {
       {required String? nextUrl, required String momentID}) async {
     String? url = AppConfig.baseUrl +
         "/api/v1/social/moments/comments/$momentID/?page_size=8";
-
+    print("COMMENT URL:- ${url}");
     if (nextUrl != null) {
       url = getSecureUrl(url: nextUrl);
     }
@@ -224,6 +226,7 @@ class MomentsService extends AuthService {
     request.fields["enable_like"] = jsonEncode(createMomentModel.enableLike);
     request.fields["enable_commenting"] =
         jsonEncode(createMomentModel.enableCommenting);
+    request.fields["is_permanent"] = jsonEncode(createMomentModel.isPermanent);
 
     debugPrint('REQUEST FIELDS :: ${request.fields}');
     if (createMomentModel.mediaPoster != null) {
@@ -251,6 +254,39 @@ class MomentsService extends AuthService {
     } else {
       return Future.error(
           "ERROR while calling moment $url StatusCode:- ${response.statusCode} Body:- $responseBody");
+    }
+  }
+
+  Future<MomentsModel> updateMoment(
+      {required String momentId, required Map<String, dynamic> data}) async {
+    var url = AppConfig.baseUrl + "/api/v1/social/moments/$momentId/";
+    Map<String, String> headers = await getAuthHeaders();
+    var response = await httpPatch(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    debugPrint(
+        "URL $url REQUEST FIELD: $data STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      MomentsModel momentsModel =
+          MomentsModel.fromJson(jsonDecode(response.body));
+
+      return momentsModel;
+    } else {
+      if (response.statusCode != 500) {
+        var jsonData = jsonDecode(response.body);
+        debugPrint(
+            "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
+        return Future.error(jsonData is Map
+            ? jsonData["error"]
+            : jsonData is List
+                ? jsonData[0]
+                : 'Something went wrong');
+      }
+      return Future.error("Server Error");
     }
   }
 

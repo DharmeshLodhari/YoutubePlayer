@@ -26,6 +26,8 @@ class UserServiceList extends StatefulWidget {
 class _UserServiceListState extends State<UserServiceList> {
   final GlobalKey<ScaffoldState> _serviceScaffoldKey =
       new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _serviceScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   // this variable responsible for service pagination
   int? serviceCount = 0;
@@ -75,48 +77,52 @@ class _UserServiceListState extends State<UserServiceList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _serviceScaffoldKey,
-      body: Container(
-        color: lightGrey,
-        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-        child: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _servicesRefreshController,
-          onRefresh: _onServiceRefresh,
-          child: ListView(
-            children: [
-              _buildServiceList(),
-              isServiceLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisExtent: 180,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
+    return ScaffoldMessenger(
+      key: _serviceScaffoldMessengerKey,
+      child: Scaffold(
+        key: _serviceScaffoldKey,
+        body: Container(
+          color: lightGrey,
+          padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _servicesRefreshController,
+            onRefresh: _onServiceRefresh,
+            child: ListView(
+              children: [
+                _buildServiceList(),
+                isServiceLoading
+                    ? Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisExtent: 180,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
                         ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : SizedBox.shrink(),
-            ],
+                      )
+                    : SizedBox.shrink(),
+              ],
+            ),
           ),
         ),
       ),
@@ -137,9 +143,10 @@ class _UserServiceListState extends State<UserServiceList> {
     return serviceNext == "" && isServiceLoading
         ? SizedBox.shrink()
         : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
             child: GridView.builder(
               shrinkWrap: true,
+              padding: EdgeInsets.zero,
               controller: _serviceScrollController,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -253,7 +260,7 @@ class _UserServiceListState extends State<UserServiceList> {
           });
         }
       } else if (serviceNext == null && serviceList.length > 6) {
-        _serviceScaffoldKey.currentState!.showSnackBar(SnackBar(
+        _serviceScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

@@ -3,9 +3,134 @@ import 'dart:io';
 import 'package:Slydo/utils/util.dart';
 import 'package:flutter/material.dart';
 
+List<String> productCategoryList = [
+  "All categories",
+  "Auto & Large Appliances",
+  "Automotive",
+  "Baby & Kids",
+  "Beauty & Spas",
+  "Electronics",
+  "Entertainment",
+  "Food & Drink",
+  "Grocery & Household",
+  "Health & Beauty",
+  "Health & Fitness",
+  "Home & Garden",
+  "Jewellery & Watches",
+  "Men's Fashion",
+  "Personalised",
+  "Pet Supplies",
+  "Sports & Outdoors",
+  "Toys",
+  "Women’s Fashion",
+];
+
+List<String> serviceCategoryList = [
+  "All categories",
+  "Alarms – Security & Fire",
+  "Appliance Repairs",
+  "Architect",
+  "Block laye",
+  "Brick layer",
+  "Builder - General",
+  "Builder - Ground Works",
+  "Builder - House Extensions",
+  "Builder - New Builds",
+  "Building Surveyor",
+  "CCTV Cameras",
+  "Carpenter/Joiner",
+  "Carpet fitter",
+  "Civil Engineer",
+  "Cleaning Service",
+  "Computer Systems",
+  "Conservatories & Sunrooms",
+  "Curtain maker",
+  "Drain & Sewer Cleaning",
+  "Electrician",
+  "Fencing Contractor",
+  "Fitter/Welder",
+  "Flooring",
+  "Gardening/Landscaping",
+  "Gas Fitter",
+  "General Work/Miscellaneous Work",
+  "Gutters Fascia & Soffit",
+  "Handyman",
+  "Heating Contractor",
+  "Insulation - Pumped",
+  "Insulation Contractor",
+  "Interior Designer",
+  "Kitchens & Fitted Furniture",
+  "Locks & Locksmiths",
+  "Mechanic",
+  "Painter/Decorator",
+  "Paving Contractor",
+  "Phone Systems",
+  "Plasterer",
+  "Plumber",
+  "Quantity Surveyor",
+  "Removal & Storage",
+  "Roofer",
+  "Slabbing Contractor",
+  "Solar Panels",
+  "Steel Erector",
+  "Stone Mason",
+  "Tiler",
+  "Tree Surgeon",
+  "Underfloor Heating",
+  "Upholsterer",
+  "Window & Door Repairs,Other",
+  "Window Installer"
+];
+
+List<ProductCondition> conditions = <ProductCondition>[
+  const ProductCondition(
+    'Fair',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'Good',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'Like New',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'New',
+    'Original packaging or with tag',
+  ),
+  const ProductCondition(
+    'Poor',
+    'Original packaging or with tag',
+  ),
+];
+
+List<PaymentCategory> paymentCategories = <PaymentCategory>[
+  PaymentCategory(
+    'General',
+  ),
+  PaymentCategory(
+    'Groceries',
+  ),
+  PaymentCategory(
+    'Entertainment',
+  ),
+  PaymentCategory(
+    'Eating out',
+  ),
+  PaymentCategory(
+    'Bills',
+  ),
+  PaymentCategory(
+    'Shopping',
+  ),
+];
+
 class Product {
   String? id;
   String? name;
+  String? type;
+  String? webUrl;
   String? description;
   String? shortDescription;
   String? price;
@@ -29,6 +154,8 @@ class Product {
   Product(
       {this.id,
       this.name,
+      this.type,
+      this.webUrl,
       this.enableInSuperStore,
       this.description,
       this.shortDescription,
@@ -62,6 +189,23 @@ class Product {
       "is_available": this.isAvailable,
       "available_from": this.availableFrom,
       "enable_in_superstore": this.enableInSuperStore,
+    };
+  }
+
+  Map toJson() {
+    return {
+      "id": this.id,
+      "name": this.name,
+      "description": this.description,
+      "short_description": this.shortDescription,
+      "price": this.price,
+      "condition": this.condition,
+      "category": this.category,
+      "manufacturer": this.manufacturer,
+      "is_available": this.isAvailable,
+      "available_from": this.availableFrom.toString(),
+      "enable_in_superstore": this.enableInSuperStore,
+      "cover": this.cover,
     };
   }
 
@@ -108,7 +252,7 @@ class Product {
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "",
       pictureMap: object["pictureMap"] ?? [],
-      rating: formatRating(object['rating'] ?? 0.0),
+      rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
     );
     // id = object["id"].toString();
@@ -134,6 +278,34 @@ class Product {
     // rating = formatRating(object['rating'] ?? 0.0);
     // canRate = object["can_rate"] ?? false;
   }
+
+  // Map<String, dynamic> toJson() {
+  //   final map = <String, dynamic>{};
+  //   map['id'] = id;
+  //   map['name'] = name;
+  //   map['type'] = type;
+  //   map['cover'] = cover;
+  //   map['price'] = price;
+  //   map['rating'] = rating;
+  //   map['seller'] = seller;
+  //   map['qr_code'] = qrCode;
+  //   map['web_url'] = webUrl;
+  //   map['category'] = category;
+  //   map['currency'] = currency;
+  //   // if (pictures != null) {
+  //   //   map['pictures'] = pictures?.map((v) => v.toJson()).toList();
+  //   // }
+  //   map['condition'] = condition;
+  //   map['description'] = description;
+  //   map['is_available'] = isAvailable;
+  //   map['manufacturer'] = manufacturer;
+  //   map['seller_avatar'] = sellerAvatar;
+  //   map['available_from'] = availableFrom;
+  //   map['seller_fullname'] = sellerFullName;
+  //   map['short_description'] = shortDescription;
+  //   map['enable_in_superstore'] = enableInSuperStore;
+  //   return map;
+  // }
 
   String? getMerchantUserName() {
     return this.seller;
@@ -274,6 +446,22 @@ class Service {
     };
   }
 
+  Map toJson() {
+    return {
+      "id": this.id,
+      "name": this.name,
+      "short_description": this.shortDescription,
+      "price": this.price,
+      "category": this.category,
+      "is_available": this.isAvailable,
+      "available_from": this.availableFrom.toString(),
+      "cover": this.cover,
+      "provider": this.provider,
+      "currency": this.currency,
+      'rating': this.rating,
+    };
+  }
+
   Service.fromJson(object) {
     this.id = object["id"];
     this.name = object["name"] ?? "";
@@ -292,7 +480,7 @@ class Service {
     this.availableFrom = getServiceDateTime(object["available_from"]);
     this.currency = object["currency"] ?? "";
     this.pictureMap = object["pictureMap"] ?? [];
-    rating = formatRating(object['rating'] ?? 0.0);
+    this.rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
   }
 
@@ -324,111 +512,11 @@ class PaymentCategory {
   final String name;
 }
 
-List<PaymentCategory> paymentCategories = <PaymentCategory>[
-  PaymentCategory(
-    'General',
-  ),
-  PaymentCategory(
-    'Groceries',
-  ),
-  PaymentCategory(
-    'Entertainment',
-  ),
-  PaymentCategory(
-    'Eating out',
-  ),
-  PaymentCategory(
-    'Bills',
-  ),
-  PaymentCategory(
-    'Shopping',
-  ),
-];
-
 class ProductCategory {
   const ProductCategory(this.name);
 
   final String name;
 }
-
-List<String> productCategoryList = [
-  "All categories",
-  "Auto & Large Appliances",
-  "Automotive",
-  "Baby & Kids",
-  "Beauty & Spas",
-  "Electronics",
-  "Entertainment",
-  "Food & Drink",
-  "Grocery & Household",
-  "Health & Beauty",
-  "Health & Fitness",
-  "Home & Garden",
-  "Jewellery & Watches",
-  "Men's Fashion",
-  "Personalised",
-  "Pet Supplies",
-  "Sports & Outdoors",
-  "Toys",
-  "Women’s Fashion",
-];
-
-List<String> serviceCategoryList = [
-  "All categories",
-  "Alarms – Security & Fire",
-  "Appliance Repairs",
-  "Architect",
-  "Block laye",
-  "Brick layer",
-  "Builder - General",
-  "Builder - Ground Works",
-  "Builder - House Extensions",
-  "Builder - New Builds",
-  "Building Surveyor",
-  "CCTV Cameras",
-  "Carpenter/Joiner",
-  "Carpet fitter",
-  "Civil Engineer",
-  "Cleaning Service",
-  "Computer Systems",
-  "Conservatories & Sunrooms",
-  "Curtain maker",
-  "Drain & Sewer Cleaning",
-  "Electrician",
-  "Fencing Contractor",
-  "Fitter/Welder",
-  "Flooring",
-  "Gardening/Landscaping",
-  "Gas Fitter",
-  "General Work/Miscellaneous Work",
-  "Gutters Fascia & Soffit",
-  "Handyman",
-  "Heating Contractor",
-  "Insulation - Pumped",
-  "Insulation Contractor",
-  "Interior Designer",
-  "Kitchens & Fitted Furniture",
-  "Locks & Locksmiths",
-  "Mechanic",
-  "Painter/Decorator",
-  "Paving Contractor",
-  "Phone Systems",
-  "Plasterer",
-  "Plumber",
-  "Quantity Surveyor",
-  "Removal & Storage",
-  "Roofer",
-  "Slabbing Contractor",
-  "Solar Panels",
-  "Steel Erector",
-  "Stone Mason",
-  "Tiler",
-  "Tree Surgeon",
-  "Underfloor Heating",
-  "Upholsterer",
-  "Window & Door Repairs,Other",
-  "Window Installer"
-];
 
 class ProductCondition {
   const ProductCondition(this.name, this.description);
@@ -436,29 +524,6 @@ class ProductCondition {
   final String name;
   final String description;
 }
-
-List<ProductCondition> conditions = <ProductCondition>[
-  const ProductCondition(
-    'Fair',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'Good',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'Like New',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'New',
-    'Original packaging or with tag',
-  ),
-  const ProductCondition(
-    'Poor',
-    'Original packaging or with tag',
-  ),
-];
 
 class ServiceCategory {
   const ServiceCategory(this.name);

@@ -1,6 +1,6 @@
 name: Slydo
 description: The slydo application.
-version: 1.1.3+33
+version: 1.1.6+37
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -27,11 +27,11 @@ dependencies:
   validators: ^3.0.0
   get_storage: ^2.0.3
 #  ext_storage: ^1.0.3
-  flutter_quill: ^4.0.5
+  flutter_quill: ^6.0.9
   path_provider: ^2.0.5
   textfield_tags: 1.4.3
   external_path: ^1.0.1
-  qr_code_scanner: ^0.7.0
+  qr_code_scanner: ^1.0.1
   dropdown_button2: ^1.4.0
   flutter_linkify: ^5.0.2
   flutter_colorpicker: ^1.0.3
@@ -40,8 +40,8 @@ dependencies:
   image_picker: ^0.8.4+2
   cached_video_player: ^2.0.3
 #  downloads_path_provider_28: ^0.1.2
-  firebase_crashlytics: ^2.2.1
-  firebase_messaging: ^13.0.3
+  firebase_crashlytics: ^3.0.3
+  firebase_messaging: ^14.0.3
   cached_network_image: ^3.1.0
   shared_preferences: ^2.0.8
   passcode_screen: ^2.0.0
@@ -59,7 +59,10 @@ dependencies:
   flip_card: ^0.5.0
   url_launcher: 6.1.4
   animated_fractionally_sized_box: ^2.0.1
+  custom_qr_generator: ^0.1.0
   modal_progress_hud_nsn: ^0.3.0
+  # Adding this logger for easy debuggin
+  logger: ^1.1.0
 #  charts_flutter: ^0.11.0
   charts_flutter:
     git:
@@ -81,7 +84,7 @@ dependencies:
   video_player: ^2.4.0
   wakelock: ^0.5.6
   percent_indicator: ^3.0.1
-  assets_audio_player: 3.0.4
+  assets_audio_player: ^3.0.5
   video_thumbnail: ^0.5.0
   flutter_video_info: ^1.2.0
   quiver: ^3.0.1
@@ -95,12 +98,12 @@ dependencies:
   flutter_sound: ^8.4.2
   flare_flutter: ^3.0.2
   lazy_load_scrollview: ^1.3.0
-  permission_handler: ^8.1.6
+  permission_handler: ^10.2.0
   shake: ^1.0.1
   sizer: ^2.0.15
   colorful_safe_area: ^0.3.0
   flutter_secure_storage: ^4.2.1
-  image_cropper: ^2.0.2
+  image_cropper: ^3.0.0
   linkwell: ^2.0.6
   swipe_to: ^0.1.0-nullsafety.1
   giphy_picker: ^2.0.0
@@ -112,7 +115,7 @@ dependencies:
   google_maps_flutter: ^2.0.10
   flutter_polyline_points: ^1.0.0
   extended_text_field: ^8.0.0
-  workmanager: 0.4.1
+  workmanager: 0.5.1
   receive_sharing_intent: ^1.4.5
   rxdart: ^0.27.3
   progress_indicators: ^1.0.0
@@ -126,6 +129,7 @@ dependencies:
   video_trimmer: 1.1.3
   # video_editor: ^1.3.0
   ffmpeg_kit_flutter: ^4.5.1
+  flutter_speed_dial: ^6.2.0
 
 
 #dependency_overrides:
@@ -133,6 +137,8 @@ dependencies:
 #  http: ^0.12.0+2
   collection: ^1.15.0-nullsafety.4
   webview_flutter: ^3.0.4
+  images_picker: ^1.2.11
+  cupertino_icons: ^1.0.5
 
 flutter_icons:
   android: "launcher_icon"
@@ -183,6 +189,7 @@ flutter:
     - assets/sounds/
     - assets/images/utility/
     - assets/images/taxi/
+    - assets/images/yarn/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -219,6 +226,10 @@ flutter:
     - family:  SlydoAppIcon
       fonts:
         - asset: assets/fonts/SlydoAppIcon.ttf
+
+    - family: SlydoAppIconNew
+      fonts:
+        - asset: assets/fonts/SlydoAppIconNew.ttf
 
   #   - family: Trajan Pro
   #     fonts:

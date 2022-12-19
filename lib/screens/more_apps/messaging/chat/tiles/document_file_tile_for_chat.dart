@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
@@ -7,16 +8,18 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_c
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../data/state_notifier.dart';
 import '../../../../../utils/enums.dart';
 import '../models/ChatConversation.dart';
-import 'package:external_path/external_path.dart';
 
 class DocumentFileTileForChat extends StatefulWidget {
   final Map<String, dynamic> message;
@@ -278,6 +281,7 @@ class _FileTileForChatState extends State<FileTileForChat> {
                     : null,
                 child: getTrailingIcon(isSend),
               ),
+              onTap: openFile,
             ),
             messageText != null && messageText!.isNotEmpty
                 ? Padding(
@@ -297,12 +301,40 @@ class _FileTileForChatState extends State<FileTileForChat> {
     );
   }
 
+  void openFile() async {
+    if (isDownloading) return;
+
+    DocumentFileInChatDownloadModel model = DocumentFileInChatDownloadModel(
+      checkID: checkID,
+      conversationID: conversationID!,
+    );
+    String? filePathInOs =
+        await DatabaseHelper().checkIfFileExistsInDB(model: model);
+
+    if (filePathInOs != null && filePathInOs != "") {
+      log("FILE PATH:- $filePathInOs");
+      try {
+        OpenResult openResult = await OpenFile.open(filePathInOs);
+      } catch (error) {
+        log("ERROR WHILE OPENING FILE:- $filePathInOs");
+      }
+    }
+  }
+
   _downloadAndSaveFileNameToDb() async {
     PermissionStatus status = await Permission.storage.request();
 
-    var downloadsDirectoryPath =
-        await ExternalPath.getExternalStoragePublicDirectory(
-            ExternalPath.DIRECTORY_DOWNLOADS);
+    var downloadsDirectoryPath;
+
+    if (Platform.isIOS) {
+      Directory directory = await getApplicationDocumentsDirectory();
+      downloadsDirectoryPath = directory.path;
+    } else {
+      downloadsDirectoryPath =
+          await ExternalPath.getExternalStoragePublicDirectory(
+        ExternalPath.DIRECTORY_DOWNLOADS,
+      );
+    }
 
     if (status.isGranted) {
       setState(() {

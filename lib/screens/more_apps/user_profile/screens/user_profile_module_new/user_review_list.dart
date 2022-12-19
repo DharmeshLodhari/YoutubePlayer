@@ -29,6 +29,8 @@ class _UserReviewListState extends State<UserReviewList> {
 
   bool noReviewInList = false;
   GlobalKey<ScaffoldState> _reviewScaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> _reviewMessengerScaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
   RefreshController _reviewRefreshController =
       RefreshController(initialRefresh: false);
 
@@ -69,19 +71,22 @@ class _UserReviewListState extends State<UserReviewList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _reviewScaffoldKey,
-      body: Container(
-        color: lightGrey,
-        child: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
+    return ScaffoldMessenger(
+      key: _reviewMessengerScaffoldKey,
+      child: Scaffold(
+        key: _reviewScaffoldKey,
+        body: Container(
+          color: lightGrey,
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _reviewRefreshController,
+            onRefresh: _onReviewRefresh,
+            child: _buildReviewList(),
           ),
-          controller: _reviewRefreshController,
-          onRefresh: _onReviewRefresh,
-          child: _buildReviewList(),
         ),
       ),
     );
@@ -140,7 +145,7 @@ class _UserReviewListState extends State<UserReviewList> {
         });
       }
     } else if (reviewNext == null && reviewList.length > 6) {
-      _reviewScaffoldKey.currentState!.showSnackBar(SnackBar(
+      _reviewMessengerScaffoldKey.currentState!.showSnackBar(SnackBar(
         content:
             Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
         duration: Duration(milliseconds: 500),

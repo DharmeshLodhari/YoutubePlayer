@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:Slydo/data/database_helper.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/music/music_detail_page.dart';
@@ -84,7 +82,8 @@ class _AddMediaToChatMessageState extends State<AddMediaToChatMessage> {
     isLoading = true;
     if (mounted) setState(() {});
     debugPrint("path=> $mediaFile");
-    _videoController = VideoPlayerController.file(mediaFile!);
+    _videoController = VideoPlayerController.file(mediaFile!,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
     await _videoController!.initialize();
 
     _chewieController = ChewieController(
