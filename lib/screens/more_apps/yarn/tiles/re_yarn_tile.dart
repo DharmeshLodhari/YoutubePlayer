@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_user_post_tile.dart';
@@ -11,6 +12,7 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
+import '../../user_profile/models/user.dart';
 import '../models/Topics/YarnTopic.dart';
 import '../widgets/yarn_media_renderer.dart';
 
@@ -273,6 +275,14 @@ class _ReYarnTileState extends State<ReYarnTile> {
       UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (widget.yarn.attachmentType == 'profile') {
+      CustomerProfile customerProfile =
+      CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+      childWidget = YarnCustomerPostTile(
+        customerProfile: customerProfile,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
