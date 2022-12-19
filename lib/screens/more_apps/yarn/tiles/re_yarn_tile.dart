@@ -1,11 +1,18 @@
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_user_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
+import '../../user_post/models/user_post.dart';
+import '../../user_profile/models/user.dart';
 import '../models/Topics/YarnTopic.dart';
 import '../widgets/yarn_media_renderer.dart';
 
@@ -28,11 +35,15 @@ class ReYarnTile extends StatefulWidget {
 class _ReYarnTileState extends State<ReYarnTile> {
   /// variables for yarn tile render TYPE
   bool isMediaPresent = false;
+  bool isAttachmentPresent = false;
 
   @override
   void initState() {
     if ((widget.yarn.media.isNotEmpty)) {
       isMediaPresent = true;
+    }
+    if (widget.yarn.attachment != null) {
+      isAttachmentPresent = true;
     }
     super.initState();
   }
@@ -65,6 +76,10 @@ class _ReYarnTileState extends State<ReYarnTile> {
           height: 10,
         ),
         _buildTagsAndViewerRow(),
+        if (isAttachmentPresent && widget.yarn.attachment != null)...[
+          SizedBox(height: 8),
+          _buildAttachment(),
+        ],
         if (isMediaPresent) ...[
           _buildImagesRow(),
         ],
@@ -244,6 +259,37 @@ class _ReYarnTileState extends State<ReYarnTile> {
         ),
       ],
     );
+  }
+
+  Widget _buildAttachment() {
+    Widget childWidget;
+    if (widget.yarn.attachmentType == 'service') {
+      Service service = Service.fromJson(widget.yarn.attachment);
+      childWidget = YarnServiceTile(service: service,);
+    }
+    else if (widget.yarn.attachmentType == 'product') {
+      Product product = Product.fromJson(widget.yarn.attachment);
+      childWidget = YarnProductTile(product: product,);
+    }
+    else if (widget.yarn.attachmentType == 'blog') {
+      UserPost post = UserPost.fromJson(widget.yarn.attachment);
+      childWidget = YarnBlogPostTile(
+        post: post,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (widget.yarn.attachmentType == 'profile') {
+      CustomerProfile customerProfile =
+      CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+      childWidget = YarnCustomerPostTile(
+        customerProfile: customerProfile,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else {
+      childWidget = SizedBox();
+    }
+    return childWidget;
   }
 
   // Widget _buildTopActions() {

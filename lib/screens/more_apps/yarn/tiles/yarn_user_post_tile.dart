@@ -222,6 +222,89 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                         child: SvgPicture.asset('heart'.toSVG()),
                       ),
                     ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
+                      child: widget.post?.video != null &&
+                              widget.post!.video!.isNotEmpty
+                          ? SizedBox(
+                              height: 150,
+                              child: Chewie(
+                                posterUrl: widget.post?.image,
+                                controller: _chewieMainController!,
+                              ),
+                            )
+                          : CachedNetworkImage(
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorWidget: imageErrorWidget,
+                              imageUrl: widget.post?.image ?? "",
+                            ),
+                    ),
+                    widget.showAuthorDetails
+                        ? Positioned(
+                            left: 10,
+                            bottom: 10,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, Routes.USER_PROFILE, arguments: {
+                                  "searchedUserName":
+                                      widget.post!.authorUsername
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: widget.post!.authorAvatar!,
+                                        errorWidget: imageErrorWidget,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  userNameWithVerifiedIcon(
+                                    name: widget.post!.authorName ?? "",
+                                    isVerified: false,
+                                    textStyle: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 2.0,
+                                          color: blackFont,
+                                          offset: Offset(0.0, 0),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                    widget.post!.isPublished!
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            left: 10,
+                            top: 10,
+                            child: CustomChip(
+                              textColor: blackFont,
+                              color: starYellow,
+                              text: 'Unpublished',
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 4, vertical: 4),
+                            ),
+                          ),
                   ],
                 ),
                 Container(
