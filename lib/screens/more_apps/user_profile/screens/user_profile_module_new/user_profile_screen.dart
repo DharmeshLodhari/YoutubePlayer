@@ -17,6 +17,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_images.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
@@ -838,7 +839,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           // getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
-          getFollowUnFollowWidget(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              getFollowUnFollowWidget(),
+              buildStackedImages(images: ["yarn/images/user_viwer_image0.png", "yarn/images/user_viwer_image1.png", "yarn/images/user_viwer_image2.png"]),
+            ],
+          ),
         ],
       ),
     );
@@ -1040,6 +1047,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
     }
     return SizedBox.shrink();
+  }
+
+  Widget buildStackedImages({
+    List? images,
+  }) {
+    final double size = 32;
+    final double xShift = 10;
+    final items = images!
+        .map((image) => buildImage('$image'))
+        .toList();
+
+    return Padding(
+      padding: EdgeInsets.only(right: 12),
+      child: StackedWidgets(
+        items: items,
+        size: size,
+        xShift: xShift,
+      ),
+    );
   }
 
   Widget getUserBioStringWidget() {
