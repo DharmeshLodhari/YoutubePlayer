@@ -325,6 +325,10 @@ class _YarnActionsState extends State<YarnActions> {
 
   Future addLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data = await YarnAuth().addLike(widget.yarn.id!);
+    setState(() {
+      widget.yarn.userUpvoted = !widget.yarn.userUpvoted;
+      widget.yarn.userDownVoted = false;
+    });
     if (data != null) {
       setState(() {
         widget.yarn.voteCount = data['vote_count'];
@@ -335,6 +339,10 @@ class _YarnActionsState extends State<YarnActions> {
 
   Future addDisLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data = await YarnAuth().addDisLike(widget.yarn.id!);
+    setState(() {
+      widget.yarn.userDownVoted = !widget.yarn.userDownVoted;
+      widget.yarn.userUpvoted = false;
+    });
     if (data != null) {
       setState(() {
         widget.yarn.voteCount = data['vote_count'];
@@ -344,11 +352,13 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Future addReYarn() async {
-    Map<String, dynamic> body = {
-      "reyarn": widget.yarn.id,
-    };
+    Map<String, dynamic> body = {"reyarn": widget.yarn.id};
     debugPrint("BODY DATA:- $body");
+
     Yarn? data = await YarnAuth().addReYarn(body);
+    setState(() {
+      widget.yarn.userReyarned = !widget.yarn.userReyarned;
+    });
     if (data != null) {
       showToast(message: "Re yarn added successfully");
       widget.yarn.numberOfReYarn = (widget.yarn.numberOfReYarn ?? 0) + 1;
