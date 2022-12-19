@@ -37,6 +37,9 @@ class SearchGroupMember extends StatefulWidget {
 class _SearchGroupMemberState extends State<SearchGroupMember> {
   final GlobalKey<ScaffoldState> _scaffoldSearchGroupMemberKey =
       new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState>
+      _scaffoldMessengerSearchGroupMemberKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
@@ -153,11 +156,14 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
         Navigator.pop(context, groupDetail);
         return Future.value(false);
       },
-      child: Scaffold(
-        key: _scaffoldSearchGroupMemberKey,
-        backgroundColor: Colors.white,
-        appBar: getAppBar() as PreferredSizeWidget?,
-        body: getScaffoldBody(),
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerSearchGroupMemberKey,
+        child: Scaffold(
+          key: _scaffoldSearchGroupMemberKey,
+          backgroundColor: Colors.white,
+          appBar: getAppBar() as PreferredSizeWidget?,
+          body: getScaffoldBody(),
+        ),
       ),
     );
   }
@@ -280,7 +286,8 @@ class _SearchGroupMemberState extends State<SearchGroupMember> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && groupMember.length > 6) {
-        _scaffoldSearchGroupMemberKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerSearchGroupMemberKey.currentState!
+            .showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

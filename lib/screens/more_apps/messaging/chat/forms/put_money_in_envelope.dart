@@ -35,6 +35,8 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
 
   final _formKey = GlobalKey<FormState>();
   final _putMoneyInEnvelopeScaffold = GlobalKey<ScaffoldState>();
+  final _putMoneyInEnvelopeScaffoldMessenger =
+      GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
 
   double? amount;
@@ -95,12 +97,15 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
       onWillPop: () async {
         return true;
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        key: _putMoneyInEnvelopeScaffold,
-        resizeToAvoidBottomInset: true,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+      child: ScaffoldMessenger(
+        key: _putMoneyInEnvelopeScaffoldMessenger,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          key: _putMoneyInEnvelopeScaffold,
+          resizeToAvoidBottomInset: true,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+        ),
       ),
     );
   }
@@ -453,7 +458,8 @@ class _PutMoneyInEnvelopeState extends State<PutMoneyInEnvelope> {
             Navigator.popUntil(context, ModalRoute.withName("/chat-screen"));
           },
           cancelCallBack: () {
-            _putMoneyInEnvelopeScaffold.currentState!.showSnackBar(SnackBar(
+            _putMoneyInEnvelopeScaffoldMessenger.currentState!
+                .showSnackBar(SnackBar(
               content: Text(AppLocalization.of(context)!.invalidPassword),
             ));
           });

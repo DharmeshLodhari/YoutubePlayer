@@ -27,6 +27,9 @@ class BlockedList extends StatefulWidget {
 class _BlockedListState extends State<BlockedList> {
   final GlobalKey<ScaffoldState> _scaffoldBlockListKey =
       new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldBlockMessengerListKey =
+      new GlobalKey<ScaffoldMessengerState>();
+
   SlidableController? _slideController;
   int? count = 0;
   String? next = "";
@@ -83,18 +86,21 @@ class _BlockedListState extends State<BlockedList> {
     // refresh the list when lifecycle called onResume method
     // _onRefreshOnResume();
 
-    return Scaffold(
-      key: _scaffoldBlockListKey,
-      backgroundColor: lightGrey,
-      body: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _refreshController,
-          onRefresh: _onRefresh,
-          child: _buildFriendsList()),
+    return ScaffoldMessenger(
+      key: _scaffoldBlockMessengerListKey,
+      child: Scaffold(
+        key: _scaffoldBlockListKey,
+        backgroundColor: lightGrey,
+        body: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: _buildFriendsList()),
+      ),
     );
   }
 
@@ -167,7 +173,7 @@ class _BlockedListState extends State<BlockedList> {
 
         if (mounted) setState(() {});
       } else if (next == null && blockList.length > 6) {
-        _scaffoldBlockListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldBlockMessengerListKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -181,7 +187,7 @@ class _BlockedListState extends State<BlockedList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldBlockListKey.currentState!
+    _scaffoldBlockMessengerListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 

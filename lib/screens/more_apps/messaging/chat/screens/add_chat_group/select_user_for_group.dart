@@ -29,6 +29,9 @@ class SelectUserForGroup extends StatefulWidget {
 class _SelectUserForGroupState extends State<SelectUserForGroup> {
   final GlobalKey<ScaffoldState> _scaffoldSelectUserForGroupKey =
       new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState>
+      _scaffoldMessengerSelectUserForGroupKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
@@ -101,11 +104,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldSelectUserForGroupKey,
-      backgroundColor: Colors.white,
-      body: getScaffoldBody(),
-      floatingActionButton: getFloatingActionBtn(),
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerSelectUserForGroupKey,
+      child: Scaffold(
+        key: _scaffoldSelectUserForGroupKey,
+        backgroundColor: Colors.white,
+        body: getScaffoldBody(),
+        floatingActionButton: getFloatingActionBtn(),
+      ),
     );
   }
 
@@ -284,7 +290,7 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         }
         Map<String, dynamic>? result = await UserAuth().searchUserInContact(
             next, previous,
-            query: searchUserController!.text.trim());
+            query: searchUserController?.text.trim() ?? "");
         if (result == null) {
           isLoading = false;
           return;
@@ -297,8 +303,14 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
 
         List<CustomerProfile> users = [];
 
-        tempList
-            .forEach((element) => users.add(CustomerProfile.fromJson(element)));
+        tempList.forEach((element) {
+          CustomerProfile customerProfile = CustomerProfile.fromJson(element);
+
+          if (customerProfile.fullName != "Slydo Inc" &&
+              customerProfile.userName != "slydo") {
+            users.add(customerProfile);
+          }
+        });
 
         isLoading = false;
         if (mounted) setState(() {});
@@ -309,9 +321,10 @@ class _SelectUserForGroupState extends State<SelectUserForGroup> {
         noItemInList = true;
         if (mounted) setState(() {});
       } else if (next == null && connectionList.length > 6) {
-        _scaffoldSelectUserForGroupKey.currentState!.showSnackBar(SnackBar(
-          content:
-              Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
+        _scaffoldMessengerSelectUserForGroupKey.currentState!
+            .showSnackBar(SnackBar(
+          content: Text(
+              AppLocalization.of(context)?.youHaveReachedBottomOfTheList ?? ""),
           duration: Duration(milliseconds: 500),
         ));
       }

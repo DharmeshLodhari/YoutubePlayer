@@ -49,7 +49,8 @@ class _ViewChatMediaState extends State<ViewChatMedia> {
     isLoading = true;
     if (mounted) setState(() {});
 
-    _videoController = VideoPlayerController.network(url!);
+    _videoController = VideoPlayerController.network(url!,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
     await _videoController!.initialize();
     _chewieController = ChewieController(
       videoPlayerController: _videoController!,

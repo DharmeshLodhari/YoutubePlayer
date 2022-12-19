@@ -28,6 +28,9 @@ class ConnectionRequestList extends StatefulWidget {
 class _ConnectionRequestListState extends State<ConnectionRequestList> {
   final GlobalKey<ScaffoldState> _scaffoldContactRequestListKey =
       new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState>
+      _scaffoldMessengerContactRequestListKey =
+      new GlobalKey<ScaffoldMessengerState>();
   late UserBloc userBloc;
   SlidableController? _slideController;
   int? count = 0;
@@ -86,10 +89,13 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
 
     // refresh the list when lifecycle called onResume method
     // _onRefreshOnResume();
-    return Scaffold(
-      key: _scaffoldContactRequestListKey,
-      backgroundColor: lightGrey,
-      body: _buildScaffoldBody(),
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerContactRequestListKey,
+      child: Scaffold(
+        key: _scaffoldContactRequestListKey,
+        backgroundColor: lightGrey,
+        body: _buildScaffoldBody(),
+      ),
     );
   }
 
@@ -176,7 +182,8 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
           });
         }
       } else if (next == null && connectionRequestList.length > 6) {
-        _scaffoldContactRequestListKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerContactRequestListKey.currentState!
+            .showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -190,7 +197,7 @@ class _ConnectionRequestListState extends State<ConnectionRequestList> {
   void handleSlideIsOpenChanged(bool? isOpen) {}
 
   void _showSnackBar(BuildContext context, String text) {
-    _scaffoldContactRequestListKey.currentState!
+    _scaffoldMessengerContactRequestListKey.currentState!
         .showSnackBar(SnackBar(content: Text(text)));
   }
 

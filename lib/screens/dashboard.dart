@@ -5,6 +5,7 @@ import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_synchronizer.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/main_socket_message_handler.dart';
@@ -20,6 +21,7 @@ import 'package:Slydo/services/list_refresher.dart';
 import 'package:Slydo/services/share_manager.dart';
 import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
@@ -39,6 +41,8 @@ import 'moments/screens/moments_screen.dart';
 import 'moments/screens/moments_service.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
+import 'more_apps/yarn/yarn_auth.dart';
+import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'super_store/super_store.dart';
 
 // ignore: must_be_immutable
@@ -60,6 +64,7 @@ class _DashboardState extends State<Dashboard> {
   var arguments;
   List<Widget>? screens;
   late BasketBloc basketBloc;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   MainSocketProvider? mainSocketProvider;
   StreamSubscription? streamSubscription;
@@ -71,7 +76,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ShareManager().initializeShareManager();
     });
     if (mounted) MainSocketMessageHandler().dispose();
@@ -88,8 +93,9 @@ class _DashboardState extends State<Dashboard> {
         }
       });
     }
-
     super.initState();
+
+    getAllCategories();
 
     PushNotificationService().initialize();
     ListRefresher().initialize();
@@ -100,6 +106,15 @@ class _DashboardState extends State<Dashboard> {
     // checkNotificationToNavigate();
     MyGlobals.notificationStream?.cancel();
     listenNotificationTap();
+  }
+
+  /// Handles fetching of all categories
+  void getAllCategories() async {
+    Map<String, dynamic>? result = await YarnAuth().getAllCategories("", "");
+
+    if (result != null && mounted) {
+      yarnDashboardBloc.addCategories(result['results']);
+    }
   }
 
   void fetchConnections() async {
@@ -173,14 +188,14 @@ class _DashboardState extends State<Dashboard> {
       } else if (receivedNotification.buttonKeyPressed == "accept_nudge") {
         // saveNudgeNotification(receivedNotification.payload);
 
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           navigateToNotification(receivedNotification.toMap());
         });
       } else {
         debugPrint("===> ${receivedNotification.toMap()}");
 
         // saveNotification(payload);
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           navigateToNotification(receivedNotification.toMap());
         });
       }
@@ -377,6 +392,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
     basketBloc = Provider.of<BasketBloc>(context);
     appLocalization = AppLocalization.of(context)!;
     _dashboardBloc = Provider.of<DashboardBloc>(context);
@@ -460,25 +476,25 @@ class _DashboardState extends State<Dashboard> {
         },
         items: [
           bottomNavigationBarItem(
-            iconData: SlydoAppIcon.home,
+            iconData: SlydoAppIconNew.home,
             title: AppLocalization.of(context)!.home,
           ),
 
           bottomNavigationBarItem(
             iconSize: 20,
             key: tutorialSuperStoreKey,
-            iconData: Icons.shopping_bag,
+            iconData: SlydoAppIconNew.super_store,
             title: AppLocalization.of(context)!.store,
           ),
           bottomNavigationBarItem(
             iconSize: 20,
-            iconData: Icons.play_circle_filled,
+            iconData: SlydoAppIconNew.moment,
             title: AppLocalization.of(context)!.moments,
           ),
           bottomNavigationBarItem(
             isChatIcon: true,
             key: tutorialChatMessageKey,
-            iconData: SlydoAppIcon.text_message,
+            iconData: SlydoAppIconNew.chat,
             title: AppLocalization.of(context)!.chat,
           ),
           // bottomNavigationBarItem(
@@ -487,21 +503,27 @@ class _DashboardState extends State<Dashboard> {
           //   title: AppLocalization.of(context)!.chat,
           // ),
 
-          BottomNavigationBarItem(
-            icon: Container(
-              key: tutorialExploreKey,
-              height: 50,
-              child: Icon(
-                Icons.explore,
-                color: blackFont,
-                size: 18,
-              ),
-            ),
-            label: "Explore",
-            activeIcon: activeIcon(
-                title: AppLocalization.of(context)!.explore,
-                icon: Icons.explore),
+          bottomNavigationBarItem(
+            key: tutorialExploreKey,
+            iconData: SlydoAppIconNew.explore,
+            title: AppLocalization.of(context)!.explore,
           ),
+
+          // BottomNavigationBarItem(
+          //   icon: Container(
+          //     key: tutorialExploreKey,
+          //     height: 50,
+          //     child: Icon(
+          //       Icons.explore,
+          //       color: blackFont,
+          //       size: 18,
+          //     ),
+          //   ),
+          //   label: "Explore",
+          //   activeIcon: activeIcon(
+          //       title: AppLocalization.of(context)!.explore,
+          //       icon: Icons.explore),
+          // ),
         ],
       ),
     );

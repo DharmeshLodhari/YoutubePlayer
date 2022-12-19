@@ -142,7 +142,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
             ),
           )
         : Text(
-            widget.user!.userName!,
+            messageDecoderWithEmoji(widget.user?.userName ?? "") ?? "",
             maxLines: 1,
             style: TextStyle(
               color: darkGrey,

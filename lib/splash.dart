@@ -8,7 +8,6 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -26,7 +25,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'data/socket_provider.dart';
 import 'data/state_notifier.dart';
@@ -110,9 +108,12 @@ class _SplashScreenState extends State<SplashScreen>
 
   void initializeVideo() {
     playerController =
-        VideoPlayerController.asset('assets/images/splash/splash-v3.mp4')
+        VideoPlayerController.asset('assets/images/splash/splash-v3.mp4',
+            videoPlayerOptions: VideoPlayerOptions(
+              mixWithOthers: true,
+            ))
           ..addListener(listener)
-          ..setVolume(1.0)
+          ..setVolume(0)
           ..initialize()
           ..play();
   }
@@ -127,10 +128,13 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   @override
-  void dispose() {
-    if (playerController != null) playerController!.dispose();
-    if (timer != null) timer?.cancel();
+  void dispose() async {
     super.dispose();
+    if (playerController != null) {
+      await playerController?.pause();
+      await playerController?.dispose();
+    }
+    if (timer != null) timer?.cancel();
   }
 
   void checkConnection() async {

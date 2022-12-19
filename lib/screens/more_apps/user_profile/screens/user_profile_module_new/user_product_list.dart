@@ -38,6 +38,8 @@ class _UserProductListState extends State<UserProductList> {
   ScrollController _productScrollController = new ScrollController();
   final GlobalKey<ScaffoldState> _productScaffoldKey =
       new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _productMessengerScaffoldKey =
+      new GlobalKey<ScaffoldMessengerState>();
   RefreshController _productsRefreshController =
       RefreshController(initialRefresh: false);
   bool isProductLoading = false;
@@ -117,7 +119,7 @@ class _UserProductListState extends State<UserProductList> {
           });
         }
       } else if (productNext == null && productList.length > 6) {
-        _productScaffoldKey.currentState!.showSnackBar(SnackBar(
+        _productMessengerScaffoldKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -128,48 +130,52 @@ class _UserProductListState extends State<UserProductList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _productScaffoldKey,
-      body: Container(
-        color: lightGrey,
-        padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-        child: SmartRefresher(
-          enablePullDown: true,
-          header: WaterDropHeader(
-            complete: Container(),
-            waterDropColor: navyBlue,
-          ),
-          controller: _productsRefreshController,
-          onRefresh: _onProductRefresh,
-          child: ListView(
-            children: [
-              _buildProductList(),
-              isProductLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.white,
-                      highlightColor: greyBorderColor,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          mainAxisExtent: 180,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 15,
-                          maxCrossAxisExtent: 200,
+    return ScaffoldMessenger(
+      key: _productMessengerScaffoldKey,
+      child: Scaffold(
+        key: _productScaffoldKey,
+        body: Container(
+          color: lightGrey,
+          padding: EdgeInsets.symmetric(horizontal: 4),
+          child: SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _productsRefreshController,
+            onRefresh: _onProductRefresh,
+            child: ListView(
+              children: [
+                _buildProductList(),
+                isProductLoading
+                    ? Shimmer.fromColors(
+                        baseColor: Colors.white,
+                        highlightColor: greyBorderColor,
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            mainAxisExtent: 180,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 15,
+                            maxCrossAxisExtent: 200,
+                          ),
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              color: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            );
+                          },
                         ),
-                        itemCount: 2,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            color: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                  : SizedBox.shrink(),
-            ],
+                      )
+                    : SizedBox.shrink(),
+              ],
+            ),
           ),
         ),
       ),
@@ -193,6 +199,7 @@ class _UserProductListState extends State<UserProductList> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: GridView.builder(
               shrinkWrap: true,
+              padding: EdgeInsets.zero,
               controller: _productScrollController,
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

@@ -18,6 +18,8 @@ class ContractTransactionHistory extends StatefulWidget {
 class _ContractTransactionHistoryState
     extends State<ContractTransactionHistory> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   int? count = 0;
   String? next = "";
@@ -74,7 +76,7 @@ class _ContractTransactionHistoryState
           });
         }
       } else if (next == null && transactionList.length > 6) {
-        _scaffoldKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -111,11 +113,14 @@ class _ContractTransactionHistoryState
       onWillPop: () async {
         return Future.value(true);
       },
-      child: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.white,
-        appBar: appBar() as PreferredSizeWidget?,
-        body: scaffoldBody(),
+      child: ScaffoldMessenger(
+        key: _scaffoldMessengerKey,
+        child: Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: Colors.white,
+          appBar: appBar() as PreferredSizeWidget?,
+          body: scaffoldBody(),
+        ),
       ),
     );
   }

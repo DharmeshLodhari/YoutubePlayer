@@ -21,10 +21,16 @@ class MessageSoundPlayer {
     String? sound = determineSoundType(messageData: messageData);
     if (sound != null) {
       if (messageData["type"] == "chatroom_message") {
-        AssetsAudioPlayer.playAndForget(Audio(sound), respectSilentMode: true);
+        AssetsAudioPlayer.playAndForget(
+          Audio(
+            sound,
+          ),
+          respectSilentMode: true,
+        );
       } else if (messageData["type"] == "nudge_user") {
-        AssetsAudioPlayer _audioPlayer =
-            AssetsAudioPlayer.withId(messageData["author"]);
+        AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId(
+          messageData["author"],
+        );
 
         _audioPlayer.open(Audio(sound),
             autoStart: true,

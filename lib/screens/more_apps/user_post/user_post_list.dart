@@ -163,7 +163,7 @@ class _UserPostListState extends State<UserPostList> {
           )
         : ListView.builder(
             physics: ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+            padding: EdgeInsets.only(right: 16, left: 16, top: 8, bottom: 0),
             controller: _postScrollController,
             itemCount: postList.length + 1,
             itemBuilder: (BuildContext context, int index) {

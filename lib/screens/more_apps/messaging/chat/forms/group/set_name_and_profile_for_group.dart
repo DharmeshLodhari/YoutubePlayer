@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/AddGroupModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
@@ -90,7 +91,6 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
         : FloatingActionButton(
             backgroundColor: navyBlue,
             onPressed: () => createGroup(onCallBack: () {
-              NavigationUtil.pop(context);
               NavigationUtil.pop(context);
             }),
             child: Icon(
@@ -609,9 +609,9 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           double.parse(_channelFeeCtrl.text.replaceAll(',', ''));
     }
 
-    groupModel.groupName = groupNameController!.text.trim();
+    groupModel.name = groupNameController!.text.trim();
     groupModel.ageRestriction = int.parse(selectedAge.split('+')[0]);
-    groupModel.groupDescription = groupDescriptionController!.text.trim();
+    groupModel.description = groupDescriptionController!.text.trim();
 
     showDialog(
         context: context,
@@ -630,8 +630,8 @@ class _SetNameAndProfileOfGroupState extends State<SetNameAndProfileOfGroup> {
           Provider.of<ConnectionListBloc>(context, listen: false);
       connectionListBloc.addConnectionUser(chatConversation: value);
 
-      //Navigator.popUntil(context, ModalRoute.withName("/friends-dashboard"));
-      onCallBack!();
+      Navigator.popUntil(context, ModalRoute.withName(Routes.DASHBOARD));
+      // if (onCallBack != null) onCallBack();
     }).catchError((error) {
       debugPrint("ERROR While creating Group :- $error");
       showToast(message: "$error");

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:Slydo/data/currency.dart';
@@ -9,6 +10,9 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/device.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -34,9 +38,10 @@ import 'package:sizer/sizer.dart';
 
 import '../locator.dart';
 import '../routes/route_constants.dart';
-import 'more_apps/ask/ask_start_screen.dart';
+import '../utils/slydo_app_icon_new_icons.dart';
 import 'more_apps/super_blog/super_blog.dart';
 import 'more_apps/user_profile/user_auth.dart';
+import 'more_apps/yarn/ask_start_screen.dart';
 
 // ignore: must_be_immutable
 class UserDashboard extends StatefulWidget {
@@ -60,6 +65,7 @@ class _UserDashboardState extends State<UserDashboard> {
   bool isBalanceHidden = true;
   late AppLocalization appLocalization;
   AppConfigurationModel? appConfigurationModel;
+  DatabaseHelper _db = DatabaseHelper();
 
   @override
   void initState() {
@@ -68,6 +74,15 @@ class _UserDashboardState extends State<UserDashboard> {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
     super.initState();
+  }
+
+  Future<UsersCategories?> getUserCategories() async {
+    Map<String, dynamic>? result = await YarnAuth().getUsersCategories();
+    UsersCategories? usersCategory;
+    if (result != null) {
+      usersCategory = result['results'];
+    }
+    return usersCategory;
   }
 
   @override
@@ -210,6 +225,8 @@ class _UserDashboardState extends State<UserDashboard> {
                 ),
                 SizedBox(height: 16),
                 firstRowOfMoreApps(),
+                SizedBox(height: 12),
+                secondRowOfMoreApps(),
                 SizedBox(height: 70),
                 appVersionDataUI(),
                 SizedBox(height: 32),
@@ -584,20 +601,98 @@ class _UserDashboardState extends State<UserDashboard> {
               Icons.question_answer_rounded,
               size: 22,
             ),
-            title: AppLocalization.of(context)!.ask,
-            onTap: () {
-              if (appConfigurationModel?.enableAsk == true) {
-                NavigationUtil.push(
-                  context,
-                  screen: AskStartScreen(),
-                );
+            title: "Yarn",
+            onTap: () async {
+              UserCategoriesStructure? userCategories =
+                  await _db.getUserSelectedYarnCategories();
+              if (userCategories != null) {
+                var data = jsonDecode(userCategories.userSelectedCategory!);
+                if (data == null && data.length != 3) {
+                  UsersCategories? userCategory = await getUserCategories();
+                  if (userCategory != null) {
+                    if (userCategory.categories!.length <= 3) {
+                      NavigationUtil.push(
+                        context,
+                        screen: AskStartScreen(),
+                      );
+                    } else {
+                      NavigationUtil.push(
+                        context,
+                        screen: YarnDashboard(),
+                      );
+                    }
+                  } else {
+                    NavigationUtil.push(
+                      context,
+                      screen: AskStartScreen(),
+                    );
+                  }
+                } else {
+                  NavigationUtil.push(
+                    context,
+                    screen: YarnDashboard(),
+                  );
+                }
               } else {
-                showToast(message: 'Feature not available at the moment');
+                UsersCategories? userCategory = await getUserCategories();
+                if (userCategory != null &&
+                    (userCategory.categories?.length ?? 0) <= 3) {
+                  NavigationUtil.push(
+                    context,
+                    screen: AskStartScreen(),
+                  );
+                } else {
+                  NavigationUtil.push(
+                    context,
+                    screen: YarnDashboard(),
+                  );
+                }
               }
+              // NavigationUtil.push(
+              //   context,
+              //   screen: AskHomeScreen(),
+              // );
+              // if (appConfigurationModel?.enableAsk == true) {
+              //   NavigationUtil.push(
+              //     context,
+              //     screen: AskStartScreen(),
+              //   );
+              // } else {
+              //   showToast(message: 'Feature not available at the moment');
+              // }
             },
             iconColor: HexColor("#374677"),
           ),
         ),
+        SizedBox(width: 12),
+      ],
+    );
+  }
+
+  Widget secondRowOfMoreApps() {
+    return Row(
+      children: [
+        Expanded(
+          child: UserDashboardItemTile(
+            icon: SlydoAppIconNew.vector_1,
+            title: "Services",
+            onTap: () {
+              // if (appConfigurationModel?.enableUtility == true) {
+              //   Navigator.pushNamed(context, Routes.SUPER_HUB);
+              // } else {
+              //   showToast(message: 'Coming soon.');
+              // }
+              Navigator.pushNamed(context, Routes.SUPER_HUB);
+            },
+            iconColor: HexColor("#93000A"),
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: Container(),
+        ),
+        SizedBox(width: 12),
+        Expanded(child: Container()),
         SizedBox(width: 12),
       ],
     );

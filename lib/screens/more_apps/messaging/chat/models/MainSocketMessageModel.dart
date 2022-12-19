@@ -69,4 +69,54 @@ class MainSocketMessageModel {
     data['was_edited'] = this.wasEdited;
     return data;
   }
+
+  Map<String, dynamic> toHashedJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['author'] = this.author;
+    data['conversation'] = this.conversation;
+    data['created_at'] = generateCreatedAt();
+    data['updated_at'] = generateUpdatedAt();
+    data['deleted_for_author'] = this.deletedForAuthor;
+    data['deleted_for_recipient'] = this.deletedForRecipient;
+    data['delivered'] = this.delivered;
+    data['kind'] = this.kind;
+    data['read_by_author'] = this.readByAuthor;
+    data['read_by_recipient'] = this.readByRecipient;
+    data['text'] = this.text;
+    data['type'] = this.type;
+    data['was_edited'] = this.wasEdited;
+    return data;
+  }
+
+  String generateCreatedAt() {
+    DateTime createdAtDate =
+        DateTime.parse(createdAt ?? DateTime.now().toString());
+
+    DateTime messageDateTillSecond = DateTime(
+      createdAtDate.year,
+      createdAtDate.month,
+      createdAtDate.day,
+      createdAtDate.hour,
+      createdAtDate.minute,
+      createdAtDate.second,
+    );
+
+    return messageDateTillSecond.toString();
+  }
+
+  String generateUpdatedAt() {
+    DateTime updatedAtDate =
+        DateTime.parse(updatedAt ?? DateTime.now().toString());
+
+    DateTime messageDateTillSecond = DateTime(
+      updatedAtDate.year,
+      updatedAtDate.month,
+      updatedAtDate.day,
+      updatedAtDate.hour,
+      updatedAtDate.minute,
+      updatedAtDate.second,
+    );
+
+    return messageDateTillSecond.toString();
+  }
 }

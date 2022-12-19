@@ -43,8 +43,8 @@ class _SuperStoreState extends State<SuperStore> {
   String? productPrevious = "";
   late BasketBloc basketBloc;
 
-  final GlobalKey<ScaffoldState> _productScaffoldKey =
-      new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldMessengerState> _productScaffoldMessengerKey =
+      new GlobalKey<ScaffoldMessengerState>();
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -134,7 +134,7 @@ class _SuperStoreState extends State<SuperStore> {
           });
         }
       } else if (productNext == null && productList.length > 6) {
-        _productScaffoldKey.currentState!.showSnackBar(SnackBar(
+        _productScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),
@@ -218,71 +218,74 @@ class _SuperStoreState extends State<SuperStore> {
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
 
-    return Scaffold(
-      backgroundColor: lightGrey,
-      appBar: appBar(),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SmartRefresher(
-            enablePullDown: true,
-            header: WaterDropHeader(
-              complete: Container(),
-              waterDropColor: navyBlue,
-            ),
-            controller: _refreshController,
-            onRefresh: _onRefresh,
-            child: ListView(
-              controller: _productScrollController,
-              children: [
-                searchBox(),
-                const SizedBox(height: 22),
-                todaysDealsEmpty ? SizedBox.shrink() : getTodaysDealList(),
-                const SizedBox(height: 38),
-                superStoreProducts(),
-                const SizedBox(height: 16),
-                isProductLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                            mainAxisSpacing: 14,
-                            mainAxisExtent: 180,
-                            crossAxisSpacing: 15,
-                            maxCrossAxisExtent: 200,
+    return ScaffoldMessenger(
+      key: _productScaffoldMessengerKey,
+      child: Scaffold(
+        backgroundColor: lightGrey,
+        appBar: appBar(),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: SmartRefresher(
+              enablePullDown: true,
+              header: WaterDropHeader(
+                complete: Container(),
+                waterDropColor: navyBlue,
+              ),
+              controller: _refreshController,
+              onRefresh: _onRefresh,
+              child: ListView(
+                controller: _productScrollController,
+                children: [
+                  searchBox(),
+                  const SizedBox(height: 22),
+                  todaysDealsEmpty ? SizedBox.shrink() : getTodaysDealList(),
+                  const SizedBox(height: 38),
+                  superStoreProducts(),
+                  const SizedBox(height: 16),
+                  isProductLoading
+                      ? Shimmer.fromColors(
+                          baseColor: Colors.white,
+                          highlightColor: greyBorderColor,
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithMaxCrossAxisExtent(
+                              mainAxisSpacing: 14,
+                              mainAxisExtent: 180,
+                              crossAxisSpacing: 15,
+                              maxCrossAxisExtent: 200,
+                            ),
+                            itemCount: 2,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                color: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              );
+                            },
                           ),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    : SizedBox.shrink(),
-                Visibility(
-                  visible: !isProductLoading &&
-                      !isTodayDealLoading &&
-                      todaysDealList.isEmpty &&
-                      productList.isEmpty,
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                        SizedBox(height: 20),
-                        Text('No items at the moment'),
-                      ],
+                        )
+                      : SizedBox.shrink(),
+                  Visibility(
+                    visible: !isProductLoading &&
+                        !isTodayDealLoading &&
+                        todaysDealList.isEmpty &&
+                        productList.isEmpty,
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Lottie.asset('assets/lottie/no_moment_lottie.json'),
+                          SizedBox(height: 20),
+                          Text('No items at the moment'),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

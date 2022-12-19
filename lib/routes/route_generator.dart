@@ -149,6 +149,8 @@ import 'package:page_transition/page_transition.dart';
 
 import '../screens/more_apps/business/screens/contract_screen.dart';
 import '../screens/more_apps/payment_and_banking/screens/banking/enter_address_or_pin_page.dart';
+import '../screens/more_apps/super_hub/search_services.dart';
+import '../screens/more_apps/super_hub/super_hub.dart';
 import '../screens/super_store/super_store.dart';
 
 class RouteGenerator {
@@ -886,6 +888,22 @@ class RouteGenerator {
           curve: Curves.ease,
           settings: settings,
         );
+
+      /// Services Route ///
+
+      case Routes.SUPER_HUB:
+        return PageTransition(
+            child: SuperHub(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
+
+      case Routes.SEARCH_SERVICES:
+        return PageTransition(
+            child: SearchServices(),
+            type: PageTransitionType.bottomToTop,
+            curve: Curves.ease,
+            settings: settings);
 
       /// Movie Route
 

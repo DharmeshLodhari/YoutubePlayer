@@ -134,6 +134,10 @@ class _AddOrEditUserBioScreenState extends State<AddOrEditUserBioScreen> {
         cityController!.text = userBioDetail!.userAddress!.city!;
       }
 
+      if (userBioDetail?.userAddress?.state != null) {
+        pickedStateId = userBioDetail?.userAddress?.state;
+      }
+
       if (userBioDetail?.contact != null) {
         contactNumberController!.text = userBioDetail!.contact;
       }

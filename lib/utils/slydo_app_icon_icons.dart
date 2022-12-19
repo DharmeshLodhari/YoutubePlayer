@@ -295,4 +295,6 @@ class SlydoAppIcon {
       IconData(0xe883, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData taxi_msg =
       IconData(0xe884, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData services =
+      IconData(0xe800, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

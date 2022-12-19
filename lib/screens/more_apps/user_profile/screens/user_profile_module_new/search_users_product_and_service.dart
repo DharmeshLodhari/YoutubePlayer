@@ -56,6 +56,8 @@ class _SearchUsersProductAndServiceState
   TextEditingController searchItemTextController = TextEditingController();
 
   GlobalKey<ScaffoldState> _scaffoldSearchKey = GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerSearchKey =
+      GlobalKey<ScaffoldMessengerState>();
   GlobalKey<FormState> _formFieldKey = GlobalKey<FormState>();
 
   //pagination variables
@@ -195,25 +197,28 @@ class _SearchUsersProductAndServiceState
 
     userBloc = Provider.of<UserBloc>(context);
 
-    return Scaffold(
-      key: _scaffoldSearchKey,
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: appBar() as PreferredSizeWidget?,
-      body: Form(
-        key: _formFieldKey,
-        child: Column(
-          children: [
-            SizedBox(height: 6),
-            searchBox(),
-            showFilterOptions ? getFilterOptions() : Container(),
-            SizedBox(
-              height: 16,
-            ),
-            Expanded(
-              child: _buildResultList(),
-            ),
-          ],
+    return ScaffoldMessenger(
+      key: _scaffoldMessengerSearchKey,
+      child: Scaffold(
+        key: _scaffoldSearchKey,
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        appBar: appBar() as PreferredSizeWidget?,
+        body: Form(
+          key: _formFieldKey,
+          child: Column(
+            children: [
+              SizedBox(height: 6),
+              searchBox(),
+              showFilterOptions ? getFilterOptions() : Container(),
+              SizedBox(
+                height: 16,
+              ),
+              Expanded(
+                child: _buildResultList(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -773,7 +778,7 @@ class _SearchUsersProductAndServiceState
           setState(() {});
         }
       } else if (next == null && results.length > 6) {
-        _scaffoldSearchKey.currentState!.showSnackBar(SnackBar(
+        _scaffoldMessengerSearchKey.currentState!.showSnackBar(SnackBar(
           content:
               Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
           duration: Duration(milliseconds: 500),

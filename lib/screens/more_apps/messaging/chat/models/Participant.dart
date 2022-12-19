@@ -4,13 +4,15 @@ class Participant {
   String? type;
   String? userName;
   bool? isVerified;
+  String? nickName;
 
   Participant(
       {this.avatar,
       this.fullName,
       this.type,
       this.userName,
-      this.isVerified = false});
+      this.isVerified = false,
+      this.nickName});
 
   factory Participant.fromJson(Map<String, dynamic> json) {
     return Participant(
@@ -19,6 +21,7 @@ class Participant {
       fullName: json['full_name'],
       type: json['type'],
       userName: json['username'],
+      nickName: json['nickname'],
     );
   }
 
@@ -29,6 +32,7 @@ class Participant {
     data['type'] = this.type;
     data['username'] = this.userName;
     data['is_verified'] = this.isVerified;
+    data['nickname'] = this.nickName;
     return data;
   }
 }

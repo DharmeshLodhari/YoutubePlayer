@@ -13,6 +13,7 @@ import '../moments/models/comment_model.dart';
 import '../more_apps/messaging/chat/models/channel_model.dart';
 
 class ChatChannels extends StatefulWidget {
+  ChatChannels();
   @override
   State<ChatChannels> createState() => _ChatChannelsState();
 }

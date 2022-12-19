@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -137,7 +138,10 @@ class _QRCodeViewState extends State<QRCodeView> {
     customerProfileBloc =
         Provider.of<CustomerProfileBloc>(context, listen: false);
     userBloc = Provider.of<UserBloc>(context, listen: false);
-    this.controller = controller;
+    setState(() {
+      this.controller = controller;
+      resumeCamara();
+    });
 
     controller.scannedDataStream.listen((scanData) async {
       // if we get a text that belongs to us then we process it
@@ -156,6 +160,13 @@ class _QRCodeViewState extends State<QRCodeView> {
         }
       }
     });
+  }
+
+  void resumeCamara() {
+    if (Platform.isAndroid) {
+      controller!.pauseCamera();
+    }
+    controller!.resumeCamera();
   }
 
   // TODO: Add try block here and check if error occurred in server like 404 then take user to home page and show error

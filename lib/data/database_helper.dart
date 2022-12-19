@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:Slydo/data/database_migrations.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatUserModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/ChatMessagePagination.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
@@ -11,13 +12,12 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccoun
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/jwt.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import "package:collection/collection.dart";
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_migration/sqflite_migration.dart';
-
-import '../screens/more_apps/messaging/chat/models/document_file_in_chat_download_model.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
@@ -38,7 +38,7 @@ class DatabaseHelper {
 
   Future<Database> openDB() async {
     final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'Initial_Slydo.db');
+    final path = join(databasesPath, 'Slydo_DB_1.db');
 
     return await openDatabaseWithMigration(path, config);
   }
@@ -1021,6 +1021,39 @@ class DatabaseHelper {
         await dbClient.query(FEE_STRUCTURE);
     if (feeStructure.length > 0)
       return FeeStructure.fromJson(feeStructure.first);
+    return null;
+  }
+
+  /// YARN USER CATEGORIES
+
+  // save user's fee structure to the db
+  Future<int> saveUserSelectedYarnCategories(
+      UserCategoriesStructure userCategoriesStructure) async {
+    var dbClient = await db;
+    await deleteUserSelectedYarnCategories();
+    int res = await dbClient.insert(
+        YARN_CATEGORY, userCategoriesStructure.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    debugPrint("DATABASE:- $YARN_CATEGORY saved to db");
+    return res;
+  }
+
+  // Delete the fee structure from the db
+  Future<int> deleteUserSelectedYarnCategories() async {
+    var dbClient = await db;
+    int res = await dbClient.delete(YARN_CATEGORY);
+    debugPrint("DATABASE:- $YARN_CATEGORY deleted from db");
+    return res;
+  }
+
+  // Get current user's fee structure from db
+  Future<UserCategoriesStructure?> getUserSelectedYarnCategories() async {
+    Database dbClient = await db;
+
+    List<Map<String, dynamic>> userCategoriesStructure =
+        await dbClient.query(YARN_CATEGORY);
+    if (userCategoriesStructure.length > 0)
+      return UserCategoriesStructure.fromJson(userCategoriesStructure.first);
     return null;
   }
 

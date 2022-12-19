@@ -1,14 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_video_player/cached_video_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../locale/app_localization.dart';
 import '../../../locator.dart';
@@ -22,6 +26,10 @@ import '../../../widget/customized_textform_field.dart';
 import '../../../widget/dialog.dart';
 import '../../../widget/read_more_widget.dart';
 import '../../../widget/rounded_background_icon.dart';
+import '../../more_apps/messaging/chat/models/ChatConversation.dart';
+import '../../more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
+import '../../more_apps/shopping/models/store.dart';
+import '../../more_apps/yarn/ask_report_screen.dart';
 import '../../post_detail_page.dart';
 import '../models/comment_model.dart';
 import '../models/moments_model.dart';
@@ -29,6 +37,8 @@ import '../moments_bloc.dart';
 import '../widgets/custom_moment_detail_button.dart';
 import 'create_moment_screen.dart';
 import 'moments_service.dart';
+
+late CachedVideoPlayerController _controller;
 
 class MomentsDetailsScreen extends StatefulWidget {
   String? nextPageUrl;
@@ -65,9 +75,12 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   int numberOfMomentsToLoad = 2;
   int currentVerticalPageIndex = 0;
   late PageController _verticalScrollPageViewCtrl;
+  late VideoPlayerManager videoPlayerManager;
+  int? horizoallyPageIndex;
 
   @override
   void initState() {
+    videoPlayerManager = VideoPlayerManager();
     super.initState();
 
     // If moment list is null, initialize it to an empty list.
@@ -291,6 +304,12 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                       }
                     }
                   }
+                  videoPlayerManager.togglePlay(
+                      index: verticalScrollIndex,
+                      url: widget
+                          .momentsModelList![verticalScrollIndex]
+                              [horizoallyPageIndex!]
+                          .media);
                 },
                 itemBuilder: (context, index) {
                   return SizedBox(
@@ -299,7 +318,17 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                       children: [
                         MediaRendererPageView(
                           momentsModelList: widget.momentsModelList![index],
-                          onPageChanged: (pageViewIndex) {},
+                          onPageChanged: (pageViewIndex) {
+                            setState(() {
+                              horizoallyPageIndex = pageViewIndex;
+                            });
+                            videoPlayerManager.togglePlay(
+                                index: pageViewIndex,
+                                url: widget
+                                    .momentsModelList![index][pageViewIndex]
+                                    .media);
+                          },
+                          videoPlayerManager: videoPlayerManager,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 34.0),
@@ -369,10 +398,14 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 }
 
 class MediaRendererPageView extends StatefulWidget {
-  final Function(int index) onPageChanged;
+  final ValueChanged<int> onPageChanged;
   final List<MomentsModel> momentsModelList;
+  final VideoPlayerManager videoPlayerManager;
   const MediaRendererPageView(
-      {Key? key, required this.onPageChanged, required this.momentsModelList})
+      {Key? key,
+      required this.onPageChanged,
+      required this.momentsModelList,
+      required this.videoPlayerManager})
       : super(key: key);
 
   @override
@@ -382,16 +415,21 @@ class MediaRendererPageView extends StatefulWidget {
 class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   bool isLiked = false;
   PageController? _pageCtrl;
+  Product? product;
+  late UserBloc? userBloc;
 
   @override
   void initState() {
     super.initState();
     _pageCtrl = PageController();
-    Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
-        widget.momentsModelList.map((e) => e.numberOfComments!).toList();
 
-    debugPrint(
-        'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
+          widget.momentsModelList.map((e) => e.numberOfComments!).toList();
+
+      debugPrint(
+          'NUMBER OF COMMENTS ${Provider.of<MomentsBloc>(context, listen: false).numberOfComments}');
+    });
   }
 
   @override
@@ -404,6 +442,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
       itemCount: widget.momentsModelList.length,
       itemBuilder: (context, index) {
         // var _index = 1;
+
         return Stack(
           fit: StackFit.expand,
           children: [
@@ -464,62 +503,90 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                               onPressed: () {
                                 androidBottomSheet(
                                   context: context,
-                                  child: bottomSheetItem(
-                                    title: 'Delete',
-                                    iconData: Icons.delete,
-                                    onTap: () {
-                                      Navigator.pop(context);
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      momentVisibilityOption(
+                                          widget.momentsModelList[index]),
+                                      momentPermanentOption(
+                                          widget.momentsModelList[index]),
+                                      momentCommentingOption(
+                                          widget.momentsModelList[index]),
+                                      momentLikeOption(
+                                          widget.momentsModelList[index]),
+                                      bottomSheetItem(
+                                          title: 'Share in chat',
+                                          iconData: Icons.send_outlined,
+                                          onTap: () async {
+                                            await sendMomentToUserInChat(
+                                                momentsModel: widget
+                                                    .momentsModelList[index]);
+                                          }),
+                                      bottomSheetItem(
+                                        title: 'Delete',
+                                        iconData: Icons.delete,
+                                        onTap: () {
+                                          Navigator.pop(context);
 
-                                      showDialogBox(
-                                        context: context,
-                                        actionOneTextColor: white,
-                                        actionOneBgColor: mateRed,
-                                        actionTwoTextColor: blackFont,
-                                        actionTwoBgColor: greyBorderColor,
-                                        title:
-                                            AppLocalization.of(context)!.delete,
-                                        actionTwoText:
-                                            AppLocalization.of(context)!.cancel,
-                                        actionOneText:
-                                            AppLocalization.of(context)!.delete,
-                                        description:
-                                            'Are you sure you want to delete this moment?',
-                                        roundedBackgroundIcon:
-                                            RoundedBackgroundIcon(
-                                          enableMargin: false,
-                                          width: 90,
-                                          height: 90,
-                                          image: Image.asset(
-                                              'assets/images/delete_dialog_icon.png'),
-                                        ),
-                                        leftButtonOnPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (dialogLoadingContext) =>
-                                                  LoadingIndicator());
-                                          MomentsService()
-                                              .deleteMoment(widget
-                                                  .momentsModelList[index].id!)
-                                              .then(
-                                            (value) {
-                                              Navigator.pop(
-                                                  context); // Dismiss loading indicator
-                                              Navigator.pop(context);
-                                              showToast(
-                                                  message: 'Moment deleted');
+                                          showDialogBox(
+                                            context: context,
+                                            actionOneTextColor: white,
+                                            actionOneBgColor: mateRed,
+                                            actionTwoTextColor: blackFont,
+                                            actionTwoBgColor: greyBorderColor,
+                                            title: AppLocalization.of(context)!
+                                                .delete,
+                                            actionTwoText:
+                                                AppLocalization.of(context)!
+                                                    .cancel,
+                                            actionOneText:
+                                                AppLocalization.of(context)!
+                                                    .delete,
+                                            description:
+                                                'Are you sure you want to delete this moment?',
+                                            roundedBackgroundIcon:
+                                                RoundedBackgroundIcon(
+                                              enableMargin: false,
+                                              width: 90,
+                                              height: 90,
+                                              image: Image.asset(
+                                                  'assets/images/delete_dialog_icon.png'),
+                                            ),
+                                            leftButtonOnPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (dialogLoadingContext) =>
+                                                          LoadingIndicator());
+                                              MomentsService()
+                                                  .deleteMoment(widget
+                                                      .momentsModelList[index]
+                                                      .id!)
+                                                  .then(
+                                                (value) {
+                                                  Navigator.pop(
+                                                      context); // Dismiss loading indicator
+                                                  Navigator.pop(context);
+                                                  showToast(
+                                                      message:
+                                                          'Moment deleted');
+                                                },
+                                              ).catchError((e) {
+                                                Navigator.pop(context);
+                                                showToast(
+                                                    message: e.toString());
+                                              });
                                             },
-                                          ).catchError((e) {
-                                            Navigator.pop(context);
-                                            showToast(message: e.toString());
-                                          });
+                                          );
                                         },
-                                      );
-                                    },
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
                             )
                           : SizedBox.shrink(),
+                      _buildShareMomentOption(index),
                       CustomMomentDetailButton(
                         iconEnabled: likeEnabled(index),
                         iconData: Icons.thumb_up,
@@ -575,15 +642,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                         iconEnabled: commentingEnabled(index),
                         iconData: Icons.messenger,
                         text: commentingEnabled(index)
-                            ? Provider.of<MomentsBloc>(context)
-                                        .numberOfComments[index] <
-                                    1
-                                ? ''
-                                : getFormattedViewCount(
-                                    noOfViews: Provider.of<MomentsBloc>(context)
-                                        .numberOfComments[index],
-                                    addViewText: false,
-                                  )
+                            ? getCommentCount(index)
                             : '',
                         onPressed: commentingEnabled(index)
                             ? () {
@@ -623,14 +682,9 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
                       children: [
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              Routes.USER_PROFILE,
-                              arguments: {
-                                "searchedUserName":
-                                    widget.momentsModelList[index].owner,
-                              },
-                            );
+                            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                                arguments:
+                                    widget.momentsModelList[index].avatar);
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
@@ -760,6 +814,270 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
         );
       },
     );
+  }
+
+  Widget _buildShareMomentOption(int index) {
+    if (isMyMoment(index)) {
+      return SizedBox.shrink();
+    }
+
+    return CustomMomentDetailButton(
+        iconEnabled: true,
+        iconData: Icons.more_horiz_outlined,
+        text: "",
+        onPressed: () async {
+          androidBottomSheet(
+            context: context,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                bottomSheetItem(
+                    title: 'Share in chat',
+                    iconData: Icons.send_outlined,
+                    onTap: () async {
+                      await sendMomentToUserInChat(
+                          momentsModel: widget.momentsModelList[index]);
+                    }),
+                bottomSheetItem(
+                  title: 'Report Moment',
+                  iconData: Icons.report_gmailerrorred_rounded,
+                  onTap: () {
+                    Navigator.pop(context);
+                    NavigationUtil.push(context,
+                        screen: AddReportScreen(
+                          object: widget.momentsModelList[index].toJson(),
+                          type: "moment",
+                        ));
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<void> sendMomentToUserInChat(
+      {required MomentsModel momentsModel}) async {
+    List<ChatConversation?> listOfRecipient =
+        await ShareInChat().selectShareCustomer(context);
+    debugPrint("Selected users = ${listOfRecipient.length}");
+
+    listOfRecipient.forEach((recipient) {
+      addMomentPostToChat(
+          recipientUser: recipient!, momentsModel: momentsModel);
+    });
+  }
+
+  Future<void> addMomentPostToChat({
+    required ChatConversation recipientUser,
+    required MomentsModel momentsModel,
+    String? url,
+  }) async {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    Map<String, dynamic> metaData = {
+      "id": momentsModel.id,
+      "title": messageDecoderWithEmoji(momentsModel.text),
+      "author_avatar": momentsModel.avatar,
+      "author_username": messageDecoderWithEmoji(momentsModel.ownerName),
+    };
+
+    switch (momentsModel.mediaType) {
+      case "image":
+        metaData.addAll({"image": momentsModel.media});
+        break;
+      case "video":
+        metaData.addAll({"image": momentsModel.mediaPoster});
+        break;
+    }
+
+    Map<String, dynamic> data = {
+      "meta_data": jsonEncode(metaData),
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": 'moment',
+      "kind": "moment",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+    await sendDataToSocket(data);
+    showToast(message: 'Moment Shared');
+  }
+
+  Widget momentVisibilityOption(MomentsModel momentModel) {
+    String title = "Make ";
+    bool isPublic = false;
+    IconData icon;
+    if (momentModel.isPublic ?? false) {
+      title += "Private";
+      icon = Icons.shield;
+      isPublic = false;
+    } else {
+      title += "Public";
+      icon = Icons.public;
+      isPublic = true;
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: icon,
+      onTap: () {
+        Navigator.pop(context);
+        MomentsService().updateMoment(
+            momentId: momentModel.id!, data: {"is_public": isPublic}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  Widget momentPermanentOption(MomentsModel momentModel) {
+    bool isPermanent = false;
+    String title;
+    debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
+    debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
+    if (momentModel.isPermanent ?? false) {
+      isPermanent = momentModel.isPermanent!;
+    }
+
+    if (isPermanent) {
+      title = "For Moment Alone";
+    } else {
+      title = "Make Permanent";
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: CupertinoIcons.infinite,
+      onTap: () {
+        Navigator.pop(context);
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"is_permanent": !isPermanent}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  Widget momentCommentingOption(MomentsModel momentModel) {
+    bool isCommentingEnable = false;
+    String title;
+    if (momentModel.enableCommenting ?? false) {
+      isCommentingEnable = momentModel.enableCommenting!;
+    }
+
+    IconData icon;
+    if (isCommentingEnable) {
+      title = "Turn off Commenting";
+      icon = Icons.comments_disabled;
+    } else {
+      title = "Turn on Commenting";
+      icon = Icons.comment;
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: icon,
+      onTap: () {
+        Navigator.pop(context);
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"enable_commenting": !isCommentingEnable}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  Widget momentLikeOption(MomentsModel momentModel) {
+    bool isLikeEnabled = false;
+    String title;
+    if (momentModel.enableLikes ?? false) {
+      isLikeEnabled = momentModel.enableLikes!;
+    }
+
+    IconData icon;
+    if (isLikeEnabled) {
+      title = "Disable Likes";
+      icon = Icons.thumb_up_alt;
+    } else {
+      title = "Enable Likes";
+      icon = Icons.thumb_up_alt;
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: icon,
+      onTap: () {
+        Navigator.pop(context);
+
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"enable_like": !isLikeEnabled}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  String getCommentCount(int index) {
+    String commentCount = '';
+
+    try {
+      MomentsBloc momentsBloc = Provider.of<MomentsBloc>(context);
+      if (momentsBloc.numberOfComments[index] >= 1) {
+        commentCount = getFormattedViewCount(
+          noOfViews: momentsBloc.numberOfComments[index],
+          addViewText: false,
+        );
+      }
+      // if (momentsBloc.numberOfComments.length <= index + 1) {
+      //   if (momentsBloc.numberOfComments[index] >= 1) {
+      //     commentCount = getFormattedViewCount(
+      //       noOfViews: momentsBloc.numberOfComments[index],
+      //       addViewText: false,
+      //     );
+      //   }
+      // }
+    } catch (error) {
+      commentCount = '';
+    }
+
+    return commentCount;
   }
 
   Widget getPrivateOrPublicIcon(int index) {
@@ -968,6 +1286,8 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
   }
 }
 
+GlobalKey videoPlayerKey = GlobalKey();
+
 class RenderMedia extends StatefulWidget {
   final MomentsModel momentsModel;
   const RenderMedia({Key? key, required this.momentsModel}) : super(key: key);
@@ -1012,7 +1332,8 @@ class _RenderMediaState extends State<RenderMedia> {
         },
       );
     } else if (widget.momentsModel.mediaType == "video") {
-      return VideoDisplay(momentsModel: widget.momentsModel);
+      return VideoDisplay(
+          key: videoPlayerKey, momentsModel: widget.momentsModel);
     } else {
       return Container(
         decoration: BoxDecoration(
@@ -1035,29 +1356,33 @@ class VideoDisplay extends StatefulWidget {
 class _VideoDisplayState extends State<VideoDisplay> {
   bool initialized = false;
   bool showMediaIcon = false;
-  late CachedVideoPlayerController _controller;
+  late VideoPlayerManager videoPlayerManager;
 
   @override
   void initState() {
     debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!}');
-    _controller =
-        CachedVideoPlayerController.network(widget.momentsModel.media!)
-          ..initialize().then((value) {
-            _controller.play();
-            initialized = true;
-            _controller.setLooping(true);
-            setState(() {});
-          }).catchError((e) {
-            Navigator.pop(context);
-            showToast(message: 'Unable to display moment');
-          });
+    videoPlayerManager = VideoPlayerManager();
+    videoPlayerManager.init(widget.momentsModel.media!);
+    // _controller = CachedVideoPlayerController.network(
+    //   widget.momentsModel.media!,
+    // )..initialize().then((value) {
+    //     _controller.play();
+    //     initialized = true;
+    //     _controller.setLooping(true);
+    //     setState(() {});
+    //   }).catchError((e) {
+    //     Navigator.pop(context);
+    //     showToast(message: 'Unable to display moment');
+    //   });
     super.initState();
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     super.dispose();
-    _controller.dispose();
+    await videoPlayerManager.dispose();
+    // await _controller.pause();
+    // await _controller.dispose();
   }
 
   @override
@@ -1149,6 +1474,46 @@ class _VideoDisplayState extends State<VideoDisplay> {
   }
 }
 
+class VideoPlayerManager {
+  late CachedVideoPlayerController _controller;
+  int? activeIndex;
+
+  init(String url) async {
+    _controller = CachedVideoPlayerController.network(
+      url,
+    )
+      ..initialize()
+      ..setLooping(true).then((value) async {
+        await play();
+      }).catchError((e) {
+        showToast(message: 'Unable to display moment');
+      });
+  }
+
+  play() async {
+    await _controller.play();
+  }
+
+  togglePlay({int? index, String? url}) async {
+    if (index == activeIndex) {
+      await play();
+    } else if (index != activeIndex) {
+      activeIndex = index;
+      await pause();
+      await init(url!);
+    }
+  }
+
+  pause() async {
+    await _controller.pause();
+  }
+
+  dispose() async {
+    await pause();
+    await _controller.dispose();
+  }
+}
+
 void commentSheet(BuildContext context, String momentID,
     {required int index}) async {
   await showModalBottomSheet(
@@ -1227,6 +1592,7 @@ class _CommentListWidgetState extends State<CommentListWidget> {
 
       basePaginationModel = value;
       nextUrl = basePaginationModel!.next;
+      print("INDEX:- ${widget.index}");
       Provider.of<MomentsBloc>(context, listen: false)
           .numberOfComments[widget.index] = basePaginationModel!.count;
 

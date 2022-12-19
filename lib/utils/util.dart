@@ -179,6 +179,20 @@ Widget imageErrorWidget(BuildContext context, String url, dynamic error) =>
       ),
     );
 
+Widget imageErrorWidgetForMomentTile(
+        BuildContext context, String url, dynamic error) =>
+    Container(
+      color: darkGrey.withOpacity(0.50),
+      child: Image.asset(
+        defaultProductAndServiceImage,
+        width: double.infinity,
+        height: double.infinity,
+        colorBlendMode: BlendMode.darken,
+        fit: BoxFit.scaleDown,
+        filterQuality: FilterQuality.high,
+      ),
+    );
+
 Widget wallpaperErrorWidget(BuildContext context, String url, dynamic error) =>
     Image.asset(
       defaultWallPaper,
@@ -270,7 +284,11 @@ TagsStyler textFieldTagStyler = TagsStyler(
   tagCancelIconPadding: EdgeInsets.only(left: 12),
   tagCancelIcon: Icon(SlydoAppIcon.close_2, color: blackFont),
 );
-TextFieldStyler textFieldStyler = TextFieldStyler(helperText: '');
+TextFieldStyler textFieldStyler = TextFieldStyler(
+  helperText: '',
+  hintText: '',
+  textFieldBorder: InputBorder.none,
+);
 
 Widget productAndServiceErrorWidget(
         BuildContext context, String url, dynamic error) =>
@@ -313,7 +331,10 @@ Widget customThemeBuilder(BuildContext context, Widget? child) {
 }
 
 BoxDecoration decorateBox(
-    {Color? borderColor, double borderRadius = 10, Color? shadowColor}) {
+    {Color? borderColor,
+    double borderRadius = 10,
+    Color? shadowColor,
+    Color? color}) {
   if (shadowColor == null) shadowColor = boxShadowTwo;
   return BoxDecoration(
     boxShadow: <BoxShadow>[
@@ -323,7 +344,7 @@ BoxDecoration decorateBox(
         blurRadius: 20.0,
       ),
     ],
-    color: Colors.white,
+    color: color ?? Colors.white,
     borderRadius: BorderRadius.all(
       Radius.circular(borderRadius),
     ),
@@ -793,6 +814,7 @@ Widget userNameWithVerifiedIcon({
   required String name,
   required bool? isVerified,
   int lengthToTruncateAt = 25,
+  double verifiedIconSize = 18,
   TextStyle? textStyle,
   Color? verifiedIconColor,
 }) {
@@ -816,7 +838,7 @@ Widget userNameWithVerifiedIcon({
               ? Icon(
                   Icons.verified_rounded,
                   color: verifiedIconColor ?? navyBlue,
-                  size: 18,
+                  size: verifiedIconSize,
                 )
               : SizedBox.shrink(),
         ),
@@ -1131,6 +1153,30 @@ String toTimeAgoLabel({required DateTime dateTime}) {
   return (inSeconds >= 3 && inSeconds < 61)
       ? '$inSeconds seconds ago'
       : 'just now';
+}
+
+List<ViolationType> violationType = [
+  ViolationType(id: 1, type: "Harassment and bullying"),
+  ViolationType(id: 2, type: "Harmful and dangerous content"),
+  ViolationType(id: 3, type: "Threatening Violence"),
+  ViolationType(id: 4, type: "Hate and vulgar language"),
+  ViolationType(id: 5, type: "Nudity and sexual content"),
+  ViolationType(id: 6, type: "Sharing personal information"),
+  ViolationType(id: 7, type: "Prohibited transaction"),
+  ViolationType(id: 8, type: "Impersonation"),
+  ViolationType(id: 9, type: "Copyright violation"),
+  ViolationType(id: 10, type: "Trademark violation"),
+  ViolationType(id: 11, type: "Self-harm or suicide"),
+  ViolationType(id: 12, type: "Spam, deceptive practices and scams"),
+  ViolationType(id: 13, type: "Misinformation"),
+  ViolationType(id: 14, type: "Fake engagement"),
+  ViolationType(id: 15, type: "Violent and graphic content"),
+];
+
+class ViolationType {
+  int? id;
+  String? type;
+  ViolationType({this.id, this.type});
 }
 
 List<Map<String, dynamic>> nigeriaStateAndLg = [
@@ -2090,6 +2136,12 @@ List<Map<String, dynamic>> nigeriaStateAndLg = [
       "Zurmi"
     ]
   }
+];
+
+List<String> expiresList = [
+  "72 hours",
+  "42 hours",
+  "24 hours",
 ];
 
 List<String> getAllStates() {

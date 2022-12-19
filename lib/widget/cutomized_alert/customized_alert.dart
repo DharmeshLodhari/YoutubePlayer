@@ -7,7 +7,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 
 class CustomizedAlert {
-  final BuildContext? context;
+  final BuildContext context;
   final AlertStyle style;
   final String? image;
   final String? title;
@@ -32,13 +32,13 @@ class CustomizedAlert {
   /// Displays defined alert window
   Future<bool?> show() async {
     return await showGeneralDialog(
-      context: context!,
+      context: context,
       pageBuilder: (BuildContext buildContext, Animation<double> animation,
           Animation<double> secondaryAnimation) {
         return _buildDialog();
       },
       barrierDismissible: style.isOverlayTapDismiss,
-      barrierLabel: MaterialLocalizations.of(context!).modalBarrierDismissLabel,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
       barrierColor: style.overlayColor,
       transitionDuration: style.animationDuration,
       transitionBuilder: (
@@ -63,11 +63,11 @@ class CustomizedAlert {
             child: AlertDialog(
               insetPadding: EdgeInsets.zero,
               backgroundColor: style.backgroundColor ??
-                  Theme.of(context!).dialogBackgroundColor,
+                  Theme.of(context).dialogBackgroundColor,
               shape: style.alertBorder ?? _defaultShape(),
               titlePadding: EdgeInsets.all(0.0),
               title: Container(
-                width: MediaQuery.of(context!).size.width - 40,
+                width: MediaQuery.of(context).size.width - 40,
                 child: Center(
                   child: content ??
                       Column(
@@ -78,7 +78,7 @@ class CustomizedAlert {
                               SizedBox(
                                 height: 24,
                               ),
-                              _getImage()!,
+                              _getImage() ?? Container(),
                               SizedBox(
                                 height: 12,
                               ),
@@ -142,15 +142,15 @@ class CustomizedAlert {
       var btnOne = Expanded(
         child: Padding(
           padding: EdgeInsets.only(right: 8.0),
-          child: buttons![0],
+          child: buttons?[0] ?? Container(),
         ),
       );
       expandedButtons.add(btnOne);
-      if (buttons!.length > 1) {
+      if ((buttons?.length ?? 0) > 1) {
         var btnTwo = Expanded(
           child: Padding(
             padding: EdgeInsets.only(left: 8.0),
-            child: buttons![1],
+            child: buttons?[1] ?? Container(),
           ),
         );
         expandedButtons.add(btnTwo);
@@ -168,7 +168,7 @@ class CustomizedAlert {
             ? Container(
                 child: ClipOval(
                   child: Image.network(
-                    image!,
+                    image ?? "",
                     height: 170,
                     width: 170,
                     fit: BoxFit.fill,

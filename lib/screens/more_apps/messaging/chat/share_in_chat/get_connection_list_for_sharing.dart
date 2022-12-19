@@ -2,7 +2,6 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/common.dart';
-import 'package:Slydo/utils/global_key.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
@@ -76,9 +75,8 @@ class _GetUserConnectionListState extends State<GetUserConnectionList> {
   }
 
   void getList() async {
-    ConnectionListBloc _connectionListBloc = Provider.of<ConnectionListBloc>(
-        myGlobals.navigationKey.currentContext!,
-        listen: false);
+    ConnectionListBloc _connectionListBloc =
+        Provider.of<ConnectionListBloc>(context, listen: false);
 
     connectionsList.addAll(_connectionListBloc.connectionUsers);
 

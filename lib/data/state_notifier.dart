@@ -163,6 +163,17 @@ class RefreshBlocForConnectionDashboard extends ChangeNotifier {
   }
 }
 
+class RefreshBlocForConnectionList extends ChangeNotifier {
+  bool _isRefresh = false;
+
+  bool get isRefresh => _isRefresh;
+
+  set isRefresh(bool value) {
+    _isRefresh = value;
+    notifyListeners();
+  }
+}
+
 class BackgroundFetchStopBloc extends ChangeNotifier {
   bool _isAllowed = true;
 

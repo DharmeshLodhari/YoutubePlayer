@@ -96,32 +96,33 @@ class MomentsModel {
   Map<String, dynamic>? attachment;
   String? payMeLabel;
   String? payMeButtonColor;
+  bool? isPermanent;
 
-  MomentsModel({
-    this.id,
-    this.views = 0,
-    this.payMe = true,
-    this.tags,
-    this.mediaPoster,
-    this.enableLikes = false,
-    this.enableCommenting = false,
-    this.payMeButtonColor,
-    this.payMeLabel,
-    this.likes,
-    this.dislikes,
-    this.attachment,
-    this.numberOfComments,
-    this.mediaType,
-    this.avatar,
-    this.ownerName,
-    this.media,
-    this.gif,
-    this.text,
-    this.owner,
-    this.createdAt,
-    this.expireAt,
-    this.isPublic,
-  });
+  MomentsModel(
+      {this.id,
+      this.views = 0,
+      this.payMe = true,
+      this.tags,
+      this.mediaPoster,
+      this.enableLikes = false,
+      this.enableCommenting = false,
+      this.payMeButtonColor,
+      this.payMeLabel,
+      this.likes,
+      this.dislikes,
+      this.attachment,
+      this.numberOfComments,
+      this.mediaType,
+      this.avatar,
+      this.ownerName,
+      this.media,
+      this.gif,
+      this.text,
+      this.owner,
+      this.createdAt,
+      this.expireAt,
+      this.isPublic,
+      this.isPermanent = false});
 
   // factory MomentsModel.fromExploreMoments(ExploreMomentsModel exploreMomentsModel) {
   //
@@ -181,7 +182,37 @@ class MomentsModel {
       createdAt: json['created_at'],
       expireAt: json['expire_at'],
       isPublic: json['is_public'] ?? false,
+      isPermanent: json['is_permanent'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = id;
+    map['views'] = views;
+    map['pay_me_label'] = payMeLabel;
+    map['payme_button_color'] = payMeButtonColor;
+    map['enable_payme'] = payMe;
+    map['tags'] = tags;
+    map['enable_like'] = enableLikes;
+    map['enable_commenting'] = enableCommenting;
+    map['likes'] = likes;
+    map['dislikes'] = dislikes;
+    map['media_type'] = mediaType;
+    map['attachment'] = attachment;
+    map['number_of_comments'] = numberOfComments;
+    map['avatar'] = avatar;
+    map['owner_name'] = ownerName;
+    map['media'] = media;
+    map['media_poster'] = mediaPoster;
+    map['gif'] = gif;
+    map['text'] = text;
+    map['owner'] = owner;
+    map['created_at'] = createdAt;
+    map['expire_at'] = expireAt;
+    map['is_public'] = isPublic;
+    map['is_permanent'] = isPermanent;
+    return map;
   }
 }
 
