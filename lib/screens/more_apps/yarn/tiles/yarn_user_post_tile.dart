@@ -170,7 +170,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                   ),
                                   SizedBox(width: 8),
                                   userNameWithVerifiedIcon(
-                                    name: widget.post!.authorName!,
+                                    name: widget.post!.authorName ?? "",
                                     isVerified: false,
                                     textStyle: TextStyle(
                                       fontWeight: FontWeight.w600,
