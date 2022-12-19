@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -17,6 +18,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/myfeed.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
@@ -44,12 +46,16 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
+import '../../../../../main.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
 import '../../../messaging/chat/models/channel_model.dart';
 import '../../../messaging/message_auth.dart';
+import '../../../yarn/models/Topics/YarnTopic.dart';
+import '../../../yarn/share_as_a_yarn_screen.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../models/UserAbout.dart';
 
 // ignore: must_be_immutable
@@ -104,6 +110,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool isInRequestList = false;
   bool isLoadingFollowingAction = false;
   bool isLoadingFriendRequest = false;
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -412,6 +419,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     if (isLoading) {
       return Scaffold(
@@ -790,25 +798,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      messageDecoderWithEmoji(searchedUser!.displayName() ?? "") ?? "",
-                      style: TextStyle(fontSize: 12, color: yarnBlack),
-                    )
-                  ),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        messageDecoderWithEmoji(
+                                searchedUser!.displayName() ?? "") ??
+                            "",
+                        style: TextStyle(fontSize: 12, color: yarnBlack),
+                      )),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: userNameWithVerifiedIcon(
-                      name: "@${searchedUser!.userName ?? ''}",
-                      isVerified: searchedUser!.isVerified,
-                      textStyle: TextStyle(
-                        fontSize: 12,
-                        color: HexColor("#151515"),
-                        fontWeight: FontWeight.w500,
-                      ),
-                      verifiedIconColor: verifyBlue,
-                      verifiedIconSize: 15
-                    ),
+                        name: "@${searchedUser!.userName ?? ''}",
+                        isVerified: searchedUser!.isVerified,
+                        textStyle: TextStyle(
+                          fontSize: 12,
+                          color: HexColor("#151515"),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        verifiedIconColor: verifyBlue,
+                        verifiedIconSize: 15),
                   ),
                 ],
               ),
@@ -946,7 +954,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             //Icon(Icons.calendar_month_rounded, size: 16),
             SvgPicture.asset("yarn/calendar".toSVG()),
             SizedBox(width: 12),
-            Text('${getDate(searchedUser!.dateJoined!)}', style: TextStyle(color: HexColor("78797A"), fontSize: 10, fontWeight: FontWeight.w400),),
+            Text(
+              '${getDate(searchedUser!.dateJoined!)}',
+              style: TextStyle(
+                  color: HexColor("78797A"),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w400),
+            ),
           ],
         ),
       ],
@@ -1042,9 +1056,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             onOpen: _onOpen,
             text: searchedUser?.bio == null
                 ? ''
-                : messageDecoderWithEmoji("${searchedUser?.bio}"
-                        "") ??
-                    "",
+                : messageDecoderWithEmoji("${searchedUser?.bio}" "") ?? "",
             textAlign: TextAlign.left,
             style: TextStyle(fontSize: 14),
             maxLines: 6,
@@ -1177,11 +1189,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget getAddConnectionIcon() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(
-          color: greyBorderColor,
-        ),
-        shape: BoxShape.circle
-      ),
+          border: Border.all(
+            color: greyBorderColor,
+          ),
+          shape: BoxShape.circle),
       child: RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -1303,11 +1314,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget chatIcon() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(
-          color: HexColor("#292929"),
-        ),
-       shape: BoxShape.circle
-      ),
+          border: Border.all(
+            color: HexColor("#292929"),
+          ),
+          shape: BoxShape.circle),
       child: RoundedBackgroundIcon(
         height: 30,
         width: 30,
@@ -1372,16 +1382,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
-          color: _tabController?.index == tabIndex
-              ? navyBlue
-              : Colors.white,
+          color: _tabController?.index == tabIndex ? navyBlue : Colors.white,
         ),
         child: Text(
           title,
           maxLines: 1,
           overflow: TextOverflow.visible,
           style: TextStyle(
-            color: _tabController?.index == tabIndex ? white : HexColor("#78797A"),
+            color:
+                _tabController?.index == tabIndex ? white : HexColor("#78797A"),
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
@@ -1720,6 +1729,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
 
+    list.add(
+      bottomSheetItem(
+        title: "Share As A Yarn",
+        iconData: SlydoAppIcon.text_message,
+        isLast: searchedUser!.userName == userBloc.user.userName,
+        onTap: () async {
+          Navigator.pop(context);
+          shareAsYarn();
+        },
+      ),
+    );
+
     if (searchedUser!.userName != userBloc.user.userName) {
       if (searchedUser?.type?.toLowerCase() != "user") {
         list.add(
@@ -1865,6 +1886,33 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     await sendDataToSocket(data);
   }
+
+  Future shareAsYarn() async {
+    /*  AddYarnAndQuestion yarn = AddYarnAndQuestion();
+    yarn.title = 'This is the title';
+    yarn.body = 'This is the body';
+    yarn.enableCommenting = true;
+    yarn.enablePayme = true;
+    yarn.attachment = {
+      "profile": searchedUser?.toJson().cast<String, dynamic>() ?? {}
+    };
+    bool data = await YarnAuth().addYarnAndQuestion(yarn);
+    if (data) {
+      showToast(message: "Share in Yarn successfully created");
+    } */
+
+    NavigationUtil.push(context,
+        screen: ShareAsAyarnScreen(
+            askCategories: yarnDashboardBloc.yarnCategories,
+            shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            callback: (params) async {
+              params..attachment = {"profile": searchedUser?.toJson()};
+              bool data = await YarnAuth().addYarnAndQuestion(params);
+              if (data) {
+                showToast(message: "Share in Yarn successfully created");
+              }
+            }));
+  }
 }
 
 class GetFullAddressWidget extends StatefulWidget {
@@ -1885,6 +1933,7 @@ class _GetFullAddressWidgetState extends State<GetFullAddressWidget> {
   @override
   void initState() {
     super.initState();
+
     UserAbout? userAbout =
         Provider.of<UserBloc>(context, listen: false).userAbout;
 

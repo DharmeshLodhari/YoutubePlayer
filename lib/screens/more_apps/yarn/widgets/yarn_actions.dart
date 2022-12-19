@@ -114,8 +114,10 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "yarn/like".toSVG(),
-            color: darkGreyYarn,
+            widget.yarn.userUpvoted
+                ? "yarn/likeAfter".toSVG()
+                : "yarn/likeBefore".toSVG(),
+            color: widget.yarn.userUpvoted ? red : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -125,7 +127,9 @@ class _YarnActionsState extends State<YarnActions> {
           Text(
             getLikeCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: widget.yarn.userUpvoted ? red : darkGreyYarn),
           ),
         ],
       ),
@@ -140,8 +144,10 @@ class _YarnActionsState extends State<YarnActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "yarn/unlike".toSVG(),
-            color: darkGreyYarn,
+            widget.yarn.userDownVoted
+                ? "yarn/unlikeAfter".toSVG()
+                : "yarn/unlikeBefore".toSVG(),
+            color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -151,7 +157,9 @@ class _YarnActionsState extends State<YarnActions> {
           Text(
             getDisLikeCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn),
           ),
         ],
       ),
@@ -167,7 +175,7 @@ class _YarnActionsState extends State<YarnActions> {
         children: [
           SvgPicture.asset(
             "yarn/re_share".toSVG(),
-            color: darkGreyYarn,
+            color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -177,7 +185,9 @@ class _YarnActionsState extends State<YarnActions> {
           Text(
             getReYarnCount(),
             style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn),
           ),
         ],
       ),
@@ -262,7 +272,11 @@ class _YarnActionsState extends State<YarnActions> {
           ),
           SvgPicture.asset(
             "yarn/send_money".toSVG(),
-            color: !isPayMeEnable ? Colors.transparent : null,
+            color: !isPayMeEnable
+                ? Colors.transparent
+                : widget.yarn.userSupported
+                    ? deepblue
+                    : null,
             height: 13,
             width: 13,
           ),
@@ -301,7 +315,8 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   bool enableCommenting() {
-    if (widget.yarn.enableCommenting != null && (widget.yarn.enableCommenting ?? false)) {
+    if (widget.yarn.enableCommenting != null &&
+        (widget.yarn.enableCommenting ?? false)) {
       return true;
     } else {
       return false;
@@ -310,6 +325,10 @@ class _YarnActionsState extends State<YarnActions> {
 
   Future addLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data = await YarnAuth().addLike(widget.yarn.id!);
+    setState(() {
+      widget.yarn.userUpvoted = !widget.yarn.userUpvoted;
+      widget.yarn.userDownVoted = false;
+    });
     if (data != null) {
       setState(() {
         widget.yarn.voteCount = data['vote_count'];
@@ -320,6 +339,10 @@ class _YarnActionsState extends State<YarnActions> {
 
   Future addDisLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data = await YarnAuth().addDisLike(widget.yarn.id!);
+    setState(() {
+      widget.yarn.userDownVoted = !widget.yarn.userDownVoted;
+      widget.yarn.userUpvoted = false;
+    });
     if (data != null) {
       setState(() {
         widget.yarn.voteCount = data['vote_count'];
@@ -329,11 +352,13 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Future addReYarn() async {
-    Map<String, dynamic> body = {
-      "reyarn": widget.yarn.id,
-    };
+    Map<String, dynamic> body = {"reyarn": widget.yarn.id};
     debugPrint("BODY DATA:- $body");
+
     Yarn? data = await YarnAuth().addReYarn(body);
+    setState(() {
+      widget.yarn.userReyarned = !widget.yarn.userReyarned;
+    });
     if (data != null) {
       showToast(message: "Re yarn added successfully");
       widget.yarn.numberOfReYarn = (widget.yarn.numberOfReYarn ?? 0) + 1;
@@ -344,7 +369,7 @@ class _YarnActionsState extends State<YarnActions> {
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
-    await ShareInChat().selectShareCustomer(context);
+        await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:Slydo/data/socket_provider.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,10 +12,13 @@ import 'global_key.dart';
 
 String? messageDecoderWithEmoji(String? text) {
   try {
+    logger.d('tEXT: $text');
+
     List<int> bytes = text.toString().codeUnits;
 
     return utf8.decode(bytes);
   } catch (error) {
+    logger.e('An error occurred: $error');
     return text;
   }
 }

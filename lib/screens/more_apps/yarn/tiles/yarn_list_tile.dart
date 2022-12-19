@@ -1,5 +1,7 @@
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_user_post_tile.dart';
@@ -70,20 +72,20 @@ class _YarnTileState extends State<YarnTile> {
         SizedBox(
           height: 10,
         ),
-        if (widget.yarn.body != null)...[
+        if (widget.yarn.body != null) ...[
           _buildPostDescription(),
           SizedBox(
             height: 10,
           ),
         ],
         _buildTagsAndViewerRow(),
-        if (isReYarnPresent && widget.yarn.reYarn != null)...[
+        if (isReYarnPresent && widget.yarn.reYarn != null) ...[
           _buildReYarnTile(),
           SizedBox(
             height: 8,
           ),
         ],
-        if (isAttachmentPresent && widget.yarn.attachment != null)...[
+        if (isAttachmentPresent && widget.yarn.attachment != null) ...[
           _buildAttachment(),
           SizedBox(
             height: 8,
@@ -107,7 +109,7 @@ class _YarnTileState extends State<YarnTile> {
         SizedBox(
           height: 4,
         ),
-        if (widget.yarn.category != null)...[
+        if (widget.yarn.category != null) ...[
           _buildCategoryTypeChip(),
           SizedBox(
             height: 8,
@@ -247,7 +249,7 @@ class _YarnTileState extends State<YarnTile> {
         child: Text(
           widget.yarn.category!.name ?? "",
           style:
-          TextStyle(color: white, fontSize: 9, fontWeight: FontWeight.w600),
+              TextStyle(color: white, fontSize: 9, fontWeight: FontWeight.w600),
         ),
       );
     } else {
@@ -326,18 +328,29 @@ class _YarnTileState extends State<YarnTile> {
 
   Widget _buildAttachment() {
     Widget childWidget;
+
     if (widget.yarn.attachmentType == 'service') {
       Service service = Service.fromJson(widget.yarn.attachment);
-      childWidget = YarnServiceTile(service: service,);
-    }
-    else if (widget.yarn.attachmentType == 'product') {
+      childWidget = YarnServiceTile(
+        service: service,
+      );
+    } else if (widget.yarn.attachmentType == 'product') {
       Product product = Product.fromJson(widget.yarn.attachment);
-      childWidget = YarnProductTile(product: product,);
-    }
-    else if (widget.yarn.attachmentType == 'blog') {
+      childWidget = YarnProductTile(
+        product: product,
+      );
+    } else if (widget.yarn.attachmentType == 'blog') {
       UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (widget.yarn.attachmentType == 'profile') {
+      CustomerProfile customerProfile =
+          CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+      childWidget = YarnCustomerPostTile(
+        customerProfile: customerProfile,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );

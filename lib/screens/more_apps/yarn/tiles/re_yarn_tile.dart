@@ -51,9 +51,8 @@ class _ReYarnTileState extends State<ReYarnTile> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: greySecondaryYarn)
-      ),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: greySecondaryYarn)),
       child: _buildMain(),
     );
   }
@@ -121,7 +120,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                       children: [
                         Text(
                           messageDecoderWithEmoji(
-                              widget.yarn.authorName ?? "") ??
+                                  widget.yarn.authorName ?? "") ??
                               "",
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
@@ -238,12 +237,12 @@ class _ReYarnTileState extends State<ReYarnTile> {
                 spacing: 2,
                 children: widget.yarn.tags!
                     .map((e) => Text(
-                  "#$e",
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: navyBlue,
-                      fontWeight: FontWeight.w500),
-                ))
+                          "#$e",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: navyBlue,
+                              fontWeight: FontWeight.w500),
+                        ))
                     .toList(),
               ),
             ),

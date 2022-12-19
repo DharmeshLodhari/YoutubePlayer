@@ -198,9 +198,16 @@ class _AskStartScreenState extends State<AskStartScreen> {
               model.onSelectedAskCategories(e.id!);
             },
             title: e.name!,
-            categoryColor: model.selectedAskCategories.contains(e.id!) ? HexColor("#D9DFF8") : HexColor("#CCCCCC"),
-            selectedCategoryTextColor: model.selectedAskCategories.contains(e.id!) ? HexColor("#3F61DB") : HexColor("#000000"),
-            borderColor: model.selectedAskCategories.contains(e.id!) ? HexColor("#D9DFF8") : HexColor("#CCCCCC"),
+            categoryColor: model.selectedAskCategories.contains(e.id!)
+                ? HexColor("#D9DFF8")
+                : HexColor("#CCCCCC"),
+            selectedCategoryTextColor:
+                model.selectedAskCategories.contains(e.id!)
+                    ? HexColor("#3F61DB")
+                    : HexColor("#000000"),
+            borderColor: model.selectedAskCategories.contains(e.id!)
+                ? HexColor("#D9DFF8")
+                : HexColor("#CCCCCC"),
             isIconShow: model.selectedAskCategories.contains(e.id!),
           );
         }).toList(),

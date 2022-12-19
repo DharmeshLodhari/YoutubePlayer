@@ -3,31 +3,35 @@ import 'dart:io';
 import '../ask_categories_model.dart';
 
 class Yarn {
-  Yarn(
-      {this.id,
-      this.tags,
-      this.authorName,
-      this.authorAvatar,
-      this.createdAt,
-      this.updatedAt,
-      this.title,
-      this.body,
-      this.media = const [],
-      this.author,
-      this.status,
-      this.numberOfAnswers,
-      this.viewersAvatars,
-      this.isQuestion = false,
-      this.numberOfComments,
-      this.enablePayMe,
-      this.voteCount,
-      this.downVoteCount,
-      this.authorIsVerified,
-      this.enableCommenting,
-      this.category,
-      this.attachment,
-      this.attachmentType,
-      });
+  Yarn({
+    this.id,
+    this.tags,
+    this.authorName,
+    this.authorAvatar,
+    this.createdAt,
+    this.updatedAt,
+    this.title,
+    this.body,
+    this.media = const [],
+    this.author,
+    this.status,
+    this.numberOfAnswers,
+    this.viewersAvatars,
+    this.isQuestion = false,
+    this.numberOfComments,
+    this.enablePayMe,
+    this.voteCount,
+    this.downVoteCount,
+    this.authorIsVerified,
+    this.enableCommenting,
+    this.category,
+    this.attachment,
+    this.attachmentType,
+    this.userUpvoted = false,
+    this.userReyarned = false,
+    this.userSupported = false,
+    this.userDownVoted = false,
+  });
 
   Yarn.fromJson(dynamic json) {
     id = json['id'];
@@ -92,16 +96,21 @@ class Yarn {
       if (json['attachment']['service'] != null) {
         attachmentType = 'service';
         attachment = json['attachment']['service'];
-      }
-      else if (json['attachment']['blog'] != null) {
+      } else if (json['attachment']['blog'] != null) {
         attachmentType = 'blog';
         attachment = json['attachment']['blog'];
-      }
-      else if (json['attachment']['product'] != null) {
+      } else if (json['attachment']['product'] != null) {
         attachmentType = 'product';
         attachment = json['attachment']['product'];
+      } else if (json['attachment']['profile'] != null) {
+        attachmentType = 'profile';
+        attachment = json['attachment']['profile'];
       }
     }
+    userUpvoted = json['user_upvoted'];
+    userReyarned = json['user_reyarned'];
+    userSupported = json['user_supported'];
+    userDownVoted = json['user_down_voted'];
   }
 
   String? id;
@@ -132,6 +141,10 @@ class Yarn {
   int? numberOfReYarn;
   Map<String, dynamic>? attachment;
   String? attachmentType;
+  bool userUpvoted = false;
+  bool userReyarned = false;
+  bool userSupported = false;
+  bool userDownVoted = false;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -167,6 +180,10 @@ class Yarn {
     if (reYarn != null) {
       map['reyarn'] = reYarn!.toJson();
     }
+    map['user_upvoted'] = userUpvoted;
+    map['user_reyarned'] = userReyarned;
+    map['user_supported'] = userSupported;
+    map['user_down_voted'] = userDownVoted;
     return map;
   }
 }
@@ -226,6 +243,9 @@ class AddYarnAndQuestion {
   bool? enablePayme;
   bool? enableCommenting;
   Map<String, dynamic>? attachment;
+  bool? isSensitiveContent;
+  bool? isAdultContent;
+  int? ageRestriction;
 
   AddYarnAndQuestion(
       {this.localImages,
@@ -236,19 +256,27 @@ class AddYarnAndQuestion {
       this.isQuestion,
       this.author,
       this.enablePayme,
-      this.enableCommenting});
+      this.enableCommenting,
+      this.attachment,
+      this.isSensitiveContent = false,
+      this.isAdultContent = false,
+      this.ageRestriction});
 
   Map<String, dynamic> toAddMap() {
     return {
-      "tags": tags,
-      "title": title,
-      "body": body,
-      "category": categoryId,
-      "author": author,
-      "is_question": isQuestion,
-      "enable_payme": enablePayme,
-      "enable_commenting": enableCommenting,
-      "attachment": attachment,
+      if (tags != null) "tags": tags,
+      if (title != null) "title": title,
+      if (body != null) "body": body,
+      if (categoryId != null) "category": categoryId,
+      if (author != null) "author": author,
+      if (isQuestion != null) "is_question": isQuestion,
+      if (enablePayme != null) "enable_payme": enablePayme,
+      if (enableCommenting != null) "enable_commenting": enableCommenting,
+      if (attachment != null) "attachment": attachment,
+      if (isSensitiveContent != null)
+        "is_sensitive_content": isSensitiveContent,
+      if (isAdultContent != null) "is_adult_content": isAdultContent,
+      if (ageRestriction != null) "age_restriction": ageRestriction
     };
   }
 }
