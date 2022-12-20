@@ -171,7 +171,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     checkCurrentUserIsInRequestList();
 
-    int tabCount = 1;
+    int tabCount = 0;
 
     showPostsTab = await getIsShowPost();
     showYarnTab = await getIsShowYarn();

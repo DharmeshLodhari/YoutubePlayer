@@ -73,7 +73,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
         ],
         _buildPostDescription(),
         SizedBox(
-          height: widget.yarn.body!.isEmpty ? 0 : 10,
+          height: 10,
         ),
         _buildTagsAndViewerRow(),
         if (isAttachmentPresent && widget.yarn.attachment != null) ...[
