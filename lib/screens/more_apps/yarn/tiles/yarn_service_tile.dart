@@ -16,7 +16,6 @@ import '../../shopping/models/store.dart';
 import '../../shopping/shopping_auth.dart';
 import '../../user_profile/user_auth.dart';
 
-
 class YarnServiceTile extends StatefulWidget {
   Service? service;
   YarnServiceTile({Key? key, this.service}) : super(key: key);
@@ -26,7 +25,6 @@ class YarnServiceTile extends StatefulWidget {
 }
 
 class _YarnServiceTileState extends State<YarnServiceTile> {
-
   late BasketBloc basketBloc;
 
   late UserBloc userBloc;
@@ -36,20 +34,22 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
+    // print('service ${widget.service?.toJson()}');
+    // print('service name ${widget.service?.shortDescription}');
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     basketBloc = Provider.of<BasketBloc>(context);
     userBloc = Provider.of<UserBloc>(context);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
     return InkWell(
       onTap: () {
-        Navigator.of(context)
-            .pushNamed("/service-detail", arguments: {"service": widget.service});
+        Navigator.of(context).pushNamed("/service-detail",
+            arguments: {"service": widget.service});
       },
       child: Container(
         height: MediaQuery.of(context).size.width / 1.5,
@@ -68,30 +68,77 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                   child: Column(
                     children: <Widget>[
                       Expanded(
-                        child: CachedNetworkImage(
-                          width: double.infinity,
-                          imageUrl: widget.service!.cover!,
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.high,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) =>
-                              Center(
-                                child: CircularProgressIndicator(
-                                  value: downloadProgress.progress,
-                                  strokeWidth: 2.5,
-                                  valueColor: AlwaysStoppedAnimation(
-                                      navyBlue),
-                                  backgroundColor: Colors.transparent,
-                                ),
+                        child: Stack(children: [
+                          CachedNetworkImage(
+                            width: double.infinity,
+                            imageUrl: widget.service!.cover!,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => Center(
+                              child: CircularProgressIndicator(
+                                value: downloadProgress.progress,
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation(navyBlue),
+                                backgroundColor: Colors.transparent,
                               ),
-                          errorWidget:
-                          productAndServiceErrorWidget,
-                        ),
+                            ),
+                            errorWidget: productAndServiceErrorWidget,
+                          ),
+                          Positioned(
+                            left: 10,
+                            bottom: 10,
+                            child: InkWell(
+                              onTap: () {
+                                // Navigator.pushNamed(
+                                //     context, Routes.SERVICE_DETAIL, arguments: {
+                                //   "searchedUserName": widget.service!.description
+                                // });
+                              },
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl:
+                                            widget.service!.providerAvatar!,
+                                        errorWidget: imageErrorWidget,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  userNameWithVerifiedIcon(
+                                    name:
+                                        widget.service?.providerFullName ?? '',
+                                    isVerified: false,
+                                    textStyle: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 2.0,
+                                          color: blackFont,
+                                          offset: Offset(0.0, 0),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ]),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
@@ -100,106 +147,109 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                                     widget.service!.name!,
                                     maxLines: 1,
                                     style: TextStyle(
-                                        fontWeight:
-                                        FontWeight.w700,
+                                        fontWeight: FontWeight.w700,
                                         fontSize: 14,
                                         color: blackFont),
                                     softWrap: false,
-                                    overflow:
-                                    TextOverflow.ellipsis,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 RichText(
                                   text: TextSpan(children: [
                                     TextSpan(
                                         text: worldCurrencies[
-                                        widget.service!.currency!],
+                                            widget.service!.currency!],
                                         style: TextStyle(
                                             fontFamily: "Roboto",
                                             color: navyBlue,
-                                            fontWeight:
-                                            FontWeight.w700,
+                                            fontWeight: FontWeight.w700,
                                             fontSize: 14)),
                                     TextSpan(
-                                        text:
-                                        moneyDisplayNormalizer(
-                                            int.parse(widget.service!
-                                                .price
-                                                .toString())),
+                                        text: moneyDisplayNormalizer(int.parse(
+                                            widget.service!.price.toString())),
                                         style: TextStyle(
                                           color: navyBlue,
                                           fontSize: 14,
-                                          fontWeight:
-                                          FontWeight.w700,
+                                          fontWeight: FontWeight.w700,
                                         ))
                                   ]),
                                 )
                               ],
                             ),
-                            widget.service!.provider ==
-                                userBloc.user.userName
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              widget.service!.shortDescription!,
+                              maxLines: 2,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12,
+                                  color: blackFont),
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            widget.service!.provider == userBloc.user.userName
                                 ? Container(
-                              height: 4,
-                            )
+                                    height: 4,
+                                  )
                                 : Container(
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    children: [
-                                      addToCartWidget(
-                                          item: widget.service),
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                      Expanded(
-                                        child: CurvedButton(
-                                          height: 36,
-                                          isPaymentBtn:
-                                          true,
-                                          textColor:
-                                          Colors.white,
-                                          backgroundColor:
-                                          navyBlue,
-                                          text: "BUY NOW",
-                                          borderRadius: 10,
-                                          onPressed:
-                                              () async {
-                                            if (appConfigurationModel
-                                                ?.enablePayment ==
-                                                true) {
-                                              bool result =
-                                              await showDisclaimerDialogueForGoods(
-                                                  context);
-                                              if (result) {
-                                                customerProfileBloc
-                                                    .customer =
-                                                await UserAuth()
-                                                    .fetchCustomerProfile(widget.service!.provider);
-
-                                                Navigator.of(
-                                                    context)
-                                                    .pushNamed(
-                                                  '/send-payment',
-                                                  arguments: {
-                                                    'isFromProfile':
-                                                    false,
-                                                    'service':
-                                                    widget.service
-                                                  },
-                                                );
-                                              }
-                                            }
-                                          },
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 8,
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
+                                        Row(
+                                          children: [
+                                            addToCartWidget(
+                                                item: widget.service),
+                                            SizedBox(
+                                              width: 8,
+                                            ),
+                                            Expanded(
+                                              child: CurvedButton(
+                                                height: 36,
+                                                isPaymentBtn: true,
+                                                textColor: Colors.white,
+                                                backgroundColor: navyBlue,
+                                                text: "BUY NOW",
+                                                borderRadius: 10,
+                                                onPressed: () async {
+                                                  if (appConfigurationModel
+                                                          ?.enablePayment ==
+                                                      true) {
+                                                    bool result =
+                                                        await showDisclaimerDialogueForGoods(
+                                                            context);
+                                                    if (result) {
+                                                      customerProfileBloc
+                                                              .customer =
+                                                          await UserAuth()
+                                                              .fetchCustomerProfile(
+                                                                  widget
+                                                                      .service!
+                                                                      .provider);
+
+                                                      Navigator.of(context)
+                                                          .pushNamed(
+                                                        '/send-payment',
+                                                        arguments: {
+                                                          'isFromProfile':
+                                                              false,
+                                                          'service':
+                                                              widget.service
+                                                        },
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  )
                           ],
                         ),
                       ),

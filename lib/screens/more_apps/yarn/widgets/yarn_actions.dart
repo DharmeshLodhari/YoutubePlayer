@@ -351,7 +351,7 @@ class _YarnActionsState extends State<YarnActions> {
     }
   }
 
-  Future addReYarn() async {
+  Future reYarn() async {
     Map<String, dynamic> body = {"reyarn": widget.yarn.id};
     debugPrint("BODY DATA:- $body");
 
@@ -365,6 +365,112 @@ class _YarnActionsState extends State<YarnActions> {
       widget.onReYarnAdded!(data);
       if (mounted) setState(() {});
     }
+  }
+
+  addReYarn() {
+    showModalBottomSheet<void>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20)),
+              ),
+              color: Colors.white,
+              margin: EdgeInsets.zero,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 18),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 35.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          reYarn();
+                          Navigator.of(context).pop();
+                        },
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              "yarn/re_share".toSVG(),
+                              color: blackFont,
+                              height: 20,
+                              width: 20,
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              'Reyarn',
+                              style: TextStyle(
+                                  color: blackFont,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 17,
+                    ),
+                    Divider(
+                      color: darkGrey,
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 35.0),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'assets/images/pen-feather.png',
+                            height: 20,
+                            width: 20,
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'Quote Yarn',
+                            style: TextStyle(
+                                color: blackFont, fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                                color: darkGreyYarn.withOpacity(.3))),
+                        child: Center(
+                            child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20),
+                        )),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
+                  ],
+                ),
+              ));
+        });
   }
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {

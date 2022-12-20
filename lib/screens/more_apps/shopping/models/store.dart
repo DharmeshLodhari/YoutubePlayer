@@ -181,7 +181,7 @@ class Product {
     return {
       "name": this.name,
       "description": this.description,
-      "short_description": this.shortDescription,
+      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
       "price": this.price,
       "condition": this.condition,
       "category": this.category,
@@ -189,6 +189,8 @@ class Product {
       "is_available": this.isAvailable,
       "available_from": this.availableFrom,
       "enable_in_superstore": this.enableInSuperStore,
+      "seller_fullname": this.sellerFullName,
+      "seller_avatar": this.sellerAvatar,
     };
   }
 
@@ -197,7 +199,7 @@ class Product {
       "id": this.id,
       "name": this.name,
       "description": this.description,
-      "short_description": this.shortDescription,
+      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
       "price": this.price,
       "condition": this.condition,
       "category": this.category,
@@ -206,6 +208,8 @@ class Product {
       "available_from": this.availableFrom.toString(),
       "enable_in_superstore": this.enableInSuperStore,
       "cover": this.cover,
+      "seller_fullname": this.sellerFullName,
+      "seller_avatar": this.sellerAvatar,
     };
   }
 
@@ -306,6 +310,12 @@ class Product {
   //   map['enable_in_superstore'] = enableInSuperStore;
   //   return map;
   // }
+
+  String getShortDescription(String short, String long) {
+    if (short.length > 100) return long;
+
+    return short;
+  }
 
   String? getMerchantUserName() {
     return this.seller;
@@ -411,6 +421,12 @@ class Service {
     return this.providerFullName;
   }
 
+  String getShortDescription(String short, String long) {
+    if (short.length > 100) return long;
+
+    return short;
+  }
+
   // ignore: missing_return
   String getImageId(String? imageUrl) {
     for (var data in this.pictureMap!) {
@@ -438,11 +454,13 @@ class Service {
     return {
       "name": this.name,
       "description": this.description,
-      "short_description": this.shortDescription,
+      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
       "price": this.price,
       "category": this.category,
       "is_available": this.isAvailable,
       "available_from": this.availableFrom,
+      "provider_avatar": this.providerAvatar,
+      "provider_fullname": this.providerFullName
     };
   }
 
@@ -450,7 +468,8 @@ class Service {
     return {
       "id": this.id,
       "name": this.name,
-      "short_description": this.shortDescription,
+      "description": this.description,
+      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
       "price": this.price,
       "category": this.category,
       "is_available": this.isAvailable,
@@ -459,6 +478,8 @@ class Service {
       "provider": this.provider,
       "currency": this.currency,
       'rating': this.rating,
+      "provider_avatar": this.providerAvatar,
+      "provider_fullname": this.providerFullName
     };
   }
 
@@ -480,7 +501,8 @@ class Service {
     this.availableFrom = getServiceDateTime(object["available_from"]);
     this.currency = object["currency"] ?? "";
     this.pictureMap = object["pictureMap"] ?? [];
-    this.rating = formatRating(double.parse(object['rating']?.toString() ?? "0"));
+    this.rating =
+        formatRating(double.parse(object['rating']?.toString() ?? "0"));
     canRate = object["can_rate"] ?? false;
   }
 

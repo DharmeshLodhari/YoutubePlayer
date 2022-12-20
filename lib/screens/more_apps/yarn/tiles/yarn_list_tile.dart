@@ -1,16 +1,18 @@
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_user_post_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
@@ -328,7 +330,6 @@ class _YarnTileState extends State<YarnTile> {
 
   Widget _buildAttachment() {
     Widget childWidget;
-
     if (widget.yarn.attachmentType == 'service') {
       Service service = Service.fromJson(widget.yarn.attachment);
       childWidget = YarnServiceTile(
