@@ -12,8 +12,6 @@ import 'global_key.dart';
 
 String? messageDecoderWithEmoji(String? text) {
   try {
-    logger.d('tEXT: $text');
-
     List<int> bytes = text.toString().codeUnits;
 
     return utf8.decode(bytes);

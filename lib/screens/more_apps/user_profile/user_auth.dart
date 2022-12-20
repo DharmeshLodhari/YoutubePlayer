@@ -74,6 +74,38 @@ class UserAuth extends AuthService {
     }
   }
 
+  Future<Map<String, dynamic>> fetchCustomerFollowers(String? userName) async {
+    if (userName == null) {
+      return {};
+    }
+    var url = AppConfig.baseUrl + "/api/v1/user/follow/followers/" + userName.trim();
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    print('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
+    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    if (response.statusCode == 200) {
+      List<UserFollowers> userFollowers = [];
+      var jsonData = json.decode(response.body);
+      for (var item in jsonData['results']) {
+        UserFollowers userFollower = UserFollowers.fromJson(item);
+        userFollowers.add(userFollower);
+      }
+      Map<String, dynamic> result = {
+        "count": jsonData['count'],
+        "next": jsonData['next'],
+        "previous": jsonData['previous'],
+        "results": userFollowers
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
   // Update User Avatar
   Future<CustomerProfile> updateUserAvatar(File? avatar) async {
     debugPrint('CROPPED IMAGE AVATAR ---> $avatar');
