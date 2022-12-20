@@ -358,8 +358,11 @@ class YarnAuth extends AuthService {
       "category": addYarnAndQuestion.categoryId ?? "",
       "author": addYarnAndQuestion.author ?? "",
       "is_question": jsonEncode(addYarnAndQuestion.isQuestion ?? false),
-      "media_count": jsonEncode(addYarnAndQuestion.localImages != null ? addYarnAndQuestion.localImages!.length : 0),
-      "enable_commenting": jsonEncode(addYarnAndQuestion.enableCommenting ?? false),
+      "media_count": jsonEncode(addYarnAndQuestion.localImages != null
+          ? addYarnAndQuestion.localImages!.length
+          : 0),
+      "enable_commenting":
+          jsonEncode(addYarnAndQuestion.enableCommenting ?? false),
       "enable_payme": jsonEncode(addYarnAndQuestion.enablePayme ?? false),
       "attachment": jsonEncode(addYarnAndQuestion.attachment),
     });
@@ -378,15 +381,15 @@ class YarnAuth extends AuthService {
           request.fields["mediafile_$i"] =
               addYarnAndQuestion.localImages![i].mediaFile!.path;
           // Create multipart using filepath, string or bytes
-          multipartFile = await http.MultipartFile.fromPath(
-              "mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
+          multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
+              addYarnAndQuestion.localImages![i].mediaFile!.path);
         } else if (addYarnAndQuestion.localImages![i].mediaType == 'video') {
           // Add fields
           request.fields["mediafile_$i"] =
               addYarnAndQuestion.localImages![i].mediaFile!.path;
           // Create multipart using filepath, string or bytes
-          multipartFile = await http.MultipartFile.fromPath(
-              "mediafile_$i", addYarnAndQuestion.localImages![i].mediaFile!.path);
+          multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
+              addYarnAndQuestion.localImages![i].mediaFile!.path);
           // Add Poster Fields
           request.fields["mediaposter_$i"] =
               addYarnAndQuestion.localImages![i].mediaPoster ?? '';
@@ -783,8 +786,14 @@ class YarnAuth extends AuthService {
     debugPrint(url);
 
     var headers = await getAuthHeaders();
+    // var headers = <String,dynamic>{};
     var response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
+    if(response.statusCode == 401){
+      var headers = await getAuthHeaders();
+       var response =
+        await httpPost(url, headers: headers, body: jsonEncode(body));
+    }
 
     debugPrint(
         "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
