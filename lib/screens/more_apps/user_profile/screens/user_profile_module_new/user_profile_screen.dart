@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
@@ -14,6 +12,7 @@ import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/following_and_follwers_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_about_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_channel_screen.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_followers_view.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_product_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_review_list.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_service_list.dart';
@@ -46,14 +45,12 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
-import '../../../../../main.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
 import '../../../messaging/chat/models/channel_model.dart';
 import '../../../messaging/message_auth.dart';
-import '../../../yarn/models/Topics/YarnTopic.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../models/UserAbout.dart';
@@ -838,7 +835,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           // getContact(),
           getJoinedDate(),
           SizedBox(height: 12),
-          getFollowUnFollowWidget(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              getFollowUnFollowWidget(),
+              UserFollowersView(userName: searchedUserName,),
+            ],
+          ),
         ],
       ),
     );
@@ -1131,15 +1134,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
     );
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(50),
-      child: CachedNetworkImage(
-        fit: BoxFit.contain,
-        filterQuality: FilterQuality.high,
-        imageUrl: searchedUser!.avatar!,
-        errorWidget: imageErrorWidget,
-      ),
-    );
+    // return ClipRRect(
+    //   borderRadius: BorderRadius.circular(50),
+    //   child: CachedNetworkImage(
+    //     fit: BoxFit.contain,
+    //     filterQuality: FilterQuality.high,
+    //     imageUrl: searchedUser!.avatar!,
+    //     errorWidget: imageErrorWidget,
+    //   ),
+    // );
   }
 
   List<Widget> actionButtons() {

@@ -357,6 +357,24 @@ class UserLocation {
   UserLocation({this.latitude, this.longitude});
 }
 
+class UserFollowers {
+  String? userName;
+  String? avatar;
+  bool? isVerified;
+  String? fullName;
+  String? accountType;
+
+  UserFollowers({this.userName, this.avatar, this.isVerified, this.fullName, this.accountType});
+
+  UserFollowers.fromJson(dynamic json) {
+    userName = json['username'];
+    avatar = json['avatar'];
+    isVerified = json['is_verified'];
+    fullName = json['full_name'];
+    accountType = json['account_type'];
+  }
+}
+
 // Map<String, dynamic> customerProfileJson = {
 //   'full_name': 'Tosin Modelling Agency International',
 //   'username': 'tosinmomodu',

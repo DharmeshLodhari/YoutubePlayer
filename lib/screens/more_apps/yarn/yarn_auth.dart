@@ -574,15 +574,15 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       List<YarnComment> commentDetails = [];
       var jsonData = json.decode(response.body);
-      for (var item in jsonData) {
+      for (var item in jsonData['results']) {
         YarnComment replyCommentDetail = YarnComment.fromJson(item);
         commentDetails.add(replyCommentDetail);
       }
 
       Map<String, dynamic> result = {
-        // "count": jsonData["count"],
-        // "next": jsonData["next"],
-        // "previous": jsonData["previous"],
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
         "results": commentDetails
       };
 

@@ -42,6 +42,7 @@ import 'moments/screens/moments_service.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'more_apps/messaging/chat/helpers/connection_list_synchronizer.dart';
 import 'more_apps/yarn/yarn_auth.dart';
+import 'more_apps/yarn/yarn_dashboard.dart';
 import 'more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'super_store/super_store.dart';
 
@@ -444,10 +445,10 @@ class _DashboardState extends State<Dashboard> {
           },
           children: <Widget>[
             KeepAlivePage(child: Home(), wantKeepAlive: false),
+            KeepAlivePage(child: YarnDashboard(), wantKeepAlive: true),
             KeepAlivePage(child: SuperStore(), wantKeepAlive: true),
             KeepAlivePage(child: MomentsScreen(), wantKeepAlive: true),
             KeepAlivePage(child: ConnectionDashboard()),
-            KeepAlivePage(child: UserDashboard(), wantKeepAlive: false),
           ],
         ),
         bottomNavigationBar: bottomNavigationBar(),
@@ -477,25 +478,24 @@ class _DashboardState extends State<Dashboard> {
         items: [
           bottomNavigationBarItem(
             iconData: SlydoAppIconNew.home,
-            title: AppLocalization.of(context)!.home,
+            title: "",
           ),
 
           bottomNavigationBarItem(
             iconSize: 20,
             key: tutorialSuperStoreKey,
-            iconData: SlydoAppIconNew.super_store,
-            title: AppLocalization.of(context)!.store,
+            iconData: SlydoAppIconNew.dashboard_yarn,
+            title: "",
           ),
           bottomNavigationBarItem(
             iconSize: 20,
-            iconData: SlydoAppIconNew.moment,
-            title: AppLocalization.of(context)!.moments,
+            iconData: SlydoAppIconNew.super_store,
+            title: "",
           ),
           bottomNavigationBarItem(
-            isChatIcon: true,
             key: tutorialChatMessageKey,
-            iconData: SlydoAppIconNew.chat,
-            title: AppLocalization.of(context)!.chat,
+            iconData: SlydoAppIconNew.moment,
+            title: "",
           ),
           // bottomNavigationBarItem(
           //   isChatIcon: true,
@@ -504,9 +504,10 @@ class _DashboardState extends State<Dashboard> {
           // ),
 
           bottomNavigationBarItem(
+            isChatIcon: true,
             key: tutorialExploreKey,
-            iconData: SlydoAppIconNew.explore,
-            title: AppLocalization.of(context)!.explore,
+            iconData: SlydoAppIconNew.dashboard_chat,
+            title: "",
           ),
 
           // BottomNavigationBarItem(
@@ -604,7 +605,7 @@ class _DashboardState extends State<Dashboard> {
       child: Container(
         height: 50,
         width: 60,
-        color: navyBlue,
+        color: Colors.white,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -616,8 +617,8 @@ class _DashboardState extends State<Dashboard> {
             Expanded(
               child: Icon(
                 icon,
-                color: Colors.white,
-                size: 16,
+                color: navyBlue,
+                size: 20,
               ),
             ),
             SizedBox(
