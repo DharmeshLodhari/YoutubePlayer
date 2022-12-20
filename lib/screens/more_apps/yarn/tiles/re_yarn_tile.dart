@@ -73,10 +73,10 @@ class _ReYarnTileState extends State<ReYarnTile> {
         ],
         _buildPostDescription(),
         SizedBox(
-          height: 10,
+          height: widget.yarn.body!.isEmpty ? 0 : 10,
         ),
         _buildTagsAndViewerRow(),
-        if (isAttachmentPresent && widget.yarn.attachment != null)...[
+        if (isAttachmentPresent && widget.yarn.attachment != null) ...[
           SizedBox(height: 8),
           _buildAttachment(),
         ],
@@ -265,13 +265,15 @@ class _ReYarnTileState extends State<ReYarnTile> {
     Widget childWidget;
     if (widget.yarn.attachmentType == 'service') {
       Service service = Service.fromJson(widget.yarn.attachment);
-      childWidget = YarnServiceTile(service: service,);
-    }
-    else if (widget.yarn.attachmentType == 'product') {
+      childWidget = YarnServiceTile(
+        service: service,
+      );
+    } else if (widget.yarn.attachmentType == 'product') {
       Product product = Product.fromJson(widget.yarn.attachment);
-      childWidget = YarnProductTile(product: product,);
-    }
-    else if (widget.yarn.attachmentType == 'blog') {
+      childWidget = YarnProductTile(
+        product: product,
+      );
+    } else if (widget.yarn.attachmentType == 'blog') {
       UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
@@ -280,7 +282,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
       );
     } else if (widget.yarn.attachmentType == 'profile') {
       CustomerProfile customerProfile =
-      CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+          CustomerProfile.fromJson(widget.yarn.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
         showAuthorDetails: true,
