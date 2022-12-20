@@ -38,16 +38,20 @@ import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 
 class ShareAsAyarnScreen extends StatefulWidget {
+  String? appTitle;
   List<YarnCategories>? askCategories;
   List<ShareAsYarnModel>? shareAsYarnModel;
   YarnCategories? askCategory;
   bool? isYarn = false;
+  bool? enableText = false;
   bool isShare = true;
   Function(AddYarnAndQuestion params) callback;
   ShareAsAyarnScreen(
       {this.askCategories,
       this.shareAsYarnModel,
+      this.appTitle,
       this.isYarn,
+      this.enableText,
       this.askCategory,
       this.isShare = true,
       required this.callback});
@@ -110,7 +114,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(widget.appTitle ?? "Share As A Yarn"),
       body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
         return Column(
           children: [
@@ -342,15 +346,16 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     }
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(String? appTitle) {
     return AppBar(
       backgroundColor: Colors.white,
       shape: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
+      centerTitle: false,
       title: Text(
-        "Share As A Yarn",
+        appTitle!,
         style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
           color: blackFont,
         ),
       ),
@@ -384,7 +389,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(left: 12),
-              child: _buildTextField(),
+              child: _buildTextField(widget.enableText),
             ),
           ),
           if (isMentionName) ...[
@@ -401,32 +406,35 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     );
   }
 
-  Widget _buildTextField() {
-    return TextField(
-      // keyboardType: TextInputType.multiline,
-      maxLines: null,
-      minLines: 1,
-      controller: textController,
-      style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: HexColor("#151515")),
-      onChanged: onValueChange,
-      decoration: InputDecoration(
-        hintText: "Leave your thought",
-        hintStyle: TextStyle(
-          fontSize: 12,
-          color: HexColor("#7A7A7A"),
-          fontWeight: FontWeight.w400,
-        ),
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        focusedErrorBorder: InputBorder.none,
-        errorBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
-      ),
-    );
+  Widget _buildTextField(bool? isReyarn) {
+    return isReyarn == true
+        ? Container()
+        : TextField(
+            // keyboardType: TextInputType.multiline,
+            maxLines: null,
+            minLines: 1,
+            controller: textController,
+
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: HexColor("#151515")),
+            onChanged: onValueChange,
+            decoration: InputDecoration(
+              hintText: "Leave your thought",
+              hintStyle: TextStyle(
+                fontSize: 12,
+                color: HexColor("#7A7A7A"),
+                fontWeight: FontWeight.w400,
+              ),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+            ),
+          );
   }
 
   Widget _buildRowForContents() {
@@ -835,21 +843,27 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         borderRadius: 20,
         isLoading: isAPILoading,
         onPressed: () {
-          final data = AddYarnAndQuestion(
-              localImages: selectedMedia,
-              title: yarnController.text,
-              body: textController.text,
-              categoryId: selectedAskCategory?.id,
-              isQuestion: widget.isYarn,
-              author: userBloc.user.userName,
-              enablePayme: enablePayMe,
-              enableCommenting: enableCommenting,
-              isSensitiveContent: _isSensitiveContent,
-              isAdultContent: _isAdultContent,
-              ageRestriction: _shareAsYarnModel?.id);
+          print(widget.appTitle);
+          if (widget.appTitle=='Quote Yarn' && textController.text.isEmpty) {
+            
+            showToast(message: 'Yarn body cannot be empty');
+          } else {
+            final data = AddYarnAndQuestion(
+                localImages: selectedMedia,
+                title: yarnController.text,
+                body: textController.text,
+                categoryId: selectedAskCategory?.id,
+                isQuestion: widget.isYarn,
+                author: userBloc.user.userName,
+                enablePayme: enablePayMe,
+                enableCommenting: enableCommenting,
+                isSensitiveContent: _isSensitiveContent,
+                isAdultContent: _isAdultContent,
+                ageRestriction: _shareAsYarnModel?.id);
 
-          widget.callback(data);
-          Navigator.pop(context);
+            widget.callback(data);
+            Navigator.pop(context);
+          }
         },
         /*   onPressed: isAPILoading
             ? () {}
