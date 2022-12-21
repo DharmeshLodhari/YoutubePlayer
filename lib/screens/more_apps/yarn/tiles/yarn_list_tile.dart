@@ -53,7 +53,7 @@ class _YarnTileState extends State<YarnTile> {
   @override
   void initState() {
     Map<String, dynamic> linkData =
-        detectLinkInText(messageDecoderWithEmoji(widget.yarn.body!)!);
+        detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
     if (linkData["hasLink"]) {
       isUrlPresent = true;
