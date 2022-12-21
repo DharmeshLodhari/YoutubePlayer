@@ -210,6 +210,7 @@ class Product {
       "cover": this.cover,
       "seller_fullname": this.sellerFullName,
       "seller_avatar": this.sellerAvatar,
+      "currency": this.currency,
     };
   }
 
@@ -254,7 +255,7 @@ class Product {
       manufacturer: object["manufacturer"] ?? "",
       isAvailable: object["is_available"] ?? false,
       availableFrom: getProductDateTime(object["available_from"]),
-      currency: object["currency"] ?? "",
+      currency: object["currency"] ?? "NGN",
       pictureMap: object["pictureMap"] ?? [],
       rating: formatRating(double.parse(object['rating']?.toString() ?? "0")),
       canRate: object["can_rate"] ?? false,
