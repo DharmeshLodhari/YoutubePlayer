@@ -80,6 +80,7 @@ class _YarnNotificationState extends State<YarnNotification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: _buildAppBar(),
       body: _buildBody(),
     );
@@ -117,7 +118,7 @@ class _YarnNotificationState extends State<YarnNotification> {
         Divider(),
         Expanded(
           child: ListView.separated(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
             itemCount: notificationList.length + 1,
             itemBuilder: (context, index) {
               if (index == notificationList.length) {

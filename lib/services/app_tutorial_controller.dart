@@ -10,12 +10,15 @@ GlobalKey tutorialRequestPaymentKey = GlobalKey();
 GlobalKey tutorialQrCodeKey = GlobalKey();
 GlobalKey tutorialRequestPaymentListKey = GlobalKey();
 GlobalKey tutorialSearchItemsKey = GlobalKey();
+GlobalKey tutorialExploreItemsKey = GlobalKey();
 GlobalKey tutorialShoppingCartKey = GlobalKey();
 GlobalKey tutorialExploreKey = GlobalKey();
 GlobalKey tutorialScanQrCodeKey = GlobalKey();
 GlobalKey tutorialChatMessageKey = GlobalKey();
 GlobalKey tutorialMessageKey = GlobalKey();
 GlobalKey tutorialSuperStoreKey = GlobalKey();
+GlobalKey tutorialYarnKey = GlobalKey();
+GlobalKey tutorialMomentKey = GlobalKey();
 
 GlobalKey keyButton3 = GlobalKey();
 GlobalKey keyButton4 = GlobalKey();
@@ -335,10 +338,10 @@ class AppTutorialController {
     );
   }
 
-  TargetFocus _getExploreTutorial() {
+  TargetFocus _getYarnTutorial() {
     return TargetFocus(
       identify: "Target 9",
-      keyTarget: tutorialExploreKey,
+      keyTarget: tutorialYarnKey,
       shape: ShapeLightFocus.RRect,
       alignSkip: Alignment.bottomLeft,
       // color: navyBlue,
@@ -351,7 +354,7 @@ class AppTutorialController {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Explore",
+                  "Yarn",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -449,10 +452,10 @@ class AppTutorialController {
     );
   }
 
-  TargetFocus _getMessagesTutorial() {
+  TargetFocus _getExploreTutorial() {
     return TargetFocus(
       identify: "Target 12",
-      keyTarget: tutorialMessageKey,
+      keyTarget: tutorialExploreItemsKey,
       shape: ShapeLightFocus.RRect,
 
       // color: navyBlue,
@@ -465,7 +468,7 @@ class AppTutorialController {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Inbox",
+                  "Explore",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -474,7 +477,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to send and read direct messages.",
+                    "Click here to explore more functionalities in the app.",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -525,6 +528,44 @@ class AppTutorialController {
     );
   }
 
+  TargetFocus _getMomentTutorial() {
+    return TargetFocus(
+      identify: "Target 14",
+      keyTarget: tutorialMomentKey,
+      shape: ShapeLightFocus.RRect,
+      alignSkip: Alignment.bottomLeft,
+      // color: navyBlue,
+      contents: [
+        TargetContent(
+          align: ContentAlign.top,
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Moment",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Click here to explore more functionalities in the app.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                nextButton()
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   void _fillTargets() {
     _targets.add(_getUserProfileTutorial());
     _targets.add(_getSendPaymentTutorial());
@@ -534,9 +575,10 @@ class AppTutorialController {
     // _targets.add(_getPaymentRequestListTutorial());
     _targets.add(_getSearchItemTutorial());
     _targets.add(_getShoppingCartTutorial());
-    _targets.add(_getMessagesTutorial());
     _targets.add(_getExploreTutorial());
-    _targets.add(_getChatMessagesTutorial());
+    _targets.add(_getYarnTutorial());
     _targets.add(_getSuperStoreTutorial());
+    _targets.add(_getMomentTutorial());
+    _targets.add(_getChatMessagesTutorial());
   }
 }

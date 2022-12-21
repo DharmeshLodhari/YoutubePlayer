@@ -75,12 +75,10 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   int numberOfMomentsToLoad = 2;
   int currentVerticalPageIndex = 0;
   late PageController _verticalScrollPageViewCtrl;
-  late VideoPlayerManager videoPlayerManager;
   int? horizoallyPageIndex;
 
   @override
   void initState() {
-    videoPlayerManager = VideoPlayerManager();
     super.initState();
 
     // If moment list is null, initialize it to an empty list.
@@ -304,12 +302,6 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                       }
                     }
                   }
-                  videoPlayerManager.togglePlay(
-                      index: verticalScrollIndex,
-                      url: widget
-                          .momentsModelList![verticalScrollIndex]
-                              [horizoallyPageIndex!]
-                          .media);
                 },
                 itemBuilder: (context, index) {
                   return SizedBox(
@@ -322,13 +314,7 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
                             setState(() {
                               horizoallyPageIndex = pageViewIndex;
                             });
-                            videoPlayerManager.togglePlay(
-                                index: pageViewIndex,
-                                url: widget
-                                    .momentsModelList![index][pageViewIndex]
-                                    .media);
                           },
-                          videoPlayerManager: videoPlayerManager,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 34.0),
@@ -400,12 +386,10 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 class MediaRendererPageView extends StatefulWidget {
   final ValueChanged<int> onPageChanged;
   final List<MomentsModel> momentsModelList;
-  final VideoPlayerManager videoPlayerManager;
   const MediaRendererPageView(
       {Key? key,
       required this.onPageChanged,
-      required this.momentsModelList,
-      required this.videoPlayerManager})
+      required this.momentsModelList})
       : super(key: key);
 
   @override
@@ -423,7 +407,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     super.initState();
     _pageCtrl = PageController();
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
           widget.momentsModelList.map((e) => e.numberOfComments!).toList();
 
@@ -1356,33 +1340,33 @@ class VideoDisplay extends StatefulWidget {
 class _VideoDisplayState extends State<VideoDisplay> {
   bool initialized = false;
   bool showMediaIcon = false;
-  late VideoPlayerManager videoPlayerManager;
+  // late VideoPlayerManager videoPlayerManager;
 
   @override
   void initState() {
     debugPrint('VIDEO MEDIA --> ${widget.momentsModel.media!}');
-    videoPlayerManager = VideoPlayerManager();
-    videoPlayerManager.init(widget.momentsModel.media!);
-    // _controller = CachedVideoPlayerController.network(
-    //   widget.momentsModel.media!,
-    // )..initialize().then((value) {
-    //     _controller.play();
-    //     initialized = true;
-    //     _controller.setLooping(true);
-    //     setState(() {});
-    //   }).catchError((e) {
-    //     Navigator.pop(context);
-    //     showToast(message: 'Unable to display moment');
-    //   });
+    // videoPlayerManager = VideoPlayerManager();
+    // videoPlayerManager.init(widget.momentsModel.media!);
+    _controller = CachedVideoPlayerController.network(
+      widget.momentsModel.media!,
+    )..initialize().then((value) {
+        _controller.play();
+        initialized = true;
+        _controller.setLooping(true);
+        setState(() {});
+      }).catchError((e) {
+        Navigator.pop(context);
+        showToast(message: 'Unable to display moment');
+      });
     super.initState();
   }
 
   @override
   void dispose() async {
     super.dispose();
-    await videoPlayerManager.dispose();
-    // await _controller.pause();
-    // await _controller.dispose();
+    //await videoPlayerManager.dispose();
+    await _controller.pause();
+    await _controller.dispose();
   }
 
   @override
@@ -1474,45 +1458,45 @@ class _VideoDisplayState extends State<VideoDisplay> {
   }
 }
 
-class VideoPlayerManager {
-  late CachedVideoPlayerController _controller;
-  int? activeIndex;
-
-  init(String url) async {
-    _controller = CachedVideoPlayerController.network(
-      url,
-    )
-      ..initialize()
-      ..setLooping(true).then((value) async {
-        await play();
-      }).catchError((e) {
-        showToast(message: 'Unable to display moment');
-      });
-  }
-
-  play() async {
-    await _controller.play();
-  }
-
-  togglePlay({int? index, String? url}) async {
-    if (index == activeIndex) {
-      await play();
-    } else if (index != activeIndex) {
-      activeIndex = index;
-      await pause();
-      await init(url!);
-    }
-  }
-
-  pause() async {
-    await _controller.pause();
-  }
-
-  dispose() async {
-    await pause();
-    await _controller.dispose();
-  }
-}
+// class VideoPlayerManager {
+//   late CachedVideoPlayerController _controller;
+//   int? activeIndex;
+//
+//   init(String url) async {
+//     _controller = CachedVideoPlayerController.network(
+//       url,
+//     )
+//       ..initialize()
+//       ..setLooping(true).then((value) async {
+//         await play();
+//       }).catchError((e) {
+//         showToast(message: 'Unable to display moment');
+//       });
+//   }
+//
+//   play() async {
+//     await _controller.play();
+//   }
+//
+//   togglePlay({int? index, String? url}) async {
+//     if (index == activeIndex) {
+//       await play();
+//     } else if (index != activeIndex) {
+//       activeIndex = index;
+//       await pause();
+//       await init(url!);
+//     }
+//   }
+//
+//   pause() async {
+//     await _controller.pause();
+//   }
+//
+//   dispose() async {
+//     await pause();
+//     await _controller.dispose();
+//   }
+// }
 
 void commentSheet(BuildContext context, String momentID,
     {required int index}) async {

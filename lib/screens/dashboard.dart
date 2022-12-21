@@ -478,24 +478,25 @@ class _DashboardState extends State<Dashboard> {
         items: [
           bottomNavigationBarItem(
             iconData: SlydoAppIconNew.home,
-            title: "",
+            title: AppLocalization.of(context)!.home,
           ),
 
           bottomNavigationBarItem(
             iconSize: 20,
-            key: tutorialSuperStoreKey,
+            key: tutorialYarnKey,
             iconData: SlydoAppIconNew.dashboard_yarn,
-            title: "",
+            title: "Yarn",
           ),
           bottomNavigationBarItem(
+            key: tutorialSuperStoreKey,
             iconSize: 20,
             iconData: SlydoAppIconNew.super_store,
-            title: "",
+            title: AppLocalization.of(context)!.store,
           ),
           bottomNavigationBarItem(
-            key: tutorialChatMessageKey,
+            key: tutorialMomentKey,
             iconData: SlydoAppIconNew.moment,
-            title: "",
+            title: AppLocalization.of(context)!.moments,
           ),
           // bottomNavigationBarItem(
           //   isChatIcon: true,
@@ -505,9 +506,9 @@ class _DashboardState extends State<Dashboard> {
 
           bottomNavigationBarItem(
             isChatIcon: true,
-            key: tutorialExploreKey,
+            key: tutorialChatMessageKey,
             iconData: SlydoAppIconNew.dashboard_chat,
-            title: "",
+            title: AppLocalization.of(context)!.chat,
           ),
 
           // BottomNavigationBarItem(
@@ -605,7 +606,7 @@ class _DashboardState extends State<Dashboard> {
       child: Container(
         height: 50,
         width: 60,
-        color: Colors.white,
+        color: navyBlue,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -617,8 +618,8 @@ class _DashboardState extends State<Dashboard> {
             Expanded(
               child: Icon(
                 icon,
-                color: navyBlue,
-                size: 20,
+                color: Colors.white,
+                size: 16,
               ),
             ),
             SizedBox(

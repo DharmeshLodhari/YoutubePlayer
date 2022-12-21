@@ -107,10 +107,18 @@ class Yarn {
         attachment = json['attachment']['profile'];
       }
     }
-    userUpvoted = json['user_upvoted'];
-    userReyarned = json['user_reyarned'];
-    userSupported = json['user_supported'];
-    userDownVoted = json['user_down_voted'];
+    if (json['user_upvoted'] != null) {
+      userUpvoted = json['user_upvoted'];
+    }
+    if (json['user_reyarned'] != null) {
+      userReyarned = json['user_reyarned'];
+    }
+    if (json['user_supported'] != null) {
+      userSupported = json['user_supported'];
+    }
+    if (json['user_down_voted'] != null) {
+      userDownVoted = json['user_down_voted'];
+    }
   }
 
   String? id;
