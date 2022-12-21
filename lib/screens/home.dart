@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       SharedPreferences _sharedPreferences;
 
       _sharedPreferences = await SharedPreferences.getInstance();
@@ -211,6 +211,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       title: InkWell(
+        key: tutorialUserProfileDetailKey,
         onTap: () {
           Navigator.pushNamed(context, Routes.USER_PROFILE,
               arguments: {"searchedUserName": userBloc.user.userName});
@@ -235,10 +236,11 @@ class _HomeState extends State<Home> {
       ),
       actions: <Widget>[
         _searchBtn(),
-        SizedBox(width: 8.0),
-        _messageBtn(),
         SizedBox(width: 4.0),
         _cartBtn(),
+        SizedBox(width: 4.0),
+        // _messageBtn(),
+        _exploreBtn(),
         SizedBox(width: 8.0),
       ],
     );
@@ -264,6 +266,36 @@ class _HomeState extends State<Home> {
                   onTap: () async {
                     await Navigator.of(context).pushNamed(Routes.SEARCH_MODULE);
 
+                    setState(() {});
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _exploreBtn() {
+    return Stack(
+      key: tutorialExploreItemsKey,
+      clipBehavior: Clip.none,
+      children: [
+        Column(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 34,
+                width: 34,
+                child: InkWell(
+                  child: Icon(
+                    SlydoAppIconNew.explore,
+                    size: 16,
+                    color: HexColor("#151515"),
+                  ),
+                  onTap: () async {
+                    await Navigator.of(context).pushNamed(Routes.USER_DASHBOARD);
                     setState(() {});
                   },
                 ),
@@ -414,6 +446,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           Expanded(
+            key: tutorialScanQrCodeKey,
             child: Container(
               child: _scanButton(),
             ),

@@ -483,17 +483,18 @@ class _DashboardState extends State<Dashboard> {
 
           bottomNavigationBarItem(
             iconSize: 20,
-            key: tutorialSuperStoreKey,
+            key: tutorialYarnKey,
             iconData: SlydoAppIconNew.dashboard_yarn,
             title: "",
           ),
           bottomNavigationBarItem(
+            key: tutorialSuperStoreKey,
             iconSize: 20,
             iconData: SlydoAppIconNew.super_store,
             title: "",
           ),
           bottomNavigationBarItem(
-            key: tutorialChatMessageKey,
+            key: tutorialMomentKey,
             iconData: SlydoAppIconNew.moment,
             title: "",
           ),
@@ -505,7 +506,7 @@ class _DashboardState extends State<Dashboard> {
 
           bottomNavigationBarItem(
             isChatIcon: true,
-            key: tutorialExploreKey,
+            key: tutorialChatMessageKey,
             iconData: SlydoAppIconNew.dashboard_chat,
             title: "",
           ),

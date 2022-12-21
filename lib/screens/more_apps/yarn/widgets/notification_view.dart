@@ -91,42 +91,45 @@ class AskNotificationView extends StatelessWidget {
                         )
                       ],
                     ),
-                    userNameWithVerifiedIcon(
-                      name: "@${notification!.yarn!.author!}",
-                      isVerified: notification!.yarn!.authorIsVerified ?? false,
-                      verifiedIconSize: 16,
-                      textStyle: TextStyle(
-                        color: yarnBlack,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                    if (notification!.type == "mention")...[
+                      if (notification!.yarn!.isQuestion)...[
+                        Text(
+                          "Mention you in Question",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: yarnBlack,
+                          ),
+                        ),
+                      ] else...[
+                        Text(
+                          "Mention you in Yarn",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: yarnBlack,
+                          ),
+                        ),
+                      ]
+                    ] else...[
+                      userNameWithVerifiedIcon(
+                        name: "@${notification!.yarn!.author!}",
+                        isVerified: notification!.yarn!.authorIsVerified ?? false,
+                        verifiedIconSize: 16,
+                        textStyle: TextStyle(
+                          color: yarnBlack,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        verifiedIconColor: verifyBlue,
                       ),
-                      verifiedIconColor: verifyBlue,
-                    ),
+                    ]
                   ],
                 ),
               ),
             ),
             InkWell(
-              onTap: () {
-                // showModalBottomSheet<void>(
-                //   backgroundColor: Colors.transparent,
-                //   context: context,
-                //   builder: (BuildContext context) {
-                //     return Card(
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.only(
-                //             topLeft: Radius.circular(20),
-                //             topRight: Radius.circular(20)),
-                //       ),
-                //       color: Colors.white,
-                //       margin: EdgeInsets.zero,
-                //       child: YarnOptions(
-                //         yarnTopic: widget.yarn,
-                //       ),
-                //     );
-                //   },
-                // );
-              },
+              onTap: () {},
               child: Icon(
                 Icons.more_horiz_rounded,
                 color: darkGreyYarn,
