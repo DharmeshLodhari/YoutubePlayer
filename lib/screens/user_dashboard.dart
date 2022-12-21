@@ -250,6 +250,15 @@ class _UserDashboardState extends State<UserDashboard> {
       elevation: 0,
       titleSpacing: 0,
       centerTitle: false,
+      leading: InkWell(
+        onTap: () {
+          Navigator.of(context).pop();
+        },
+        child: Icon(
+          Icons.arrow_back_ios,
+          color: Colors.white,
+        ),
+      ),
       title: GestureDetector(
         onTap: () async {
           await UserAuth()

@@ -423,7 +423,7 @@ class _MediaRendererPageViewState extends State<MediaRendererPageView> {
     super.initState();
     _pageCtrl = PageController();
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<MomentsBloc>(context, listen: false).numberOfComments =
           widget.momentsModelList.map((e) => e.numberOfComments!).toList();
 

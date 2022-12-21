@@ -65,22 +65,22 @@ class _YarnDashboardState extends State<YarnDashboard> {
         ),
       ),
       centerTitle: false,
-      titleSpacing: 0,
+      titleSpacing: 16,
       shadowColor: greySecondaryYarn,
       actions: _buildAppBarActions(),
       elevation: 0.5,
-      leading: IconButton(
-        padding: EdgeInsets.zero,
-        icon: Icon(
-          Icons.arrow_back_ios_rounded,
-          color: yarnBlack,
-          size: 14,
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        color: yarnBlack,
-      ),
+      // leading: IconButton(
+      //   padding: EdgeInsets.zero,
+      //   icon: Icon(
+      //     Icons.arrow_back_ios_rounded,
+      //     color: yarnBlack,
+      //     size: 14,
+      //   ),
+      //   onPressed: () {
+      //     Navigator.pop(context);
+      //   },
+      //   color: yarnBlack,
+      // ),
     );
   }
 
