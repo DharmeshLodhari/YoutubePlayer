@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/topic_action_for_notification.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +26,7 @@ class AskNotificationView extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        if (notification!.yarn!.body != null)...[
+        if (notification!.body != null)...[
           _buildPostDescription(),
           SizedBox(
             height: 10,
@@ -55,7 +54,7 @@ class AskNotificationView extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": notification!.yarn!.author});
+                      arguments: {"searchedUserName": notification!.authorUserName});
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +64,7 @@ class AskNotificationView extends StatelessWidget {
                       children: [
                         Text(
                           messageDecoderWithEmoji(
-                              notification!.yarn!.authorName ?? "") ??
+                              notification!.authorName ?? "") ??
                               "",
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
@@ -84,7 +83,7 @@ class AskNotificationView extends StatelessWidget {
                         ),
                         Expanded(
                           child: Text(
-                            '${getGetYarnQuestionDateTime(notification!.yarn!.createdAt!)}',
+                            '${getGetYarnQuestionDateTime(notification!.createdAt!)}',
                             overflow: TextOverflow.fade,
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
@@ -92,29 +91,17 @@ class AskNotificationView extends StatelessWidget {
                       ],
                     ),
                     if (notification!.type == "mention")...[
-                      if (notification!.yarn!.isQuestion)...[
-                        Text(
-                          "Mention you in Question",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: yarnBlack,
-                          ),
-                        ),
-                      ] else...[
-                        Text(
-                          "Mention you in Yarn",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: yarnBlack,
-                          ),
-                        ),
-                      ]
+                      RichTextForTitle(
+                        description: notification!.title ?? "",
+                      ),
+                    ] else if (notification!.type == "like")...[
+                      RichTextForTitle(
+                        description: notification!.title ?? "",
+                      ),
                     ] else...[
                       userNameWithVerifiedIcon(
-                        name: "@${notification!.yarn!.author!}",
-                        isVerified: notification!.yarn!.authorIsVerified ?? false,
+                        name: "@${notification!.authorUserName}",
+                        isVerified: false,
                         verifiedIconSize: 16,
                         textStyle: TextStyle(
                           color: yarnBlack,
@@ -145,7 +132,7 @@ class AskNotificationView extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: notification!.yarn!.authorAvatar!);
+            arguments: notification!.authorAvatar ?? "");
       },
       child: Container(
         height: 36,
@@ -153,7 +140,7 @@ class AskNotificationView extends StatelessWidget {
         decoration: BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: notification!.yarn!.authorAvatar!,
+            imageUrl: notification!.authorAvatar ?? "",
             fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
           ),
@@ -164,7 +151,7 @@ class AskNotificationView extends StatelessWidget {
 
   Widget _buildPostDescription() {
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(notification!.yarn!.body ?? '') ?? '',
+      description: messageDecoderWithEmoji(notification!.body ?? '') ?? '',
     );
   }
 }

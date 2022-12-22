@@ -81,7 +81,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
       ),
       activeChild: Icon(
         Icons.close,
-        color: HexColor(widget.askCategories!.color!),
+        color: yarnBlack,
       ),
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
@@ -117,7 +117,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
       required VoidCallback onTap}) {
     return SpeedDialChild(
         onTap: onTap,
-        backgroundColor: HexColor(widget.askCategories!.color!),
+        backgroundColor: yarnBlack,
         labelBackgroundColor: HexColor("#FFFFFF"),
         labelWidget: Card(
           elevation: 2,
