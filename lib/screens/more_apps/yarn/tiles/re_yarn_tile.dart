@@ -8,12 +8,16 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:linkwell/linkwell.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../../../utils/link_preview/flutter_link_preview.dart';
+import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/models/user.dart';
 import '../models/Topics/YarnTopic.dart';
+import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
 
 class ReYarnTile extends StatefulWidget {
@@ -37,8 +41,23 @@ class _ReYarnTileState extends State<ReYarnTile> {
   bool isMediaPresent = false;
   bool isAttachmentPresent = false;
 
+  bool isUrlPresent = false;
+  String? linkToBePreview;
+
   @override
   void initState() {
+
+    Map<String, dynamic> linkData =
+        detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
+
+    if (linkData["hasLink"]) {
+      isUrlPresent = true;
+
+      linkToBePreview = linkData['links'][0];
+      if (!linkToBePreview!.contains("http")) {
+        linkToBePreview = "http://" + linkToBePreview!;
+      }
+    }
     if ((widget.yarn.media.isNotEmpty)) {
       isMediaPresent = true;
     }
@@ -216,6 +235,77 @@ class _ReYarnTileState extends State<ReYarnTile> {
   }
 
   Widget _buildPostDescription() {
+    if (isUrlPresent) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 5,
+          ),
+          LinkWell(
+            messageDecoderWithEmoji(widget.yarn.body)!,
+            style: TextStyle(
+                color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
+            textScaleFactor: 0.8,
+            linkStyle: TextStyle(
+                color: navyBlue,
+                decoration: TextDecoration.underline,
+                fontSize: 17,
+                fontFamily: "OpenSans"),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    color: darkGrey.withOpacity(
+                      .4,
+                    ),
+                    width: .5)),
+            child: FlutterLinkPreview(
+              key: ValueKey("${linkToBePreview}233"),
+              url: linkToBePreview!,
+              builder: (info) {
+                if (info == null)
+                  return const SizedBox(
+                    height: 0,
+                    width: 0,
+                  );
+                if (info is WebImageInfo) {
+                  return CachedNetworkImage(
+                    imageUrl: info.image!,
+                    fit: BoxFit.contain,
+                    errorWidget: imageErrorWidget,
+                  );
+                }
+
+                final WebInfo webInfo = info as WebInfo;
+                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                  return const SizedBox(
+                    height: 0,
+                    width: 0,
+                  );
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: getWebPreview(webInfo, context)),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
     return RichTextForTitle(
       description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
     );
