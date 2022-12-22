@@ -11,10 +11,14 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
+import '../add_yarn_screen.dart';
 import '../ask_report_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
+import '../utils/utils.dart';
 import '../yarn_auth.dart';
+import '../yarn_dashboard_bloc.dart';
+import '../yarn_list_screen.dart';
 
 class YarnOptions extends StatefulWidget {
   Yarn? yarnTopic;
@@ -23,12 +27,28 @@ class YarnOptions extends StatefulWidget {
   bool? isShareOption;
   Function(Yarn)? onDeleteYarn;
   Function(YarnComment)? onDeleteComment;
+
   YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false, this.isShareOption = false, this.onDeleteYarn, this.onDeleteComment});
   @override
   State<YarnOptions> createState() => _YarnOptionsState();
 }
 
 class _YarnOptionsState extends State<YarnOptions> {
+
+
+  late YarnDashboardBloc yarnDashboardBloc;
+  late PageController _pageViewController;
+  int currentAskTapOnHome = 0;
+
+  GlobalKey<YarnListScreenState> topicViewStateKey =
+      GlobalKey<YarnListScreenState>();
+
+  void updateCurrentAskTapOnHome({required int index}) {
+    setState(() {
+      currentAskTapOnHome = index;
+    });
+  }
+
   Future addUserVisibilityOption(String status) async {
     bool? data =
         await YarnAuth().addStatusInPost(widget.yarnTopic!.id!, status);
@@ -65,6 +85,12 @@ class _YarnOptionsState extends State<YarnOptions> {
       }
       Navigator.pop(context);
     }
+  }
+
+  @override
+  void initState() {
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
+    super.initState();
   }
 
   @override
@@ -138,12 +164,29 @@ class _YarnOptionsState extends State<YarnOptions> {
                   'Once you accept this answer, your bounty \nreward will be sent to this user.'),
         ] else ...[
           if (currentTime.difference(messageCreatedTime) <
-              Duration(minutes: 1)) ...[
+              Duration(minutes: 1000)) ...[
             _buildTile(
                 icon: "yarn/bookmark",
                 width: 12,
                 title: 'Edit',
-                subTitle: 'Edit yarn'),
+                subTitle: 'Edit yarn',
+                onTap: () async {
+                  await NavigationUtil.push(context,
+                  screen: AddTopicScreen(
+                    askCategories: yarnDashboardBloc.yarnCategories,
+                    isYarn: true,
+                    yarner: widget.yarnTopic,
+                  )).then((value) {
+                debugPrint("THEN VALUE===$value");
+                if (value != null) {
+                  if (value == Types.Yarn) {
+                    updateCurrentAskTapOnHome(index: 0);
+                    _pageViewController.jumpToPage(0);
+                    topicViewStateKey.currentState?.onRefresh();
+                  }
+                }
+              });
+                }),
           ]
         ],
         SizedBox(
