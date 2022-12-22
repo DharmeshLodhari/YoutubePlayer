@@ -16,6 +16,7 @@ import '../screens/more_apps/yarn/yarn_auth.dart';
 import '../screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import '../utils/navigation_util.dart';
 import '../utils/slydo_app_icon_icons.dart';
+import '../utils/slydo_app_icon_new_icons.dart';
 import 'bottom_sheet_item.dart';
 
 class DisplayProduct extends StatefulWidget {
@@ -245,7 +246,7 @@ class _DisplayProductState extends State<DisplayProduct> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: Icons.newspaper,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();
@@ -771,7 +772,7 @@ class _DisplayServiceState extends State<DisplayService> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: Icons.newspaper,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();

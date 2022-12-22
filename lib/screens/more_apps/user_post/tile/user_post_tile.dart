@@ -18,6 +18,7 @@ import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/slydo_app_icon_icons.dart';
+import '../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../utils/video_player_controller/chewie_player.dart';
 import '../../../../widget/bottom_sheet_item.dart';
 import '../../../../widget/dialog.dart';
@@ -363,7 +364,7 @@ class _PostTileState extends State<PostTile> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: Icons.newspaper,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();

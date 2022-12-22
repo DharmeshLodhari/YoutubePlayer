@@ -178,7 +178,7 @@ class _YarnOptionsState extends State<YarnOptions> {
         _buildTile(
           icon: "yarn/bookmark",
           width: 12,
-          title: 'Save yarn/question',
+          title: !widget.yarnTopic!.isQuestion ? 'Save Yarn' : 'Save Questions',
           subTitle: 'Add this to you saved items',
           onTap: () {
             addUserVisibilityOption("saved");
@@ -190,28 +190,28 @@ class _YarnOptionsState extends State<YarnOptions> {
         _buildTile(
             icon: "yarn/hide",
             width: 12,
-            title: 'Hide yarn',
-            subTitle: 'See fewer posts like this',
-            onTap: () {
-              addUserVisibilityOption("hidden");
-            }),
-        SizedBox(
-          height: 15,
-        ),
-        _buildTile(
-            icon: "yarn/not_interested",
             title: 'Not Interested',
-            subTitle: 'Not interested in this yarn',
+            subTitle: !widget.yarnTopic!.isQuestion ? 'Not interested in this yarn' : 'Not interested in this type of question',
             onTap: () {
               addUserVisibilityOption("not-interested");
             }),
         SizedBox(
           height: 15,
         ),
+        // _buildTile(
+        //     icon: "yarn/not_interested",
+        //     title: 'Not Interested',
+        //     subTitle: 'Not interested in this yarn',
+        //     onTap: () {
+        //       addUserVisibilityOption("not-interested");
+        //     }),
+        // SizedBox(
+        //   height: 15,
+        // ),
         _buildTile(
             icon: "yarn/report",
-            title: 'Report yarn',
-            subTitle: 'I’m concerned about this post',
+            title: !widget.yarnTopic!.isQuestion ? 'Report yarn' : "Report question",
+            subTitle: !widget.yarnTopic!.isQuestion ? 'I’m concerned about this yarn' : 'I’m concerned about this question',
             onTap: () {
               Navigator.pop(context);
               NavigationUtil.push(context,
