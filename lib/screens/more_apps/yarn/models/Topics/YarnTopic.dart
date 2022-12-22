@@ -130,7 +130,7 @@ class Yarn {
   dynamic updatedAt;
   String? title;
   String? body;
-  List<MediaFiles> media = [];
+  dynamic media = [];
   String? author;
   String? status;
   int? numberOfAnswers;

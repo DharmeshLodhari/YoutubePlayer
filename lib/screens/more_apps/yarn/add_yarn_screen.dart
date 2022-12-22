@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
@@ -33,7 +34,9 @@ class AddTopicScreen extends StatefulWidget {
   List<YarnCategories>? askCategories;
   YarnCategories? askCategory;
   bool? isYarn = false;
-  AddTopicScreen({this.askCategories, this.isYarn, this.askCategory});
+  Yarn? yarner;
+  AddTopicScreen(
+      {this.askCategories, this.isYarn, this.askCategory, this.yarner});
 
   @override
   State<AddTopicScreen> createState() => _AddTopicScreenState();
@@ -42,7 +45,7 @@ class AddTopicScreen extends StatefulWidget {
 class _AddTopicScreenState extends State<AddTopicScreen> {
   final yarnController = TextEditingController();
 
-  final textController = TextEditingController();
+  TextEditingController? textController;
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
   List<PickedFile> selectedImages = [];
@@ -65,9 +68,21 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   bool isAPILoading = false;
   bool isMentionName = false;
   String? searchString;
+  Map<String, dynamic>? yarn;
 
   @override
   void initState() {
+    // print('object ${widget.yarner?.toJson()}');
+    yarn = widget.yarner?.toJson();
+    print('object pumping $yarn');
+    selectedAskCategory = yarn?['category'] == null
+        ? YarnCategories()
+        : YarnCategories.fromJson(yarn?['category'].toJson());
+    pressedAskCategory = yarn?['category'] == null
+        ? YarnCategories()
+        : YarnCategories.fromJson(yarn?['category'].toJson());
+
+    textController = TextEditingController(text: yarn?['body'] ?? '');
     Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
@@ -218,23 +233,21 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         child: Row(
           children: [
             InkWell(
-              onTap: () {
-                if (selectedImages.length == 4) {
-                  showToast(message: "You can select only 4 images or videos");
-                } else {
-                  pickFileFromMedia();
-                  // pickImage();
-                }
-              },
-              child: SvgPicture.asset("yarn/images".toSVG())
-            ),
+                onTap: () {
+                  if (selectedImages.length == 4) {
+                    showToast(
+                        message: "You can select only 4 images or videos");
+                  } else {
+                    pickFileFromMedia();
+                    // pickImage();
+                  }
+                },
+                child: SvgPicture.asset("yarn/images".toSVG())),
             SizedBox(
               width: 8,
             ),
             InkWell(
-              onTap: () {},
-              child: SvgPicture.asset("yarn/yarn_gif".toSVG())
-            ),
+                onTap: () {}, child: SvgPicture.asset("yarn/yarn_gif".toSVG())),
             SizedBox(
               width: 8,
             ),
@@ -256,7 +269,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   Widget _buildEnableComment() {
     return AskEnableCommentAndPayment(
       onTap: (value) {
-        enableCommenting = value ?? false;
+        enableCommenting = yarn?['enable_commenting'] ?? value ?? false;
         if (mounted) setState(() {});
       },
       title: enableCommenting ? "comment enabled" : "enable comment",
@@ -273,7 +286,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   Widget _buildEnablePayme() {
     return AskEnableCommentAndPayment(
       onTap: (value) {
-        enablePayMe = value ?? false;
+        enablePayMe = yarn?['enable_payme'] ?? value ?? false;
         if (mounted) setState(() {});
       },
       title: enablePayMe ? "payment enabled" : "enable payment",
@@ -302,7 +315,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              selectedAskCategory != null ? (selectedAskCategory!.name ?? "select category") : "select category",
+              selectedAskCategory != null
+                  ? (selectedAskCategory!.name ?? "select category")
+                  : "select category",
               style: TextStyle(fontSize: 10, color: HexColor("#ACAEB4")),
             ),
             SizedBox(
@@ -466,14 +481,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
-          textController.text = textController.text.replaceRange(
-                (textController.text.length - (searchString?.length ?? 0)),
-                textController.text.length,
+          textController?.text = textController!.text.replaceRange(
+                (textController!.text.length - (searchString?.length ?? 0)),
+                textController!.text.length,
                 tappedUser,
               ) +
               " ";
-          textController.selection = TextSelection.fromPosition(TextPosition(
-            offset: textController.text.length,
+          textController?.selection = TextSelection.fromPosition(TextPosition(
+            offset: textController!.text.length,
           ));
           searchString = "";
           if (mounted) setState(() {});
@@ -534,8 +549,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             ? () {}
             : () async {
                 isAPILoading = true;
-                if (mounted) setState(() {});
-                await addYarnAndQuestion();
+
+                if (yarn != null) {
+                  editYarnAndQuestion();
+                } else {
+                  if (mounted) setState(() {});
+                  await addYarnAndQuestion();
+                }
+
                 isAPILoading = false;
                 if (mounted) setState(() {});
               },
@@ -803,12 +824,40 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     );
   }
 
+  Future<void> editYarnAndQuestion() async {
+    Yarn yarnEdit = Yarn();
+    yarnEdit.body = textController?.text;
+    yarnEdit.enableCommenting = enableCommenting;
+    yarnEdit.enablePayMe = enablePayMe;
+    yarnEdit.title = yarnController.text;
+    yarnEdit.category?.id = selectedAskCategory?.id ?? "0";
+    yarnEdit.isQuestion = widget.isYarn == true ? false : true;
+    yarnEdit.author = userBloc.user.userName;
+    // yarnEdit.media = yarn?['media']; 
+    yarnEdit.tags = userTags;
+
+    await YarnAuth().editYarnAndQuestion(yarnEdit).then((value) {
+      if (widget.isYarn == true) {
+        Navigator.pop(context, Types.Yarn);
+      } else if (widget.isYarn == false) {
+        Navigator.pop(context, Types.Question);
+      }
+      showToast(
+          message: widget.isYarn == true
+              ? "Yarn add successfully"
+              : "Question add successfully");
+    }).catchError((error) {
+      debugPrint(error.toString());
+      showToast(message: error.toString());
+    });
+  }
+
   Future<void> addYarnAndQuestion() async {
     AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
     addYarnAndQuestion.title = yarnController.text;
-    addYarnAndQuestion.body = textController.text;
+    addYarnAndQuestion.body = textController?.text;
     addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
     addYarnAndQuestion.isQuestion = widget.isYarn == true ? false : true;
     addYarnAndQuestion.author = userBloc.user.userName;

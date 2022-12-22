@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:Slydo/data/socket_provider.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
@@ -23,7 +21,6 @@ import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
 import '../utils/navigation_util.dart';
-import '../widget/LoadingIndicator.dart';
 import '../widget/rounded_background_icon.dart';
 
 class Home extends StatefulWidget {
