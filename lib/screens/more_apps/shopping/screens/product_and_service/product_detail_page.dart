@@ -29,6 +29,7 @@ import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../routes/route_constants.dart';
+import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../../widget/item_display_card.dart';
 import '../../../user_profile/user_auth.dart';
 import '../../../yarn/models/Topics/YarnTopic.dart';
@@ -388,7 +389,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: Icons.newspaper,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();

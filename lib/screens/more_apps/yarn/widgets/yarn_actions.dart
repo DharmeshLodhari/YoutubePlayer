@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
@@ -17,9 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
-
-import '../../../../main.dart';
-import '../../user_profile/models/user.dart';
 import '../models/share_as_yarn_model.dart';
 import '../share_as_a_yarn_screen.dart';
 import '../yarn_dashboard_bloc.dart';
@@ -181,13 +177,13 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildRetweetButton() {
     return InkWell(
-      onTap: () {
+      onTap: getLoggedInUserName(context) != widget.yarn.author ? () {
         if (widget.yarn.userReyarned) {
           showToast(message: "Re yarn added successfully");
         } else {
           addReYarn();
         }
-      },
+      } : null,
       child: Row(
         children: [
           SvgPicture.asset(

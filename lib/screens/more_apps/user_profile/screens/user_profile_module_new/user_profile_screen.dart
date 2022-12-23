@@ -46,6 +46,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
 import '../../../../../utils/navigation_util.dart';
+import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
@@ -171,12 +172,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     checkCurrentUserIsInRequestList();
 
-    int tabCount = 0;
+    int tabCount = 1;
 
     showPostsTab = await getIsShowPost();
     showYarnTab = await getIsShowYarn();
     showMomentTab = await getIsShowMoment();
     showChannelTab = await getIsShowChannels();
+    showProductTab = await getIsShowProduct();
+    showServiceTab = await getIsShowService();
     if (showYarnTab) {
       tabCount++;
     }
@@ -192,7 +195,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         tabCount++;
       }
     } else {
-      debugPrint("TAB COUNT:- $tabCount");
+      debugPrint("TAB COUNT1:- $tabCount");
       if (tabCount == 2) {
         tabCount = 3;
       } else if (tabCount == 3) {
@@ -202,10 +205,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       } else {
         tabCount = 3;
       }
-
-      showProductTab = await getIsShowProduct();
-      showServiceTab = await getIsShowService();
-
       if (showProductTab) {
         tabCount++;
       }
@@ -217,7 +216,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         tabCount++;
       }
     }
-
+    debugPrint("TAB COUNT2:- $tabCount");
     _tabController = TabController(length: tabCount, vsync: this);
     isLoading = false;
     if (mounted) setState(() {});
@@ -1443,7 +1442,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
         index++;
       }
-
+      debugPrint("TABS LENGTH IF:- ${tabs.length}");
       // tabs.add(
       //   getTabUI(title: "QR code", tabIndex: index),
       // );
@@ -1500,6 +1499,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       tabs.add(
         getTabUI(title: "Hours", tabIndex: index),
       );
+      debugPrint("TABS LENGTH ELSE:- ${tabs.length}");
     }
     return tabs;
   }
@@ -1539,6 +1539,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       //     child: UserQRCodeScreen(user: searchedUser),
       //   ),
       // );
+      debugPrint("TAB VIEW LENGTH IF:- ${list.length}");
     } else {
       // list.add(
       //   KeepAlivePage(
@@ -1590,6 +1591,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           child: UserAboutScreen(user: searchedUser),
         ),
       );
+      debugPrint("TAB VIEW LENGTH ELSE:- ${list.length}");
     }
     return list;
   }
@@ -1735,7 +1737,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     list.add(
       bottomSheetItem(
         title: "Share As A Yarn",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);
