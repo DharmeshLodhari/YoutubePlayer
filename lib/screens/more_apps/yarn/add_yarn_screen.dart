@@ -28,6 +28,8 @@ import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
+import 'models/global_field.dart';
+import 'models/share_as_yarn_model.dart';
 import 'yarn_dashboard_bloc.dart';
 
 class AddTopicScreen extends StatefulWidget {
@@ -35,8 +37,14 @@ class AddTopicScreen extends StatefulWidget {
   YarnCategories? askCategory;
   bool? isYarn = false;
   Yarn? yarner;
+
+  List<ShareAsYarnModel>? shareAsYarnModel;
   AddTopicScreen(
-      {this.askCategories, this.isYarn, this.askCategory, this.yarner});
+      {this.askCategories,
+      this.isYarn,
+      this.askCategory,
+      this.yarner,
+      this.shareAsYarnModel});
 
   @override
   State<AddTopicScreen> createState() => _AddTopicScreenState();
@@ -70,10 +78,15 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   String? searchString;
   Map<String, dynamic>? yarn;
 
+  List<ShareAsYarnModel>? shareAsYarnModelCopy;
+
+  ShareAsYarnModel? _shareAsYarnModel;
+
   @override
   void initState() {
+    shareAsYarnModelCopy = widget.shareAsYarnModel;
+    _shareAsYarnModel = widget.shareAsYarnModel?.first;
     yarn = widget.yarner?.toJson();
-    print('object pumping $yarn');
     selectedAskCategory = yarn?['category'] == null
         ? YarnCategories()
         : YarnCategories.fromJson(yarn?['category'].toJson());
@@ -222,12 +235,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   Widget _buildRowForMedia() {
     return Container(
-      height: 54,
+      // height: 65,
       decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: HexColor("#D9D9D9")))),
+          border: Border(
+              bottom: BorderSide(color: HexColor("#D9D9D9")),
+              top: BorderSide(color: HexColor("#D9D9D9")))),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.only(left: 8),
+        padding: EdgeInsets.only(left: 8, bottom: 20, top: 15),
         child: Row(
           children: [
             InkWell(
@@ -253,11 +268,21 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
             SizedBox(
               width: 4,
             ),
+            _buildRatingCategory(),
+            SizedBox(
+              width: 4,
+            ),
             _buildEnableComment(),
             SizedBox(
               width: 4,
             ),
             _buildEnablePayme(),
+            SizedBox(
+              width: 4,
+            ),
+            _buildEnableViewerAdvice(),
+            SizedBox(width: 4),
+            _buildEnableAdultsOnly(),
           ],
         ),
       ),
@@ -295,6 +320,132 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       highLightBGColor: HexColor("#D9E1FA"),
       highLightBorderColor: HexColor("#BBCBFF"),
       highLightTextColor: HexColor("#3F61DB"),
+    );
+  }
+
+  Widget _buildRatingCategory() {
+    return InkWell(
+      onTap: () => ratingCategory(),
+      child: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            color: HexColor("#F8F8F8"),
+            border: Border.all(color: HexColor("#E9E9E9")),
+            borderRadius: BorderRadius.circular(15)),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _shareAsYarnModel?.name ?? '',
+              style: TextStyle(fontSize: 10, color: HexColor("#7A7A7A")),
+            ),
+            SizedBox(
+              width: 4,
+            ),
+            Icon(Icons.expand_more_outlined,
+                color: HexColor("#7A7A7A"), size: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEnableViewerAdvice() {
+    return AskEnableCommentAndPayment(
+      onTap: (value) {
+        isSensitiveContent = value ?? false;
+        if (mounted) setState(() {});
+      },
+      title: "Viewer Advice",
+      baseBGColor: HexColor("#F8F8F8"),
+      baseBorderColor: HexColor("#E9E9E9"),
+      baseTextColor: HexColor("#ACAEB4"),
+      highLightBGColor: HexColor("#F8BBD9"),
+      highLightBorderColor: HexColor("#E96CAA"),
+      highLightTextColor: HexColor("#E96CAA"),
+    );
+  }
+
+  Widget _buildEnableAdultsOnly() {
+    return AskEnableCommentAndPayment(
+      onTap: (value) {
+        isAdultContent = value ?? false;
+        if (mounted) setState(() {});
+      },
+      title: "Adults Only",
+      baseBGColor: HexColor("#F8F8F8"),
+      baseBorderColor: HexColor("#E9E9E9"),
+      baseTextColor: HexColor("#ACAEB4"),
+      highLightBGColor: HexColor("#D9B6FF"),
+      highLightBorderColor: HexColor("#9F6BD8"),
+      highLightTextColor: HexColor("#9F6BD8"),
+    );
+  }
+
+  void ratingCategory() {
+    _shareAsYarnModel = widget.shareAsYarnModel?.first;
+    widget.shareAsYarnModel = shareAsYarnModelCopy;
+    androidBottomSheet(
+      context: context,
+      child: StatefulBuilder(
+        builder: (context, changeState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Wrap(
+              children: [
+                CustomizedTextFormField(
+                  hintText: 'Select age',
+                  onChanged: (value) {
+                    if (value.toString().isNotEmpty) {
+                      widget.shareAsYarnModel = shareAsYarnModelCopy!
+                          .where((element) => element.name!
+                              .toLowerCase()
+                              .startsWith(value.toString().toLowerCase()))
+                          .toList();
+                      changeState(
+                          () {}); // To upgrade the product categories in the bottom sheet.
+                    } else {
+                      widget.shareAsYarnModel = shareAsYarnModelCopy;
+                      changeState(() {});
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: widget.shareAsYarnModel!.length,
+                    itemBuilder: (context, index) {
+                      ShareAsYarnModel category =
+                          widget.shareAsYarnModel![index];
+
+                      return ListTile(
+                        title: Text(
+                          category.name ?? '',
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                              color: blackFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        dense: true,
+                        onTap: () {
+                          _shareAsYarnModel = category;
+                          ageRating = _shareAsYarnModel?.name?.substring(9);
+                          setState(() {});
+                          Navigator.pop(context);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -831,7 +982,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     yarnEdit.category?.id = selectedAskCategory?.id ?? "0";
     yarnEdit.isQuestion = widget.isYarn == true ? false : true;
     yarnEdit.author = userBloc.user.userName;
-    // yarnEdit.media = yarn?['media']; 
+    // yarnEdit.media = yarn?['media'];
     yarnEdit.tags = userTags;
 
     await YarnAuth().editYarnAndQuestion(yarnEdit).then((value) {
@@ -861,6 +1012,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.author = userBloc.user.userName;
     addYarnAndQuestion.enablePayme = enablePayMe;
     addYarnAndQuestion.enableCommenting = enableCommenting;
+    addYarnAndQuestion.ageRestriction = int.parse(ageRating);
+    addYarnAndQuestion.isAdultContent = isAdultContent;
+    addYarnAndQuestion.isSensitiveContent = isSensitiveContent;
 
     await YarnAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
       if (widget.isYarn == true) {
