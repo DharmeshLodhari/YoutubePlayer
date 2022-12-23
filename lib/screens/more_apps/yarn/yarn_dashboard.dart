@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
@@ -259,6 +260,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
               await NavigationUtil.push(context,
                   screen: AddTopicScreen(
                     askCategories: yarnDashboardBloc.yarnCategories,
+                    shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                     isYarn: true,
                   )).then((value) {
                 debugPrint("THEN VALUE===$value");

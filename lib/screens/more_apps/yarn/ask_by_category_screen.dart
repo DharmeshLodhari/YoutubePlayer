@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -105,6 +106,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
                   screen: AddTopicScreen(
                       askCategories: askViewModel.yarnCategories,
                       isYarn: true,
+                      shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                       askCategory: widget.askCategories));
             }),
       ],
