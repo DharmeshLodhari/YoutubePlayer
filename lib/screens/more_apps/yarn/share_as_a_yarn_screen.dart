@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
@@ -1079,7 +1078,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             child: Wrap(
               children: [
                 CustomizedTextFormField(
-                  hintText: 'Search category',
+                  hintText: 'Select age',
                   onChanged: (value) {
                     if (value.toString().isNotEmpty) {
                       widget.shareAsYarnModel = shareAsYarnModelCopy!

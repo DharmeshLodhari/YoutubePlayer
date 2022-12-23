@@ -1,5 +1,6 @@
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/global_field.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_reply_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,8 +12,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
+import '../../../main.dart';
 import '../../../utils/util.dart';
 import 'models/Topics/CommentDetails.dart';
+import 'models/share_as_yarn_model.dart';
 import 'widgets/yarn_comment_textfield.dart';
 import 'widgets/yarn_shimmer.dart';
 import 'yarn_auth.dart';
@@ -39,6 +42,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   ScrollController _commentScrollController = new ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
   bool? enableComment = false, enablePayment = false;
+  bool? enableAdult = false, viewerAdvice = false;
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +173,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       hint: "Leave your thought",
       yarn: widget.yarn,
       userImage: userBloc.user.avatar,
+      shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       isLoading: isAPILoading,
       enableComment: enableComment,
       onTapEnableComment: (value) {
@@ -180,13 +185,25 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
         enablePayment = value;
         if (mounted) setState(() {});
       },
+      onTapEnableAdult: (value) {
+        enableAdult = value;
+        if (mounted) setState(() {});
+      },
+      onTapViewerAdvice: (value) {
+        viewerAdvice = value;
+        if (mounted) setState(() {});
+      },
       onPressed: () async {
-        FocusScope.of(context).unfocus();
-        isAPILoading = true;
-        if (mounted) setState(() {});
-        await addReplyComment();
-        isAPILoading = false;
-        if (mounted) setState(() {});
+        if (controller.text.isNotEmpty) {
+          FocusScope.of(context).unfocus();
+          isAPILoading = true;
+          if (mounted) setState(() {});
+          await addReplyComment();
+          isAPILoading = false;
+          if (mounted) setState(() {});
+        } else {
+          showToast(message: 'Enter a valid commment');
+        }
       },
     );
   }
@@ -195,8 +212,14 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": userBloc.user.userName,
-      "is_reply": true
+      "is_reply": true,
+      "enable_payme": enablePayment,
+      "enable_commenting": enableComment,
+      "is_adult_content": isAdultContent,
+      "is_sensitive_content": isSensitiveContent,
+      "age_restriction": ageRating ?? 13
     };
+    logger.d(data);
     try {
       YarnComment? commentDetail =
           await YarnAuth().addReplyToComment(widget.yarnComment.id!, data);
