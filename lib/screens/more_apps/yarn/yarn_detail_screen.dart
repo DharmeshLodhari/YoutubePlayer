@@ -4,6 +4,7 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_textfield.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -15,6 +16,10 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'models/global_field.dart';
+import 'models/share_as_yarn_model.dart';
+import 'widgets/ask_mention_view.dart';
 
 class YarnDetailScreen extends StatefulWidget {
   final Yarn yarn;
@@ -36,6 +41,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   ScrollController _commentScrollController = new ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
   bool? enableComment = false, enablePayment = false;
+  bool? viewerAdvice = false, adultOnly = false;
+  bool isMentionName = false;
+  String? searchString;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +124,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return Column(
       children: [
         _buildPostAndCommentView(),
+        if (isMentionName) ...[
+          _buildUserNameContainer(),
+        ],
         _buildTopicTextFiled(),
       ],
     );
@@ -160,15 +171,73 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     );
   }
 
+  Widget _buildUserNameContainer() {
+    return AskMentionView(
+      searchText: searchString,
+      key: UniqueKey(),
+      onTap: (String? tappedUser) {
+        if (tappedUser != null) {
+          controller.text = controller.text.replaceRange(
+                (controller.text.length - (searchString?.length ?? 0)),
+                controller.text.length,
+                tappedUser,
+              ) +
+              " ";
+          controller.selection = TextSelection.fromPosition(TextPosition(
+            offset: controller.text.length,
+          ));
+          searchString = "";
+          if (mounted) setState(() {});
+        }
+      },
+    );
+  }
+
+  void onValueChange(String value) {
+    List<String> listOfWords = value.split(" ");
+
+    if (listOfWords.isNotEmpty) {
+      if ((listOfWords.last.contains("@") &&
+          !value.endsWith(" ") &&
+          !value.endsWith("@"))) {
+        isMentionName = true;
+        List<String> mentionString = getAllMentions(value);
+
+        if (mentionString.isNotEmpty) {
+          searchString = mentionString.last.substring(1);
+        }
+      } else if (value.endsWith("@")) {
+        isMentionName = true;
+
+        searchString = "";
+      } else {
+        isMentionName = false;
+      }
+    }
+    if (mounted) setState(() {});
+  }
+
   Widget _buildTopicTextFiled() {
     return YarnCommentTextField(
       height: 50,
       controller: controller,
       hint: "Leave your thought",
       yarn: widget.yarn,
+      shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       userImage: userBloc.user.avatar,
       isLoading: isAPILoading,
+      onChanged: onValueChange,
       enableComment: enableComment,
+      enableAdult: adultOnly,
+      viewerAdvice: viewerAdvice,
+      onTapEnableAdult: (value) {
+        adultOnly = value;
+        if (mounted) setState(() {});
+      },
+      onTapViewerAdvice: (value) {
+        viewerAdvice = value;
+        if (mounted) setState(() {});
+      },
       onTapEnableComment: (value) {
         enableComment = value;
         if (mounted) setState(() {});
@@ -179,12 +248,16 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         if (mounted) setState(() {});
       },
       onPressed: () async {
-        FocusScope.of(context).unfocus();
-        isAPILoading = true;
-        if (mounted) setState(() {});
-        await addComment();
-        isAPILoading = false;
-        if (mounted) setState(() {});
+        if (controller.text.isNotEmpty) {
+          FocusScope.of(context).unfocus();
+          isAPILoading = true;
+          if (mounted) setState(() {});
+          await addComment();
+          isAPILoading = false;
+          if (mounted) setState(() {});
+        } else {
+          showToast(message: 'Enter a valid comment');
+        }
       },
     );
   }
@@ -192,7 +265,12 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   Future addComment() async {
     Map<String, dynamic> data = {
       "comment": controller.text,
-      "author_username": userBloc.user.userName
+      "author_username": userBloc.user.userName,
+      "enable_payme": enablePayment,
+      "enable_commenting": enableComment,
+      "is_adult_content": isAdultContent,
+      "is_sensitive_content": isSensitiveContent,
+      "age_restriction": ageRating ?? 13
     };
     try {
       YarnComment? commentDetails =

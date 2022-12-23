@@ -56,3 +56,4 @@ List<String> getAllMentions(String text) {
 
   return filterMention;
 }
+

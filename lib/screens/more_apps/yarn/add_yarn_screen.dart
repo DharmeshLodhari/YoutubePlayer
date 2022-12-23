@@ -72,7 +72,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   @override
   void initState() {
-    // print('object ${widget.yarner?.toJson()}');
     yarn = widget.yarner?.toJson();
     print('object pumping $yarn');
     selectedAskCategory = yarn?['category'] == null
@@ -81,7 +80,6 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     pressedAskCategory = yarn?['category'] == null
         ? YarnCategories()
         : YarnCategories.fromJson(yarn?['category'].toJson());
-
     textController = TextEditingController(text: yarn?['body'] ?? '');
     Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();

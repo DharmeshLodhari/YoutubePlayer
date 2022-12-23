@@ -5,21 +5,26 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:linkwell/linkwell.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../../../utils/link_preview/flutter_link_preview.dart';
+import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../models/Topics/CommentDetails.dart';
+import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_options.dart';
 import '../yarn_comment_detail_screen.dart';
 
-class YarnCommentTile extends StatelessWidget {
+class YarnCommentTile extends StatefulWidget {
   final Yarn yarn;
   final YarnComment yarnComment;
   List<YarnComment>? commentDetailsList = [];
   final bool? openReply;
   final bool? isCommentDetail;
   final Function(YarnComment)? onDeleteComment;
+
 
   YarnCommentTile({
     required this.yarn,
@@ -31,15 +36,39 @@ class YarnCommentTile extends StatelessWidget {
   });
 
   @override
+  State<YarnCommentTile> createState() => _YarnCommentTileState();
+}
+
+class _YarnCommentTileState extends State<YarnCommentTile> {
+  bool isUrlPresent = false;
+  String? linkToBePreview;
+
+  @override
+  void initState() {
+    Map<String, dynamic> linkData =
+        detectLinkInText(messageDecoderWithEmoji(widget.yarnComment.comment)!);
+
+    if (linkData["hasLink"]) {
+      isUrlPresent = true;
+
+      linkToBePreview = linkData['links'][0];
+      if (!linkToBePreview!.contains("http")) {
+        linkToBePreview = "http://" + linkToBePreview!;
+      }
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (!(isCommentDetail ?? false)) {
+        if (!(widget.isCommentDetail ?? false)) {
           NavigationUtil.push(
             context,
             screen: YarnCommentDetailScreen(
-              yarn: yarn,
-              yarnComment: yarnComment,
+              yarn: widget.yarn,
+              yarnComment: widget.yarnComment,
             ),
           );
         }
@@ -92,7 +121,7 @@ class YarnCommentTile extends StatelessWidget {
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: yarnComment.authorAvatar!);
+            arguments: widget.yarnComment.authorAvatar!);
       },
       child: Container(
         height: 36,
@@ -100,7 +129,7 @@ class YarnCommentTile extends StatelessWidget {
         decoration: BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: yarnComment.authorAvatar!,
+            imageUrl: widget.yarnComment.authorAvatar!,
             fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
           ),
@@ -128,7 +157,7 @@ class YarnCommentTile extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                  "searchedUserName": yarnComment.authorUsername!
+                  "searchedUserName": widget.yarnComment.authorUsername!
                 });
               },
               child: Row(
@@ -136,7 +165,7 @@ class YarnCommentTile extends StatelessWidget {
                 children: [
                   Flexible(
                     child: Text(
-                      messageDecoderWithEmoji(yarnComment.authorName ?? "") ?? "",
+                      messageDecoderWithEmoji(widget.yarnComment.authorName ?? "") ?? "",
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(fontSize: 12, color: yarnBlack),
@@ -146,7 +175,7 @@ class YarnCommentTile extends StatelessWidget {
                     width: 4,
                   ),
                   Text(
-                    "@${yarnComment.authorUsername!}",
+                    "@${widget.yarnComment.authorUsername!}",
                     style: TextStyle(fontSize: 12, color: yarnBlack),
                   ),
                   SizedBox(
@@ -163,7 +192,7 @@ class YarnCommentTile extends StatelessWidget {
                     width: 4,
                   ),
                   Text(
-                    '${getGetYarnQuestionDateTime(yarnComment.createdAt!)}',
+                    '${getGetYarnQuestionDateTime(widget.yarnComment.createdAt!)}',
                     overflow: TextOverflow.fade,
                     style: TextStyle(
                         fontSize: 12,
@@ -195,10 +224,10 @@ class YarnCommentTile extends StatelessWidget {
                         color: Colors.white,
                         margin: EdgeInsets.zero,
                         child: YarnOptions(
-                          commentDetail: yarnComment,
+                          commentDetail: widget.yarnComment,
                           isComment: true,
                           onDeleteComment: (YarnComment yarnComment) {
-                            onDeleteComment!(yarnComment);
+                            widget.onDeleteComment!(yarnComment);
                           },
                         ),
                       );
@@ -225,7 +254,7 @@ class YarnCommentTile extends StatelessWidget {
         ),
         Expanded(
           child: userNameWithVerifiedIcon(
-              name: "@${yarn.author}",
+              name: "@${widget.yarn.author}",
               isVerified: false,
               textStyle: TextStyle(
                   fontSize: 13, fontWeight: FontWeight.w500, color: navyBlue)),
@@ -235,8 +264,78 @@ class YarnCommentTile extends StatelessWidget {
   }
 
   Widget _buildCommentDescription() {
+    if (isUrlPresent) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 5,
+          ),
+          LinkWell(
+            messageDecoderWithEmoji(widget.yarn.body)!,
+            style: TextStyle(
+                color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
+            textScaleFactor: 0.8,
+            linkStyle: TextStyle(
+                color: navyBlue,
+                decoration: TextDecoration.underline,
+                fontSize: 17,
+                fontFamily: "OpenSans"),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    color: darkGrey.withOpacity(
+                      .4,
+                    ),
+                    width: .5)),
+            child: FlutterLinkPreview(
+              key: ValueKey("${linkToBePreview}233"),
+              url: linkToBePreview!,
+              builder: (info) {
+                if (info == null)
+                  return const SizedBox(
+                    height: 0,
+                    width: 0,
+                  );
+                if (info is WebImageInfo) {
+                  return CachedNetworkImage(
+                    imageUrl: info.image!,
+                    fit: BoxFit.contain,
+                    errorWidget: imageErrorWidget,
+                  );
+                }
+
+                final WebInfo webInfo = info as WebInfo;
+                if (!WebAnalyzer.isNotEmpty(webInfo.title))
+                  return const SizedBox(
+                    height: 0,
+                    width: 0,
+                  );
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  margin: EdgeInsets.only(bottom: 4, top: 8),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: getWebPreview(webInfo, context)),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(yarnComment.comment ?? '') ?? '',
+      description: messageDecoderWithEmoji(widget.yarnComment.comment ?? '') ?? '',
     );
     // return Text(
     //   messageDecoderWithEmoji(commentDetail!.comment!)!,
@@ -251,31 +350,31 @@ class YarnCommentTile extends StatelessWidget {
 
   Widget _buildTopActions({required BuildContext context}) {
     return YarnCommentActions(
-      comment: yarnComment,
-      yarn: yarn,
-      isCommentDetail: isCommentDetail ?? false,
+      comment: widget.yarnComment,
+      yarn: widget.yarn,
+      isCommentDetail: widget.isCommentDetail ?? false,
     );
   }
 
   Widget _buildReplyCommentView({required BuildContext context}) {
-    if (openReply! &&
-        commentDetailsList!.isNotEmpty &&
-        commentDetailsList != null) {
+    if (widget.openReply! &&
+        widget.commentDetailsList!.isNotEmpty &&
+        widget.commentDetailsList != null) {
       return Column(
-        children: commentDetailsList!.map((replyCommentDetail) {
+        children: widget.commentDetailsList!.map((replyCommentDetail) {
           return InkWell(
             onTap: () {
               NavigationUtil.push(
                 context,
                 screen: YarnCommentDetailScreen(
-                  yarn: yarn,
+                  yarn: widget.yarn,
                   yarnComment: replyCommentDetail,
                 ),
               );
             },
             child: AskReplyView(
-              yarnTopic: yarn,
-              commentDetail: yarnComment,
+              yarnTopic: widget.yarn,
+              commentDetail: widget.yarnComment,
               replyCommentDetail: replyCommentDetail,
             ),
           );
@@ -287,10 +386,10 @@ class YarnCommentTile extends StatelessWidget {
 
   bool isComments(BuildContext context) {
     DateTime messageCreatedTime =
-        DateTime.parse(yarnComment.createdAt!).toLocal();
+        DateTime.parse(widget.yarnComment.createdAt!).toLocal();
 
     DateTime currentTime = DateTime.now();
-    if (getLoggedInUserName(context) == yarnComment.authorUsername) {
+    if (getLoggedInUserName(context) == widget.yarnComment.authorUsername) {
       if (currentTime.difference(messageCreatedTime) < Duration(minutes: 3)) {
         return true;
       } else {

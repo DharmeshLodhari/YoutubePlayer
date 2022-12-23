@@ -46,6 +46,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../locator.dart';
 import '../../../../../utils/navigation_util.dart';
+import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../../moments/screens/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
@@ -1736,7 +1737,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     list.add(
       bottomSheetItem(
         title: "Share As A Yarn",
-        iconData: SlydoAppIcon.text_message,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         isLast: searchedUser!.userName == userBloc.user.userName,
         onTap: () async {
           Navigator.pop(context);

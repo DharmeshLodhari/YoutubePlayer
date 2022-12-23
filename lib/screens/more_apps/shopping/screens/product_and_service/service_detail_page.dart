@@ -27,6 +27,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../yarn/models/Topics/YarnTopic.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
@@ -380,7 +381,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: Icons.newspaper,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();

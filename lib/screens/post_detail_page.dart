@@ -18,6 +18,7 @@ import '../routes/route_constants.dart';
 import '../utils/enums.dart';
 import '../utils/navigation_util.dart';
 import '../utils/slydo_app_icon_icons.dart';
+import '../utils/slydo_app_icon_new_icons.dart';
 import '../utils/util.dart';
 import '../utils/video_player_controller/chewie_player.dart';
 import '../utils/video_player_controller/chewie_progress_colors.dart';
@@ -481,7 +482,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       bottomSheetItem(
         isLast: true,
         title: "Share As A Yarn",
-        iconData: Icons.newspaper,
+        iconData: SlydoAppIconNew.dashboard_yarn,
         onTap: () async {
           Navigator.pop(context);
           shareAsYarn();

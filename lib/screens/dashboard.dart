@@ -507,7 +507,7 @@ class _DashboardState extends State<Dashboard> {
           bottomNavigationBarItem(
             isChatIcon: true,
             key: tutorialChatMessageKey,
-            iconData: SlydoAppIconNew.dashboard_chat,
+            iconData: SlydoAppIconNew.chat,
             title: AppLocalization.of(context)!.chat,
           ),
 
