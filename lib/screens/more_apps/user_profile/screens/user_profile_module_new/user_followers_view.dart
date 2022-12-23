@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/user_stacked_image.dart';
+import 'package:flutter/material.dart';
 
 import '../../models/user.dart';
 import '../../user_auth.dart';
@@ -13,7 +13,6 @@ class UserFollowersView extends StatefulWidget {
 }
 
 class _UserFollowersViewState extends State<UserFollowersView> {
-
   bool isLoading = false;
   String? next = "", previous = "";
   List<UserFollowers> userFollowers = [];
@@ -27,7 +26,8 @@ class _UserFollowersViewState extends State<UserFollowersView> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await UserAuth().fetchCustomerFollowers(userName);
+        Map<String, dynamic>? result =
+            await UserAuth().fetchCustomerFollowers(userName);
 
         if (result == null) {
           noList = true;
@@ -75,7 +75,6 @@ class _UserFollowersViewState extends State<UserFollowersView> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return _buildMain(userImages: userFollowers);
@@ -98,13 +97,14 @@ class _UserFollowersViewState extends State<UserFollowersView> {
     final double size = 32;
     final double xShift = 10;
     return Padding(
-      padding: EdgeInsets.only(right:  12),
+      padding: EdgeInsets.only(right: 12),
       child: StackedWidgets(
         size: size,
         xShift: xShift,
         items: [
-          ...List.generate(4, (index) => buildImage(userImages![index].avatar ?? "")),
-          _buildText(),
+          ...List.generate(
+              4, (index) => buildImage(userImages![index].avatar ?? "")),
+          if (userImages != null && userImages.length != 4) _buildText(),
         ],
       ),
     );
@@ -121,13 +121,13 @@ class _UserFollowersViewState extends State<UserFollowersView> {
           color: Colors.black,
           child: Center(
               child: Text(
-                "+$count",
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              )),
+            "+$count",
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          )),
         ),
       ),
     );
@@ -139,9 +139,8 @@ class _UserFollowersViewState extends State<UserFollowersView> {
     if (images!.length != 0) {
       final double size = 32;
       final double xShift = 10;
-      final items = images
-          .map((image) => buildImage(image.avatar ?? ""))
-          .toList();
+      final items =
+          images.map((image) => buildImage(image.avatar ?? "")).toList();
 
       return Padding(
         padding: EdgeInsets.only(right: 12),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
@@ -77,7 +78,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   _UserProfileScreenState({this.arguments});
 
-  int currentIndex = 0;
+  int currentIndex = 1;
   BehaviorSubject<int> selectedIndexStream = BehaviorSubject<int>();
   CustomerProfile? searchedUser;
   String? searchedUserName;
@@ -194,6 +195,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       if (showPostsTab) {
         tabCount++;
       }
+
+      /// FOR USER DEFAULT VALUE SHOULD BE 0 BECAUSE EVERY TAB ARE DEPENDENT ON API CALLS SO SUBTRACTING 1 for user type as
+      /// it was not suppose to added default at lib/screens/more_apps/user_profile/screens/user_profile_module_new/user_profile_screen.dart:176
+      tabCount--;
     } else {
       debugPrint("TAB COUNT1:- $tabCount");
       if (tabCount == 2) {
@@ -838,7 +843,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               getFollowUnFollowWidget(),
-              UserFollowersView(userName: searchedUserName,),
+              UserFollowersView(
+                userName: searchedUserName,
+              ),
             ],
           ),
         ],
