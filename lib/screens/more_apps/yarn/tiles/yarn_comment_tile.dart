@@ -1,4 +1,8 @@
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_reply_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
@@ -12,8 +16,13 @@ import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
+import '../../shopping/models/store.dart';
+import '../../user_post/models/user_post.dart';
+import '../../user_profile/models/user.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../widgets/url_reader_of_yarn.dart';
+import '../widgets/yarn_comment_media_renderer.dart';
+import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 import '../yarn_comment_detail_screen.dart';
 
@@ -24,7 +33,6 @@ class YarnCommentTile extends StatefulWidget {
   final bool? openReply;
   final bool? isCommentDetail;
   final Function(YarnComment)? onDeleteComment;
-
 
   YarnCommentTile({
     required this.yarn,
@@ -42,6 +50,8 @@ class YarnCommentTile extends StatefulWidget {
 class _YarnCommentTileState extends State<YarnCommentTile> {
   bool isUrlPresent = false;
   String? linkToBePreview;
+  bool isMediaPresent = false;
+  bool isAttachmentPresent = false;
 
   @override
   void initState() {
@@ -55,6 +65,14 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       if (!linkToBePreview!.contains("http")) {
         linkToBePreview = "http://" + linkToBePreview!;
       }
+    }
+
+    if (widget.yarnComment.media.isNotEmpty) {
+      isMediaPresent = true;
+    }
+
+    if (widget.yarnComment.attachment != null) {
+      isAttachmentPresent = true;
     }
     super.initState();
   }
@@ -99,7 +117,25 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildCommentDescription(),
+                        if (widget.yarnComment.comment != null) ...[
+                          _buildCommentDescription(),
+                          SizedBox(
+                            height: 8,
+                          ),
+                        ],
+                        if (isAttachmentPresent &&
+                            widget.yarnComment.attachment != null) ...[
+                          _buildAttachment(),
+                          SizedBox(
+                            height: 8,
+                          ),
+                        ],
+                        if (isMediaPresent) ...[
+                          _buildImagesRow(),
+                          SizedBox(
+                            height: 8,
+                          ),
+                        ],
                         SizedBox(
                           height: 10,
                         ),
@@ -115,6 +151,45 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         ),
       ),
     );
+  }
+
+  Widget _buildImagesRow() {
+    return YarnCommentMediaRender(
+      yarnTopic: widget.yarnComment,
+    );
+  }
+
+  Widget _buildAttachment() {
+    Widget childWidget;
+    if (widget.yarnComment.attachmentType == 'service') {
+      Service service = Service.fromJson(widget.yarnComment.attachment);
+      childWidget = YarnServiceTile(
+        service: service,
+      );
+    } else if (widget.yarnComment.attachmentType == 'product') {
+      Product product = Product.fromJson(widget.yarnComment.attachment);
+      childWidget = YarnProductTile(
+        product: product,
+      );
+    } else if (widget.yarnComment.attachmentType == 'blog') {
+      UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
+      childWidget = YarnBlogPostTile(
+        post: post,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (widget.yarnComment.attachmentType == 'profile') {
+      CustomerProfile customerProfile =
+          CustomerProfile.fromJson(widget.yarnComment.attachment ?? {});
+      childWidget = YarnCustomerPostTile(
+        customerProfile: customerProfile,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else {
+      childWidget = SizedBox();
+    }
+    return childWidget;
   }
 
   Widget _buildUserAvatar({required BuildContext context}) {
@@ -165,7 +240,9 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                 children: [
                   Flexible(
                     child: Text(
-                      messageDecoderWithEmoji(widget.yarnComment.authorName ?? "") ?? "",
+                      messageDecoderWithEmoji(
+                              widget.yarnComment.authorName ?? "") ??
+                          "",
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(fontSize: 12, color: yarnBlack),
@@ -272,7 +349,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             height: 5,
           ),
           LinkWell(
-            messageDecoderWithEmoji(widget.yarn.body)!,
+            messageDecoderWithEmoji(widget.yarnComment.comment)!,
             style: TextStyle(
                 color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
             textScaleFactor: 0.8,
@@ -335,7 +412,8 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       );
     }
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(widget.yarnComment.comment ?? '') ?? '',
+      description:
+          messageDecoderWithEmoji(widget.yarnComment.comment ?? '') ?? '',
     );
     // return Text(
     //   messageDecoderWithEmoji(commentDetail!.comment!)!,

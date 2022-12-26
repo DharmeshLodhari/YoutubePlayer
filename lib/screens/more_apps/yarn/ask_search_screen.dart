@@ -196,7 +196,8 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
       child: Column(
         children: [
-          _buildSearchBox(),
+          // _buildSearchBox(),
+          _buildSearchField(),
           isLoading
               ? CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
@@ -363,7 +364,8 @@ class _SearchScreenState extends State<SearchScreen> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                int index = yarnTopicList.indexWhere((element) => element.id == yarn.id);
+                int index = yarnTopicList
+                    .indexWhere((element) => element.id == yarn.id);
                 if (index != -1) {
                   yarnTopicList.removeAt(index);
                   if (mounted) setState(() {});
@@ -371,7 +373,7 @@ class _SearchScreenState extends State<SearchScreen> {
               },
               onReYarn: (Yarn yarn) {
                 yarnTopicList.insert(0, yarn);
-                if(mounted) setState(() {});
+                if (mounted) setState(() {});
               },
             ),
           );

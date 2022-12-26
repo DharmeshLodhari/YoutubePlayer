@@ -122,8 +122,10 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "yarn/like".toSVG(),
-            color: darkGreyYarn,
+            widget.comment.userLike!
+                ? "yarn/likeAfter".toSVG()
+                : "yarn/likeBefore".toSVG(),
+            color: widget.comment.userLike! ? red : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -148,8 +150,10 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       child: Row(
         children: [
           SvgPicture.asset(
-            "yarn/unlike".toSVG(),
-            color: darkGreyYarn,
+           widget.comment.userDisLike!
+                ? "yarn/unlikeAfter".toSVG()
+                : "yarn/unlikeBefore".toSVG(),
+            color: widget.comment.userDisLike! ? starYellow : darkGreyYarn,
             height: 13,
             width: 13,
           ),
@@ -357,6 +361,10 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   Future addLikeToComment() async {
     Map<String, dynamic>? data =
         await YarnAuth().addLikeComment(widget.comment.id!);
+    setState(() {
+      widget.comment.userLike = !widget.comment.userLike!;
+      widget.comment.userDisLike = false;
+    });
     if (data != null) {
       setState(() {
         widget.comment.likes = data['likes'];
@@ -368,6 +376,11 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   Future addDisLikeToComment() async {
     Map<String, dynamic>? data =
         await YarnAuth().addDisLikeComment(widget.comment.id!);
+
+    setState(() {
+      widget.comment.userDisLike = !widget.comment.userDisLike!;
+      widget.comment.userLike = false;
+    });
     if (data != null) {
       setState(() {
         widget.comment.likes = data['likes'];

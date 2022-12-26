@@ -107,7 +107,7 @@ class YarnListScreenState extends State<YarnListScreen> {
       enablePullDown: true,
       header: WaterDropHeader(
         complete: Container(),
-        waterDropColor: navyBlue,
+        waterDropColor: yarnBlack,
       ),
       controller: refreshController,
       onRefresh: onRefresh,
@@ -139,7 +139,8 @@ class YarnListScreenState extends State<YarnListScreen> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                int index = yarnTopicList.indexWhere((element) => element.id == yarn.id);
+                int index = yarnTopicList
+                    .indexWhere((element) => element.id == yarn.id);
                 if (index != -1) {
                   yarnTopicList.removeAt(index);
                   if (mounted) setState(() {});
