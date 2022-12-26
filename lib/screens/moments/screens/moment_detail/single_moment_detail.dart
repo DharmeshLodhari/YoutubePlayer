@@ -1,0 +1,963 @@
+import 'dart:convert';
+
+import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/locator.dart';
+import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/moments_bloc.dart';
+import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/moment_comment_list.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/moment_dash_view.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/render_moment_screen.dart';
+import 'package:Slydo/screens/moments/screens/moments_service.dart';
+import 'package:Slydo/screens/moments/utils.dart';
+import 'package:Slydo/screens/moments/widgets/attachment_widget.dart';
+import 'package:Slydo/screens/moments/widgets/custom_moment_detail_button.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_report_screen.dart';
+import 'package:Slydo/screens/post_detail_page.dart';
+import 'package:Slydo/services/app_config_bloc.dart';
+import 'package:Slydo/utils/cached_video_player/cached_video_player.dart';
+import 'package:Slydo/utils/enums.dart';
+import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/read_more_widget.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
+
+class SingleMomentDetailScreen extends StatefulWidget {
+  final List<MomentsModel> momentsModelList;
+  final List<CachedVideoPlayerController> videoPlayerControllers;
+  final List<PhotoViewController> photoViewController;
+
+  final int index;
+  final void Function() onLeftSwipe;
+  final void Function() onRightSwipe;
+  final void Function() onMomentPop;
+
+  MomentsModel currentMoment;
+
+  SingleMomentDetailScreen({
+    Key? key,
+    required this.index,
+    required this.momentsModelList,
+    required this.videoPlayerControllers,
+    required this.photoViewController,
+    required this.currentMoment,
+    required this.onLeftSwipe,
+    required this.onRightSwipe,
+    required this.onMomentPop,
+  }) : super(key: key);
+
+  @override
+  State<SingleMomentDetailScreen> createState() =>
+      _SingleMomentDetailScreenState();
+}
+
+class _SingleMomentDetailScreenState extends State<SingleMomentDetailScreen> {
+  GlobalKey<RenderMomentState> _renderMomentStateKey =
+      GlobalKey<RenderMomentState>();
+
+  void toggleMediaPlayingState() {
+    _renderMomentStateKey.currentState?.toggleMediaPlayingState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        RenderMoment(
+          key: _renderMomentStateKey,
+          momentsModel: widget.currentMoment,
+          videoPlayerControllers: widget.videoPlayerControllers,
+          photoViewController: widget.photoViewController,
+        ),
+        Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: MomentDashView(
+                currentPageViewIndex: widget.index,
+                lengthOfMoment: widget.momentsModelList.length),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          bottom: 0,
+          child: InkWell(
+            onTap: widget.onLeftSwipe,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.4,
+            ),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          bottom: 0,
+          child: InkWell(
+            onTap: widget.onRightSwipe,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.4,
+            ),
+          ),
+        ),
+        Positioned.directional(
+          textDirection: Directionality.of(context),
+          end: 15.0,
+          bottom: MediaQuery.of(context).size.height * 0.04,
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(height: 16),
+                  isMyMoment()
+                      ? CustomMomentDetailButton(
+                          iconEnabled: true,
+                          iconData: Icons.more_horiz_outlined,
+                          text: '',
+                          onPressed: () {
+                            androidBottomSheet(
+                              context: context,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  momentVisibilityOption(widget.currentMoment),
+                                  momentPermanentOption(widget.currentMoment),
+                                  momentCommentingOption(widget.currentMoment),
+                                  momentLikeOption(widget.currentMoment),
+                                  bottomSheetItem(
+                                      title: 'Share in chat',
+                                      iconData: Icons.send_outlined,
+                                      onTap: () async {
+                                        await sendMomentToUserInChat(
+                                            momentsModel: widget.currentMoment);
+                                      }),
+                                  bottomSheetItem(
+                                    title: 'Delete',
+                                    iconData: Icons.delete,
+                                    onTap: () {
+                                      Navigator.pop(context);
+
+                                      showDialogBox(
+                                        context: context,
+                                        actionOneTextColor: white,
+                                        actionOneBgColor: mateRed,
+                                        actionTwoTextColor: blackFont,
+                                        actionTwoBgColor: greyBorderColor,
+                                        title:
+                                            AppLocalization.of(context)!.delete,
+                                        actionTwoText:
+                                            AppLocalization.of(context)!.cancel,
+                                        actionOneText:
+                                            AppLocalization.of(context)!.delete,
+                                        description:
+                                            'Are you sure you want to delete this moment?',
+                                        roundedBackgroundIcon:
+                                            RoundedBackgroundIcon(
+                                          enableMargin: false,
+                                          width: 90,
+                                          height: 90,
+                                          image: Image.asset(
+                                              'assets/images/delete_dialog_icon.png'),
+                                        ),
+                                        leftButtonOnPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (dialogLoadingContext) =>
+                                                  LoadingIndicator());
+                                          MomentsService()
+                                              .deleteMoment(
+                                                  widget.currentMoment.id!)
+                                              .then(
+                                            (value) {
+                                              Navigator.pop(
+                                                  context); // Dismiss loading indicator
+                                              Navigator.pop(context);
+                                              showToast(
+                                                  message: 'Moment deleted');
+                                            },
+                                          ).catchError((e) {
+                                            Navigator.pop(context);
+                                            showToast(message: e.toString());
+                                          });
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                      : SizedBox.shrink(),
+                  _buildShareMomentOption(),
+                  CustomMomentDetailButton(
+                    iconEnabled: likeEnabled(),
+                    iconData: Icons.thumb_up,
+                    text: likeEnabled()
+                        ? int.parse(widget.currentMoment.likes.toString()) < 1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: widget.currentMoment.likes!,
+                                addViewText: false)
+                        : '',
+                    onPressed: likeEnabled()
+                        ? () {
+                            MomentsService()
+                                .likeMoment(widget.currentMoment.id!)
+                                .then((value) {
+                              widget.currentMoment = value;
+                              if (mounted) setState(() {});
+                            });
+                          }
+                        : null,
+                  ),
+                  CustomMomentDetailButton(
+                    iconEnabled: likeEnabled(),
+                    iconData: Icons.thumb_down,
+                    text: likeEnabled()
+                        ? int.parse(widget.currentMoment.dislikes.toString()) <
+                                1
+                            ? ''
+                            : getFormattedViewCount(
+                                noOfViews: widget.currentMoment.dislikes!,
+                                addViewText: false,
+                              )
+                        : '',
+                    onPressed: likeEnabled()
+                        ? () {
+                            MomentsService()
+                                .dislikeMoment(widget.currentMoment.id!)
+                                .then((value) {
+                              widget.currentMoment = value;
+                              if (mounted) setState(() {});
+                            });
+                          }
+                        : null,
+                  ),
+                  CustomMomentDetailButton(
+                    iconEnabled: commentingEnabled(),
+                    iconData: Icons.messenger,
+                    text: commentingEnabled()
+                        ? getCommentCount(widget.index)
+                        : '',
+                    onPressed: commentingEnabled()
+                        ? () {
+                            commentSheet(
+                              context,
+                              widget.currentMoment.id!,
+                              index: widget.index,
+                            );
+                          }
+                        : null,
+                  ),
+                  CustomMomentDetailButton(
+                    iconEnabled: true,
+                    iconData: Icons.visibility_rounded,
+                    text: getFormattedViewCount(
+                      noOfViews: widget.currentMoment.views,
+                      addViewText: false,
+                    ),
+                    onPressed: null,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 12.0,
+          bottom: 20.0,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                            arguments: widget.currentMoment.avatar);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 6.0),
+                        child: getCircularUserAvatar(
+                          widget.currentMoment.avatar!,
+                          width: 35,
+                          height: 35,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.USER_PROFILE,
+                                arguments: {
+                                  "searchedUserName":
+                                      widget.currentMoment.owner,
+                                },
+                              );
+                            },
+                            child: Text(
+                              messageDecoderWithEmoji(
+                                  '${widget.currentMoment.ownerName!}')!,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 10.0,
+                                    color: blackFont,
+                                    offset: Offset(0.0, 0),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${MomentsUtils().getGetMomentDetailDateTime(widget.currentMoment.createdAt!)}',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w400,
+                                  shadows: [
+                                    Shadow(
+                                      blurRadius: 10.0,
+                                      offset: Offset(0.0, 0),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 4),
+                              getPrivateOrPublicIcon(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 6),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: widget.currentMoment.text != null
+                      ? ReadMoreText(
+                          messageDecoderWithEmoji(widget.currentMoment.text)!,
+                          trimLines: 2,
+                          colorClickableText: Colors.pink,
+                          trimMode: TrimMode.Line,
+                          trimCollapsedText: 'more',
+                          trimExpandedText: 'less',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 10.0,
+                                color: blackFont,
+                                offset: Offset(0.0, 0),
+                              ),
+                            ],
+                          ),
+                          moreStyle: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          lessStyle: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                ),
+                SizedBox(
+                  width: 300,
+                  child: getTags(),
+                ),
+                SizedBox(height: 9),
+                Row(
+                  children: [
+                    getPayMeBtn(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: getWhichAttachmentWidgetToShow(
+                        widget.currentMoment.attachment!,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          top: 34,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                onPressed: () {
+                  widget.onMomentPop();
+                  Navigator.pop(context);
+                },
+                icon: CircleAvatar(
+                  backgroundColor: navyBlue,
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () async {
+                        toggleMediaPlayingState();
+                        await NavigationUtil.push(context,
+                            screen: CreateMediaMomentScreen());
+                        toggleMediaPlayingState();
+                      },
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: navyBlue,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShareMomentOption() {
+    if (isMyMoment()) {
+      return SizedBox.shrink();
+    }
+
+    return CustomMomentDetailButton(
+        iconEnabled: true,
+        iconData: Icons.more_horiz_outlined,
+        text: "",
+        onPressed: () async {
+          androidBottomSheet(
+            context: context,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                bottomSheetItem(
+                    title: 'Share in chat',
+                    iconData: Icons.send_outlined,
+                    onTap: () async {
+                      await sendMomentToUserInChat(
+                          momentsModel: widget.currentMoment);
+                    }),
+                bottomSheetItem(
+                  title: 'Report Moment',
+                  iconData: Icons.report_gmailerrorred_rounded,
+                  onTap: () async {
+                    Navigator.pop(context);
+
+                    toggleMediaPlayingState();
+
+                    await NavigationUtil.push(context,
+                        screen: AddReportScreen(
+                          object: widget.currentMoment.toJson(),
+                          type: "moment",
+                        ));
+
+                    toggleMediaPlayingState();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<void> sendMomentToUserInChat(
+      {required MomentsModel momentsModel}) async {
+    List<ChatConversation?> listOfRecipient =
+        await ShareInChat().selectShareCustomer(context);
+    debugPrint("Selected users = ${listOfRecipient.length}");
+
+    listOfRecipient.forEach((recipient) {
+      addMomentPostToChat(
+          recipientUser: recipient!, momentsModel: momentsModel);
+    });
+  }
+
+  Future<void> addMomentPostToChat({
+    required ChatConversation recipientUser,
+    required MomentsModel momentsModel,
+    String? url,
+  }) async {
+    UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
+
+    Map<String, dynamic> metaData = {
+      "id": momentsModel.id,
+      "title": messageDecoderWithEmoji(momentsModel.text),
+      "author_avatar": momentsModel.avatar,
+      "author_username": messageDecoderWithEmoji(momentsModel.ownerName),
+    };
+
+    switch (momentsModel.mediaType) {
+      case "image":
+        metaData.addAll({"image": momentsModel.media});
+        break;
+      case "video":
+        metaData.addAll({"image": momentsModel.mediaPoster});
+        break;
+    }
+
+    Map<String, dynamic> data = {
+      "meta_data": jsonEncode(metaData),
+      "check_id": Uuid().v4(),
+      "conversation_id": recipientUser.conversationId,
+      "author": userBloc.user.userName,
+      "message": 'moment',
+      "kind": "moment",
+      "created_at": DateTime.now().toUtc().toString(),
+      "type": "chatroom_message",
+    };
+    await sendDataToSocket(data);
+    showToast(message: 'Moment Shared');
+  }
+
+  Widget momentVisibilityOption(MomentsModel momentModel) {
+    String title = "Make ";
+    bool isPublic = false;
+    IconData icon;
+    if (momentModel.isPublic ?? false) {
+      title += "Private";
+      icon = Icons.shield;
+      isPublic = false;
+    } else {
+      title += "Public";
+      icon = Icons.public;
+      isPublic = true;
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: icon,
+      onTap: () {
+        Navigator.pop(context);
+        MomentsService().updateMoment(
+            momentId: momentModel.id!, data: {"is_public": isPublic}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  Widget momentPermanentOption(MomentsModel momentModel) {
+    bool isPermanent = false;
+    String title;
+    debugPrint("MOMENT MODEL IS PERMANENT:- ${momentModel.isPermanent}");
+    debugPrint("MOMENT IS PERMANENT:- ${momentModel.isPermanent}");
+    if (momentModel.isPermanent ?? false) {
+      isPermanent = momentModel.isPermanent!;
+    }
+
+    if (isPermanent) {
+      title = "For Moment Alone";
+    } else {
+      title = "Make Permanent";
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: CupertinoIcons.infinite,
+      onTap: () {
+        Navigator.pop(context);
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"is_permanent": !isPermanent}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  Widget momentCommentingOption(MomentsModel momentModel) {
+    bool isCommentingEnable = false;
+    String title;
+    if (momentModel.enableCommenting ?? false) {
+      isCommentingEnable = momentModel.enableCommenting!;
+    }
+
+    IconData icon;
+    if (isCommentingEnable) {
+      title = "Turn off Commenting";
+      icon = Icons.comments_disabled;
+    } else {
+      title = "Turn on Commenting";
+      icon = Icons.comment;
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: icon,
+      onTap: () {
+        Navigator.pop(context);
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"enable_commenting": !isCommentingEnable}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  Widget momentLikeOption(MomentsModel momentModel) {
+    bool isLikeEnabled = false;
+    String title;
+    if (momentModel.enableLikes ?? false) {
+      isLikeEnabled = momentModel.enableLikes!;
+    }
+
+    IconData icon;
+    if (isLikeEnabled) {
+      title = "Disable Likes";
+      icon = Icons.thumb_up_alt;
+    } else {
+      title = "Enable Likes";
+      icon = Icons.thumb_up_alt;
+    }
+
+    return bottomSheetItem(
+      title: title,
+      iconData: icon,
+      onTap: () {
+        Navigator.pop(context);
+
+        MomentsService().updateMoment(
+            momentId: momentModel.id!,
+            data: {"enable_like": !isLikeEnabled}).then(
+          (value) {
+            momentModel = value;
+            if (mounted) setState(() {});
+            Navigator.pop(context); // Dismiss loading indicator
+            showToast(message: 'Moment updated !!');
+          },
+        ).catchError((e) {
+          Navigator.pop(context);
+          showToast(message: e.toString());
+        });
+      },
+    );
+  }
+
+  String getCommentCount(int index) {
+    String commentCount = '';
+
+    try {
+      MomentsBloc momentsBloc = Provider.of<MomentsBloc>(context);
+      if (momentsBloc.numberOfComments[index] >= 1) {
+        commentCount = getFormattedViewCount(
+          noOfViews: momentsBloc.numberOfComments[index],
+          addViewText: false,
+        );
+      }
+      // if (momentsBloc.numberOfComments.length <= index + 1) {
+      //   if (momentsBloc.numberOfComments[index] >= 1) {
+      //     commentCount = getFormattedViewCount(
+      //       noOfViews: momentsBloc.numberOfComments[index],
+      //       addViewText: false,
+      //     );
+      //   }
+      // }
+    } catch (error) {
+      commentCount = '';
+    }
+
+    return commentCount;
+  }
+
+  Widget getPrivateOrPublicIcon() {
+    return Padding(
+      padding: EdgeInsets.only(top: 4),
+      child: widget.currentMoment.isPublic == true
+          ? Icon(
+              Icons.public_outlined,
+              color: Colors.white,
+              size: 16,
+            )
+          : Icon(
+              Icons.security_outlined,
+              color: Colors.white,
+              size: 16,
+            ),
+    );
+  }
+
+  Widget getTags() {
+    List<String> formattedTagList = [];
+
+    if (widget.currentMoment.tags != null) {
+      widget.currentMoment.tags!.join(', ');
+
+      widget.currentMoment.tags!.forEach((tag) {
+        formattedTagList.add('#$tag ');
+      });
+
+      return ReadMoreText(
+        formattedTagList.join(' '),
+        trimLines: 2,
+        colorClickableText: Colors.pink,
+        trimMode: TrimMode.Line,
+        trimCollapsedText: 'more',
+        trimExpandedText: 'less',
+        style: TextStyle(color: Colors.white70),
+        moreStyle: TextStyle(
+          fontSize: 14,
+          color: Colors.white70,
+          fontWeight: FontWeight.w600,
+        ),
+        lessStyle: TextStyle(
+          fontSize: 14,
+          color: Colors.white70,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget getWhichAttachmentWidgetToShow(Map<String, dynamic> attachment) {
+    if (attachment.containsKey('url')) {
+      return attachmentWidget(
+        onTap: () {
+          _launchUrl(attachment['url'].toString().split('-')[0]);
+        },
+        iconData: Icons.link,
+        title: attachment['url'].toString().split('-')[1],
+      );
+    }
+
+    if (attachment.containsKey('product')) {
+      return attachmentWidget(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              Routes.PRODUCT,
+              // arguments: {"productId": 'ce8d6464-8c7f-47db-a381-a163a258713a'},
+              arguments: {"productId": attachment['product']},
+            );
+          },
+          iconData: Icons.shopping_cart_rounded,
+          title: 'Product');
+    }
+
+    if (attachment.containsKey('service')) {
+      return attachmentWidget(
+          onTap: () {
+            Navigator.pushNamed(
+              context,
+              Routes.SERVICE_DETAIL,
+              // arguments: {"serviceId": '08083ad8-04d9-4878-8b18-e820f7c680af'},
+              arguments: {"serviceId": attachment['service']},
+            );
+          },
+          iconData: Icons.handyman_rounded,
+          title: 'Service');
+    }
+
+    if (attachment.containsKey('blog')) {
+      return attachmentWidget(
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: PostDetailPage(
+              // postId: '303d5c1b-5539-4b63-a448-c0d3e9687d61',
+              postId: attachment['blog'],
+              postType: PostType.blog,
+            ),
+          );
+        },
+        iconData: Icons.receipt_long_rounded,
+        title: 'Blog',
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  void _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) throw 'Could not launch $url';
+  }
+
+  bool isMyMoment() {
+    return getLoggedInUserName(context) == widget.currentMoment.owner;
+  }
+
+  bool likeEnabled() {
+    return widget.currentMoment.enableLikes != null &&
+        widget.currentMoment.enableLikes!;
+  }
+
+  bool commentingEnabled() {
+    return widget.currentMoment.enableCommenting != null &&
+        widget.currentMoment.enableCommenting!;
+  }
+
+  Widget getPayMeBtn() {
+    return widget.currentMoment.payMe!
+        ? InkWell(
+            onTap: getLoggedInUserName(context) != widget.currentMoment.owner
+                ? () async {
+                    if (getIt<AppConfigurationBloc>()
+                            .appConfigurationModel
+                            ?.enablePayment ==
+                        true) {
+                      Navigator.of(context).pushNamed(
+                        Routes.SEND_PAYMENT,
+                        arguments: <String, dynamic>{
+                          'recipient': widget.currentMoment.owner,
+                          'isFromProfile': false,
+                          'isFromChat': false,
+                          'defaultReferenceText':
+                              'Payment from  "${truncateString(
+                            str: widget.currentMoment.text!,
+                            lengthToTruncateAt: 8,
+                          )}\" moment'
+                        },
+                      );
+                    } else {
+                      showToast(message: 'Payment not available at the moment');
+                    }
+                  }
+                : () {
+                    showToast(message: 'You cannot pay yourself');
+                  },
+            child: PhysicalModel(
+              color: Colors.transparent,
+              elevation: 20,
+              shadowColor: Colors.black.withOpacity(0.7),
+              child: Container(
+                margin: EdgeInsets.only(right: 12),
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                    color: HexColor(
+                        widget.currentMoment.payMeButtonColor != null
+                            ? '#${widget.currentMoment.payMeButtonColor}'
+                            : '#3F61DB'),
+                    borderRadius: BorderRadius.circular(6)),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/slydo_icon_white.png',
+                      width: 30,
+                      height: 20,
+                      color: widget.currentMoment.payMeButtonColor
+                                  ?.toLowerCase() ==
+                              '#ffffff'
+                          ? navyBlue
+                          : Colors.white,
+                    ),
+                    Text(
+                      messageDecoderWithEmoji(
+                          widget.currentMoment.payMeLabel ?? 'Pay Me')!,
+                      style: TextStyle(
+                        color: widget.currentMoment.payMeButtonColor
+                                    ?.toLowerCase() ==
+                                '#ffffff'
+                            ? navyBlue
+                            : Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          )
+        : SizedBox.shrink();
+  }
+
+  void commentSheet(BuildContext context, String momentID,
+      {required int index}) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const OutlineInputBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+        borderSide: BorderSide.none,
+      ),
+      builder: (context) => SizedBox(
+        height: MediaQuery.of(context).size.height * 0.8,
+        child: CommentListWidget(momentID: momentID, index: index),
+      ),
+    );
+  }
+}

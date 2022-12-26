@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/utils.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import '../../../routes/route_constants.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
 import '../../../widget/customized_textform_field.dart';
-import 'moment_detail_page.dart';
+import 'moment_detail/moment_detail_page.dart';
 import 'moments_service.dart';
 
 class MomentSearchScreen extends StatefulWidget {
@@ -384,7 +385,7 @@ class _SearchMomentSingleWidgetState extends State<SearchMomentSingleWidget> {
                           ),
                           Text(' • '),
                           Text(
-                            getGetMomentDetailDateTime(
+                              MomentsUtils(). getGetMomentDetailDateTime(
                                 widget.searchMomentModel.createdAt!),
                             textAlign: TextAlign.end,
                             style: TextStyle(
