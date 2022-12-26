@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -37,7 +38,6 @@ class YarnCommentTextField extends StatefulWidget {
   final String? userImage;
   final VoidCallback? onPressed;
   final bool? isLoading;
-  // bool unFocus = false;
   bool? enableComment;
   bool? enablePayment;
   ScrollController? scrollController;
@@ -64,7 +64,6 @@ class YarnCommentTextField extends StatefulWidget {
     this.shareAsYarnModel,
     this.height = 60,
     this.isScrolling = false,
-    // this.unFocus = false,
     this.function,
     this.ageRating,
     this.keyboardType = TextInputType.text,
@@ -106,33 +105,20 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
   List<ShareAsYarnModel>? shareAsYarnModelCopy;
   ShareAsYarnModel? _shareAsYarnModel;
 
-  // bool isSensitiveContent = false;
-  // bool isAdultContent = false;
   var ageRating;
   bool isShowExtension = false;
   bool onFocus = true;
 
   FocusNode _focus = FocusNode();
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _focus.removeListener(_onFocusChange);
-  //   _focus.dispose();
-  // }
-
   void _onFocusChange() {
-    if (!onFocus) isShowExtension = false;
     if (_focus.hasFocus) {
-      // setState(() {
       isShowExtension = true;
-      // });
+      setState(() {});
     } else {
-      // setState(() {
       isShowExtension = false;
-      // });
+      setState(() {});
     }
-    setState(() {});
   }
 
   @override
@@ -147,7 +133,9 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget build(BuildContext context) {
     return ClipRect(
         clipper: CustomShape(),
-        child: isShowExtension ? getCommentBoxWithOptions() : getCommentBox());
+        child: !widget.isScrolling && isShowExtension
+            ? getCommentBoxWithOptions()
+            : getCommentBox());
   }
 
   Widget getCommentBoxWithOptions() {
@@ -559,6 +547,7 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
                       changeState(() {});
                     }
                   },
+                  onTap: widget.onTapAgeRestriction,
                 ),
                 SizedBox(height: 20),
                 Expanded(
@@ -583,6 +572,8 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
                         onTap: () {
                           _shareAsYarnModel = category;
                           ageRating = _shareAsYarnModel?.name?.substring(9);
+                          logger.d('message $ageRating');
+                          widget.onTapAgeRestriction(int.parse(ageRating));
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -627,11 +618,7 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
 
   Widget _buildEnableViewerAdvice() {
     return AskEnableCommentAndPayment(
-      onTap: (value) {
-        // isSensitiveContent
-        widget.viewerAdvice = value ?? false;
-        if (mounted) setState(() {});
-      },
+      onTap: widget.onTapViewerAdvice,
       title: "Viewer Advice",
       baseBGColor: HexColor("#F8F8F8"),
       baseBorderColor: HexColor("#E9E9E9"),
@@ -644,11 +631,11 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
 
   Widget _buildEnableAdultsOnly() {
     return AskEnableCommentAndPayment(
-      onTap: (value) {
-        // isAdultContent
-        widget.enableAdult = value ?? false;
-        if (mounted) setState(() {});
-      },
+      onTap: widget.onTapEnableAdult,
+      // onTap: (value) {
+      //   widget.enableAdult = value ?? false;
+      //   if (mounted) setState(() {});
+      // },
       title: "Adults Only",
       baseBGColor: HexColor("#F8F8F8"),
       baseBorderColor: HexColor("#E9E9E9"),

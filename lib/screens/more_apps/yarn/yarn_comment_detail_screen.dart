@@ -43,6 +43,18 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   bool? enableAdult = false, viewerAdvice = false;
   var ageRating;
 
+  ScrollController scrollController = new ScrollController();
+  List<AddMediaForYarn> selectedMedia = [];
+  bool isScrolling = false;
+
+  @override
+  void initState() {
+     scrollController.addListener(() {
+        setState(() => isScrolling = true);
+      });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -126,7 +138,6 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     );
   }
 
-  ScrollController scrollController = ScrollController();
 
   Widget _buildCommentDetailView() {
     return Expanded(
@@ -138,10 +149,12 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
         ),
         controller: _postRefreshController,
         onRefresh: _onPostRefresh,
-        child: SingleChildScrollView(
+        child: ListView(
           controller: scrollController,
-          padding: EdgeInsets.all(10),
-          child: !isLoading ? _buildMain() : YarnShimmer(),
+          children: [
+            if (isLoading) YarnShimmer(),
+            if (!isLoading) _buildMain(),
+          ],
         ),
       ),
     );
@@ -179,6 +192,15 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       isLoading: isAPILoading,
       enableComment: enableComment,
+      isScrolling: isScrolling,
+      resetScrollingValue: (p0) {
+        setState(() => isScrolling = p0);
+      },
+      addedSelectedMedia: (value) {
+        selectedMedia = value;
+        logger.d(selectedMedia);
+        setState(() {});
+      },
       onTapEnableComment: (value) {
         enableComment = value;
         if (mounted) setState(() {});
@@ -222,9 +244,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       "is_adult_content": enableAdult,
       "is_sensitive_content": viewerAdvice,
       "age_restriction": ageRating ?? 13,
-      // "media_count": jsonEncode(selectedMedia.isNotEmpty
-      //     ? selectedMedia.length
-      //     : 0),
+      "media_count": selectedMedia,
     };
     logger.d(data);
 
