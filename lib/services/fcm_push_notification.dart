@@ -29,7 +29,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/moments/screens/moment_detail_page.dart';
+import '../screens/moments/screens/moment_detail/moment_detail_page.dart';
 
 bool isDialogueOpen = false;
 

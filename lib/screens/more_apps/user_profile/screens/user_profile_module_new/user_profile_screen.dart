@@ -49,7 +49,7 @@ import '../../../../../locator.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../../moments/models/comment_model.dart';
-import '../../../../moments/screens/moment_detail_page.dart';
+import '../../../../moments/screens/moment_detail/moment_detail_page.dart';
 import '../../../../moments/screens/moments_service.dart';
 import '../../../messaging/chat/models/channel_model.dart';
 import '../../../messaging/message_auth.dart';

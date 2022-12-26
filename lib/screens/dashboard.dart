@@ -33,7 +33,7 @@ import '../services/app_tutorial_controller.dart';
 import '../utils/navigation_util.dart';
 import 'connection_module/connections_dashboard.dart';
 import 'home.dart';
-import 'moments/screens/moment_detail_page.dart';
+import 'moments/screens/moment_detail/moment_detail_page.dart';
 import 'moments/screens/moments_screen.dart';
 import 'moments/screens/moments_service.dart';
 import 'more_apps/messaging/chat/helpers/chat_user_manager.dart';

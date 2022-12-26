@@ -1,6 +1,6 @@
 import 'package:Slydo/screens/moments/models/moments_model.dart';
 import 'package:Slydo/screens/moments/screens/create_moment_screen.dart';
-import 'package:Slydo/screens/moments/screens/moment_detail_page.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/moments/screens/moments_service.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
