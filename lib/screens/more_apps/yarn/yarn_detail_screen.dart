@@ -1,5 +1,6 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
@@ -14,10 +15,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'models/global_field.dart';
 import 'models/share_as_yarn_model.dart';
 import 'widgets/ask_mention_view.dart';
 
@@ -39,11 +40,33 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       RefreshController(initialRefresh: false);
   bool isAPILoading = false;
   ScrollController _commentScrollController = new ScrollController();
+  ScrollController scrollController = new ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
   bool? enableComment = false, enablePayment = false;
   bool? viewerAdvice = false, adultOnly = false;
   bool isMentionName = false;
   String? searchString;
+  var ageRating;
+  List<AddMediaForYarn> selectedMedia = [];
+  bool isScrolling = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      scrollController.addListener(() {
+        setState(() => isScrolling = true);
+        print('scrolling');
+      });
+      // scrollController.position.isScrollingNotifier.addListener(() {
+      //   if (scrollController.position.isScrollingNotifier.value) {
+      //     print('scroll is stopped');
+      //   } else {
+      //     print('scroll is started');
+      //   }
+      // });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,13 +161,16 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         enablePullDown: true,
         header: WaterDropHeader(
           complete: Container(),
-          waterDropColor: navyBlue,
+          waterDropColor: yarnBlack,
         ),
         controller: _postRefreshController,
         onRefresh: _onPostRefresh,
-        child: SingleChildScrollView(
-          controller: _commentScrollController,
-          child: !isLoading ? _buildMain() : YarnShimmer(),
+        child: ListView(
+          controller: scrollController,
+          children: [
+            if (isLoading) YarnShimmer(),
+            if (!isLoading) _buildMain(),
+          ],
         ),
       ),
     );
@@ -223,29 +249,46 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       controller: controller,
       hint: "Leave your thought",
       yarn: widget.yarn,
+      // scrollController: scrollController,
       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       userImage: userBloc.user.avatar,
       isLoading: isAPILoading,
       onChanged: onValueChange,
+      // unFocus: unFocusValue,
       enableComment: enableComment,
       enableAdult: adultOnly,
       viewerAdvice: viewerAdvice,
+      resetScrollingValue: (p0) {
+        setState(() => isScrolling = p0);
+      },
+      addedSelectedMedia: (value) {
+        selectedMedia = value;
+        logger.d(selectedMedia);
+        setState(() {});
+      },
       onTapEnableAdult: (value) {
         adultOnly = value;
+        logger.d(value);
         if (mounted) setState(() {});
       },
       onTapViewerAdvice: (value) {
         viewerAdvice = value;
+        logger.d(value);
         if (mounted) setState(() {});
       },
       onTapEnableComment: (value) {
         enableComment = value;
+        logger.d(enableComment);
         if (mounted) setState(() {});
       },
       enablePayment: enablePayment,
       onTapEnablePayment: (value) {
         enablePayment = value;
         if (mounted) setState(() {});
+      },
+      onTapAgeRestriction: (value) {
+        ageRating = value;
+        setState(() {});
       },
       onPressed: () async {
         if (controller.text.isNotEmpty) {
@@ -268,10 +311,14 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       "author_username": userBloc.user.userName,
       "enable_payme": enablePayment,
       "enable_commenting": enableComment,
-      "is_adult_content": isAdultContent,
-      "is_sensitive_content": isSensitiveContent,
-      "age_restriction": ageRating ?? 13
+      "is_adult_content": adultOnly,
+      "is_sensitive_content": viewerAdvice,
+      "age_restriction": ageRating ?? 13,
+      "media_count": selectedMedia,
     };
+
+    logger.d(data);
+
     try {
       YarnComment? commentDetails =
           await YarnAuth().addCommentToYarn(widget.yarn.id!, data);

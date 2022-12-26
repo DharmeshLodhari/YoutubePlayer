@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
@@ -16,6 +14,7 @@ import 'package:video_player/video_player.dart';
 
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
+import '../../../main.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
@@ -28,7 +27,6 @@ import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
 import 'models/Topics/YarnTopic.dart';
 import 'models/ask_categories_model.dart';
-import 'models/global_field.dart';
 import 'models/share_as_yarn_model.dart';
 import 'yarn_dashboard_bloc.dart';
 
@@ -81,6 +79,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   List<ShareAsYarnModel>? shareAsYarnModelCopy;
 
   ShareAsYarnModel? _shareAsYarnModel;
+
+  bool isSensitiveContent = false;
+  bool isAdultContent = false;
+  var ageRating;
 
   @override
   void initState() {
@@ -1015,6 +1017,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.ageRestriction = int.parse(ageRating);
     addYarnAndQuestion.isAdultContent = isAdultContent;
     addYarnAndQuestion.isSensitiveContent = isSensitiveContent;
+
+    logger.d(addYarnAndQuestion.toAddMap());
 
     await YarnAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
       if (widget.isYarn == true) {

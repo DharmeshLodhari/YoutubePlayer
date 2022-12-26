@@ -87,17 +87,17 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
       children: [
-        _buildSpeedDialChild(
-            title: "Ask Question",
-            icon: SlydoAppIconNew.question,
-            onTap: () {
-              NavigationUtil.push(context,
-                  screen: AddTopicScreen(
-                    askCategories: askViewModel.yarnCategories,
-                    isYarn: false,
-                    askCategory: widget.askCategories,
-                  ));
-            }),
+        // _buildSpeedDialChild(
+            // title: "Ask Question",
+            // icon: SlydoAppIconNew.question,
+            // onTap: () {
+            //   NavigationUtil.push(context,
+            //       screen: AddTopicScreen(
+            //         askCategories: askViewModel.yarnCategories,
+            //         isYarn: false,
+            //         askCategory: widget.askCategories,
+            //       ));
+            // }),
         _buildSpeedDialChild(
             title: "Yarn",
             icon: SlydoAppIconNew.yarn,
@@ -252,7 +252,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
         SizedBox(
           height: 16,
         ),
-        _buildCategoryAndTabs(),
+        // _buildCategoryAndTabs(),
         _buildPageView(),
       ],
     );
@@ -293,10 +293,10 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
             key: topicViewStateKey,
             selectedCategory: widget.askCategories!.id,
           ),
-          QuestionListScreen(
-            key: questionViewStateKey,
-            selectedCategory: widget.askCategories!.id,
-          ),
+          // QuestionListScreen(
+          //   key: questionViewStateKey,
+          //   selectedCategory: widget.askCategories!.id,
+          // ),
           // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),

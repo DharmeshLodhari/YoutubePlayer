@@ -1,6 +1,5 @@
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/global_field.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_reply_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,7 +8,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../main.dart';
@@ -43,6 +41,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
   bool? enableComment = false, enablePayment = false;
   bool? enableAdult = false, viewerAdvice = false;
+  var ageRating;
 
   @override
   Widget build(BuildContext context) {
@@ -127,17 +126,20 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     );
   }
 
+  ScrollController scrollController = ScrollController();
+
   Widget _buildCommentDetailView() {
     return Expanded(
       child: SmartRefresher(
         enablePullDown: true,
         header: WaterDropHeader(
           complete: Container(),
-          waterDropColor: navyBlue,
+          waterDropColor: yarnBlack,
         ),
         controller: _postRefreshController,
         onRefresh: _onPostRefresh,
         child: SingleChildScrollView(
+          controller: scrollController,
           padding: EdgeInsets.all(10),
           child: !isLoading ? _buildMain() : YarnShimmer(),
         ),
@@ -170,6 +172,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     return YarnCommentTextField(
       height: 50,
       controller: controller,
+      scrollController: scrollController,
       hint: "Leave your thought",
       yarn: widget.yarn,
       userImage: userBloc.user.avatar,
@@ -205,6 +208,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
           showToast(message: 'Enter a valid commment');
         }
       },
+      onTapAgeRestriction: (value) {},
     );
   }
 
@@ -215,11 +219,16 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       "is_reply": true,
       "enable_payme": enablePayment,
       "enable_commenting": enableComment,
-      "is_adult_content": isAdultContent,
-      "is_sensitive_content": isSensitiveContent,
-      "age_restriction": ageRating ?? 13
+      "is_adult_content": enableAdult,
+      "is_sensitive_content": viewerAdvice,
+      "age_restriction": ageRating ?? 13,
+      // "media_count": jsonEncode(selectedMedia.isNotEmpty
+      //     ? selectedMedia.length
+      //     : 0),
     };
     logger.d(data);
+
+    //create multipart request for POST or PATCH method
     try {
       YarnComment? commentDetail =
           await YarnAuth().addReplyToComment(widget.yarnComment.id!, data);

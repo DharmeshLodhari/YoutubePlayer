@@ -35,6 +35,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
   int currentAskTapOnHome = 0;
   String? selectedCategoryId;
   late YarnDashboardBloc yarnDashboardBloc;
+  bool isQuestionMode = false;
 
   @override
   void initState() {
@@ -173,17 +174,17 @@ class _YarnDashboardState extends State<YarnDashboard> {
       children: [
         YarnCategorySelection(),
         SizedBox(height: 14),
-        YarnTabSelection(
-          onTap: (index) {
-            currentAskTapOnHome = index;
-            _pageViewController.jumpToPage(currentAskTapOnHome);
-            if (mounted) setState(() {});
-          },
-          currentIndex: currentAskTapOnHome,
-        ),
-        SizedBox(
-          height: 16,
-        ),
+        // YarnTabSelection(
+        //   onTap: (index) {
+        //     currentAskTapOnHome = index;
+        //     _pageViewController.jumpToPage(currentAskTapOnHome);
+        //     if (mounted) setState(() {});
+        //   },
+        //   currentIndex: currentAskTapOnHome,
+        // ),
+        // SizedBox(
+        //   height: 16,
+        // ),
         Divider(
           height: 0,
           thickness: 0.5,
@@ -205,10 +206,10 @@ class _YarnDashboardState extends State<YarnDashboard> {
             key: topicViewStateKey,
             selectedCategory: selectedCategoryId,
           ),
-          QuestionListScreen(
-            key: questionViewStateKey,
-            selectedCategory: selectedCategoryId,
-          ),
+          // QuestionListScreen(
+          //   key: questionViewStateKey,
+          //   selectedCategory: selectedCategoryId,
+          // ),
           // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),
@@ -234,25 +235,25 @@ class _YarnDashboardState extends State<YarnDashboard> {
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
       children: [
-        _buildSpeedDialChild(
-            title: "Ask Question",
-            icon: SlydoAppIconNew.question,
-            onTap: () async {
-              await NavigationUtil.push(context,
-                  screen: AddTopicScreen(
-                    askCategories: yarnDashboardBloc.yarnCategories,
-                    isYarn: false,
-                  )).then((value) {
-                debugPrint("THEN VALUE===$value");
-                if (value != null) {
-                  if (value == Types.Question) {
-                    updateCurrentAskTapOnHome(index: 1);
-                    _pageViewController.jumpToPage(1);
-                    questionViewStateKey.currentState?.onPostRefresh();
-                  }
-                }
-              });
-            }),
+        // _buildSpeedDialChild(
+        //     title: "Ask Question",
+        //     icon: SlydoAppIconNew.question,
+        //     onTap: () async {
+        //       await NavigationUtil.push(context,
+        //           screen: AddTopicScreen(
+        //             askCategories: yarnDashboardBloc.yarnCategories,
+        //             isYarn: false,
+        //           )).then((value) {
+        //         debugPrint("THEN VALUE===$value");
+        //         if (value != null) {
+        //           if (value == Types.Question) {
+        //             updateCurrentAskTapOnHome(index: 1);
+        //             _pageViewController.jumpToPage(1);
+        //             questionViewStateKey.currentState?.onPostRefresh();
+        //           }
+        //         }
+        //       });
+        //     }),
         _buildSpeedDialChild(
             title: "Yarn",
             icon: SlydoAppIconNew.yarn,

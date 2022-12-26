@@ -45,8 +45,8 @@ class YarnTile extends StatefulWidget {
 class _YarnTileState extends State<YarnTile> {
   /// variables for yarn tile render TYPE
   bool isMediaPresent = false;
-  bool isReYarnPresent = false;
   bool isAttachmentPresent = false;
+  bool isReYarnPresent = false;
   bool isUrlPresent = false;
   String? linkToBePreview;
 
@@ -64,12 +64,14 @@ class _YarnTileState extends State<YarnTile> {
       }
     }
 
-    if (widget.yarn.media.isNotEmpty) {
-      isMediaPresent = true;
-    }
     if (widget.yarn.reYarn != null) {
       isReYarnPresent = true;
     }
+
+    if (widget.yarn.media.isNotEmpty) {
+      isMediaPresent = true;
+    }
+    
     if (widget.yarn.attachment != null) {
       isAttachmentPresent = true;
     }

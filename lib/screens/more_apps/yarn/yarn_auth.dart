@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:Slydo/main.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
@@ -335,7 +335,7 @@ class YarnAuth extends AuthService {
   Future<bool> editYarnAndQuestion(Yarn yarn) async {
     var headers = await getAuthHeaders();
     var url =
-        AppConfig.baseUrl +  "/api/v1/social/ask/" + yarn.id.toString() + "/";
+        AppConfig.baseUrl + "/api/v1/social/ask/" + yarn.id.toString() + "/";
 
     //create multipart request for POST or PATCH method
     var request = http.MultipartRequest("PATCH", Uri.parse(url));
@@ -351,11 +351,8 @@ class YarnAuth extends AuthService {
       "category": yarn.category?.id ?? "",
       "author": yarn.author ?? "",
       "is_question": jsonEncode(yarn.isQuestion),
-      "media_count": jsonEncode(yarn.media != null
-          ? yarn.media.length
-          : 0),
-      "enable_commenting":
-          jsonEncode(yarn.enableCommenting ?? false),
+      "media_count": jsonEncode(yarn.media != null ? yarn.media.length : 0),
+      "enable_commenting": jsonEncode(yarn.enableCommenting ?? false),
       "enable_payme": jsonEncode(yarn.enablePayMe ?? false),
       "attachment": jsonEncode(yarn.attachment),
     });
@@ -365,30 +362,28 @@ class YarnAuth extends AuthService {
     if (yarn.media != null) {
       debugPrint("MEDIA LENGTH::: ${yarn.media.length}");
       for (int i = 0; i < yarn.media.length; i++) {
-        debugPrint(
-            "MEDIA TYPE::: ${yarn.media[i].mediaType}");
+        debugPrint("MEDIA TYPE::: ${yarn.media[i].mediaType}");
         var multipartFile;
         var thumbnailImage;
         if (yarn.media[i].mediaType == 'image') {
           // Add fields
-        //   request.fields["mediafile_$i"] =
-        //       yarn.media[i].file.;
-        //   // Create multipart using filepath, string or bytes
-        //   multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
-        //       yarn.media[i].file!.path);
-        // } else if (yarn.media[i].mediaType == 'video') {
-        //   // Add fields
-        //   request.fields["mediafile_$i"] =
-        //       yarn.media[i].file.;
-        //   // Create multipart using filepath, string or bytes
-        //   multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
-        //       yarn.media[i]..path);
+          //   request.fields["mediafile_$i"] =
+          //       yarn.media[i].file.;
+          //   // Create multipart using filepath, string or bytes
+          //   multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
+          //       yarn.media[i].file!.path);
+          // } else if (yarn.media[i].mediaType == 'video') {
+          //   // Add fields
+          //   request.fields["mediafile_$i"] =
+          //       yarn.media[i].file.;
+          //   // Create multipart using filepath, string or bytes
+          //   multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
+          //       yarn.media[i]..path);
           // Add Poster Fields
-          request.fields["mediaposter_$i"] =
-              yarn.media[i].imagePoster ?? '';
+          request.fields["mediaposter_$i"] = yarn.media[i].imagePoster ?? '';
 
-          thumbnailImage = await http.MultipartFile.fromPath("mediaposter_$i",
-              yarn.media[i].imagePoster ?? '');
+          thumbnailImage = await http.MultipartFile.fromPath(
+              "mediaposter_$i", yarn.media[i].imagePoster ?? '');
           thumbnailList.add(thumbnailImage);
         }
 
@@ -420,7 +415,6 @@ class YarnAuth extends AuthService {
     }
   }
 
-
   // Add Yarn and Question
   Future<bool> addYarnAndQuestion(AddYarnAndQuestion addYarnAndQuestion) async {
     var headers = await getAuthHeaders();
@@ -431,12 +425,6 @@ class YarnAuth extends AuthService {
 
     Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
     debugPrint('DATA ---> $_data');
-    // _data["available_from"] = dateToString(product.availableFrom!);
-    // _data["image_count"] = product.localImages!.length;
-
-    // _data.forEach((k, v) {
-    //   request.fields[k] = jsonEncode(v);
-    // });
 
     if (addYarnAndQuestion.isQuestion ?? false) {
       request.fields["title"] = addYarnAndQuestion.title!;
@@ -454,7 +442,12 @@ class YarnAuth extends AuthService {
       "enable_commenting":
           jsonEncode(addYarnAndQuestion.enableCommenting ?? false),
       "enable_payme": jsonEncode(addYarnAndQuestion.enablePayme ?? false),
-      "attachment": jsonEncode(addYarnAndQuestion.attachment),
+      "type":"yarn",
+      // "attachment": jsonEncode(addYarnAndQuestion.attachment),
+      "is_sensitive_content":jsonEncode(addYarnAndQuestion.isSensitiveContent ?? false),
+      "is_adult_content":jsonEncode(addYarnAndQuestion.isAdultContent ?? false),
+      "age_restriction":jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
+
     });
 
     List<MultipartFile> newList = [];
@@ -516,30 +509,93 @@ class YarnAuth extends AuthService {
       throw responseBody;
     }
   }
+
   // {"comment":"xyz","author_username:""};
   // ADD COMMENT TO YARN
   Future<YarnComment?> addCommentToYarn(
       String yarnId, Map<String, dynamic> body) async {
     debugPrint("CALLING ALL CATEGORIES");
-    String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$yarnId/";
+
+    String url =
+        AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$yarnId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
-    var response =
-        await httpPost(url, headers: headers, body: jsonEncode(body));
+    var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    debugPrint(
-        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    logger.d('body to see $body and d ${body['media_count'].length}');
 
+    Map<String,String> payload = {
+      "comment": body['comment'] ?? "",
+      "author_username": body['author_username'] ?? "",
+      "enable_payme": jsonEncode(body['enable_payme'] ?? false),
+      "enable_commenting": jsonEncode(body['enable_commenting'] ?? false),
+      "is_adult_content": jsonEncode(body['is_adult_content'] ?? false),
+      "is_sensitive_content": jsonEncode(body['is_sensitive_content'] ?? false),
+      "age_restriction": jsonEncode(body['age_restriction'] ?? 13),
+      "media_count":jsonEncode(body['media_count'] != null ? body['media_count'].length : 0),
+    };
+
+    print('print payload let see $payload');
+    request.fields.addAll(payload);
+    List<MultipartFile> newList = [];
+    List<MultipartFile> thumbnailList = [];
+    if (body['media_count'].isNotEmpty) {
+      debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
+      for (int i = 0; i < body['media_count'].length; i++) {
+        debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
+        var multipartFile;
+        var thumbnailImage;
+        if (body['media_count'][i].mediaType == 'image') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+        } else if (body['media_count'][i].mediaType == 'video') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+          // Add Poster Fields
+          request.fields["mediaposter_$i"] =
+              body['media_count'][i].mediaPoster ?? '';
+
+          thumbnailImage = await http.MultipartFile.fromPath(
+              "mediaposter_$i", body['media_count'][i].mediaPoster ?? '');
+          thumbnailList.add(thumbnailImage);
+        }
+
+        // Add multipart to newList
+        newList.add(multipartFile);
+      }
+      // Add multipart to request
+      request.files.addAll(newList);
+      request.files.addAll(thumbnailList);
+    }
+
+    debugPrint('REQUEST FIELDS ---> ${request.fields}');
+    debugPrint('REQUEST FILES ---> ${request.files}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+    if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+
+    var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 200) {
       YarnComment commentDetails =
-          YarnComment.fromJson(json.decode(response.body));
+          YarnComment.fromJson(json.decode(responseBody));
       return commentDetails;
     } else if (response.statusCode == 500) {
       return Future.error("Please try again later !!");
     } else {
-      return Future.error("${response.body}");
+      throw responseBody;
     }
   }
 
@@ -878,10 +934,10 @@ class YarnAuth extends AuthService {
     // var headers = <String,dynamic>{};
     var response =
         await httpPost(url, headers: headers, body: jsonEncode(body));
-    if(response.statusCode == 401){
+    if (response.statusCode == 401) {
       var headers = await getAuthHeaders();
-       var response =
-        await httpPost(url, headers: headers, body: jsonEncode(body));
+      var response =
+          await httpPost(url, headers: headers, body: jsonEncode(body));
     }
 
     debugPrint(

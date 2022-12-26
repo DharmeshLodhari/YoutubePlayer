@@ -12,7 +12,6 @@ class Yarn {
     this.updatedAt,
     this.title,
     this.body,
-    this.media = const [],
     this.author,
     this.status,
     this.numberOfAnswers,
@@ -25,6 +24,7 @@ class Yarn {
     this.authorIsVerified,
     this.enableCommenting,
     this.category,
+    this.media = const [],
     this.attachment,
     this.attachmentType,
     this.userUpvoted = false,
@@ -130,7 +130,6 @@ class Yarn {
   dynamic updatedAt;
   String? title;
   String? body;
-  dynamic media = [];
   String? author;
   String? status;
   int? numberOfAnswers;
@@ -144,9 +143,10 @@ class Yarn {
   bool? enableCommenting;
   bool? isSensitiveContent;
   bool? isAdultContent;
-  int? ageRestriction;
+  dynamic ageRestriction;
   Yarn? reYarn;
   int? numberOfReYarn;
+  dynamic media = [];
   Map<String, dynamic>? attachment;
   String? attachmentType;
   bool userUpvoted = false;
