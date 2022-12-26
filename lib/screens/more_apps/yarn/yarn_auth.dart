@@ -677,15 +677,82 @@ class YarnAuth extends AuthService {
     debugPrint(url);
 
     var headers = await getAuthHeaders();
-    var response =
-        await httpPost(url, headers: headers, body: jsonEncode(body));
 
-    debugPrint(
-        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+    // var response =
+    //     await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    // debugPrint(
+    //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+
+    Map<String,String> payload = {
+      "comment": body['comment'] ?? "",
+      "is_reply": jsonEncode(body['is_reply']),
+      "author_username": body['author_username'] ?? "",
+      "enable_payme": jsonEncode(body['enable_payme'] ?? false),
+      "enable_commenting": jsonEncode(body['enable_commenting'] ?? false),
+      "is_adult_content": jsonEncode(body['is_adult_content'] ?? false),
+      "is_sensitive_content": jsonEncode(body['is_sensitive_content'] ?? false),
+      "age_restriction": jsonEncode(body['age_restriction'] ?? 13),
+      "media_count":jsonEncode(body['media_count'] != null ? body['media_count'].length : 0),
+    };
+
+    request.fields.addAll(payload);
+    List<MultipartFile> newList = [];
+    List<MultipartFile> thumbnailList = [];
+    if (body['media_count'].isNotEmpty) {
+      debugPrint("MEDIA LENGTH::: ${body['media_count'].length}");
+      for (int i = 0; i < body['media_count'].length; i++) {
+        debugPrint("MEDIA TYPE::: ${body['media_count'][i].mediaType}");
+        var multipartFile;
+        var thumbnailImage;
+        if (body['media_count'][i].mediaType == 'image') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+        } else if (body['media_count'][i].mediaType == 'video') {
+          // Add fields
+          request.fields["mediafile_$i"] =
+              body['media_count'][i].mediaFile!.path;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", body['media_count'][i].mediaFile!.path);
+          // Add Poster Fields
+          request.fields["mediaposter_$i"] =
+              body['media_count'][i].mediaPoster ?? '';
+
+          thumbnailImage = await http.MultipartFile.fromPath(
+              "mediaposter_$i", body['media_count'][i].mediaPoster ?? '');
+          thumbnailList.add(thumbnailImage);
+        }
+
+        // Add multipart to newList
+        newList.add(multipartFile);
+      }
+      // Add multipart to request
+      request.files.addAll(newList);
+      request.files.addAll(thumbnailList);
+    }
+
+    debugPrint('REQUEST FIELDS ---> ${request.fields}');
+    debugPrint('REQUEST FILES ---> ${request.files}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+     if (response.statusCode == 413) {
+      return Future.error(
+          "Please upload smaller images, One or all of your images are too large.");
+    }
+
+    var responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200) {
       YarnComment commentDetail =
-          YarnComment.fromJson(json.decode(response.body));
+          YarnComment.fromJson(json.decode(responseBody));
       return commentDetail;
     } else if (response.statusCode == 500) {
       return null;

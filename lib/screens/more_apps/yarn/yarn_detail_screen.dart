@@ -52,19 +52,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scrollController.addListener(() {
+     scrollController.addListener(() {
         setState(() => isScrolling = true);
-        print('scrolling');
       });
-      // scrollController.position.isScrollingNotifier.addListener(() {
-      //   if (scrollController.position.isScrollingNotifier.value) {
-      //     print('scroll is stopped');
-      //   } else {
-      //     print('scroll is started');
-      //   }
-      // });
-    });
     super.initState();
   }
 
@@ -258,36 +248,39 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       enableComment: enableComment,
       enableAdult: adultOnly,
       viewerAdvice: viewerAdvice,
+      isScrolling: isScrolling,
       resetScrollingValue: (p0) {
         setState(() => isScrolling = p0);
       },
       addedSelectedMedia: (value) {
         selectedMedia = value;
-        logger.d(selectedMedia);
         setState(() {});
       },
       onTapEnableAdult: (value) {
         adultOnly = value;
-        logger.d(value);
+        logger.d('adult $value');
         if (mounted) setState(() {});
       },
       onTapViewerAdvice: (value) {
         viewerAdvice = value;
-        logger.d(value);
+        logger.d('adv $value');
         if (mounted) setState(() {});
       },
       onTapEnableComment: (value) {
         enableComment = value;
-        logger.d(enableComment);
+        logger.d('comment $enableComment');
         if (mounted) setState(() {});
       },
       enablePayment: enablePayment,
       onTapEnablePayment: (value) {
         enablePayment = value;
+
+        logger.d('pay $enableComment');
         if (mounted) setState(() {});
       },
       onTapAgeRestriction: (value) {
         ageRating = value;
+        logger.d('age $ageRating');
         setState(() {});
       },
       onPressed: () async {
