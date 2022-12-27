@@ -363,7 +363,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to explore more functionalities in the app.",
+                    "Click here to navigate to Yarn timeline",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -506,7 +506,7 @@ class AppTutorialController {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Product",
+                  "Super Store",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -515,7 +515,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to explore multiple products",
+                    "Click here to navigate to the Slydo Super Store",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -553,7 +553,7 @@ class AppTutorialController {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: Text(
-                    "Click here to explore more functionalities in the app.",
+                    "Click here to navigate to the Moment Timeline",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
