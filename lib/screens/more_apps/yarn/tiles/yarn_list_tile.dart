@@ -12,6 +12,7 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:logger/logger.dart';
 
@@ -71,7 +72,7 @@ class _YarnTileState extends State<YarnTile> {
     if (widget.yarn.media.isNotEmpty) {
       isMediaPresent = true;
     }
-    
+
     if (widget.yarn.attachment != null) {
       isAttachmentPresent = true;
     }
@@ -119,6 +120,10 @@ class _YarnTileState extends State<YarnTile> {
             height: 8,
           ),
         ],
+        widget.yarn.factChecked == true
+            ? _buildFactCheckWidget()
+            : SizedBox.shrink(),
+        SizedBox(height: 6),
         _buildTopActions(),
       ],
     );
@@ -457,4 +462,29 @@ class _YarnTileState extends State<YarnTile> {
       yarnTopic: widget.yarn,
     );
   }
+
+  Widget _buildFactCheckWidget() {
+    return Container(
+      padding: EdgeInsets.all(5),
+      margin: EdgeInsets.only(right: 84),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.5),
+          color: Color.fromARGB(255, 247, 224, 154)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SvgPicture.asset('assets/images/yarn/yell_icon.svg'),
+          SizedBox(
+            width: 2,
+          ),
+          Text(
+            'We doubt the information in the Yarn is correct.',
+            style: TextStyle(
+                color: Color.fromARGB(255, 187, 118, 27), fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

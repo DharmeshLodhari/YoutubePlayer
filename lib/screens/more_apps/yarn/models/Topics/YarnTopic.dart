@@ -31,6 +31,10 @@ class Yarn {
     this.userReyarned = false,
     this.userSupported = false,
     this.userDownVoted = false,
+    this.ageRestriction,
+    this.isAdultContent = false,
+    this.isSensitiveContent = false,
+    this.factChecked = false,
   });
 
   Yarn.fromJson(dynamic json) {
@@ -87,6 +91,7 @@ class Yarn {
     enableCommenting = json['enable_commenting'];
     isSensitiveContent = json['is_sensitive_content'];
     isAdultContent = json['is_adult_content'];
+    factChecked = json['fact_checked'];
     ageRestriction = json['age_restriction'];
     numberOfReYarn = json['numbers_of_reyarn'];
     if (json['reyarn'] != null) {
@@ -140,10 +145,6 @@ class Yarn {
   int? voteCount;
   int? downVoteCount;
   bool? authorIsVerified;
-  bool? enableCommenting;
-  bool? isSensitiveContent;
-  bool? isAdultContent;
-  dynamic ageRestriction;
   Yarn? reYarn;
   int? numberOfReYarn;
   dynamic media = [];
@@ -153,6 +154,11 @@ class Yarn {
   bool userReyarned = false;
   bool userSupported = false;
   bool userDownVoted = false;
+   bool? enableCommenting;
+  bool? isSensitiveContent;
+  bool? isAdultContent;
+  dynamic ageRestriction;
+  bool? factChecked;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -183,6 +189,7 @@ class Yarn {
     map['category'] = category;
     map['is_sensitive_content'] = isSensitiveContent;
     map['is_adult_content'] = isAdultContent;
+    map['fact_checked'] = factChecked;
     map['age_restriction'] = ageRestriction;
     map['numbers_of_reyarn'] = numberOfReYarn;
     if (reYarn != null) {
