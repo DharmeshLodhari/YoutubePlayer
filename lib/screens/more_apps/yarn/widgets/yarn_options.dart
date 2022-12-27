@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -27,15 +28,21 @@ class YarnOptions extends StatefulWidget {
   bool? isShareOption;
   Function(Yarn)? onDeleteYarn;
   Function(YarnComment)? onDeleteComment;
+  Function(Yarn)? onUpdate;
 
-  YarnOptions({this.yarnTopic, this.commentDetail, this.isComment = false, this.isShareOption = false, this.onDeleteYarn, this.onDeleteComment});
+  YarnOptions(
+      {this.yarnTopic,
+      this.commentDetail,
+      this.isComment = false,
+      this.isShareOption = false,
+      this.onDeleteYarn,
+      this.onUpdate,
+      this.onDeleteComment});
   @override
   State<YarnOptions> createState() => _YarnOptionsState();
 }
 
 class _YarnOptionsState extends State<YarnOptions> {
-
-
   late YarnDashboardBloc yarnDashboardBloc;
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
@@ -107,7 +114,6 @@ class _YarnOptionsState extends State<YarnOptions> {
       padding: EdgeInsets.only(bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-
         children: [
           SizedBox(
             height: 10,
@@ -164,28 +170,32 @@ class _YarnOptionsState extends State<YarnOptions> {
                   'Once you accept this answer, your bounty \nreward will be sent to this user.'),
         ] else ...[
           if (currentTime.difference(messageCreatedTime) <
-              Duration(minutes: 1000)) ...[
+              Duration(minutes: 5)) ...[
             _buildTile(
                 icon: "yarn/bookmark",
                 width: 12,
                 title: 'Edit',
                 subTitle: 'Edit yarn',
                 onTap: () async {
-                  await NavigationUtil.push(context,
-                  screen: AddTopicScreen(
-                    askCategories: yarnDashboardBloc.yarnCategories,
-                    isYarn: true,
-                    yarner: widget.yarnTopic,
-                  )).then((value) {
-                debugPrint("THEN VALUE===$value");
-                if (value != null) {
-                  if (value == Types.Yarn) {
-                    updateCurrentAskTapOnHome(index: 0);
-                    _pageViewController.jumpToPage(0);
-                    topicViewStateKey.currentState?.onRefresh();
-                  }
-                }
-              });
+                  NavigationUtil.push(context,
+                      screen: AddTopicScreen(
+                        askCategories: yarnDashboardBloc.yarnCategories,
+                        isYarn: true,
+                        yarner: widget.yarnTopic,
+                        shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                      )).then((value) {
+                    debugPrint("THEN VALUE===$value");
+                    if (value != null) {
+                      if (value[0] == Types.Yarn) {
+                        widget.onUpdate!(value[1]);
+                        Navigator.of(context).pop();
+                        // updateCurrentAskTapOnHome(index: 0);
+                        // _pageViewController.jumpToPage(0);
+                        // topicViewStateKey.currentState?.onRefresh();
+                      }
+                      // Navigator.of(context).pop();
+                    }
+                  });
                 }),
           ]
         ],
@@ -234,7 +244,9 @@ class _YarnOptionsState extends State<YarnOptions> {
             icon: "yarn/hide",
             width: 12,
             title: 'Not Interested',
-            subTitle: !widget.yarnTopic!.isQuestion ? 'Not interested in this yarn' : 'Not interested in this type of question',
+            subTitle: !widget.yarnTopic!.isQuestion
+                ? 'Not interested in this yarn'
+                : 'Not interested in this type of question',
             onTap: () {
               addUserVisibilityOption("not-interested");
             }),
@@ -253,8 +265,12 @@ class _YarnOptionsState extends State<YarnOptions> {
         // ),
         _buildTile(
             icon: "yarn/report",
-            title: !widget.yarnTopic!.isQuestion ? 'Report yarn' : "Report question",
-            subTitle: !widget.yarnTopic!.isQuestion ? 'I’m concerned about this yarn' : 'I’m concerned about this question',
+            title: !widget.yarnTopic!.isQuestion
+                ? 'Report yarn'
+                : "Report question",
+            subTitle: !widget.yarnTopic!.isQuestion
+                ? 'I’m concerned about this yarn'
+                : 'I’m concerned about this question',
             onTap: () {
               Navigator.pop(context);
               NavigationUtil.push(context,
@@ -389,7 +405,8 @@ class _YarnOptionsState extends State<YarnOptions> {
       return getLoggedInUserName(context) == widget.yarnTopic!.author;
     } else if (widget.commentDetail != null) {
       debugPrint("IS MY COMMENTS");
-      return getLoggedInUserName(context) == widget.commentDetail!.authorUsername;
+      return getLoggedInUserName(context) ==
+          widget.commentDetail!.authorUsername;
     }
     debugPrint("NOTHING");
     return false;
@@ -398,7 +415,8 @@ class _YarnOptionsState extends State<YarnOptions> {
   bool isComments() {
     if (widget.commentDetail != null) {
       debugPrint("IS MY COMMENTS");
-      return getLoggedInUserName(context) == widget.commentDetail!.authorUsername;
+      return getLoggedInUserName(context) ==
+          widget.commentDetail!.authorUsername;
     } else if (widget.yarnTopic != null) {
       debugPrint("IS MY YARN QUESTION");
       return getLoggedInUserName(context) == widget.yarnTopic!.author;
@@ -409,7 +427,7 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
     List<ChatConversation?> listOfRecipient =
-    await ShareInChat().selectShareCustomer(context);
+        await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {

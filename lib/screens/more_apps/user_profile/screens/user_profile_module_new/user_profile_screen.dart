@@ -537,26 +537,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   ),
                   verifiedIconColor: verifyBlue,
                 )
-              : Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.topCenter,
-                  children: <Widget>[
-                    SizedBox.expand(
-                      child: Container(
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).padding.top),
-                        height: 30,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                    /// Banner image
-                    getProfileCover(),
-
-                    /// UserModel avatar, message icon, profile edit
-                    getUserDetails(),
-                  ],
-                ),
+              : SizedBox.shrink(),
           titleSpacing: 0,
           backgroundColor: navyBlue,
           flexibleSpace: FlexibleSpaceBar(

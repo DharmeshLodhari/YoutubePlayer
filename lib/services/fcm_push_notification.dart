@@ -8,6 +8,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/moments/models/moments_model.dart';
+import 'package:Slydo/screens/moments/screens/moment_detail/moment_detail_page.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_message_handler.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/chat_user_manager.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/helpers/connection_list_manager.dart';
@@ -29,7 +30,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/moments/screens/moment_detail/moment_detail_page.dart';
+import '../screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import '../screens/more_apps/yarn/yarn_detail_screen.dart';
 
 bool isDialogueOpen = false;
 
@@ -413,6 +415,10 @@ class PushNotificationService {
                 [momentsModel]
               ],
             ));
+      } else if (payload.toString().contains('/yarn/')) {
+        String yarnId = payload.toString().replaceAll("/yarn/", "");
+        NavigationUtil.push(context!,
+            screen: YarnDetailScreen(yarn: Yarn(), yarnId: yarnId,));
       }
     } catch (error) {
       print("new error:- $error");

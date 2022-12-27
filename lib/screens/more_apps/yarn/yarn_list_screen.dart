@@ -150,6 +150,11 @@ class YarnListScreenState extends State<YarnListScreen> {
                 yarnTopicList.insert(0, yarn);
                 if (mounted) setState(() {});
               },
+              onUpdateYarn: (Yarn yarn) {
+                int index = yarnTopicList.indexWhere((element) => element.id == yarn.id);
+                yarnTopicList[index] = yarn;
+                if (mounted) setState(() {});
+              },
             ),
           );
         },

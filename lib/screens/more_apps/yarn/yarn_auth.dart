@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:Slydo/main.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -332,13 +333,15 @@ class YarnAuth extends AuthService {
   }
 
   //edit Yarn and Question
-  Future<bool> editYarnAndQuestion(Yarn yarn) async {
+  Future editYarnAndQuestion(Yarn yarn) async {
     var headers = await getAuthHeaders();
-    var url =
-        AppConfig.baseUrl + "/api/v1/social/ask/" + yarn.id.toString() + "/";
+    var url = AppConfig.baseUrl +
+        "/api/v1/social/ask/" +
+        yarn.id.toString() +
+        "/edit-yarn-or-question/";
 
     //create multipart request for POST or PATCH method
-    var request = http.MultipartRequest("PATCH", Uri.parse(url));
+    var request = http.MultipartRequest("POST", Uri.parse(url));
 
     // Map<dynamic, dynamic> _data = yarn.toJson();
     if (yarn.isQuestion) {
@@ -365,20 +368,22 @@ class YarnAuth extends AuthService {
         debugPrint("MEDIA TYPE::: ${yarn.media[i].mediaType}");
         var multipartFile;
         var thumbnailImage;
+        request.fields['type'] = yarn.media[i].mediaType;
         if (yarn.media[i].mediaType == 'image') {
           // Add fields
-          //   request.fields["mediafile_$i"] =
-          //       yarn.media[i].file.;
-          //   // Create multipart using filepath, string or bytes
-          //   multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
-          //       yarn.media[i].file!.path);
-          // } else if (yarn.media[i].mediaType == 'video') {
-          //   // Add fields
-          //   request.fields["mediafile_$i"] =
-          //       yarn.media[i].file.;
-          //   // Create multipart using filepath, string or bytes
-          //   multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
-          //       yarn.media[i]..path);
+            request.fields["mediafile_$i"] =
+                yarn.media[i].file;
+            // Create multipart using filepath, string or bytes
+            multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
+                yarn.media[i].file);
+
+          } else if (yarn.media[i].mediaType == 'video') {
+            // Add fields
+            request.fields["mediafile_$i"] =
+                yarn.media[i].file;
+            // Create multipart using filepath, string or bytes
+            multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
+                yarn.media[i].file);
           // Add Poster Fields
           request.fields["mediaposter_$i"] = yarn.media[i].imagePoster ?? '';
 
@@ -405,8 +410,9 @@ class YarnAuth extends AuthService {
           "Please upload smaller images, One or all of your images are too large.");
     }
     var responseBody = await response.stream.bytesToString();
-    if (response.statusCode == 201) {
-      return true;
+    if (response.statusCode == 200) {
+      var result = jsonDecode(responseBody);
+      return result;
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${jsonDecode(responseBody)}");
@@ -417,6 +423,7 @@ class YarnAuth extends AuthService {
 
   // Add Yarn and Question
   Future<bool> addYarnAndQuestion(AddYarnAndQuestion addYarnAndQuestion) async {
+    debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.localImages!.length}");
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/social/ask/";
 
@@ -442,12 +449,13 @@ class YarnAuth extends AuthService {
       "enable_commenting":
           jsonEncode(addYarnAndQuestion.enableCommenting ?? false),
       "enable_payme": jsonEncode(addYarnAndQuestion.enablePayme ?? false),
-      "type":"yarn",
+      "type": "yarn",
       // "attachment": jsonEncode(addYarnAndQuestion.attachment),
-      "is_sensitive_content":jsonEncode(addYarnAndQuestion.isSensitiveContent ?? false),
-      "is_adult_content":jsonEncode(addYarnAndQuestion.isAdultContent ?? false),
-      "age_restriction":jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
-
+      "is_sensitive_content":
+          jsonEncode(addYarnAndQuestion.isSensitiveContent ?? false),
+      "is_adult_content":
+          jsonEncode(addYarnAndQuestion.isAdultContent ?? false),
+      "age_restriction": jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
     });
 
     List<MultipartFile> newList = [];
@@ -525,7 +533,7 @@ class YarnAuth extends AuthService {
 
     logger.d('body to see $body and d ${body['media_count'].length}');
 
-    Map<String,String> payload = {
+    Map<String, String> payload = {
       "comment": body['comment'] ?? "",
       "author_username": body['author_username'] ?? "",
       "enable_payme": jsonEncode(body['enable_payme'] ?? false),
@@ -533,7 +541,8 @@ class YarnAuth extends AuthService {
       "is_adult_content": jsonEncode(body['is_adult_content'] ?? false),
       "is_sensitive_content": jsonEncode(body['is_sensitive_content'] ?? false),
       "age_restriction": jsonEncode(body['age_restriction'] ?? 13),
-      "media_count":jsonEncode(body['media_count'] != null ? body['media_count'].length : 0),
+      "media_count": jsonEncode(
+          body['media_count'] != null ? body['media_count'].length : 0),
     };
 
     print('print payload let see $payload');
@@ -685,8 +694,7 @@ class YarnAuth extends AuthService {
     // debugPrint(
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
-
-    Map<String,String> payload = {
+    Map<String, String> payload = {
       "comment": body['comment'] ?? "",
       "is_reply": jsonEncode(body['is_reply']),
       "author_username": body['author_username'] ?? "",
@@ -695,7 +703,8 @@ class YarnAuth extends AuthService {
       "is_adult_content": jsonEncode(body['is_adult_content'] ?? false),
       "is_sensitive_content": jsonEncode(body['is_sensitive_content'] ?? false),
       "age_restriction": jsonEncode(body['age_restriction'] ?? 13),
-      "media_count":jsonEncode(body['media_count'] != null ? body['media_count'].length : 0),
+      "media_count": jsonEncode(
+          body['media_count'] != null ? body['media_count'].length : 0),
     };
 
     request.fields.addAll(payload);
@@ -743,7 +752,7 @@ class YarnAuth extends AuthService {
 
     headers.forEach((k, v) => request.headers[k] = v);
     var response = await request.send();
-     if (response.statusCode == 413) {
+    if (response.statusCode == 413) {
       return Future.error(
           "Please upload smaller images, One or all of your images are too large.");
     }

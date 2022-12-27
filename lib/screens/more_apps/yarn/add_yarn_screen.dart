@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
@@ -51,7 +52,7 @@ class AddTopicScreen extends StatefulWidget {
 class _AddTopicScreenState extends State<AddTopicScreen> {
   final yarnController = TextEditingController();
 
-  TextEditingController? textController;
+  final textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
   List<PickedFile> selectedImages = [];
@@ -88,6 +89,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   void initState() {
     shareAsYarnModelCopy = widget.shareAsYarnModel;
     _shareAsYarnModel = widget.shareAsYarnModel?.first;
+    ageRating = _shareAsYarnModel?.name?.substring(9);
     yarn = widget.yarner?.toJson();
     selectedAskCategory = yarn?['category'] == null
         ? YarnCategories()
@@ -95,11 +97,26 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     pressedAskCategory = yarn?['category'] == null
         ? YarnCategories()
         : YarnCategories.fromJson(yarn?['category'].toJson());
-    textController = TextEditingController(text: yarn?['body'] ?? '');
+    textController.text = yarn?['body'] ?? '';
     Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
+    mediaAddInLocal();
     super.initState();
+  }
+
+  void mediaAddInLocal() {
+    if (yarn != null && yarn!['media'] != null) {
+      for (var item in yarn!['media']) {
+        selectedImagesList.add({
+          'mediaType': item['type'],
+          'file': item['file'],
+          'imagePoster': item['image_poster'],
+          'isEditYarn': true
+        });
+      }
+    }
+    if (mounted) setState(() {});
   }
 
   @override
@@ -164,7 +181,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           if (isMentionName) ...[
             _buildUserNameContainer(),
           ],
-          if (selectedImages.isNotEmpty) ...[
+          if (selectedImagesList.isNotEmpty) ...[
             _buildAddImages(),
             SizedBox(
               height: 20,
@@ -249,7 +266,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
           children: [
             InkWell(
                 onTap: () {
-                  if (selectedImages.length == 4) {
+                  if (selectedImagesList.length == 4) {
                     showToast(
                         message: "You can select only 4 images or videos");
                   } else {
@@ -529,7 +546,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               ],
             ),
             onTap: () {
-              if (selectedImages.length == 4) {
+              if (selectedImagesList.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
                 // pickImage();
@@ -559,17 +576,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
-                image: selectedImagesList[index - 1]['mediaType'] == 'image'
-                    ? DecorationImage(
-                        image: FileImage(
-                          File(selectedImagesList[index - 1]['file'].path),
-                        ),
-                        fit: BoxFit.fill)
-                    : DecorationImage(
-                        image: MemoryImage(
-                          selectedImagesList[index - 1]['file'],
-                        ),
-                        fit: BoxFit.fill),
+                image: _buildImageRowView(index),
               ),
             ),
           ),
@@ -581,6 +588,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                 setState(() {
                   selectedImagesList.removeAt(index - 1);
                   selectedImages.removeAt(index - 1);
+                  selectedMedia.removeAt(index -1);
                 });
               },
               child: Container(
@@ -600,6 +608,38 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
         ],
       ),
     );
+  }
+
+  DecorationImage _buildImageRowView(int index) {
+    if (selectedImagesList[index - 1]['isEditYarn'] == true) {
+      if (selectedImagesList[index - 1]['mediaType'] == "image") {
+        return DecorationImage(
+            image: NetworkImage(
+              selectedImagesList[index - 1]['file'],
+            ),
+            fit: BoxFit.fill);
+      } else {
+        return DecorationImage(
+            image: NetworkImage(
+              selectedImagesList[index - 1]['imagePoster'],
+            ),
+            fit: BoxFit.fill);
+      }
+    } else {
+      if (selectedImagesList[index - 1]['mediaType'] == 'image') {
+        return DecorationImage(
+            image: FileImage(
+              File(selectedImagesList[index - 1]['file'].path),
+            ),
+            fit: BoxFit.fill);
+      } else {
+        return DecorationImage(
+            image: MemoryImage(
+              selectedImagesList[index - 1]['file'],
+            ),
+            fit: BoxFit.fill);
+      }
+    }
   }
 
   void onValueChange(String value) {
@@ -632,14 +672,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
-          textController?.text = textController!.text.replaceRange(
-                (textController!.text.length - (searchString?.length ?? 0)),
-                textController!.text.length,
+          textController.text = textController.text.replaceRange(
+                (textController.text.length - (searchString?.length ?? 0)),
+                textController.text.length,
                 tappedUser,
               ) +
               " ";
-          textController?.selection = TextSelection.fromPosition(TextPosition(
-            offset: textController!.text.length,
+          textController.selection = TextSelection.fromPosition(TextPosition(
+            offset: textController.text.length,
           ));
           searchString = "";
           if (mounted) setState(() {});
@@ -707,7 +747,11 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                   if (mounted) setState(() {});
                   await addYarnAndQuestion();
                 }
-
+                selectedImagesList.clear();
+                selectedImages.clear();
+                selectedMedia.clear();
+                textController.clear();
+                yarnController.clear();
                 isAPILoading = false;
                 if (mounted) setState(() {});
               },
@@ -977,7 +1021,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
   Future<void> editYarnAndQuestion() async {
     Yarn yarnEdit = Yarn();
-    yarnEdit.body = textController?.text;
+    selectedMedia.forEach((element) {
+      yarnEdit.media = [];
+      yarnEdit.media.add(MediaFiles(file: element.mediaFile!.path, imagePoster: element.mediaPoster, mediaType: element.mediaType));
+    });
+    yarnEdit.id = yarn!['id'];
+    yarnEdit.body = textController.text;
     yarnEdit.enableCommenting = enableCommenting;
     yarnEdit.enablePayMe = enablePayMe;
     yarnEdit.title = yarnController.text;
@@ -988,8 +1037,12 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     yarnEdit.tags = userTags;
 
     await YarnAuth().editYarnAndQuestion(yarnEdit).then((value) {
+      debugPrint("EDIT YARN:- $value");
+      if (value!= null) {
+        widget.yarner = Yarn.fromJson(value);
+      }
       if (widget.isYarn == true) {
-        Navigator.pop(context, Types.Yarn);
+        Navigator.pop(context, [Types.Yarn, widget.yarner]);
       } else if (widget.isYarn == false) {
         Navigator.pop(context, Types.Question);
       }
@@ -1008,7 +1061,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     addYarnAndQuestion.localImages = selectedMedia;
     addYarnAndQuestion.tags = userTags;
     addYarnAndQuestion.title = yarnController.text;
-    addYarnAndQuestion.body = textController?.text;
+    addYarnAndQuestion.body = textController.text;
     addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
     addYarnAndQuestion.isQuestion = widget.isYarn == true ? false : true;
     addYarnAndQuestion.author = userBloc.user.userName;
