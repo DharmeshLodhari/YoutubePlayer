@@ -19,6 +19,7 @@ import '../../../moments/screens/trimmer_view.dart';
 import '../../messaging/chat/utils.dart';
 import '../models/Topics/YarnTopic.dart';
 import '../models/share_as_yarn_model.dart';
+import 'ask_enable_adult_viewers_advice.dart';
 import 'ask_enable_comment_payment.dart';
 
 class YarnCommentTextField extends StatefulWidget {
@@ -111,6 +112,8 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
 
   FocusNode _focus = FocusNode();
 
+  
+
   void _onFocusChange() {
     if (_focus.hasFocus) {
       isShowExtension = true;
@@ -163,7 +166,7 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
                 child: RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                        text: 'Replying to ',
+                        text:'Replying to ',
                         style: TextStyle(
                             fontFamily: "Roboto",
                             color: blackFont,
@@ -339,7 +342,6 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
     return Container(
       height: 100,
       child: ListView.builder(
-        // controller: _scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: selectedImagesList.length + 1,
         itemBuilder: (context, index) => Container(
@@ -617,7 +619,7 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   Widget _buildEnableViewerAdvice() {
-    return AskEnableCommentAndPayment(
+    return AskEnableAdultAndViewerAdvice(
       onTap: widget.onTapViewerAdvice,
       title: "Viewer Advice",
       baseBGColor: HexColor("#F8F8F8"),
@@ -630,12 +632,8 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   Widget _buildEnableAdultsOnly() {
-    return AskEnableCommentAndPayment(
+    return AskEnableAdultAndViewerAdvice(
       onTap: widget.onTapEnableAdult,
-      // onTap: (value) {
-      //   widget.enableAdult = value ?? false;
-      //   if (mounted) setState(() {});
-      // },
       title: "Adults Only",
       baseBGColor: HexColor("#F8F8F8"),
       baseBorderColor: HexColor("#E9E9E9"),
@@ -649,7 +647,7 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget _buildEnableComment() {
     return AskEnableCommentAndPayment(
       onTap: widget.onTapEnableComment,
-      title: (widget.enableComment ?? false)
+      title: (widget.enableComment ?? true)
           ? "comment enabled"
           : "enable comment",
       image: "yarn/yarn_comment",
@@ -665,7 +663,7 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget _buildEnablePayme() {
     return AskEnableCommentAndPayment(
       onTap: widget.onTapEnablePayment,
-      title: (widget.enablePayment ?? false)
+      title: (widget.enablePayment ?? true)
           ? "payment enabled"
           : "enable payment",
       image: "yarn/send_money",
