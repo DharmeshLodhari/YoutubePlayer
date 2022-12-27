@@ -1,4 +1,3 @@
-import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
@@ -14,7 +13,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:linkwell/linkwell.dart';
-import 'package:logger/logger.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
@@ -27,15 +25,17 @@ import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 
 class YarnTile extends StatefulWidget {
-  final Yarn yarn;
+  Yarn yarn;
   Function(Yarn)? onDeleteYarn;
   Function(Yarn)? onReYarn;
+  Function(Yarn)? onUpdateYarn;
   final Color? backGroundColor;
 
   YarnTile({
     required this.yarn,
     this.backGroundColor,
     this.onDeleteYarn,
+    this.onUpdateYarn,
     this.onReYarn,
   });
 
@@ -227,6 +227,11 @@ class _YarnTileState extends State<YarnTile> {
                         isComment: false,
                         onDeleteYarn: (Yarn yarn) {
                           widget.onDeleteYarn!(yarn);
+                        },
+                        onUpdate: (Yarn yarn) {
+                          widget.onUpdateYarn!(yarn);
+                          // widget.yarn = yarn;
+                          // if(mounted) setState(() {});
                         },
                       ),
                     );

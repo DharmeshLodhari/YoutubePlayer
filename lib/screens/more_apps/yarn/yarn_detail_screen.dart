@@ -23,8 +23,9 @@ import 'widgets/ask_mention_view.dart';
 
 class YarnDetailScreen extends StatefulWidget {
   final Yarn yarn;
+  String? yarnId;
 
-  YarnDetailScreen({required this.yarn});
+  YarnDetailScreen({required this.yarn, this.yarnId});
 
   @override
   State<YarnDetailScreen> createState() => _YarnDetailScreenState();
@@ -32,6 +33,7 @@ class YarnDetailScreen extends StatefulWidget {
 
 class _YarnDetailScreenState extends State<YarnDetailScreen> {
   bool isLoading = false;
+  bool isSingleYarnLoading = false;
 
   late UserBloc userBloc;
   final TextEditingController controller = TextEditingController();
@@ -48,13 +50,32 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   var ageRating;
   List<AddMediaForYarn> selectedMedia = [];
   bool isScrolling = false;
+  Yarn? finalYarn;
+  GlobalKey<YarnCommentTextFieldState> yarnCommentTextFieldStateKey = GlobalKey<YarnCommentTextFieldState>();
 
   @override
   void initState() {
+    if (widget.yarnId != null) {
+      getSingleYarn();
+    } else {
+      finalYarn = widget.yarn;
+    }
     scrollController.addListener(() {
       setState(() => isScrolling = true);
     });
     super.initState();
+  }
+
+  Future getSingleYarn() async {
+    isSingleYarnLoading = true;
+    if (mounted) setState(() {});
+
+    Map<String, dynamic>? result = await YarnAuth().getSingleTopics(yarnId: widget.yarnId!);
+    if (result != null) {
+      finalYarn = result['results'];
+    }
+    isSingleYarnLoading = false;
+    if (mounted) setState(() {});
   }
 
   @override
@@ -74,7 +95,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        !widget.yarn.isQuestion ? "Yarn" : "Question",
+        finalYarn != null ? !finalYarn!.isQuestion ? "Yarn" : "Question" : "",
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -133,6 +154,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   }
 
   Widget _buildBody() {
+    if (isSingleYarnLoading) {
+      return YarnShimmer();
+    }
     return Column(
       children: [
         _buildPostAndCommentView(),
@@ -171,7 +195,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: YarnTile(
-            yarn: widget.yarn,
+            yarn: finalYarn!,
             onDeleteYarn: (Yarn yarn) {
               Navigator.of(context).pop();
             },
@@ -179,7 +203,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         ),
         YarnCommentList(
           key: yarnCommentScreenKey,
-          yarn: widget.yarn,
+          yarn: finalYarn!,
           commentScrollController: _commentScrollController,
         ),
       ],
@@ -234,10 +258,11 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
   Widget _buildTopicTextFiled() {
     return YarnCommentTextField(
+      key: yarnCommentTextFieldStateKey,
       height: 50,
       controller: controller,
       hint: "Leave your thought",
-      yarn: widget.yarn,
+      yarn: finalYarn,
       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       userImage: userBloc.user.avatar,
       isLoading: isAPILoading,
@@ -315,15 +340,17 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
     try {
       YarnComment? commentDetails =
-          await YarnAuth().addCommentToYarn(widget.yarn.id!, data);
+          await YarnAuth().addCommentToYarn(finalYarn!.id!, data);
       if (commentDetails != null) {
         setState(() {
-          widget.yarn.numberOfComments = widget.yarn.numberOfComments! + 1;
+          finalYarn!.numberOfComments = finalYarn!.numberOfComments! + 1;
         });
         // commentDetailsList.add(commentDetails);
         yarnCommentScreenKey = GlobalKey<ScaffoldState>();
 
         controller.clear();
+        selectedMedia.clear();
+        yarnCommentTextFieldStateKey.currentState?.onAPICall();
 
         if (mounted) setState(() {});
       }

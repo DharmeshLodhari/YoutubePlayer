@@ -94,10 +94,12 @@ class YarnCommentTextField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<YarnCommentTextField> createState() => _YarnCommentTextFieldState();
+  State<YarnCommentTextField> createState() => YarnCommentTextFieldState(key: key);
 }
 
-class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
+class YarnCommentTextFieldState extends State<YarnCommentTextField> {
+  Key? key;
+  YarnCommentTextFieldState({this.key});
   List<Map<String, dynamic>> selectedImagesList = [];
   List<AddMediaForYarn> selectedMedia = [];
   List<PickedFile> selectedImages = [];
@@ -122,6 +124,16 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
       isShowExtension = false;
       setState(() {});
     }
+  }
+
+  void onAPICall() {
+    setState(() {
+      selectedImages.clear();
+      selectedMedia.clear();
+      selectedImagesList.clear();
+      widget.addedSelectedMedia!(selectedMedia);
+    });
+
   }
 
   @override
@@ -436,6 +448,8 @@ class _YarnCommentTextFieldState extends State<YarnCommentTextField> {
                 setState(() {
                   selectedImagesList.removeAt(index - 1);
                   selectedImages.removeAt(index - 1);
+                  selectedMedia.removeAt(index -1);
+                  widget.addedSelectedMedia!(selectedMedia);
                 });
               },
               child: Container(

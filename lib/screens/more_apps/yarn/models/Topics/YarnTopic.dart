@@ -206,6 +206,8 @@ class Yarn {
 class MediaFiles {
   MediaFiles({
     this.file,
+    this.imagePoster,
+    this.mediaType,
   });
 
   MediaFiles.fromJson(dynamic json) {
