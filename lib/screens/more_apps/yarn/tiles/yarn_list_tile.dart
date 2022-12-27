@@ -103,19 +103,19 @@ class _YarnTileState extends State<YarnTile> {
         ],
         _buildTagsAndViewerRow(),
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
-          _buildReYarnTile(),
+          getDisplayWidget(_buildReYarnTile),
           SizedBox(
             height: 8,
           ),
         ],
         if (isAttachmentPresent && widget.yarn.attachment != null) ...[
-          _buildAttachment(),
+          getDisplayWidget(_buildAttachment),
           SizedBox(
             height: 8,
           ),
         ],
         if (isMediaPresent) ...[
-          _buildImagesRow(),
+          getDisplayWidget(_buildImagesRow),
           SizedBox(
             height: 8,
           ),
@@ -487,4 +487,133 @@ class _YarnTileState extends State<YarnTile> {
     );
   }
 
+  Widget _buildSensitiveContentWidget() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: deepPink),
+          color: lightPink),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'The following Yarn may contain sensitive information',
+            style: TextStyle(
+                color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'This media is not available because it contains content you’ve chosen not to see.',
+            style: TextStyle(
+                color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              clickWidget(
+                text: 'View',
+                onClick: () {
+                  setState(() {
+                    widget.yarn.isSensitiveContent = false;
+                  });
+                },
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              clickWidget(
+                text: 'Always show me sensitive media',
+                onClick: () {
+                  print('sensitive');
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdultContentWidget() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Color.fromARGB(255, 187, 118, 27)),
+          color: Color.fromARGB(255, 249, 242, 222)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'The following Yarn may contain adult content',
+            style: TextStyle(
+                color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'This media is not available because it contains content you’ve chosen not to see.',
+            style: TextStyle(
+                color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              clickWidget(
+                text: 'View',
+                onClick: () {
+                  setState(() {
+                    widget.yarn.isAdultContent = false;
+                  });
+                },
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              clickWidget(
+                text: 'Always show me sensitive media',
+                onClick: () {
+                  print('sensitive');
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getDisplayWidget(Function() widgetDisplay) {
+    if (widget.yarn.isSensitiveContent == true) {
+      return _buildSensitiveContentWidget();
+    }
+    if (widget.yarn.isAdultContent == true) {
+      return _buildAdultContentWidget();
+    }
+    return widgetDisplay();
+  }
+
+  Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
+        onTap: onClick,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15), color: blackFont),
+          child: Text(
+            text ?? '',
+            style: TextStyle(
+                color: white, fontSize: 12.5, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
 }
