@@ -15,7 +15,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -42,7 +41,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   ScrollController _commentScrollController = new ScrollController();
   ScrollController scrollController = new ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
-  bool? enableComment = false, enablePayment = false;
+  bool? enableComment = true, enablePayment = true;
   bool? viewerAdvice = false, adultOnly = false;
   bool isMentionName = false;
   String? searchString;
@@ -52,9 +51,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
   @override
   void initState() {
-     scrollController.addListener(() {
-        setState(() => isScrolling = true);
-      });
+    scrollController.addListener(() {
+      setState(() => isScrolling = true);
+    });
     super.initState();
   }
 
@@ -239,13 +238,12 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       controller: controller,
       hint: "Leave your thought",
       yarn: widget.yarn,
-      // scrollController: scrollController,
       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       userImage: userBloc.user.avatar,
       isLoading: isAPILoading,
       onChanged: onValueChange,
-      // unFocus: unFocusValue,
       enableComment: enableComment,
+      enablePayment: enablePayment,
       enableAdult: adultOnly,
       viewerAdvice: viewerAdvice,
       isScrolling: isScrolling,
@@ -271,10 +269,8 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         logger.d('comment $enableComment');
         if (mounted) setState(() {});
       },
-      enablePayment: enablePayment,
       onTapEnablePayment: (value) {
         enablePayment = value;
-
         logger.d('pay $enableComment');
         if (mounted) setState(() {});
       },
@@ -294,6 +290,11 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         } else {
           showToast(message: 'Enter a valid comment');
         }
+        enableComment = true;
+        enablePayment = true;
+        adultOnly = false;
+        viewerAdvice = false;
+        setState(() {});
       },
     );
   }

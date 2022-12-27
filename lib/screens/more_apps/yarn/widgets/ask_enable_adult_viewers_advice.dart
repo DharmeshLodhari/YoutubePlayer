@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../utils/colors.dart';
 
-class AskEnableCommentAndPayment extends StatefulWidget {
+class AskEnableAdultAndViewerAdvice extends StatefulWidget {
   final String? title, image;
   final Widget? icon;
   // Text Color
@@ -15,7 +15,7 @@ class AskEnableCommentAndPayment extends StatefulWidget {
   final Color? baseBGColor, highLightBGColor;
   final Function(bool?) onTap;
 
-  AskEnableCommentAndPayment(
+  AskEnableAdultAndViewerAdvice(
       {Key? key,
       this.title,
       this.image,
@@ -30,13 +30,13 @@ class AskEnableCommentAndPayment extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<AskEnableCommentAndPayment> createState() =>
-      _AskEnableCommentAndPaymentState();
+  State<AskEnableAdultAndViewerAdvice> createState() =>
+      _AskEnableAdultAndViewerAdviceState();
 }
 
-class _AskEnableCommentAndPaymentState
-    extends State<AskEnableCommentAndPayment> {
-  bool isSelected = true;
+class _AskEnableAdultAndViewerAdviceState
+    extends State<AskEnableAdultAndViewerAdvice> {
+  bool isSelected = false;
 
   @override
   Widget build(BuildContext context) {
