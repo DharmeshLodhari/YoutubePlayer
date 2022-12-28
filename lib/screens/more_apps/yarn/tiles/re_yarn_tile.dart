@@ -143,7 +143,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                                   widget.yarn.authorName ?? "") ??
                               "",
                           style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               color: yarnBlack,
                               fontWeight: FontWeight.w700),
                         ),
@@ -175,7 +175,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                       verifiedIconSize: 12,
                       textStyle: TextStyle(
                         color: yarnBlack.withOpacity(.7),
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),
                       verifiedIconColor: verifyBlue,
