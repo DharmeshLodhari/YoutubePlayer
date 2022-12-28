@@ -117,98 +117,73 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Widget _buildLikeButton() {
-    return InkWell(
-      onTap: () {
-        addLikeToYarnAndQuestion();
-      },
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            widget.yarn.userUpvoted
-                ? "yarn/likeAfter".toSVG()
-                : "yarn/likeBefore".toSVG(),
-            color: widget.yarn.userUpvoted ? red : darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            getLikeCount(),
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: widget.yarn.userUpvoted ? red : darkGreyYarn),
-          ),
-        ],
+    return LikeButton(
+      size: 13,
+      circleColor: CircleColor(start: red, end: red),
+      bubblesColor: BubblesColor(
+        dotPrimaryColor: red,
+        dotSecondaryColor: red,
       ),
+      onTap: (isLike) {
+        return addLikeToYarnAndQuestion();
+      },
+      likeBuilder: (bool isLiked) {
+        return SvgPicture.asset(
+          widget.yarn.userUpvoted
+              ? "yarn/likeAfter".toSVG()
+              : "yarn/likeBefore".toSVG(),
+          color: widget.yarn.userUpvoted ? red : darkGreyYarn,
+          height: 13,
+          width: 13,
+        );
+      },
+      likeCount: getLikeCount(),
+      countBuilder: (_, __, ___) {
+        int count = getLikeCount();
+        return Text(
+          count == 0 ? '' : count.toString(),
+          style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: widget.yarn.userUpvoted ? red : darkGreyYarn),
+        );
+      },
     );
   }
 
   Widget _buildDisLikeButton() {
     return LikeButton(
       size: 13,
-      circleColor:
-          CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+      circleColor: CircleColor(start: starYellow, end: starYellow),
       bubblesColor: BubblesColor(
-        dotPrimaryColor: Color(0xff33b5e5),
-        dotSecondaryColor: Color(0xff0099cc),
+        dotPrimaryColor: starYellow,
+        dotSecondaryColor: starYellow,
       ),
-      likeBuilder: (_) {
-        return SvgPicture.asset(
-            widget.yarn.userDownVoted
-                ? "yarn/unlikeAfter".toSVG()
-                : "yarn/unlikeBefore".toSVG(),
-            color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn,
-            height: 13,
-            width: 13,
-          );
+      onTap: (isLike) {
+        return addDisLikeToYarnAndQuestion();
       },
-      likeCount: 665,
-      // countBuilder: (int count, bool isLiked, String text) {
-      //   var color = isLiked ? Colors.deepPurpleAccent : Colors.grey;
-      //   Widget result;
-      //   if (count == 0) {
-      //     result = Text(
-      //       "love",
-      //       style: TextStyle(color: color),
-      //     );
-      //   } else
-      //     result = Text(
-      //       text,
-      //       style: TextStyle(color: color),
-      //     );
-      //   return result;
-      // },
+      likeBuilder: (bool isLiked) {
+        return SvgPicture.asset(
+          widget.yarn.userDownVoted
+              ? "yarn/unlikeAfter".toSVG()
+              : "yarn/unlikeBefore".toSVG(),
+          color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn,
+          height: 13,
+          width: 13,
+        );
+      },
+      likeCount: getDisLikeCount(),
+      countBuilder: (_, __, ___) {
+        int count = getDisLikeCount();
+        return Text(
+          count == 0 ? '' : count.toString(),
+          style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn),
+        );
+      },
     );
-    // InkWell(
-    //   onTap: () {
-    //     addDisLikeToYarnAndQuestion();
-    //   },
-    //   child: Row(
-    //     children: [
-    //       SvgPicture.asset(
-    //         widget.yarn.userDownVoted
-    //             ? "yarn/unlikeAfter".toSVG()
-    //             : "yarn/unlikeBefore".toSVG(),
-    //         color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn,
-    //         height: 13,
-    //         width: 13,
-    //       ),
-    //       SizedBox(
-    //         width: 6,
-    //       ),
-    //       Text(
-    //         getDisLikeCount(),
-    //         style: TextStyle(
-    //             fontSize: 13,
-    //             fontWeight: FontWeight.w400,
-    //             color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 
   Widget _buildRetweetButton() {
@@ -344,18 +319,18 @@ class _YarnActionsState extends State<YarnActions> {
     return "";
   }
 
-  String getLikeCount() {
+  int getLikeCount() {
     if (widget.yarn.voteCount != null && widget.yarn.voteCount != 0) {
-      return widget.yarn.voteCount?.toString() ?? "";
+      return widget.yarn.voteCount ?? 0;
     }
-    return "";
+    return 0;
   }
 
-  String getDisLikeCount() {
-    if (widget.yarn.downVoteCount != null && widget.yarn.downVoteCount != 0) {
-      return widget.yarn.downVoteCount?.toString() ?? "";
+  int getDisLikeCount() {
+    if (widget.yarn.downVoteCount != null && widget.yarn.downVoteCount != 0 && widget.yarn.userDownVoted==true) {
+      return widget.yarn.downVoteCount ?? 0;
     }
-    return "";
+    return 0;
   }
 
   String getReYarnCount() {
@@ -374,7 +349,7 @@ class _YarnActionsState extends State<YarnActions> {
     }
   }
 
-  Future addLikeToYarnAndQuestion() async {
+  Future<bool> addLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data = await YarnAuth().addLike(widget.yarn.id!);
     setState(() {
       widget.yarn.userUpvoted = !widget.yarn.userUpvoted;
@@ -385,10 +360,12 @@ class _YarnActionsState extends State<YarnActions> {
         widget.yarn.voteCount = data['vote_count'];
         widget.yarn.downVoteCount = data['down_vote_count'];
       });
+      return true;
     }
+    return false;
   }
 
-  Future addDisLikeToYarnAndQuestion() async {
+  Future<bool> addDisLikeToYarnAndQuestion() async {
     Map<String, dynamic>? data = await YarnAuth().addDisLike(widget.yarn.id!);
     setState(() {
       widget.yarn.userDownVoted = !widget.yarn.userDownVoted;
@@ -399,7 +376,9 @@ class _YarnActionsState extends State<YarnActions> {
         widget.yarn.voteCount = data['vote_count'];
         widget.yarn.downVoteCount = data['down_vote_count'];
       });
+      return true;
     }
+    return false;
   }
 
   Future reYarn(AddYarnAndQuestion yarn) async {
