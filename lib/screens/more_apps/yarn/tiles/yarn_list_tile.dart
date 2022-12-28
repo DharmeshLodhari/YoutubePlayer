@@ -97,16 +97,18 @@ class _YarnTileState extends State<YarnTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
-        SizedBox(
-          height: 10,
-        ),
-        if (widget.yarn.body != null) ...[
+        if (widget.yarn.body != null && widget.yarn.body!.isNotEmpty) ...[
+          SizedBox(
+            height: 10,
+          ),
           _buildPostDescription(),
           SizedBox(
             height: 10,
           ),
         ],
-        _buildTagsAndViewerRow(),
+        if (widget.yarn.tags != null && widget.yarn.viewersAvatars != null )...[
+          _buildTagsAndViewerRow(),
+        ],
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
           getDisplayWidget(_buildReYarnTile),
           SizedBox(
@@ -174,7 +176,7 @@ class _YarnTileState extends State<YarnTile> {
                           messageDecoderWithEmoji(
                                   widget.yarn.authorName ?? "") ??
                               "",
-                          style: TextStyle(fontSize: 12, color: yarnBlack),
+                          style: TextStyle(fontSize: 12, color: yarnBlack, fontWeight: FontWeight.w500),
                         ),
                         SizedBox(
                           width: 4,
@@ -464,6 +466,7 @@ class _YarnTileState extends State<YarnTile> {
 
     return RichTextForTitle(
       description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
+      fontSize: 14,
     );
   }
 
