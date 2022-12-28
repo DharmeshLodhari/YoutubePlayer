@@ -20,14 +20,15 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   late YarnDashboardBloc? yarnSettingsBloc;
   bool? isAdultSwitch;
   bool? isSensitiveSwitch;
+  bool? isNotification;
 
   @override
   void initState() {
     yarnSettingsBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-
     isAdultSwitch = yarnSettingsBloc?.yarnSettings?.allowAdultContent ?? false;
     isSensitiveSwitch =
         yarnSettingsBloc?.yarnSettings?.allowSensitiveContent ?? false;
+    isNotification = yarnSettingsBloc?.yarnSettings?.allowNotification ?? false;
     super.initState();
   }
 
@@ -37,6 +38,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
     isAdultSwitch = yarnSettingsBloc?.yarnSettings?.allowAdultContent ?? false;
     isSensitiveSwitch =
         yarnSettingsBloc?.yarnSettings?.allowSensitiveContent ?? false;
+    isNotification = yarnSettingsBloc?.yarnSettings?.allowNotification ?? false;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(context: context) as PreferredSizeWidget,
@@ -129,8 +131,17 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: Switch(
-            value: true,
-            onChanged: (bool value) {},
+            value: isNotification!,
+            onChanged: (bool value) async {
+              isNotification = value;
+
+              var settings = await _yarnAuth.updateUserYarnSettings(
+                  {'allow_notification': isNotification});
+
+              setState(() {
+                yarnSettingsBloc?.yarnSettings = settings;
+              });
+            },
             activeColor: HexColor("#3F61DB"),
             inactiveThumbColor: HexColor("#75818F"),
           ),
@@ -159,7 +170,7 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
           ),
           trailing: Switch(
             value: isSensitiveSwitch!,
-            onChanged: (bool value) async{
+            onChanged: (bool value) async {
               isSensitiveSwitch = value;
 
               var settings = await _yarnAuth.updateUserYarnSettings(

@@ -52,7 +52,6 @@ class _YarnTileState extends State<YarnTile> {
   bool isUrlPresent = false;
   String? linkToBePreview;
 
-
   late YarnDashboardBloc _yarnSettings;
 
   @override
@@ -176,7 +175,10 @@ class _YarnTileState extends State<YarnTile> {
                           messageDecoderWithEmoji(
                                   widget.yarn.authorName ?? "") ??
                               "",
-                          style: TextStyle(fontSize: 12, color: yarnBlack, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: yarnBlack,
+                              fontWeight: FontWeight.w700),
                         ),
                         SizedBox(
                           width: 4,
@@ -205,9 +207,9 @@ class _YarnTileState extends State<YarnTile> {
                       isVerified: widget.yarn.authorIsVerified ?? false,
                       verifiedIconSize: 16,
                       textStyle: TextStyle(
-                        color: yarnBlack,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        color: yarnBlack.withOpacity(.7),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
                       ),
                       verifiedIconColor: verifyBlue,
                     ),
@@ -263,8 +265,8 @@ class _YarnTileState extends State<YarnTile> {
             arguments: widget.yarn.authorAvatar!);
       },
       child: Container(
-        height: 36,
-        width: 36,
+        height: 34,
+        width: 34,
         decoration: BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
@@ -280,15 +282,15 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildCategoryTypeChip() {
     if (widget.yarn.category != null) {
       return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: yarnBlack,
         ),
         child: Text(
           widget.yarn.category!.name ?? "",
-          style:
-              TextStyle(color: white, fontSize: 9, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              color: white, fontSize: 10.5, fontWeight: FontWeight.w700),
         ),
       );
     } else {
@@ -607,10 +609,12 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget getDisplayWidget(Function() widgetDisplay) {
-    if (widget.yarn.isSensitiveContent == true && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+    if (widget.yarn.isSensitiveContent == true &&
+        _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
       return _buildSensitiveContentWidget();
     }
-    if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+    if (widget.yarn.isAdultContent == true &&
+        _yarnSettings.yarnSettings?.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }
     return widgetDisplay();

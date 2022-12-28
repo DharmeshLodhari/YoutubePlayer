@@ -22,7 +22,6 @@ import '../../user_profile/models/user.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_comment_media_renderer.dart';
-import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 import '../yarn_comment_detail_screen.dart';
 
@@ -66,7 +65,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         linkToBePreview = "http://" + linkToBePreview!;
       }
 
-    print('print is url to know ${isUrlPresent.toString()}');
+      print('print is url to know ${isUrlPresent.toString()}');
     }
 
     if (widget.yarnComment.media.isNotEmpty) {
@@ -255,7 +254,10 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                           "",
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
-                      style: TextStyle(fontSize: 12, color: yarnBlack),
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: yarnBlack,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   SizedBox(

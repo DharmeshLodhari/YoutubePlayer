@@ -200,14 +200,14 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       minLines: 1,
       controller: textController,
       style: TextStyle(
-          fontSize: 12,
+          fontSize: 15.5,
           fontWeight: FontWeight.w600,
           color: HexColor("#151515")),
       onChanged: onValueChange,
       decoration: InputDecoration(
         hintText: "Leave your thought",
         hintStyle: TextStyle(
-          fontSize: 12,
+          fontSize: 13,
           color: HexColor("#7A7A7A"),
           fontWeight: FontWeight.w400,
         ),
@@ -231,7 +231,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       child: TextField(
         controller: yarnController,
         style: TextStyle(
-            fontSize: 12,
+            fontSize: 15.5,
             fontWeight: FontWeight.w600,
             color: HexColor("#151515")),
         decoration: InputDecoration(
@@ -588,7 +588,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
                 setState(() {
                   selectedImagesList.removeAt(index - 1);
                   selectedImages.removeAt(index - 1);
-                  selectedMedia.removeAt(index -1);
+                  selectedMedia.removeAt(index - 1);
                 });
               },
               child: Container(
@@ -1023,7 +1023,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     Yarn yarnEdit = Yarn();
     selectedMedia.forEach((element) {
       yarnEdit.media = [];
-      yarnEdit.media.add(MediaFiles(file: element.mediaFile!.path, imagePoster: element.mediaPoster, mediaType: element.mediaType));
+      yarnEdit.media.add(MediaFiles(
+          file: element.mediaFile!.path,
+          imagePoster: element.mediaPoster,
+          mediaType: element.mediaType));
     });
     yarnEdit.id = yarn!['id'];
     yarnEdit.body = textController.text;
@@ -1038,7 +1041,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
 
     await YarnAuth().editYarnAndQuestion(yarnEdit).then((value) {
       debugPrint("EDIT YARN:- $value");
-      if (value!= null) {
+      if (value != null) {
         widget.yarner = Yarn.fromJson(value);
       }
       if (widget.isYarn == true) {

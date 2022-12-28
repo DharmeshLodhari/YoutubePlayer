@@ -46,7 +46,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
 
   @override
   void initState() {
-
     Map<String, dynamic> linkData =
         detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
@@ -143,7 +142,10 @@ class _ReYarnTileState extends State<ReYarnTile> {
                           messageDecoderWithEmoji(
                                   widget.yarn.authorName ?? "") ??
                               "",
-                          style: TextStyle(fontSize: 12, color: yarnBlack),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: yarnBlack,
+                              fontWeight: FontWeight.w700),
                         ),
                         SizedBox(
                           width: 4,
@@ -170,11 +172,11 @@ class _ReYarnTileState extends State<ReYarnTile> {
                     userNameWithVerifiedIcon(
                       name: "@${widget.yarn.author!}",
                       isVerified: widget.yarn.authorIsVerified ?? false,
-                      verifiedIconSize: 16,
+                      verifiedIconSize: 12,
                       textStyle: TextStyle(
-                        color: yarnBlack,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                        color: yarnBlack.withOpacity(.7),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
                       ),
                       verifiedIconColor: verifyBlue,
                     ),
@@ -195,8 +197,8 @@ class _ReYarnTileState extends State<ReYarnTile> {
             arguments: widget.yarn.authorAvatar!);
       },
       child: Container(
-        height: 36,
-        width: 36,
+        height: 28,
+        width: 28,
         decoration: BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(

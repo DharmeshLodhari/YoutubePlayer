@@ -68,6 +68,7 @@ class UserYarnSettings {
   String? owner;
   bool? allowAdultContent;
   bool? allowSensitiveContent;
+  bool? allowNotification;
   UsersCategories? categories;
 
   UserYarnSettings(
@@ -75,12 +76,14 @@ class UserYarnSettings {
       this.owner,
       this.allowAdultContent,
       this.allowSensitiveContent,
+      this.allowNotification,
       this.categories});
 
   UserYarnSettings.fromJson(object) {
     this.id = object["id"];
     this.allowAdultContent = object['allow_adult_content'] ?? false;
     this.allowSensitiveContent = object['allow_sensitive_content'] ?? false;
+    this.allowNotification = object['allow_notification'] ?? false;
     this.owner = object["owner"];
     this.categories = UsersCategories.fromJson(object);
     
