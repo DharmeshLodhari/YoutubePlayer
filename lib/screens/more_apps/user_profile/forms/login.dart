@@ -11,6 +11,7 @@ import 'package:Slydo/screens/more_apps/payment_and_banking/payment_and_banking_
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/secure_storage.dart';
 import 'package:Slydo/utils/country_picker/country.dart';
@@ -28,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../yarn/yarn_auth.dart';
 
 class UserLogin extends StatefulWidget {
   @override
@@ -38,6 +40,7 @@ class _UserLoginState extends State<UserLogin> {
   bool isRemember = false;
   final _loginFormKey = GlobalKey<FormState>();
   final _auth = AuthService();
+  final _yarnAuth = YarnAuth();
   String phoneNumber = '';
   String? password = '';
 
@@ -495,6 +498,8 @@ class _UserLoginState extends State<UserLogin> {
         Provider.of<MainSocketProvider>(context, listen: false);
     final BankAccountBloc bankAccountBloc =
         Provider.of<BankAccountBloc>(context, listen: false);
+    final YarnDashboardBloc yarnSettingsBloc =
+        Provider.of<YarnDashboardBloc>(context, listen: false);
 
     FocusScope.of(context).unfocus();
 
@@ -574,6 +579,16 @@ class _UserLoginState extends State<UserLogin> {
           showToast(message: "$error");
         }
       });
+      await _yarnAuth.getUserYarnSettings().then((value) async {
+        yarnSettingsBloc.yarnSettings = value;
+      });
+
+      print(
+          'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings?.allowAdultContent.toString()}');
+      print(
+          'printing yarn settings id 1 ............ ${yarnSettingsBloc.yarnSettings?.allowSensitiveContent.toString()}');
+      print(
+          'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings?.id.toString()}');
     }
   }
 

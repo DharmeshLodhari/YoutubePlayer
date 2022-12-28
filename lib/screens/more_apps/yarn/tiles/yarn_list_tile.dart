@@ -13,7 +13,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:linkwell/linkwell.dart';
-
+import 'package:provider/provider.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
@@ -23,6 +23,7 @@ import '../models/Topics/YarnTopic.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
+import '../yarn_dashboard_bloc.dart';
 
 class YarnTile extends StatefulWidget {
   Yarn yarn;
@@ -51,8 +52,12 @@ class _YarnTileState extends State<YarnTile> {
   bool isUrlPresent = false;
   String? linkToBePreview;
 
+
+  late YarnDashboardBloc _yarnSettings;
+
   @override
   void initState() {
+    _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
     Map<String, dynamic> linkData =
         detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
@@ -599,10 +604,10 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget getDisplayWidget(Function() widgetDisplay) {
-    if (widget.yarn.isSensitiveContent == true) {
+    if (widget.yarn.isSensitiveContent == true && _yarnSettings.yarnSettings!.allowSensitiveContent == false) {
       return _buildSensitiveContentWidget();
     }
-    if (widget.yarn.isAdultContent == true) {
+    if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings!.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }
     return widgetDisplay();
