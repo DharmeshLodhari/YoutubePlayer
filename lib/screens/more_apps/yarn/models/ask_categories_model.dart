@@ -62,3 +62,28 @@ class UserCategoriesStructure {
         "categories": userSelectedCategory,
       };
 }
+
+class UserYarnSettings {
+  String? id;
+  String? owner;
+  bool? allowAdultContent;
+  bool? allowSensitiveContent;
+  UsersCategories? categories;
+
+  UserYarnSettings(
+      {this.id,
+      this.owner,
+      this.allowAdultContent,
+      this.allowSensitiveContent,
+      this.categories});
+
+  UserYarnSettings.fromJson(object) {
+    this.id = object["id"];
+    this.allowAdultContent = object['allow_adult_content'] ?? false;
+    this.allowSensitiveContent = object['allow_sensitive_content'] ?? false;
+    this.owner = object["owner"];
+    this.categories = UsersCategories.fromJson(object);
+    
+  }
+
+}
