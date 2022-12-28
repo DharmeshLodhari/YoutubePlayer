@@ -11,7 +11,12 @@ class RichTextForTitle extends StatelessWidget {
   String? description;
   double? fontSize;
   FontWeight? fontWeight;
-  RichTextForTitle({Key? key, this.description, this.fontSize = 12, this.fontWeight = FontWeight.w400}) : super(key: key);
+  RichTextForTitle(
+      {Key? key,
+      this.description,
+      this.fontSize = 14,
+      this.fontWeight = FontWeight.w400})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -114,8 +114,9 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       UserYarnSettings yarnSettings;
       var jsonData = json.decode(response.body);
-      debugPrint("JSON DECODED:- $jsonData");
+      logger.d(jsonData);
       yarnSettings = UserYarnSettings.fromJson(jsonData);
+      logger.d(yarnSettings);
 
       return yarnSettings;
     } else if (response.statusCode == 500) {
@@ -145,8 +146,6 @@ class YarnAuth extends AuthService {
       debugPrint("JSON DECODED:- $jsonData");
       logger.d(jsonData);
       yarnSettings = UserYarnSettings.fromJson(jsonData);
-      logger.d(yarnSettings.allowAdultContent);
-
       return yarnSettings;
     } else if (response.statusCode == 500) {
       return null;
@@ -428,19 +427,16 @@ class YarnAuth extends AuthService {
         request.fields['type'] = yarn.media[i].mediaType;
         if (yarn.media[i].mediaType == 'image') {
           // Add fields
-            request.fields["mediafile_$i"] =
-                yarn.media[i].file;
-            // Create multipart using filepath, string or bytes
-            multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
-                yarn.media[i].file);
-
-          } else if (yarn.media[i].mediaType == 'video') {
-            // Add fields
-            request.fields["mediafile_$i"] =
-                yarn.media[i].file;
-            // Create multipart using filepath, string or bytes
-            multipartFile = await http.MultipartFile.fromPath("mediafile_$i",
-                yarn.media[i].file);
+          request.fields["mediafile_$i"] = yarn.media[i].file;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", yarn.media[i].file);
+        } else if (yarn.media[i].mediaType == 'video') {
+          // Add fields
+          request.fields["mediafile_$i"] = yarn.media[i].file;
+          // Create multipart using filepath, string or bytes
+          multipartFile = await http.MultipartFile.fromPath(
+              "mediafile_$i", yarn.media[i].file);
           // Add Poster Fields
           request.fields["mediaposter_$i"] = yarn.media[i].imagePoster ?? '';
 

@@ -1,5 +1,4 @@
 import 'package:Slydo/screens/more_apps/yarn/widgets/view_ask_media.dart';
-import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -26,7 +25,11 @@ class YarnSingleMediaPreview extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: lightGreyYarn)),
+              border: Border.all(
+                  color: darkGrey.withOpacity(
+                    .4,
+                  ),
+                  width: .5)),
           // constraints: BoxConstraints(maxHeight: 300),
           child: Container(
             child: Stack(
@@ -51,37 +54,33 @@ class YarnSingleMediaPreview extends StatelessWidget {
                 ),
                 if (mediaType == 'video') ...[
                   Center(
-                    child: InkWell(
-                      onTap: () {
-                        NavigationUtil.push(
-                          context,
-                          screen: ViewAskMedia(
-                            arguments: {
-                              "type": mediaType,
-                              "file": imageUrl,
-                              "poster": imagePoster
-                            },
-                          ),
-                        );
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        //padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: white,
-                          shape: BoxShape.circle
+                      child: InkWell(
+                    onTap: () {
+                      NavigationUtil.push(
+                        context,
+                        screen: ViewAskMedia(
+                          arguments: {
+                            "type": mediaType,
+                            "file": imageUrl,
+                            "poster": imagePoster
+                          },
                         ),
-                        child: Center(
-                          child: Icon(
-                            Icons.play_circle_rounded,
-                            size: 40,
-                            color: HexColor("#4060DB"),
-                          ),
+                      );
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration:
+                          BoxDecoration(color: white, shape: BoxShape.circle),
+                      child: Center(
+                        child: Icon(
+                          Icons.play_circle_rounded,
+                          size: 40,
+                          color: HexColor("#4060DB"),
                         ),
                       ),
-                    )
-                  ),
+                    ),
+                  )),
                 ]
               ],
             ),
@@ -95,7 +94,11 @@ class YarnSingleMediaPreview extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(width: 2, color: lightGreyYarn)),
+            border: Border.all(
+                color: darkGrey.withOpacity(
+                  .4,
+                ),
+                width: .5)),
         child: Stack(
           children: [
             ClipRRect(
@@ -117,36 +120,33 @@ class YarnSingleMediaPreview extends StatelessWidget {
             ),
             if (mediaType == 'video') ...[
               Center(
-                  child: InkWell(
-                    onTap: () {
-                      NavigationUtil.push(
-                        context,
-                        screen: ViewAskMedia(
-                          arguments: {
-                            "type": mediaType,
-                            "file": imageUrl,
-                            "poster": imagePoster
-                          },
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 50,
-                      width: 50,
-                      //padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: white,
-                          shape: BoxShape.circle
+                child: InkWell(
+                  onTap: () {
+                    NavigationUtil.push(
+                      context,
+                      screen: ViewAskMedia(
+                        arguments: {
+                          "type": mediaType,
+                          "file": imageUrl,
+                          "poster": imagePoster
+                        },
                       ),
-                      child: Center(
-                        child: Icon(
-                          Icons.play_circle_rounded,
-                          size: 40,
-                          color: HexColor("#4060DB"),
-                        ),
+                    );
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration:
+                        BoxDecoration(color: white, shape: BoxShape.circle),
+                    child: Center(
+                      child: Icon(
+                        Icons.play_circle_rounded,
+                        size: 40,
+                        color: HexColor("#4060DB"),
                       ),
                     ),
                   ),
+                ),
               ),
             ]
           ],
