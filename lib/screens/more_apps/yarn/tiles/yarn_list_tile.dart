@@ -604,10 +604,10 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget getDisplayWidget(Function() widgetDisplay) {
-    if (widget.yarn.isSensitiveContent == true && _yarnSettings.yarnSettings!.allowSensitiveContent == false) {
+    if (widget.yarn.isSensitiveContent == true && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
       return _buildSensitiveContentWidget();
     }
-    if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings!.allowAdultContent == false) {
+    if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }
     return widgetDisplay();
