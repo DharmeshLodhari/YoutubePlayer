@@ -14,6 +14,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 import '../models/share_as_yarn_model.dart';
@@ -146,44 +147,81 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Widget _buildDisLikeButton() {
-    return InkWell(
-      onTap: () {
-        addDisLikeToYarnAndQuestion();
-      },
-      child: Row(
-        children: [
-          SvgPicture.asset(
+    return LikeButton(
+      size: 13,
+      circleColor:
+          CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+      bubblesColor: BubblesColor(
+        dotPrimaryColor: Color(0xff33b5e5),
+        dotSecondaryColor: Color(0xff0099cc),
+      ),
+      likeBuilder: (_) {
+        return SvgPicture.asset(
             widget.yarn.userDownVoted
                 ? "yarn/unlikeAfter".toSVG()
                 : "yarn/unlikeBefore".toSVG(),
             color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn,
             height: 13,
             width: 13,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            getDisLikeCount(),
-            style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w400,
-                color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn),
-          ),
-        ],
-      ),
+          );
+      },
+      likeCount: 665,
+      // countBuilder: (int count, bool isLiked, String text) {
+      //   var color = isLiked ? Colors.deepPurpleAccent : Colors.grey;
+      //   Widget result;
+      //   if (count == 0) {
+      //     result = Text(
+      //       "love",
+      //       style: TextStyle(color: color),
+      //     );
+      //   } else
+      //     result = Text(
+      //       text,
+      //       style: TextStyle(color: color),
+      //     );
+      //   return result;
+      // },
     );
+    // InkWell(
+    //   onTap: () {
+    //     addDisLikeToYarnAndQuestion();
+    //   },
+    //   child: Row(
+    //     children: [
+    //       SvgPicture.asset(
+    //         widget.yarn.userDownVoted
+    //             ? "yarn/unlikeAfter".toSVG()
+    //             : "yarn/unlikeBefore".toSVG(),
+    //         color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn,
+    //         height: 13,
+    //         width: 13,
+    //       ),
+    //       SizedBox(
+    //         width: 6,
+    //       ),
+    //       Text(
+    //         getDisLikeCount(),
+    //         style: TextStyle(
+    //             fontSize: 13,
+    //             fontWeight: FontWeight.w400,
+    //             color: widget.yarn.userDownVoted ? starYellow : darkGreyYarn),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   Widget _buildRetweetButton() {
     return InkWell(
-      onTap: getLoggedInUserName(context) != widget.yarn.author ? () {
-        if (widget.yarn.userReyarned) {
-          showToast(message: "Re yarn added successfully");
-        } else {
-          addReYarn();
-        }
-      } : null,
+      onTap: getLoggedInUserName(context) != widget.yarn.author
+          ? () {
+              if (widget.yarn.userReyarned) {
+                showToast(message: "Re yarn added successfully");
+              } else {
+                addReYarn();
+              }
+            }
+          : null,
       child: Row(
         children: [
           SvgPicture.asset(
@@ -410,23 +448,21 @@ class _YarnActionsState extends State<YarnActions> {
                         padding: EdgeInsets.symmetric(horizontal: 35.0),
                         child: GestureDetector(
                           onTap: () async {
-                           await NavigationUtil.push(context,
+                            await NavigationUtil.push(context,
                                 screen: ShareAsAyarnScreen(
-                                  appTitle: "Reyarn",
-                                  enableText:true,
+                                    appTitle: "Reyarn",
+                                    enableText: true,
                                     askCategories:
                                         yarnDashboardBloc.yarnCategories,
                                     shareAsYarnModel:
                                         ShareAsYarnModel.shareAsYarnModel,
                                     callback: (params) async {
                                       reYarn(params);
-                                        showToast(
-                                            message:
-                                                "Share in Yarn successfully created");
-                                    
+                                      showToast(
+                                          message:
+                                              "Share in Yarn successfully created");
                                     }));
-                                    Navigator.of(context).pop();
-                            
+                            Navigator.of(context).pop();
                           },
                           child: Row(
                             children: [
@@ -462,22 +498,20 @@ class _YarnActionsState extends State<YarnActions> {
                         padding: EdgeInsets.symmetric(horizontal: 35.0),
                         child: GestureDetector(
                           onTap: () async {
-                           await NavigationUtil.push(context,
+                            await NavigationUtil.push(context,
                                 screen: ShareAsAyarnScreen(
-                                  appTitle: "Quote Yarn",
+                                    appTitle: "Quote Yarn",
                                     askCategories:
                                         yarnDashboardBloc.yarnCategories,
                                     shareAsYarnModel:
                                         ShareAsYarnModel.shareAsYarnModel,
                                     callback: (params) async {
                                       reYarn(params);
-                                        showToast(
-                                            message:
-                                                "Share in Yarn successfully created");
-                                    
+                                      showToast(
+                                          message:
+                                              "Share in Yarn successfully created");
                                     }));
-                                    Navigator.of(context).pop();
-                            
+                            Navigator.of(context).pop();
                           },
                           child: Row(
                             children: [
