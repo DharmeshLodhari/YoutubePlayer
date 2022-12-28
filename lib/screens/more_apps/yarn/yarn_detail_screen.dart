@@ -97,8 +97,8 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       title: Text(
         finalYarn != null ? !finalYarn!.isQuestion ? "Yarn" : "Question" : "",
         style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
           color: yarnBlack,
           height: 1.3,
         ),

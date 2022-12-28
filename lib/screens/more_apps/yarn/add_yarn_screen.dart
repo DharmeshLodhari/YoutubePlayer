@@ -140,8 +140,8 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       title: Text(
         widget.isYarn! ? "Yarn" : "Question",
         style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
           color: blackFont,
         ),
       ),
@@ -200,7 +200,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       minLines: 1,
       controller: textController,
       style: TextStyle(
-          fontSize: 15.5,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           color: HexColor("#151515")),
       onChanged: onValueChange,
@@ -231,7 +231,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
       child: TextField(
         controller: yarnController,
         style: TextStyle(
-            fontSize: 15.5,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
             color: HexColor("#151515")),
         decoration: InputDecoration(

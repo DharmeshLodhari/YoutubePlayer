@@ -73,8 +73,8 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       title: Text(
         "Thread",
         style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
           color: yarnBlack,
           height: 1.3,
         ),

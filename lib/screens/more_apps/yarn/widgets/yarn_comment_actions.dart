@@ -7,6 +7,7 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
 
@@ -115,58 +116,72 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   }
 
   Widget _buildLikeButton() {
-    return InkWell(
-      onTap: () {
-        addLikeToComment();
-      },
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            widget.comment.userLike!
-                ? "yarn/likeAfter".toSVG()
-                : "yarn/likeBefore".toSVG(),
-            color: widget.comment.userLike! ? red : darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            getLikeCount(),
-            style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
-          ),
-        ],
+    return LikeButton(
+      size: 13,
+      circleColor: CircleColor(start: red, end: red),
+      bubblesColor: BubblesColor(
+        dotPrimaryColor: red,
+        dotSecondaryColor: red,
       ),
+      onTap: (isLike) {
+        return addLikeToComment();
+      },
+      likeBuilder: (bool isLiked) {
+        return SvgPicture.asset(
+          widget.comment.userLike!
+              ? "yarn/likeAfter".toSVG()
+              : "yarn/likeBefore".toSVG(),
+          color: widget.comment.userLike! ? red : darkGreyYarn,
+          height: 13,
+          width: 13,
+        );
+      },
+      likeCount: getLikeCount(),
+      countBuilder: (_, __, ___) {
+        int count = getLikeCount();
+        return Text(
+          count == 0 ? '' : count.toString(),
+          style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: widget.comment.userLike! ? red : darkGreyYarn),
+        );
+      },
     );
   }
 
   Widget _buildDisLikeButton() {
-    return InkWell(
-      onTap: () {
-        addDisLikeToComment();
-      },
-      child: Row(
-        children: [
-          SvgPicture.asset(
-           widget.comment.userDisLike!
-                ? "yarn/unlikeAfter".toSVG()
-                : "yarn/unlikeBefore".toSVG(),
-            color: widget.comment.userDisLike! ? starYellow : darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            getDisLikeCount(),
-            style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
-          ),
-        ],
+    return LikeButton(
+      size: 13,
+      circleColor: CircleColor(start: starYellow, end: starYellow),
+      bubblesColor: BubblesColor(
+        dotPrimaryColor: starYellow,
+        dotSecondaryColor: starYellow,
       ),
+      onTap: (isLike) {
+        return addDisLikeToComment();
+      },
+      likeBuilder: (bool isLiked) {
+        return SvgPicture.asset(
+          widget.comment.userDisLike!
+              ? "yarn/unlikeAfter".toSVG()
+              : "yarn/unlikeBefore".toSVG(),
+          color: widget.comment.userDisLike! ? starYellow : darkGreyYarn,
+          height: 13,
+          width: 13,
+        );
+      },
+      likeCount: getDisLikeCount(),
+      countBuilder: (_, __, ___) {
+        int count = getDisLikeCount();
+        return Text(
+          count == 0 ? '' : count.toString(),
+          style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color:widget.comment.userDisLike! ? starYellow : darkGreyYarn),
+        );
+      },
     );
   }
 
@@ -291,18 +306,18 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     return "";
   }
 
-  String getLikeCount() {
+  int getLikeCount() {
     if (widget.comment.likes != null && widget.comment.likes != 0) {
-      return widget.comment.likes?.toString() ?? "";
+      return widget.comment.likes ?? 0;
     }
-    return "";
+    return 0;
   }
 
-  String getDisLikeCount() {
-    if (widget.comment.dislike != null && widget.comment.dislike != 0) {
-      return widget.comment.dislike?.toString() ?? "";
+  int getDisLikeCount() {
+    if (widget.comment.dislike != null && widget.comment.dislike != 0 && widget.comment.userDisLike == true) {
+      return widget.comment.dislike ?? 0;
     }
-    return "";
+    return 0;
   }
 
   Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
@@ -358,7 +373,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
         message: yarnTopic.isQuestion ? 'Yarn Shared' : 'Question Shared');
   }
 
-  Future addLikeToComment() async {
+  Future<bool> addLikeToComment() async {
     Map<String, dynamic>? data =
         await YarnAuth().addLikeComment(widget.comment.id!);
     setState(() {
@@ -370,10 +385,12 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
         widget.comment.likes = data['likes'];
         widget.comment.dislike = data['dislikes'];
       });
+      return true;
     }
+    return false;
   }
 
-  Future addDisLikeToComment() async {
+  Future<bool> addDisLikeToComment() async {
     Map<String, dynamic>? data =
         await YarnAuth().addDisLikeComment(widget.comment.id!);
 
@@ -386,6 +403,8 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
         widget.comment.likes = data['likes'];
         widget.comment.dislike = data['dislikes'];
       });
+      return true;
     }
+    return false;
   }
 }
