@@ -606,7 +606,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             height: 8,
           ),
         ],
-        _buildTopActions(),
       ],
     );
   }
@@ -680,33 +679,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 ),
               ),
             ),
-            InkWell(
-              onTap: () {
-                showModalBottomSheet<void>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                      ),
-                      color: Colors.white,
-                      margin: EdgeInsets.zero,
-                      child: YarnOptions(
-                        yarnTopic: yarn,
-                        isComment: false,
-                      ),
-                    );
-                  },
-                );
-              },
-              child: Icon(
-                Icons.more_horiz_rounded,
-                color: darkGreyYarn,
-              ),
-            )
           ],
         ),
       ],

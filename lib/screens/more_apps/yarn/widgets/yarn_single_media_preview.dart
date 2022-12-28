@@ -26,7 +26,7 @@ class YarnSingleMediaPreview extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(width: 2.0, color: lightGreyYarn)),
+              border: Border.all(color: lightGreyYarn)),
           // constraints: BoxConstraints(maxHeight: 300),
           child: Container(
             child: Stack(
@@ -43,7 +43,7 @@ class YarnSingleMediaPreview extends StatelessWidget {
                         Container(
                       child: Center(
                         child: CircularProgressIndicator(
-                          color: navyBlue,
+                          color: yarnBlack,
                         ),
                       ),
                     ),
@@ -109,7 +109,7 @@ class YarnSingleMediaPreview extends StatelessWidget {
                 progressIndicatorBuilder: (context, url, progress) => Container(
                   child: Center(
                     child: CircularProgressIndicator(
-                      color: navyBlue,
+                      color: yarnBlack,
                     ),
                   ),
                 ),
