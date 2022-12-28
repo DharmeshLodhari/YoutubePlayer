@@ -98,6 +98,63 @@ class YarnAuth extends AuthService {
     }
   }
 
+  // Get all User's Yarn Setting
+  Future<UserYarnSettings?> getUserYarnSettings() async {
+    debugPrint("CALLING YARN SETTINGS");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      UserYarnSettings yarnSettings;
+      var jsonData = json.decode(response.body);
+      debugPrint("JSON DECODED:- $jsonData");
+      yarnSettings = UserYarnSettings.fromJson(jsonData);
+
+      return yarnSettings;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Get all User's Yarn Setting
+  Future<UserYarnSettings?> updateUserYarnSettings(Map body) async {
+    debugPrint("CALLING YARN SETTINGS");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/user-interest/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response =
+        await httpPost(url, headers: headers, body: jsonEncode(body));
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 201) {
+      UserYarnSettings yarnSettings;
+      var jsonData = json.decode(response.body);
+      debugPrint("JSON DECODED:- $jsonData");
+      logger.d(jsonData);
+      yarnSettings = UserYarnSettings.fromJson(jsonData);
+      logger.d(yarnSettings.allowAdultContent);
+
+      return yarnSettings;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
   // Save User's Selected Categories
   Future<Map<String, dynamic>?> saveUsersCategories(String body) async {
     debugPrint("CALLING ALL CATEGORIES");

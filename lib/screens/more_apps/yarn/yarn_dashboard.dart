@@ -71,18 +71,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
       shadowColor: greySecondaryYarn,
       actions: _buildAppBarActions(),
       elevation: 0.5,
-      // leading: IconButton(
-      //   padding: EdgeInsets.zero,
-      //   icon: Icon(
-      //     Icons.arrow_back_ios_rounded,
-      //     color: yarnBlack,
-      //     size: 14,
-      //   ),
-      //   onPressed: () {
-      //     Navigator.pop(context);
-      //   },
-      //   color: yarnBlack,
-      // ),
+      
     );
   }
 

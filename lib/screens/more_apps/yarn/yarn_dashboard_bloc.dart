@@ -12,6 +12,7 @@ class YarnDashboardBloc extends ChangeNotifier {
   List<String> _selectedAskCategories = [];
   List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length - 1);
+  UserYarnSettings? yarnSettings;
 
   set yarnCategories(List<YarnCategories> cat) {
     _yarnCategories = cat;
