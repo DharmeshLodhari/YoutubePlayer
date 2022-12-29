@@ -481,11 +481,13 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildFactCheckWidget() {
     return Container(
       padding: EdgeInsets.all(5),
-      margin: EdgeInsets.only(right: 84),
+      //margin: EdgeInsets.only(right: 64),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.5),
-          color: Color.fromARGB(255, 247, 224, 154)),
+          border: Border.all(color: HexColor("#FCCF72")),
+          color: HexColor("#FEE6B5")),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SvgPicture.asset('assets/images/yarn/yell_icon.svg'),
@@ -495,7 +497,7 @@ class _YarnTileState extends State<YarnTile> {
           Text(
             'We doubt the information in the Yarn is correct.',
             style: TextStyle(
-                color: Color.fromARGB(255, 187, 118, 27), fontSize: 12),
+                color: Color.fromARGB(255, 187, 118, 27), fontSize: 10),
           ),
         ],
       ),
@@ -629,7 +631,7 @@ class _YarnTileState extends State<YarnTile> {
           child: Text(
             text ?? '',
             style: TextStyle(
-                color: white, fontSize: 12.5, fontWeight: FontWeight.w700),
+                color: white, fontSize: 10, fontWeight: FontWeight.w700),
           ),
         ),
       );
