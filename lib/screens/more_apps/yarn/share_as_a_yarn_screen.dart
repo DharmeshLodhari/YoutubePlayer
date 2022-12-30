@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -353,7 +354,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
       title: Text(
         appTitle!,
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 18.5,
           fontWeight: FontWeight.w600,
           color: blackFont,
         ),
@@ -415,7 +416,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             controller: textController,
 
             style: TextStyle(
-                fontSize: 12,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: HexColor("#151515")),
             onChanged: onValueChange,
@@ -504,9 +505,9 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   Widget _buildEnableViewerAdvice() {
-    return AskEnableCommentAndPayment(
+    return AskEnableAdultAndViewerAdvice(
       onTap: (value) {
-        _isSensitiveContent = value ?? false;
+        _isSensitiveContent = value ?? true;
         if (mounted) setState(() {});
       },
       title: "Viewer Advice",
@@ -520,9 +521,9 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   Widget _buildEnableAdultsOnly() {
-    return AskEnableCommentAndPayment(
+    return AskEnableAdultAndViewerAdvice(
       onTap: (value) {
-        _isAdultContent = value ?? false;
+        _isAdultContent = value ?? true;
         if (mounted) setState(() {});
       },
       title: "Adults Only",
@@ -843,8 +844,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         isLoading: isAPILoading,
         onPressed: () {
           print(widget.appTitle);
-          if (widget.appTitle=='Quote Yarn' && textController.text.isEmpty) {
-            
+          if (widget.appTitle == 'Quote Yarn' && textController.text.isEmpty) {
             showToast(message: 'Yarn body cannot be empty');
           } else {
             final data = AddYarnAndQuestion(

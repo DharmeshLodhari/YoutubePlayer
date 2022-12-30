@@ -320,7 +320,7 @@ class _SuperStoreState extends State<SuperStore> {
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 22,
-                  mainAxisExtent: 240,
+                  mainAxisExtent: 300,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),

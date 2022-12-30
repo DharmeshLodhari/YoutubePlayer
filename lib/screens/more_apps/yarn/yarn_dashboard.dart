@@ -211,7 +211,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
     });
   }
 
-  Widget _buildFloatingActionButton() {
+  Widget _buildFloatingActionButton() {      
     return SpeedDial(
       child: Icon(
         Icons.add,
@@ -245,7 +245,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
         //     }),
         _buildSpeedDialChild(
             title: "Yarn",
-            icon: SlydoAppIconNew.yarn,
+            icon:SlydoAppIconNew.dashboard_yarn,
             onTap: () async {
               await NavigationUtil.push(context,
                   screen: AddTopicScreen(
