@@ -32,25 +32,25 @@ import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 import 'yarn_dashboard_bloc.dart';
 
-class AddTopicScreen extends StatefulWidget {
+class AddOrEditYarn extends StatefulWidget {
   List<YarnCategories>? askCategories;
   YarnCategories? askCategory;
   bool? isYarn = false;
-  Yarn? yarner;
+  Yarn? yarn;
 
   List<ShareAsYarnModel>? shareAsYarnModel;
-  AddTopicScreen(
+  AddOrEditYarn(
       {this.askCategories,
       this.isYarn,
       this.askCategory,
-      this.yarner,
+      this.yarn,
       this.shareAsYarnModel});
 
   @override
-  State<AddTopicScreen> createState() => _AddTopicScreenState();
+  State<AddOrEditYarn> createState() => _AddOrEditYarnState();
 }
 
-class _AddTopicScreenState extends State<AddTopicScreen> {
+class _AddOrEditYarnState extends State<AddOrEditYarn> {
   final yarnController = TextEditingController();
 
   final textController = TextEditingController();
@@ -91,7 +91,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     shareAsYarnModelCopy = widget.shareAsYarnModel;
     _shareAsYarnModel = widget.shareAsYarnModel?.first;
     ageRating = _shareAsYarnModel?.name?.substring(9);
-    yarn = widget.yarner?.toJson();
+    yarn = widget.yarn?.toJson();
     selectedAskCategory = yarn?['category'] == null
         ? YarnCategories()
         : YarnCategories.fromJson(yarn?['category'].toJson());
@@ -1044,10 +1044,10 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     await YarnAuth().editYarnAndQuestion(yarnEdit).then((value) {
       debugPrint("EDIT YARN:- $value");
       if (value != null) {
-        widget.yarner = Yarn.fromJson(value);
+        widget.yarn = Yarn.fromJson(value);
       }
       if (widget.isYarn == true) {
-        Navigator.pop(context, [Types.Yarn, widget.yarner]);
+        Navigator.pop(context, [Types.Yarn, widget.yarn]);
       } else if (widget.isYarn == false) {
         Navigator.pop(context, Types.Question);
       }

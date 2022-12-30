@@ -12,7 +12,7 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
-import '../add_yarn_screen.dart';
+import '../add_or_edit_yarn_screen.dart';
 import '../ask_report_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/YarnTopic.dart';
@@ -178,10 +178,10 @@ class _YarnOptionsState extends State<YarnOptions> {
                 subTitle: 'Edit yarn',
                 onTap: () async {
                   NavigationUtil.push(context,
-                      screen: AddTopicScreen(
+                      screen: AddOrEditYarn(
                         askCategories: yarnDashboardBloc.yarnCategories,
                         isYarn: true,
-                        yarner: widget.yarnTopic,
+                        yarn: widget.yarnTopic,
                         shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                       )).then((value) {
                     debugPrint("THEN VALUE===$value");
