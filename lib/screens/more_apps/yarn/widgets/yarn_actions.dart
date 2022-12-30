@@ -51,13 +51,16 @@ class _YarnActionsState extends State<YarnActions> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(child: _buildActionableList()),
+        SizedBox(
+          width: 22,
+        ),
         _buildShareButton(),
         SizedBox(
-          width: 32,
+          width: 45,
         ),
         _buildPayButton(),
         SizedBox(
-          width: 24,
+          width: 10,
         )
       ],
     );
@@ -118,6 +121,8 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildLikeButton() {
     return LikeButton(
+      mainAxisAlignment: MainAxisAlignment.start,
+      padding: EdgeInsets.only(left: 5),
       size: 13,
       circleColor: CircleColor(start: red, end: red),
       bubblesColor: BubblesColor(
@@ -153,6 +158,9 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildDisLikeButton() {
     return LikeButton(
+      padding: EdgeInsets.only(left: 10),
+      // crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       size: 13,
       circleColor: CircleColor(start: starYellow, end: starYellow),
       bubblesColor: BubblesColor(
@@ -199,6 +207,9 @@ class _YarnActionsState extends State<YarnActions> {
           : null,
       child: Row(
         children: [
+          SizedBox(
+            width: 20,
+          ),
           SvgPicture.asset(
             "yarn/re_share".toSVG(),
             color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn,
@@ -327,7 +338,9 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   int getDisLikeCount() {
-    if (widget.yarn.downVoteCount != null && widget.yarn.downVoteCount != 0 && widget.yarn.userDownVoted==true) {
+    if (widget.yarn.downVoteCount != null &&
+        widget.yarn.downVoteCount != 0 &&
+        widget.yarn.userDownVoted == true) {
       return widget.yarn.downVoteCount ?? 0;
     }
     return 0;

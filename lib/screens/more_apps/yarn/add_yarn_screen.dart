@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -66,7 +67,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   List<String> userTags = [];
   late UserBloc userBloc;
   bool enableCommenting = true;
-  bool enablePayMe = false;
+  bool enablePayMe = true;
   String? videoPath;
   String? imagePath;
   bool isVideoLoading = false;
@@ -137,6 +138,7 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       shape: Border(bottom: BorderSide(color: HexColor("#D9D9D9"))),
+      centerTitle: false,
       title: Text(
         widget.isYarn! ? "Yarn" : "Question",
         style: TextStyle(
@@ -370,9 +372,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   }
 
   Widget _buildEnableViewerAdvice() {
-    return AskEnableCommentAndPayment(
+    return AskEnableAdultAndViewerAdvice(
       onTap: (value) {
-        isSensitiveContent = value ?? false;
+        isSensitiveContent = value ?? true;
         if (mounted) setState(() {});
       },
       title: "Viewer Advice",
@@ -386,9 +388,9 @@ class _AddTopicScreenState extends State<AddTopicScreen> {
   }
 
   Widget _buildEnableAdultsOnly() {
-    return AskEnableCommentAndPayment(
+    return AskEnableAdultAndViewerAdvice(
       onTap: (value) {
-        isAdultContent = value ?? false;
+        isAdultContent = value ?? true;
         if (mounted) setState(() {});
       },
       title: "Adults Only",
