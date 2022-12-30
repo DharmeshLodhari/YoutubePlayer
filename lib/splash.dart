@@ -8,6 +8,8 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/SecureUser.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/services/awesome_notification_service.dart';
 import 'package:Slydo/services/secure_storage.dart';
@@ -356,6 +358,9 @@ class _SplashScreenState extends State<SplashScreen>
 
             userBloc.user = user;
 
+            /// get User's YARN Setting
+            getUserYarnSetting();
+
             /// get user settings from DB
             Map<String, dynamic> settings =
                 await DatabaseHelper().getGeneralSettings();
@@ -535,5 +540,16 @@ class _SplashScreenState extends State<SplashScreen>
       isUserFound = false;
       CacheManager().deleteCache(clearAll: true);
     }
+  }
+
+  void getUserYarnSetting() async {
+    await YarnAuth().getUserYarnSettings().then((value) async {
+      if (value != null) {
+        YarnDashboardBloc yarnDashboardBloc = Provider.of<YarnDashboardBloc>(
+            MyGlobals().navigationKey.currentContext ?? context,
+            listen: false);
+        yarnDashboardBloc.yarnSettings = value;
+      }
+    });
   }
 }

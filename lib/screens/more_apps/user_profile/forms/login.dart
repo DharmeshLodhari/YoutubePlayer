@@ -580,15 +580,15 @@ class _UserLoginState extends State<UserLogin> {
         }
       });
       await _yarnAuth.getUserYarnSettings().then((value) async {
-        yarnSettingsBloc.yarnSettings = value;
+        if (value != null) yarnSettingsBloc.yarnSettings = value;
       });
 
       print(
-          'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings?.allowAdultContent.toString()}');
+          'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings.allowAdultContent.toString()}');
       print(
-          'printing yarn settings id 1 ............ ${yarnSettingsBloc.yarnSettings?.allowSensitiveContent.toString()}');
+          'printing yarn settings id 1 ............ ${yarnSettingsBloc.yarnSettings.allowSensitiveContent.toString()}');
       print(
-          'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings?.id.toString()}');
+          'printing yarn settings id ............ ${yarnSettingsBloc.yarnSettings.id.toString()}');
     }
   }
 

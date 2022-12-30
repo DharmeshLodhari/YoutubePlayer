@@ -66,17 +66,17 @@ class UserCategoriesStructure {
 class UserYarnSettings {
   String? id;
   String? owner;
-  bool? allowAdultContent;
-  bool? allowSensitiveContent;
-  bool? allowNotification;
+  bool allowAdultContent = false;
+  bool allowSensitiveContent = false;
+  bool allowNotification = false;
   UsersCategories? categories;
 
   UserYarnSettings(
       {this.id,
       this.owner,
-      this.allowAdultContent,
-      this.allowSensitiveContent,
-      this.allowNotification,
+      this.allowAdultContent = false,
+      this.allowSensitiveContent = false,
+      this.allowNotification = false,
       this.categories});
 
   UserYarnSettings.fromJson(object) {
@@ -86,7 +86,5 @@ class UserYarnSettings {
     this.allowNotification = object['allow_notification'] ?? false;
     this.owner = object["owner"];
     this.categories = UsersCategories.fromJson(object);
-    
   }
-
 }
