@@ -462,6 +462,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             border: Border(top: BorderSide(color: HexColor("#D9D9D9")))),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
+          physics: AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.only(left: 8),
           child: Row(
             children: [

@@ -490,7 +490,7 @@ class YarnAuth extends AuthService {
       request.fields["title"] = addYarnAndQuestion.title!;
     }
 
-    request.fields.addAll({
+    var mapValue = {
       "tags": jsonEncode(addYarnAndQuestion.tags),
       "body": addYarnAndQuestion.body ?? "",
       "category": addYarnAndQuestion.categoryId ?? "",
@@ -503,13 +503,20 @@ class YarnAuth extends AuthService {
           jsonEncode(addYarnAndQuestion.enableCommenting ?? false),
       "enable_payme": jsonEncode(addYarnAndQuestion.enablePayme ?? false),
       "type": "yarn",
-      // "attachment": jsonEncode(addYarnAndQuestion.attachment),
       "is_sensitive_content":
           jsonEncode(addYarnAndQuestion.isSensitiveContent ?? false),
       "is_adult_content":
           jsonEncode(addYarnAndQuestion.isAdultContent ?? false),
       "age_restriction": jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
-    });
+    };
+    if (addYarnAndQuestion.attachment != null) {
+      mapValue['attachment'] =
+          jsonEncode(addYarnAndQuestion.attachment ?? null);
+    }
+
+    logger.d(' share as yar message...... $mapValue');
+
+    request.fields.addAll(mapValue);
 
     List<MultipartFile> newList = [];
     List<MultipartFile> thumbnailList = [];
