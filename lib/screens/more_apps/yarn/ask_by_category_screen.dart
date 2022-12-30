@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
-import 'add_yarn_screen.dart';
+import 'add_or_edit_yarn_screen.dart';
 import 'ask_search_screen.dart';
 import 'question_list_screen.dart';
 import 'yarn_auth.dart';
@@ -88,22 +88,22 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
       activeBackgroundColor: HexColor("#FFFFFF"),
       children: [
         // _buildSpeedDialChild(
-            // title: "Ask Question",
-            // icon: SlydoAppIconNew.question,
-            // onTap: () {
-            //   NavigationUtil.push(context,
-            //       screen: AddTopicScreen(
-            //         askCategories: askViewModel.yarnCategories,
-            //         isYarn: false,
-            //         askCategory: widget.askCategories,
-            //       ));
-            // }),
+        // title: "Ask Question",
+        // icon: SlydoAppIconNew.question,
+        // onTap: () {
+        //   NavigationUtil.push(context,
+        //       screen: AddTopicScreen(
+        //         askCategories: askViewModel.yarnCategories,
+        //         isYarn: false,
+        //         askCategory: widget.askCategories,
+        //       ));
+        // }),
         _buildSpeedDialChild(
             title: "Yarn",
             icon: SlydoAppIconNew.yarn,
             onTap: () {
               NavigationUtil.push(context,
-                  screen: AddTopicScreen(
+                  screen: AddOrEditYarn(
                       askCategories: askViewModel.yarnCategories,
                       isYarn: true,
                       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,

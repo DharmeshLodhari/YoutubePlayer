@@ -1,3 +1,4 @@
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:flutter/material.dart';
@@ -17,28 +18,16 @@ class YarnSettingsScreen extends StatefulWidget {
 class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   final _yarnAuth = YarnAuth();
 
-  late YarnDashboardBloc? yarnSettingsBloc;
-  bool? isAdultSwitch;
-  bool? isSensitiveSwitch;
-  bool? isNotification;
+  late YarnDashboardBloc yarnSettingsBloc;
 
   @override
   void initState() {
-    yarnSettingsBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-    isAdultSwitch = yarnSettingsBloc?.yarnSettings?.allowAdultContent ?? false;
-    isSensitiveSwitch =
-        yarnSettingsBloc?.yarnSettings?.allowSensitiveContent ?? false;
-    isNotification = yarnSettingsBloc?.yarnSettings?.allowNotification ?? false;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    yarnSettingsBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-    isAdultSwitch = yarnSettingsBloc?.yarnSettings?.allowAdultContent ?? false;
-    isSensitiveSwitch =
-        yarnSettingsBloc?.yarnSettings?.allowSensitiveContent ?? false;
-    isNotification = yarnSettingsBloc?.yarnSettings?.allowNotification ?? false;
+    yarnSettingsBloc = Provider.of<YarnDashboardBloc>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(context: context) as PreferredSizeWidget,
@@ -131,15 +120,14 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: Switch(
-            value: isNotification!,
+            value: yarnSettingsBloc.pushNotification,
             onChanged: (bool value) async {
-              isNotification = value;
+              yarnSettingsBloc.pushNotification = value;
 
-              var settings = await _yarnAuth.updateUserYarnSettings(
-                  {'allow_notification': isNotification});
-
-              setState(() {
-                yarnSettingsBloc?.yarnSettings = settings;
+              await _yarnAuth.updateUserYarnSettings({
+                'allow_notification': yarnSettingsBloc.pushNotification
+              }).catchError((error) {
+                logger.e(error);
               });
             },
             activeColor: HexColor("#3F61DB"),
@@ -169,15 +157,13 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: Switch(
-            value: isSensitiveSwitch!,
+            value: yarnSettingsBloc.sensitiveContent,
             onChanged: (bool value) async {
-              isSensitiveSwitch = value;
-
-              var settings = await _yarnAuth.updateUserYarnSettings(
-                  {'allow_sensitive_content': isSensitiveSwitch});
-
-              setState(() {
-                yarnSettingsBloc?.yarnSettings = settings;
+              yarnSettingsBloc.sensitiveContent = value;
+              await _yarnAuth.updateUserYarnSettings({
+                'allow_sensitive_content': yarnSettingsBloc.sensitiveContent
+              }).catchError((error) {
+                logger.e(error);
               });
             },
             activeColor: HexColor("#3F61DB"),
@@ -207,14 +193,13 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             ),
           ),
           trailing: Switch(
-            value: isAdultSwitch!,
+            value: yarnSettingsBloc.adultContent,
             onChanged: (bool value) async {
-              isAdultSwitch = value;
-              var settings = await _yarnAuth.updateUserYarnSettings(
-                  {'allow_adult_content': isAdultSwitch});
-
-              setState(() {
-                yarnSettingsBloc?.yarnSettings = settings;
+              yarnSettingsBloc.adultContent = value;
+              await _yarnAuth.updateUserYarnSettings({
+                'allow_adult_content': yarnSettingsBloc.adultContent
+              }).catchError((error) {
+                logger.e(error);
               });
             },
             activeColor: HexColor("#3F61DB"),

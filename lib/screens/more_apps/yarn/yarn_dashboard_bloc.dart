@@ -12,7 +12,7 @@ class YarnDashboardBloc extends ChangeNotifier {
   List<String> _selectedAskCategories = [];
   List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length - 1);
-  UserYarnSettings? yarnSettings;
+  UserYarnSettings _yarnSettings = UserYarnSettings();
 
   set yarnCategories(List<YarnCategories> cat) {
     _yarnCategories = cat;
@@ -26,6 +26,32 @@ class YarnDashboardBloc extends ChangeNotifier {
 
   void addCategories(List<YarnCategories> cat) {
     _yarnCategories.addAll(cat);
+    notifyListeners();
+  }
+
+  set yarnSettings(UserYarnSettings userYarnSettings) {
+    _yarnSettings = userYarnSettings;
+    notifyListeners();
+  }
+
+  UserYarnSettings get yarnSettings => _yarnSettings;
+
+  bool get adultContent => yarnSettings.allowAdultContent;
+  bool get sensitiveContent => yarnSettings.allowSensitiveContent;
+  bool get pushNotification => yarnSettings.allowNotification;
+
+  set adultContent(bool value) {
+    yarnSettings.allowAdultContent = value;
+    notifyListeners();
+  }
+
+  set sensitiveContent(bool value) {
+    yarnSettings.allowSensitiveContent = value;
+    notifyListeners();
+  }
+
+  set pushNotification(bool value) {
+    yarnSettings.allowNotification = value;
     notifyListeners();
   }
 
@@ -108,8 +134,4 @@ class YarnDashboardBloc extends ChangeNotifier {
     currentTabIndex = i;
     notifyListeners();
   }
-
-  void joinACategory() {}
-
-  void setInTag() {}
 }

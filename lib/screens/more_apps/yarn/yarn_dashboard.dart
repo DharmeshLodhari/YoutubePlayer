@@ -1,7 +1,6 @@
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -13,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
-import 'add_yarn_screen.dart';
+import 'add_or_edit_yarn_screen.dart';
 import 'ask_search_screen.dart';
 import 'question_list_screen.dart';
 import 'yarn_dashboard_bloc.dart';
@@ -71,7 +70,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
       shadowColor: greySecondaryYarn,
       actions: _buildAppBarActions(),
       elevation: 0.5,
-      
     );
   }
 
@@ -211,7 +209,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
     });
   }
 
-  Widget _buildFloatingActionButton() {      
+  Widget _buildFloatingActionButton() {
     return SpeedDial(
       child: Icon(
         Icons.add,
@@ -245,10 +243,10 @@ class _YarnDashboardState extends State<YarnDashboard> {
         //     }),
         _buildSpeedDialChild(
             title: "Yarn",
-            icon:SlydoAppIconNew.dashboard_yarn,
+            icon: SlydoAppIconNew.dashboard_yarn,
             onTap: () async {
               await NavigationUtil.push(context,
-                  screen: AddTopicScreen(
+                  screen: AddOrEditYarn(
                     askCategories: yarnDashboardBloc.yarnCategories,
                     shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                     isYarn: true,
