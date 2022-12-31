@@ -1205,7 +1205,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
 
   Widget _buildProviderOtherServices() {
     return Container(
-      height: 250,
+      height: 310,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -1242,14 +1242,14 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
               ],
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 12),
           Expanded(
             child: ListView.separated(
               padding: EdgeInsets.symmetric(horizontal: 20),
               itemCount: sellersOtherItems.length,
               scrollDirection: Axis.horizontal,
               separatorBuilder: (context, index) {
-                return SizedBox(width: 10);
+                return SizedBox(width: 15);
               },
               itemBuilder: (context, index) => DisplayService(
                 service: sellersOtherItems[index],

@@ -320,7 +320,7 @@ class _SuperStoreState extends State<SuperStore> {
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 22,
-                  mainAxisExtent: 300,
+                  mainAxisExtent: 274,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),
@@ -381,7 +381,7 @@ class _SuperStoreState extends State<SuperStore> {
                 ],
               ),
         Container(
-          height: 180,
+          height: 280,
           child: ListView.builder(
             padding: EdgeInsets.only(bottom: 6),
             scrollDirection: Axis.horizontal,
@@ -427,6 +427,7 @@ class _SuperStoreState extends State<SuperStore> {
                     isAvailable: shoppingProduct.isAvailable,
                     seller: shoppingProduct.seller,
                     sellerFullName: shoppingProduct.sellerFullname,
+                    shortDescription: shoppingProduct.shortDescription
                   ),
                 );
               }

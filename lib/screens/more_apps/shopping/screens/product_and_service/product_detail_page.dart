@@ -1190,7 +1190,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   Widget _buildSellersOtherProducts() {
     return Container(
-      height: 250,
+      height: 310,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -1226,7 +1226,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
               ],
             ),
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 12),
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 20),

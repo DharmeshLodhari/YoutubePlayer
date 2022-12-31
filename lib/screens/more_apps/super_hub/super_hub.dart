@@ -252,7 +252,7 @@ class _SuperHubState extends State<SuperHub> {
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 22,
-                  mainAxisExtent: 240,
+                  mainAxisExtent: 272,
                   crossAxisSpacing: 15,
                   maxCrossAxisExtent: 200,
                 ),

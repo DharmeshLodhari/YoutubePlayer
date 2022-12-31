@@ -13,25 +13,30 @@ class RoundedBackgroundIcon extends StatelessWidget {
   double borderRadius;
   double margin;
 
-  RoundedBackgroundIcon(
-      {this.key,
-      this.backgroundColor,
-      this.icon,
-      this.image,
-      this.height = 34,
-      this.width = 34,
-      this.borderRadius = 10,
-      this.onTap,
-      this.enableMargin = false,
-      this.margin = 10,
-      });
+  RoundedBackgroundIcon({
+    this.key,
+    this.backgroundColor,
+    this.icon,
+    this.image,
+    this.height = 34,
+    this.width = 34,
+    this.borderRadius = 10,
+    this.onTap,
+    this.enableMargin = false,
+    this.margin = 10,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: InkWell(
+    return InkWell(
+      onTap: () {
+        if (onTap != null) {
+          onTap!();
+        }
+      },
+      child: Container(
+        height: height,
+        width: width,
         child: Card(
           color: backgroundColor,
           elevation: 0,
@@ -43,11 +48,6 @@ class RoundedBackgroundIcon extends StatelessWidget {
           ),
           child: image ?? icon,
         ),
-        onTap: () {
-          if (onTap != null) {
-            onTap!();
-          }
-        },
       ),
     );
   }

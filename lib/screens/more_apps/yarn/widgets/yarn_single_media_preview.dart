@@ -25,7 +25,9 @@ class YarnSingleMediaPreview extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Container(
-            constraints: BoxConstraints(maxHeight: 307, minHeight: 175),
+            height: 310,
+            width: MediaQuery.of(context).size.width,
+            // constraints: BoxConstraints(maxHeight: 307, minHeight: 175),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
