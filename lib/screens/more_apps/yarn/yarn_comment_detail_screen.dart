@@ -1,5 +1,5 @@
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_reply_list.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +8,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../main.dart';
@@ -44,14 +45,14 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   var ageRating;
 
   ScrollController scrollController = new ScrollController();
-  List<AddMediaForYarn> selectedMedia = [];
+  List<YarnMedia> selectedMedia = [];
   bool isScrolling = false;
 
   @override
   void initState() {
-     scrollController.addListener(() {
-        setState(() => isScrolling = true);
-      });
+    scrollController.addListener(() {
+      setState(() => isScrolling = true);
+    });
     super.initState();
   }
 
@@ -137,7 +138,6 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       ],
     );
   }
-
 
   Widget _buildCommentDetailView() {
     return Expanded(

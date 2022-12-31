@@ -3,6 +3,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,14 +25,16 @@ class YarnCustomerPostTile extends StatefulWidget {
   bool? isNavigable;
   Function onDeleteBlog;
   final bool showAuthorDetails;
+  final TileRenderPlace tileRenderPlace;
 
-  YarnCustomerPostTile(
-      {Key? key,
-      this.customerProfile,
-      this.showAuthorDetails = true,
-      required this.onDeleteBlog,
-      this.isNavigable = true})
-      : super(key: key);
+  YarnCustomerPostTile({
+    Key? key,
+    this.customerProfile,
+    this.showAuthorDetails = true,
+    required this.onDeleteBlog,
+    this.isNavigable = true,
+    this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
+  }) : super(key: key);
 
   @override
   _YarnCustomerPostTileState createState() => _YarnCustomerPostTileState();

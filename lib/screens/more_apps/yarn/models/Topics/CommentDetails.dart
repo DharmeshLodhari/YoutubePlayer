@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 
 class YarnComment {
   YarnComment({
@@ -45,7 +45,7 @@ class YarnComment {
     if (json['media'] != null) {
       media = [];
       json['media'].forEach((v) {
-        media.add(MediaFiles.fromJson(v));
+        media.add(YarnMedia.fromJson(v));
       });
     }
     if (json['attachment'] != null) {
@@ -64,7 +64,7 @@ class YarnComment {
       }
     }
   }
-  
+
   String? id;
   String? authorAvatar;
   String? comment;
@@ -80,9 +80,9 @@ class YarnComment {
   String? socialLikes;
   String? socialDislikes;
   bool? enablePayMe;
-  bool? userLike=false;
-  bool? userDisLike=false;
-  dynamic media = [];
+  bool? userLike = false;
+  bool? userDisLike = false;
+  List<YarnMedia> media = [];
   Map<String, dynamic>? attachment;
   String? attachmentType;
 
@@ -108,4 +108,3 @@ class YarnComment {
     return map;
   }
 }
-    

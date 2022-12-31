@@ -14,7 +14,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:validators/validators.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../../data/state_notifier.dart';
@@ -33,7 +32,7 @@ import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/models/gif_model/GIFModel.dart';
 import '../messaging/chat/utils.dart';
 import '../messaging/message_auth.dart';
-import 'models/Topics/YarnTopic.dart';
+import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 
@@ -45,7 +44,7 @@ class ShareAsAyarnScreen extends StatefulWidget {
   bool? isYarn = false;
   bool? enableText = false;
   bool isShare = true;
-  Function(AddYarnAndQuestion params) callback;
+  Function(Yarn params) callback;
   ShareAsAyarnScreen(
       {this.askCategories,
       this.shareAsYarnModel,
@@ -67,7 +66,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
   List<PickedFile> selectedImages = [];
-  List<AddMediaForYarn> selectedMedia = [];
+  List<YarnMedia> selectedMedia = [];
   List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
   YarnCategories? selectedAskCategory;
@@ -848,14 +847,14 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           if (widget.appTitle == 'Quote Yarn' && textController.text.isEmpty) {
             showToast(message: 'Yarn body cannot be empty');
           } else {
-            final data = AddYarnAndQuestion(
-                localImages: selectedMedia,
+            final data = Yarn(
+                media: selectedMedia,
                 title: yarnController.text,
                 body: textController.text,
-                categoryId: selectedAskCategory?.id,
-                isQuestion: widget.isYarn,
+                category: selectedAskCategory,
+                isQuestion: widget.isYarn ?? false,
                 author: userBloc.user.userName,
-                enablePayme: enablePayMe,
+                enablePayMe: enablePayMe,
                 enableCommenting: enableCommenting,
                 isSensitiveContent: _isSensitiveContent,
                 isAdultContent: _isAdultContent,
@@ -935,8 +934,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         'file': PickedFile(imagePath!),
       });
       selectedImages.add(PickedFile(imagePath!));
-      selectedMedia.add(
-          AddMediaForYarn(mediaFile: File(imagePath!), mediaType: mediaType));
+      selectedMedia
+          .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
       if (mounted) setState(() {});
     } else if (mediaType == 'video') {
       var videoFilePath =
@@ -959,7 +958,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           'imagePoster': thumbnailImage,
         });
         selectedImages.add(PickedFile(videoPath!));
-        selectedMedia.add(AddMediaForYarn(
+        selectedMedia.add(YarnMedia(
             mediaFile: File(videoPath!),
             mediaType: mediaType,
             mediaPoster: thumbnailImage));
@@ -1204,18 +1203,18 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   Future<void> addYarnAndQuestion() async {
-    AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
-    addYarnAndQuestion.localImages = selectedMedia;
-    addYarnAndQuestion.tags = userTags;
-    addYarnAndQuestion.title = yarnController.text;
-    addYarnAndQuestion.body = textController.text;
-    addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
-    addYarnAndQuestion.isQuestion = widget.isYarn == true ? false : true;
-    addYarnAndQuestion.author = userBloc.user.userName;
-    addYarnAndQuestion.enablePayme = enablePayMe;
-    addYarnAndQuestion.enableCommenting = enableCommenting;
+    Yarn yarn = Yarn();
+    yarn.media = selectedMedia;
+    yarn.tags = userTags;
+    yarn.title = yarnController.text;
+    yarn.body = textController.text;
+    yarn.category = selectedAskCategory;
+    yarn.isQuestion = widget.isYarn == true ? false : true;
+    yarn.author = userBloc.user.userName;
+    yarn.enablePayMe = enablePayMe;
+    yarn.enableCommenting = enableCommenting;
 
-    await YarnAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
+    await YarnAuth().addYarnAndQuestion(yarn).then((value) {
       if (widget.isYarn == true) {
         Navigator.pop(context, Types.Yarn);
       } else if (widget.isYarn == false) {

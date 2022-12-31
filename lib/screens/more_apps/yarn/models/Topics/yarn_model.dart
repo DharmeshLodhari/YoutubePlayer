@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import '../ask_categories_model.dart';
@@ -59,12 +60,12 @@ class Yarn {
     if (json['media'] != null) {
       media = [];
       json['media'].forEach((v) {
-        media.add(MediaFiles.fromJson(v));
+        media.add(YarnMedia.fromJson(v));
       });
     } else if (json['image'] != null) {
       media = [];
       json['image'].forEach((v) {
-        media.add(MediaFiles.fromJson(v));
+        media.add(YarnMedia.fromJson(v));
       });
     }
     if (json['author'] == null) {
@@ -98,18 +99,28 @@ class Yarn {
       reYarn = Yarn.fromJson(json['reyarn']);
     }
     if (json['attachment'] != null) {
-      if (json['attachment']['service'] != null) {
+      Map<String, dynamic> item;
+
+      if (json['attachment'] is String) {
+        item = jsonDecode(json['attachment']);
+      } else if (json['attachment'] is Map) {
+        item = json['attachment'];
+      } else {
+        item = {};
+      }
+
+      if (item['service'] != null) {
         attachmentType = 'service';
-        attachment = json['attachment']['service'];
-      } else if (json['attachment']['blog'] != null) {
+        attachment = item['service'];
+      } else if (item['blog'] != null) {
         attachmentType = 'blog';
-        attachment = json['attachment']['blog'];
-      } else if (json['attachment']['product'] != null) {
+        attachment = item['blog'];
+      } else if (item['product'] != null) {
         attachmentType = 'product';
-        attachment = json['attachment']['product'];
-      } else if (json['attachment']['profile'] != null) {
+        attachment = item['product'];
+      } else if (item['profile'] != null) {
         attachmentType = 'profile';
-        attachment = json['attachment']['profile'];
+        attachment = item['profile'];
       }
     }
     if (json['user_upvoted'] != null) {
@@ -147,14 +158,14 @@ class Yarn {
   bool? authorIsVerified;
   Yarn? reYarn;
   int? numberOfReYarn;
-  dynamic media = [];
+  List<YarnMedia> media = <YarnMedia>[];
   Map<String, dynamic>? attachment;
   String? attachmentType;
   bool userUpvoted = false;
   bool userReyarned = false;
   bool userSupported = false;
   bool userDownVoted = false;
-   bool? enableCommenting;
+  bool? enableCommenting;
   bool? isSensitiveContent;
   bool? isAdultContent;
   dynamic ageRestriction;
@@ -201,30 +212,23 @@ class Yarn {
     map['user_down_voted'] = userDownVoted;
     return map;
   }
-}
 
-class MediaFiles {
-  MediaFiles({
-    this.file,
-    this.imagePoster,
-    this.mediaType,
-  });
-
-  MediaFiles.fromJson(dynamic json) {
-    file = json['file'];
-    imagePoster = json['image_poster'];
-    mediaType = json['type'];
-  }
-  String? file;
-  String? imagePoster;
-  String? mediaType;
-
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['file'] = file;
-    map['image_poster'] = imagePoster;
-    map['type'] = mediaType;
-    return map;
+  Map<String, dynamic> toAddMap() {
+    return {
+      if (tags != null) "tags": tags,
+      if (title != null) "title": title,
+      if (body != null) "body": body,
+      if (category != null) "category": category,
+      if (author != null) "author": author,
+      if (isQuestion != null) "is_question": isQuestion,
+      if (enablePayMe != null) "enable_payme": enablePayMe,
+      if (enableCommenting != null) "enable_commenting": enableCommenting,
+      if (attachment != null) "attachment": attachment,
+      if (isSensitiveContent != null)
+        "is_sensitive_content": isSensitiveContent,
+      if (isAdultContent != null) "is_adult_content": isAdultContent,
+      if (ageRestriction != null) "age_restriction": ageRestriction
+    };
   }
 }
 
@@ -249,59 +253,34 @@ class ViewersAvatars {
   }
 }
 
-class AddYarnAndQuestion {
-  List<AddMediaForYarn>? localImages;
-  List<String>? tags;
-  String? categoryId;
-  String? title;
-  String? body;
-  String? author;
-  bool? isQuestion;
-  bool? enablePayme;
-  bool? enableCommenting;
-  Map<String, dynamic>? attachment;
-  bool? isSensitiveContent;
-  bool? isAdultContent;
-  int? ageRestriction;
-
-  AddYarnAndQuestion(
-      {this.localImages,
-      this.tags,
-      this.categoryId,
-      this.title,
-      this.body,
-      this.isQuestion,
-      this.author,
-      this.enablePayme,
-      this.enableCommenting,
-      this.attachment,
-      this.isSensitiveContent = false,
-      this.isAdultContent = false,
-      this.ageRestriction});
-
-  Map<String, dynamic> toAddMap() {
-    return {
-      if (tags != null) "tags": tags,
-      if (title != null) "title": title,
-      if (body != null) "body": body,
-      if (categoryId != null) "category": categoryId,
-      if (author != null) "author": author,
-      if (isQuestion != null) "is_question": isQuestion,
-      if (enablePayme != null) "enable_payme": enablePayme,
-      if (enableCommenting != null) "enable_commenting": enableCommenting,
-      if (attachment != null) "attachment": attachment,
-      if (isSensitiveContent != null)
-        "is_sensitive_content": isSensitiveContent,
-      if (isAdultContent != null) "is_adult_content": isAdultContent,
-      if (ageRestriction != null) "age_restriction": ageRestriction
-    };
-  }
-}
-
-class AddMediaForYarn {
+class YarnMedia {
   File? mediaFile;
+  File? posterFile;
   String? mediaType;
   String? mediaPoster;
+  String? id;
+  String? mediaUrl;
 
-  AddMediaForYarn({this.mediaFile, this.mediaType, this.mediaPoster});
+  YarnMedia({
+    this.mediaFile,
+    this.mediaType,
+    this.mediaPoster,
+    this.posterFile,
+  });
+
+  YarnMedia.fromJson(dynamic json) {
+    id = json['id'];
+    mediaUrl = json['file'];
+    mediaType = json['type'];
+    mediaPoster = json['image_poster'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "mediaUrl": mediaUrl,
+      "mediaType": mediaType,
+      "mediaPoster": mediaPoster,
+    };
+  }
 }

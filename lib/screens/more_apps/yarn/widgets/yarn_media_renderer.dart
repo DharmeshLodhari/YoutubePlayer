@@ -1,4 +1,4 @@
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/view_ask_media.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_single_media_preview.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +40,9 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
 
   Widget _buildSingleImageView() {
     return _buildCommonImageView(
-        imageUrl: widget.yarnTopic.media.first.file ?? '',
+        imageUrl: widget.yarnTopic.media.first.mediaUrl ?? '',
         mediaType: widget.yarnTopic.media.first.mediaType ?? '',
-        imagePoster: widget.yarnTopic.media.first.imagePoster ?? '',
+        imagePoster: widget.yarnTopic.media.first.mediaPoster ?? '',
         isSingleImage: true);
   }
 
@@ -52,18 +52,18 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
         children: [
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[0].file ?? '',
+                imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[0].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[1].file ?? '',
+                imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[1].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
           ),
         ],
       ),
@@ -77,27 +77,27 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
         children: [
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[0].file ?? '',
+                imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[0].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[1].file ?? '',
+                imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[1].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[2].file ?? '',
+                imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[2].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[2].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[2].mediaPoster ?? ''),
           ),
         ],
       ),
@@ -112,18 +112,18 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[0].file ?? '',
+                    imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[0].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
               ),
               SizedBox(
                 width: 8,
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[1].file ?? '',
+                    imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[1].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
               ),
             ],
           ),
@@ -134,18 +134,18 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[2].file ?? '',
+                    imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[2].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[2].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[2].mediaPoster ?? ''),
               ),
               SizedBox(
                 width: 8,
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[3].file ?? '',
+                    imageUrl: widget.yarnTopic.media[3].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[3].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[3].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[3].mediaPoster ?? ''),
               ),
             ],
           ),
@@ -187,11 +187,12 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
     );
   }
 
-  Widget _buildSingleAndMultiImageView(
-      {required String imageUrl,
-      required String mediaType,
-      String? imagePoster,
-      required bool isSingleImage,}) {
+  Widget _buildSingleAndMultiImageView({
+    required String imageUrl,
+    required String mediaType,
+    String? imagePoster,
+    required bool isSingleImage,
+  }) {
     return YarnSingleMediaPreview(
       imageUrl: imageUrl,
       isSingleImage: isSingleImage,

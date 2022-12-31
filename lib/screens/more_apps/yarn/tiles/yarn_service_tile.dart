@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,9 +18,13 @@ import '../../shopping/shopping_auth.dart';
 import '../../user_profile/user_auth.dart';
 
 class YarnServiceTile extends StatefulWidget {
-  Service? service;
-  YarnServiceTile({Key? key, this.service}) : super(key: key);
-
+  final Service? service;
+  final TileRenderPlace tileRenderPlace;
+  const YarnServiceTile({
+    Key? key,
+    this.service,
+    this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
+  }) : super(key: key);
   @override
   State<YarnServiceTile> createState() => _YarnServiceTileState();
 }
@@ -40,6 +45,33 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
     super.initState();
   }
 
+  double getItemHeight() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return MediaQuery.of(context).size.width / 1.5;
+      case TileRenderPlace.YarnComment:
+        return MediaQuery.of(context).size.width / 2.0;
+    }
+  }
+
+  double getSizeBoxHeight() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 10;
+      case TileRenderPlace.YarnComment:
+        return 6;
+    }
+  }
+
+  double getFontSize() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 14;
+      case TileRenderPlace.YarnComment:
+        return 12;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
@@ -52,7 +84,7 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
             arguments: {"service": widget.service});
       },
       child: Container(
-        height: MediaQuery.of(context).size.width / 1.5,
+        height: getItemHeight(),
         width: double.infinity,
         child: CustomBoxShadow(
           child: Card(
@@ -163,13 +195,13 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                                             fontFamily: "Roboto",
                                             color: navyBlue,
                                             fontWeight: FontWeight.w700,
-                                            fontSize: 14)),
+                                            fontSize: getFontSize())),
                                     TextSpan(
                                         text: moneyDisplayNormalizer(int.parse(
                                             widget.service!.price.toString())),
                                         style: TextStyle(
                                           color: navyBlue,
-                                          fontSize: 14,
+                                          fontSize: getFontSize(),
                                           fontWeight: FontWeight.w700,
                                         ))
                                   ]),
@@ -177,7 +209,7 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                               ],
                             ),
                             SizedBox(
-                              height: 10,
+                              height: getSizeBoxHeight(),
                             ),
                             Text(
                               widget.service!.shortDescription!,

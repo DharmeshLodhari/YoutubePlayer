@@ -6,7 +6,7 @@ import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
 import '../../../widget/noItemInList.dart';
-import 'models/Topics/YarnTopic.dart';
+import 'models/Topics/yarn_model.dart';
 import 'tiles/yarn_list_tile.dart';
 import 'widgets/yarn_shimmer.dart';
 import 'yarn_auth.dart';
@@ -151,7 +151,8 @@ class YarnListScreenState extends State<YarnListScreen> {
                 if (mounted) setState(() {});
               },
               onUpdateYarn: (Yarn yarn) {
-                int index = yarnTopicList.indexWhere((element) => element.id == yarn.id);
+                int index = yarnTopicList
+                    .indexWhere((element) => element.id == yarn.id);
                 yarnTopicList[index] = yarn;
                 if (mounted) setState(() {});
               },

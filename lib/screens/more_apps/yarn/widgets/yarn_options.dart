@@ -15,7 +15,7 @@ import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../add_or_edit_yarn_screen.dart';
 import '../ask_report_screen.dart';
 import '../models/Topics/CommentDetails.dart';
-import '../models/Topics/YarnTopic.dart';
+import '../models/Topics/yarn_model.dart';
 import '../utils/utils.dart';
 import '../yarn_auth.dart';
 import '../yarn_dashboard_bloc.dart';

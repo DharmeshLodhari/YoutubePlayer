@@ -30,7 +30,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import '../screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import '../screens/more_apps/yarn/yarn_detail_screen.dart';
 
 bool isDialogueOpen = false;
@@ -418,7 +418,10 @@ class PushNotificationService {
       } else if (payload.toString().contains('/yarn/')) {
         String yarnId = payload.toString().replaceAll("/yarn/", "");
         NavigationUtil.push(context!,
-            screen: YarnDetailScreen(yarn: Yarn(), yarnId: yarnId,));
+            screen: YarnDetailScreen(
+              yarn: Yarn(),
+              yarnId: yarnId,
+            ));
       }
     } catch (error) {
       print("new error:- $error");

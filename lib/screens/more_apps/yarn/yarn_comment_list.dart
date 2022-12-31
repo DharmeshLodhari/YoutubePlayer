@@ -1,5 +1,5 @@
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
@@ -101,7 +101,8 @@ class _YarnCommentListState extends State<YarnCommentList> {
                             yarnComment: yarnComment,
                             openReply: false,
                             onDeleteComment: (YarnComment yarnCmt) {
-                              int index = yarnComments.indexWhere((element) => element.id == yarnCmt.id);
+                              int index = yarnComments.indexWhere(
+                                  (element) => element.id == yarnCmt.id);
                               if (index != -1) {
                                 yarnComments.removeAt(index);
                               }

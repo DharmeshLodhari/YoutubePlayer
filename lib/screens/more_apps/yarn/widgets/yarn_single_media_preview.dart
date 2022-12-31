@@ -21,71 +21,73 @@ class YarnSingleMediaPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isSingleImage) {
-      return Center(
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                  color: darkGrey.withOpacity(
-                    .4,
-                  ),
-                  width: .5)),
-          // constraints: BoxConstraints(maxHeight: 300),
-          child: Container(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        mediaType == 'video' ? imagePoster ?? '' : imageUrl,
-                    fit: BoxFit.cover,
-                    errorWidget: imageErrorWidget,
-                    progressIndicatorBuilder: (context, url, progress) =>
-                        Container(
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: yarnBlack,
-                        ),
-                      ),
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            constraints: BoxConstraints(maxHeight: 307, minHeight: 175),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                    color: darkGrey.withOpacity(
+                      .4,
+                    ),
+                    width: .5)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                if (mediaType == 'video') ...[
-                  Center(
-                      child: InkWell(
-                    onTap: () {
-                      NavigationUtil.push(
-                        context,
-                        screen: ViewAskMedia(
-                          arguments: {
-                            "type": mediaType,
-                            "file": imageUrl,
-                            "poster": imagePoster
-                          },
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 50,
-                      width: 50,
-                      decoration:
-                          BoxDecoration(color: white, shape: BoxShape.circle),
-                      child: Center(
-                        child: Icon(
-                          Icons.play_circle_rounded,
-                          size: 40,
-                          color: HexColor("#4060DB"),
-                        ),
-                      ),
+                errorWidget: imageErrorWidget,
+                progressIndicatorBuilder: (context, url, progress) => Container(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: yarnBlack,
                     ),
-                  )),
-                ]
-              ],
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
+          if (mediaType == 'video') ...[
+            Center(
+                child: InkWell(
+              onTap: () {
+                NavigationUtil.push(
+                  context,
+                  screen: ViewAskMedia(
+                    arguments: {
+                      "type": mediaType,
+                      "file": imageUrl,
+                      "poster": imagePoster
+                    },
+                  ),
+                );
+              },
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(color: white, shape: BoxShape.circle),
+                child: Center(
+                  child: Icon(
+                    Icons.play_circle_rounded,
+                    size: 40,
+                    color: HexColor("#4060DB"),
+                  ),
+                ),
+              ),
+            )),
+          ]
+        ],
       );
     }
     return Container(

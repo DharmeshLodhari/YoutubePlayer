@@ -17,7 +17,7 @@ import '../../../../widget/CustomBoxShadow.dart';
 import '../../../../widget/customized_textform_field.dart';
 import '../../../moments/screens/trimmer_view.dart';
 import '../../messaging/chat/utils.dart';
-import '../models/Topics/YarnTopic.dart';
+import '../models/Topics/yarn_model.dart';
 import '../models/share_as_yarn_model.dart';
 import 'ask_enable_adult_viewers_advice.dart';
 import 'ask_enable_comment_payment.dart';
@@ -51,7 +51,7 @@ class YarnCommentTextField extends StatefulWidget {
   final Function(bool?) onTapEnablePayment;
   final Function(bool?) onTapEnableAdult;
   final Function(bool?) onTapViewerAdvice;
-  final Function(List<AddMediaForYarn>)? addedSelectedMedia;
+  final Function(List<YarnMedia>)? addedSelectedMedia;
   final Function(bool)? resetScrollingValue;
   bool isScrolling;
 
@@ -94,14 +94,15 @@ class YarnCommentTextField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<YarnCommentTextField> createState() => YarnCommentTextFieldState(key: key);
+  State<YarnCommentTextField> createState() =>
+      YarnCommentTextFieldState(key: key);
 }
 
 class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Key? key;
   YarnCommentTextFieldState({this.key});
   List<Map<String, dynamic>> selectedImagesList = [];
-  List<AddMediaForYarn> selectedMedia = [];
+  List<YarnMedia> selectedMedia = [];
   List<PickedFile> selectedImages = [];
   String? videoPath;
   String? imagePath;
@@ -113,8 +114,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   bool onFocus = true;
 
   FocusNode _focus = FocusNode();
-
-  
 
   void _onFocusChange() {
     if (_focus.hasFocus) {
@@ -133,7 +132,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       selectedImagesList.clear();
       widget.addedSelectedMedia!(selectedMedia);
     });
-
   }
 
   @override
@@ -178,7 +176,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                 child: RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                        text:'Replying to ',
+                        text: 'Replying to ',
                         style: TextStyle(
                             fontFamily: "Roboto",
                             color: blackFont,
@@ -448,7 +446,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                 setState(() {
                   selectedImagesList.removeAt(index - 1);
                   selectedImages.removeAt(index - 1);
-                  selectedMedia.removeAt(index -1);
+                  selectedMedia.removeAt(index - 1);
                   widget.addedSelectedMedia!(selectedMedia);
                 });
               },
@@ -495,8 +493,8 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         'file': PickedFile(imagePath!),
       });
       selectedImages.add(PickedFile(imagePath!));
-      selectedMedia.add(
-          AddMediaForYarn(mediaFile: File(imagePath!), mediaType: mediaType));
+      selectedMedia
+          .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
 
       if (widget.addedSelectedMedia != null)
         widget.addedSelectedMedia!(selectedMedia);
@@ -522,7 +520,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           'imagePoster': thumbnailImage,
         });
         selectedImages.add(PickedFile(videoPath!));
-        selectedMedia.add(AddMediaForYarn(
+        selectedMedia.add(YarnMedia(
             mediaFile: File(videoPath!),
             mediaType: mediaType,
             mediaPoster: thumbnailImage));
@@ -661,9 +659,8 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget _buildEnableComment() {
     return AskEnableCommentAndPayment(
       onTap: widget.onTapEnableComment,
-      title: (widget.enableComment ?? true)
-          ? "comment enabled"
-          : "enable comment",
+      title:
+          (widget.enableComment ?? true) ? "comment enabled" : "enable comment",
       image: "yarn/yarn_comment",
       baseBGColor: HexColor("#F8F8F8"),
       baseBorderColor: HexColor("#E9E9E9"),
@@ -677,9 +674,8 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget _buildEnablePayme() {
     return AskEnableCommentAndPayment(
       onTap: widget.onTapEnablePayment,
-      title: (widget.enablePayment ?? true)
-          ? "payment enabled"
-          : "enable payment",
+      title:
+          (widget.enablePayment ?? true) ? "payment enabled" : "enable payment",
       image: "yarn/send_money",
       baseBGColor: HexColor("#F8F8F8"),
       baseBorderColor: HexColor("#E9E9E9"),

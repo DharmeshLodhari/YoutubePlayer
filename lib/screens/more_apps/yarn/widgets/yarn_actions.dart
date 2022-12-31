@@ -1,10 +1,11 @@
 import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locator.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/share_in_chat/ShareInChat.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import "package:uuid/uuid.dart";
+
 import '../models/share_as_yarn_model.dart';
 import '../share_as_a_yarn_screen.dart';
 import '../yarn_dashboard_bloc.dart';
@@ -394,7 +396,7 @@ class _YarnActionsState extends State<YarnActions> {
     return false;
   }
 
-  Future reYarn(AddYarnAndQuestion yarn) async {
+  Future reYarn(Yarn yarn) async {
     Map<String, dynamic> yarnMap = yarn.toAddMap();
     yarnMap['reyarn'] = widget.yarn.id;
     // print('object  yarn here');

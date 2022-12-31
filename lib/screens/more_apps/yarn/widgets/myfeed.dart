@@ -2,15 +2,15 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../../../widget/noItemInList.dart';
-import '../models/Topics/YarnTopic.dart';
+import '../models/Topics/yarn_model.dart';
 import '../tiles/yarn_list_tile.dart';
 import '../yarn_auth.dart';
 import '../yarn_detail_screen.dart';
-import 'yarn_options.dart';
 
 class MyFeedView extends StatefulWidget {
   String? selectedCategory;
@@ -86,7 +86,6 @@ class MyFeedViewState extends State<MyFeedView> {
       if (yarnTopicList.isEmpty) {
         if (mounted) {
           setState(() {
-
             noList = true;
           });
         }
@@ -133,12 +132,10 @@ class MyFeedViewState extends State<MyFeedView> {
           }
           return InkWell(
             onTap: () async {
-              if (yarnTopicList[index].enableCommenting ??
-                  false) {
+              if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
-                  screen: YarnDetailScreen(
-                      yarn: yarnTopicList[index]),
+                  screen: YarnDetailScreen(yarn: yarnTopicList[index]),
                 );
               }
               if (mounted) setState(() {});
@@ -146,7 +143,8 @@ class MyFeedViewState extends State<MyFeedView> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                int index = yarnTopicList.indexWhere((element) => element.id == yarn.id);
+                int index = yarnTopicList
+                    .indexWhere((element) => element.id == yarn.id);
                 if (index != -1) {
                   yarnTopicList.removeAt(index);
                   if (mounted) setState(() {});
@@ -154,7 +152,7 @@ class MyFeedViewState extends State<MyFeedView> {
               },
               onReYarn: (Yarn yarn) {
                 yarnTopicList.insert(0, yarn);
-                if(mounted) setState(() {});
+                if (mounted) setState(() {});
               },
             ),
           );
@@ -200,7 +198,6 @@ class MyFeedViewState extends State<MyFeedView> {
 
         getYarnTopic(categoryId: selectedId);
         setState(() {
-
           _postRefreshController.refreshCompleted();
         });
       } else {
