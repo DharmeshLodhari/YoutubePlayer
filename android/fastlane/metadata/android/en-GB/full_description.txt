@@ -1,5 +1,13 @@
 <h2>Slydo</h2> is a digital payment and lifestyle app. Send and receive money, buy and sell products and services, connect and chat with friends and customers, and do much more.
 
+<b>YARN :</b> Yarn about your day and more, engage with people on enticing topics, ask question and receive helpful answers.
+
+<b>COOL MESSAGING:</b> Send or request money during a chat with friends. Buy or sell products and services during the chat.
+
+<b>SUPER SEARCH:</b> Find people, businesses, products & services easily through the search feature.
+
+<b>SUPER STORE:</b> Find amazing product offers in deals of the day and more.
+
 <b>QR PAYMENT:</b> Send and receive money by QR scan. Pay for products and services at shops by scanning their QR. Accept payment with QR technology that works! Connect and pay friends and family.
 
 <b>CASHLESS TRANSACTIONS:</b> Paste your QR on your shop and get paid for your products and services.
@@ -11,10 +19,6 @@
 <b>EASY TOP UP:</b> Top up your wallet easily with easy options.
 
 <b>BANK CASH OUT:</b> Transfer money from your wallet to your connected bank accounts to get cash.
-
-<b>COOL MESSAGING:</b> Send or request money during a chat with friends. Buy or sell products and services during the chat.
-
-<b>SUPER SEARCH:</b> Find people, businesses, products & services easily through the search feature.
 
 <b>MULTI-FUNCTION APP:</b> No need to switch between apps for payment, chat, shopping, product and service search. All features operate seamlessly.
 

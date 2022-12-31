@@ -1,1 +1,7 @@
 Make cashless payment, receive money, connect, chat, shop, and do more.
+
+YARN : Yarn about your day and more, engage with people on enticing topics, ask question and receive helpful answers.
+
+BUG FIXES
+
+
