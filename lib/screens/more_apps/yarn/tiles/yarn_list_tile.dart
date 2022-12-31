@@ -1,10 +1,10 @@
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/re_yarn_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
@@ -14,12 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
-import '../models/Topics/YarnTopic.dart';
+import '../models/Topics/yarn_model.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
@@ -105,7 +106,7 @@ class _YarnTileState extends State<YarnTile> {
             height: 10,
           ),
         ],
-        if (widget.yarn.tags != null && widget.yarn.viewersAvatars != null )...[
+        if (widget.yarn.tags != null && widget.yarn.viewersAvatars != null) ...[
           _buildTagsAndViewerRow(),
         ],
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
@@ -611,12 +612,12 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget getDisplayWidget(Function() widgetDisplay) {
-    if (widget.yarn.isSensitiveContent == true){
-        // && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+    if (widget.yarn.isSensitiveContent == true) {
+      // && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
       return _buildSensitiveContentWidget();
     }
-    if (widget.yarn.isAdultContent == true){
-    // && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+    if (widget.yarn.isAdultContent == true) {
+      // && _yarnSettings.yarnSettings?.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }
     return widgetDisplay();

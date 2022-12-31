@@ -40,9 +40,9 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
 
   Widget _buildSingleImageView() {
     return _buildCommonImageView(
-        imageUrl: widget.yarnTopic.media.first.file ?? '',
+        imageUrl: widget.yarnTopic.media.first.mediaUrl ?? '',
         mediaType: widget.yarnTopic.media.first.mediaType ?? '',
-        imagePoster: widget.yarnTopic.media.first.imagePoster ?? '',
+        imagePoster: widget.yarnTopic.media.first.mediaPoster ?? '',
         isSingleImage: true);
   }
 
@@ -52,18 +52,18 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
         children: [
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[0].file ?? '',
+                imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[0].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[1].file ?? '',
+                imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[1].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
           ),
         ],
       ),
@@ -77,27 +77,27 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
         children: [
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[0].file ?? '',
+                imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[0].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[1].file ?? '',
+                imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[1].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[2].file ?? '',
+                imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
                 mediaType: widget.yarnTopic.media[2].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[2].imagePoster ?? ''),
+                imagePoster: widget.yarnTopic.media[2].mediaPoster ?? ''),
           ),
         ],
       ),
@@ -112,18 +112,18 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[0].file ?? '',
+                    imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[0].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
               ),
               SizedBox(
                 width: 8,
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[1].file ?? '',
+                    imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[1].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
               ),
             ],
           ),
@@ -134,18 +134,18 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[2].file ?? '',
+                    imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[2].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[2].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[2].mediaPoster ?? ''),
               ),
               SizedBox(
                 width: 8,
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[3].file ?? '',
+                    imageUrl: widget.yarnTopic.media[3].mediaUrl ?? '',
                     mediaType: widget.yarnTopic.media[3].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[3].imagePoster ?? ''),
+                    imagePoster: widget.yarnTopic.media[3].mediaPoster ?? ''),
               ),
             ],
           ),
@@ -187,11 +187,12 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
     );
   }
 
-  Widget _buildSingleAndMultiImageView(
-      {required String imageUrl,
-      required String mediaType,
-      String? imagePoster,
-      required bool isSingleImage,}) {
+  Widget _buildSingleAndMultiImageView({
+    required String imageUrl,
+    required String mediaType,
+    String? imagePoster,
+    required bool isSingleImage,
+  }) {
     return YarnSingleMediaPreview(
       imageUrl: imageUrl,
       isSingleImage: isSingleImage,

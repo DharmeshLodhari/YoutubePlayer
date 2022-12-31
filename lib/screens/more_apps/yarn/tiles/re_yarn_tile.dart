@@ -1,13 +1,13 @@
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:linkwell/linkwell.dart';
 
 import '../../../../routes/route_constants.dart';
@@ -16,7 +16,7 @@ import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/models/user.dart';
-import '../models/Topics/YarnTopic.dart';
+import '../models/Topics/yarn_model.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
 

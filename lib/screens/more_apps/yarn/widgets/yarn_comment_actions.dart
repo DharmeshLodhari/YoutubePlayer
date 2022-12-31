@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_detail_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -179,7 +179,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
           style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w400,
-              color:widget.comment.userDisLike! ? starYellow : darkGreyYarn),
+              color: widget.comment.userDisLike! ? starYellow : darkGreyYarn),
         );
       },
     );
@@ -314,7 +314,9 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   }
 
   int getDisLikeCount() {
-    if (widget.comment.dislike != null && widget.comment.dislike != 0 && widget.comment.userDisLike == true) {
+    if (widget.comment.dislike != null &&
+        widget.comment.dislike != 0 &&
+        widget.comment.userDisLike == true) {
       return widget.comment.dislike ?? 0;
     }
     return 0;

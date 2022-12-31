@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
@@ -9,7 +8,6 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -24,10 +22,9 @@ import '../../../widget/CustomBoxShadow.dart';
 import '../../../widget/curved_btn.dart';
 import '../../../widget/customized_dropdown_field.dart';
 import '../../../widget/customized_textform_field.dart';
-import '../../../widget/image_crop.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/utils.dart';
-import 'models/Topics/YarnTopic.dart';
+import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
 import 'yarn_dashboard_bloc.dart';
@@ -55,10 +52,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   final textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
-  ScrollController _scrollController = ScrollController();
-  List<PickedFile> selectedImages = [];
-  List<AddMediaForYarn> selectedMedia = [];
-  List<Map<String, dynamic>> selectedImagesList = [];
+  // List<PickedFile> selectedImages = [];
+  List<YarnMedia> newMediaList = [];
+  List<YarnMedia> existingMediaList = [];
+  // List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
   YarnCategories? selectedAskCategory;
   YarnCategories? pressedAskCategory;
@@ -102,20 +99,15 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
-    mediaAddInLocal();
+    fillExistingYarnMedia();
     super.initState();
   }
 
-  void mediaAddInLocal() {
-    if (yarn != null && yarn!['media'] != null) {
-      for (var item in yarn!['media']) {
-        selectedImagesList.add({
-          'mediaType': item['type'],
-          'file': item['file'],
-          'imagePoster': item['image_poster'],
-          'isEditYarn': true
-        });
-      }
+  void fillExistingYarnMedia() {
+    if (widget.yarn != null && widget.yarn?.media != null) {
+      widget.yarn?.media.forEach((element) {
+        existingMediaList.add(element);
+      });
     }
     if (mounted) setState(() {});
   }
@@ -183,12 +175,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           if (isMentionName) ...[
             _buildUserNameContainer(),
           ],
-          if (selectedImagesList.isNotEmpty) ...[
-            _buildAddImages(),
-            SizedBox(
-              height: 20,
-            ),
-          ],
+          _buildAddImages(),
           _buildRowForMedia(),
         ],
       ),
@@ -268,13 +255,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           children: [
             InkWell(
                 onTap: () {
-                  if (selectedImagesList.length == 4) {
-                    showToast(
-                        message: "You can select only 4 images or videos");
-                  } else {
-                    pickFileFromMedia();
-                    // pickImage();
-                  }
+                  // if (selectedImagesList.length == 4) {
+                  //   showToast(
+                  //       message: "You can select only 4 images or videos");
+                  // } else {
+                  pickFileFromMedia();
+                  // pickImage();
+                  // }
                 },
                 child: SvgPicture.asset("yarn/images".toSVG())),
             SizedBox(
@@ -502,18 +489,223 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildAddImages() {
-    return Container(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: selectedImagesList.length + 1,
-        itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
-          child: index == 0 ? addImageButton() : showImage(index),
+    if (existingMediaList.isEmpty && newMediaList.isEmpty) return Container();
+
+    bool showAddMediaButton = false;
+
+    if (existingMediaList.length + newMediaList.length < 4) {
+      showAddMediaButton = true;
+    } else {
+      showAddMediaButton = false;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 100,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if (showAddMediaButton) ...[
+                  addImageButton(),
+                  SizedBox(
+                    width: 8,
+                  )
+                ],
+                _buildNewAddedMedia(),
+                _buildExistingMedia(),
+              ],
+            ),
+          ),
         ),
-      ),
+
+        // Container(
+        //   height: 100,
+        //   child: ListView.builder(
+        //     scrollDirection: Axis.horizontal,
+        //     itemCount: selectedImagesList.length + 1,
+        //     itemBuilder: (context, index) => Container(
+        //       padding: EdgeInsets.only(right: 6),
+        //       child: index == 0 ? addImageButton() : showImage(index),
+        //     ),
+        //   ),
+        // ),
+        SizedBox(
+          height: 20,
+        ),
+      ],
     );
+  }
+
+  Widget _buildNewAddedMedia() {
+    if (newMediaList.isEmpty) {
+      return Container();
+    }
+
+    return Row(
+      children: newMediaList.map((e) => showLocalMedia(e)).toList(),
+    );
+  }
+
+  Widget _buildExistingMedia() {
+    if (existingMediaList.isEmpty) {
+      return Container();
+    }
+
+    return Row(
+      children: existingMediaList.map((e) => showServerMedia(e)).toList(),
+    );
+  }
+
+  Widget showLocalMedia(YarnMedia e) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 100,
+          child: Stack(
+            children: <Widget>[
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
+                shadowColor: dividerColor,
+                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                child: Container(
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
+                    image: _buildLocalMediaView(e),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: InkWell(
+                  onTap: () {
+                    newMediaList.remove(e);
+                    if (mounted) setState(() {});
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    margin: EdgeInsets.only(right: 6, top: 6),
+                    decoration: BoxDecoration(
+                        color: HexColor("#000000"), shape: BoxShape.circle),
+                    child: Icon(
+                      Icons.close_outlined,
+                      color: white,
+                      size: 15,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 8,
+        )
+      ],
+    );
+  }
+
+  Widget showServerMedia(YarnMedia e) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 100,
+          child: Stack(
+            children: <Widget>[
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
+                shadowColor: dividerColor,
+                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                child: Container(
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
+                    image: _buildServerMediaView(e),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: InkWell(
+                  onTap: () {
+                    existingMediaList.remove(e);
+                    if (mounted) setState(() {});
+
+                    YarnAuth().deleteYarnMedia(e.id!).catchError((error) {
+                      logger.e(error);
+                    });
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    margin: EdgeInsets.only(right: 6, top: 6),
+                    decoration: BoxDecoration(
+                        color: HexColor("#000000"), shape: BoxShape.circle),
+                    child: Icon(
+                      Icons.close_outlined,
+                      color: white,
+                      size: 15,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 8,
+        )
+      ],
+    );
+  }
+
+  DecorationImage _buildLocalMediaView(YarnMedia e) {
+    File? file;
+
+    if (e.mediaType == "image") {
+      file = e.mediaFile!;
+    } else {
+      file = e.posterFile!;
+    }
+
+    return DecorationImage(
+        image: FileImage(
+          file,
+        ),
+        fit: BoxFit.fill);
+  }
+
+  DecorationImage _buildServerMediaView(YarnMedia e) {
+    String imageUrl;
+
+    if (e.mediaType == "image") {
+      imageUrl = e.mediaUrl!;
+    } else {
+      imageUrl = e.mediaPoster!;
+    }
+
+    return DecorationImage(
+        image: NetworkImage(
+          imageUrl,
+        ),
+        fit: BoxFit.fill);
   }
 
   Widget addImageButton() {
@@ -548,7 +740,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               ],
             ),
             onTap: () {
-              if (selectedImagesList.length == 4) {
+              if (existingMediaList.length + newMediaList.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
                 // pickImage();
@@ -559,89 +751,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         ),
       ),
     );
-  }
-
-  Widget showImage(int index) {
-    return Container(
-      height: 100,
-      child: Stack(
-        children: <Widget>[
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
-            shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
-                image: _buildImageRowView(index),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  selectedImagesList.removeAt(index - 1);
-                  selectedImages.removeAt(index - 1);
-                  selectedMedia.removeAt(index - 1);
-                });
-              },
-              child: Container(
-                height: 25,
-                width: 25,
-                margin: EdgeInsets.only(right: 6, top: 6),
-                decoration: BoxDecoration(
-                    color: HexColor("#000000"), shape: BoxShape.circle),
-                child: Icon(
-                  Icons.close_outlined,
-                  color: white,
-                  size: 15,
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  DecorationImage _buildImageRowView(int index) {
-    if (selectedImagesList[index - 1]['isEditYarn'] == true) {
-      if (selectedImagesList[index - 1]['mediaType'] == "image") {
-        return DecorationImage(
-            image: NetworkImage(
-              selectedImagesList[index - 1]['file'],
-            ),
-            fit: BoxFit.fill);
-      } else {
-        return DecorationImage(
-            image: NetworkImage(
-              selectedImagesList[index - 1]['imagePoster'],
-            ),
-            fit: BoxFit.fill);
-      }
-    } else {
-      if (selectedImagesList[index - 1]['mediaType'] == 'image') {
-        return DecorationImage(
-            image: FileImage(
-              File(selectedImagesList[index - 1]['file'].path),
-            ),
-            fit: BoxFit.fill);
-      } else {
-        return DecorationImage(
-            image: MemoryImage(
-              selectedImagesList[index - 1]['file'],
-            ),
-            fit: BoxFit.fill);
-      }
-    }
   }
 
   void onValueChange(String value) {
@@ -742,16 +851,15 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             ? () {}
             : () async {
                 isAPILoading = true;
-
+                if (mounted) setState(() {});
                 if (yarn != null) {
-                  editYarnAndQuestion();
+                  await editYarnAndQuestion();
                 } else {
                   if (mounted) setState(() {});
                   await addYarnAndQuestion();
                 }
-                selectedImagesList.clear();
-                selectedImages.clear();
-                selectedMedia.clear();
+                existingMediaList.clear();
+                newMediaList.clear();
                 textController.clear();
                 yarnController.clear();
                 isAPILoading = false;
@@ -761,40 +869,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     );
   }
 
-  void pickImage() async {
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context)!.selectTheImageSource),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text(AppLocalization.of(context)!.camera),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text(AppLocalization.of(context)!.gallery),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
-
-    if (imageSource != null) {
-      ImagePicker().pickImage(source: imageSource).then((value) async {
-        if (value != null) {
-          /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
-          if (croppedImage == null) {
-            return;
-          }
-
-          selectedImages.add(PickedFile(croppedImage));
-          if (mounted) setState(() {});
-        }
-      });
-    }
-  }
-
-  pickFileFromMedia() async {
+  void pickFileFromMedia() async {
     List<Media>? res = await ImagesPicker.pick(
       count: 1,
       pickType: PickType.all,
@@ -813,22 +888,16 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
     if (mediaType == 'image') {
       imagePath = file.path;
-      selectedImagesList.add({
-        'mediaType': mediaType,
-        'file': PickedFile(imagePath!),
-      });
-      selectedImages.add(PickedFile(imagePath!));
-      selectedMedia.add(
-          AddMediaForYarn(mediaFile: File(imagePath!), mediaType: mediaType));
+      newMediaList
+          .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
       if (mounted) setState(() {});
     } else if (mediaType == 'video') {
       var videoFilePath =
           await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
-        Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-        String? thumbnailImage =
-            await generateThumbNailFromVideo(videoPath: videoPath!);
+        File? thumbnailImage =
+            await generateThumbnailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
         //   if (thumbnail != null) {
@@ -836,20 +905,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         //     debugPrint('file path gen -> $generatedVideoThumbnail');
         //   }
         // });
-        selectedImagesList.add({
-          'mediaType': mediaType,
-          'file': uInt8List,
-          'imagePoster': thumbnailImage,
-        });
-        selectedImages.add(PickedFile(videoPath!));
-        selectedMedia.add(AddMediaForYarn(
-            mediaFile: File(videoPath!),
-            mediaType: mediaType,
-            mediaPoster: thumbnailImage));
+        newMediaList.add(YarnMedia(
+          mediaFile: File(videoPath!),
+          mediaType: mediaType,
+          posterFile: thumbnailImage,
+        ));
         if (mounted) setState(() {});
       }
     }
-    debugPrint("SELECTED IMAGES:- $selectedImages");
   }
 
   void categoryAndroidSheet() {
@@ -1022,14 +1085,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Future<void> editYarnAndQuestion() async {
-    Yarn yarnEdit = Yarn();
-    selectedMedia.forEach((element) {
-      yarnEdit.media = [];
-      yarnEdit.media.add(MediaFiles(
-          file: element.mediaFile!.path,
-          imagePoster: element.mediaPoster,
-          mediaType: element.mediaType));
-    });
+    Yarn yarnEdit = Yarn(media: existingMediaList + newMediaList);
     yarnEdit.id = yarn!['id'];
     yarnEdit.body = textController.text;
     yarnEdit.enableCommenting = enableCommenting;
@@ -1053,8 +1109,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       }
       showToast(
           message: widget.isYarn == true
-              ? "Yarn add successfully"
-              : "Question add successfully");
+              ? "Yarn updated successfully"
+              : "Question updated successfully");
     }).catchError((error) {
       debugPrint(error.toString());
       showToast(message: error.toString());
@@ -1062,23 +1118,23 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Future<void> addYarnAndQuestion() async {
-    AddYarnAndQuestion addYarnAndQuestion = AddYarnAndQuestion();
-    addYarnAndQuestion.localImages = selectedMedia;
-    addYarnAndQuestion.tags = userTags;
-    addYarnAndQuestion.title = yarnController.text;
-    addYarnAndQuestion.body = textController.text;
-    addYarnAndQuestion.categoryId = selectedAskCategory?.id ?? "0";
-    addYarnAndQuestion.isQuestion = widget.isYarn == true ? false : true;
-    addYarnAndQuestion.author = userBloc.user.userName;
-    addYarnAndQuestion.enablePayme = enablePayMe;
-    addYarnAndQuestion.enableCommenting = enableCommenting;
-    addYarnAndQuestion.ageRestriction = int.parse(ageRating);
-    addYarnAndQuestion.isAdultContent = isAdultContent;
-    addYarnAndQuestion.isSensitiveContent = isSensitiveContent;
+    Yarn yarn = Yarn();
+    yarn.media = newMediaList;
+    yarn.tags = userTags;
+    yarn.title = yarnController.text;
+    yarn.body = textController.text;
+    yarn.category = selectedAskCategory;
+    yarn.isQuestion = widget.isYarn == true ? false : true;
+    yarn.author = userBloc.user.userName;
+    yarn.enablePayMe = enablePayMe;
+    yarn.enableCommenting = enableCommenting;
+    yarn.ageRestriction = int.parse(ageRating);
+    yarn.isAdultContent = isAdultContent;
+    yarn.isSensitiveContent = isSensitiveContent;
 
-    logger.d(addYarnAndQuestion.toAddMap());
+    logger.d(yarn.toAddMap());
 
-    await YarnAuth().addYarnAndQuestion(addYarnAndQuestion).then((value) {
+    await YarnAuth().addYarnAndQuestion(yarn).then((value) {
       if (widget.isYarn == true) {
         Navigator.pop(context, Types.Yarn);
       } else if (widget.isYarn == false) {

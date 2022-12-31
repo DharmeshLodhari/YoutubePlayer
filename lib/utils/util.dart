@@ -274,6 +274,24 @@ Future<String?> generateThumbNailFromVideo({required String videoPath}) async {
   return null;
 }
 
+Future<File?> generateThumbnailFromVideo({required String videoPath}) async {
+  final videoInUnit8List = await VideoThumbnail.thumbnailData(
+    video: videoPath,
+    quality: 85,
+    timeMs: 5,
+  );
+
+  if (videoInUnit8List != null) {
+    final tempDir = await getTemporaryDirectory();
+    String uniqueId = Uuid().v4();
+    File file = await File('${tempDir.path}/$uniqueId.jpg').create();
+    //Example of file => File: '/data/user/0/com.slydo.slydo/cache/954e542e-c217-46d8-867c-cfcb8d2636ba.png'
+    file.writeAsBytesSync(videoInUnit8List);
+    return file;
+  }
+  return null;
+}
+
 TagsStyler textFieldTagStyler = TagsStyler(
   tagDecoration: BoxDecoration(
     borderRadius: BorderRadius.circular(4),

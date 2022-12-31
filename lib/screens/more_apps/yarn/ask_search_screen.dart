@@ -7,9 +7,8 @@ import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../widget/customized_popup_menu.dart';
 import '../../../widget/noItemInList.dart';
-import 'models/Topics/YarnTopic.dart';
+import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
-import 'widgets/yarn_options.dart';
 import 'yarn_auth.dart';
 import 'yarn_detail_screen.dart';
 

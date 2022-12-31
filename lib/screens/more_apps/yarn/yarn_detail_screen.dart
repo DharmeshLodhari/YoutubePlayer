@@ -3,7 +3,7 @@ import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_textfield.dart';
@@ -48,10 +48,11 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   bool isMentionName = false;
   String? searchString;
   var ageRating;
-  List<AddMediaForYarn> selectedMedia = [];
+  List<YarnMedia> selectedMedia = [];
   bool isScrolling = false;
   Yarn? finalYarn;
-  GlobalKey<YarnCommentTextFieldState> yarnCommentTextFieldStateKey = GlobalKey<YarnCommentTextFieldState>();
+  GlobalKey<YarnCommentTextFieldState> yarnCommentTextFieldStateKey =
+      GlobalKey<YarnCommentTextFieldState>();
 
   @override
   void initState() {
@@ -70,7 +71,8 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     isSingleYarnLoading = true;
     if (mounted) setState(() {});
 
-    Map<String, dynamic>? result = await YarnAuth().getSingleTopics(yarnId: widget.yarnId!);
+    Map<String, dynamic>? result =
+        await YarnAuth().getSingleTopics(yarnId: widget.yarnId!);
     if (result != null) {
       finalYarn = result['results'];
     }
@@ -95,7 +97,11 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        finalYarn != null ? !finalYarn!.isQuestion ? "Yarn" : "Question" : "",
+        finalYarn != null
+            ? !finalYarn!.isQuestion
+                ? "Yarn"
+                : "Question"
+            : "",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,

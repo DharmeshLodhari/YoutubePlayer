@@ -301,7 +301,7 @@ class AuthService {
         } catch (error) {
           debugPrint("ERROR:- while fetching new Token $error");
           await Future.delayed(Duration(milliseconds: 500));
-          fetchNewToken();
+          return await fetchNewToken();
         }
 
         jwt = await _db.getJwt(); // get new token now
@@ -309,11 +309,11 @@ class AuthService {
         if (jwt == null) {
           debugPrint("ERROR:- while fetching new Token JWT IS FOUND NULL");
           await Future.delayed(Duration(milliseconds: 500));
-          fetchNewToken();
+          return await fetchNewToken();
         }
       } else {
         await Future.delayed(Duration(milliseconds: 500));
-        fetchNewToken();
+        return await fetchNewToken();
       }
     });
 

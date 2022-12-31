@@ -36,7 +36,6 @@ import 'more_apps/user_post/models/user_post.dart';
 import 'more_apps/user_post/tile/user_post_tile.dart';
 import 'more_apps/user_post/user_post_auth.dart';
 import 'more_apps/user_profile/models/user.dart';
-import 'more_apps/yarn/models/Topics/YarnTopic.dart';
 import 'more_apps/yarn/models/share_as_yarn_model.dart';
 import 'more_apps/yarn/share_as_a_yarn_screen.dart';
 import 'more_apps/yarn/yarn_auth.dart';

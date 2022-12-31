@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -18,7 +18,6 @@ import '../../../yarn/widgets/rich_text.dart';
 import '../../../yarn/widgets/viewer_screen.dart';
 import '../../../yarn/widgets/yarn_actions.dart';
 import '../../../yarn/widgets/yarn_media_renderer.dart';
-import '../../../yarn/widgets/yarn_options.dart';
 
 class YarnQuestionTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
@@ -269,7 +268,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        if (yarnQuestionForChatModel.media != null)...[
+        if (yarnQuestionForChatModel.media != null) ...[
           _buildImagesRow(context: context),
           SizedBox(
             height: 6,
@@ -637,9 +636,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          messageDecoderWithEmoji(
-                              yarn.authorName ?? "") ??
-                              "",
+                          messageDecoderWithEmoji(yarn.authorName ?? "") ?? "",
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
                         SizedBox(
@@ -657,7 +654,9 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                         ),
                         Expanded(
                           child: Text(
-                            yarn.createdAt != null ? '${getGetYarnQuestionDateTime(yarn.createdAt!)}' : "",
+                            yarn.createdAt != null
+                                ? '${getGetYarnQuestionDateTime(yarn.createdAt!)}'
+                                : "",
                             overflow: TextOverflow.fade,
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
@@ -688,8 +687,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildUserAvatar() {
     return InkWell(
       onTap: () {
-        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: yarn.authorAvatar!);
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: yarn.authorAvatar!);
       },
       child: Container(
         height: 36,
@@ -736,12 +735,12 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                 spacing: 2,
                 children: yarn.tags!
                     .map((e) => Text(
-                  "#$e",
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: navyBlue,
-                      fontWeight: FontWeight.w500),
-                ))
+                          "#$e",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: navyBlue,
+                              fontWeight: FontWeight.w500),
+                        ))
                     .toList(),
               ),
             ),

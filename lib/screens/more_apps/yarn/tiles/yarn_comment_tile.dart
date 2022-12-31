@@ -1,9 +1,10 @@
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/YarnTopic.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_reply_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_actions.dart';
@@ -174,11 +175,13 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       Service service = Service.fromJson(widget.yarnComment.attachment);
       childWidget = YarnServiceTile(
         service: service,
+        tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'product') {
       Product product = Product.fromJson(widget.yarnComment.attachment);
       childWidget = YarnProductTile(
         product: product,
+        tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else if (widget.yarnComment.attachmentType == 'blog') {
       UserPost post = UserPost.fromJson(widget.yarnComment.attachment);
@@ -194,6 +197,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         customerProfile: customerProfile,
         showAuthorDetails: true,
         onDeleteBlog: () {},
+        tileRenderPlace: TileRenderPlace.YarnComment,
       );
     } else {
       childWidget = SizedBox();
