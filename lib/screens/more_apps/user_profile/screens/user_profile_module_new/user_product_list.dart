@@ -204,17 +204,19 @@ class _UserProductListState extends State<UserProductList> {
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 mainAxisSpacing: 8,
-                mainAxisExtent: 180,
+                mainAxisExtent: 274,
                 crossAxisSpacing: 15,
                 maxCrossAxisExtent: 200,
               ),
               itemCount: productList.length,
               itemBuilder: (context, index) {
-                return DisplayProduct(
-                  product: productList[index],
-                  onProductRefresh: () {
-                    _onProductRefresh();
-                  },
+                return SizedBox(
+                  child: DisplayProduct(
+                    product: productList[index],
+                    onProductRefresh: () {
+                      _onProductRefresh();
+                    },
+                  ),
                 );
               },
             ),

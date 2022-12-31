@@ -1429,12 +1429,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           getTabUI(title: "Posts", tabIndex: index),
         );
         index++;
+      } else if (!showYarnTab &&
+          !showChannelTab &&
+          !showMomentTab &&
+          !showPostsTab) {
+        tabs.add(
+          getTabUI(title: "No List", tabIndex: index),
+        );
       }
       debugPrint("TABS LENGTH IF:- ${tabs.length}");
-      // tabs.add(
-      //   getTabUI(title: "QR code", tabIndex: index),
-      // );
-    } else {
+    }
+    // else this is for business or developer account
+    else {
       int index = 0;
       if (showYarnTab) {
         tabs.add(
@@ -1454,14 +1460,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         );
         index++;
       }
-      // tabs.add(
-      //   getTabUI(title: "QR code", tabIndex: index),
-      // );
-      // index++;
-      // tabs.add(
-      //   getTabUI(title: "Info", tabIndex: index),
-      // );
-      // index++;
       if (showProductTab) {
         tabs.add(
           getTabUI(title: "Products", tabIndex: index),
@@ -1487,8 +1485,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       tabs.add(
         getTabUI(title: "Hours", tabIndex: index),
       );
-      debugPrint("TABS LENGTH ELSE:- ${tabs.length}");
     }
+    debugPrint("TABS LENGTH ELSE:- ${tabs.length}");
+
     return tabs;
   }
 
@@ -1521,12 +1520,33 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             child: UserPostList(user: searchedUser),
           ),
         );
+      } else if (!showYarnTab &&
+          !showChannelTab &&
+          !showMomentTab &&
+          !showPostsTab) {
+        list.add(
+          KeepAlivePage(
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 120,
+                  ),
+                  SvgPicture.asset('assets/images/no_item.svg'),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'No Content Found',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       }
-      // list.add(
-      //   KeepAlivePage(
-      //     child: UserQRCodeScreen(user: searchedUser),
-      //   ),
-      // );
       debugPrint("TAB VIEW LENGTH IF:- ${list.length}");
     } else {
       // list.add(

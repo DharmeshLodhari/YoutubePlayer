@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:Slydo/data/currency.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/colors.dart';
@@ -5,6 +7,7 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../data/state_notifier.dart';
@@ -82,6 +85,8 @@ class _DisplayProductState extends State<DisplayProduct> {
       child: SizedBox(
         width: 180,
         child: Card(
+          semanticContainer: true,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
           color: Colors.white,
           margin: EdgeInsets.only(
               right: widget.giveRightPadding ? 10 : 0.0, bottom: 2),
@@ -90,34 +95,39 @@ class _DisplayProductState extends State<DisplayProduct> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           shadowColor: boxShadow,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Expanded(
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10)),
+                Stack(
+                  children: [
+                    Container(
+                      height: 155,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
                         clipBehavior: Clip.antiAliasWithSaveLayer,
                         child: CachedNetworkImage(
                           imageUrl: widget.product.cover!,
-                          fit: BoxFit.fitHeight,
+                          fit: BoxFit.cover,
                           width: double.infinity,
                           errorWidget: productAndServiceBigErrorWidget,
                         ),
                       ),
-                      Positioned(
-                        right: 10,
-                        bottom: 10,
-                        child: getRating(
-                            numberOfRating: widget.product.rating?.toInt()),
-                      ),
-                      getMenuIcon(),
-                    ],
-                  ),
+                    ),
+                    Positioned(
+                      left: 10,
+                      bottom: 10,
+                      child: getRating(
+                          numberOfRating: widget.product.rating?.toInt()),
+                    ),
+                    displayShoppingCartControls(),
+                    // TODO: to be added in future
+                    // Positioned(right: 10, top: 10, child: favouriteIcon())
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -137,30 +147,45 @@ class _DisplayProductState extends State<DisplayProduct> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            worldCurrencies[widget.product.currency!]!,
-                            style: TextStyle(
-                              fontFamily: "Roboto",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: navyBlue,
-                            ),
-                          ),
-                          Text(
-                            moneyDisplayNormalizer(
-                                int.parse(widget.product.price!)),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: navyBlue,
-                            ),
-                          ),
-                          Spacer(),
-                          // getFavouriteIcon(),
-                        ],
+                      SizedBox(
+                        height: 4,
                       ),
+                      Text(
+                        '${widget.product.shortDescription}',
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.w300,
+                          fontSize: 9,
+                          color: yarnBlack,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              worldCurrencies[widget.product.currency!]!,
+                              style: TextStyle(
+                                fontFamily: "Roboto",
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: navyBlue,
+                              ),
+                            ),
+                            Text(
+                              moneyDisplayNormalizer(
+                                  int.parse(widget.product.price!)),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.4,
+                                color: navyBlue,
+                              ),
+                            ),
+                            Expanded(child: SizedBox(width: 50)),
+                            displayShoppingAddingToCartControl()
+                          ]),
                     ],
                   ),
                 ),
@@ -275,112 +300,6 @@ class _DisplayProductState extends State<DisplayProduct> {
             }));
   }
 
-  Widget getMenuIcon() {
-    if (basketBloc.getProductOrServiceQuantityInCart(widget.product.id!) == 0) {
-      setState(() {
-        showAddToCartButton = true;
-      });
-    }
-    if (isOwner) {
-      return Positioned(
-        top: 5,
-        right: 5,
-        child: RoundedBackgroundIcon(
-          icon: Icon(
-            SlydoAppIcon.menu,
-            size: 22,
-            color: Colors.black,
-          ),
-          onTap: () {
-            showProductProfileActionsSheet();
-          },
-          backgroundColor: Colors.white.withOpacity(0.5),
-        ),
-      );
-    } else {
-      if (showAddToCartButton) {
-        return Positioned(
-          top: 5,
-          right: 5,
-          child: RoundedBackgroundIcon(
-            icon: Icon(
-              SlydoAppIcon.cart,
-              size: 16,
-              color: blackFont,
-            ),
-            backgroundColor: Colors.white.withOpacity(0.5),
-            onTap: () async {
-              setState(() {
-                showAddToCartButton = false;
-              });
-              addProductToCart();
-            },
-          ),
-        );
-      } else {
-        return Positioned(
-          top: 5,
-          right: 5,
-          child: SizedBox(
-            height: 100,
-            width: 40,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: InkWell(
-                        onTap: () {
-                          addProductToCart();
-                        },
-                        child: Icon(Icons.add),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: navyBlue,
-                      child: Center(
-                        child: Text(
-                          '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: InkWell(
-                          onTap: () {
-                            if (basketBloc.getProductOrServiceQuantityInCart(
-                                    widget.product.id!) ==
-                                1) {
-                              setState(() {
-                                showAddToCartButton = true;
-                              });
-                            }
-
-                            removeProductFromCart();
-                          },
-                          child: Icon(Icons.remove_rounded)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   Widget getFavouriteIcon() {
     return !isOwner
         ? Padding(
@@ -390,6 +309,15 @@ class _DisplayProductState extends State<DisplayProduct> {
             ),
           )
         : SizedBox.shrink();
+  }
+
+  Widget favouriteIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: InkWell(
+        child: Icon(Icons.favorite_border),
+      ),
+    );
   }
 
   void addProductToCart() async {
@@ -417,6 +345,106 @@ class _DisplayProductState extends State<DisplayProduct> {
       }
     } else {
       showToast(message: AppLocalization.of(context)!.productOutOfStock);
+    }
+  }
+
+  Widget displayShoppingCartControls() {
+    if (isInCart() == true) {
+      return Positioned(
+          right: 10,
+          bottom: 5,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+            height: 25,
+            decoration: BoxDecoration(
+                color: white, borderRadius: BorderRadius.circular(20)),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      addProductToCart();
+                    },
+                    child: SvgPicture.asset(
+                      'assets/images/add.svg',
+                      height: 17,
+                      width: 17,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    '${basketBloc.getProductOrServiceQuantityInCart(widget.product.id!)}',
+                    style: TextStyle(
+                      fontFamily: "Roboto",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: yarnBlack,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      removeProductFromCart();
+                    },
+                    child: SvgPicture.asset('assets/images/minus.svg',
+                        height: 17, width: 17),
+                  ),
+                ],
+              ),
+            ),
+          ));
+    } else {
+      return Positioned(
+        right: 10,
+        bottom: 5,
+        child: Container(),
+      );
+    }
+  }
+
+  Widget displayShoppingAddingToCartControl() {
+    IconData iconValue = SlydoAppIcon.add_cart;
+    Color iconBackgroundColor = greyBorderColor;
+    Color iconColor = blackFont;
+
+    if (isInCart() == true) {
+      iconValue = SlydoAppIcon.cart;
+      iconBackgroundColor = navyBlue;
+      iconColor = white;
+    } else {
+      iconValue = SlydoAppIcon.add_cart;
+      iconBackgroundColor = greyBorderColor;
+      iconColor = blackFont;
+    }
+    return RoundedBackgroundIcon(
+      height: 30,
+      width: 30,
+      borderRadius: 20,
+      icon: Icon(
+        iconValue,
+        size: 14,
+        color: iconColor,
+      ),
+      backgroundColor: iconBackgroundColor,
+      onTap: () async {
+        setState(() {
+          showAddToCartButton = false;
+        });
+        addProductToCart();
+      },
+    );
+  }
+
+  bool isInCart() {
+    if (basketBloc.getProductOrServiceQuantityInCart(widget.product.id!) == 0) {
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -501,32 +529,37 @@ class _DisplayServiceState extends State<DisplayService> {
         Navigator.pushNamed(context, '/service-detail',
             arguments: {"service": currentService});
       },
-      child: Card(
-        color: Colors.white,
-        margin: EdgeInsets.only(
-            right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        shadowColor: boxShadow,
-        child: Container(
-          width: MediaQuery.of(context).size.width - 220,
-          margin: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Expanded(
-                child: Stack(
+      child: SizedBox(
+        width: 180,
+        child: Card(
+          color: Colors.white,
+          margin: EdgeInsets.only(
+              right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
+          elevation: 3,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shadowColor: boxShadow,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Stack(
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: CachedNetworkImage(
-                        imageUrl: widget.service.cover!,
-                        fit: BoxFit.fitWidth,
-                        width: double.infinity,
-                        errorWidget: productAndServiceBigErrorWidget,
+                    Container(
+                      height: 155,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                            topRight: Radius.circular(10)),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        child: CachedNetworkImage(
+                          imageUrl: widget.service.cover!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorWidget: productAndServiceBigErrorWidget,
+                        ),
                       ),
                     ),
                     Positioned(
@@ -536,165 +569,188 @@ class _DisplayServiceState extends State<DisplayService> {
                         numberOfRating: widget.service.rating?.toInt(),
                       ),
                     ),
-                    getMenuIcon(),
+                    displayShoppingCartControls(),
+                    //TODO: to be implemented later in future
+                    // Positioned(right: 10, top: 10, child: favouriteIcon())
                   ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, top: 4),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      truncateString(
-                        str: widget.service.name!,
-                        lengthToTruncateAt: 16,
-                        showEllipsis: false,
-                      ),
-                      style: TextStyle(
-                        color: blackFont,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          worldCurrencies[widget.service.currency!]!,
-                          style: TextStyle(
-                            fontFamily: "Roboto",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: navyBlue,
-                          ),
-                        ),
-                        Text(
-                          moneyDisplayNormalizer(
-                              int.parse(widget.service.price!)),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: navyBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 4),
-                  ],
+                SizedBox(
+                  height: 10,
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, top: 4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        truncateString(
+                          str: widget.service.name!,
+                          lengthToTruncateAt: 16,
+                          showEllipsis: false,
+                        ),
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        widget.service.shortDescription!,
+                        overflow: widget.service.shortDescription!.length > 60
+                            ? TextOverflow.ellipsis
+                            : TextOverflow.visible,
+                        style: TextStyle(
+                          fontFamily: "Roboto",
+                          fontWeight: FontWeight.w300,
+                          fontSize: 9,
+                          color: yarnBlack,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            worldCurrencies[widget.service.currency!]!,
+                            style: TextStyle(
+                              fontFamily: "Roboto",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: navyBlue,
+                            ),
+                          ),
+                          Text(
+                            moneyDisplayNormalizer(
+                                int.parse(widget.service.price!)),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: navyBlue,
+                            ),
+                          ),
+                          Expanded(child: SizedBox(width: 50)),
+                          displayShoppingAddingToCartControl()
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget getMenuIcon() {
-    if (basketBloc.getProductOrServiceQuantityInCart(widget.service.id!) == 0) {
-      setState(() {
-        showAddToCartButton = true;
-      });
-    }
-    if (isOwner) {
+  Widget favouriteIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: InkWell(
+        child: Icon(Icons.favorite_border),
+      ),
+    );
+  }
+
+  Widget displayShoppingCartControls() {
+    if (isInCart() == true) {
       return Positioned(
-        top: 5,
-        right: 5,
-        child: RoundedBackgroundIcon(
-          icon: Icon(
-            SlydoAppIcon.menu,
-            size: 22,
-            color: Colors.black,
-          ),
-          onTap: () {
-            showServiceActionsSheet();
-          },
-          backgroundColor: Colors.white.withOpacity(0.5),
-        ),
-      );
-    } else {
-      if (showAddToCartButton) {
-        return Positioned(
-          top: 5,
-          right: 5,
-          child: RoundedBackgroundIcon(
-            icon: Icon(
-              SlydoAppIcon.cart,
-              size: 16,
-              color: blackFont,
-            ),
-            backgroundColor: Colors.white.withOpacity(0.5),
-            onTap: () async {
-              setState(() {
-                showAddToCartButton = false;
-              });
-              addServiceToCart();
-            },
-          ),
-        );
-      } else {
-        return Positioned(
-          top: 5,
-          right: 5,
-          child: SizedBox(
-            height: 100,
-            width: 40,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              child: Column(
+          right: 10,
+          bottom: 5,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 6),
+            height: 25,
+            decoration: BoxDecoration(
+                color: white, borderRadius: BorderRadius.circular(20)),
+            child: Center(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: Center(
-                      child: InkWell(
-                        onTap: () {
-                          addServiceToCart();
-                        },
-                        child: Icon(Icons.add),
-                      ),
+                  GestureDetector(
+                    onTap: () {
+                      addServiceToCart();
+                    },
+                    child: SvgPicture.asset(
+                      'assets/images/add.svg',
+                      height: 17,
+                      width: 17,
                     ),
                   ),
-                  Expanded(
-                    child: Container(
-                      color: navyBlue,
-                      child: Center(
-                        child: Text(
-                          '${basketBloc.getProductOrServiceQuantityInCart(widget.service.id!)}',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    '${basketBloc.getProductOrServiceQuantityInCart(widget.service.id!)}',
+                    style: TextStyle(
+                      fontFamily: "Roboto",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: yarnBlack,
                     ),
                   ),
-                  Expanded(
-                    child: Center(
-                      child: InkWell(
-                        onTap: () {
-                          if (basketBloc.getProductOrServiceQuantityInCart(
-                                  widget.service.id!) ==
-                              1) {
-                            setState(() {
-                              showAddToCartButton = true;
-                            });
-                          }
-
-                          removeServiceFromCart();
-                        },
-                        child: Icon(Icons.remove_rounded),
-                      ),
-                    ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      removeServiceFromCart();
+                    },
+                    child: SvgPicture.asset('assets/images/minus.svg',
+                        height: 17, width: 17),
                   ),
                 ],
               ),
             ),
-          ),
-        );
-      }
+          ));
+    } else {
+      return Positioned(
+        right: 10,
+        bottom: 5,
+        child: Container(),
+      );
+    }
+  }
+
+  Widget displayShoppingAddingToCartControl() {
+    IconData iconValue = SlydoAppIcon.add_cart;
+    Color iconBackgroundColor = greyBorderColor;
+    Color iconColor = blackFont;
+
+    if (isInCart() == true) {
+      iconValue = SlydoAppIcon.cart;
+      iconBackgroundColor = navyBlue;
+      iconColor = white;
+    } else {
+      iconValue = SlydoAppIcon.add_cart;
+      iconBackgroundColor = greyBorderColor;
+      iconColor = blackFont;
+    }
+    return RoundedBackgroundIcon(
+      height: 30,
+      width: 30,
+      borderRadius: 20,
+      icon: Icon(
+        iconValue,
+        size: 14,
+        color: iconColor,
+      ),
+      backgroundColor: iconBackgroundColor,
+      onTap: () async {
+        setState(() {
+          showAddToCartButton = false;
+        });
+        addServiceToCart();
+      },
+    );
+  }
+
+  bool isInCart() {
+    if (basketBloc.getProductOrServiceQuantityInCart(widget.service.id!) == 0) {
+      return false;
+    } else {
+      return true;
     }
   }
 

@@ -151,7 +151,7 @@ class _UserServiceListState extends State<UserServiceList> {
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 mainAxisSpacing: 8,
-                mainAxisExtent: 180,
+                mainAxisExtent: 274,
                 crossAxisSpacing: 15,
                 maxCrossAxisExtent: 200,
               ),
