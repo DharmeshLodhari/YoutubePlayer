@@ -153,6 +153,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     _tabController?.dispose();
   }
 
+  // Fetch all data synchronously()
+  Future _fetchData() async {
+    var apiCalls = [getIsShowPost(), getIsShowYarn(), getIsShowMoment(), getIsShowChannels()];
+    if (searchedUser?.type?.toLowerCase() != "user") {
+      apiCalls.addAll([getIsShowProduct(), getIsShowService()]);
+    }
+    final results = await Future.wait(apiCalls);
+
+    showPostsTab = results[0];
+    showYarnTab = results[1];
+    showMomentTab = results[2];
+    showChannelTab = results[3];
+
+    if (searchedUser?.type?.toLowerCase() != "user") {
+      showProductTab = results[4];
+      showServiceTab = results[5];
+    }
+  }
+
   Future<void> getSearchedUser({bool load = true}) async {
     late CustomerProfile user;
     searchedUserName = arguments['searchedUserName'];
@@ -174,13 +193,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     checkCurrentUserIsInRequestList();
 
     int tabCount = 1;
-
-    showPostsTab = await getIsShowPost();
-    showYarnTab = await getIsShowYarn();
-    showMomentTab = await getIsShowMoment();
-    showChannelTab = await getIsShowChannels();
-    showProductTab = await getIsShowProduct();
-    showServiceTab = await getIsShowService();
+    await _fetchData();
     if (showYarnTab) {
       tabCount++;
     }
@@ -221,7 +234,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         tabCount++;
       }
     }
-    debugPrint("TAB COUNT2:- $tabCount");
     _tabController = TabController(length: tabCount, vsync: this);
     isLoading = false;
     if (mounted) setState(() {});
@@ -1673,7 +1685,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           iconData: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context);
-            var result = await Navigator.of(context).pushNamed(
+            await Navigator.of(context).pushNamed(
                 '/add-edit-user-bio',
                 arguments: {"searchedUser": searchedUser});
 
