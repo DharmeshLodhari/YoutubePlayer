@@ -635,24 +635,30 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          messageDecoderWithEmoji(yarn.authorName ?? "") ?? "",
-                          style: TextStyle(fontSize: 12, color: yarnBlack),
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        ClipOval(
-                          child: Container(
-                            height: 4,
-                            width: 4,
-                            color: yarnBlack,
+                        Expanded(flex: 3,
+                          child: Text(
+                            messageDecoderWithEmoji(yarn.authorName ?? "") ?? "",
+                            style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
                         ),
                         SizedBox(
                           width: 4,
                         ),
                         Expanded(
+                          flex: 1,
+                          child: ClipOval(
+                            child: Container(
+                              height: 4,
+                              width: 4,
+                              color: yarnBlack,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Expanded(
+                          flex: 1,
                           child: Text(
                             yarn.createdAt != null
                                 ? '${getGetYarnQuestionDateTime(yarn.createdAt!)}'
