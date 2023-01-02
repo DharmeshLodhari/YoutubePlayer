@@ -71,6 +71,7 @@ class _UserTileForGroupDetailState extends State<UserTileForGroupDetail> {
           title: userNameWithVerifiedIcon(
             name: _buildName() ?? "",
             isVerified: widget.user!.isVerified!,
+            verifiedIconColor: verifyBlue,
           ),
           subtitle: getSubtitle(context),
           leading: avatarImage,

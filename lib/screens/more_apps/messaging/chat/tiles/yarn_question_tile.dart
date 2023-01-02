@@ -96,7 +96,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         if (mounted) setState(() {});
 
         await YarnAuth()
-            .getSingleTopics(yarnId: yarnQuestionForChatModel.id!)
+            .getSingleTopics(yarnId: yarnQuestionForChatModel.id)
             .then((data) {
           Yarn? yarnTopic;
           if (data != null) {
