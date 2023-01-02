@@ -13,10 +13,9 @@ import 'package:provider/provider.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/util.dart';
+import '../../../user_profile/screens/user_profile_module_new/utils.dart';
 import '../../../yarn/utils/utils.dart';
 import '../../../yarn/widgets/rich_text.dart';
-import '../../../yarn/widgets/viewer_screen.dart';
-import '../../../yarn/widgets/yarn_actions.dart';
 import '../../../yarn/widgets/yarn_media_renderer.dart';
 
 class YarnQuestionTileForChat extends StatefulWidget {
@@ -598,7 +597,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        _buildTagsAndViewerRow(),
+        getFollowersWidget(widget),
         if (isMediaPresent) ...[
           _buildImagesRowNew(),
           SizedBox(
@@ -717,51 +716,12 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
-  Widget _buildTagsAndViewerRow() {
-    List<String> selectedImages = [];
-    if (yarn.viewersAvatars != null) {
-      for (ViewersAvatars avatars in yarn.viewersAvatars!) {
-        selectedImages.add(avatars.avatar!);
-      }
-    }
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Wrap(
-                runSpacing: 5,
-                spacing: 2,
-                children: yarn.tags!
-                    .map((e) => Text(
-                          "#$e",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: navyBlue,
-                              fontWeight: FontWeight.w500),
-                        ))
-                    .toList(),
-              ),
-            ),
-            SizedBox(
-              width: 70,
-              child: ViewerArranger(selectedImages: selectedImages),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 10,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTopActions() {
-    return YarnActions(
-      yarn: yarn,
-    );
-  }
+  //
+  // Widget _buildTopActions() {
+  //   return YarnActions(
+  //     yarn: yarn,
+  //   );
+  // }
 
   Widget _buildImagesRowNew() {
     return YarnMediaRender(
