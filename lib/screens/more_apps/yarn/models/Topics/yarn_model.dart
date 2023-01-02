@@ -159,7 +159,7 @@ class Yarn {
   Yarn? reYarn;
   int? numberOfReYarn;
   List<YarnMedia> media = <YarnMedia>[];
-  Map<String, dynamic>? attachment;
+  Map<String, dynamic>? attachment = {};
   String? attachmentType;
   bool userUpvoted = false;
   bool userReyarned = false;
@@ -210,6 +210,13 @@ class Yarn {
     map['user_reyarned'] = userReyarned;
     map['user_supported'] = userSupported;
     map['user_down_voted'] = userDownVoted;
+
+    if (attachment != null) {
+      map['attachment'] = attachment;
+    }
+
+
+
     return map;
   }
 

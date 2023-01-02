@@ -18,7 +18,6 @@ import '../../../../../utils/util.dart';
 import '../../../shopping/models/store.dart';
 import '../../../user_post/models/user_post.dart';
 import '../../../user_profile/models/user.dart';
-import '../../../user_profile/screens/user_profile_module_new/utils.dart';
 import '../../../yarn/tiles/re_yarn_tile.dart';
 import '../../../yarn/tiles/yarn_blog_post_tile.dart';
 import '../../../yarn/tiles/yarn_customer_post_tile.dart';
@@ -79,32 +78,34 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   }
 
   void checkModel() {
+    _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
     try {
       yarnQuestionForChatModel = YarnQuestionForChatModel();
       var meta = widget.message!['meta_data'];
-      yarn = Yarn.fromJson(jsonDecode(widget.message!['meta_data']));
-      logger.d("yarn meta:${meta}");
-      _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
-      Map<String, dynamic> linkData =
-      detectLinkInText(messageDecoderWithEmoji(yarn.body)!);
+      yarn = Yarn.fromJson(jsonDecode(meta));
+      if (yarn != null) {
+        Map<String, dynamic> linkData =
+        detectLinkInText(messageDecoderWithEmoji(yarn.body)!);
 
-      if (linkData["hasLink"]) {
-        isUrlPresent = true;
+        if (linkData["hasLink"]) {
+          isUrlPresent = true;
 
-        linkToBePreview = linkData['links'][0];
-        if (!linkToBePreview!.contains("http")) {
-          linkToBePreview = "http://" + linkToBePreview!;
+          linkToBePreview = linkData['links'][0];
+          if (!linkToBePreview!.contains("http")) {
+            linkToBePreview = "http://" + linkToBePreview!;
+          }
+        }
+        if (yarn.attachment != null) {
+          isAttachmentPresent = true;
+        }
+        if (yarn.reYarn != null) {
+          isReYarnPresent = true;
+        }
+        if (yarn.media.isNotEmpty) {
+          isMediaPresent = true;
         }
       }
-      if (yarn.attachment != null) {
-        isAttachmentPresent = true;
-      }
-      if (yarn.reYarn != null) {
-        isReYarnPresent = true;
-      }
-      if (yarn.media.isNotEmpty) {
-        isMediaPresent = true;
-      }
+
       isNewModel = true;
       if (mounted) setState(() {});
       debugPrint("TRY:- $yarnQuestionForChatModel");
