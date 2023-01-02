@@ -7,7 +7,6 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +19,7 @@ import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
+import '../../user_profile/screens/user_profile_module_new/utils.dart';
 import '../models/Topics/yarn_model.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
@@ -97,6 +97,12 @@ class _YarnTileState extends State<YarnTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
+        Align(
+          alignment: Alignment.topRight,
+          child: getFollowersWidget(widget),),
+        SizedBox(
+          height: 4,
+        ),
         if (widget.yarn.body != null && widget.yarn.body!.isNotEmpty) ...[
           SizedBox(
             height: 10,
@@ -105,9 +111,6 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 10,
           ),
-        ],
-        if (widget.yarn.tags != null && widget.yarn.viewersAvatars != null) ...[
-          _buildTagsAndViewerRow(),
         ],
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
           getDisplayWidget(_buildReYarnTile),
@@ -214,6 +217,7 @@ class _YarnTileState extends State<YarnTile> {
                       ),
                       verifiedIconColor: verifyBlue,
                     ),
+                    // SizedBox(height: 5.0,),
                   ],
                 ),
               ),
@@ -304,46 +308,6 @@ class _YarnTileState extends State<YarnTile> {
       description: messageDecoderWithEmoji(widget.yarn.title ?? '') ?? '',
       fontSize: 12,
       fontWeight: FontWeight.w600,
-    );
-  }
-
-  Widget _buildTagsAndViewerRow() {
-    List<String> selectedImages = [];
-    if (widget.yarn.viewersAvatars != null) {
-      for (ViewersAvatars avatars in widget.yarn.viewersAvatars!) {
-        selectedImages.add(avatars.avatar!);
-      }
-    }
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Wrap(
-                runSpacing: 5,
-                spacing: 2,
-                children: widget.yarn.tags!
-                    .map((e) => Text(
-                          "#$e",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: navyBlue,
-                              fontWeight: FontWeight.w500),
-                        ))
-                    .toList(),
-              ),
-            ),
-            SizedBox(
-              width: 70,
-              child: ViewerArranger(selectedImages: selectedImages),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 10,
-        ),
-      ],
     );
   }
 

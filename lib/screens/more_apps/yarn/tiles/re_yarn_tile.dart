@@ -5,11 +5,10 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/viewer_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:linkwell/linkwell.dart';
-
+import '../../user_profile/screens/user_profile_module_new/utils.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
@@ -93,7 +92,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
         SizedBox(
           height: 9,
         ),
-        _buildTagsAndViewerRow(),
+        getFollowersWidget(widget),
         if (isAttachmentPresent && widget.yarn.attachment != null) ...[
           SizedBox(height: 8),
           _buildAttachment(),
@@ -310,46 +309,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
 
     return RichTextForTitle(
       description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
-    );
-  }
-
-  Widget _buildTagsAndViewerRow() {
-    List<String> selectedImages = [];
-    if (widget.yarn.viewersAvatars != null) {
-      for (ViewersAvatars avatars in widget.yarn.viewersAvatars!) {
-        selectedImages.add(avatars.avatar!);
-      }
-    }
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Wrap(
-                runSpacing: 5,
-                spacing: 2,
-                children: widget.yarn.tags!
-                    .map((e) => Text(
-                          "#$e",
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: navyBlue,
-                              fontWeight: FontWeight.w500),
-                        ))
-                    .toList(),
-              ),
-            ),
-            SizedBox(
-              width: 70,
-              child: ViewerArranger(selectedImages: selectedImages),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 10,
-        ),
-      ],
     );
   }
 
