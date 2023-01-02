@@ -160,7 +160,7 @@ class _FollowingAndFollowersListState extends State<FollowingAndFollowersList> {
 
 Future<BasePaginationModel<List>> getListOfFollowersL() async {
   return UserAuth().getFollowingOrFollowersList(
-      nextUrl: '', username: 'frankdroid', isFollowingUser: true);
+      nextUrl: '', username: '', isFollowingUser: true);
 }
 
 class FollowAndFollowersList extends StatefulWidget {
