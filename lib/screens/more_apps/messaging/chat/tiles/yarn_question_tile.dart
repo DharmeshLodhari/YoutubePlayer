@@ -8,17 +8,30 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../main.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/util.dart';
+import '../../../shopping/models/store.dart';
+import '../../../user_post/models/user_post.dart';
+import '../../../user_profile/models/user.dart';
 import '../../../user_profile/screens/user_profile_module_new/utils.dart';
+import '../../../yarn/tiles/re_yarn_tile.dart';
+import '../../../yarn/tiles/yarn_blog_post_tile.dart';
+import '../../../yarn/tiles/yarn_customer_post_tile.dart';
+import '../../../yarn/tiles/yarn_product_tile.dart';
+import '../../../yarn/tiles/yarn_service_tile.dart';
 import '../../../yarn/utils/utils.dart';
 import '../../../yarn/widgets/rich_text.dart';
+import '../../../yarn/widgets/url_reader_of_yarn.dart';
 import '../../../yarn/widgets/yarn_media_renderer.dart';
+import '../../../yarn/yarn_dashboard_bloc.dart';
 
 class YarnQuestionTileForChat extends StatefulWidget {
+  // Yarn yarn;
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
@@ -39,6 +52,13 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   bool isLoading = false;
   bool isMediaPresent = false;
   bool isNewModel = false;
+
+  bool isAttachmentPresent = false;
+  bool isReYarnPresent = false;
+  bool isUrlPresent = false;
+  String? linkToBePreview;
+
+  late YarnDashboardBloc _yarnSettings;
 
   @override
   void initState() {
@@ -61,7 +81,27 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   void checkModel() {
     try {
       yarnQuestionForChatModel = YarnQuestionForChatModel();
+      var meta = widget.message!['meta_data'];
       yarn = Yarn.fromJson(jsonDecode(widget.message!['meta_data']));
+      logger.d("yarn meta:${meta}");
+      _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
+      Map<String, dynamic> linkData =
+      detectLinkInText(messageDecoderWithEmoji(yarn.body)!);
+
+      if (linkData["hasLink"]) {
+        isUrlPresent = true;
+
+        linkToBePreview = linkData['links'][0];
+        if (!linkToBePreview!.contains("http")) {
+          linkToBePreview = "http://" + linkToBePreview!;
+        }
+      }
+      if (yarn.attachment != null) {
+        isAttachmentPresent = true;
+      }
+      if (yarn.reYarn != null) {
+        isReYarnPresent = true;
+      }
       if (yarn.media.isNotEmpty) {
         isMediaPresent = true;
       }
@@ -338,15 +378,16 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   }
 
   Widget _buildPostDescription() {
-    return Text(
-      yarnQuestionForChatModel.description ?? "",
-      maxLines: 3,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        color: blackFont,
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-      ),
+    return RichTextForTitle(
+        description: messageDecoderWithEmoji(yarnQuestionForChatModel.description ?? ""),
+      fontSize: 14,
+      // maxLines: 3,
+      // overflow: TextOverflow.ellipsis,
+      // style: TextStyle(
+      //   color: blackFont,
+      //   fontSize: 14,
+      //   fontWeight: FontWeight.w400,
+      // ),
     );
   }
 
@@ -597,13 +638,29 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        getFollowersWidget(widget),
+
+        if (isReYarnPresent && yarn.reYarn != null) ...[
+          getDisplayWidget(_buildReYarnTile),
+          SizedBox(
+            height: 8,
+          ),
+        ],
+        if (isAttachmentPresent && yarn.attachment != null) ...[
+          getDisplayWidget(_buildAttachment),
+          SizedBox(
+            height: 8,
+          ),
+        ],
         if (isMediaPresent) ...[
           _buildImagesRowNew(),
           SizedBox(
             height: 8,
           ),
         ],
+        yarn.factChecked == true
+            ? _buildFactCheckWidget()
+            : SizedBox.shrink(),
+        SizedBox(height: 6),
       ],
     );
   }
@@ -643,29 +700,13 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                         SizedBox(
                           width: 4,
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: ClipOval(
-                            child: Container(
-                              height: 4,
-                              width: 4,
-                              color: yarnBlack,
-                            ),
-                          ),
+                        Text(
+                          yarn.createdAt != null
+                              ? '${getGetYarnQuestionDateTime(yarn.createdAt!)}'
+                              : "",
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            yarn.createdAt != null
-                                ? '${getGetYarnQuestionDateTime(yarn.createdAt!)}'
-                                : "",
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(fontSize: 12, color: yarnBlack),
-                          ),
-                        )
                       ],
                     ),
                     userNameWithVerifiedIcon(
@@ -722,13 +763,210 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
+  Widget _buildAttachment() {
+    Widget childWidget;
+    if (yarn.attachmentType == 'service') {
+      Service service = Service.fromJson(yarn.attachment);
+      childWidget = YarnServiceTile(
+        service: service,
+      );
+    } else if (yarn.attachmentType == 'product') {
+      Product product = Product.fromJson(yarn.attachment);
+      childWidget = YarnProductTile(
+        product: product,
+      );
+    } else if (yarn.attachmentType == 'blog') {
+      UserPost post = UserPost.fromJson(yarn.attachment);
+      childWidget = YarnBlogPostTile(
+        post: post,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (yarn.attachmentType == 'profile') {
+      CustomerProfile customerProfile =
+      CustomerProfile.fromJson(yarn.attachment ?? {});
+      childWidget = YarnCustomerPostTile(
+        customerProfile: customerProfile,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else {
+      childWidget = SizedBox();
+    }
+    return childWidget;
+  }
+  
   //
   // Widget _buildTopActions() {
   //   return YarnActions(
   //     yarn: yarn,
   //   );
   // }
+  
+  Widget _buildReYarnTile() {
+    return ReYarnTile(
+      yarn: yarn.reYarn ?? Yarn(),
+    );
+  }
 
+  Widget _buildFactCheckWidget() {
+    return Container(
+      padding: EdgeInsets.all(5),
+      //margin: EdgeInsets.only(right: 64),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.5),
+          border: Border.all(color: HexColor("#FCCF72")),
+          color: HexColor("#FEE6B5")),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SvgPicture.asset('assets/images/yarn/yell_icon.svg'),
+          SizedBox(
+            width: 2,
+          ),
+          Text(
+            'We doubt the information in the Yarn is correct.',
+            style: TextStyle(
+                color: Color.fromARGB(255, 187, 118, 27), fontSize: 10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSensitiveContentWidget() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: deepPink),
+          color: lightPink),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'The following Yarn may contain sensitive information',
+            style: TextStyle(
+                color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'This media is not available because it contains content you’ve chosen not to see.',
+            style: TextStyle(
+                color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              clickWidget(
+                text: 'View',
+                onClick: () {
+                  setState(() {
+                    yarn.isSensitiveContent = false;
+                  });
+                },
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              clickWidget(
+                text: 'Always show me sensitive media',
+                onClick: () {
+                  print('sensitive');
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdultContentWidget() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Color.fromARGB(255, 187, 118, 27)),
+          color: Color.fromARGB(255, 249, 242, 222)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'The following Yarn may contain adult content',
+            style: TextStyle(
+                color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'This media is not available because it contains content you’ve chosen not to see.',
+            style: TextStyle(
+                color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              clickWidget(
+                text: 'View',
+                onClick: () {
+                  setState(() {
+                    yarn.isAdultContent = false;
+                  });
+                },
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              clickWidget(
+                text: 'Always show me sensitive media',
+                onClick: () {
+                  print('sensitive');
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getDisplayWidget(Function() widgetDisplay) {
+    if (yarn.isSensitiveContent == true && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+
+      return _buildSensitiveContentWidget();
+    }
+    if (yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+      return _buildAdultContentWidget();
+    }
+    return widgetDisplay();
+  }
+
+  Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
+    onTap: onClick,
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), color: blackFont),
+      child: Text(
+        text ?? '',
+        style: TextStyle(
+            color: white, fontSize: 10, fontWeight: FontWeight.w700),
+      ),
+    ),
+  );
+  
+  
   Widget _buildImagesRowNew() {
     return YarnMediaRender(
       yarnTopic: yarn,
