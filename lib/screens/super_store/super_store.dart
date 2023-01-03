@@ -31,6 +31,7 @@ class SuperStore extends StatefulWidget {
 class _SuperStoreState extends State<SuperStore> {
   bool todaysDealsEmpty = false;
   bool isTodayDealLoading = false;
+  double todaysDealsSizeBox = 0;
   List<ShoppingProduct> todaysDealList = [];
 
   List<Product> productList = [];
@@ -155,6 +156,7 @@ class _SuperStoreState extends State<SuperStore> {
 
         if (result == null) {
           todaysDealsEmpty = true;
+          todaysDealsSizeBox = 22;
           isTodayDealLoading = false;
           if (mounted) {
             setState(() {});
@@ -238,9 +240,10 @@ class _SuperStoreState extends State<SuperStore> {
                 controller: _productScrollController,
                 children: [
                   searchBox(),
-                  const SizedBox(height: 22),
+                  SizedBox(height: todaysDealsSizeBox),
                   todaysDealsEmpty ? SizedBox.shrink() : getTodaysDealList(),
-                  const SizedBox(height: 38),
+                  todaysDealsEmpty ? SizedBox.shrink() : SizedBox(height: 38),
+                  // const
                   superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading

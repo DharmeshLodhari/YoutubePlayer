@@ -5,21 +5,7 @@ import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module
 import '../../../yarn/models/Topics/yarn_model.dart';
 
 
-Widget followersWidget({List<UserFollowers>? userImages}) {
-  int count = userImages!.length;
-  if (count == 0) {
-    return SizedBox();
-  } else if (4 > count) {
-    return buildStackedfollowersWidget(images: userImages);
-  } else if (4 <= count) {
-    return buildMultipleFollowersWidget(userImages: userImages);
-  } else {
-    return SizedBox();
-  }
-}
-
-
-Widget getFollowersWidget(widget) {
+Widget getFollowersWidget(widget, {double radiusSize: 32, double radiusShift: 10, double radiusHeight: 32, double radiusWidth: 32}) {
   List<UserFollowers> viewers = [];
 
   if (widget.yarn.viewersAvatars != null) {
@@ -28,55 +14,29 @@ Widget getFollowersWidget(widget) {
       viewers.add(follower);
     }
   }
-  return followersWidget(userImages: viewers);
+  return followersWidget(userImages: viewers, radiusSize: radiusSize, radiusShift: radiusShift, radiusHeight: radiusHeight, radiusWidth: radiusWidth);
 }
 
 
-Widget buildMultipleFollowersWidget({List<UserFollowers>? userImages}) {
-  final double size = 32;
-  final double xShift = 10;
-  return Padding(
-    padding: EdgeInsets.only(right: 12),
-    child: StackedWidgets(
-      size: size,
-      xShift: xShift,
-      items: [
-        ...List.generate(
-            4, (index) => buildImage(userImages![index].avatar ?? "")),
-        if (userImages != null && userImages.length != 4) buildfollowersCountWidget(userImages),
-      ],
-    ),
-  );
-}
-
-
-Widget buildStackedfollowersWidget({
-  List<UserFollowers>? images,
-}) {
-  if (images!.length != 0) {
-    final double size = 32;
-    final double xShift = 10;
-    final items =
-    images.map((image) => buildImage(image.avatar ?? "")).toList();
-
-    return Padding(
-      padding: EdgeInsets.only(right: 12),
-      child: StackedWidgets(
-        items: items,
-        size: size,
-        xShift: xShift,
-      ),
-    );
+Widget followersWidget({List<UserFollowers>? userImages, double radiusSize: 32, double radiusShift: 10, double radiusHeight: 32, double radiusWidth: 32}) {
+  int count = userImages!.length;
+  if (count == 0) {
+    return SizedBox();
+  } else if (4 > count) {
+    return buildStackedfollowersWidget(images: userImages, radiusSize: radiusSize, radiusShift: radiusShift);
+  } else if (4 <= count) {
+    return buildMultipleFollowersWidget(userImages: userImages, radiusSize: radiusSize, radiusShift: radiusShift, radiusHeight: radiusHeight, radiusWidth: radiusWidth);
+  } else {
+    return SizedBox();
   }
-  return SizedBox();
 }
 
 
-Widget buildfollowersCountWidget(List<UserFollowers> userFollowers) {
+Widget buildfollowersCountWidget(List<UserFollowers> userFollowers, {userImages, double radiusHeight: 32, double radiusWidth: 32}) {
   int count = userFollowers.length - 4;
   return Container(
-    height: 32,
-    width: 32,
+    height: radiusHeight,
+    width: radiusWidth,
     padding: EdgeInsets.all(2),
     child: ClipOval(
       child: Container(
@@ -91,6 +51,42 @@ Widget buildfollowersCountWidget(List<UserFollowers> userFollowers) {
               ),
             )),
       ),
+    ),
+  );
+}
+
+
+Widget buildStackedfollowersWidget({
+  List<UserFollowers>? images, double radiusSize: 32, double radiusShift: 10
+}) {
+  if (images!.length != 0) {
+    final items =
+    images.map((image) => buildImage(image.avatar ?? "")).toList();
+
+    return Padding(
+      padding: EdgeInsets.only(right: 12),
+      child: StackedWidgets(
+        items: items,
+        size: radiusSize,
+        xShift: radiusShift,
+      ),
+    );
+  }
+  return SizedBox();
+}
+
+
+Widget buildMultipleFollowersWidget({List<UserFollowers>? userImages, double radiusSize: 32, double radiusShift: 10, double radiusHeight: 32, radiusWidth: 32}) {
+  return Padding(
+    padding: EdgeInsets.only(right: 12),
+    child: StackedWidgets(
+      size: radiusSize,
+      xShift: radiusShift,
+      items: [
+        ...List.generate(
+            4, (index) => buildImage(userImages![index].avatar ?? "")),
+        if (userImages != null && userImages.length != 4) buildfollowersCountWidget(userImages, radiusWidth: radiusWidth, radiusHeight: radiusHeight),
+      ],
     ),
   );
 }
