@@ -30,7 +30,6 @@ import '../../../yarn/widgets/yarn_media_renderer.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 
 class YarnQuestionTileForChat extends StatefulWidget {
-  // Yarn yarn;
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
@@ -646,7 +645,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             height: 8,
           ),
         ],
-        if (isAttachmentPresent && yarn.attachment != null) ...[
+        if (isAttachmentPresent && yarn.attachment != null && yarn.attachment?.isEmpty != true) ...[
           getDisplayWidget(_buildAttachment),
           SizedBox(
             height: 8,

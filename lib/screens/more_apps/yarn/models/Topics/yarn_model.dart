@@ -123,7 +123,12 @@ class Yarn {
         attachmentType = 'profile';
         attachment = item['profile'];
       }
+      else {
+        rebuildAttachment(item);
+        attachment = item;
+      }
     }
+
     if (json['user_upvoted'] != null) {
       userUpvoted = json['user_upvoted'];
     }
@@ -137,6 +142,22 @@ class Yarn {
       userDownVoted = json['user_down_voted'];
     }
   }
+
+  // an alternative way to get the data in the data payload for attachment
+  void rebuildAttachment(Map<String, dynamic> data){
+    if (data.containsKey("seller_fullname")){
+      attachmentType = 'product';
+    }
+    else if (data.containsKey("provider_fullname")){
+      attachmentType = 'service';
+    }
+    else if (data.containsKey("title")){
+      attachmentType = 'blog';
+    }
+    else if (data.containsKey("fullname")){
+      attachmentType = 'profile';
+    }
+    }
 
   String? id;
   List<String>? tags;
@@ -212,10 +233,9 @@ class Yarn {
     map['user_supported'] = userSupported;
     map['user_down_voted'] = userDownVoted;
 
-    if (attachment != null) {
+    if (attachment != null && attachment?.isEmpty != true) {
       map['attachment'] = attachment;
     }
-
 
 
     return map;
@@ -238,6 +258,7 @@ class Yarn {
       if (ageRestriction != null) "age_restriction": ageRestriction
     };
   }
+
 }
 
 class ViewersAvatars {
