@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import '../../../../../main.dart';
 import '../ask_categories_model.dart';
 
 class Yarn {
@@ -277,9 +278,9 @@ class YarnMedia {
 
   YarnMedia.fromJson(dynamic json) {
     id = json['id'];
-    mediaUrl = json['file'];
-    mediaType = json['type'];
-    mediaPoster = json['image_poster'];
+    mediaUrl = json['file'] ??  json['mediaUrl'];
+    mediaType = json['type'] ??  json['mediaType'];
+    mediaPoster = json['image_poster'] ??  json['mediaPoster'];
   }
 
   Map<String, dynamic> toJson() {
