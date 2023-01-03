@@ -168,11 +168,8 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 15,
-              ),
               Container(
-                padding: EdgeInsets.only(left: 16, right: 8),
+                padding: EdgeInsets.only(left: 16, right: 8, top: 3.6),
                 child: RichText(
                   text: TextSpan(children: [
                     TextSpan(
@@ -193,7 +190,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 6,
               ),
               Divider(
                 color: greySecondaryYarn,
