@@ -155,7 +155,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   // Fetch all data synchronously()
   Future _fetchData() async {
-    var apiCalls = [getIsShowPost(), getIsShowYarn(), getIsShowMoment(), getIsShowChannels()];
+    var apiCalls = [
+      getIsShowPost(),
+      getIsShowYarn(),
+      getIsShowMoment(),
+      getIsShowChannels()
+    ];
     if (searchedUser?.type?.toLowerCase() != "user") {
       apiCalls.addAll([getIsShowProduct(), getIsShowService()]);
     }
@@ -1685,8 +1690,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           iconData: SlydoAppIcon.edit,
           onTap: () async {
             Navigator.pop(context);
-            await Navigator.of(context).pushNamed(
-                '/add-edit-user-bio',
+            await Navigator.of(context).pushNamed('/add-edit-user-bio',
                 arguments: {"searchedUser": searchedUser});
 
             getSearchedUser();
