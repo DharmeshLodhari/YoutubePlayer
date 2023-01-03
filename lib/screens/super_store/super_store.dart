@@ -240,10 +240,10 @@ class _SuperStoreState extends State<SuperStore> {
                 controller: _productScrollController,
                 children: [
                   searchBox(),
+                  SizedBox(height: 16),
                   SizedBox(height: todaysDealsSizeBox),
                   todaysDealsEmpty ? SizedBox.shrink() : getTodaysDealList(),
-                  todaysDealsEmpty ? SizedBox.shrink() : SizedBox(height: 38),
-                  // const
+                  todaysDealsEmpty ? SizedBox.shrink() : SizedBox(height: 20),
                   superStoreProducts(),
                   const SizedBox(height: 16),
                   isProductLoading
