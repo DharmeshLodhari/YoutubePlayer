@@ -692,9 +692,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(flex: 3,
+                        Expanded(
+                          flex: 3,
                           child: Text(
-                            messageDecoderWithEmoji(yarn.authorName ?? "") ?? "",
+                            messageDecoderWithEmoji(yarn.authorName ?? "") ??
+                                "",
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
                         ),

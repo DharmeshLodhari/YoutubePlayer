@@ -83,7 +83,7 @@ class _DisplayProductState extends State<DisplayProduct> {
             arguments: {"product": currentProduct});
       },
       child: SizedBox(
-        width: 180,
+        width: 200,
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -96,7 +96,7 @@ class _DisplayProductState extends State<DisplayProduct> {
           shadowColor: boxShadow,
           child: Padding(
             padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 6.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -127,10 +127,10 @@ class _DisplayProductState extends State<DisplayProduct> {
                   ],
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 15,
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,8 +154,8 @@ class _DisplayProductState extends State<DisplayProduct> {
                         '${widget.product.shortDescription}',
                         style: TextStyle(
                           fontFamily: "Roboto",
-                          fontWeight: FontWeight.w300,
-                          fontSize: 9,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 10,
                           color: yarnBlack,
                         ),
                       ),
@@ -163,14 +163,14 @@ class _DisplayProductState extends State<DisplayProduct> {
                         height: 6,
                       ),
                       Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               worldCurrencies[widget.product.currency!]!,
                               style: TextStyle(
                                 fontFamily: "Roboto",
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 14.8,
                                 color: navyBlue,
                               ),
                             ),
@@ -179,11 +179,11 @@ class _DisplayProductState extends State<DisplayProduct> {
                                   int.parse(widget.product.price!)),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15.4,
+                                fontSize: 14,
                                 color: navyBlue,
                               ),
                             ),
-                            Expanded(child: SizedBox(width: 50)),
+                            Expanded(child: SizedBox(width: 40)),
                             displayShoppingAddingToCartControl()
                           ]),
                     ],
@@ -536,10 +536,12 @@ class _DisplayServiceState extends State<DisplayService> {
           margin: EdgeInsets.only(
               right: widget.giveRightPadding ? 10 : 0.0, bottom: 8.0),
           elevation: 3,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           shadowColor: boxShadow,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 6.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
