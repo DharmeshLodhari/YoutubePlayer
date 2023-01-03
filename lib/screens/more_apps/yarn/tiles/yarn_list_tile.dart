@@ -99,7 +99,7 @@ class _YarnTileState extends State<YarnTile> {
         _buildUserInfoRow(),
         Align(
           alignment: Alignment.topRight,
-          child: getFollowersWidget(widget),),
+          child: getFollowersWidget(widget, radiusSize: 28, radiusShift: 10, radiusHeight: 28, radiusWidth: 28),),
         SizedBox(
           height: 4,
         ),
@@ -580,7 +580,7 @@ class _YarnTileState extends State<YarnTile> {
 
       return _buildSensitiveContentWidget();
     }
-    if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+    else if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }
     return widgetDisplay();
