@@ -1302,6 +1302,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       showMoreAction = false;
       if (mounted) setState(() {});
     }
+    // return Container();
 
     return ColorfulSafeArea(
       bottom: Platform.isAndroid ? false : true,

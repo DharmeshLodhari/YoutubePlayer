@@ -84,7 +84,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       yarn = Yarn.fromJson(jsonDecode(meta));
       if (yarn != null) {
         Map<String, dynamic> linkData =
-        detectLinkInText(messageDecoderWithEmoji(yarn.body)!);
+            detectLinkInText(messageDecoderWithEmoji(yarn.body)!);
 
         if (linkData["hasLink"]) {
           isUrlPresent = true;
@@ -135,7 +135,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         if (mounted) setState(() {});
 
         await YarnAuth()
-            .getSingleTopics(yarnId: yarnQuestionForChatModel.id)
+            .getSingleTopics(yarnId: yarn.id)
             .then((data) {
           Yarn? yarnTopic;
           if (data != null) {
@@ -379,7 +379,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
   Widget _buildPostDescription() {
     return RichTextForTitle(
-        description: messageDecoderWithEmoji(yarnQuestionForChatModel.description ?? ""),
+      description:
+          messageDecoderWithEmoji(yarnQuestionForChatModel.description ?? ""),
       fontSize: 14,
       // maxLines: 3,
       // overflow: TextOverflow.ellipsis,
@@ -638,14 +639,15 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-
         if (isReYarnPresent && yarn.reYarn != null) ...[
           getDisplayWidget(_buildReYarnTile),
           SizedBox(
             height: 8,
           ),
         ],
-        if (isAttachmentPresent && yarn.attachment != null && yarn.attachment?.isEmpty != true) ...[
+        if (isAttachmentPresent &&
+            yarn.attachment != null &&
+            yarn.attachment?.isEmpty != true) ...[
           getDisplayWidget(_buildAttachment),
           SizedBox(
             height: 8,
@@ -657,9 +659,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             height: 8,
           ),
         ],
-        yarn.factChecked == true
-            ? _buildFactCheckWidget()
-            : SizedBox.shrink(),
+        yarn.factChecked == true ? _buildFactCheckWidget() : SizedBox.shrink(),
         SizedBox(height: 6),
       ],
     );
@@ -786,7 +786,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       );
     } else if (yarn.attachmentType == 'profile') {
       CustomerProfile customerProfile =
-      CustomerProfile.fromJson(yarn.attachment ?? {});
+          CustomerProfile.fromJson(yarn.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
         showAuthorDetails: true,
@@ -797,14 +797,14 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     }
     return childWidget;
   }
-  
+
   //
   // Widget _buildTopActions() {
   //   return YarnActions(
   //     yarn: yarn,
   //   );
   // }
-  
+
   Widget _buildReYarnTile() {
     return ReYarnTile(
       yarn: yarn.reYarn ?? Yarn(),
@@ -944,31 +944,31 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   }
 
   Widget getDisplayWidget(Function() widgetDisplay) {
-    if (yarn.isSensitiveContent == true && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
-
+    if (yarn.isSensitiveContent == true &&
+        _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
       return _buildSensitiveContentWidget();
     }
-    if (yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+    if (yarn.isAdultContent == true &&
+        _yarnSettings.yarnSettings?.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }
     return widgetDisplay();
   }
 
   Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
-    onTap: onClick,
-    child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15), color: blackFont),
-      child: Text(
-        text ?? '',
-        style: TextStyle(
-            color: white, fontSize: 10, fontWeight: FontWeight.w700),
-      ),
-    ),
-  );
-  
-  
+        onTap: onClick,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15), color: blackFont),
+          child: Text(
+            text ?? '',
+            style: TextStyle(
+                color: white, fontSize: 10, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+
   Widget _buildImagesRowNew() {
     return YarnMediaRender(
       yarnTopic: yarn,
