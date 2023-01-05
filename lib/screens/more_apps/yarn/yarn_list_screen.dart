@@ -156,6 +156,13 @@ class YarnListScreenState extends State<YarnListScreen> {
                 yarnTopicList[index] = yarn;
                 if (mounted) setState(() {});
               },
+              navigateToReyarn: () {
+                if (yarnTopicList[index].reYarn == null) return;
+                NavigationUtil.push(
+                  context,
+                  screen: YarnDetailScreen(yarn: yarnTopicList[index].reYarn!),
+                );
+              },
             ),
           );
         },

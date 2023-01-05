@@ -31,15 +31,16 @@ class YarnTile extends StatefulWidget {
   Function(Yarn)? onDeleteYarn;
   Function(Yarn)? onReYarn;
   Function(Yarn)? onUpdateYarn;
+  Function()? navigateToReyarn;
   final Color? backGroundColor;
 
-  YarnTile({
-    required this.yarn,
-    this.backGroundColor,
-    this.onDeleteYarn,
-    this.onUpdateYarn,
-    this.onReYarn,
-  });
+  YarnTile(
+      {required this.yarn,
+      this.backGroundColor,
+      this.onDeleteYarn,
+      this.onUpdateYarn,
+      this.onReYarn,
+      this.navigateToReyarn});
 
   @override
   State<YarnTile> createState() => _YarnTileState();
@@ -324,6 +325,9 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildReYarnTile() {
     return ReYarnTile(
       yarn: widget.yarn.reYarn ?? Yarn(),
+      onOptionsAction: () {
+        if (widget.navigateToReyarn != null) widget.navigateToReyarn!();
+      },
     );
   }
 
