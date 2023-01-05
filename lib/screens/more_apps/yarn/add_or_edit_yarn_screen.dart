@@ -850,11 +850,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         onPressed: isAPILoading
             ? () {}
             : () async {
-                isAPILoading = true;
                 if (mounted) setState(() {});
                 if (yarn != null) {
+                  isAPILoading = true;
                   await editYarnAndQuestion();
                 } else {
+                  if (selectedAskCategory?.id == null) return;
+                  isAPILoading = true;
                   if (mounted) setState(() {});
                   await addYarnAndQuestion();
                 }
