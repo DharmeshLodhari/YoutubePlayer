@@ -105,8 +105,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/yarn_comment".toSVG(),
             color: darkGreyYarn,
-            height: 13,
-            width: 13,
+            height: 15,
+            width: 15,
           ),
           SizedBox(
             width: 6,
@@ -125,7 +125,7 @@ class _YarnActionsState extends State<YarnActions> {
     return LikeButton(
       mainAxisAlignment: MainAxisAlignment.start,
       padding: EdgeInsets.only(left: 5),
-      size: 13,
+      size: 15,
       circleColor: CircleColor(start: red, end: red),
       bubblesColor: BubblesColor(
         dotPrimaryColor: red,
@@ -163,7 +163,7 @@ class _YarnActionsState extends State<YarnActions> {
       padding: EdgeInsets.only(left: 10),
       // crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
-      size: 13,
+      size: 15,
       circleColor: CircleColor(start: starYellow, end: starYellow),
       bubblesColor: BubblesColor(
         dotPrimaryColor: starYellow,
@@ -215,8 +215,8 @@ class _YarnActionsState extends State<YarnActions> {
           SvgPicture.asset(
             "yarn/re_share".toSVG(),
             color: widget.yarn.userReyarned ? naturalGreen : darkGreyYarn,
-            height: 13,
-            width: 13,
+            height: 15,
+            width: 15,
           ),
           SizedBox(
             width: 6,
@@ -316,8 +316,8 @@ class _YarnActionsState extends State<YarnActions> {
                 : widget.yarn.userSupported
                     ? deepblue
                     : null,
-            height: 13,
-            width: 13,
+            height: 15,
+            width: 15,
           ),
         ],
       ),
