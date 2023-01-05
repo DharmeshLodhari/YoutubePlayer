@@ -92,6 +92,30 @@ class _YarnTileState extends State<YarnTile> {
     );
   }
 
+  bool _showText(){
+    if(isAttachmentPresent && widget.yarn.attachment != null && widget.yarn.attachment?.isEmpty == false){
+      return false;
+    }
+    if(isMediaPresent){
+      return false;
+    }
+    if (widget.yarn.body != null && widget.yarn.body!.isNotEmpty ){
+      return true;
+    }
+    return false;
+  }
+
+
+  bool shouldShowYarnText(){
+    if (widget.yarn.isSensitiveContent == true && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+      return _showText();
+    }
+    else if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+      return _showText();
+    }
+    return true;
+  }
+
   Widget _buildMain() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +127,7 @@ class _YarnTileState extends State<YarnTile> {
         SizedBox(
           height: 4,
         ),
-        if (widget.yarn.body != null && widget.yarn.body!.isNotEmpty) ...[
+        if (shouldShowYarnText() == true) ...[
           SizedBox(
             height: 10,
           ),
@@ -111,14 +135,14 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 10,
           ),
-        ],
+        ] else SizedBox(height: 8,),
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
           getDisplayWidget(_buildReYarnTile),
           SizedBox(
             height: 8,
           ),
         ],
-        if (isAttachmentPresent && widget.yarn.attachment != null) ...[
+        if (isAttachmentPresent && widget.yarn.attachment != null && widget.yarn.attachment?.isEmpty == false) ...[
           getDisplayWidget(_buildAttachment),
           SizedBox(
             height: 8,
@@ -582,8 +606,9 @@ class _YarnTileState extends State<YarnTile> {
     }
     else if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
       return _buildAdultContentWidget();
+    }else{
+      return widgetDisplay();
     }
-    return widgetDisplay();
   }
 
   Widget clickWidget({String? text, Function()? onClick}) => GestureDetector(
