@@ -76,7 +76,7 @@ class YarnListScreenState extends State<YarnListScreen> {
         previous = result['previous'];
         var tempList = result['results'];
         // yarnTopicList = [];
-        if (mounted) {
+        if (mounted && tempList.isNotEmpty) {
           setState(() {
             noList = false;
             isLoading = false;
