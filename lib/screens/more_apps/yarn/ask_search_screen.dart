@@ -50,9 +50,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void getYarnTopic() async {
     bool isQuestion = false;
-    debugPrint("FILTER VALUE:- $filterValue");
     String? categoryId;
-    if (filterValue == null || filterValue == "question") {
+    if (filterValue == "question") {
       isQuestion = true;
     } else {
       isQuestion = false;
@@ -71,7 +70,6 @@ class _SearchScreenState extends State<SearchScreen> {
             isQuestion: isQuestion,
             searchText: searchController.text,
             categoryId: categoryId);
-
         if (result == null) {
           noList = true;
 

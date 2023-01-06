@@ -349,19 +349,23 @@ class YarnAuth extends AuthService {
   // Search Yarns
   Future<Map<String, dynamic>?> getSearchYarns(String? next, String previous,
       {bool isQuestion = false, String? searchText, String? categoryId}) async {
-    debugPrint("CALLING ALL CATEGORIES");
     String url = "";
     if (next == null) {
       return null;
     }
     if (next == "") {
       url = AppConfig.baseUrl +
-          "/api/v1/social/ask/?question=$isQuestion&search=$searchText&categoryId=$categoryId";
+          "/api/v1/social/ask/?question=$isQuestion&search=$searchText";
+
+      if (categoryId != null) {
+        url = AppConfig.baseUrl +
+            "/api/v1/social/ask/?question=$isQuestion&search=$searchText&categoryId=$categoryId";
+      }
+
+
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
-
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
