@@ -231,7 +231,8 @@ class _ReYarnTileState extends State<ReYarnTile> {
 
   Widget _buildPostTitle() {
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(widget.yarn.title ?? '') ?? '',
+      description:
+      widget.yarn.title ?? '',
     );
   }
 
@@ -308,7 +309,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
     }
 
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
+      description: widget.yarn.body ?? '',
     );
   }
 

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../../../../utils/util.dart';
@@ -22,10 +23,11 @@ String getGetYarnQuestionDateTime(String dateTime) {
 
 List<String> getAllHashtags(String text) {
   final regexp = RegExp(r'\#[a-zA-Z0-9._-]+\b()');
+  text = text.replaceAll("\n ", " ");
 
   List<String> hashtags = [];
 
-  regexp.allMatches(text).forEach((element) {
+  regexp.allMatches(text.replaceAll("\n ", " ")).forEach((element) {
     if (element.group(0) != null) {
       hashtags.add(element.group(0).toString());
     }
@@ -40,7 +42,7 @@ List<String> getAllMentions(String text) {
   List<String> mentions = [];
   List<String> filterMention = [];
 
-  regexp.allMatches(text).forEach((element) {
+  regexp.allMatches(text.replaceAll("\n", " ")).forEach((element) {
     if (element.group(0) != null) {
       mentions.add(element.group(0).toString());
     }

@@ -329,7 +329,7 @@ class _YarnTileState extends State<YarnTile> {
 
   Widget _buildPostTitle() {
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(widget.yarn.title ?? '') ?? '',
+      description: widget.yarn.title ?? '',
       fontSize: 12,
       fontWeight: FontWeight.w600,
     );
@@ -456,7 +456,8 @@ class _YarnTileState extends State<YarnTile> {
     }
 
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
+      // description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
+      description: widget.yarn.body ?? '',
       fontSize: 14,
     );
   }

@@ -380,7 +380,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildPostDescription() {
     return RichTextForTitle(
       description:
-          messageDecoderWithEmoji(yarnQuestionForChatModel.description ?? ""),
+          yarnQuestionForChatModel.description ?? "",
       fontSize: 14,
       // maxLines: 3,
       // overflow: TextOverflow.ellipsis,
@@ -755,13 +755,13 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
   Widget _buildPostTitleNew() {
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(yarn.title ?? '') ?? '',
+      description: yarn.title ?? '',
     );
   }
 
   Widget _buildPostDescriptionNew() {
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(yarn.body ?? '') ?? '',
+      description: yarn.body ?? '',
     );
   }
 

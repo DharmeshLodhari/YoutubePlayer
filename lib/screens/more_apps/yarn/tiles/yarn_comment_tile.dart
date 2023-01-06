@@ -428,8 +428,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       );
     }
     return RichTextForTitle(
-      description:
-          messageDecoderWithEmoji(widget.yarnComment.comment ?? '') ?? '',
+      description:widget.yarnComment.comment ?? '',
     );
     // return Text(
     //   messageDecoderWithEmoji(commentDetail!.comment!)!,

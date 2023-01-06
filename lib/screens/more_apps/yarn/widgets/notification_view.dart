@@ -151,7 +151,7 @@ class AskNotificationView extends StatelessWidget {
 
   Widget _buildPostDescription() {
     return RichTextForTitle(
-      description: messageDecoderWithEmoji(notification!.body ?? '') ?? '',
+      description: notification!.body ?? '',
     );
   }
 }
