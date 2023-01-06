@@ -209,8 +209,19 @@ class _YarnOptionsState extends State<YarnOptions> {
         _buildTile(
             icon: "yarn/hide",
             width: 12,
-            title: 'Turn off commenting',
-            subTitle: 'Disable commenting on this post.'),
+            title: widget.yarnTopic!.enableCommenting!
+                ? 'Turn off commenting'
+                : 'Turn on commenting',
+            subTitle: widget.yarnTopic!.enableCommenting!
+                ? 'Disable commenting on this post.'
+                : 'Enable commenting on this post.',
+            onTap: () async {
+              bool mstatus = widget.yarnTopic!.enableCommenting =
+                  !widget.yarnTopic!.enableCommenting!;
+              Navigator.pop(context);
+              await YarnAuth().toggleCommenting(widget.yarnTopic!.id!, mstatus);
+              showToast(message: 'Commenting updated..');
+            }),
         SizedBox(
           height: 15,
         ),
