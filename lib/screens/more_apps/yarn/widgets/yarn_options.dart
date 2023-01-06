@@ -8,8 +8,12 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../data/state_notifier.dart';
+import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
+import '../../../../utils/slydo_app_icon_icons.dart';
 import '../../../../utils/util.dart';
+import '../../../../widget/dialog.dart';
+import '../../../../widget/rounded_background_icon.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../add_or_edit_yarn_screen.dart';
@@ -218,9 +222,30 @@ class _YarnOptionsState extends State<YarnOptions> {
                 ? 'Delete this question'
                 : 'Delete this yarn',
             onTap: () {
-              deleteYarnAndQuestion();
+              showDeleteYarnDialog();
             }),
       ],
+    );
+  }
+
+  showDeleteYarnDialog() {
+    showDialogBox(
+      context: context,
+      actionOneTextColor: white,
+      actionOneBgColor: mateRed,
+      actionTwoTextColor: blackFont,
+      actionTwoBgColor: greyBorderColor,
+      title: 'Delete',
+      actionTwoText: AppLocalization.of(context)!.cancel,
+      actionOneText: AppLocalization.of(context)!.delete,
+      description: 'Are you sure you want to delete this yarn?',
+      roundedBackgroundIcon: RoundedBackgroundIcon(
+        enableMargin: false,
+        width: 90,
+        height: 90,
+        image: Icon(SlydoAppIcon.delete, color: mateRed),
+      ),
+      leftButtonOnPressed: () => deleteYarnAndQuestion(),
     );
   }
 
