@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:Slydo/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -22,16 +23,24 @@ String getGetYarnQuestionDateTime(String dateTime) {
 }
 
 List<String> getAllHashtags(String text) {
-  final regexp = RegExp(r'\#[a-zA-Z0-9._-]+\b()');
-  text = text.replaceAll("\n ", " ");
-
+  text = messageDecoderWithEmoji(text) ?? "";
+  text = text.replaceAll(RegExp(r'\n'), ' ');
+  var new_list = text.split(" ");
+  new_list.removeWhere((item) => ["", " ", null, false, 0].contains(item));
   List<String> hashtags = [];
-
-  regexp.allMatches(text.replaceAll("\n ", " ")).forEach((element) {
-    if (element.group(0) != null) {
-      hashtags.add(element.group(0).toString());
+  for (var i in new_list){
+    if(i.startsWith("#")) {
+      print("NaI:$i");
+      hashtags.add(i);
     }
-  });
+  }
+
+  final regexp = RegExp(r'\#[a-zA-Z0-9._-]+\b()');
+  // regexp.allMatches(text).forEach((element) {
+  //   if (element.group(0) != null) {
+  //     hashtags.add(element.group(0).toString());
+  //   }
+  // });
 
   return hashtags;
 }
