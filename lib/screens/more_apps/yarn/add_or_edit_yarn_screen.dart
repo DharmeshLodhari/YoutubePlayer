@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
@@ -193,6 +194,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           fontWeight: FontWeight.w600,
           color: HexColor("#151515")),
       onChanged: onValueChange,
+      inputFormatters: [LengthLimitingTextInputFormatter(300)],
       decoration: InputDecoration(
         hintText: "Leave your thought",
         hintStyle: TextStyle(
@@ -834,41 +836,43 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildSubmitButton() {
-    return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 24),
-      constraints:
-          BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 240),
-      child: CurvedButton(
-        height: 32,
-        textColor: Colors.white,
-        backgroundColor: navyBlue,
-        text: "Submit",
-        fontSize: 10,
-        borderRadius: 20,
-        isLoading: isAPILoading,
-        onPressed: isAPILoading
-            ? () {}
-            : () async {
-                if (mounted) setState(() {});
-                if (yarn != null) {
-                  isAPILoading = true;
-                  await editYarnAndQuestion();
-                } else {
-                  if (selectedAskCategory?.id == null) return;
-                  isAPILoading = true;
-                  if (mounted) setState(() {});
-                  await addYarnAndQuestion();
-                }
-                existingMediaList.clear();
-                newMediaList.clear();
-                textController.clear();
-                yarnController.clear();
-                isAPILoading = false;
-                if (mounted) setState(() {});
-              },
-      ),
-    );
+    return textController.text.isNotEmpty && textController.text.length <= 300
+        ? Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 240),
+            child: CurvedButton(
+              height: 32,
+              textColor: Colors.white,
+              backgroundColor: navyBlue,
+              text: "Submit",
+              fontSize: 10,
+              borderRadius: 20,
+              isLoading: isAPILoading,
+              onPressed: isAPILoading
+                  ? () {}
+                  : () async {
+                      if (mounted) setState(() {});
+                      if (yarn != null) {
+                        isAPILoading = true;
+                        await editYarnAndQuestion();
+                      } else {
+                        if (selectedAskCategory?.id == null) return;
+                        isAPILoading = true;
+                        if (mounted) setState(() {});
+                        await addYarnAndQuestion();
+                      }
+                      existingMediaList.clear();
+                      newMediaList.clear();
+                      textController.clear();
+                      yarnController.clear();
+                      isAPILoading = false;
+                      if (mounted) setState(() {});
+                    },
+            ),
+          )
+        : Container();
   }
 
   void pickFileFromMedia() async {
