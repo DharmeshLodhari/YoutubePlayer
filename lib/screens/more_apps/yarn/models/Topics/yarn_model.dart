@@ -121,7 +121,7 @@ class Yarn {
         attachment = item['product'];
       } else if (item['profile'] != null) {
         attachmentType = 'profile';
-        attachment = item['profile'];
+        attachment = item['full_name'] == null ? item['profile']: item ;
       }
       else {
         rebuildAttachment(item);
@@ -154,7 +154,7 @@ class Yarn {
     else if (data.containsKey("title")){
       attachmentType = 'blog';
     }
-    else if (data.containsKey("fullname")){
+    else {
       attachmentType = 'profile';
     }
     }
