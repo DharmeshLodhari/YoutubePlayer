@@ -76,7 +76,7 @@ class YarnListScreenState extends State<YarnListScreen> {
         previous = result['previous'];
         var tempList = result['results'];
         // yarnTopicList = [];
-        if (mounted) {
+        if (mounted && tempList.isNotEmpty) {
           setState(() {
             noList = false;
             isLoading = false;
@@ -155,6 +155,13 @@ class YarnListScreenState extends State<YarnListScreen> {
                     .indexWhere((element) => element.id == yarn.id);
                 yarnTopicList[index] = yarn;
                 if (mounted) setState(() {});
+              },
+              navigateToReyarn: () {
+                if (yarnTopicList[index].reYarn == null) return;
+                NavigationUtil.push(
+                  context,
+                  screen: YarnDetailScreen(yarn: yarnTopicList[index].reYarn!),
+                );
               },
             ),
           );

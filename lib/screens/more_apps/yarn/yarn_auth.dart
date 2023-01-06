@@ -734,6 +734,17 @@ class YarnAuth extends AuthService {
     }
   }
 
+  // Toggle commenting
+  Future<Map<String, dynamic>?> toggleCommenting(
+      String? yarnId, bool status) async {
+    String url =
+        getSecureUrl(url: AppConfig.baseUrl + "/api/v1/social/ask/$yarnId/");
+    var headers = await getAuthHeaders();
+    var response = await httpPatch(url,
+        headers: headers, body: jsonEncode({"enable_commenting": status}));
+    return jsonDecode(response.body);
+  }
+
   // Delete Single Comment
   Future<bool?> deleteComment(String commentId) async {
     debugPrint("CALLING ALL COMMENTS");

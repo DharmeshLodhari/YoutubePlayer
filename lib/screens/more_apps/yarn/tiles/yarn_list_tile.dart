@@ -31,15 +31,16 @@ class YarnTile extends StatefulWidget {
   Function(Yarn)? onDeleteYarn;
   Function(Yarn)? onReYarn;
   Function(Yarn)? onUpdateYarn;
+  Function()? navigateToReyarn;
   final Color? backGroundColor;
 
-  YarnTile({
-    required this.yarn,
-    this.backGroundColor,
-    this.onDeleteYarn,
-    this.onUpdateYarn,
-    this.onReYarn,
-  });
+  YarnTile(
+      {required this.yarn,
+      this.backGroundColor,
+      this.onDeleteYarn,
+      this.onUpdateYarn,
+      this.onReYarn,
+      this.navigateToReyarn});
 
   @override
   State<YarnTile> createState() => _YarnTileState();
@@ -123,7 +124,12 @@ class _YarnTileState extends State<YarnTile> {
         _buildUserInfoRow(),
         Align(
           alignment: Alignment.topRight,
-          child: getFollowersWidget(widget, radiusSize: 28, radiusShift: 10, radiusHeight: 28, radiusWidth: 28),),
+          child: getFollowersWidget(widget,
+              radiusSize: 28,
+              radiusShift: 10,
+              radiusHeight: 28,
+              radiusWidth: 28),
+        ),
         SizedBox(
           height: 4,
         ),
@@ -148,6 +154,18 @@ class _YarnTileState extends State<YarnTile> {
             height: 8,
           ),
         ],
+        // if (isReYarnPresent && widget.yarn.reYarn != null) ...[
+        //   getDisplayWidget(_buildReYarnTile),
+        //   SizedBox(
+        //     height: 8,
+        //   ),
+        // ],
+        // if (isAttachmentPresent && widget.yarn.attachment != null) ...[
+        //   getDisplayWidget(_buildAttachment),
+        //   SizedBox(
+        //     height: 8,
+        //   ),
+        // ],
         if (isMediaPresent) ...[
           getDisplayWidget(_buildImagesRow),
           SizedBox(
@@ -338,6 +356,9 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildReYarnTile() {
     return ReYarnTile(
       yarn: widget.yarn.reYarn ?? Yarn(),
+      onOptionsAction: () {
+        if (widget.navigateToReyarn != null) widget.navigateToReyarn!();
+      },
     );
   }
 
@@ -601,11 +622,11 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget getDisplayWidget(Function() widgetDisplay) {
-    if (widget.yarn.isSensitiveContent == true && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
-
+    if (widget.yarn.isSensitiveContent == true &&
+        _yarnSettings.yarnSettings.allowSensitiveContent == false) {
       return _buildSensitiveContentWidget();
-    }
-    else if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+    } else if (widget.yarn.isAdultContent == true &&
+        _yarnSettings.yarnSettings.allowAdultContent == false) {
       return _buildAdultContentWidget();
     }else{
       return widgetDisplay();

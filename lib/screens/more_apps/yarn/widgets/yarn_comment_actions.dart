@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_statements
+
 import 'dart:convert';
 import 'dart:math';
 
@@ -46,20 +48,21 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(child: _buildActionableList()),
-        _buildShareButton(),
-        SizedBox(
-          width: 18,
-        ),
-        _buildPayButton(),
-        SizedBox(
-          width: 16,
-        )
-      ],
-    );
+    // return Row(
+    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //   children: [
+    //     Expanded(child: _buildActionableList()),
+    //     _buildShareButton(),
+    //     SizedBox(
+    //       width: 18,
+    //     ),
+    //     _buildPayButton(),
+    //     SizedBox(
+    //       width: 16,
+    //     )
+    //   ],
+    // );
+    return _buildActionableList();
   }
 
   Widget _buildActionableList() {
@@ -67,9 +70,14 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
 
     finalActionList.addAll([
       Expanded(child: _buildCommentButton()),
+      Spacer(),
       Expanded(child: _buildLikeButton()),
+      Spacer(),
       Expanded(child: _buildDisLikeButton()),
-      //Expanded(child: _buildRetweetButton()),
+      Spacer(),
+      Expanded(child: _buildShareButton()),
+      Spacer(),
+      Expanded(child: _buildPayButton()),
     ]);
 
     if (finalActionList.length == 3) {
@@ -77,13 +85,16 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     }
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       children: finalActionList,
     );
   }
 
   Widget _buildCommentButton() {
-    return InkWell(
-      onTap: () {
+    return LikeButton(
+      size: 15,
+      onTap: (_) async {
         if (!widget.isCommentDetail) {
           NavigationUtil.push(
             context,
@@ -93,31 +104,29 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
             ),
           );
         }
+        return false;
       },
-      child: Row(
-        children: [
-          SvgPicture.asset(
-            "yarn/yarn_comment".toSVG(),
-            color: darkGreyYarn,
-            height: 13,
-            width: 13,
-          ),
-          SizedBox(
-            width: 6,
-          ),
-          Text(
-            getCommentCount(),
-            style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
-          ),
-        ],
-      ),
+      likeBuilder: (bool isLiked) {
+        return SvgPicture.asset(
+          "yarn/yarn_comment".toSVG(),
+          color: darkGreyYarn,
+          height: 15,
+          width: 15,
+        );
+      },
+      countBuilder: (_, __, ___) {
+        return Text(
+          getCommentCount(),
+          style: TextStyle(
+              fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+        );
+      },
     );
   }
 
   Widget _buildLikeButton() {
     return LikeButton(
-      size: 13,
+      size: 15,
       circleColor: CircleColor(start: red, end: red),
       bubblesColor: BubblesColor(
         dotPrimaryColor: red,
@@ -132,8 +141,8 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
               ? "yarn/likeAfter".toSVG()
               : "yarn/likeBefore".toSVG(),
           color: widget.comment.userLike! ? red : darkGreyYarn,
-          height: 13,
-          width: 13,
+          height: 15,
+          width: 15,
         );
       },
       likeCount: getLikeCount(),
@@ -152,7 +161,7 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
 
   Widget _buildDisLikeButton() {
     return LikeButton(
-      size: 13,
+      size: 15,
       circleColor: CircleColor(start: starYellow, end: starYellow),
       bubblesColor: BubblesColor(
         dotPrimaryColor: starYellow,
@@ -212,40 +221,11 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   // }
 
   Widget _buildShareButton() {
-    return InkWell(
-      onTap: () {
-        // androidBottomSheet(
-        //   context: context,
-        //   child: Column(
-        //     mainAxisSize: MainAxisSize.min,
-        //     children: [
-        //       bottomSheetItem(
-        //           title: 'Share in chat',
-        //           iconData: Icons.send_outlined,
-        //           onTap: () async {
-        //             Navigator.of(context).pop();
-        //             await sendMomentToUserInChat(
-        //                 yarnTopic: widget.yarnTopic);
-        //           }),
-        //     ],
-        //   ),
-        // );
-      },
-      // child: SvgPicture.asset("ask/share".toSVG()),
-      child: Column(
-        children: [
-          SvgPicture.asset(
-            "yarn/share".toSVG(),
-            color: darkGreyYarn,
-            height: 17,
-            width: 17,
-          ),
-          SizedBox(
-            height: 2,
-          )
-        ],
-      ),
-    );
+    return LikeButton(
+        size: 17,
+        onTap: (_) async => false,
+        likeBuilder: (_) => SvgPicture.asset("yarn/share".toSVG(),
+            color: darkGreyYarn, height: 17, width: 17));
   }
 
   Widget _buildPayButton() {
@@ -253,51 +233,93 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     if (widget.comment.enablePayMe ?? false) {
       isPayMeEnable = true;
     }
-
-    return InkWell(
-      onTap: getLoggedInUserName(context) != widget.comment.authorUsername
-          ? () {
-              if (!isPayMeEnable) return;
-              if (getIt<AppConfigurationBloc>()
-                      .appConfigurationModel
-                      ?.enablePayment ==
-                  true) {
-                Navigator.of(context).pushNamed(
-                  Routes.SEND_PAYMENT,
-                  arguments: <String, dynamic>{
-                    'recipient': widget.comment.authorUsername!,
-                    'isFromProfile': false,
-                    'isFromChat': false,
-                    'defaultReferenceText': 'Payment from  "${truncateString(
-                      str: widget.comment.comment!,
-                      lengthToTruncateAt: 8,
-                    )}\" comment'
-                  },
-                );
-              } else {
-                showToast(message: 'Payment not available at the moment');
-              }
-            }
-          : () {
-              if (!isPayMeEnable) return;
-              showToast(message: 'You cannot pay yourself');
-            },
-      child: Column(
-        children: [
-          SizedBox(
-            height: 2,
-          ),
-          SvgPicture.asset(
-            "yarn/send_money".toSVG(),
-            color: darkGreyYarn,
-            height: 13,
-            width: 13,
-            // color: !isPayMeEnable ? Colors.transparent : null,
-          ),
-        ],
-      ),
-    );
+    return LikeButton(
+        size: 15,
+        onTap: (_) async {
+          getLoggedInUserName(context) != widget.comment.authorUsername
+              ? () {
+                  if (!isPayMeEnable) return;
+                  if (getIt<AppConfigurationBloc>()
+                          .appConfigurationModel
+                          ?.enablePayment ==
+                      true) {
+                    Navigator.of(context).pushNamed(
+                      Routes.SEND_PAYMENT,
+                      arguments: <String, dynamic>{
+                        'recipient': widget.comment.authorUsername!,
+                        'isFromProfile': false,
+                        'isFromChat': false,
+                        'defaultReferenceText':
+                            'Payment from  "${truncateString(
+                          str: widget.comment.comment!,
+                          lengthToTruncateAt: 8,
+                        )}\" comment'
+                      },
+                    );
+                  } else {
+                    showToast(message: 'Payment not available at the moment');
+                  }
+                }
+              : () {
+                  if (!isPayMeEnable) return;
+                  showToast(message: 'You cannot pay yourself');
+                };
+          return false;
+        },
+        likeBuilder: (_) => SvgPicture.asset("yarn/send_money".toSVG(),
+            color: darkGreyYarn, height: 17, width: 17));
   }
+
+  // Widget _buildPayButton() {
+  //   bool isPayMeEnable = false;
+  //   if (widget.comment.enablePayMe ?? false) {
+  //     isPayMeEnable = true;
+  //   }
+
+  //   return InkWell(
+  //     onTap: getLoggedInUserName(context) != widget.comment.authorUsername
+  //         ? () {
+  //             if (!isPayMeEnable) return;
+  //             if (getIt<AppConfigurationBloc>()
+  //                     .appConfigurationModel
+  //                     ?.enablePayment ==
+  //                 true) {
+  //               Navigator.of(context).pushNamed(
+  //                 Routes.SEND_PAYMENT,
+  //                 arguments: <String, dynamic>{
+  //                   'recipient': widget.comment.authorUsername!,
+  //                   'isFromProfile': false,
+  //                   'isFromChat': false,
+  //                   'defaultReferenceText': 'Payment from  "${truncateString(
+  //                     str: widget.comment.comment!,
+  //                     lengthToTruncateAt: 8,
+  //                   )}\" comment'
+  //                 },
+  //               );
+  //             } else {
+  //               showToast(message: 'Payment not available at the moment');
+  //             }
+  //           }
+  //         : () {
+  //             if (!isPayMeEnable) return;
+  //             showToast(message: 'You cannot pay yourself');
+  //           },
+  //     child: Column(
+  //       children: [
+  //         SizedBox(
+  //           height: 2,
+  //         ),
+  //         SvgPicture.asset(
+  //           "yarn/send_money".toSVG(),
+  //           color: darkGreyYarn,
+  //           height: 13,
+  //           width: 13,
+  //           // color: !isPayMeEnable ? Colors.transparent : null,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   String getCommentCount() {
     if (widget.comment.replyCount != null && widget.comment.replyCount != 0) {

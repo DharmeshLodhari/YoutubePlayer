@@ -67,12 +67,15 @@ class _ReYarnTileState extends State<ReYarnTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: greySecondaryYarn)),
-      child: _buildMain(),
+    return GestureDetector(
+      onTap: widget.onOptionsAction,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: greySecondaryYarn)),
+        child: _buildMain(),
+      ),
     );
   }
 
@@ -92,7 +95,8 @@ class _ReYarnTileState extends State<ReYarnTile> {
         SizedBox(
           height: 9,
         ),
-        getFollowersWidget(widget, radiusSize: 28, radiusShift: 10, radiusHeight: 28, radiusWidth: 28),
+        getFollowersWidget(widget,
+            radiusSize: 28, radiusShift: 10, radiusHeight: 28, radiusWidth: 28),
         if (isAttachmentPresent && widget.yarn.attachment != null) ...[
           SizedBox(height: 8),
           _buildAttachment(),
