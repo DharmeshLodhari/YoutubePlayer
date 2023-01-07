@@ -108,7 +108,7 @@ class AskNotificationView extends StatelessWidget {
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
-                        verifiedIconColor: verifyBlue,
+                        verifiedIconColor: verifyGreen,
                       ),
                     ]
                   ],

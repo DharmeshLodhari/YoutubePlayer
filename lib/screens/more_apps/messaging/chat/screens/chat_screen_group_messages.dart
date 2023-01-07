@@ -1391,7 +1391,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
                         ? chatConversation!.fullName!
                         : '',
                     isVerified: chatConversation?.isVerified,
-                    verifiedIconColor: verifyBlue,
+                    verifiedIconColor: verifyGreen,
                   ),
                   Text(
                     chatConversation != null

@@ -855,7 +855,7 @@ Widget userNameWithVerifiedIcon({
           child: isVerified != null && isVerified == true
               ? Icon(
                   Icons.verified_rounded,
-                  color: verifiedIconColor ?? verifyBlue,
+                  color: verifiedIconColor ?? verifyGreen,
                   size: verifiedIconSize,
                 )
               : SizedBox.shrink(),

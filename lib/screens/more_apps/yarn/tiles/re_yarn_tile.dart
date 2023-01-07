@@ -181,7 +181,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),
-                      verifiedIconColor: verifyBlue,
+                      verifiedIconColor: verifyGreen,
                     ),
                   ],
                 ),

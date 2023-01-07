@@ -552,7 +552,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
-                  verifiedIconColor: verifyBlue,
+                  verifiedIconColor: verifyGreen,
                 )
               : SizedBox.shrink(),
           titleSpacing: 0,
@@ -814,7 +814,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           color: HexColor("#151515"),
                           fontWeight: FontWeight.w500,
                         ),
-                        verifiedIconColor: verifyBlue,
+                        verifiedIconColor: verifyGreen,
                         verifiedIconSize: 15),
                   ),
                 ],

@@ -314,7 +314,7 @@ class _YarnActionsState extends State<YarnActions> {
             color: !isPayMeEnable
                 ? Colors.transparent
                 : widget.yarn.userSupported
-                    ? deepblue
+                    ? deepBlue
                     : null,
             height: 15,
             width: 15,

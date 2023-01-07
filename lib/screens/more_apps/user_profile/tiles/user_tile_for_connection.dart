@@ -123,7 +123,7 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
           title: userNameWithVerifiedIcon(
             name: widget.user!.fullName!,
             isVerified: widget.user?.isVerified,
-            verifiedIconColor: verifyBlue,
+            verifiedIconColor: verifyGreen,
           ),
           subtitle: getSubtitle(context),
           leading: avatarImage,

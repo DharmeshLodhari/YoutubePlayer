@@ -257,7 +257,7 @@ class _YarnTileState extends State<YarnTile> {
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                       ),
-                      verifiedIconColor: verifyBlue,
+                      verifiedIconColor: verifyGreen,
                     ),
                     // SizedBox(height: 5.0,),
                   ],

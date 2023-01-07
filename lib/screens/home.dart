@@ -223,7 +223,7 @@ class _HomeState extends State<Home> {
             userNameWithVerifiedIcon(
               name: userBloc.user.displayName()!,
               isVerified: userBloc.user.isVerified,
-              verifiedIconColor: verifyBlue,
+              verifiedIconColor: verifyGreen,
               textStyle: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -408,7 +408,7 @@ class _HomeState extends State<Home> {
           userNameWithVerifiedIcon(
             name: userBloc.user.displayName()!,
             isVerified: userBloc.user.isVerified,
-            verifiedIconColor: verifyBlue,
+            verifiedIconColor: verifyGreen,
             textStyle: TextStyle(
                 fontSize: 16,
                 color: HexColor("#151515"),

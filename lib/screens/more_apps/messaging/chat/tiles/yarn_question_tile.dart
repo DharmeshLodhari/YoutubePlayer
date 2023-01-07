@@ -720,7 +720,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
-                      verifiedIconColor: verifyBlue,
+                      verifiedIconColor: verifyGreen,
                     ),
                   ],
                 ),
