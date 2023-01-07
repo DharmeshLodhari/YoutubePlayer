@@ -169,7 +169,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         if (isMentionName) ...[
           _buildUserNameContainer(),
         ],
-        _buildTopicTextFiled(),
+        if (widget.yarn.enableCommenting ?? false) _buildTopicTextFiled(),
       ],
     );
   }

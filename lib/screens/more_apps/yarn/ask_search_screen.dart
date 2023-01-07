@@ -230,11 +230,41 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearchField() {
-    return Expanded(
-      child: TextFormField(
-        controller: searchController,
-        onFieldSubmitted: (val) {
-          if (mounted) {
+    return TextFormField(
+      controller: searchController,
+      onFieldSubmitted: (val) {
+        if (mounted) {
+          setState(() {
+            count = 0;
+            next = "";
+            previous = "";
+            yarnTopicList.clear();
+            noList = false;
+          });
+          getYarnTopic();
+        }
+      },
+      //autofocus: true,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w600,
+      ),
+      cursorWidth: 1.5,
+      cursorColor: navyBlue,
+      decoration: InputDecoration(
+        hintStyle: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: darkGrey,
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            SlydoAppIconNew.search,
+            color: HexColor("#75818F"),
+            size: 20,
+          ),
+          onPressed: () {
             setState(() {
               count = 0;
               next = "";
@@ -243,73 +273,41 @@ class _SearchScreenState extends State<SearchScreen> {
               noList = false;
             });
             getYarnTopic();
-          }
-        },
-        //autofocus: true,
-        style: TextStyle(
-          fontSize: 16,
-          color: blackFont,
-          fontWeight: FontWeight.w600,
+          },
         ),
-        cursorWidth: 1.5,
-        cursorColor: navyBlue,
-        decoration: InputDecoration(
-          hintStyle: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: darkGrey,
+        hintText: "Search anything",
+        fillColor: Colors.white,
+        filled: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 10),
+        prefix: Padding(
+          padding: EdgeInsets.only(left: 16),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: HexColor("#EBEDFC"),
+            width: 1.0,
           ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              SlydoAppIconNew.search,
-              color: HexColor("#75818F"),
-              size: 20,
-            ),
-            onPressed: () {
-              setState(() {
-                count = 0;
-                next = "";
-                previous = "";
-                yarnTopicList.clear();
-                noList = false;
-              });
-              getYarnTopic();
-            },
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: HexColor("#EBEDFC"),
+            width: 1.0,
           ),
-          hintText: "Search anything",
-          fillColor: Colors.white,
-          filled: true,
-          contentPadding: EdgeInsets.symmetric(vertical: 10),
-          prefix: Padding(
-            padding: EdgeInsets.only(left: 16),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: HexColor("#EBEDFC"),
+            width: 1.0,
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: HexColor("#EBEDFC"),
-              width: 1.0,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: HexColor("#EBEDFC"),
-              width: 1.0,
-            ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: HexColor("#EBEDFC"),
-              width: 1.0,
-            ),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: HexColor("#EBEDFC"),
-              width: 1.0,
-            ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: HexColor("#EBEDFC"),
+            width: 1.0,
           ),
         ),
       ),
