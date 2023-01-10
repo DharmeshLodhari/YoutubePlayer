@@ -71,19 +71,20 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildActionableList() {
     List<Widget> finalActionList = [];
 
-    if (enableCommenting()) {
-      finalActionList.add(Expanded(child: _buildCommentButton()));
-    }
+    // if (enableCommenting()) {
+    //   finalActionList.add(Expanded(child: _buildCommentButton()));
+    // }
 
     finalActionList.addAll([
+      Expanded(child: _buildCommentButton()),
       Expanded(child: _buildLikeButton()),
       Expanded(child: _buildDisLikeButton()),
       Expanded(child: _buildRetweetButton()),
     ]);
 
-    if (finalActionList.length == 3) {
-      finalActionList.add(Expanded(child: Container()));
-    }
+    // if (finalActionList.length == 3) {
+    //   finalActionList.add(Expanded(child: Container()));
+    // }
 
     return Row(
       children: finalActionList,

@@ -129,7 +129,8 @@ class _YarnTileState extends State<YarnTile> {
           height: 4,
         ),
 
-        if (shouldShowYarnText() == true && widget.yarn.body!.isNotEmpty) ...[
+        if (shouldShowYarnText() == true) ...[
+          // if (shouldShowYarnText() == true && widget.yarn.body!.isNotEmpty) ...[
           SizedBox(
             height: 10,
           ),

@@ -44,6 +44,8 @@ class YarnListScreenState extends State<YarnListScreen> {
       }
     });
     super.initState();
+
+    debugPrint('Yarn clicked:::: ');
   }
 
   void getYarnList(

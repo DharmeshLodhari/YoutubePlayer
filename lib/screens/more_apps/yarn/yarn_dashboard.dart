@@ -96,7 +96,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 15),
+      SizedBox(width: 25),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -118,7 +118,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 22,
           // ),
           ),
-      SizedBox(width: 10),
+      SizedBox(width: 25),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -140,7 +140,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 10),
+      SizedBox(width: 25),
     ];
   }
 

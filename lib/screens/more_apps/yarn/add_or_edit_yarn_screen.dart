@@ -1107,6 +1107,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     // yarnEdit.media = yarn?['media'];
     yarnEdit.tags = userTags;
 
+    // debugPrint("YARN CATEGORY 000:- ${yarnEdit}");
+    // debugPrint("YARN CATEGORY:- ${yarnEdit.category}");
+
     await YarnAuth().editYarnAndQuestion(yarnEdit).then((value) {
       debugPrint("EDIT YARN:- $value");
       if (value != null) {
