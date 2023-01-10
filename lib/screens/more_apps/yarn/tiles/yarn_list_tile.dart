@@ -82,6 +82,7 @@ class _YarnTileState extends State<YarnTile> {
     if (widget.yarn.attachment != null) {
       isAttachmentPresent = true;
     }
+
     super.initState();
   }
 

@@ -394,6 +394,7 @@ class DashboardBloc extends ChangeNotifier {
   int _index = 0;
 
   int get index => _index;
+  bool top = false;
 
   PageController get pageController => _pageController;
 
