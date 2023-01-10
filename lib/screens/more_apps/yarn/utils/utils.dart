@@ -19,7 +19,7 @@ Future<Uint8List?> getVideoThumbnailFromUrl(String videoPath) async {
 }
 
 String getGetYarnQuestionDateTime(String dateTime) {
-  return toTimeAgoLabel(dateTime: DateTime.parse(dateTime));
+  return toTimeAgoLabelYarn(dateTime: DateTime.parse(dateTime));
 }
 
 List<String> getAllHashtags(String text) {
@@ -28,8 +28,8 @@ List<String> getAllHashtags(String text) {
   var new_list = text.split(" ");
   new_list.removeWhere((item) => ["", " ", null, false, 0].contains(item));
   List<String> hashtags = [];
-  for (var i in new_list){
-    if(i.startsWith("#")) {
+  for (var i in new_list) {
+    if (i.startsWith("#")) {
       print("NaI:$i");
       hashtags.add(i);
     }
@@ -67,4 +67,3 @@ List<String> getAllMentions(String text) {
 
   return filterMention;
 }
-

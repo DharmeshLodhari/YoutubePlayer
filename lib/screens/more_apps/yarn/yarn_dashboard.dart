@@ -212,7 +212,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
   Widget _buildFloatingActionButton() {
     return SpeedDial(
       child: Icon(
-        Icons.add,
+        SlydoAppIconNew.dashboard_yarn,
         color: Colors.white,
       ),
       activeChild: Icon(
