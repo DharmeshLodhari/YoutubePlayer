@@ -124,15 +124,15 @@ class YarnListScreenState extends State<YarnListScreen> {
   Widget build(BuildContext context) {
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
-    debugPrint('Yarn clicked:::: ${_dashboardBloc.top}');
+    // debugPrint('Yarn clicked:::: ${_dashboardBloc.top}');
 
-    if (_dashboardBloc.top == true) {
-      _dashboardBloc.top = false;
+    if (_dashboardBloc.topYarn == true) {
+      _dashboardBloc.topYarn = false;
       if (_scrollController.hasClients) {
         final position = _scrollController.position.minScrollExtent;
         _scrollController.animateTo(
           position,
-          duration: Duration(seconds: 3),
+          duration: Duration(milliseconds: 3),
           curve: Curves.easeOut,
         );
       }

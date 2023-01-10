@@ -47,13 +47,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
   @override
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
-    // _dashboardBloc = Provider.of<DashboardBloc>(context);
-    //
-    // debugPrint('Yarn clicked:::: ${_dashboardBloc.top}');
-    //
-    // if (_dashboardBloc.top = true) {
-    //   _dashboardBloc.top = false;
-    // }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -88,28 +81,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
-            // NavigationUtil.push(
-            //   context,
-            //   screen: SearchScreen(),
-            // );
-          },
-          height: 20,
-          width: 20,
-          icon: SvgPicture.asset(
-            "yarn/images".toSVG(),
-            height: 12,
-            width: 12,
-          )
-          // icon: Icon(
-          //   Icons.search_rounded,
-          //   color: yarnBlack,
-          //   size: 26,
-          // ),
-          ),
-      SizedBox(width: 25),
-      RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
             NavigationUtil.push(
               context,
               screen: SearchScreen(),
@@ -128,7 +99,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 25),
+      SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -150,7 +121,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 22,
           // ),
           ),
-      SizedBox(width: 25),
+      SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -172,7 +143,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 25),
+      SizedBox(width: 30),
     ];
   }
 

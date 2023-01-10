@@ -60,6 +60,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   int imageCount = 5;
   YarnCategories? selectedAskCategory;
   YarnCategories? pressedAskCategory;
+  YarnCategories? categoryPicked;
   List<YarnCategories>? askCategoriesCopy;
   String askCategory = "";
   List<String> userTags = [];
@@ -102,6 +103,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     askCategoriesCopy = widget.askCategories;
     fillExistingYarnMedia();
     super.initState();
+
+    debugPrint('Yarn Mind 000:::: ${yarn}');
+    // debugPrint('Yarn Mind 001:::: ${yarn!['category']}');
+    debugPrint('Yarn Mind 002:::: ${selectedAskCategory!.name.runtimeType}');
   }
 
   void fillExistingYarnMedia() {
@@ -194,7 +199,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           fontWeight: FontWeight.w600,
           color: HexColor("#151515")),
       onChanged: onValueChange,
-      inputFormatters: [LengthLimitingTextInputFormatter(300)],
+      inputFormatters: [LengthLimitingTextInputFormatter(355)],
       decoration: InputDecoration(
         hintText: "Leave your thought",
         hintStyle: TextStyle(
@@ -460,6 +465,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildCategory() {
+    // debugPrint('Yarn Mind:::: ${selectedAskCategory!.name}');
+    // debugPrint('Yarn Mind:::: ${selectedAskCategory!.name.runtimeType}');
+
     return InkWell(
       onTap: () {
         categoryAndroidSheet();
@@ -474,9 +482,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              selectedAskCategory != null
-                  ? (selectedAskCategory!.name ?? "select category")
-                  : "select category",
+              checkCat(),
               style: TextStyle(fontSize: 10, color: HexColor("#ACAEB4")),
             ),
             SizedBox(
@@ -488,6 +494,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         ),
       ),
     );
+  }
+
+  String checkCat() {
+    if (selectedAskCategory!.name != null) {
+      return selectedAskCategory!.name.toString();
+    } else {
+      return 'select category';
+    }
   }
 
   Widget _buildAddImages() {
@@ -836,7 +850,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildSubmitButton() {
-    return textController.text.isNotEmpty && textController.text.length <= 300
+    return textController.text.isNotEmpty && textController.text.length <= 355
         ? Container(
             alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: 24),
@@ -1101,7 +1115,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarnEdit.enableCommenting = enableCommenting;
     yarnEdit.enablePayMe = enablePayMe;
     yarnEdit.title = yarnController.text;
-    yarnEdit.category?.id = selectedAskCategory?.id ?? "0";
+    yarnEdit.category = selectedAskCategory;
+    // yarnEdit.category?.id = selectedAskCategory?.id ?? "0";
     yarnEdit.isQuestion = widget.isYarn == true ? false : true;
     yarnEdit.author = userBloc.user.userName;
     // yarnEdit.media = yarn?['media'];

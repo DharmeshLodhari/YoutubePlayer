@@ -472,7 +472,7 @@ class _DashboardState extends State<Dashboard> {
           _dashboardBloc.index = index;
           FocusScope.of(context).unfocus();
           if (index == 1) {
-            _dashboardBloc.top = true;
+            _dashboardBloc.topYarn = true;
             // debugPrint('Dashboard Yarn clicked:::: ${_dashboardBloc.top}');
           }
         },
