@@ -96,7 +96,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 15),
+      SizedBox(width: 20),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -118,7 +118,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 22,
           // ),
           ),
-      SizedBox(width: 10),
+      SizedBox(width: 20),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -140,7 +140,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 10),
+      SizedBox(width: 20),
     ];
   }
 
@@ -211,89 +211,31 @@ class _YarnDashboardState extends State<YarnDashboard> {
 
   Widget _buildFloatingActionButton() {
     return SpeedDial(
-      child: Icon(
-        SlydoAppIconNew.dashboard_yarn,
-        color: Colors.white,
-      ),
-      activeChild: Icon(
-        Icons.close,
-        color: yarnBlack,
+      child: InkWell(
+        onTap: () async {
+          await NavigationUtil.push(context,
+              screen: AddOrEditYarn(
+                askCategories: yarnDashboardBloc.yarnCategories,
+                shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                isYarn: true,
+              )).then((value) {
+            debugPrint("THEN VALUE===$value");
+            if (value != null) {
+              if (value == Types.Yarn) {
+                updateCurrentAskTapOnHome(index: 0);
+                _pageViewController.jumpToPage(0);
+                topicViewStateKey.currentState?.onRefresh();
+              }
+            }
+          });
+        },
+        child: Icon(
+          SlydoAppIconNew.dashboard_yarn,
+          color: Colors.white,
+        ),
       ),
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
-      children: [
-        // _buildSpeedDialChild(
-        //     title: "Ask Question",
-        //     icon: SlydoAppIconNew.question,
-        //     onTap: () async {
-        //       await NavigationUtil.push(context,
-        //           screen: AddTopicScreen(
-        //             askCategories: yarnDashboardBloc.yarnCategories,
-        //             isYarn: false,
-        //           )).then((value) {
-        //         debugPrint("THEN VALUE===$value");
-        //         if (value != null) {
-        //           if (value == Types.Question) {
-        //             updateCurrentAskTapOnHome(index: 1);
-        //             _pageViewController.jumpToPage(1);
-        //             questionViewStateKey.currentState?.onPostRefresh();
-        //           }
-        //         }
-        //       });
-        //     }),
-        _buildSpeedDialChild(
-            title: "Yarn",
-            icon: SlydoAppIconNew.dashboard_yarn,
-            onTap: () async {
-              await NavigationUtil.push(context,
-                  screen: AddOrEditYarn(
-                    askCategories: yarnDashboardBloc.yarnCategories,
-                    shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                    isYarn: true,
-                  )).then((value) {
-                debugPrint("THEN VALUE===$value");
-                if (value != null) {
-                  if (value == Types.Yarn) {
-                    updateCurrentAskTapOnHome(index: 0);
-                    _pageViewController.jumpToPage(0);
-                    topicViewStateKey.currentState?.onRefresh();
-                  }
-                }
-              });
-            }),
-      ],
     );
-  }
-
-  SpeedDialChild _buildSpeedDialChild({
-    required String title,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return SpeedDialChild(
-        onTap: onTap,
-        backgroundColor: yarnBlack,
-        labelBackgroundColor: HexColor("#FFFFFF"),
-        labelWidget: Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Text(
-              title,
-              style: TextStyle(
-                  color: HexColor("#424242"),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 20,
-        ));
   }
 }
