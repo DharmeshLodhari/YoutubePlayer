@@ -211,57 +211,58 @@ class _YarnDashboardState extends State<YarnDashboard> {
 
   Widget _buildFloatingActionButton() {
     return SpeedDial(
-      child: Icon(
-        SlydoAppIconNew.dashboard_yarn,
-        color: Colors.white,
+      child: InkWell(
+        onTap: () async {
+          await NavigationUtil.push(context,
+              screen: AddOrEditYarn(
+                askCategories: yarnDashboardBloc.yarnCategories,
+                shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                isYarn: true,
+              )).then((value) {
+            debugPrint("THEN VALUE===$value");
+            if (value != null) {
+              if (value == Types.Yarn) {
+                updateCurrentAskTapOnHome(index: 0);
+                _pageViewController.jumpToPage(0);
+                topicViewStateKey.currentState?.onRefresh();
+              }
+            }
+          });
+        },
+        child: Icon(
+          SlydoAppIconNew.dashboard_yarn,
+          color: Colors.white,
+        ),
       ),
-      activeChild: Icon(
-        Icons.close,
-        color: yarnBlack,
-      ),
+      // activeChild: Icon(
+      //   Icons.close,
+      //   color: yarnBlack,
+      // ),
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
-      children: [
-        // _buildSpeedDialChild(
-        //     title: "Ask Question",
-        //     icon: SlydoAppIconNew.question,
-        //     onTap: () async {
-        //       await NavigationUtil.push(context,
-        //           screen: AddTopicScreen(
-        //             askCategories: yarnDashboardBloc.yarnCategories,
-        //             isYarn: false,
-        //           )).then((value) {
-        //         debugPrint("THEN VALUE===$value");
-        //         if (value != null) {
-        //           if (value == Types.Question) {
-        //             updateCurrentAskTapOnHome(index: 1);
-        //             _pageViewController.jumpToPage(1);
-        //             questionViewStateKey.currentState?.onPostRefresh();
-        //           }
-        //         }
-        //       });
-        //     }),
-        _buildSpeedDialChild(
-            title: "Yarn",
-            icon: SlydoAppIconNew.dashboard_yarn,
-            onTap: () async {
-              await NavigationUtil.push(context,
-                  screen: AddOrEditYarn(
-                    askCategories: yarnDashboardBloc.yarnCategories,
-                    shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                    isYarn: true,
-                  )).then((value) {
-                debugPrint("THEN VALUE===$value");
-                if (value != null) {
-                  if (value == Types.Yarn) {
-                    updateCurrentAskTapOnHome(index: 0);
-                    _pageViewController.jumpToPage(0);
-                    topicViewStateKey.currentState?.onRefresh();
-                  }
-                }
-              });
-            }),
-      ],
+      // children: [
+      //
+      //   _buildSpeedDialChild(
+      //       title: "Yarn",
+      //       icon: SlydoAppIconNew.dashboard_yarn,
+      //       onTap: () async {
+      //         await NavigationUtil.push(context,
+      //             screen: AddOrEditYarn(
+      //               askCategories: yarnDashboardBloc.yarnCategories,
+      //               shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+      //               isYarn: true,
+      //             )).then((value) {
+      //           debugPrint("THEN VALUE===$value");
+      //           if (value != null) {
+      //             if (value == Types.Yarn) {
+      //               updateCurrentAskTapOnHome(index: 0);
+      //               _pageViewController.jumpToPage(0);
+      //               topicViewStateKey.currentState?.onRefresh();
+      //             }
+      //           }
+      //         });
+      //       }),
+      // ],
     );
   }
 
