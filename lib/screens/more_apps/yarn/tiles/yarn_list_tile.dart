@@ -93,25 +93,27 @@ class _YarnTileState extends State<YarnTile> {
     );
   }
 
-  bool _showText(){
-    if(isAttachmentPresent && widget.yarn.attachment != null && widget.yarn.attachment?.isEmpty == false){
+  bool _showText() {
+    if (isAttachmentPresent &&
+        widget.yarn.attachment != null &&
+        widget.yarn.attachment?.isEmpty == false) {
       return false;
     }
-    if(isMediaPresent){
+    if (isMediaPresent) {
       return false;
     }
-    if (widget.yarn.body != null && widget.yarn.body!.isNotEmpty ){
+    if (widget.yarn.body != null && widget.yarn.body!.isNotEmpty) {
       return true;
     }
     return false;
   }
 
-
-  bool shouldShowYarnText(){
-    if (widget.yarn.isSensitiveContent == true && _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+  bool shouldShowYarnText() {
+    if (widget.yarn.isSensitiveContent == true &&
+        _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
       return _showText();
-    }
-    else if (widget.yarn.isAdultContent == true && _yarnSettings.yarnSettings?.allowAdultContent == false) {
+    } else if (widget.yarn.isAdultContent == true &&
+        _yarnSettings.yarnSettings?.allowAdultContent == false) {
       return _showText();
     }
     return true;
@@ -122,18 +124,12 @@ class _YarnTileState extends State<YarnTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
-        Align(
-          alignment: Alignment.topRight,
-          child: getFollowersWidget(widget,
-              radiusSize: 28,
-              radiusShift: 10,
-              radiusHeight: 28,
-              radiusWidth: 28),
-        ),
+
         SizedBox(
           height: 4,
         ),
-        if (shouldShowYarnText() == true) ...[
+
+        if (shouldShowYarnText() == true && widget.yarn.body!.isNotEmpty) ...[
           SizedBox(
             height: 10,
           ),
@@ -141,14 +137,19 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 10,
           ),
-        ] else SizedBox(height: 8,),
+        ] else
+          SizedBox(
+            height: 8,
+          ),
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
           getDisplayWidget(_buildReYarnTile),
           SizedBox(
             height: 8,
           ),
         ],
-        if (isAttachmentPresent && widget.yarn.attachment != null && widget.yarn.attachment?.isEmpty == false) ...[
+        if (isAttachmentPresent &&
+            widget.yarn.attachment != null &&
+            widget.yarn.attachment?.isEmpty == false) ...[
           getDisplayWidget(_buildAttachment),
           SizedBox(
             height: 8,
@@ -327,6 +328,22 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildCategoryTypeChip() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _checkCategoryTypeChip(),
+        Container(
+          child: getFollowersWidget(widget,
+              radiusSize: 28,
+              radiusShift: 10,
+              radiusHeight: 28,
+              radiusWidth: 28),
+        ),
+      ],
+    );
+  }
+
+  Widget _checkCategoryTypeChip() {
     if (widget.yarn.category != null) {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -628,7 +645,7 @@ class _YarnTileState extends State<YarnTile> {
     } else if (widget.yarn.isAdultContent == true &&
         _yarnSettings.yarnSettings.allowAdultContent == false) {
       return _buildAdultContentWidget();
-    }else{
+    } else {
       return widgetDisplay();
     }
   }

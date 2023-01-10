@@ -858,7 +858,11 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                         isAPILoading = true;
                         await editYarnAndQuestion();
                       } else {
-                        if (selectedAskCategory?.id == null) return;
+                        if (selectedAskCategory?.id == null) {
+                          showToast(message: 'Category is not selected');
+                          return;
+                        }
+
                         isAPILoading = true;
                         if (mounted) setState(() {});
                         await addYarnAndQuestion();
