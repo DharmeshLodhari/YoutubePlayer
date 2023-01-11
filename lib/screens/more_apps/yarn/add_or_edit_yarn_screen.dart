@@ -199,7 +199,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           fontWeight: FontWeight.w600,
           color: HexColor("#151515")),
       onChanged: onValueChange,
-      inputFormatters: [LengthLimitingTextInputFormatter(355)],
+      inputFormatters: [LengthLimitingTextInputFormatter(400)],
       decoration: InputDecoration(
         hintText: "Leave your thought",
         hintStyle: TextStyle(
@@ -482,7 +482,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              checkCat(),
+              checkCategory(),
               style: TextStyle(fontSize: 10, color: HexColor("#ACAEB4")),
             ),
             SizedBox(
@@ -496,7 +496,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     );
   }
 
-  String checkCat() {
+  String checkCategory() {
     if (selectedAskCategory!.name != null) {
       return selectedAskCategory!.name.toString();
     } else {
@@ -850,7 +850,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildSubmitButton() {
-    return textController.text.isNotEmpty && textController.text.length <= 355
+    return textController.text.isNotEmpty && textController.text.length <= 400
         ? Container(
             alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: 24),

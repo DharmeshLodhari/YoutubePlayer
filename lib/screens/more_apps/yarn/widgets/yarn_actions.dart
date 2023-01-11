@@ -26,6 +26,7 @@ import '../yarn_dashboard_bloc.dart';
 class YarnActions extends StatefulWidget {
   final Yarn yarn;
   final Function(Yarn)? onReYarnAdded;
+
   YarnActions({required this.yarn, this.onReYarnAdded});
 
   @override
@@ -38,6 +39,7 @@ class _YarnActionsState extends State<YarnActions> {
   // CustomerProfile? searchedUser;
 
   int retweetCount = 1;
+
   @override
   void initState() {
     // retweetCount = Random().nextInt(200);
@@ -198,13 +200,22 @@ class _YarnActionsState extends State<YarnActions> {
   }
 
   Widget _buildRetweetButton() {
+    bool canReYarn = true;
+    if (widget.yarn.body.toString().isEmpty && widget.yarn.reYarn != null) {
+      canReYarn = false;
+    }
+
     return InkWell(
       onTap: getLoggedInUserName(context) != widget.yarn.author
           ? () {
-              if (widget.yarn.userReyarned) {
-                showToast(message: "Re yarn added successfully");
+              if (canReYarn) {
+                if (widget.yarn.userReyarned) {
+                  showToast(message: "Re yarn added successfully");
+                } else {
+                  addReYarn();
+                }
               } else {
-                addReYarn();
+                showToast(message: "You cannot Reyarn.");
               }
             }
           : null,
