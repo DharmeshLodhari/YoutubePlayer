@@ -237,35 +237,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
           color: Colors.white,
         ),
       ),
-      // activeChild: Icon(
-      //   Icons.close,
-      //   color: yarnBlack,
-      // ),
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
-      // children: [
-      //
-      //   _buildSpeedDialChild(
-      //       title: "Yarn",
-      //       icon: SlydoAppIconNew.dashboard_yarn,
-      //       onTap: () async {
-      //         await NavigationUtil.push(context,
-      //             screen: AddOrEditYarn(
-      //               askCategories: yarnDashboardBloc.yarnCategories,
-      //               shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-      //               isYarn: true,
-      //             )).then((value) {
-      //           debugPrint("THEN VALUE===$value");
-      //           if (value != null) {
-      //             if (value == Types.Yarn) {
-      //               updateCurrentAskTapOnHome(index: 0);
-      //               _pageViewController.jumpToPage(0);
-      //               topicViewStateKey.currentState?.onRefresh();
-      //             }
-      //           }
-      //         });
-      //       }),
-      // ],
     );
   }
 

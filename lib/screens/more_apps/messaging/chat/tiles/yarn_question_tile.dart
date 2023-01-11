@@ -90,6 +90,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
           linkToBePreview = linkData['links'][0];
           if (!linkToBePreview!.contains("http")) {
+            // debugPrint('Link to view question::: ${linkData.toString()}');
+
             linkToBePreview = "http://" + linkToBePreview!;
           }
         }
