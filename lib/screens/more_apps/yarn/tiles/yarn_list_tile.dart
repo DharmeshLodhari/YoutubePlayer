@@ -507,17 +507,17 @@ class _YarnTileState extends State<YarnTile> {
 
     debugPrint('Yarn Body:::: ${widget.yarn.body}');
 
-    // return RichTextForTitle(
-    //   description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
-    //   // description: widget.yarn.body ?? '',
-    //   fontSize: 14,
-    // );
-
-    return Text(
-      widget.yarn.body.toString(),
-      style: TextStyle(
-          fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+    return RichTextForTitle(
+      description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
+      // description: widget.yarn.body ?? '',
+      fontSize: 14,
     );
+
+    // return Text(
+    //   widget.yarn.body.toString(),
+    //   style: TextStyle(
+    //       fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+    // );
   }
 
   Widget _buildImagesRow() {

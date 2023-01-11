@@ -51,7 +51,7 @@ class AddOrEditYarn extends StatefulWidget {
 class _AddOrEditYarnState extends State<AddOrEditYarn> {
   final yarnController = TextEditingController();
 
-  final textController = TextEditingController();
+  TextEditingController? textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
   // List<PickedFile> selectedImages = [];
   List<YarnMedia> newMediaList = [];
@@ -97,16 +97,23 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     pressedAskCategory = yarn?['category'] == null
         ? YarnCategories()
         : YarnCategories.fromJson(yarn?['category'].toJson());
-    textController.text = yarn?['body'] ?? '';
+
+    if (messageDecoderWithEmoji(yarn?['body']).toString() == 'null') {
+      textController!.text = '';
+    } else {
+      textController!.text = messageDecoderWithEmoji(yarn?['body']) ?? '';
+    }
+
     Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
     fillExistingYarnMedia();
     super.initState();
 
-    debugPrint('Yarn Mind 000:::: ${yarn}');
+    debugPrint('Yarn Add Edit 000:::: ${yarn}');
     // debugPrint('Yarn Mind 001:::: ${yarn!['category']}');
-    debugPrint('Yarn Mind 002:::: ${selectedAskCategory!.name.runtimeType}');
+    debugPrint(
+        'Yarn Add Edit 002:::: ${selectedAskCategory!.name.runtimeType}');
   }
 
   void fillExistingYarnMedia() {
@@ -201,6 +208,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       onChanged: onValueChange,
       inputFormatters: [LengthLimitingTextInputFormatter(400)],
       decoration: InputDecoration(
+        counterText:
+            textController!.text.length.toString() + "/" + 400.toString(),
         hintText: "Leave your thought",
         hintStyle: TextStyle(
           fontSize: 13,
@@ -799,14 +808,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       key: UniqueKey(),
       onTap: (String? tappedUser) {
         if (tappedUser != null) {
-          textController.text = textController.text.replaceRange(
-                (textController.text.length - (searchString?.length ?? 0)),
-                textController.text.length,
+          textController!.text = textController!.text.replaceRange(
+                (textController!.text.length - (searchString?.length ?? 0)),
+                textController!.text.length,
                 tappedUser,
               ) +
               " ";
-          textController.selection = TextSelection.fromPosition(TextPosition(
-            offset: textController.text.length,
+          textController!.selection = TextSelection.fromPosition(TextPosition(
+            offset: textController!.text.length,
           ));
           searchString = "";
           if (mounted) setState(() {});
@@ -850,7 +859,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildSubmitButton() {
-    return textController.text.isNotEmpty && textController.text.length <= 400
+    return textController!.text.isNotEmpty && textController!.text.length <= 400
         ? Container(
             alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: 24),
@@ -883,7 +892,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                       }
                       existingMediaList.clear();
                       newMediaList.clear();
-                      textController.clear();
+                      textController!.clear();
                       yarnController.clear();
                       isAPILoading = false;
                       if (mounted) setState(() {});
@@ -1111,7 +1120,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   Future<void> editYarnAndQuestion() async {
     Yarn yarnEdit = Yarn(media: existingMediaList + newMediaList);
     yarnEdit.id = yarn!['id'];
-    yarnEdit.body = textController.text;
+    yarnEdit.body = textController!.text;
     yarnEdit.enableCommenting = enableCommenting;
     yarnEdit.enablePayMe = enablePayMe;
     yarnEdit.title = yarnController.text;
@@ -1150,7 +1159,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn.media = newMediaList;
     yarn.tags = userTags;
     yarn.title = yarnController.text;
-    yarn.body = textController.text;
+    yarn.body = textController!.text;
     yarn.category = selectedAskCategory;
     yarn.isQuestion = widget.isYarn == true ? false : true;
     yarn.author = userBloc.user.userName;

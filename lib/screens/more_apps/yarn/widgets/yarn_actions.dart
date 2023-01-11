@@ -201,7 +201,7 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildRetweetButton() {
     bool canReYarn = true;
-    if (widget.yarn.body.toString().isEmpty && widget.yarn.reYarn != null) {
+    if (widget.yarn.reYarn != null) {
       canReYarn = false;
     }
 
