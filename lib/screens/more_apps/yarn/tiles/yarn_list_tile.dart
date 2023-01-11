@@ -82,6 +82,7 @@ class _YarnTileState extends State<YarnTile> {
     if (widget.yarn.attachment != null) {
       isAttachmentPresent = true;
     }
+
     super.initState();
   }
 
@@ -129,19 +130,24 @@ class _YarnTileState extends State<YarnTile> {
           height: 4,
         ),
 
-        if (shouldShowYarnText() == true && widget.yarn.body!.isNotEmpty) ...[
-          SizedBox(
-            height: 10,
-          ),
-          _buildPostDescription(),
-          SizedBox(
-            height: 10,
-          ),
+        if (shouldShowYarnText() == true) ...[
+          if (widget.yarn.body.toString().isNotEmpty) ...[
+            SizedBox(
+              height: 10,
+            ),
+            _buildPostDescription(),
+            SizedBox(
+              height: 10,
+            ),
+          ]
         ] else
           SizedBox(
             height: 8,
           ),
         if (isReYarnPresent && widget.yarn.reYarn != null) ...[
+          SizedBox(
+            height: 10,
+          ),
           getDisplayWidget(_buildReYarnTile),
           SizedBox(
             height: 8,
@@ -150,6 +156,9 @@ class _YarnTileState extends State<YarnTile> {
         if (isAttachmentPresent &&
             widget.yarn.attachment != null &&
             widget.yarn.attachment?.isEmpty == false) ...[
+          SizedBox(
+            height: 10,
+          ),
           getDisplayWidget(_buildAttachment),
           SizedBox(
             height: 8,
@@ -168,6 +177,9 @@ class _YarnTileState extends State<YarnTile> {
         //   ),
         // ],
         if (isMediaPresent) ...[
+          SizedBox(
+            height: 10,
+          ),
           getDisplayWidget(_buildImagesRow),
           SizedBox(
             height: 8,
@@ -493,11 +505,19 @@ class _YarnTileState extends State<YarnTile> {
       );
     }
 
+    debugPrint('Yarn Body:::: ${widget.yarn.body}');
+
     return RichTextForTitle(
-      // description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
-      description: widget.yarn.body ?? '',
+      description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
+      // description: widget.yarn.body ?? '',
       fontSize: 14,
     );
+
+    // return Text(
+    //   widget.yarn.body.toString(),
+    //   style: TextStyle(
+    //       fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
+    // );
   }
 
   Widget _buildImagesRow() {

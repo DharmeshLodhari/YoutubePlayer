@@ -471,6 +471,10 @@ class _DashboardState extends State<Dashboard> {
         onTap: (index) {
           _dashboardBloc.index = index;
           FocusScope.of(context).unfocus();
+          if (index == 1) {
+            _dashboardBloc.topYarn = true;
+            // debugPrint('Dashboard Yarn clicked:::: ${_dashboardBloc.top}');
+          }
         },
         items: [
           bottomNavigationBarItem(

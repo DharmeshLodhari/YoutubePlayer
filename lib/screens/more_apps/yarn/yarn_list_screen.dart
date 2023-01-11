@@ -1,7 +1,9 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
@@ -32,6 +34,7 @@ class YarnListScreenState extends State<YarnListScreen> {
       RefreshController(initialRefresh: false);
   String? selectedId;
   ScrollController _scrollController = new ScrollController();
+  late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
@@ -43,6 +46,22 @@ class YarnListScreenState extends State<YarnListScreen> {
         getYarnList(categoryId: widget.selectedCategory);
       }
     });
+
+    // _dashboardBloc = Provider.of<DashboardBloc>(context);
+    //
+    // debugPrint('Yarn clicked:::: ${_dashboardBloc.top}');
+    //
+    // if (_dashboardBloc.top = true) {
+    //   _dashboardBloc.top = false;
+    //   if (_scrollController.hasClients) {
+    //     final position = _scrollController.position.minScrollExtent;
+    //     _scrollController.animateTo(
+    //       position,
+    //       duration: Duration(seconds: 1),
+    //       curve: Curves.easeOut,
+    //     );
+    //   }
+    // }
     super.initState();
   }
 
@@ -103,6 +122,22 @@ class YarnListScreenState extends State<YarnListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _dashboardBloc = Provider.of<DashboardBloc>(context);
+
+    // debugPrint('Yarn clicked:::: ${_dashboardBloc.top}');
+
+    if (_dashboardBloc.topYarn == true) {
+      _dashboardBloc.topYarn = false;
+      if (_scrollController.hasClients) {
+        final position = _scrollController.position.minScrollExtent;
+        _scrollController.animateTo(
+          position,
+          duration: Duration(milliseconds: 3),
+          curve: Curves.easeOut,
+        );
+      }
+    }
+
     return SmartRefresher(
       enablePullDown: true,
       header: WaterDropHeader(

@@ -212,7 +212,9 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                               height: getSizeBoxHeight(),
                             ),
                             Text(
-                              widget.service!.shortDescription!,
+                              messageDecoderWithEmoji(
+                                      widget.service!.shortDescription!)! ??
+                                  "",
                               maxLines: 2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
