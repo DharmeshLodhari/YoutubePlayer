@@ -10,7 +10,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../../main.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
@@ -134,9 +133,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        await YarnAuth()
-            .getSingleTopics(yarnId: yarn.id)
-            .then((data) {
+        await YarnAuth().getSingleTopics(yarnId: yarn.id).then((data) {
           Yarn? yarnTopic;
           if (data != null) {
             yarnTopic = data['results'];
@@ -379,8 +376,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
   Widget _buildPostDescription() {
     return RichTextForTitle(
-      description:
-          yarnQuestionForChatModel.description ?? "",
+      description: yarnQuestionForChatModel.description ?? "",
       fontSize: 14,
       // maxLines: 3,
       // overflow: TextOverflow.ellipsis,
