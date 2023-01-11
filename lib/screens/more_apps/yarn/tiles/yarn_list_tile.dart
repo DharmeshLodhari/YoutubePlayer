@@ -67,7 +67,12 @@ class _YarnTileState extends State<YarnTile> {
 
       linkToBePreview = linkData['links'][0];
       if (!linkToBePreview!.contains("http")) {
+        debugPrint('Link to view::: ${linkData.toString()}');
+        debugPrint('Link to view 000::: ${linkToBePreview}');
+
         linkToBePreview = "http://" + linkToBePreview!;
+
+        debugPrint('Link to view::: ${linkData.toString()}');
       }
     }
 
@@ -434,6 +439,28 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildPostDescription() {
+    var newString = '';
+    var list = [];
+
+    widget.yarn.body.toString().split(' ').forEach((ch) {
+      list.add(ch);
+      // print(ch);
+    });
+
+    list.forEach((data) {
+      if (data.toString().contains('.') &&
+          !data.toString().contains('@') &&
+          !data.toString().contains('..') &&
+          !data.toString().startsWith('.') &&
+          !data.toString().endsWith('.')) {
+        final replaceWith = 'http://' + data;
+
+        newString = newString + ' ' + replaceWith.toString();
+      } else {
+        newString = newString + ' ' + data.toString();
+      }
+    });
+
     if (isUrlPresent) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -441,6 +468,13 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 5,
           ),
+
+          // Text(
+          //   messageDecoderWithEmoji(newString ?? '') ?? '',
+          //   style: TextStyle(
+          //       color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
+          // ),
+
           LinkWell(
             messageDecoderWithEmoji(widget.yarn.body)!,
             style: TextStyle(
@@ -452,6 +486,7 @@ class _YarnTileState extends State<YarnTile> {
                 fontSize: 17,
                 fontFamily: "OpenSans"),
           ),
+
           SizedBox(
             height: 10,
           ),
@@ -505,6 +540,10 @@ class _YarnTileState extends State<YarnTile> {
       );
     }
 
+    // debugPrint('Yarn Body:::: ${widget.yarn.body}');
+
+    // print("value of fola:: ${newString}");
+
     debugPrint('Yarn Body:::: ${widget.yarn.body}');
 
     return RichTextForTitle(
@@ -512,12 +551,6 @@ class _YarnTileState extends State<YarnTile> {
       // description: widget.yarn.body ?? '',
       fontSize: 14,
     );
-
-    // return Text(
-    //   widget.yarn.body.toString(),
-    //   style: TextStyle(
-    //       fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
-    // );
   }
 
   Widget _buildImagesRow() {

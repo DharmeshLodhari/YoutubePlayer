@@ -76,41 +76,60 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
 
   Widget _buildFloatingActionButton() {
     return SpeedDial(
-      child: Icon(
-        Icons.add,
-        color: Colors.white,
-      ),
-      activeChild: Icon(
-        Icons.close,
-        color: yarnBlack,
+      child: InkWell(
+        onTap: () async {
+          NavigationUtil.push(context,
+              screen: AddOrEditYarn(
+                  askCategories: askViewModel.yarnCategories,
+                  isYarn: true,
+                  shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                  askCategory: widget.askCategories));
+        },
+        child: Icon(
+          SlydoAppIconNew.dashboard_yarn,
+          color: Colors.white,
+        ),
       ),
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
-      children: [
-        // _buildSpeedDialChild(
-        // title: "Ask Question",
-        // icon: SlydoAppIconNew.question,
-        // onTap: () {
-        //   NavigationUtil.push(context,
-        //       screen: AddTopicScreen(
-        //         askCategories: askViewModel.yarnCategories,
-        //         isYarn: false,
-        //         askCategory: widget.askCategories,
-        //       ));
-        // }),
-        _buildSpeedDialChild(
-            title: "Yarn",
-            icon: SlydoAppIconNew.yarn,
-            onTap: () {
-              NavigationUtil.push(context,
-                  screen: AddOrEditYarn(
-                      askCategories: askViewModel.yarnCategories,
-                      isYarn: true,
-                      shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                      askCategory: widget.askCategories));
-            }),
-      ],
     );
+
+    // return SpeedDial(
+    //   child: Icon(
+    //     Icons.add,
+    //     color: Colors.white,
+    //   ),
+    //   activeChild: Icon(
+    //     Icons.close,
+    //     color: yarnBlack,
+    //   ),
+    //   backgroundColor: yarnBlack,
+    //   activeBackgroundColor: HexColor("#FFFFFF"),
+    //   children: [
+    //     // _buildSpeedDialChild(
+    //     // title: "Ask Question",
+    //     // icon: SlydoAppIconNew.question,
+    //     // onTap: () {
+    //     //   NavigationUtil.push(context,
+    //     //       screen: AddTopicScreen(
+    //     //         askCategories: askViewModel.yarnCategories,
+    //     //         isYarn: false,
+    //     //         askCategory: widget.askCategories,
+    //     //       ));
+    //     // }),
+    //     _buildSpeedDialChild(
+    //         title: "Yarn",
+    //         icon: SlydoAppIconNew.yarn,
+    //         onTap: () {
+    //           NavigationUtil.push(context,
+    //               screen: AddOrEditYarn(
+    //                   askCategories: askViewModel.yarnCategories,
+    //                   isYarn: true,
+    //                   shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+    //                   askCategory: widget.askCategories));
+    //         }),
+    //   ],
+    // );
   }
 
   SpeedDialChild _buildSpeedDialChild(
@@ -146,7 +165,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: Size.fromHeight(80.0),
+      preferredSize: Size.fromHeight(50.0),
       child: AppBar(
         backgroundColor: Colors.white,
         titleSpacing: 0,
@@ -249,9 +268,9 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   Widget _buildBody() {
     return Column(
       children: [
-        SizedBox(
-          height: 16,
-        ),
+        // SizedBox(
+        //   height: 16,
+        // ),
         // _buildCategoryAndTabs(),
         _buildPageView(),
       ],
