@@ -241,36 +241,4 @@ class _YarnDashboardState extends State<YarnDashboard> {
       activeBackgroundColor: HexColor("#FFFFFF"),
     );
   }
-
-  SpeedDialChild _buildSpeedDialChild({
-    required String title,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return SpeedDialChild(
-        onTap: onTap,
-        backgroundColor: yarnBlack,
-        labelBackgroundColor: HexColor("#FFFFFF"),
-        labelWidget: Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Text(
-              title,
-              style: TextStyle(
-                  color: HexColor("#424242"),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 20,
-        ));
-  }
 }

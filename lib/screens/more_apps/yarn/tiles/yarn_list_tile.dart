@@ -88,33 +88,6 @@ class _YarnTileState extends State<YarnTile> {
       isAttachmentPresent = true;
     }
 
-    // var input =
-    //     'Testing if @abiola.rasheed can see espn.com check food.. next do...it .fun  try out.';
-    // var newString = '';
-    // var list = [];
-    //
-    // print('input test string');
-    // input.split(' ').forEach((ch) {
-    //   list.add(ch);
-    //   // print(ch);
-    // });
-    //
-    // list.forEach((data) {
-    //   if (data.toString().contains('.') &&
-    //       !data.toString().contains('@') &&
-    //       !data.toString().contains('..') &&
-    //       !data.toString().startsWith('.') &&
-    //       !data.toString().endsWith('.')) {
-    //     final replaceWith = 'http://' + data;
-    //
-    //     newString = newString + ' ' + replaceWith.toString();
-    //   } else {
-    //     newString = newString + ' ' + data.toString();
-    //   }
-    // });
-    //
-    // print("value of fola:: ${newString}");
-
     super.initState();
   }
 
@@ -571,16 +544,13 @@ class _YarnTileState extends State<YarnTile> {
 
     // print("value of fola:: ${newString}");
 
+    debugPrint('Yarn Body:::: ${widget.yarn.body}');
+
     return RichTextForTitle(
       description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
       // description: widget.yarn.body ?? '',
       fontSize: 14,
     );
-
-    // return Text(
-    //   messageDecoderWithEmoji(newString ?? '') ?? '',
-    //   style: TextStyle(color: Color.fromARGB(255, 187, 118, 27), fontSize: 10),
-    // );
   }
 
   Widget _buildImagesRow() {
