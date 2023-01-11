@@ -9,6 +9,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
+import '../../../data/state_notifier.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
@@ -35,6 +36,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
   String? selectedCategoryId;
   late YarnDashboardBloc yarnDashboardBloc;
   bool isQuestionMode = false;
+  late DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
   @override
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
+
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: _buildFloatingActionButton(),
@@ -96,7 +99,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 15),
+      SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -118,7 +121,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 22,
           // ),
           ),
-      SizedBox(width: 10),
+      SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -140,7 +143,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           //   size: 26,
           // ),
           ),
-      SizedBox(width: 10),
+      SizedBox(width: 30),
     ];
   }
 

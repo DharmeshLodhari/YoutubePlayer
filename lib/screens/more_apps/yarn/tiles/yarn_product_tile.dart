@@ -210,7 +210,9 @@ class _YarnProductTileState extends State<YarnProductTile> {
                               height: getSizeBoxHeight(),
                             ),
                             Text(
-                              widget.product!.shortDescription!,
+                              messageDecoderWithEmoji(
+                                      widget.product!.shortDescription!)! ??
+                                  "",
                               maxLines: 2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,

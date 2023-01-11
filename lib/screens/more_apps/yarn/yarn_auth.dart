@@ -361,8 +361,6 @@ class YarnAuth extends AuthService {
         url = AppConfig.baseUrl +
             "/api/v1/social/ask/?question=$isQuestion&search=$searchText&categoryId=$categoryId";
       }
-
-
     } else {
       url = getSecureUrl(url: next);
     }
@@ -449,7 +447,7 @@ class YarnAuth extends AuthService {
     request.fields.addAll({
       "tags": jsonEncode(yarn.tags),
       "body": yarn.body ?? "",
-      "category": yarn.category?.id ?? "",
+      "category": yarn.category?.id ?? "0",
       "author": yarn.author ?? "",
       "is_question": jsonEncode(yarn.isQuestion),
       "media_count": "$count",
