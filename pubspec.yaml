@@ -122,7 +122,8 @@ dependencies:
   web_socket_channel: ^2.1.0
   webview_flutter: ^3.0.4
   workmanager: 0.5.1
-  linkfy_text: ^1.1.5
+#  linkfy_text: ^1.1.5
+  hash_at_links_detector: ^1.0.1
 
 flutter_icons:
   android: "launcher_icon"
