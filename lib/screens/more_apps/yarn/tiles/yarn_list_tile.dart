@@ -11,8 +11,10 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:linkfy_text/linkfy_text.dart';
 import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
@@ -452,6 +454,7 @@ class _YarnTileState extends State<YarnTile> {
           !data.toString().contains('@') &&
           !data.toString().contains('..') &&
           !data.toString().startsWith('.') &&
+          !data.toString().startsWith('http') &&
           !data.toString().endsWith('.')) {
         final replaceWith = 'http://' + data;
 
@@ -469,23 +472,41 @@ class _YarnTileState extends State<YarnTile> {
             height: 5,
           ),
 
-          // Text(
-          //   messageDecoderWithEmoji(newString ?? '') ?? '',
+          Container(
+              child: LinkifyText(
+            messageDecoderWithEmoji(newString)!,
+            linkStyle: TextStyle(color: Colors.blue),
+            linkTypes: [LinkType.url, LinkType.hashTag, LinkType.userTag],
+            onTap: (link) {
+              /// if(link.type == Link.url) launchUrl(link.value);
+
+              print('link clicked::: ${link.type}');
+
+              if (link.value!.startsWith("@")) {
+                // print('link clicked userTag::: ${link.value}');
+                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                  "searchedUserName": link.value?.replaceFirst("@", "")
+                });
+              } else {
+                // print('link clicked url::: ${link.value}');
+                launchUrl(Uri.parse(link.value.toString()));
+              }
+
+              // print('link clicked::: ${link.value}');
+            },
+          )),
+
+          // LinkWell(
+          //   messageDecoderWithEmoji(widget.yarn.body)!,
           //   style: TextStyle(
           //       color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
+          //   textScaleFactor: 0.8,
+          //   linkStyle: TextStyle(
+          //       color: navyBlue,
+          //       decoration: TextDecoration.underline,
+          //       fontSize: 17,
+          //       fontFamily: "OpenSans"),
           // ),
-
-          LinkWell(
-            messageDecoderWithEmoji(widget.yarn.body)!,
-            style: TextStyle(
-                color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
-            textScaleFactor: 0.8,
-            linkStyle: TextStyle(
-                color: navyBlue,
-                decoration: TextDecoration.underline,
-                fontSize: 17,
-                fontFamily: "OpenSans"),
-          ),
 
           SizedBox(
             height: 10,
@@ -541,10 +562,6 @@ class _YarnTileState extends State<YarnTile> {
     }
 
     // debugPrint('Yarn Body:::: ${widget.yarn.body}');
-
-    // print("value of fola:: ${newString}");
-
-    debugPrint('Yarn Body:::: ${widget.yarn.body}');
 
     return RichTextForTitle(
       description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
