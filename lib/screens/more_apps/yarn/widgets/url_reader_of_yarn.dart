@@ -14,7 +14,7 @@ Map<String, dynamic> detectLinkInText(String text) {
   matches.forEach((match) {
     link = text.substring(match.start, match.end);
     // will match google.com
-    if (link.startsWith("@") != true) {
+    if (link.startsWith("@") != true && !link.contains("..")) {
       // don't match @abiola.rasheed as a url
       listOfLinks.add(link);
     }

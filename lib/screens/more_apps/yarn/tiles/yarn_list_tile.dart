@@ -11,18 +11,18 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:linkfy_text/linkfy_text.dart';
-import 'package:linkwell/linkwell.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
+import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
+import '../ask_search_screen.dart';
 import '../models/Topics/yarn_model.dart';
+import '../utils/slydo_yarn_links.dart';
 import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
@@ -471,43 +471,25 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 5,
           ),
-
-          Container(
-              child: LinkifyText(
-            messageDecoderWithEmoji(newString)!,
-            linkStyle: TextStyle(color: Colors.blue),
-            linkTypes: [LinkType.url, LinkType.hashTag, LinkType.userTag],
-            onTap: (link) {
-              /// if(link.type == Link.url) launchUrl(link.value);
-
-              print('link clicked::: ${link.type}');
-
-              if (link.value!.startsWith("@")) {
-                // print('link clicked userTag::: ${link.value}');
-                Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
-                  "searchedUserName": link.value?.replaceFirst("@", "")
-                });
-              } else {
-                // print('link clicked url::: ${link.value}');
-                launchUrl(Uri.parse(link.value.toString()));
-              }
-
-              // print('link clicked::: ${link.value}');
+          YarnSmartText(
+            text: messageDecoderWithEmoji(newString)!,
+            atStyle: TextStyle(color: navyBlue),
+            disableAt: false,
+            onTagClick: (tag) {
+              NavigationUtil.push(context,
+                  screen: SearchScreen(searchText: tag));
             },
-          )),
-
-          // LinkWell(
-          //   messageDecoderWithEmoji(widget.yarn.body)!,
-          //   style: TextStyle(
-          //       color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
-          //   textScaleFactor: 0.8,
-          //   linkStyle: TextStyle(
-          //       color: navyBlue,
-          //       decoration: TextDecoration.underline,
-          //       fontSize: 17,
-          //       fontFamily: "OpenSans"),
-          // ),
-
+            onUrlClicked: (open) {
+              // launch  url
+              print("opened $open");
+              launchUrl(Uri.parse(open.toString()));
+            },
+            onAtClick: (at) {
+              print("at is  $at");
+              Navigator.pushNamed(context, Routes.USER_PROFILE,
+                  arguments: {"searchedUserName": at.replaceFirst("@", "")});
+            },
+          ),
           SizedBox(
             height: 10,
           ),
