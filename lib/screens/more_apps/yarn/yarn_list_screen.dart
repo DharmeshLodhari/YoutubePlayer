@@ -132,7 +132,7 @@ class YarnListScreenState extends State<YarnListScreen> {
         final position = _scrollController.position.minScrollExtent;
         _scrollController.animateTo(
           position,
-          duration: Duration(milliseconds: 3),
+          duration: Duration(seconds: 3),
           curve: Curves.easeOut,
         );
       }
