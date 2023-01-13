@@ -181,7 +181,8 @@ class Product {
     return {
       "name": this.name,
       "description": this.description,
-      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
+      "short_description": this.getShortDescription(
+          this.shortDescription ?? '', this.description ?? ''),
       "price": this.price,
       "condition": this.condition,
       "category": this.category,
@@ -199,7 +200,8 @@ class Product {
       "id": this.id,
       "name": this.name,
       "description": this.description,
-      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
+      "short_description": this.getShortDescription(
+          this.shortDescription ?? '', this.description ?? ''),
       "price": this.price,
       "condition": this.condition,
       "category": this.category,
@@ -253,7 +255,7 @@ class Product {
       condition: object["condition"] ?? "",
       category: object["category"] ?? "",
       manufacturer: object["manufacturer"] ?? "",
-      isAvailable: object["is_available"] ?? false,
+      isAvailable: object["is_available"] ?? true,
       availableFrom: getProductDateTime(object["available_from"]),
       currency: object["currency"] ?? "NGN",
       pictureMap: object["pictureMap"] ?? [],
@@ -455,7 +457,8 @@ class Service {
     return {
       "name": this.name,
       "description": this.description,
-      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
+      "short_description": this.getShortDescription(
+          this.shortDescription ?? '', this.description ?? ''),
       "price": this.price,
       "category": this.category,
       "is_available": this.isAvailable,
@@ -470,7 +473,8 @@ class Service {
       "id": this.id,
       "name": this.name,
       "description": this.description,
-      "short_description": this.getShortDescription(this.shortDescription??'', this.description??''),
+      "short_description": this.getShortDescription(
+          this.shortDescription ?? '', this.description ?? ''),
       "price": this.price,
       "category": this.category,
       "is_available": this.isAvailable,
@@ -498,7 +502,7 @@ class Service {
     this.providerFullName = object["provider_fullname"] ?? "";
     this.qrCode = object["qr_code"] ?? "";
     this.category = object["category"] ?? "";
-    this.isAvailable = object["is_available"] ?? false;
+    this.isAvailable = object["is_available"] ?? true;
     this.availableFrom = getServiceDateTime(object["available_from"]);
     this.currency = object["currency"] ?? "";
     this.pictureMap = object["pictureMap"] ?? [];
