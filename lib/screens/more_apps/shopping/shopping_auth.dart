@@ -969,6 +969,7 @@ class ShoppingAuthService extends AuthService {
     if (exclude != null) {
       url += "?exclude=$exclude";
     }
+
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
     List items = [];

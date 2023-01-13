@@ -321,28 +321,29 @@ class _DisplayProductState extends State<DisplayProduct> {
   }
 
   void addProductToCart() async {
+    debugPrint('Product available::::: ${widget.product.isAvailable}');
+    if (isOwner) {
+      return showToast(
+          message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
+    }
+
     if (widget.product.isAvailable!) {
-      if (!isOwner) {
-        String type = "product";
-        basketBloc.addItemToCart(item: widget.product, type: type);
-        late var mapData;
-        basketBloc.items.forEach((element) {
-          if (element["item"].id == widget.product.id) {
-            mapData = element;
-            return;
-          }
-        });
-        Map data = {
-          "type": type,
-          "id": mapData["item"].id,
-          "qty": mapData["qty"],
-        };
-        debugPrint("Data From Display Product widget Page : $data");
-        await _auth.addItemToShoppingCart(data);
-      } else {
-        showToast(
-            message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-      }
+      String type = "product";
+      basketBloc.addItemToCart(item: widget.product, type: type);
+      late var mapData;
+      basketBloc.items.forEach((element) {
+        if (element["item"].id == widget.product.id) {
+          mapData = element;
+          return;
+        }
+      });
+      Map data = {
+        "type": type,
+        "id": mapData["item"].id,
+        "qty": mapData["qty"],
+      };
+      debugPrint("Data From Display Product widget Page : $data");
+      await _auth.addItemToShoppingCart(data);
     } else {
       showToast(message: AppLocalization.of(context)!.productOutOfStock);
     }
@@ -863,28 +864,27 @@ class _DisplayServiceState extends State<DisplayService> {
   }
 
   void addServiceToCart() async {
+    if (isOwner) {
+      return showToast(
+          message: AppLocalization.of(context)!.cantPurchaseYourOwnServices);
+    }
     if (widget.service.isAvailable!) {
-      if (!isOwner) {
-        String type = "product";
-        basketBloc.addItemToCart(item: widget.service, type: type);
-        late var mapData;
-        basketBloc.items.forEach((element) {
-          if (element["item"].id == widget.service.id) {
-            mapData = element;
-            return;
-          }
-        });
-        Map data = {
-          "type": type,
-          "id": mapData["item"].id,
-          "qty": mapData["qty"],
-        };
-        debugPrint("Data From Display Product widget Page : $data");
-        await _auth.addItemToShoppingCart(data);
-      } else {
-        showToast(
-            message: AppLocalization.of(context)!.youCanNotPurchaseThisItem);
-      }
+      String type = "service";
+      basketBloc.addItemToCart(item: widget.service, type: type);
+      late var mapData;
+      basketBloc.items.forEach((element) {
+        if (element["item"].id == widget.service.id) {
+          mapData = element;
+          return;
+        }
+      });
+      Map data = {
+        "type": type,
+        "id": mapData["item"].id,
+        "qty": mapData["qty"],
+      };
+      debugPrint("Data From Display Product widget Page : $data");
+      await _auth.addItemToShoppingCart(data);
     } else {
       showToast(message: AppLocalization.of(context)!.serviceOutOfStock);
     }
