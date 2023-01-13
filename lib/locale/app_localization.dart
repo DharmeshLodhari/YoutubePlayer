@@ -1338,6 +1338,13 @@ class AppLocalization {
     );
   }
 
+  String get cantPurchaseYourOwnServices {
+    return Intl.message(
+      "You can't purchase your own goods and service",
+      name: "cantPurchaseYourOwnServices",
+    );
+  }
+
   String get serviceOutOfStock {
     return Intl.message(
       "Service Out Of Stock",

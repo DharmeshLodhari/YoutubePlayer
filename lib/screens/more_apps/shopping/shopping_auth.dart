@@ -884,8 +884,7 @@ class ShoppingAuthService extends AuthService {
     if (response.statusCode == 200) {
       return getCartItems(jsonData);
     }
-    debugPrint(
-        "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
     return Future.error("ERROR:- ${response.body}");
   }
 
@@ -895,10 +894,7 @@ class ShoppingAuthService extends AuthService {
     var _data = jsonEncode(data);
     var response = await httpPatch(url, headers: headers, body: _data);
 
-    var jsonData = jsonDecode(response.body);
-    debugPrint("sent data: " + _data.toString());
     if (response.statusCode == 200) {
-      debugPrint("response" + jsonData.toString());
       return true;
     }
     return false;
@@ -910,8 +906,6 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpPatch(url, headers: headers, body: _data);
     if (response.statusCode == 200) {
-      var jsonData = jsonDecode(response.body);
-      debugPrint("response" + jsonData.toString());
       return true;
     } else
       return false;
@@ -921,19 +915,14 @@ class ShoppingAuthService extends AuthService {
   Future<dynamic> placeOrderOfShoppingCart(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/shopping-cart/";
     var _data = jsonEncode(data);
-    debugPrint('PLACE DATA ::: $_data');
 
     var headers = await getAuthHeaders();
     var response = await httpPost(url, headers: headers, body: _data);
     var jsonData = jsonDecode(response.body);
 
-    debugPrint(
-        "PLACE ORDER URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
     if (response.statusCode == 201) {
       return jsonData;
     } else {
-      debugPrint(
-          "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${response.body}");
       return null;
     }
   }
@@ -945,8 +934,6 @@ class ShoppingAuthService extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
-    debugPrint('CREATE REVIEWABLE RECORD ::: ${response.statusCode}');
-    debugPrint('CREATE REVIEWABLE RECORD ::: ${response.body}');
     return response;
   }
 
