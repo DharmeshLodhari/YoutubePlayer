@@ -27,6 +27,7 @@ import '../widgets/url_reader_of_yarn.dart';
 import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 import '../yarn_dashboard_bloc.dart';
+import '../yarn_setting_screen.dart';
 
 class YarnTile extends StatefulWidget {
   Yarn yarn;
@@ -622,9 +623,12 @@ class _YarnTileState extends State<YarnTile> {
                 width: 10,
               ),
               clickWidget(
-                text: 'Always show me sensitive media',
+                text: 'Change sensitive media settings',
                 onClick: () {
-                  print('sensitive');
+                  NavigationUtil.push(
+                    context,
+                    screen: YarnSettingsScreen(),
+                  );
                 },
               )
             ],
@@ -675,9 +679,12 @@ class _YarnTileState extends State<YarnTile> {
                 width: 10,
               ),
               clickWidget(
-                text: 'Always show me sensitive media',
+                text: 'Change adult content settings',
                 onClick: () {
-                  print('sensitive');
+                  NavigationUtil.push(
+                    context,
+                    screen: YarnSettingsScreen(),
+                  );
                 },
               )
             ],
