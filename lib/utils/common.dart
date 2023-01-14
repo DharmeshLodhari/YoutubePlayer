@@ -12,9 +12,11 @@ import 'global_key.dart';
 
 String? messageDecoderWithEmoji(String? text) {
   try {
-    List<int> bytes = text.toString().codeUnits;
+    List<int> bytes = text!.codeUnits;
 
     return utf8.decode(bytes);
+    // return utf8.decode(base64.decode(text!));
+    // return latin1.decode(base64.decode(text.toString()));
   } catch (error) {
     logger.e('An error occurred: $error');
     return text;

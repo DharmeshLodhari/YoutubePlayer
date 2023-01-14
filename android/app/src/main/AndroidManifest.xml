@@ -28,6 +28,7 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -61,8 +62,10 @@
 <!--            android:name="com.yalantis.ucrop.UCropActivity"-->
 <!--            android:screenOrientation="portrait"-->
 <!--            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>-->
-        <activity android:name="com.android.camera.CropImage"/>
-        <activity android:name="com.yalantis.ucrop.UCropActivity"/>
+        <activity android:name="com.android.camera.CropImage"
+            />
+        <activity android:name="com.yalantis.ucrop.UCropActivity"
+            />
 
 
 

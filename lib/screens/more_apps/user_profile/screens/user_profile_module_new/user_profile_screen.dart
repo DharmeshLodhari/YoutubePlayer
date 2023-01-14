@@ -1917,23 +1917,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Future shareAsYarn() async {
-    /*  AddYarnAndQuestion yarn = AddYarnAndQuestion();
-    yarn.title = 'This is the title';
-    yarn.body = 'This is the body';
-    yarn.enableCommenting = true;
-    yarn.enablePayme = true;
-    yarn.attachment = {
-      "profile": searchedUser?.toJson().cast<String, dynamic>() ?? {}
-    };
-    bool data = await YarnAuth().addYarnAndQuestion(yarn);
-    if (data) {
-      showToast(message: "Share in Yarn successfully created");
-    } */
-
     NavigationUtil.push(context,
         screen: ShareAsAyarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            userProfile: searchedUser,
             callback: (params) async {
               params..attachment = {"profile": searchedUser?.toJson()};
               bool data = await YarnAuth().addYarnAndQuestion(params);

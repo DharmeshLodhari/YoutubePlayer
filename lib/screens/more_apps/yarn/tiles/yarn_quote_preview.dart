@@ -28,7 +28,7 @@ import '../widgets/yarn_media_renderer.dart';
 import '../widgets/yarn_options.dart';
 import '../yarn_dashboard_bloc.dart';
 
-class YarnTile extends StatefulWidget {
+class YarnQuotePreview extends StatefulWidget {
   Yarn yarn;
   Function(Yarn)? onDeleteYarn;
   Function(Yarn)? onReYarn;
@@ -36,7 +36,7 @@ class YarnTile extends StatefulWidget {
   Function()? navigateToReyarn;
   final Color? backGroundColor;
 
-  YarnTile(
+  YarnQuotePreview(
       {required this.yarn,
       this.backGroundColor,
       this.onDeleteYarn,
@@ -45,10 +45,10 @@ class YarnTile extends StatefulWidget {
       this.navigateToReyarn});
 
   @override
-  State<YarnTile> createState() => _YarnTileState();
+  State<YarnQuotePreview> createState() => _YarnQuotePreviewState();
 }
 
-class _YarnTileState extends State<YarnTile> {
+class _YarnQuotePreviewState extends State<YarnQuotePreview> {
   /// variables for yarn tile render TYPE
   bool isMediaPresent = false;
   bool isAttachmentPresent = false;
@@ -191,7 +191,7 @@ class _YarnTileState extends State<YarnTile> {
             ? _buildFactCheckWidget()
             : SizedBox.shrink(),
         SizedBox(height: 6),
-        _buildTopActions(),
+        // _buildTopActions(),
       ],
     );
   }
@@ -221,99 +221,57 @@ class _YarnTileState extends State<YarnTile> {
               width: 10,
             ),
             Expanded(
-              child: InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": widget.yarn.author});
-                },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          messageDecoderWithEmoji(
-                                  widget.yarn.authorName ?? "") ??
-                              "",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: yarnBlack,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        ClipOval(
-                          child: Container(
-                            height: 4,
-                            width: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        messageDecoderWithEmoji(widget.yarn.authorName ?? "") ??
+                            "",
+                        style: TextStyle(
+                            fontSize: 14,
                             color: yarnBlack,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Expanded(
-                          child: Text(
-                            '${getGetYarnQuestionDateTime(widget.yarn.createdAt!)}',
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(fontSize: 12, color: yarnBlack),
-                          ),
-                        )
-                      ],
-                    ),
-                    userNameWithVerifiedIcon(
-                      name: "@${widget.yarn.author!}",
-                      isVerified: widget.yarn.authorIsVerified ?? false,
-                      verifiedIconSize: 16,
-                      textStyle: TextStyle(
-                        color: yarnBlack.withOpacity(.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w700),
                       ),
-                      verifiedIconColor: verifyGreen,
+                      SizedBox(
+                        width: 4,
+                      ),
+                      ClipOval(
+                        child: Container(
+                          height: 4,
+                          width: 4,
+                          color: yarnBlack,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Expanded(
+                        child: Text(
+                          '${getGetYarnQuestionDateTime(widget.yarn.createdAt!)}',
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(fontSize: 12, color: yarnBlack),
+                        ),
+                      )
+                    ],
+                  ),
+                  userNameWithVerifiedIcon(
+                    name: "@${widget.yarn.author!}",
+                    isVerified: widget.yarn.authorIsVerified ?? false,
+                    verifiedIconSize: 16,
+                    textStyle: TextStyle(
+                      color: yarnBlack.withOpacity(.7),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
                     ),
-                    // SizedBox(height: 5.0,),
-                  ],
-                ),
+                    verifiedIconColor: verifyGreen,
+                  ),
+                  // SizedBox(height: 5.0,),
+                ],
               ),
             ),
-            InkWell(
-              onTap: () {
-                showModalBottomSheet<void>(
-                  backgroundColor: Colors.transparent,
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                      ),
-                      color: Colors.white,
-                      margin: EdgeInsets.zero,
-                      child: YarnOptions(
-                        yarnTopic: widget.yarn,
-                        isComment: false,
-                        onDeleteYarn: (Yarn yarn) {
-                          widget.onDeleteYarn!(yarn);
-                        },
-                        onUpdate: (Yarn yarn) {
-                          widget.onUpdateYarn!(yarn);
-                          // widget.yarn = yarn;
-                          // if(mounted) setState(() {});
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-              child: Icon(
-                Icons.more_horiz_rounded,
-                color: darkGreyYarn,
-              ),
-            )
           ],
         ),
       ],
@@ -321,21 +279,15 @@ class _YarnTileState extends State<YarnTile> {
   }
 
   Widget _buildUserAvatar() {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-            arguments: widget.yarn.authorAvatar!);
-      },
-      child: Container(
-        height: 34,
-        width: 34,
-        decoration: BoxDecoration(shape: BoxShape.circle),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.yarn.authorAvatar!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-          ),
+    return Container(
+      height: 34,
+      width: 34,
+      decoration: BoxDecoration(shape: BoxShape.circle),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: widget.yarn.authorAvatar!,
+          fit: BoxFit.cover,
+          errorWidget: imageErrorWidget,
         ),
       ),
     );
@@ -345,8 +297,6 @@ class _YarnTileState extends State<YarnTile> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // getFollowersWidget(widget,
-        //     radiusSize: 28, radiusShift: 10, radiusHeight: 28, radiusWidth: 28),
         _checkCategoryTypeChip(),
         Container(
           child: getFollowersWidget(widget,
@@ -391,15 +341,6 @@ class _YarnTileState extends State<YarnTile> {
       yarn: widget.yarn.reYarn ?? Yarn(),
       onOptionsAction: () {
         if (widget.navigateToReyarn != null) widget.navigateToReyarn!();
-      },
-    );
-  }
-
-  Widget _buildTopActions() {
-    return YarnActions(
-      yarn: widget.yarn,
-      onReYarnAdded: (Yarn yarn) {
-        widget.onReYarn!(yarn);
       },
     );
   }
@@ -472,19 +413,13 @@ class _YarnTileState extends State<YarnTile> {
             text: messageDecoderWithEmoji(newString)!,
             atStyle: TextStyle(color: navyBlue),
             disableAt: false,
-            onTagClick: (tag) {
-              NavigationUtil.push(context,
-                  screen: SearchScreen(searchText: tag));
-            },
+            onTagClick: (tag) {},
             onUrlClicked: (open) {
               // launch  url
               print("opened $open");
-              launchUrl(Uri.parse(open.toString()));
             },
             onAtClick: (at) {
               print("at is  $at");
-              Navigator.pushNamed(context, Routes.USER_PROFILE,
-                  arguments: {"searchedUserName": at.replaceFirst("@", "")});
             },
           ),
           SizedBox(

@@ -212,7 +212,18 @@ class _YarnActionsState extends State<YarnActions> {
                 if (widget.yarn.userReyarned) {
                   showToast(message: "Re yarn added successfully");
                 } else {
-                  addReYarn();
+                  NavigationUtil.push(context,
+                      screen: ShareAsAyarnScreen(
+                          appTitle: "Reyarn",
+                          enableText: true,
+                          askCategories: yarnDashboardBloc.yarnCategories,
+                          shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                          yarnTopic: widget.yarn,
+                          callback: (params) async {
+                            reYarn(params);
+                            showToast(
+                                message: "Share in Yarn successfully created");
+                          }));
                 }
               } else {
                 showToast(message: "You cannot Reyarn.");
@@ -426,148 +437,6 @@ class _YarnActionsState extends State<YarnActions> {
       widget.yarn.numberOfReYarn = (widget.yarn.numberOfReYarn ?? 0) + 1;
       widget.onReYarnAdded!(data);
       if (mounted) setState(() {});
-    }
-  }
-
-  addReYarn() {
-    if (widget.yarn.userReyarned) {
-      showToast(message: "Re yarn added successfully");
-    } else {
-      showModalBottomSheet<void>(
-          backgroundColor: Colors.transparent,
-          context: context,
-          builder: (BuildContext context) {
-            return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20)),
-                ),
-                color: Colors.white,
-                margin: EdgeInsets.zero,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 18),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 35.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            await NavigationUtil.push(context,
-                                screen: ShareAsAyarnScreen(
-                                    appTitle: "Reyarn",
-                                    enableText: true,
-                                    askCategories:
-                                        yarnDashboardBloc.yarnCategories,
-                                    shareAsYarnModel:
-                                        ShareAsYarnModel.shareAsYarnModel,
-                                    callback: (params) async {
-                                      reYarn(params);
-                                      showToast(
-                                          message:
-                                              "Share in Yarn successfully created");
-                                    }));
-                            Navigator.of(context).pop();
-                          },
-                          child: Row(
-                            children: [
-                              SvgPicture.asset(
-                                "yarn/re_share".toSVG(),
-                                color: blackFont,
-                                height: 20,
-                                width: 20,
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Text(
-                                'Reyarn',
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 17,
-                      ),
-                      Divider(
-                        color: darkGrey,
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 35.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            await NavigationUtil.push(context,
-                                screen: ShareAsAyarnScreen(
-                                    appTitle: "Quote Yarn",
-                                    askCategories:
-                                        yarnDashboardBloc.yarnCategories,
-                                    shareAsYarnModel:
-                                        ShareAsYarnModel.shareAsYarnModel,
-                                    callback: (params) async {
-                                      reYarn(params);
-                                      showToast(
-                                          message:
-                                              "Share in Yarn successfully created");
-                                    }));
-                            Navigator.of(context).pop();
-                          },
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/pen-feather.png',
-                                height: 20,
-                                width: 20,
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Text(
-                                'Quote Yarn',
-                                style: TextStyle(
-                                    color: blackFont,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 50,
-                      ),
-                      InkWell(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.symmetric(horizontal: 30),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                  color: darkGreyYarn.withOpacity(.3))),
-                          child: Center(
-                              child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                                color: blackFont,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 20),
-                          )),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 50,
-                      ),
-                    ],
-                  ),
-                ));
-          });
     }
   }
 

@@ -4,15 +4,18 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dar
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/state_notifier.dart';
+import '../../../routes/route_constants.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
+import '../messaging/message_auth.dart';
 import 'add_or_edit_yarn_screen.dart';
 import 'ask_search_screen.dart';
 import 'question_list_screen.dart';
@@ -36,12 +39,33 @@ class _YarnDashboardState extends State<YarnDashboard> {
   String? selectedCategoryId;
   late YarnDashboardBloc yarnDashboardBloc;
   bool isQuestionMode = false;
-  late DashboardBloc _dashboardBloc;
+  int count = 0;
 
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
+    fetchMessageCount();
     super.initState();
+  }
+
+  void fetchMessageCount() async {
+    try {
+      count = await MessageAuth().getUnreadNotificationCount();
+      if (mounted) setState(() {});
+    } catch (error) {
+      count = 0;
+    }
+  }
+
+  Widget? getUnReadCount(int count) {
+    if (count == 0) {
+      return null;
+    }
+    return Text(
+      count.toString(),
+      style: TextStyle(
+          fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+    );
   }
 
   @override
@@ -100,27 +124,60 @@ class _YarnDashboardState extends State<YarnDashboard> {
           // ),
           ),
       SizedBox(width: 30),
+      // RoundedBackgroundIcon(
+      //     backgroundColor: Colors.transparent,
+      //     onTap: () {
+      //       NavigationUtil.push(
+      //         context,
+      //         screen: YarnNotification(),
+      //       );
+      //     },
+      //     height: 20,
+      //     width: 20,
+      //     icon: SvgPicture.asset(
+      //       "yarn/notification".toSVG(),
+      //       height: 12,
+      //       width: 12,
+      //     )
+      //     // Icon(
+      //     //   SlydoAppIconNew.notification,
+      //     //   color: yarnBlack,
+      //     //   size: 22,
+      //     // ),
+      //     ),
+
       RoundedBackgroundIcon(
-          backgroundColor: Colors.transparent,
-          onTap: () {
-            NavigationUtil.push(
-              context,
-              screen: YarnNotification(),
-            );
-          },
-          height: 20,
-          width: 20,
-          icon: SvgPicture.asset(
-            "yarn/notification".toSVG(),
-            height: 12,
-            width: 12,
-          )
-          // Icon(
-          //   SlydoAppIconNew.notification,
-          //   color: yarnBlack,
-          //   size: 22,
-          // ),
-          ),
+        height: 34,
+        width: 34,
+        icon: Badge(
+            badgeColor: naturalGreen,
+            animationType: BadgeAnimationType.slide,
+            badgeContent: getUnReadCount(count),
+            padding: count == 0
+                ? EdgeInsets.all(0)
+                : EdgeInsets.only(
+                    left: count.toString().length == 1 ? 6 : 8,
+                    right: 6,
+                    top: 4,
+                    bottom: 4),
+            position: BadgePosition(
+                end: count.toString().length == 1 ? -5 : -10, top: 0),
+            child: SvgPicture.asset(
+              "yarn/notification".toSVG(),
+              height: 16,
+              width: 16,
+              color: HexColor("#151515"),
+            )),
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: YarnNotification(),
+          );
+        },
+        backgroundColor: lightGrey.withOpacity(0.1),
+        enableMargin: true,
+      ),
+
       SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,

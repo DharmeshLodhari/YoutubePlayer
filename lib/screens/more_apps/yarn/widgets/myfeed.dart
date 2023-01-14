@@ -81,7 +81,12 @@ class MyFeedViewState extends State<MyFeedView> {
             yarnTopicList.addAll(tempList);
           });
         }
-        debugPrint("YARN TOPICS:- $yarnTopicList");
+        // debugPrint("YARN TOPICS Feed:- $yarnTopicList");
+
+        for (var item in yarnTopicList) {
+          debugPrint("YARN TOPICS Feed:- ${item.viewersAvatars.toString()}");
+          debugPrint("YARN TOPICS Feed body:::- ${item.body}");
+        }
       }
       if (yarnTopicList.isEmpty) {
         if (mounted) {
@@ -130,6 +135,10 @@ class MyFeedViewState extends State<MyFeedView> {
           if (index == yarnTopicList.length) {
             return _buildLoadingIndicator();
           }
+
+          debugPrint(
+              'yarn detail feed::: ${yarnTopicList[index].viewersAvatars.toString()}');
+
           return InkWell(
             onTap: () async {
               if (yarnTopicList[index].enableCommenting ?? false) {
