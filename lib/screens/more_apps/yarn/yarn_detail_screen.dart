@@ -65,6 +65,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       setState(() => isScrolling = true);
     });
     super.initState();
+
+    // debugPrint(
+    //     'yarn detail profile full::: ${finalYarn!.viewersAvatars.toString()}');
   }
 
   Future getSingleYarn() async {

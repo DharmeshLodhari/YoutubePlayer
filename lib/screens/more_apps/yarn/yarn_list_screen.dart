@@ -47,21 +47,6 @@ class YarnListScreenState extends State<YarnListScreen> {
       }
     });
 
-    // _dashboardBloc = Provider.of<DashboardBloc>(context);
-    //
-    // debugPrint('Yarn clicked:::: ${_dashboardBloc.top}');
-    //
-    // if (_dashboardBloc.top = true) {
-    //   _dashboardBloc.top = false;
-    //   if (_scrollController.hasClients) {
-    //     final position = _scrollController.position.minScrollExtent;
-    //     _scrollController.animateTo(
-    //       position,
-    //       duration: Duration(seconds: 1),
-    //       curve: Curves.easeOut,
-    //     );
-    //   }
-    // }
     super.initState();
   }
 
@@ -102,7 +87,12 @@ class YarnListScreenState extends State<YarnListScreen> {
             yarnTopicList.addAll(tempList);
           });
         }
-        debugPrint("YARN TOPICS:- $yarnTopicList");
+        // debugPrint("YARN TOPICS:- $yarnTopicList");
+
+        for (var item in yarnTopicList) {
+          debugPrint("YARN TOPICS List:- ${item.viewersAvatars.toString()}");
+          debugPrint("YARN TOPICS List body:::- ${item.body}");
+        }
       }
     }
     if (yarnTopicList.isEmpty) {
@@ -161,6 +151,9 @@ class YarnListScreenState extends State<YarnListScreen> {
           if (index == yarnTopicList.length) {
             return _buildLoadingIndicator();
           }
+
+          // debugPrint('yarn detail profile::: ${yarnTopicList[index]}');
+
           return InkWell(
             onTap: () async {
               if (yarnTopicList[index].enableCommenting ?? false) {

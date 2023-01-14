@@ -98,9 +98,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         ? YarnCategories()
         : YarnCategories.fromJson(yarn?['category'].toJson());
 
-    if (messageDecoderWithEmoji(yarn?['body']).toString() == 'null') {
+    if (yarn?['body'].toString() == 'null') {
       textController!.text = '';
     } else {
+      // textController!.text = yarn?['body'] ?? '';
       textController!.text = messageDecoderWithEmoji(yarn?['body']) ?? '';
     }
 

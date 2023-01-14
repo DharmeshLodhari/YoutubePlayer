@@ -272,7 +272,7 @@ class YarnAuth extends AuthService {
     } else {
       url = getSecureUrl(url: next);
     }
-    debugPrint(url);
+    debugPrint('GET DATA Yarn profile::: $url');
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
@@ -280,10 +280,12 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
-      debugPrint("GET DATA:- $jsonData");
+      // debugPrint("GET DATA:- $jsonData");
       for (var item in jsonData["results"]) {
         Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
+
+        debugPrint("GET DATA Yarn:- ${item['viewers_avatars']}");
       }
 
       Map<String, dynamic> result = {

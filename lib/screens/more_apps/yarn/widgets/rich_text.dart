@@ -119,6 +119,7 @@ class RichTextForTitle extends StatelessWidget {
     for (final Match match in matches) {
       textSpans.add(TextSpan(
           text: messageDecoderWithEmoji(text.substring(start, match.start)),
+          // text: text.substring(start, match.start),
           style: TextStyle(
               color: blackFont, fontSize: fontSize, fontWeight: fontWeight)));
       textSpans.add(WidgetSpan(
@@ -145,6 +146,7 @@ class RichTextForTitle extends StatelessWidget {
     }
     textSpans.add(TextSpan(
         text: messageDecoderWithEmoji(text.substring(start, text.length)),
+        // text: text.substring(start, text.length),
         style: TextStyle(
             color: blackFont, fontSize: fontSize, fontWeight: fontWeight)));
     return Text.rich(TextSpan(children: textSpans));

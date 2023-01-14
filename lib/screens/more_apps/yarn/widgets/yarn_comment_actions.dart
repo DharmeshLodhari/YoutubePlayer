@@ -92,36 +92,53 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   }
 
   Widget _buildCommentButton() {
-    return LikeButton(
-      size: 15,
-      onTap: (_) async {
-        if (!widget.isCommentDetail) {
-          NavigationUtil.push(
-            context,
-            screen: YarnCommentDetailScreen(
-              yarn: widget.yarn,
-              yarnComment: widget.comment,
-            ),
-          );
-        }
-        return false;
-      },
-      likeBuilder: (bool isLiked) {
-        return SvgPicture.asset(
-          "yarn/yarn_comment".toSVG(),
-          color: darkGreyYarn,
-          height: 15,
-          width: 15,
-        );
-      },
-      countBuilder: (_, __, ___) {
-        return Text(
-          getCommentCount(),
-          style: TextStyle(
-              fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
-        );
-      },
+    return Row(
+      children: [
+        LikeButton(
+          size: 15,
+          onTap: (_) async {
+            if (!widget.isCommentDetail) {
+              NavigationUtil.push(
+                context,
+                screen: YarnCommentDetailScreen(
+                  yarn: widget.yarn,
+                  yarnComment: widget.comment,
+                ),
+              );
+            }
+            return false;
+          },
+          likeBuilder: (bool isLiked) {
+            return SvgPicture.asset(
+              "yarn/yarn_comment".toSVG(),
+              color: darkGreyYarn,
+              height: 15,
+              width: 15,
+            );
+          },
+          countBuilder: (_, __, ___) {
+            return Text(
+              getCommentCount(),
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: darkGreyYarn),
+            );
+          },
+        ),
+        SizedBox(
+          width: 6,
+        ),
+        Text(getCommentCount())
+      ],
     );
+  }
+
+  String getCommentReplyCount() {
+    if (widget.comment.replyCount != null && widget.comment.replyCount != 0) {
+      return widget.comment.replyCount?.toString() ?? "";
+    }
+    return "";
   }
 
   Widget _buildLikeButton() {

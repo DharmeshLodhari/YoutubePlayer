@@ -184,6 +184,21 @@ class MessageAuth extends AuthService {
     }
   }
 
+  Future<int> getUnreadNotificationCount() async {
+    var url = AppConfig.baseUrl + "/api/v1/social/ask/notifications-count/";
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+      return jsonData["count"] as int;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
+
   // List messages filters: [archived,sent,starred,all]
   Future<Map<String, dynamic>?> listMessages(String? next, String? previous,
       {String? filter}) async {

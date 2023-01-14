@@ -1,15 +1,23 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_quote_preview.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
@@ -32,6 +40,10 @@ import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/models/gif_model/GIFModel.dart';
 import '../messaging/chat/utils.dart';
 import '../messaging/message_auth.dart';
+import '../shopping/models/store.dart';
+import '../user_post/models/user_post.dart';
+import '../user_profile/models/user.dart';
+import '../user_profile/screens/user_profile_module_new/utils.dart';
 import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
@@ -42,18 +54,28 @@ class ShareAsAyarnScreen extends StatefulWidget {
   List<ShareAsYarnModel>? shareAsYarnModel;
   YarnCategories? askCategory;
   bool? isYarn = false;
-  bool? enableText = false;
+  bool? enableText = false; //TODO: this attribute should be deprecated
   bool isShare = true;
+  Yarn? yarnTopic = null;
+  CustomerProfile? userProfile = null;
+  Service? service = null;
+  Product? product = null;
+  UserPost? blogPost = null;
+
   Function(Yarn params) callback;
   ShareAsAyarnScreen(
       {this.askCategories,
       this.shareAsYarnModel,
       this.appTitle,
       this.isYarn,
-      this.enableText,
+      this.enableText, //TODO: this attribute should be deprecated
       this.askCategory,
       this.isShare = true,
-      required this.callback});
+      required this.callback,
+      this.yarnTopic,
+      this.userProfile,
+      this.service,
+      this.blogPost});
 
   @override
   State<ShareAsAyarnScreen> createState() => _ShareAsAyarnScreenState();
@@ -106,19 +128,30 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
     super.initState();
+
+    // debugPrint('Share yarn:::: ${shareAsYarnModelCopy}');
+    // debugPrint('Share yarn 000:::: ${widget.yarnTopic!.body}');
   }
 
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: _buildAppBar(widget.appTitle ?? "Share As A Yarn"),
       body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
-        return Column(
-          children: [
-            _buildYarnForm(model),
-            messageActionBar(),
+        return CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                children: [
+                  _buildYarnForm(model),
+                  messageActionBar(),
+                ],
+              ),
+            ),
           ],
         );
       }),
@@ -378,62 +411,97 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
   Widget _buildYarnForm(YarnDashboardBloc model) {
     return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          /*  if (!(widget.isYarn ?? false)) ...[
-            _buildQuestionFiled(),
-          ], */
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: _buildTextField(widget.enableText),
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: _buildTextField(),
+              ),
             ),
-          ),
-          if (isMentionName) ...[
-            _buildUserNameContainer(),
+            Container(
+              margin: EdgeInsets.only(left: 20.0, right: 20.0),
+              child: getPreviewContainer(),
+            ),
+
+            if (isMentionName) ...[
+              _buildUserNameContainer(),
+            ],
+            if (selectedImages.isNotEmpty) ...[
+              _buildAddImages(),
+              SizedBox(height: 20),
+            ],
+            // if (!_isMessageIsGIFOrSticker) _buildRowForContents(),
+            if (!_isMessageIsGIFOrSticker) _buildRowForMedia(),
           ],
-          if (selectedImages.isNotEmpty) ...[
-            _buildAddImages(),
-            SizedBox(height: 20),
-          ],
-          if (!_isMessageIsGIFOrSticker) _buildRowForContents(),
-          if (!_isMessageIsGIFOrSticker) _buildRowForMedia(),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildTextField(bool? isReyarn) {
-    return isReyarn == true
-        ? Container()
-        : TextField(
-            // keyboardType: TextInputType.multiline,
-            maxLines: null,
-            minLines: 1,
-            controller: textController,
+  Widget getPreviewContainer() {
+    if (widget.userProfile != null) {
+      return YarnCustomerPostTile(
+        customerProfile: widget.userProfile,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else if (widget.yarnTopic != null) {
+      return YarnQuotePreview(
+        yarn: widget.yarnTopic!,
+      );
+    } else if (widget.service != null) {
+      return YarnServiceTile(
+        service: widget.service,
+      );
+    } else if (widget.product != null) {
+      return YarnProductTile(
+        product: widget.product,
+      );
+    } else if (widget.blogPost != null) {
+      return YarnBlogPostTile(
+        post: widget.blogPost,
+        showAuthorDetails: true,
+        onDeleteBlog: () {},
+      );
+    } else {
+      return Container();
+    }
+  }
 
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: HexColor("#151515")),
-            onChanged: onValueChange,
-            decoration: InputDecoration(
-              hintText: "Leave your thought",
-              hintStyle: TextStyle(
-                fontSize: 12,
-                color: HexColor("#7A7A7A"),
-                fontWeight: FontWeight.w400,
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              focusedErrorBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-            ),
-          );
+  Widget _buildTextField() {
+    return TextField(
+      // keyboardType: TextInputType.multiline,
+      maxLines: null,
+      minLines: 1,
+      controller: textController,
+
+      style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: HexColor("#151515")),
+      onChanged: onValueChange,
+      inputFormatters: [LengthLimitingTextInputFormatter(400)],
+      decoration: InputDecoration(
+        hintText: "Leave your thought",
+        hintStyle: TextStyle(
+          fontSize: 12,
+          color: HexColor("#7A7A7A"),
+          fontWeight: FontWeight.w400,
+        ),
+        counterText:
+            textController!.text.length.toString() + "/" + 400.toString(),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        focusedErrorBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+      ),
+    );
   }
 
   Widget _buildRowForContents() {
@@ -497,6 +565,10 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
                 width: 4,
               ),
               _buildEnablePayme(),
+              SizedBox(
+                width: 4,
+              ),
+              _buildRowForContents(),
             ],
           ),
         ),
@@ -844,35 +916,23 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         isLoading: isAPILoading,
         onPressed: () {
           print(widget.appTitle);
-          if (widget.appTitle == 'Quote Yarn' && textController.text.isEmpty) {
-            showToast(message: 'Yarn body cannot be empty');
-          } else {
-            final data = Yarn(
-                media: selectedMedia,
-                title: yarnController.text,
-                body: textController.text,
-                category: selectedAskCategory,
-                isQuestion: widget.isYarn ?? false,
-                author: userBloc.user.userName,
-                enablePayMe: enablePayMe,
-                enableCommenting: enableCommenting,
-                isSensitiveContent: _isSensitiveContent,
-                isAdultContent: _isAdultContent,
-                ageRestriction: _shareAsYarnModel?.id);
 
-            widget.callback(data);
-            Navigator.pop(context);
-          }
+          final data = Yarn(
+              media: selectedMedia,
+              title: yarnController.text,
+              body: textController.text,
+              category: selectedAskCategory,
+              isQuestion: widget.isYarn ?? false,
+              author: userBloc.user.userName,
+              enablePayMe: enablePayMe,
+              enableCommenting: enableCommenting,
+              isSensitiveContent: _isSensitiveContent,
+              isAdultContent: _isAdultContent,
+              ageRestriction: _shareAsYarnModel?.id);
+
+          widget.callback(data);
+          Navigator.pop(context);
         },
-        /*   onPressed: isAPILoading
-            ? () {}
-            : () async {
-                isAPILoading = true;
-                if (mounted) setState(() {});
-                await addYarnAndQuestion();
-                isAPILoading = false;
-                if (mounted) setState(() {});
-              }, */
       ),
     );
   }
