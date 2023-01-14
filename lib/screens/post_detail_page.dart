@@ -493,29 +493,17 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   Future shareAsYarn() async {
-    /*   AddYarnAndQuestion yarn = AddYarnAndQuestion();
-    yarn.body = userPost?.title ?? "";
-    yarn.enableCommenting = true;
-    yarn.enablePayme = true;
-    yarn.attachment = {
-      "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
-    };
-    bool data = await YarnAuth().addYarnAndQuestion(yarn);
-    if (data) {
-      showToast(message: "Share in Yarn successfully created");
-    } */
-
     NavigationUtil.push(context,
         screen: ShareAsAyarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-            callback: (params) async {
-              params..body = userPost?.title ?? "";
-              params
+            blogPost: userPost,
+            callback: (yarn) async {
+              yarn
                 ..attachment = {
                   "blog": userPost?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params);
+              bool data = await YarnAuth().addYarnAndQuestion(yarn);
               if (data) {
                 showToast(message: "Share in Yarn successfully created");
               }

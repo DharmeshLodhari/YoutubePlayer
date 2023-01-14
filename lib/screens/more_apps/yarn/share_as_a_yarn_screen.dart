@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
-import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_quote_preview.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
@@ -11,7 +10,6 @@ import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
-import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -43,7 +41,6 @@ import '../messaging/message_auth.dart';
 import '../shopping/models/store.dart';
 import '../user_post/models/user_post.dart';
 import '../user_profile/models/user.dart';
-import '../user_profile/screens/user_profile_module_new/utils.dart';
 import 'models/Topics/yarn_model.dart';
 import 'models/ask_categories_model.dart';
 import 'models/share_as_yarn_model.dart';
@@ -58,8 +55,10 @@ class ShareAsAyarnScreen extends StatefulWidget {
   bool isShare = true;
   Yarn? yarnTopic = null;
   CustomerProfile? userProfile = null;
-  Service? service = null;
-  Product? product = null;
+
+  Service? serviceModel = null;
+  Product? productModel = null;
+
   UserPost? blogPost = null;
 
   Function(Yarn params) callback;
@@ -74,8 +73,9 @@ class ShareAsAyarnScreen extends StatefulWidget {
       required this.callback,
       this.yarnTopic,
       this.userProfile,
-      this.service,
-      this.blogPost});
+      this.serviceModel,
+      this.blogPost,
+      this.productModel});
 
   @override
   State<ShareAsAyarnScreen> createState() => _ShareAsAyarnScreenState();
@@ -426,7 +426,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               margin: EdgeInsets.only(left: 20.0, right: 20.0),
               child: getPreviewContainer(),
             ),
-
             if (isMentionName) ...[
               _buildUserNameContainer(),
             ],
@@ -434,7 +433,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               _buildAddImages(),
               SizedBox(height: 20),
             ],
-            // if (!_isMessageIsGIFOrSticker) _buildRowForContents(),
             if (!_isMessageIsGIFOrSticker) _buildRowForMedia(),
           ],
         ),
@@ -443,25 +441,34 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   }
 
   Widget getPreviewContainer() {
-    if (widget.userProfile != null) {
+    //display yarn,
+    if (widget.yarnTopic != null) {
+      return YarnQuotePreview(
+        yarn: widget.yarnTopic!,
+      );
+    }
+    //display user profile,
+    else if (widget.userProfile != null) {
       return YarnCustomerPostTile(
         customerProfile: widget.userProfile,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
-    } else if (widget.yarnTopic != null) {
-      return YarnQuotePreview(
-        yarn: widget.yarnTopic!,
-      );
-    } else if (widget.service != null) {
+    }
+    //display services
+    else if (widget.serviceModel != null) {
       return YarnServiceTile(
-        service: widget.service,
+        service: widget.serviceModel,
       );
-    } else if (widget.product != null) {
+    }
+    //display product
+    else if (widget.productModel != null) {
       return YarnProductTile(
-        product: widget.product,
+        product: widget.productModel,
       );
-    } else if (widget.blogPost != null) {
+    }
+    //display blog post
+    else if (widget.blogPost != null) {
       return YarnBlogPostTile(
         post: widget.blogPost,
         showAuthorDetails: true,
@@ -493,7 +500,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           fontWeight: FontWeight.w400,
         ),
         counterText:
-            textController!.text.length.toString() + "/" + 400.toString(),
+            textController.text.length.toString() + "/" + 400.toString(),
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
@@ -916,6 +923,11 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         isLoading: isAPILoading,
         onPressed: () {
           print(widget.appTitle);
+
+          if (selectedAskCategory?.id == null) {
+            showToast(message: 'Category is not selected');
+            return;
+          }
 
           final data = Yarn(
               media: selectedMedia,

@@ -407,8 +407,8 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
         screen: ShareAsAyarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            serviceModel: service,
             callback: (params) async {
-              params..body = service?.name ?? "";
               params
                 ..attachment = {
                   "service": service?.toJson().cast<String, dynamic>() ?? {}
