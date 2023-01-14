@@ -61,151 +61,153 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
     super.dispose();
   }
 
-  Widget _buildProfileCard() => Card(
-        margin: EdgeInsets.zero,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  Widget _buildProfileCard() {
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Container(
+        decoration: decorateBox(borderColor: greySecondaryYarn),
         child: Container(
-          decoration: decorateBox(borderColor: greySecondaryYarn),
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      ),
-                      child: CachedNetworkImage(
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorWidget: imageErrorWidget,
-                          imageUrl: widget.customerProfile?.wallpaper ?? ""),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
                     ),
-                    Positioned(
-                      top: 120,
-                      left: 22,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, Routes.USER_PROFILE, arguments: {
-                            "searchedUserName": widget.customerProfile?.userName
-                          });
-                        },
-                        child: Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(width: 3, color: white)),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: CachedNetworkImage(
-                              fit: BoxFit.cover,
-                              imageUrl: widget.customerProfile?.avatar ?? '',
-                              errorWidget: imageErrorWidget,
-                            ),
+                    child: CachedNetworkImage(
+                        height: 150,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorWidget: imageErrorWidget,
+                        imageUrl: widget.customerProfile?.wallpaper ?? ""),
+                  ),
+                  Positioned(
+                    top: 120,
+                    left: 22,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, Routes.USER_PROFILE, arguments: {
+                          "searchedUserName": widget.customerProfile?.userName
+                        });
+                      },
+                      child: Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(width: 3, color: white)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.cover,
+                            imageUrl: widget.customerProfile?.avatar ?? '',
+                            errorWidget: imageErrorWidget,
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(height: 40),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 22),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, Routes.USER_PROFILE,
-                          arguments: {
-                            "searchedUserName": widget.customerProfile?.userName
-                          });
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    messageDecoderWithEmoji(
-                                            widget.customerProfile?.fullName ??
-                                                "") ??
-                                        '',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w400,
-                                      color: blackFont,
-                                    ),
-                                    maxLines: 2,
-                                    softWrap: true,
-                                    overflow: TextOverflow.clip,
-                                  ),
-                                  SizedBox(height: 4),
-                                  userNameWithVerifiedIcon(
-                                      name:
-                                          '@${widget.customerProfile?.displayName() ?? ""}',
-                                      isVerified:
-                                          widget.customerProfile?.isVerified,
-                                      textStyle: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 11,
-                                          color: blackFont))
-                                ],
-                              ),
-                            ),
-                            SvgPicture.asset('circle_chat'.toSVG()),
-                            SizedBox(width: 7),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 18, vertical: 7),
-                              decoration: BoxDecoration(
-                                  color: blackFont,
-                                  borderRadius: BorderRadius.circular(17)),
-                              child: Text(
-                                'Following',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 11,
-                                    color: white),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 11),
-                        Linkify(
-                          onOpen: (_) {},
-                          text: widget.customerProfile?.bio == null
-                              ? ''
-                              : messageDecoderWithEmoji(
-                                      "${widget.customerProfile?.bio}" "") ??
-                                  "",
-                          textAlign: TextAlign.left,
-                          style: TextStyle(fontSize: 14),
-                          maxLines: 6,
-                        ),
-                        SizedBox(height: 16),
-                      ],
                     ),
+                  )
+                ],
+              ),
+              SizedBox(height: 40),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 22),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, Routes.USER_PROFILE,
+                        arguments: {
+                          "searchedUserName": widget.customerProfile?.userName
+                        });
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  messageDecoderWithEmoji(
+                                          widget.customerProfile?.fullName ??
+                                              "") ??
+                                      '',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                    color: blackFont,
+                                  ),
+                                  maxLines: 2,
+                                  softWrap: true,
+                                  overflow: TextOverflow.clip,
+                                ),
+                                SizedBox(height: 4),
+                                userNameWithVerifiedIcon(
+                                    name:
+                                        '@${widget.customerProfile?.displayName() ?? ""}',
+                                    isVerified:
+                                        widget.customerProfile?.isVerified,
+                                    textStyle: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 11,
+                                        color: blackFont))
+                              ],
+                            ),
+                          ),
+                          SvgPicture.asset('circle_chat'.toSVG()),
+                          SizedBox(width: 7),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 18, vertical: 7),
+                            decoration: BoxDecoration(
+                                color: blackFont,
+                                borderRadius: BorderRadius.circular(17)),
+                            child: Text(
+                              'Following',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
+                                  color: white),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 11),
+                      Linkify(
+                        onOpen: (_) {},
+                        text: widget.customerProfile?.bio == null
+                            ? ''
+                            : messageDecoderWithEmoji(
+                                    "${widget.customerProfile?.bio}" "") ??
+                                "",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontSize: 14),
+                        maxLines: 6,
+                      ),
+                      SizedBox(height: 16),
+                    ],
                   ),
-                )
-              ],
-            ),
+                ),
+              )
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 
   void showUserProfileActionsSheet() {
     showModalBottomSheet<void>(

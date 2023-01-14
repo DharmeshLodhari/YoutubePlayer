@@ -299,7 +299,7 @@ class CustomerProfile {
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     data['bio'] = this.bio;
-    data['wallpaper'] = this.userAbout?.wallpaper;
+    data['wallpaper'] = this.wallpaper;
     data['conversation_id'] = this.conversationId;
     data['status'] = this.status.name;
     data['uuid'] = this.uuid;
@@ -364,7 +364,12 @@ class UserFollowers {
   String? fullName;
   String? accountType;
 
-  UserFollowers({this.userName, this.avatar, this.isVerified, this.fullName, this.accountType});
+  UserFollowers(
+      {this.userName,
+      this.avatar,
+      this.isVerified,
+      this.fullName,
+      this.accountType});
 
   UserFollowers.fromJson(dynamic json) {
     userName = json['username'];
