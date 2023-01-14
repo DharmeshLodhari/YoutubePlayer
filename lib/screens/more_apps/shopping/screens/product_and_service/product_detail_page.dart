@@ -414,8 +414,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         screen: ShareAsAyarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
             shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+            productModel: product,
             callback: (params) async {
-              // params..body = product?.name ?? "";
               params
                 ..attachment = {
                   "product": product?.toJson().cast<String, dynamic>() ?? {}
