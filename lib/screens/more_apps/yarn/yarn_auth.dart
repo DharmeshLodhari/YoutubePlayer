@@ -501,7 +501,8 @@ class YarnAuth extends AuthService {
 
     var mapValue = {
       "tags": jsonEncode(addYarnAndQuestion.tags),
-      "body": addYarnAndQuestion.body ?? "",
+      "body": messageDecoderWithEmoji(addYarnAndQuestion.body) ?? "",
+      // "body": addYarnAndQuestion.body ?? "",
       "category": addYarnAndQuestion.category?.id ?? "0",
       "author": addYarnAndQuestion.author ?? "",
       "is_question": jsonEncode(addYarnAndQuestion.isQuestion),

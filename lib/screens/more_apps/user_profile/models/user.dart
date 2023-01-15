@@ -292,6 +292,9 @@ class CustomerProfile {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+
+    print('User type::: ${data['type']}');
+
     data['full_name'] = this.fullName;
     data['username'] = this.userName;
     data['nickname'] = this.nickName;
@@ -299,7 +302,12 @@ class CustomerProfile {
     data['qr_code'] = this.qrCode;
     data['type'] = this.type;
     data['bio'] = this.bio;
-    data['wallpaper'] = this.wallpaper;
+    if (data['type'] == "User") {
+      data['wallpaper'] = this.wallpaper;
+    } else if (data['type'] == null) {
+      data['wallpaper'] = this.userAbout?.wallpaper;
+    }
+    // data['wallpaper'] = this.wallpaper;
     data['conversation_id'] = this.conversationId;
     data['status'] = this.status.name;
     data['uuid'] = this.uuid;
@@ -379,20 +387,3 @@ class UserFollowers {
     accountType = json['account_type'];
   }
 }
-
-// Map<String, dynamic> customerProfileJson = {
-//   'full_name': 'Tosin Modelling Agency International',
-//   'username': 'tosinmomodu',
-//   'nickname': 'TM',
-//   'avatar':
-//   'https://slydo-assets.s3.amazonaws.com/media/customer/avatar/390cfd31-3b45-486f-ba2d-96616cf774a4.jpg',
-//   'qr_code':
-//   'https://slydo-assets.s3.amazonaws.com/media/customer/qr-code/c04a20e1-112d-4a13-896d-a5c554311548.png',
-//   'type': 'Business',
-//   'conversation_id': '',
-//   'status': UserStatus.UNKNOWN,
-//   'uuid': '5159d1df-8f22-4abc-a814-fa3065f732cb',
-//   'default_currency': 'NGN',
-//   'is_verified': false,
-//   'profile': {'address': '', 'bio': '', 'contact': '', 'opening_hours': []}
-// };

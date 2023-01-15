@@ -48,6 +48,12 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
   @override
   void initState() {
     super.initState();
+
+    // print(
+    //     'CustomerProfile wallpaper::::: ${widget.customerProfile!.wallpaper}');
+    // print('CustomerProfile type::::: ${widget.customerProfile!.type}');
+    // print(
+    //     'CustomerProfile user about::::: ${widget.customerProfile!.userAbout!.wallpaper}');
   }
 
   @override
@@ -75,18 +81,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    child: CachedNetworkImage(
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorWidget: imageErrorWidget,
-                        imageUrl: widget.customerProfile?.wallpaper ?? ""),
-                  ),
+                  checkAccountType(),
                   Positioned(
                     top: 120,
                     left: 22,
@@ -191,7 +186,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                         text: widget.customerProfile?.bio == null
                             ? ''
                             : messageDecoderWithEmoji(
-                                    "${widget.customerProfile?.bio}" "") ??
+                                    widget.customerProfile?.bio) ??
                                 "",
                         textAlign: TextAlign.left,
                         style: TextStyle(fontSize: 14),
@@ -314,5 +309,35 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
     }
 
     return list;
+  }
+
+  checkAccountType() {
+    if (widget.customerProfile!.type == 'User') {
+      return ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+        child: CachedNetworkImage(
+            height: 150,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+            imageUrl: widget.customerProfile?.wallpaper ?? ""),
+      );
+    } else {
+      return ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+        child: CachedNetworkImage(
+            height: 150,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+            imageUrl: widget.customerProfile?.userAbout!.wallpaper ?? ""),
+      );
+    }
   }
 }

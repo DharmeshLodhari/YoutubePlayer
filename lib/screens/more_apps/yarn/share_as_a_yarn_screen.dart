@@ -931,8 +931,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
           final data = Yarn(
               media: selectedMedia,
-              title: yarnController.text,
-              body: textController.text,
+              title: messageDecoderWithEmoji(yarnController.text),
+              body: messageDecoderWithEmoji(textController.text),
               category: selectedAskCategory,
               isQuestion: widget.isYarn ?? false,
               author: userBloc.user.userName,

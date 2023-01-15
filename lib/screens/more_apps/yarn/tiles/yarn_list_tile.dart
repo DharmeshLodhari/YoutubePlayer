@@ -63,8 +63,6 @@ class _YarnTileState extends State<YarnTile> {
   void initState() {
     _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
 
-    print('check :::: ${widget.yarn.body.runtimeType}');
-
     if (widget.yarn.body != null) {
       Map<String, dynamic> linkData =
           detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
@@ -432,6 +430,10 @@ class _YarnTileState extends State<YarnTile> {
     } else if (widget.yarn.attachmentType == 'profile') {
       CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+
+      // print('CustomerProfile ::::: ${customerProfile.userAbout!.wallpaper}');
+      // print('CustomerProfile 000::::: ${customerProfile.wallpaper}');
+
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
         showAuthorDetails: true,
@@ -454,11 +456,12 @@ class _YarnTileState extends State<YarnTile> {
 
     list.forEach((data) {
       if (data.toString().contains('.') &&
-          !data.toString().contains('@') &&
-          !data.toString().contains('..') &&
-          !data.toString().startsWith('.') &&
-          !data.toString().startsWith('http') &&
-          !data.toString().endsWith('.')) {
+          !data.toString().trim().contains('@') &&
+          !data.toString().trim().contains('..') &&
+          !data.toString().trim().startsWith('.') &&
+          !data.toString().trim().startsWith('http') &&
+          !data.toString().trim().contains('.\n') &&
+          !data.toString().trim().endsWith('.')) {
         final replaceWith = 'http://' + data;
 
         newString = newString + ' ' + replaceWith.toString();
