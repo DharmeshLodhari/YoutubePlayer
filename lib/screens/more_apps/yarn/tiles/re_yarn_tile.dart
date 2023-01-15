@@ -214,29 +214,9 @@ class _ReYarnTileState extends State<ReYarnTile> {
     );
   }
 
-  // Widget _buildCategoryTypeChip() {
-  //   if (widget.yarn.category != null) {
-  //     return Container(
-  //       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(20),
-  //         color: yarnBlack,
-  //       ),
-  //       child: Text(
-  //         widget.yarn.category!.name ?? "",
-  //         style:
-  //         TextStyle(color: white, fontSize: 9, fontWeight: FontWeight.w600),
-  //       ),
-  //     );
-  //   } else {
-  //     return SizedBox();
-  //   }
-  // }
-
   Widget _buildPostTitle() {
     return RichTextForTitle(
-      description:
-      widget.yarn.title ?? '',
+      description: widget.yarn.title ?? '',
     );
   }
 

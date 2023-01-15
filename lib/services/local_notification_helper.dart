@@ -15,7 +15,7 @@ Future<NotificationDetails> _imageAndIcon(
   final androidPlatformChannelSpecifics = AndroidNotificationDetails(
     'big text channel id',
     'big text channel name',
-    'big text channel description',
+    // 'big text channel description',
     styleInformation: bigPictureStyleInformation,
   );
   return NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -43,7 +43,7 @@ Future<NotificationDetails> _image(BuildContext context, Image picture) async {
   final androidPlatformChannelSpecifics = AndroidNotificationDetails(
     'slydo_nudge',
     'big text channel name',
-    'big text channel description',
+    // 'big text channel description',
     styleInformation: bigPictureStyleInformation,
   );
   return NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -65,7 +65,7 @@ Future<NotificationDetails> _icon(BuildContext context, Image icon) async {
   final androidPlatformChannelSpecifics = AndroidNotificationDetails(
     'big text channel id',
     'big text channel name',
-    'big text channel description',
+    // 'big text channel description',
     largeIcon: FilePathAndroidBitmap(iconPath),
   );
   return NotificationDetails(android: androidPlatformChannelSpecifics);
@@ -85,7 +85,7 @@ NotificationDetails get _noSound {
   final androidChannelSpecifics = AndroidNotificationDetails(
     'silent channel id',
     'silent channel name',
-    'silent channel description',
+    // 'silent channel description',
     playSound: false,
   );
   final iOSChannelSpecifics = IOSNotificationDetails(presentSound: false);
@@ -107,7 +107,7 @@ NotificationDetails get _ongoing {
   final androidChannelSpecifics = AndroidNotificationDetails(
     'slydo_notification',
     'simple_notification',
-    'notification for simple messages',
+    // 'notification for simple messages',
     ongoing: true,
     autoCancel: true,
   );

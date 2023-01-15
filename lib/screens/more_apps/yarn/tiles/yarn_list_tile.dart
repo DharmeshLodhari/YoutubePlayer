@@ -62,17 +62,22 @@ class _YarnTileState extends State<YarnTile> {
   @override
   void initState() {
     _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
-    Map<String, dynamic> linkData =
-        detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
-    if (linkData["hasLink"]) {
-      isUrlPresent = true;
+    print('check :::: ${widget.yarn.body.runtimeType}');
 
-      linkToBePreview = linkData['links'][0];
-      if (!linkToBePreview!.contains("http")) {
-        linkToBePreview = "http://" + linkToBePreview!;
+    if (widget.yarn.body != null) {
+      Map<String, dynamic> linkData =
+          detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
+
+      if (linkData["hasLink"]) {
+        isUrlPresent = true;
+
+        linkToBePreview = linkData['links'][0];
+        if (!linkToBePreview!.contains("http")) {
+          linkToBePreview = "http://" + linkToBePreview!;
+        }
       }
-    }
+    } else {}
 
     if (widget.yarn.reYarn != null) {
       isReYarnPresent = true;
@@ -475,17 +480,16 @@ class _YarnTileState extends State<YarnTile> {
             disableAt: false,
             onTagClick: (tag) {
               NavigationUtil.push(context,
-                  screen: SearchScreen(searchText: tag));
+                  screen: SearchScreen(searchText: tag.trim()));
             },
             onUrlClicked: (open) {
               // launch  url
-              print("opened $open");
               launchUrl(Uri.parse(open.toString()));
             },
             onAtClick: (at) {
-              print("at is  $at");
-              Navigator.pushNamed(context, Routes.USER_PROFILE,
-                  arguments: {"searchedUserName": at.replaceFirst("@", "")});
+              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": at.replaceFirst("@", "").trim()
+              });
             },
           ),
           SizedBox(
@@ -541,12 +545,23 @@ class _YarnTileState extends State<YarnTile> {
       );
     }
 
-    // debugPrint('Yarn Body:::: ${widget.yarn.body}');
-
-    return RichTextForTitle(
-      description: messageDecoderWithEmoji(widget.yarn.body ?? '') ?? '',
-      // description: widget.yarn.body ?? '',
-      fontSize: 14,
+    return YarnSmartText(
+      text: messageDecoderWithEmoji(newString)!,
+      atStyle: TextStyle(color: navyBlue, fontSize: 14),
+      disableAt: false,
+      onTagClick: (tag) {
+        NavigationUtil.push(context,
+            screen: SearchScreen(searchText: tag.trim()));
+      },
+      onUrlClicked: (open) {
+        // launch  url
+        launchUrl(Uri.parse(open.toString()));
+      },
+      onAtClick: (at) {
+        Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+          "searchedUserName": at.replaceAll(RegExp('@'), '').trim()
+        });
+      },
     );
   }
 

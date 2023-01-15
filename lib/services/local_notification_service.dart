@@ -88,7 +88,7 @@ class LocalNotificationService {
     var androidNotificationChannel = AndroidNotificationChannel(
       id,
       name,
-      description,
+      // description,
       sound: RawResourceAndroidNotificationSound(sound),
       showBadge: true,
       playSound: true,

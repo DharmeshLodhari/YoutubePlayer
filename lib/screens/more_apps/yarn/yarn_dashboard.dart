@@ -116,36 +116,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
             "yarn/search".toSVG(),
             height: 12,
             width: 12,
-          )
-          // icon: Icon(
-          //   Icons.search_rounded,
-          //   color: yarnBlack,
-          //   size: 26,
-          // ),
-          ),
+          )),
       SizedBox(width: 30),
-      // RoundedBackgroundIcon(
-      //     backgroundColor: Colors.transparent,
-      //     onTap: () {
-      //       NavigationUtil.push(
-      //         context,
-      //         screen: YarnNotification(),
-      //       );
-      //     },
-      //     height: 20,
-      //     width: 20,
-      //     icon: SvgPicture.asset(
-      //       "yarn/notification".toSVG(),
-      //       height: 12,
-      //       width: 12,
-      //     )
-      //     // Icon(
-      //     //   SlydoAppIconNew.notification,
-      //     //   color: yarnBlack,
-      //     //   size: 22,
-      //     // ),
-      //     ),
-
       RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -177,7 +149,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
         backgroundColor: lightGrey.withOpacity(0.1),
         enableMargin: true,
       ),
-
       SizedBox(width: 30),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,

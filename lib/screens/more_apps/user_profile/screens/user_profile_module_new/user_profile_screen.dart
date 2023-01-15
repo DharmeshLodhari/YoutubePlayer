@@ -179,7 +179,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Future<void> getSearchedUser({bool load = true}) async {
     late CustomerProfile user;
-    searchedUserName = arguments['searchedUserName'];
+    searchedUserName = arguments['searchedUserName'].toString();
 
     if (load) {
       isLoading = true;
