@@ -85,7 +85,7 @@ List<Widget> getWebPreview(WebInfo webInfo, BuildContext context) {
         webInfo.description!,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(color: blackFont, fontSize: 14),
+        style: TextStyle(color: blackFont, fontSize: 12),
       ),
       const SizedBox(height: 8),
     ]);
@@ -103,6 +103,7 @@ List<Widget> getWebPreview(WebInfo webInfo, BuildContext context) {
             imageUrl: webInfo.image!,
             width: double.infinity,
             fit: BoxFit.fill,
+            height: 120,
           ),
         ),
       ),

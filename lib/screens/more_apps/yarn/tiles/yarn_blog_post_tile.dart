@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
 import 'package:Slydo/utils/enums.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -30,12 +31,14 @@ class YarnBlogPostTile extends StatefulWidget {
   bool? isNavigable;
   Function onDeleteBlog;
   final bool showAuthorDetails;
+  final TileRenderPlace tileRenderPlace;
 
   YarnBlogPostTile(
       {Key? key,
       this.post,
       this.showAuthorDetails = true,
       required this.onDeleteBlog,
+      this.tileRenderPlace = TileRenderPlace.YarnTimeLine,
       this.isNavigable = true})
       : super(key: key);
 
@@ -70,6 +73,33 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
           playedColor: Colors.transparent,
         ),
       );
+    }
+  }
+
+  double getItemWidth() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return MediaQuery.of(context).size.width;
+      case TileRenderPlace.YarnComment:
+        return MediaQuery.of(context).size.width / 1.2;
+    }
+  }
+
+  double getSizeBoxHeight() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 140;
+      case TileRenderPlace.YarnComment:
+        return 120;
+    }
+  }
+
+  double getFontSize() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 12;
+      case TileRenderPlace.YarnComment:
+        return 10;
     }
   }
 
@@ -117,6 +147,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Container(
+          // width: getItemWidth(),
           decoration: decorateBox(borderColor: greySecondaryYarn),
           child: Container(
             child: Column(
@@ -135,14 +166,14 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                           child: widget.post?.video != null &&
                                   widget.post!.video!.isNotEmpty
                               ? SizedBox(
-                                  height: 150,
+                                  height: getSizeBoxHeight(),
                                   child: Chewie(
                                     posterUrl: widget.post?.image,
                                     controller: _chewieMainController!,
                                   ),
                                 )
                               : CachedNetworkImage(
-                                  height: 150,
+                                  height: getSizeBoxHeight(),
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                   errorWidget: imageErrorWidget,
@@ -183,7 +214,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                         isVerified: false,
                                         textStyle: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: 16,
+                                          fontSize: getFontSize(),
                                           color: Colors.white,
                                           shadows: [
                                             Shadow(
@@ -231,14 +262,14 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                       child: widget.post?.video != null &&
                               widget.post!.video!.isNotEmpty
                           ? SizedBox(
-                              height: 150,
+                              height: getSizeBoxHeight(),
                               child: Chewie(
                                 posterUrl: widget.post?.image,
                                 controller: _chewieMainController!,
                               ),
                             )
                           : CachedNetworkImage(
-                              height: 150,
+                              height: getSizeBoxHeight(),
                               width: double.infinity,
                               fit: BoxFit.cover,
                               errorWidget: imageErrorWidget,
@@ -277,7 +308,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                     isVerified: false,
                                     textStyle: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 16,
+                                      fontSize: getFontSize(),
                                       color: Colors.white,
                                       shadows: [
                                         Shadow(
@@ -309,7 +340,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                   ],
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 15, top: 16, bottom: 16),
+                  padding: EdgeInsets.only(left: 15, top: 10, bottom: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -320,7 +351,7 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                             child: Text(
                               messageDecoderWithEmoji(widget.post?.title) ?? "",
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: getFontSize(),
                                 fontWeight: FontWeight.w700,
                                 color: blackFont,
                               ),
@@ -329,20 +360,13 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                               overflow: TextOverflow.clip,
                             ),
                           ),
-                          /*   InkWell(
-                            onTap: () => showUserProfileActionsSheet(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: Icon(SlydoAppIcon.menu, size: 16),
-                            ),
-                          ), */
                         ],
                       ),
                       SizedBox(height: 8),
                       Text(
                         messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: getFontSize(),
                           fontWeight: FontWeight.w400,
                           color: darkGrey,
                         ),
@@ -350,48 +374,6 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                         softWrap: false,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      /*   SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.visibility_rounded,
-                                size: 16,
-                                color: blackFont,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                getFormattedViewCount(
-                                  noOfViews: widget.post?.views != null
-                                      ? widget.post!.views!
-                                      : 1,
-                                  addViewText: false,
-                                ),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: blackFont,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(width: 16),
-                          _buildLikeUnLikeReportTile(),
-                          Spacer(),
-                          CustomChip(
-                            color: greyBorderColor,
-                            textColor: blackFont,
-                            text: widget.post?.readTime == 0
-                                ? '1 min read'
-                                : '${widget.post?.readTime ?? 3} min read',
-                            padding: EdgeInsets.all(4),
-                          ),
-                          SizedBox(width: 8),
-                        ],
-                      )
-                    */
                     ],
                   ),
                 ),
