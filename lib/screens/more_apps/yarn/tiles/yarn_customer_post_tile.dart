@@ -56,6 +56,42 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
     //     'CustomerProfile user about::::: ${widget.customerProfile!.userAbout!.wallpaper}');
   }
 
+  double getSizeBoxHeight() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 10;
+      case TileRenderPlace.YarnComment:
+        return 6;
+    }
+  }
+
+  double getFontSize() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 12;
+      case TileRenderPlace.YarnComment:
+        return 10;
+    }
+  }
+
+  double getWallPaperCoverHeight() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 130;
+      case TileRenderPlace.YarnComment:
+        return 110;
+    }
+  }
+
+  double getAvatarTop() {
+    switch (widget.tileRenderPlace) {
+      case TileRenderPlace.YarnTimeLine:
+        return 100;
+      case TileRenderPlace.YarnComment:
+        return 80;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
@@ -83,7 +119,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                 children: [
                   checkAccountType(),
                   Positioned(
-                    top: 120,
+                    top: getAvatarTop(),
                     left: 22,
                     child: InkWell(
                       onTap: () {
@@ -93,8 +129,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                         });
                       },
                       child: Container(
-                        width: 60,
-                        height: 60,
+                        width: 50,
+                        height: 50,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(width: 3, color: white)),
@@ -111,7 +147,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                   )
                 ],
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 20),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 22),
                 child: GestureDetector(
@@ -139,7 +175,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                                               "") ??
                                       '',
                                   style: TextStyle(
-                                    fontSize: 10,
+                                    fontSize: getFontSize(),
                                     fontWeight: FontWeight.w400,
                                     color: blackFont,
                                   ),
@@ -147,7 +183,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                                   softWrap: true,
                                   overflow: TextOverflow.clip,
                                 ),
-                                SizedBox(height: 4),
+                                SizedBox(height: 2),
                                 userNameWithVerifiedIcon(
                                     name:
                                         '@${widget.customerProfile?.displayName() ?? ""}',
@@ -155,7 +191,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                                         widget.customerProfile?.isVerified,
                                     textStyle: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 11,
+                                        fontSize: getFontSize(),
                                         color: blackFont))
                               ],
                             ),
@@ -172,7 +208,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                               'Following',
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 11,
+                                  fontSize: getFontSize(),
                                   color: white),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -180,7 +216,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                           )
                         ],
                       ),
-                      SizedBox(height: 11),
+                      SizedBox(height: 8),
                       Linkify(
                         onOpen: (_) {},
                         text: widget.customerProfile?.bio == null
@@ -189,10 +225,12 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                                     widget.customerProfile?.bio) ??
                                 "",
                         textAlign: TextAlign.left,
-                        style: TextStyle(fontSize: 14),
+                        style: TextStyle(
+                          fontSize: getFontSize(),
+                        ),
                         maxLines: 6,
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: 10),
                     ],
                   ),
                 ),
@@ -319,7 +357,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
           topRight: Radius.circular(10),
         ),
         child: CachedNetworkImage(
-            height: 150,
+            height: getWallPaperCoverHeight(),
             width: double.infinity,
             fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
@@ -332,7 +370,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
           topRight: Radius.circular(10),
         ),
         child: CachedNetworkImage(
-            height: 150,
+            height: getWallPaperCoverHeight(),
             width: double.infinity,
             fit: BoxFit.cover,
             errorWidget: imageErrorWidget,

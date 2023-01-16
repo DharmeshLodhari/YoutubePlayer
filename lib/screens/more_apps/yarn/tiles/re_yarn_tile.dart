@@ -1,13 +1,17 @@
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/yarn/ask_search_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:linkwell/linkwell.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
@@ -104,7 +108,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
         if (isMediaPresent) ...[
           _buildImagesRow(),
         ],
-        // _buildTopActions(),
       ],
     );
   }
@@ -116,12 +119,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
         SizedBox(
           height: 4,
         ),
-        // if (widget.yarn.category != null)...[
-        //   _buildCategoryTypeChip(),
-        //   SizedBox(
-        //     height: 8,
-        //   ),
-        // ],
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -221,6 +218,30 @@ class _ReYarnTileState extends State<ReYarnTile> {
   }
 
   Widget _buildPostDescription() {
+    var newString = '';
+    var list = [];
+
+    widget.yarn.body.toString().split(' ').forEach((ch) {
+      list.add(ch);
+      // print(ch);
+    });
+
+    list.forEach((data) {
+      if (data.toString().contains('.') &&
+          !data.toString().trim().contains('@') &&
+          !data.toString().trim().contains('..') &&
+          !data.toString().trim().startsWith('.') &&
+          !data.toString().trim().startsWith('http') &&
+          !data.toString().trim().contains('.\n') &&
+          !data.toString().trim().endsWith('.')) {
+        final replaceWith = 'http://' + data;
+
+        newString = newString + ' ' + replaceWith.toString();
+      } else {
+        newString = newString + ' ' + data.toString();
+      }
+    });
+
     if (isUrlPresent) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,16 +249,23 @@ class _ReYarnTileState extends State<ReYarnTile> {
           SizedBox(
             height: 5,
           ),
-          LinkWell(
-            messageDecoderWithEmoji(widget.yarn.body)!,
-            style: TextStyle(
-                color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
-            textScaleFactor: 0.8,
-            linkStyle: TextStyle(
-                color: navyBlue,
-                decoration: TextDecoration.underline,
-                fontSize: 17,
-                fontFamily: "OpenSans"),
+          YarnSmartText(
+            text: messageDecoderWithEmoji(newString)!,
+            atStyle: TextStyle(color: navyBlue),
+            disableAt: false,
+            onTagClick: (tag) {
+              NavigationUtil.push(context,
+                  screen: SearchScreen(searchText: tag.trim()));
+            },
+            onUrlClicked: (open) {
+              // launch  url
+              launchUrl(Uri.parse(open.toString()));
+            },
+            onAtClick: (at) {
+              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": at.replaceFirst("@", "").trim()
+              });
+            },
           ),
           SizedBox(
             height: 10,
@@ -292,8 +320,23 @@ class _ReYarnTileState extends State<ReYarnTile> {
       );
     }
 
-    return RichTextForTitle(
-      description: widget.yarn.body ?? '',
+    return YarnSmartText(
+      text: messageDecoderWithEmoji(newString)!,
+      atStyle: TextStyle(color: navyBlue, fontSize: 14),
+      disableAt: false,
+      onTagClick: (tag) {
+        NavigationUtil.push(context,
+            screen: SearchScreen(searchText: tag.trim()));
+      },
+      onUrlClicked: (open) {
+        // launch  url
+        launchUrl(Uri.parse(open.toString()));
+      },
+      onAtClick: (at) {
+        Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+          "searchedUserName": at.replaceAll(RegExp('@'), '').trim()
+        });
+      },
     );
   }
 
@@ -329,12 +372,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
     }
     return childWidget;
   }
-
-  // Widget _buildTopActions() {
-  //   return YarnActions(
-  //     yarn: widget.yarn,
-  //   );
-  // }
 
   Widget _buildImagesRow() {
     return YarnMediaRender(
