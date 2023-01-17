@@ -194,10 +194,12 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
     required bool isSingleImage,
   }) {
     return YarnSingleMediaPreview(
-      imageUrl: imageUrl,
-      isSingleImage: isSingleImage,
-      mediaType: mediaType,
-      imagePoster: imagePoster,
-    );
+        imageUrl: imageUrl,
+        isSingleImage: isSingleImage,
+        mediaType: mediaType,
+        imagePoster: imagePoster,
+        type:
+            'yarn' //this determine if its coming from yarn dashboard or comment
+        );
   }
 }

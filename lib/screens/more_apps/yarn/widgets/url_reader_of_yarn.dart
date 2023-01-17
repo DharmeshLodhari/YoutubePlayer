@@ -103,7 +103,78 @@ List<Widget> getWebPreview(WebInfo webInfo, BuildContext context) {
             imageUrl: webInfo.image!,
             width: double.infinity,
             fit: BoxFit.fill,
-            height: 120,
+            height: 150,
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  return children;
+}
+
+List<Widget> getWebPreviewComment(WebInfo webInfo, BuildContext context) {
+  List<Widget> children = [
+    Center(
+      child: Row(
+        children: <Widget>[
+          getPreviewIcon(webInfo.icon)!.isEmpty
+              ? SizedBox.shrink()
+              : CachedNetworkImage(
+                  imageUrl: getPreviewIcon(webInfo.icon)!,
+                  errorWidget: imageErrorWidget,
+                  imageBuilder: (context, imageProvider) {
+                    return Image(
+                      image: imageProvider,
+                      fit: BoxFit.contain,
+                      width: 30,
+                      height: 30,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.link);
+                      },
+                    );
+                  },
+                ),
+          getPreviewIcon(webInfo.icon)!.isEmpty
+              ? SizedBox.shrink()
+              : const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              webInfo.title!,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ];
+
+  if (WebAnalyzer.isNotEmpty(webInfo.description)) {
+    children.addAll([
+      const SizedBox(height: 4),
+      Text(
+        webInfo.description!,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: blackFont, fontSize: 10),
+      ),
+      const SizedBox(height: 8),
+    ]);
+  }
+
+  if (WebAnalyzer.isNotEmpty(webInfo.image)) {
+    children.addAll([
+      const SizedBox(height: 8),
+      Center(
+        child: Container(
+          constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.width / 2.5),
+          child: CachedNetworkImage(
+            errorWidget: imageErrorWidget,
+            imageUrl: webInfo.image!,
+            width: double.infinity,
+            fit: BoxFit.fill,
+            height: 100,
           ),
         ),
       ),
