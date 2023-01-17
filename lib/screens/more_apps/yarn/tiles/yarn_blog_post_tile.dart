@@ -1,5 +1,4 @@
 import 'package:Slydo/data/state_notifier.dart';
-import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
@@ -74,33 +73,6 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
           playedColor: Colors.transparent,
         ),
       );
-    }
-  }
-
-  double getItemWidth() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return MediaQuery.of(context).size.width;
-      case TileRenderPlace.YarnComment:
-        return MediaQuery.of(context).size.width / 1.2;
-    }
-  }
-
-  double getSizeBoxHeight() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 140;
-      case TileRenderPlace.YarnComment:
-        return 120;
-    }
-  }
-
-  double getFontSize() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 12;
-      case TileRenderPlace.YarnComment:
-        return 10;
     }
   }
 

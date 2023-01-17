@@ -57,42 +57,6 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
     //     'CustomerProfile user about::::: ${widget.customerProfile!.userAbout!.wallpaper}');
   }
 
-  double getSizeBoxHeight() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 10;
-      case TileRenderPlace.YarnComment:
-        return 6;
-    }
-  }
-
-  double getFontSize() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 12;
-      case TileRenderPlace.YarnComment:
-        return 10;
-    }
-  }
-
-  double getWallPaperCoverHeight() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 130;
-      case TileRenderPlace.YarnComment:
-        return 110;
-    }
-  }
-
-  double getAvatarTop() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 100;
-      case TileRenderPlace.YarnComment:
-        return 80;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
