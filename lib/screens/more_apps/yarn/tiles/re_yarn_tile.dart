@@ -102,8 +102,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
         SizedBox(
           height: 9,
         ),
-        getFollowersWidget(widget,
-            radiusSize: 28, radiusShift: 10, radiusHeight: 28, radiusWidth: 28),
         if (isAttachmentPresent && widget.yarn.attachment != null) ...[
           SizedBox(height: 8),
           _buildAttachment(),
