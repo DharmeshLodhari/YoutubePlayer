@@ -10,6 +10,7 @@ class YarnSingleMediaPreview extends StatelessWidget {
       required this.mediaType,
       required this.isSingleImage,
       this.imagePoster,
+      required this.type,
       Key? key})
       : super(key: key);
 
@@ -17,6 +18,8 @@ class YarnSingleMediaPreview extends StatelessWidget {
   final String mediaType;
   final String? imagePoster;
   final bool isSingleImage;
+  //this determine if its coming from yarn dashboard or comment
+  final String type;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,7 @@ class YarnSingleMediaPreview extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Container(
-            height: 310,
+            height: type == 'yarn' ? 310 : 150,
             width: MediaQuery.of(context).size.width,
             // constraints: BoxConstraints(maxHeight: 307, minHeight: 175),
             decoration: BoxDecoration(

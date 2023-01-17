@@ -67,8 +67,6 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       if (!linkToBePreview!.contains("http")) {
         linkToBePreview = "http://" + linkToBePreview!;
       }
-
-      print('print is url to know ${isUrlPresent.toString()}');
     }
 
     if (widget.yarnComment.media.isNotEmpty) {
@@ -455,7 +453,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: getWebPreview(webInfo, context)),
+                      children: getWebPreviewComment(webInfo, context)),
                 );
               },
             ),

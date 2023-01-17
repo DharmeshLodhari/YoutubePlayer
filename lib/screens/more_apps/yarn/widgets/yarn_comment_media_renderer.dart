@@ -194,10 +194,12 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
     required bool isSingleImage,
   }) {
     return YarnSingleMediaPreview(
-      imageUrl: imageUrl,
-      isSingleImage: isSingleImage,
-      mediaType: mediaType,
-      imagePoster: imagePoster,
-    );
+        imageUrl: imageUrl,
+        isSingleImage: isSingleImage,
+        mediaType: mediaType,
+        imagePoster: imagePoster,
+        type:
+            'comment' //this determine if its coming from yarn dashboard or comment
+        );
   }
 }
