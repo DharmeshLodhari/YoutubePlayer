@@ -49,17 +49,20 @@ class _ReYarnTileState extends State<ReYarnTile> {
 
   @override
   void initState() {
-    Map<String, dynamic> linkData =
-        detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
+    if (widget.yarn.body != null) {
+      Map<String, dynamic> linkData =
+          detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
-    if (linkData["hasLink"]) {
-      isUrlPresent = true;
+      if (linkData["hasLink"]) {
+        isUrlPresent = true;
 
-      linkToBePreview = linkData['links'][0];
-      if (!linkToBePreview!.contains("http")) {
-        linkToBePreview = "http://" + linkToBePreview!;
+        linkToBePreview = linkData['links'][0];
+        if (!linkToBePreview!.contains("http")) {
+          linkToBePreview = "http://" + linkToBePreview!;
+        }
       }
-    }
+    } else {}
+
     if ((widget.yarn.media.isNotEmpty)) {
       isMediaPresent = true;
     }
@@ -250,7 +253,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(newString)!,
+            text: messageDecoderWithEmoji(newString)! ?? '',
             atStyle: TextStyle(color: navyBlue),
             disableAt: false,
             onTagClick: (tag) {
@@ -321,7 +324,7 @@ class _ReYarnTileState extends State<ReYarnTile> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(newString)!,
+      text: messageDecoderWithEmoji(newString)! ?? '',
       atStyle: TextStyle(color: navyBlue, fontSize: 14),
       disableAt: false,
       onTagClick: (tag) {

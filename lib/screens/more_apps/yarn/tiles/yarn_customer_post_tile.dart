@@ -3,6 +3,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
@@ -117,9 +118,23 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  checkAccountType(),
+                  // checkAccountType(),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                    child: CachedNetworkImage(
+                        height: getWallPaperCoverHeight(
+                            widget.tileRenderPlace, context),
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorWidget: imageErrorWidget,
+                        imageUrl: widget.customerProfile?.wallpaper ?? ""),
+                  ),
                   Positioned(
-                    top: getAvatarTop(),
+                    top: getAvatarTop(widget.tileRenderPlace, context),
                     left: 22,
                     child: InkWell(
                       onTap: () {
@@ -175,7 +190,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                                               "") ??
                                       '',
                                   style: TextStyle(
-                                    fontSize: getFontSize(),
+                                    fontSize: getFontSize(
+                                        widget.tileRenderPlace, context),
                                     fontWeight: FontWeight.w400,
                                     color: blackFont,
                                   ),
@@ -191,7 +207,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                                         widget.customerProfile?.isVerified,
                                     textStyle: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: getFontSize(),
+                                        fontSize: getFontSize(
+                                            widget.tileRenderPlace, context),
                                         color: blackFont))
                               ],
                             ),
@@ -208,7 +225,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                               'Following',
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: getFontSize(),
+                                  fontSize: getFontSize(
+                                      widget.tileRenderPlace, context),
                                   color: white),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -226,7 +244,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                                 "",
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: getFontSize(),
+                          fontSize:
+                              getFontSize(widget.tileRenderPlace, context),
                         ),
                         maxLines: 6,
                       ),
@@ -349,33 +368,33 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
     return list;
   }
 
-  checkAccountType() {
-    if (widget.customerProfile!.type == 'User') {
-      return ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
-        child: CachedNetworkImage(
-            height: getWallPaperCoverHeight(),
-            width: double.infinity,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-            imageUrl: widget.customerProfile?.wallpaper ?? ""),
-      );
-    } else {
-      return ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10),
-          topRight: Radius.circular(10),
-        ),
-        child: CachedNetworkImage(
-            height: getWallPaperCoverHeight(),
-            width: double.infinity,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
-            imageUrl: widget.customerProfile?.userAbout!.wallpaper ?? ""),
-      );
-    }
-  }
+  // checkAccountType() {
+  //   if (widget.customerProfile!.type == 'User') {
+  //     return ClipRRect(
+  //       borderRadius: BorderRadius.only(
+  //         topLeft: Radius.circular(10),
+  //         topRight: Radius.circular(10),
+  //       ),
+  //       child: CachedNetworkImage(
+  //           height: getWallPaperCoverHeight(widget.tileRenderPlace, context),
+  //           width: double.infinity,
+  //           fit: BoxFit.cover,
+  //           errorWidget: imageErrorWidget,
+  //           imageUrl: widget.customerProfile?.wallpaper ?? ""),
+  //     );
+  //   } else {
+  //     return ClipRRect(
+  //       borderRadius: BorderRadius.only(
+  //         topLeft: Radius.circular(10),
+  //         topRight: Radius.circular(10),
+  //       ),
+  //       child: CachedNetworkImage(
+  //           height: getWallPaperCoverHeight(widget.tileRenderPlace, context),
+  //           width: double.infinity,
+  //           fit: BoxFit.cover,
+  //           errorWidget: imageErrorWidget,
+  //           imageUrl: widget.customerProfile?.userAbout!.wallpaper ?? ''),
+  //     );
+  //   }
+  // }
 }

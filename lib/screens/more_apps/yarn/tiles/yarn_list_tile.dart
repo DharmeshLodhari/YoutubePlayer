@@ -431,9 +431,6 @@ class _YarnTileState extends State<YarnTile> {
       CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarn.attachment ?? {});
 
-      // print('CustomerProfile ::::: ${customerProfile.userAbout!.wallpaper}');
-      // print('CustomerProfile 000::::: ${customerProfile.wallpaper}');
-
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
         showAuthorDetails: true,
@@ -478,7 +475,7 @@ class _YarnTileState extends State<YarnTile> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(newString)!,
+            text: messageDecoderWithEmoji(newString)! ?? '',
             atStyle: TextStyle(color: navyBlue),
             disableAt: false,
             onTagClick: (tag) {
@@ -549,7 +546,7 @@ class _YarnTileState extends State<YarnTile> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(newString)!,
+      text: messageDecoderWithEmoji(newString)! ?? '',
       atStyle: TextStyle(color: navyBlue, fontSize: 14),
       disableAt: false,
       onTagClick: (tag) {

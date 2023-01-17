@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 import 'package:Slydo/main.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-
 import '../../../../utils/util.dart';
 
 enum Types { Yarn, Question }
@@ -66,4 +67,60 @@ List<String> getAllMentions(String text) {
   }
 
   return filterMention;
+}
+
+double getItemHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
+  switch (tileRenderPlace) {
+    case TileRenderPlace.YarnTimeLine:
+      return MediaQuery.of(context).size.width / 1.5;
+    case TileRenderPlace.YarnComment:
+      return MediaQuery.of(context).size.width / 2.0;
+  }
+}
+
+double getSizeBoxHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
+  switch (tileRenderPlace) {
+    case TileRenderPlace.YarnTimeLine:
+      return 10;
+    case TileRenderPlace.YarnComment:
+      return 6;
+  }
+}
+
+double getFontSize(TileRenderPlace tileRenderPlace, BuildContext context) {
+  switch (tileRenderPlace) {
+    case TileRenderPlace.YarnTimeLine:
+      return 14;
+    case TileRenderPlace.YarnComment:
+      return 12;
+  }
+}
+
+double getContainerHeight(
+    TileRenderPlace tileRenderPlace, BuildContext context) {
+  switch (tileRenderPlace) {
+    case TileRenderPlace.YarnTimeLine:
+      return 140;
+    case TileRenderPlace.YarnComment:
+      return 120;
+  }
+}
+
+double getWallPaperCoverHeight(
+    TileRenderPlace tileRenderPlace, BuildContext context) {
+  switch (tileRenderPlace) {
+    case TileRenderPlace.YarnTimeLine:
+      return 130;
+    case TileRenderPlace.YarnComment:
+      return 110;
+  }
+}
+
+double getAvatarTop(TileRenderPlace tileRenderPlace, BuildContext context) {
+  switch (tileRenderPlace) {
+    case TileRenderPlace.YarnTimeLine:
+      return 100;
+    case TileRenderPlace.YarnComment:
+      return 80;
+  }
 }
