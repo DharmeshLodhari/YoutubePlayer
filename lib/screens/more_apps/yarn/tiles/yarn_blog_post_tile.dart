@@ -4,6 +4,7 @@ import 'package:Slydo/screens/more_apps/news/CustomChip.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/post_detail_page.dart';
 import 'package:Slydo/utils/enums.dart';
@@ -166,14 +167,16 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                           child: widget.post?.video != null &&
                                   widget.post!.video!.isNotEmpty
                               ? SizedBox(
-                                  height: getSizeBoxHeight(),
+                                  height: getContainerHeight(
+                                      widget.tileRenderPlace, context),
                                   child: Chewie(
                                     posterUrl: widget.post?.image,
                                     controller: _chewieMainController!,
                                   ),
                                 )
                               : CachedNetworkImage(
-                                  height: getSizeBoxHeight(),
+                                  height: getContainerHeight(
+                                      widget.tileRenderPlace, context),
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                   errorWidget: imageErrorWidget,
@@ -214,7 +217,8 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                         isVerified: false,
                                         textStyle: TextStyle(
                                           fontWeight: FontWeight.w600,
-                                          fontSize: getFontSize(),
+                                          fontSize: getFontSize(
+                                              widget.tileRenderPlace, context),
                                           color: Colors.white,
                                           shadows: [
                                             Shadow(
@@ -262,14 +266,16 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                       child: widget.post?.video != null &&
                               widget.post!.video!.isNotEmpty
                           ? SizedBox(
-                              height: getSizeBoxHeight(),
+                              height: getContainerHeight(
+                                  widget.tileRenderPlace, context),
                               child: Chewie(
                                 posterUrl: widget.post?.image,
                                 controller: _chewieMainController!,
                               ),
                             )
                           : CachedNetworkImage(
-                              height: getSizeBoxHeight(),
+                              height: getContainerHeight(
+                                  widget.tileRenderPlace, context),
                               width: double.infinity,
                               fit: BoxFit.cover,
                               errorWidget: imageErrorWidget,
@@ -308,7 +314,8 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                                     isVerified: false,
                                     textStyle: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      fontSize: getFontSize(),
+                                      fontSize: getFontSize(
+                                          widget.tileRenderPlace, context),
                                       color: Colors.white,
                                       shadows: [
                                         Shadow(
@@ -351,7 +358,8 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                             child: Text(
                               messageDecoderWithEmoji(widget.post?.title) ?? "",
                               style: TextStyle(
-                                fontSize: getFontSize(),
+                                fontSize: getFontSize(
+                                    widget.tileRenderPlace, context),
                                 fontWeight: FontWeight.w700,
                                 color: blackFont,
                               ),
@@ -366,7 +374,8 @@ class _YarnBlogPostTileState extends State<YarnBlogPostTile> {
                       Text(
                         messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
                         style: TextStyle(
-                          fontSize: getFontSize(),
+                          fontSize:
+                              getFontSize(widget.tileRenderPlace, context),
                           fontWeight: FontWeight.w400,
                           color: darkGrey,
                         ),

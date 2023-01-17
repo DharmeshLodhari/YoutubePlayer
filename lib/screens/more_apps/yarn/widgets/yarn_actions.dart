@@ -36,8 +36,6 @@ class YarnActions extends StatefulWidget {
 class _YarnActionsState extends State<YarnActions> {
   late YarnDashboardBloc yarnDashboardBloc;
 
-  // CustomerProfile? searchedUser;
-
   int retweetCount = 1;
 
   @override

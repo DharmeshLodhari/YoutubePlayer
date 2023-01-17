@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -43,33 +44,6 @@ class _YarnProductTileState extends State<YarnProductTile> {
     super.initState();
   }
 
-  double getItemHeight() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return MediaQuery.of(context).size.width / 1.5;
-      case TileRenderPlace.YarnComment:
-        return MediaQuery.of(context).size.width / 2.0;
-    }
-  }
-
-  double getSizeBoxHeight() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 10;
-      case TileRenderPlace.YarnComment:
-        return 6;
-    }
-  }
-
-  double getFontSize() {
-    switch (widget.tileRenderPlace) {
-      case TileRenderPlace.YarnTimeLine:
-        return 14;
-      case TileRenderPlace.YarnComment:
-        return 12;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     basketBloc = Provider.of<BasketBloc>(context);
@@ -82,7 +56,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
             .pushNamed("/product", arguments: {"product": widget.product});
       },
       child: Container(
-        height: getItemHeight(),
+        height: getItemHeight(widget.tileRenderPlace, context),
         width: double.infinity,
         child: CustomBoxShadow(
           child: Card(
@@ -176,7 +150,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                     maxLines: 1,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w700,
-                                        fontSize: getFontSize(),
+                                        fontSize: getFontSize(
+                                            widget.tileRenderPlace, context),
                                         color: blackFont),
                                     softWrap: false,
                                     overflow: TextOverflow.ellipsis,
@@ -191,7 +166,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                           fontFamily: "Roboto",
                                           color: navyBlue,
                                           fontWeight: FontWeight.w700,
-                                          fontSize: getFontSize(),
+                                          fontSize: getFontSize(
+                                              widget.tileRenderPlace, context),
                                         )),
                                     TextSpan(
                                         // text: widget.product.price.toString(),
@@ -199,7 +175,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                             widget.product!.price.toString())),
                                         style: TextStyle(
                                           color: navyBlue,
-                                          fontSize: getFontSize(),
+                                          fontSize: getFontSize(
+                                              widget.tileRenderPlace, context),
                                           fontWeight: FontWeight.w700,
                                         ))
                                   ]),
@@ -207,7 +184,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                               ],
                             ),
                             SizedBox(
-                              height: getSizeBoxHeight(),
+                              height: getSizeBoxHeight(
+                                  widget.tileRenderPlace, context),
                             ),
                             Text(
                               messageDecoderWithEmoji(

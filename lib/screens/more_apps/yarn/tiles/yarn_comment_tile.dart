@@ -1,8 +1,10 @@
+import 'package:Slydo/screens/more_apps/yarn/ask_search_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_reply_view.dart';
@@ -11,7 +13,7 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_actions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:linkwell/linkwell.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/link_preview/flutter_link_preview.dart';
 import '../../../../utils/link_preview/web_analyzer.dart';
@@ -357,6 +359,30 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
   }
 
   Widget _buildCommentDescription() {
+    var newString = '';
+    var list = [];
+
+    widget.yarnComment.comment.toString().split(' ').forEach((ch) {
+      list.add(ch);
+      // print(ch);
+    });
+
+    list.forEach((data) {
+      if (data.toString().contains('.') &&
+          !data.toString().trim().contains('@') &&
+          !data.toString().trim().contains('..') &&
+          !data.toString().trim().startsWith('.') &&
+          !data.toString().trim().startsWith('http') &&
+          !data.toString().trim().contains('.\n') &&
+          !data.toString().trim().endsWith('.')) {
+        final replaceWith = 'http://' + data;
+
+        newString = newString + ' ' + replaceWith.toString();
+      } else {
+        newString = newString + ' ' + data.toString();
+      }
+    });
+
     if (isUrlPresent) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,16 +390,26 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
           SizedBox(
             height: 5,
           ),
-          LinkWell(
-            messageDecoderWithEmoji(widget.yarnComment.comment)!,
+          YarnSmartText(
+            text: messageDecoderWithEmoji(newString)!,
             style: TextStyle(
                 color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
-            textScaleFactor: 0.8,
-            linkStyle: TextStyle(
-                color: navyBlue,
-                decoration: TextDecoration.underline,
-                fontSize: 17,
-                fontFamily: "OpenSans"),
+            atStyle: TextStyle(
+                color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
+            disableAt: false,
+            onTagClick: (tag) {
+              NavigationUtil.push(context,
+                  screen: SearchScreen(searchText: tag.trim()));
+            },
+            onUrlClicked: (open) {
+              // launch  url
+              launchUrl(Uri.parse(open.toString()));
+            },
+            onAtClick: (at) {
+              Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                "searchedUserName": at.replaceFirst("@", "").trim()
+              });
+            },
           ),
           SizedBox(
             height: 10,
@@ -427,18 +463,25 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         ],
       );
     }
-    return RichTextForTitle(
-      description: widget.yarnComment.comment ?? '',
+
+    return YarnSmartText(
+      text: messageDecoderWithEmoji(newString)!,
+      style: TextStyle(color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
+      atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
+      disableAt: false,
+      onTagClick: (tag) {
+        NavigationUtil.push(context,
+            screen: SearchScreen(searchText: tag.trim()));
+      },
+      onUrlClicked: (open) {
+        // launch  url
+        launchUrl(Uri.parse(open.toString()));
+      },
+      onAtClick: (at) {
+        Navigator.pushNamed(context, Routes.USER_PROFILE,
+            arguments: {"searchedUserName": at.replaceFirst("@", "").trim()});
+      },
     );
-    // return Text(
-    //   messageDecoderWithEmoji(commentDetail!.comment!)!,
-    //   maxLines: 30,
-    //   style: TextStyle(
-    //     color: blackFont,
-    //     fontSize: 14,
-    //     fontWeight: FontWeight.w400,
-    //   ),
-    // );
   }
 
   Widget _buildTopActions({required BuildContext context}) {
