@@ -121,9 +121,8 @@ class Yarn {
         attachment = item['product'];
       } else if (item['profile'] != null) {
         attachmentType = 'profile';
-        attachment = item['full_name'] == null ? item['profile']: item ;
-      }
-      else {
+        attachment = item['full_name'] == null ? item['profile'] : item;
+      } else {
         rebuildAttachment(item);
         attachment = item;
       }
@@ -144,20 +143,17 @@ class Yarn {
   }
 
   // an alternative way to get the data in the data payload for attachment
-  void rebuildAttachment(Map<String, dynamic> data){
-    if (data.containsKey("seller_fullname")){
+  void rebuildAttachment(Map<String, dynamic> data) {
+    if (data.containsKey("seller_fullname")) {
       attachmentType = 'product';
-    }
-    else if (data.containsKey("provider_fullname")){
+    } else if (data.containsKey("provider_fullname")) {
       attachmentType = 'service';
-    }
-    else if (data.containsKey("title")){
+    } else if (data.containsKey("title")) {
       attachmentType = 'blog';
-    }
-    else {
+    } else {
       attachmentType = 'profile';
     }
-    }
+  }
 
   String? id;
   List<String>? tags;
@@ -237,7 +233,6 @@ class Yarn {
       map['attachment'] = attachment;
     }
 
-
     return map;
   }
 
@@ -258,7 +253,6 @@ class Yarn {
       if (ageRestriction != null) "age_restriction": ageRestriction
     };
   }
-
 }
 
 class ViewersAvatars {
@@ -299,9 +293,9 @@ class YarnMedia {
 
   YarnMedia.fromJson(dynamic json) {
     id = json['id'];
-    mediaUrl = json['file'] ??  json['mediaUrl'];
-    mediaType = json['type'] ??  json['mediaType'];
-    mediaPoster = json['image_poster'] ??  json['mediaPoster'];
+    mediaUrl = json['file'] ?? json['mediaUrl'];
+    mediaType = json['type'] ?? json['mediaType'];
+    mediaPoster = json['image_poster'] ?? json['mediaPoster'];
   }
 
   Map<String, dynamic> toJson() {

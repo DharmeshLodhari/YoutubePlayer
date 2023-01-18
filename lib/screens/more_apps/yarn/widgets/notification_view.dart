@@ -14,7 +14,7 @@ class AskNotificationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
         child: _buildMain(context: context));
   }
 
@@ -26,7 +26,7 @@ class AskNotificationView extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        if (notification!.body != null)...[
+        if (notification!.body != null) ...[
           _buildPostDescription(),
           SizedBox(
             height: 10,
@@ -53,8 +53,9 @@ class AskNotificationView extends StatelessWidget {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": notification!.authorUserName});
+                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                    "searchedUserName": notification!.authorUserName
+                  });
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +65,7 @@ class AskNotificationView extends StatelessWidget {
                       children: [
                         Text(
                           messageDecoderWithEmoji(
-                              notification!.authorName ?? "") ??
+                                  notification!.authorName ?? "") ??
                               "",
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
@@ -90,15 +91,15 @@ class AskNotificationView extends StatelessWidget {
                         )
                       ],
                     ),
-                    if (notification!.type == "mention")...[
+                    if (notification!.type == "mention") ...[
                       RichTextForTitle(
                         description: notification!.title ?? "",
                       ),
-                    ] else if (notification!.type == "like")...[
+                    ] else if (notification!.type == "like") ...[
                       RichTextForTitle(
                         description: notification!.title ?? "",
                       ),
-                    ] else...[
+                    ] else ...[
                       userNameWithVerifiedIcon(
                         name: "@${notification!.authorUserName}",
                         isVerified: false,
@@ -116,9 +117,11 @@ class AskNotificationView extends StatelessWidget {
               ),
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                print('Notification delete::: ${notification!.id}');
+              },
               child: Icon(
-                Icons.more_horiz_rounded,
+                Icons.cancel,
                 color: darkGreyYarn,
               ),
             )

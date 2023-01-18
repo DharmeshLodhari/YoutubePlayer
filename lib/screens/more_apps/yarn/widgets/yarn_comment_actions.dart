@@ -39,10 +39,10 @@ class YarnCommentActions extends StatefulWidget {
 }
 
 class _YarnCommentActionsState extends State<YarnCommentActions> {
-  int retweetCount = 1;
+  int reyarnCount = 1;
   @override
   void initState() {
-    retweetCount = Random().nextInt(200);
+    reyarnCount = Random().nextInt(200);
     super.initState();
   }
 

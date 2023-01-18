@@ -754,7 +754,7 @@ class YarnAuth extends AuthService {
   Future<bool?> deleteComment(String commentId) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/comments/$commentId/";
+    url = AppConfig.baseUrl + "/api/v1/social/comments/$commentId/";
     debugPrint(url);
 
     var headers = await getAuthHeaders();
