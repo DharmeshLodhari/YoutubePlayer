@@ -192,17 +192,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
       children: [
         YarnCategorySelection(),
         SizedBox(height: 14),
-        // YarnTabSelection(
-        //   onTap: (index) {
-        //     currentAskTapOnHome = index;
-        //     _pageViewController.jumpToPage(currentAskTapOnHome);
-        //     if (mounted) setState(() {});
-        //   },
-        //   currentIndex: currentAskTapOnHome,
-        // ),
-        // SizedBox(
-        //   height: 16,
-        // ),
         Divider(
           height: 0,
           thickness: 0.5,
