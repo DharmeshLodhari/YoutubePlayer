@@ -84,7 +84,8 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
                   askCategories: askViewModel.yarnCategories,
                   isYarn: true,
                   shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                  askCategory: widget.askCategories));
+                  askCategory: widget.askCategories,
+                  passedCategory: widget.askCategories!.name));
         },
         child: Icon(
           SlydoAppIconNew.dashboard_yarn,

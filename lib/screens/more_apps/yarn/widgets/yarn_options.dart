@@ -187,6 +187,7 @@ class _YarnOptionsState extends State<YarnOptions> {
                         isYarn: true,
                         yarn: widget.yarnTopic,
                         shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                        passedCategory: '',
                       )).then((value) {
                     debugPrint("THEN VALUE===$value");
                     if (value != null) {

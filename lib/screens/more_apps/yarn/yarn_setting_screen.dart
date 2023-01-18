@@ -1,6 +1,8 @@
 import 'package:Slydo/main.dart';
+import 'package:Slydo/screens/more_apps/yarn/saved_yarn_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +21,9 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
   final _yarnAuth = YarnAuth();
 
   late YarnDashboardBloc yarnSettingsBloc;
+  GlobalKey<YarnListScreenState> topicViewStateKey =
+      GlobalKey<YarnListScreenState>();
+  String? selectedCategoryId;
 
   @override
   void initState() {
@@ -221,7 +226,11 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
         decoration: decorateBox(),
         child: ListTile(
           onTap: () {
-            // NavigationUtil.push(context, screen: AskSCustomizeScreen());
+            NavigationUtil.push(context,
+                screen: SavedYarn(
+                  key: topicViewStateKey,
+                  selectedCategory: selectedCategoryId,
+                ));
           },
           visualDensity: VisualDensity(vertical: 0, horizontal: 0),
           title: Text(

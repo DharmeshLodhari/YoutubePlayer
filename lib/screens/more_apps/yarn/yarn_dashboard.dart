@@ -238,6 +238,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
                 askCategories: yarnDashboardBloc.yarnCategories,
                 shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                 isYarn: true,
+                passedCategory: '',
               )).then((value) {
             debugPrint("THEN VALUE===$value");
             if (value != null) {
