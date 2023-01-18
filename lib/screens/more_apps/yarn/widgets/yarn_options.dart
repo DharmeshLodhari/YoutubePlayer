@@ -72,12 +72,12 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Future deleteYarnAndQuestion() async {
-    bool isQuestion = widget.yarnTopic!.isQuestion;
+    bool? isQuestion = widget.yarnTopic!.isQuestion;
     bool? data =
         await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
     if (data != null && data) {
       showToast(
-          message: isQuestion
+          message: isQuestion!
               ? "Question Deleted Successfully"
               : "Yarn Deleted Successfully");
       if (widget.yarnTopic != null) {
@@ -147,6 +147,7 @@ class _YarnOptionsState extends State<YarnOptions> {
     final List<Widget> widgetList = [];
     if (isMyYarnQuestion()) {
       debugPrint("IS MY YARN QUESTION TRUE");
+
       if ((widget.isComment ?? true) && widget.commentDetail != null) {
         widgetList.add(_buildMoreOptionForComments());
       } else {
@@ -324,13 +325,52 @@ class _YarnOptionsState extends State<YarnOptions> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // if (widget.commentDetail!.authorName ==
+        //     getLoggedInUserName(context)) ...{
+        //   _buildTile(
+        //       icon: "yarn/delete",
+        //       title: 'Delete',
+        //       subTitle: 'Delete this comment',
+        //       onTap: () {
+        //         print('Delete clicked');
+        //         deleteComment();
+        //         Navigator.pop(context);
+        //       }),
+        // } else ...{
+        //   if (isComments()) ...[
+        //     _buildTile(
+        //         icon: "yarn/delete",
+        //         title: 'Delete',
+        //         subTitle: 'Delete this comment',
+        //         onTap: () {
+        //           print('Delete clicked');
+        //           deleteComment();
+        //           Navigator.pop(context);
+        //         }),
+        //   ] else ...[
+        //     _buildTile(
+        //         icon: "yarn/report",
+        //         title: 'Report comment',
+        //         subTitle: 'I’m concerned about this post',
+        //         onTap: () {
+        //           Navigator.pop(context);
+        //           NavigationUtil.push(context,
+        //               screen: AddReportScreen(
+        //                 object: widget.commentDetail!.toJson(),
+        //                 type: "comment",
+        //               ));
+        //         }),
+        //   ],
+        // }
         if (isComments()) ...[
           _buildTile(
               icon: "yarn/delete",
               title: 'Delete',
               subTitle: 'Delete this comment',
               onTap: () {
+                print('Delete clicked');
                 deleteComment();
+                Navigator.pop(context);
               }),
         ] else ...[
           _buildTile(
@@ -450,6 +490,8 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   bool isComments() {
+    debugPrint("IS MY COMMENTS::: ${widget.commentDetail!.authorUsername}");
+
     if (widget.commentDetail != null) {
       debugPrint("IS MY COMMENTS");
       return getLoggedInUserName(context) ==

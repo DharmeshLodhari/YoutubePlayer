@@ -1,6 +1,9 @@
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/notification_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';
 
 import '../../../locale/app_localization.dart';
@@ -16,7 +19,6 @@ class YarnNotification extends StatefulWidget {
 }
 
 class _YarnNotificationState extends State<YarnNotification> {
-
   bool isLoading = false;
   String? next = "", previous = "";
   List<Notifications> notificationList = [];
@@ -29,7 +31,10 @@ class _YarnNotificationState extends State<YarnNotification> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllNotification(next, previous ?? "",);
+        Map<String, dynamic>? result = await YarnAuth().getAllNotification(
+          next,
+          previous ?? "",
+        );
 
         if (result == null) {
           noList = true;
@@ -45,6 +50,8 @@ class _YarnNotificationState extends State<YarnNotification> {
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
+
+        // print('tempList:::: ${tempList.runtimeType}');
         if (mounted) {
           setState(() {
             noList = false;
@@ -124,7 +131,17 @@ class _YarnNotificationState extends State<YarnNotification> {
               if (index == notificationList.length) {
                 return _buildLoadingIndicator();
               }
-              return _buildListView(notificationList[index]);
+              return InkWell(
+                  onTap: () {
+                    // NavigationUtil.push(context,
+                    //     screen: YarnDetailScreen(
+                    //         yarnId: notificationList[index].yarn,
+                    //         yarn: yarnTopicList![index]));
+                    print('Notify:: ${notificationList.runtimeType}');
+                    print('Notify:: ${notificationList[index].id}');
+                    // print('Notify:: ${yarnTopicList}');
+                  },
+                  child: _buildListView(notificationList[index]));
             },
             separatorBuilder: (context, index) {
               return Divider();
@@ -148,6 +165,8 @@ class _YarnNotificationState extends State<YarnNotification> {
         msg: AppLocalization.of(context)!.noResultFound,
       );
     }
-    return AskNotificationView(notification: notification,);
+    return AskNotificationView(
+      notification: notification,
+    );
   }
 }
