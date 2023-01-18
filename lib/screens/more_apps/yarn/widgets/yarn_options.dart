@@ -145,17 +145,29 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   List<Widget> _buildMoreOptionList() {
     final List<Widget> widgetList = [];
-    if (isMyYarnQuestion()) {
-      debugPrint("IS MY YARN QUESTION TRUE");
 
-      if ((widget.isComment ?? true) && widget.commentDetail != null) {
-        widgetList.add(_buildMoreOptionForComments());
-      } else {
-        widgetList.add(_buildMoreOptionForOwner());
-      }
+    if ((widget.isComment ?? true)) {
+      widgetList.add(_buildMoreOptionForComments());
+    } else if (widget.commentDetail != null) {
+      widgetList.add(_buildMoreOptionForOwner());
     } else {
       widgetList.add(_buildMoreOptionForOther());
     }
+
+    // if (isMyYarnQuestion()) {
+    //   debugPrint("IS MY YARN QUESTION TRUE");
+    //
+    //   if ((widget.isComment ?? true) && widget.commentDetail != null) {
+    //     print('fola::::: mine');
+    //     widgetList.add(_buildMoreOptionForComments());
+    //   } else {
+    //     print('fola::::: owner');
+    //     widgetList.add(_buildMoreOptionForOwner());
+    //   }
+    // } else {
+    //   // widgetList.add(_buildMoreOptionForOther());
+    //   print('fola::::: others');
+    // }
     return widgetList;
   }
 
@@ -362,7 +374,8 @@ class _YarnOptionsState extends State<YarnOptions> {
         //         }),
         //   ],
         // }
-        if (isComments()) ...[
+        if (getLoggedInUserName(context) ==
+            widget.commentDetail!.authorUsername) ...[
           _buildTile(
               icon: "yarn/delete",
               title: 'Delete',
@@ -478,10 +491,10 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   bool isMyYarnQuestion() {
     if (widget.yarnTopic != null) {
-      debugPrint("IS MY YARN QUESTION");
+      debugPrint("IS MY YARN QUESTION::: ${widget.yarnTopic!.author}");
       return getLoggedInUserName(context) == widget.yarnTopic!.author;
     } else if (widget.commentDetail != null) {
-      debugPrint("IS MY COMMENTS");
+      debugPrint("IS MY COMMENTS::: ${widget.commentDetail!.authorUsername}");
       return getLoggedInUserName(context) ==
           widget.commentDetail!.authorUsername;
     }
