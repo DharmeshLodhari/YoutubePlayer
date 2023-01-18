@@ -66,7 +66,8 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
         _buildCategoryTile(context),
         _buildNotificationTile(),
         _buildSensitiveContentTile(),
-        _buildAdultContentTile()
+        _buildAdultContentTile(),
+        _buildSavedYarn(context),
       ],
     );
   }
@@ -204,6 +205,36 @@ class _YarnSettingsScreenState extends State<YarnSettingsScreen> {
             },
             activeColor: HexColor("#3F61DB"),
             inactiveThumbColor: HexColor("#75818F"),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSavedYarn(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+      shadowColor: boxShadowTwo,
+      elevation: 0,
+      child: Container(
+        decoration: decorateBox(),
+        child: ListTile(
+          onTap: () {
+            // NavigationUtil.push(context, screen: AskSCustomizeScreen());
+          },
+          visualDensity: VisualDensity(vertical: 0, horizontal: 0),
+          title: Text(
+            "Saved Yarn",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
+          trailing: Icon(
+            Icons.chevron_right_outlined,
+            color: blackFont,
           ),
         ),
       ),

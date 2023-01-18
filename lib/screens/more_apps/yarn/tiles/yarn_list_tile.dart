@@ -8,6 +8,7 @@ import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_category_individual_tag.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -365,16 +366,26 @@ class _YarnTileState extends State<YarnTile> {
 
   Widget _checkCategoryTypeChip() {
     if (widget.yarn.category != null) {
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: yarnBlack,
-        ),
-        child: Text(
-          widget.yarn.category!.name ?? "",
-          style: TextStyle(
-              color: white, fontSize: 10.5, fontWeight: FontWeight.w700),
+      return InkWell(
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: YarnCategoryIndividualTag(
+              askCategories: widget.yarn.category,
+            ),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: yarnBlack,
+          ),
+          child: Text(
+            widget.yarn.category!.name ?? "",
+            style: TextStyle(
+                color: white, fontSize: 10.5, fontWeight: FontWeight.w700),
+          ),
         ),
       );
     } else {
