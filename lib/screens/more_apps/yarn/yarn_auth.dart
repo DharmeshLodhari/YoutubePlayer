@@ -302,6 +302,58 @@ class YarnAuth extends AuthService {
     }
   }
 
+  // Get all SAVED YARN Topics
+  Future<Map<String, dynamic>?> getAllSavedYarn(String? next, String previous,
+      {String? type,
+      bool isType = false,
+      String? categoryId,
+      String? userName}) async {
+    debugPrint("CALLING ALL YARNS");
+    debugPrint("NEXT URL:- $next");
+    String url = "";
+    if (next == null) {
+      return null;
+    }
+    if (next == "") {
+      url =
+          AppConfig.baseUrl + "/api/v1/social/ask/user-yarn-visibility-options";
+    } else {
+      url = getSecureUrl(url: next);
+    }
+    debugPrint('GET DATA saved Yarn::: $url');
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List<Yarn> yarnTopics = [];
+      var jsonData = json.decode(response.body);
+
+      debugPrint("GET DATA saved list:- $jsonData");
+
+      for (var item in jsonData["results"]) {
+        Yarn yarnTopic = Yarn.fromJson(item);
+        yarnTopics.add(yarnTopic);
+
+        debugPrint("GET DATA Yarn:- ${item['viewers_avatars']}");
+      }
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": yarnTopics
+      };
+      return result;
+    } else if (response.statusCode == 500) {
+      debugPrint("GET DATA saved error 500");
+      return null;
+    } else {
+      debugPrint("GET DATA saved error unknown");
+      return null;
+    }
+  }
+
   // Get Single Yarn Question
   Future<Map<String, dynamic>?> getSingleTopics({String? yarnId}) async {
     debugPrint("CALLING ALL CATEGORIES");

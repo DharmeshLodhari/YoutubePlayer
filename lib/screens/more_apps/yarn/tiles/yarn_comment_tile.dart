@@ -301,71 +301,102 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             _buildRepliedText(),
           ],
         )),
-        if (getLoggedInUserName(context) ==
-            widget.yarnComment.authorUsername) ...[
-          InkWell(
-            onTap: () {
-              showModalBottomSheet<void>(
-                backgroundColor: Colors.transparent,
-                context: context,
-                builder: (BuildContext context) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    color: Colors.white,
-                    margin: EdgeInsets.zero,
-                    child: YarnOptions(
-                      commentDetail: widget.yarnComment,
-                      isComment: true,
-                      onDeleteComment: (YarnComment yarnComment) {
-                        widget.onDeleteComment!(yarnComment);
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-            child: Icon(
-              Icons.more_horiz_rounded,
-              color: Color(0xFF4B545A),
-            ),
-          ),
-        ],
-        isComments(context)
-            ? InkWell(
-                onTap: () {
-                  showModalBottomSheet<void>(
-                    backgroundColor: Colors.transparent,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20)),
-                        ),
-                        color: Colors.white,
-                        margin: EdgeInsets.zero,
-                        child: YarnOptions(
-                          commentDetail: widget.yarnComment,
-                          isComment: true,
-                          onDeleteComment: (YarnComment yarnComment) {
-                            widget.onDeleteComment!(yarnComment);
-                          },
-                        ),
-                      );
+        // if (getLoggedInUserName(context) ==
+        //     widget.yarnComment.authorUsername) ...[
+        //   InkWell(
+        //     onTap: () {
+        //       showModalBottomSheet<void>(
+        //         backgroundColor: Colors.transparent,
+        //         context: context,
+        //         builder: (BuildContext context) {
+        //           return Card(
+        //             shape: RoundedRectangleBorder(
+        //               borderRadius: BorderRadius.only(
+        //                   topLeft: Radius.circular(20),
+        //                   topRight: Radius.circular(20)),
+        //             ),
+        //             color: Colors.white,
+        //             margin: EdgeInsets.zero,
+        //             child: YarnOptions(
+        //               commentDetail: widget.yarnComment,
+        //               isComment: true,
+        //               onDeleteComment: (YarnComment yarnComment) {
+        //                 widget.onDeleteComment!(yarnComment);
+        //               },
+        //             ),
+        //           );
+        //         },
+        //       );
+        //     },
+        //     child: Icon(
+        //       Icons.more_horiz_rounded,
+        //       color: Color(0xFF4B545A),
+        //     ),
+        //   ),
+        // ],
+
+        InkWell(
+          onTap: () {
+            showModalBottomSheet<void>(
+              backgroundColor: Colors.transparent,
+              context: context,
+              builder: (BuildContext context) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                  ),
+                  color: Colors.white,
+                  margin: EdgeInsets.zero,
+                  child: YarnOptions(
+                    commentDetail: widget.yarnComment,
+                    isComment: true,
+                    onDeleteComment: (YarnComment yarnComment) {
+                      widget.onDeleteComment!(yarnComment);
                     },
-                  );
-                },
-                child: Icon(
-                  Icons.more_horiz_rounded,
-                  color: Color(0xFF4B545A),
-                ),
-              )
-            : SizedBox()
+                  ),
+                );
+              },
+            );
+          },
+          child: Icon(
+            Icons.more_horiz_rounded,
+            color: Color(0xFF4B545A),
+          ),
+        ),
+        // isComments(context)
+        //     ? InkWell(
+        //         onTap: () {
+        //           showModalBottomSheet<void>(
+        //             backgroundColor: Colors.transparent,
+        //             context: context,
+        //             builder: (BuildContext context) {
+        //               return Card(
+        //                 shape: RoundedRectangleBorder(
+        //                   borderRadius: BorderRadius.only(
+        //                       topLeft: Radius.circular(20),
+        //                       topRight: Radius.circular(20)),
+        //                 ),
+        //                 color: Colors.white,
+        //                 margin: EdgeInsets.zero,
+        //                 child: YarnOptions(
+        //                   commentDetail: widget.yarnComment,
+        //                   isComment: true,
+        //                   onDeleteComment: (YarnComment yarnComment) {
+        //                     widget.onDeleteComment!(yarnComment);
+        //                   },
+        //                 ),
+        //               );
+        //             },
+        //           );
+        //         },
+        //         child: Icon(
+        //           Icons.more_horiz_rounded,
+        //           color: Color(0xFF4B545A),
+        //         ),
+        //       )
+        //     : SizedBox()
       ],
     );
   }

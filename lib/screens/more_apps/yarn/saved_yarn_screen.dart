@@ -64,7 +64,7 @@ class SavedYarnState extends State<SavedYarn> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        Map<String, dynamic>? result = await YarnAuth().getAllYarn(
+        Map<String, dynamic>? result = await YarnAuth().getAllSavedYarn(
             next, previous ?? '',
             type: type, isType: isType, categoryId: categoryId);
 
@@ -87,9 +87,15 @@ class SavedYarnState extends State<SavedYarn> {
           setState(() {
             noList = false;
             isLoading = false;
+
             yarnTopicList.addAll(tempList);
           });
+
+          tempList.forEach((value) {
+            // debugPrint("YARN TOPICS List 0001:::- ${result}");
+          });
         }
+        debugPrint("YARN TOPICS List 0001:::- ${result}");
         // debugPrint("YARN TOPICS:- $yarnTopicList");
 
         for (var item in yarnTopicList) {
