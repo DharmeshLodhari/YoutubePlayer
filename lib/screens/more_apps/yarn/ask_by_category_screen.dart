@@ -80,10 +80,12 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
         onTap: () async {
           NavigationUtil.push(context,
               screen: AddOrEditYarn(
-                  askCategories: askViewModel.yarnCategories,
-                  isYarn: true,
-                  shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                  askCategory: widget.askCategories));
+                askCategories: askViewModel.yarnCategories,
+                isYarn: true,
+                shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                askCategory: widget.askCategories,
+                passedCategory: widget.askCategories!.name,
+              ));
         },
         child: Icon(
           SlydoAppIconNew.dashboard_yarn,

@@ -35,6 +35,7 @@ class AddOrEditYarn extends StatefulWidget {
   YarnCategories? askCategory;
   bool? isYarn = false;
   Yarn? yarn;
+  String? passedCategory;
 
   List<ShareAsYarnModel>? shareAsYarnModel;
   AddOrEditYarn(
@@ -42,7 +43,8 @@ class AddOrEditYarn extends StatefulWidget {
       this.isYarn,
       this.askCategory,
       this.yarn,
-      this.shareAsYarnModel});
+      this.shareAsYarnModel,
+      this.passedCategory});
 
   @override
   State<AddOrEditYarn> createState() => _AddOrEditYarnState();
@@ -91,12 +93,17 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     _shareAsYarnModel = widget.shareAsYarnModel?.first;
     ageRating = _shareAsYarnModel?.name?.substring(9);
     yarn = widget.yarn?.toJson();
-    selectedAskCategory = yarn?['category'] == null
-        ? YarnCategories()
-        : YarnCategories.fromJson(yarn?['category'].toJson());
-    pressedAskCategory = yarn?['category'] == null
-        ? YarnCategories()
-        : YarnCategories.fromJson(yarn?['category'].toJson());
+
+    if (widget.passedCategory.toString().isNotEmpty) {
+      selectedAskCategory = widget.askCategory;
+    } else {
+      selectedAskCategory = yarn?['category'] == null
+          ? YarnCategories()
+          : YarnCategories.fromJson(yarn?['category'].toJson());
+      pressedAskCategory = yarn?['category'] == null
+          ? YarnCategories()
+          : YarnCategories.fromJson(yarn?['category'].toJson());
+    }
 
     if (yarn?['body'].toString() == 'null') {
       textController!.text = '';
@@ -110,11 +117,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     askCategoriesCopy = widget.askCategories;
     fillExistingYarnMedia();
     super.initState();
-
-    debugPrint('Yarn Add Edit 000:::: ${yarn}');
-    // debugPrint('Yarn Mind 001:::: ${yarn!['category']}');
-    debugPrint(
-        'Yarn Add Edit 002:::: ${selectedAskCategory!.name.runtimeType}');
   }
 
   void fillExistingYarnMedia() {
@@ -475,9 +477,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   Widget _buildCategory() {
-    // debugPrint('Yarn Mind:::: ${selectedAskCategory!.name}');
-    // debugPrint('Yarn Mind:::: ${selectedAskCategory!.name.runtimeType}');
-
     return InkWell(
       onTap: () {
         categoryAndroidSheet();
@@ -507,6 +506,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   String checkCategory() {
+    // if (widget.passedCategory.toString().isNotEmpty) {
+    //   selectedAskCategory!.name = widget.passedCategory.toString();
+    // }
     if (selectedAskCategory!.name != null) {
       return selectedAskCategory!.name.toString();
     } else {
@@ -882,7 +884,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                         isAPILoading = true;
                         await editYarnAndQuestion();
                       } else {
-                        if (selectedAskCategory?.id == null) {
+                        if (selectedAskCategory?.name == null ||
+                            selectedAskCategory!.name.toString().isEmpty) {
                           showToast(message: 'Category is not selected');
                           return;
                         }
