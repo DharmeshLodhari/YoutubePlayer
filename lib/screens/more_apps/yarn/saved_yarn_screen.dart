@@ -91,15 +91,11 @@ class SavedYarnState extends State<SavedYarn> {
             yarnTopicList.addAll(tempList);
           });
 
-          tempList.forEach((value) {
-            // debugPrint("YARN TOPICS List 0001:::- ${result}");
-          });
+          tempList.forEach((value) {});
         }
-        debugPrint("YARN TOPICS List 0001:::- ${result}");
-        // debugPrint("YARN TOPICS:- $yarnTopicList");
 
         for (var item in yarnTopicList) {
-          debugPrint("YARN TOPICS List:- ${item.viewersAvatars.toString()}");
+          // debugPrint("YARN TOPICS List:- ${item.viewersAvatars.toString()}");
           debugPrint("YARN TOPICS List body:::- ${item.body}");
         }
       }

@@ -7,6 +7,7 @@ import '../ask_categories_model.dart';
 class Yarn {
   Yarn({
     this.id,
+    this.saveId,
     this.tags,
     this.authorName,
     this.authorAvatar,
@@ -41,6 +42,7 @@ class Yarn {
 
   Yarn.fromJson(dynamic json) {
     id = json['id'];
+    saveId = json['save_id'];
     tags = json['tags'] != null ? json['tags'].cast<String>() : [];
     if (json['category'] != null) {
       category = YarnCategories.fromJson(json['category']);
@@ -156,6 +158,7 @@ class Yarn {
   }
 
   String? id;
+  String? saveId;
   List<String>? tags;
   YarnCategories? category;
   String? authorName;
@@ -192,6 +195,7 @@ class Yarn {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
+    map['save_id'] = saveId;
     map['tags'] = tags;
     map['author_name'] = authorName;
     map['author_avatar'] = authorAvatar;
