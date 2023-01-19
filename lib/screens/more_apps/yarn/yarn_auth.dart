@@ -280,7 +280,8 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
-      // debugPrint("GET DATA:- $jsonData");
+
+      // debugPrint("GET DATA yarn list:- $jsonData");
       for (var item in jsonData["results"]) {
         Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
@@ -329,13 +330,13 @@ class YarnAuth extends AuthService {
       List<Yarn> yarnTopics = [];
       var jsonData = json.decode(response.body);
 
-      debugPrint("GET DATA saved list:- $jsonData");
+      // debugPrint("GET DATA saved list:- $jsonData");
 
       for (var item in jsonData["results"]) {
         Yarn yarnTopic = Yarn.fromJson(item);
         yarnTopics.add(yarnTopic);
 
-        debugPrint("GET DATA Yarn:- ${item['viewers_avatars']}");
+        // debugPrint("GET DATA Yarn:- ${item['viewers_avatars']}");
       }
 
       Map<String, dynamic> result = {
@@ -346,10 +347,29 @@ class YarnAuth extends AuthService {
       };
       return result;
     } else if (response.statusCode == 500) {
-      debugPrint("GET DATA saved error 500");
       return null;
     } else {
-      debugPrint("GET DATA saved error unknown");
+      return null;
+    }
+  }
+
+  // Delete Save Yarn
+  Future<bool?> deleteSavedYarn({String? savedYarnID}) async {
+    debugPrint("REMOVING SAVED YARN ID");
+    String url = "";
+    if (savedYarnID != null) {
+      url = AppConfig.baseUrl +
+          "/api/v1/social/ask/user-saved-or-hidden-yarns/$savedYarnID/";
+    }
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
       return null;
     }
   }

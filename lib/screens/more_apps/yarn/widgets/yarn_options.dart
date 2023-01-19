@@ -87,6 +87,17 @@ class _YarnOptionsState extends State<YarnOptions> {
     }
   }
 
+  Future removeSavedYarn(String yarnId) async {
+    bool? data = await YarnAuth().deleteSavedYarn(savedYarnID: yarnId);
+    if (data != null && data) {
+      showToast(message: "Removed Saved Yarn Successfully");
+      if (widget.yarnTopic != null) {
+        widget.onDeleteYarn!(widget.yarnTopic!);
+      }
+      Navigator.pop(context);
+    }
+  }
+
   Future deleteComment() async {
     bool? data = await YarnAuth().deleteComment(widget.commentDetail!.id!);
     if (data != null && data) {
@@ -278,15 +289,30 @@ class _YarnOptionsState extends State<YarnOptions> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildTile(
-          icon: "yarn/bookmark",
-          width: 12,
-          title: !widget.yarnTopic!.isQuestion ? 'Save Yarn' : 'Save Questions',
-          subTitle: 'Add this to you saved items',
-          onTap: () {
-            addUserVisibilityOption("saved");
-          },
-        ),
+        if (widget.yarnTopic!.saveId == null) ...[
+          _buildTile(
+            icon: "yarn/bookmark",
+            width: 12,
+            title:
+                !widget.yarnTopic!.isQuestion ? 'Save Yarn' : 'Save Questions',
+            subTitle: 'Add this to you saved items',
+            onTap: () {
+              addUserVisibilityOption("saved");
+            },
+          ),
+        ] else ...[
+          _buildTile(
+            icon: "yarn/delete",
+            width: 12,
+            title: !widget.yarnTopic!.isQuestion
+                ? 'Delete Saved Yarn'
+                : 'Delete Saved Questions',
+            subTitle: 'Deleted this from saved items',
+            onTap: () {
+              removeSavedYarn(widget.yarnTopic!.saveId.toString());
+            },
+          ),
+        ],
         SizedBox(
           height: 15,
         ),
@@ -303,16 +329,6 @@ class _YarnOptionsState extends State<YarnOptions> {
         SizedBox(
           height: 15,
         ),
-        // _buildTile(
-        //     icon: "yarn/not_interested",
-        //     title: 'Not Interested',
-        //     subTitle: 'Not interested in this yarn',
-        //     onTap: () {
-        //       addUserVisibilityOption("not-interested");
-        //     }),
-        // SizedBox(
-        //   height: 15,
-        // ),
         _buildTile(
             icon: "yarn/report",
             title: !widget.yarnTopic!.isQuestion
@@ -337,43 +353,6 @@ class _YarnOptionsState extends State<YarnOptions> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // if (widget.commentDetail!.authorName ==
-        //     getLoggedInUserName(context)) ...{
-        //   _buildTile(
-        //       icon: "yarn/delete",
-        //       title: 'Delete',
-        //       subTitle: 'Delete this comment',
-        //       onTap: () {
-        //         print('Delete clicked');
-        //         deleteComment();
-        //         Navigator.pop(context);
-        //       }),
-        // } else ...{
-        //   if (isComments()) ...[
-        //     _buildTile(
-        //         icon: "yarn/delete",
-        //         title: 'Delete',
-        //         subTitle: 'Delete this comment',
-        //         onTap: () {
-        //           print('Delete clicked');
-        //           deleteComment();
-        //           Navigator.pop(context);
-        //         }),
-        //   ] else ...[
-        //     _buildTile(
-        //         icon: "yarn/report",
-        //         title: 'Report comment',
-        //         subTitle: 'I’m concerned about this post',
-        //         onTap: () {
-        //           Navigator.pop(context);
-        //           NavigationUtil.push(context,
-        //               screen: AddReportScreen(
-        //                 object: widget.commentDetail!.toJson(),
-        //                 type: "comment",
-        //               ));
-        //         }),
-        //   ],
-        // }
         if (getLoggedInUserName(context) ==
             widget.commentDetail!.authorUsername) ...[
           _buildTile(
