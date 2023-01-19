@@ -165,20 +165,6 @@ class _YarnOptionsState extends State<YarnOptions> {
       widgetList.add(_buildMoreOptionForOther());
     }
 
-    // if (isMyYarnQuestion()) {
-    //   debugPrint("IS MY YARN QUESTION TRUE");
-    //
-    //   if ((widget.isComment ?? true) && widget.commentDetail != null) {
-    //     print('fola::::: mine');
-    //     widgetList.add(_buildMoreOptionForComments());
-    //   } else {
-    //     print('fola::::: owner');
-    //     widgetList.add(_buildMoreOptionForOwner());
-    //   }
-    // } else {
-    //   // widgetList.add(_buildMoreOptionForOther());
-    //   print('fola::::: others');
-    // }
     return widgetList;
   }
 
@@ -201,7 +187,6 @@ class _YarnOptionsState extends State<YarnOptions> {
               Duration(minutes: 5)) ...[
             _buildTile(
                 icon: "yarn/bookmark",
-                width: 12,
                 title: 'Edit',
                 subTitle: 'Edit yarn',
                 onTap: () async {
@@ -233,7 +218,6 @@ class _YarnOptionsState extends State<YarnOptions> {
         ),
         _buildTile(
             icon: "yarn/hide",
-            width: 12,
             title: widget.yarnTopic!.enableCommenting!
                 ? 'Turn off commenting'
                 : 'Turn on commenting',
@@ -252,7 +236,6 @@ class _YarnOptionsState extends State<YarnOptions> {
         ),
         _buildTile(
             icon: "yarn/delete",
-            width: 12,
             title: 'Delete',
             subTitle: widget.yarnTopic!.isQuestion
                 ? 'Delete this question'
@@ -292,7 +275,6 @@ class _YarnOptionsState extends State<YarnOptions> {
         if (widget.yarnTopic!.saveId == null) ...[
           _buildTile(
             icon: "yarn/bookmark",
-            width: 12,
             title:
                 !widget.yarnTopic!.isQuestion ? 'Save Yarn' : 'Save Questions',
             subTitle: 'Add this to you saved items',
@@ -303,7 +285,6 @@ class _YarnOptionsState extends State<YarnOptions> {
         ] else ...[
           _buildTile(
             icon: "yarn/delete",
-            width: 12,
             title: !widget.yarnTopic!.isQuestion
                 ? 'Delete Saved Yarn'
                 : 'Delete Saved Questions',
@@ -318,7 +299,6 @@ class _YarnOptionsState extends State<YarnOptions> {
         ),
         _buildTile(
             icon: "yarn/hide",
-            width: 12,
             title: 'Not Interested',
             subTitle: !widget.yarnTopic!.isQuestion
                 ? 'Not interested in this yarn'
@@ -429,17 +409,21 @@ class _YarnOptionsState extends State<YarnOptions> {
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            SvgPicture.asset(
-              "$icon".toSVG(),
-              height: 20,
-              width: 20,
+            Container(
+              padding: const EdgeInsets.all(10.0),
+              width: 40,
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.withOpacity(0.05),
+              ),
+              child: SvgPicture.asset(
+                "$icon".toSVG(),
+                height: 20,
+                width: 20,
+              ),
             ),
-            // Icon(
-            //   icon,
-            //   size: iconSize ?? 24,
-            // ),
             SizedBox(
-              width: width ?? 10,
+              width: 15,
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -449,7 +433,7 @@ class _YarnOptionsState extends State<YarnOptions> {
                   style: TextStyle(
                     color: blackFont,
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
