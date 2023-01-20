@@ -64,3 +64,5 @@ linux
 macos
 windows
 web
+android
+ios/Runner.xcodeproj/project.xcworkspace/
