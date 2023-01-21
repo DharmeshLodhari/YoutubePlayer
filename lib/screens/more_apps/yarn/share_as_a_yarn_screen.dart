@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
@@ -87,9 +88,11 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   final textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
-  List<PickedFile> selectedImages = [];
-  List<YarnMedia> selectedMedia = [];
-  List<Map<String, dynamic>> selectedImagesList = [];
+  // List<PickedFile> selectedImages = [];
+  // List<YarnMedia> selectedMedia = [];
+  List<YarnMedia> newMediaList = [];
+  List<YarnMedia> existingMediaList = [];
+  // List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
   YarnCategories? selectedAskCategory;
   ShareAsYarnModel? _shareAsYarnModel;
@@ -128,9 +131,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
     super.initState();
-
-    // debugPrint('Share yarn:::: ${shareAsYarnModelCopy}');
-    // debugPrint('Share yarn 000:::: ${widget.yarnTopic!.body}');
   }
 
   @override
@@ -429,10 +429,11 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             if (isMentionName) ...[
               _buildUserNameContainer(),
             ],
-            if (selectedImages.isNotEmpty) ...[
-              _buildAddImages(),
-              SizedBox(height: 20),
-            ],
+            // if (selectedImages.isNotEmpty) ...[
+            //   _buildAddImages(),
+            //   SizedBox(height: 20),
+            // ],
+            _buildAddImages(),
             if (!_isMessageIsGIFOrSticker) _buildRowForMedia(),
           ],
         ),
@@ -543,13 +544,13 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               if (!widget.isShare)
                 InkWell(
                     onTap: () {
-                      if (selectedImages.length == 4) {
-                        showToast(
-                            message: "You can select only 4 images or videos");
-                      } else {
-                        pickFileFromMedia();
-                        // pickImage();
-                      }
+                      // if (selectedImages.length == 4) {
+                      //   showToast(
+                      //       message: "You can select only 4 images or videos");
+                      // } else {
+                      pickFileFromMedia();
+                      // pickImage();
+                      // }
                     },
                     child: SvgPicture.asset("yarn/images".toSVG())),
               if (!widget.isShare) SizedBox(width: 8),
@@ -707,20 +708,137 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     );
   }
 
+  // Widget _buildAddImages() {
+  //   return Container(
+  //     height: 100,
+  //     child: ListView.builder(
+  //       controller: _scrollController,
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: selectedImagesList.length + 1,
+  //       itemBuilder: (context, index) => Container(
+  //         padding: EdgeInsets.only(right: 6),
+  //         child: index == 0 ? addImageButton() : showImage(index),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _buildAddImages() {
-    return Container(
-      height: 100,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: selectedImagesList.length + 1,
-        itemBuilder: (context, index) => Container(
-          padding: EdgeInsets.only(right: 6),
-          child: index == 0 ? addImageButton() : showImage(index),
+    if (existingMediaList.isEmpty && newMediaList.isEmpty) return Container();
+
+    bool showAddMediaButton = false;
+
+    if (existingMediaList.length + newMediaList.length < 4) {
+      showAddMediaButton = true;
+    } else {
+      showAddMediaButton = false;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 100,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if (showAddMediaButton) ...[
+                  addImageButton(),
+                  SizedBox(
+                    width: 8,
+                  )
+                ],
+                _buildNewAddedMedia(),
+                _buildExistingMedia(),
+              ],
+            ),
+          ),
         ),
-      ),
+
+        // Container(
+        //   height: 100,
+        //   child: ListView.builder(
+        //     scrollDirection: Axis.horizontal,
+        //     itemCount: selectedImagesList.length + 1,
+        //     itemBuilder: (context, index) => Container(
+        //       padding: EdgeInsets.only(right: 6),
+        //       child: index == 0 ? addImageButton() : showImage(index),
+        //     ),
+        //   ),
+        // ),
+        SizedBox(
+          height: 20,
+        ),
+      ],
     );
   }
+
+  Widget _buildNewAddedMedia() {
+    if (newMediaList.isEmpty) {
+      return Container();
+    }
+
+    return Row(
+      children: newMediaList.map((e) => showLocalMedia(e)).toList(),
+    );
+  }
+
+  Widget _buildExistingMedia() {
+    if (existingMediaList.isEmpty) {
+      return Container();
+    }
+
+    return Row(
+      children: existingMediaList.map((e) => showServerMedia(e)).toList(),
+    );
+  }
+
+  // Widget addImageButton() {
+  //   return CustomBoxShadow(
+  //     child: Card(
+  //       elevation: 0,
+  //       shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(10),
+  //           side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
+  //       shadowColor: boxShadowTwo,
+  //       margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+  //       child: Container(
+  //         width: 100,
+  //         decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(10),
+  //             border: Border.all(color: HexColor("#E9E9E9"), width: 1.5)),
+  //         child: InkWell(
+  //           child: Column(
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: <Widget>[
+  //               Icon(
+  //                 Icons.camera_alt_outlined,
+  //                 color: HexColor("#130F26"),
+  //               ),
+  //               SizedBox(
+  //                 height: 4,
+  //               ),
+  //               Text(
+  //                 AppLocalization.of(context)!.addImage,
+  //                 style: TextStyle(color: HexColor("#000000"), fontSize: 14),
+  //               ),
+  //             ],
+  //           ),
+  //           onTap: () {
+  //             if (selectedImages.length == 4) {
+  //               showToast(message: "You can select only 4 images or videos");
+  //             } else {
+  //               // pickImage();
+  //               pickFileFromMedia();
+  //             }
+  //           },
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget addImageButton() {
     return CustomBoxShadow(
@@ -754,7 +872,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               ],
             ),
             onTap: () {
-              if (selectedImages.length == 4) {
+              if (existingMediaList.length + newMediaList.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
                 // pickImage();
@@ -767,65 +885,213 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     );
   }
 
-  Widget showImage(int index) {
-    return Container(
-      height: 100,
-      child: Stack(
-        children: <Widget>[
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
-            shadowColor: dividerColor,
-            margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-            child: Container(
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
-                image: selectedImagesList[index - 1]['mediaType'] == 'image'
-                    ? DecorationImage(
-                        image: FileImage(
-                          File(selectedImagesList[index - 1]['file'].path),
-                        ),
-                        fit: BoxFit.fill)
-                    : DecorationImage(
-                        image: MemoryImage(
-                          selectedImagesList[index - 1]['file'],
-                        ),
-                        fit: BoxFit.fill),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  selectedImagesList.removeAt(index - 1);
-                  selectedImages.removeAt(index - 1);
-                });
-              },
-              child: Container(
-                height: 25,
-                width: 25,
-                margin: EdgeInsets.only(right: 6, top: 6),
-                decoration: BoxDecoration(
-                    color: HexColor("#000000"), shape: BoxShape.circle),
-                child: Icon(
-                  Icons.close_outlined,
-                  color: white,
-                  size: 15,
+  Widget showLocalMedia(YarnMedia e) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 100,
+          child: Stack(
+            children: <Widget>[
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
+                shadowColor: dividerColor,
+                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                child: Container(
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
+                    image: _buildLocalMediaView(e),
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
-      ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: InkWell(
+                  onTap: () {
+                    newMediaList.remove(e);
+                    if (mounted) setState(() {});
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    margin: EdgeInsets.only(right: 6, top: 6),
+                    decoration: BoxDecoration(
+                        color: HexColor("#000000"), shape: BoxShape.circle),
+                    child: Icon(
+                      Icons.close_outlined,
+                      color: white,
+                      size: 15,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 8,
+        )
+      ],
     );
   }
+
+  Widget showServerMedia(YarnMedia e) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 100,
+          child: Stack(
+            children: <Widget>[
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
+                shadowColor: dividerColor,
+                margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                child: Container(
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
+                    image: _buildServerMediaView(e),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: InkWell(
+                  onTap: () {
+                    existingMediaList.remove(e);
+                    if (mounted) setState(() {});
+
+                    YarnAuth().deleteYarnMedia(e.id!).catchError((error) {
+                      logger.e(error);
+                    });
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    margin: EdgeInsets.only(right: 6, top: 6),
+                    decoration: BoxDecoration(
+                        color: HexColor("#000000"), shape: BoxShape.circle),
+                    child: Icon(
+                      Icons.close_outlined,
+                      color: white,
+                      size: 15,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 8,
+        )
+      ],
+    );
+  }
+
+  DecorationImage _buildLocalMediaView(YarnMedia e) {
+    File? file;
+
+    if (e.mediaType == "image") {
+      file = e.mediaFile!;
+    } else {
+      file = e.posterFile!;
+    }
+
+    return DecorationImage(
+        image: FileImage(
+          file,
+        ),
+        fit: BoxFit.fill);
+  }
+
+  DecorationImage _buildServerMediaView(YarnMedia e) {
+    String imageUrl;
+
+    if (e.mediaType == "image") {
+      imageUrl = e.mediaUrl!;
+    } else {
+      imageUrl = e.mediaPoster!;
+    }
+
+    return DecorationImage(
+        image: NetworkImage(
+          imageUrl,
+        ),
+        fit: BoxFit.fill);
+  }
+
+  // Widget showImage(int index) {
+  //   return Container(
+  //     height: 100,
+  //     child: Stack(
+  //       children: <Widget>[
+  //         Card(
+  //           elevation: 2,
+  //           shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.circular(10),
+  //               side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
+  //           shadowColor: dividerColor,
+  //           margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+  //           child: Container(
+  //             width: 100,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10),
+  //               border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
+  //               image: selectedImagesList[index - 1]['mediaType'] == 'image'
+  //                   ? DecorationImage(
+  //                       image: FileImage(
+  //                         File(selectedImagesList[index - 1]['file'].path),
+  //                       ),
+  //                       fit: BoxFit.fill)
+  //                   : DecorationImage(
+  //                       image: MemoryImage(
+  //                         selectedImagesList[index - 1]['file'],
+  //                       ),
+  //                       fit: BoxFit.fill),
+  //             ),
+  //           ),
+  //         ),
+  //         Positioned(
+  //           right: 0,
+  //           top: 0,
+  //           child: InkWell(
+  //             onTap: () {
+  //               setState(() {
+  //                 selectedImagesList.removeAt(index - 1);
+  //                 selectedImages.removeAt(index - 1);
+  //               });
+  //             },
+  //             child: Container(
+  //               height: 25,
+  //               width: 25,
+  //               margin: EdgeInsets.only(right: 6, top: 6),
+  //               decoration: BoxDecoration(
+  //                   color: HexColor("#000000"), shape: BoxShape.circle),
+  //               child: Icon(
+  //                 Icons.close_outlined,
+  //                 color: white,
+  //                 size: 15,
+  //               ),
+  //             ),
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void onValueChange(String value) {
     List<String> listOfWords = value.split(" ");
@@ -922,19 +1188,18 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         borderRadius: 20,
         isLoading: isAPILoading,
         onPressed: () {
-          print(widget.appTitle);
-
           if (selectedAskCategory?.id == null) {
             showToast(message: 'Category is not selected');
             return;
           }
 
-          final data = Yarn(
-              media: selectedMedia,
-              title: messageDecoderWithEmoji(yarnController.text),
+          final yarn = Yarn(
+              media: newMediaList,
+              // media: selectedMedia,
+              // title: messageDecoderWithEmoji(yarnController.text),
               body: messageDecoderWithEmoji(textController.text),
               category: selectedAskCategory,
-              isQuestion: widget.isYarn ?? false,
+              isQuestion: false, //widget.isYarn ?? false,
               author: userBloc.user.userName,
               enablePayMe: enablePayMe,
               enableCommenting: enableCommenting,
@@ -942,47 +1207,51 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               isAdultContent: _isAdultContent,
               ageRestriction: _shareAsYarnModel?.id);
 
-          widget.callback(data);
+          // print('Reyarn::: ${yarn}');
+          // print('Reyarn 1111::: ${yarn.body}');
+          // print('Reyarn 0000::: ${yarn.media[0].toJson().toString()}');
+
+          widget.callback(yarn);
           Navigator.pop(context);
         },
       ),
     );
   }
 
-  void pickImage() async {
-    final imageSource = await showDialog<ImageSource>(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text(AppLocalization.of(context)!.selectTheImageSource),
-              actions: <Widget>[
-                MaterialButton(
-                  child: Text(AppLocalization.of(context)!.camera),
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                ),
-                MaterialButton(
-                  child: Text(AppLocalization.of(context)!.gallery),
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                )
-              ],
-            ));
+  // void pickImage() async {
+  //   final imageSource = await showDialog<ImageSource>(
+  //       context: context,
+  //       builder: (context) => AlertDialog(
+  //             title: Text(AppLocalization.of(context)!.selectTheImageSource),
+  //             actions: <Widget>[
+  //               MaterialButton(
+  //                 child: Text(AppLocalization.of(context)!.camera),
+  //                 onPressed: () => Navigator.pop(context, ImageSource.camera),
+  //               ),
+  //               MaterialButton(
+  //                 child: Text(AppLocalization.of(context)!.gallery),
+  //                 onPressed: () => Navigator.pop(context, ImageSource.gallery),
+  //               )
+  //             ],
+  //           ));
+  //
+  //   if (imageSource != null) {
+  //     ImagePicker().pickImage(source: imageSource).then((value) async {
+  //       if (value != null) {
+  //         /// for cropping the image
+  //         String? croppedImage = await ImageCrop().cropImage(value.path);
+  //         if (croppedImage == null) {
+  //           return;
+  //         }
+  //
+  //         selectedImages.add(PickedFile(croppedImage));
+  //         if (mounted) setState(() {});
+  //       }
+  //     });
+  //   }
+  // }
 
-    if (imageSource != null) {
-      ImagePicker().pickImage(source: imageSource).then((value) async {
-        if (value != null) {
-          /// for cropping the image
-          String? croppedImage = await ImageCrop().cropImage(value.path);
-          if (croppedImage == null) {
-            return;
-          }
-
-          selectedImages.add(PickedFile(croppedImage));
-          if (mounted) setState(() {});
-        }
-      });
-    }
-  }
-
-  pickFileFromMedia() async {
+  void pickFileFromMedia() async {
     List<Media>? res = await ImagesPicker.pick(
       count: 1,
       pickType: PickType.all,
@@ -1001,12 +1270,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
     if (mediaType == 'image') {
       imagePath = file.path;
-      selectedImagesList.add({
-        'mediaType': mediaType,
-        'file': PickedFile(imagePath!),
-      });
-      selectedImages.add(PickedFile(imagePath!));
-      selectedMedia
+      newMediaList
           .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
       if (mounted) setState(() {});
     } else if (mediaType == 'video') {
@@ -1014,9 +1278,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
           await NavigationUtil.push(context, screen: TrimmerView(file: file));
       if (videoFilePath is String) {
         videoPath = videoFilePath;
-        Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-        String? thumbnailImage =
-            await generateThumbNailFromVideo(videoPath: videoPath!);
+        File? thumbnailImage =
+            await generateThumbnailFromVideo(videoPath: videoPath!);
         // setUpVideoPlayer();
         // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
         //   if (thumbnail != null) {
@@ -1024,21 +1287,73 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         //     debugPrint('file path gen -> $generatedVideoThumbnail');
         //   }
         // });
-        selectedImagesList.add({
-          'mediaType': mediaType,
-          'file': uInt8List,
-          'imagePoster': thumbnailImage,
-        });
-        selectedImages.add(PickedFile(videoPath!));
-        selectedMedia.add(YarnMedia(
-            mediaFile: File(videoPath!),
-            mediaType: mediaType,
-            mediaPoster: thumbnailImage));
+        newMediaList.add(YarnMedia(
+          mediaFile: File(videoPath!),
+          mediaType: mediaType,
+          posterFile: thumbnailImage,
+        ));
         if (mounted) setState(() {});
       }
     }
-    debugPrint("SELECTED IMAGES:- $selectedImages");
   }
+
+  // pickFileFromMedia() async {
+  //   List<Media>? res = await ImagesPicker.pick(
+  //     count: 1,
+  //     pickType: PickType.all,
+  //     language: Language.System,
+  //     maxTime: 900,
+  //     cropOpt: CropOption(
+  //       cropType: CropType.rect,
+  //     ),
+  //   );
+  //
+  //   if (res == null || res.isEmpty) return;
+  //   File file = File(res.first.path);
+  //   String? mediaType = getFileTypeByPath(path: file.path);
+  //
+  //   if (mediaType == null) return;
+  //
+  //   if (mediaType == 'image') {
+  //     imagePath = file.path;
+  //     selectedImagesList.add({
+  //       'mediaType': mediaType,
+  //       'file': PickedFile(imagePath!),
+  //     });
+  //     selectedImages.add(PickedFile(imagePath!));
+  //     selectedMedia
+  //         .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
+  //     if (mounted) setState(() {});
+  //   } else if (mediaType == 'video') {
+  //     var videoFilePath =
+  //         await NavigationUtil.push(context, screen: TrimmerView(file: file));
+  //     if (videoFilePath is String) {
+  //       videoPath = videoFilePath;
+  //       Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
+  //       String? thumbnailImage =
+  //           await generateThumbNailFromVideo(videoPath: videoPath!);
+  //       // setUpVideoPlayer();
+  //       // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
+  //       //   if (thumbnail != null) {
+  //       //     generatedVideoThumbnail = thumbnail;
+  //       //     debugPrint('file path gen -> $generatedVideoThumbnail');
+  //       //   }
+  //       // });
+  //       selectedImagesList.add({
+  //         'mediaType': mediaType,
+  //         'file': uInt8List,
+  //         'imagePoster': thumbnailImage,
+  //       });
+  //       selectedImages.add(PickedFile(videoPath!));
+  //       selectedMedia.add(YarnMedia(
+  //           mediaFile: File(videoPath!),
+  //           mediaType: mediaType,
+  //           mediaPoster: thumbnailImage));
+  //       if (mounted) setState(() {});
+  //     }
+  //   }
+  //   debugPrint("SELECTED IMAGES:- $selectedImages");
+  // }
 
   void categoryAndroidSheet() {
     widget.askCategories = askCategoriesCopy;
@@ -1276,7 +1591,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
   Future<void> addYarnAndQuestion() async {
     Yarn yarn = Yarn();
-    yarn.media = selectedMedia;
+    yarn.media = newMediaList;
+    // yarn.media = selectedMedia;
     yarn.tags = userTags;
     yarn.title = yarnController.text;
     yarn.body = textController.text;

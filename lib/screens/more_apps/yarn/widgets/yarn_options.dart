@@ -17,7 +17,7 @@ import '../../../../widget/rounded_background_icon.dart';
 import '../../messaging/chat/models/ChatConversation.dart';
 import '../../messaging/chat/share_in_chat/ShareInChat.dart';
 import '../add_or_edit_yarn_screen.dart';
-import '../ask_report_screen.dart';
+import '../yarn_report_screen.dart';
 import '../models/Topics/CommentDetails.dart';
 import '../models/Topics/yarn_model.dart';
 import '../utils/utils.dart';
@@ -156,17 +156,32 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   List<Widget> _buildMoreOptionList() {
     final List<Widget> widgetList = [];
-
-    if ((widget.isComment ?? true)) {
-      widgetList.add(_buildMoreOptionForComments());
-    } else if (widget.commentDetail != null) {
-      widgetList.add(_buildMoreOptionForOwner());
+    if (isMyYarnQuestion()) {
+      debugPrint("IS MY YARN QUESTION TRUE");
+      if ((widget.isComment ?? true) && widget.commentDetail != null) {
+        widgetList.add(_buildMoreOptionForComments());
+      } else {
+        widgetList.add(_buildMoreOptionForOwner());
+      }
     } else {
       widgetList.add(_buildMoreOptionForOther());
     }
-
     return widgetList;
   }
+
+  // List<Widget> _buildMoreOptionList() {
+  //   final List<Widget> widgetList = [];
+  //
+  //   if ((widget.isComment ?? true)) {
+  //     widgetList.add(_buildMoreOptionForComments());
+  //   } else if (widget.commentDetail != null) {
+  //     widgetList.add(_buildMoreOptionForOwner());
+  //   } else {
+  //     widgetList.add(_buildMoreOptionForOther());
+  //   }
+  //
+  //   return widgetList;
+  // }
 
   Widget _buildMoreOptionForOwner() {
     DateTime messageCreatedTime =

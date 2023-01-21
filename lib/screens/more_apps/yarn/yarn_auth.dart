@@ -49,6 +49,9 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       List<YarnCategories> askCategories = [];
       var jsonData = json.decode(response.body);
+
+      // debugPrint("JSON CATEGORIES::- $jsonData");
+
       for (var item in jsonData["results"]) {
         YarnCategories categories = createAskCategories(item);
         askCategories.add(categories);
@@ -552,6 +555,134 @@ class YarnAuth extends AuthService {
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${jsonDecode(responseBody)}");
 
       throw responseBody;
+    }
+  }
+
+  // Add Yarn and Question
+  Future<StreamedResponse> _createYarn(
+      Yarn addYarnAndQuestion, String url) async {
+    debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
+    var headers = await getAuthHeaders();
+
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(url));
+
+    Map<dynamic, dynamic> _data = addYarnAndQuestion.toAddMap();
+    debugPrint('DATA ---> $_data');
+
+    if (addYarnAndQuestion.isQuestion ?? false) {
+      request.fields["title"] = addYarnAndQuestion.title!;
+    }
+
+    var mapValue = {
+      "tags": jsonEncode(addYarnAndQuestion.tags),
+      "body": messageDecoderWithEmoji(addYarnAndQuestion.body) ?? "",
+      // "body": addYarnAndQuestion.body ?? "",
+      "category": addYarnAndQuestion.category?.id ?? "0",
+      "author": addYarnAndQuestion.author ?? "",
+      "is_question": jsonEncode(addYarnAndQuestion.isQuestion),
+      "media_count": jsonEncode(addYarnAndQuestion.media.length),
+      "enable_commenting":
+          jsonEncode(addYarnAndQuestion.enableCommenting ?? false),
+      "enable_payme": jsonEncode(addYarnAndQuestion.enablePayMe ?? false),
+      "type": "yarn",
+      "is_sensitive_content":
+          jsonEncode(addYarnAndQuestion.isSensitiveContent ?? false),
+      "is_adult_content":
+          jsonEncode(addYarnAndQuestion.isAdultContent ?? false),
+      "age_restriction": jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
+    };
+    if (addYarnAndQuestion.attachment != null) {
+      mapValue['attachment'] =
+          jsonEncode(addYarnAndQuestion.attachment ?? null);
+    }
+
+    if (addYarnAndQuestion.reYarn != null) {
+      mapValue['reyarn'] = addYarnAndQuestion.reYarn!.id!;
+      logger.d("reyarnId ${mapValue['reyarn']}");
+    }
+
+    logger.d(' share as yar message...... $mapValue');
+
+    request.fields.addAll(mapValue);
+
+    List<MultipartFile> newList = [];
+    List<MultipartFile> thumbnailList = [];
+    debugPrint("MEDIA LENGTH::: ${addYarnAndQuestion.media.length}");
+    for (int i = 0; i < addYarnAndQuestion.media.length; i++) {
+      debugPrint("MEDIA TYPE::: ${addYarnAndQuestion.media[i].mediaType}");
+      var multipartFile;
+      var thumbnailImage;
+      if (addYarnAndQuestion.media[i].mediaType == 'image') {
+        // Add fields
+        request.fields["mediafile_$i"] =
+            addYarnAndQuestion.media[i].mediaFile!.path;
+        // Create multipart using filepath, string or bytes
+        multipartFile = await http.MultipartFile.fromPath(
+            "mediafile_$i", addYarnAndQuestion.media[i].mediaFile!.path);
+      } else if (addYarnAndQuestion.media[i].mediaType == 'video') {
+        // Add fields
+        request.fields["mediafile_$i"] =
+            addYarnAndQuestion.media[i].mediaFile!.path;
+        // Create multipart using filepath, string or bytes
+        multipartFile = await http.MultipartFile.fromPath(
+            "mediafile_$i", addYarnAndQuestion.media[i].mediaFile!.path);
+        // Add Poster Fields
+        request.fields["mediaposter_$i"] =
+            addYarnAndQuestion.media[i].posterFile?.path ?? '';
+
+        thumbnailImage = await http.MultipartFile.fromPath("mediaposter_$i",
+            addYarnAndQuestion.media[i].posterFile?.path ?? '');
+        thumbnailList.add(thumbnailImage);
+      }
+
+      // Add multipart to newList
+      newList.add(multipartFile);
+    }
+    // Add multipart to request
+    request.files.addAll(newList);
+    request.files.addAll(thumbnailList);
+
+    debugPrint('REQUEST FIELDS ---> ${request.fields}');
+    debugPrint('REQUEST FILES ---> ${request.files}');
+
+    headers.forEach((k, v) => request.headers[k] = v);
+    var response = await request.send();
+
+    return response;
+  }
+
+  // ADD REYARN TO YARN
+  Future<Yarn?> addReYarn(Map<String, dynamic> body, Yarn reYarn) async {
+    debugPrint("CALLING REYARN");
+
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/reyarn/";
+    debugPrint(url);
+
+    var response = await _createYarn(reYarn, url);
+
+    debugPrint("MEDIA LENGTH::: ${reYarn.media.length}");
+
+    if (response.statusCode == 401) {
+      var headers = await getAuthHeaders();
+      // var response =
+      // await httpPost(url, headers: headers, body: jsonEncode(body));
+      var response = await _createYarn(reYarn, url);
+    }
+
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.stream.bytesToString()}");
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var data = jsonDecode(response.stream.bytesToString().toString());
+      Yarn reYarn = Yarn.fromJson(data);
+
+      return reYarn;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
     }
   }
 
@@ -1161,37 +1292,6 @@ class YarnAuth extends AuthService {
     } else {
       var jsonData = json.decode(response.body);
       throw jsonData;
-    }
-  }
-
-  // ADD REYARN TO YARN
-  Future<Yarn?> addReYarn(Map<String, dynamic> body) async {
-    debugPrint("CALLING REYARN");
-    String url = "";
-    url = AppConfig.baseUrl + "/api/v1/social/ask/reyarn/";
-    debugPrint(url);
-
-    var headers = await getAuthHeaders();
-    // var headers = <String,dynamic>{};
-    var response =
-        await httpPost(url, headers: headers, body: jsonEncode(body));
-    if (response.statusCode == 401) {
-      var headers = await getAuthHeaders();
-      var response =
-          await httpPost(url, headers: headers, body: jsonEncode(body));
-    }
-
-    debugPrint(
-        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = jsonDecode(response.body);
-      Yarn reYarn = Yarn.fromJson(data);
-      return reYarn;
-    } else if (response.statusCode == 500) {
-      return null;
-    } else {
-      return null;
     }
   }
 

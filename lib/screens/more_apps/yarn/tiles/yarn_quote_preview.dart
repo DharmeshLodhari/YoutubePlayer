@@ -20,7 +20,7 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
-import '../ask_search_screen.dart';
+import '../yarn_search_screen.dart';
 import '../models/Topics/yarn_model.dart';
 import '../utils/slydo_yarn_links.dart';
 import '../widgets/url_reader_of_yarn.dart';

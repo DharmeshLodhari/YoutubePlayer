@@ -3,10 +3,12 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -45,16 +47,11 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
   UserBloc? userBloc;
   bool isAuthor = false;
   bool isSelected = false;
+  bool isLoadingFollowingAction = false;
 
   @override
   void initState() {
     super.initState();
-
-    // print(
-    //     'CustomerProfile wallpaper::::: ${widget.customerProfile!.wallpaper}');
-    // print('CustomerProfile type::::: ${widget.customerProfile!.type}');
-    // print(
-    //     'CustomerProfile user about::::: ${widget.customerProfile!.userAbout!.wallpaper}');
   }
 
   @override
@@ -177,25 +174,68 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                               ],
                             ),
                           ),
-                          SvgPicture.asset('circle_chat'.toSVG()),
+                          InkWell(
+                              onTap: () {},
+                              child: SvgPicture.asset('circle_chat'.toSVG())),
                           SizedBox(width: 7),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 7),
-                            decoration: BoxDecoration(
-                                color: blackFont,
-                                borderRadius: BorderRadius.circular(17)),
-                            child: Text(
-                              'Following',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: getFontSize(
-                                      widget.tileRenderPlace, context),
-                                  color: white),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
+                          // InkWell(
+                          //   onTap: () {
+                          //     print(
+                          //         'follow tapped::: ${widget.customerProfile!.userName}');
+                          //     if(widget.customerProfile!.isFollowing == false){
+                          //       if (mounted) setState(() {});
+                          //       UserAuth()
+                          //           .followOrUnfollowUser(widget.customerProfile!.userName!,
+                          //           shouldFollow: false)
+                          //           .then((value) async {
+                          //         if (value == true) {
+                          //           // await getSearchedUser(load: false);
+                          //         }
+                          //         isLoadingFollowingAction = false;
+                          //         if (mounted) setState(() {});
+                          //       }).catchError((e) {
+                          //         isLoadingFollowingAction = false;
+                          //         if (mounted) setState(() {});
+                          //         showToast(message: e.toString());
+                          //       });
+                          //     }else{
+                          //       if (mounted) setState(() {});
+                          //       UserAuth()
+                          //           .followOrUnfollowUser(widget.customerProfile!.userName!, shouldFollow: true)
+                          //           .then((value) async {
+                          //         if (value == true) {
+                          //           // await getSearchedUser(load: false);
+                          //         }
+                          //         isLoadingFollowingAction = false;
+                          //         if (mounted) setState(() {});
+                          //       }).catchError((e) {
+                          //         isLoadingFollowingAction = true;
+                          //         if (mounted) setState(() {});
+                          //         showToast(message: e.toString());
+                          //       });
+                          //     }
+                          //   },
+                          //   child: Container(
+                          //     padding: EdgeInsets.symmetric(
+                          //         horizontal: 18, vertical: 7),
+                          //     decoration: BoxDecoration(
+                          //         color: blackFont,
+                          //         borderRadius: BorderRadius.circular(17)),
+                          //     child: Text(
+                          //       widget.customerProfile!.isFollowing == false
+                          //           ? 'Follow'
+                          //           : 'Following',
+                          //       style: TextStyle(
+                          //           fontWeight: FontWeight.w500,
+                          //           fontSize: getFontSize(
+                          //               widget.tileRenderPlace, context),
+                          //           color: white),
+                          //       maxLines: 2,
+                          //       overflow: TextOverflow.ellipsis,
+                          //     ),
+                          //   ),
+                          // )
+                          getFollowUnFollowBtn(),
                         ],
                       ),
                       SizedBox(height: 8),
@@ -219,6 +259,106 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                 ),
               )
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getFollowUnFollowBtn() {
+    if (isLoadingFollowingAction) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 14),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularLoadingIndicator(),
+        ),
+      );
+    }
+
+    // if (searchedUser!.userName == userBloc.user.userName) {
+    //   return SizedBox.shrink();
+    // }
+    if (widget.customerProfile?.isFollowing != null &&
+        widget.customerProfile!.isFollowing == true) {
+      return InkWell(
+        onTap: () {
+          isLoadingFollowingAction = true;
+          if (mounted) setState(() {});
+          UserAuth()
+              .followOrUnfollowUser(widget.customerProfile!.userName!,
+                  shouldFollow: false)
+              .then((value) async {
+            if (value == true) {
+              // await getSearchedUser(load: false);
+            }
+            isLoadingFollowingAction = false;
+            if (mounted) setState(() {});
+          }).catchError((e) {
+            isLoadingFollowingAction = false;
+            if (mounted) setState(() {});
+            showToast(message: e.toString());
+          });
+        },
+        child: Container(
+          height: 30,
+          width: 80,
+          margin: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+              color: blackFont,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: HexColor("#292929"), width: 1)),
+          child: Center(
+            child: Text(
+              'Following',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: () {
+        isLoadingFollowingAction = true;
+        if (mounted) setState(() {});
+        UserAuth()
+            .followOrUnfollowUser(widget.customerProfile!.userName!,
+                shouldFollow: true)
+            .then((value) async {
+          if (value == true) {
+            // await getSearchedUser(load: false);
+          }
+          isLoadingFollowingAction = false;
+          if (mounted) setState(() {});
+        }).catchError((e) {
+          isLoadingFollowingAction = true;
+          if (mounted) setState(() {});
+          showToast(message: e.toString());
+        });
+      },
+      child: Container(
+        height: 30,
+        width: 80,
+        margin: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: HexColor("#292929"), width: 1)),
+        child: Center(
+          child: Text(
+            'Follow',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

@@ -214,6 +214,7 @@ class _YarnActionsState extends State<YarnActions> {
                       screen: ShareAsAyarnScreen(
                           appTitle: "Reyarn",
                           enableText: true,
+                          isShare: false,
                           askCategories: yarnDashboardBloc.yarnCategories,
                           shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                           yarnTopic: widget.yarn,
@@ -419,14 +420,18 @@ class _YarnActionsState extends State<YarnActions> {
 
   Future reYarn(Yarn yarn) async {
     Map<String, dynamic> yarnMap = yarn.toAddMap();
-    yarnMap['reyarn'] = widget.yarn.id;
+    // yarnMap['reyarn'] = widget.yarn.id;
+    yarn.reYarn = widget.yarn;
+
+
     // print('object  yarn here');
     // Map<String, dynamic> body = {"reyarn": widget.yarn.id};
-    // debugPrint("BODY DATA:- $body");
+    debugPrint("BODY DATA REYARN::::- $yarnMap");
 
     // logger.d('this is the yarn map data $yarnMap');
 
-    Yarn? data = await YarnAuth().addReYarn(yarnMap);
+    // Yarn? data = await YarnAuth().addReYarnNew(yarn, yarnMap);
+    Yarn? data = await YarnAuth().addReYarn(yarnMap, yarn);
     setState(() {
       widget.yarn.userReyarned = !widget.yarn.userReyarned;
     });
