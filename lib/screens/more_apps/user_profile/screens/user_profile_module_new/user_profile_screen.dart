@@ -478,21 +478,33 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       onTap: (int index) {
                         changeIndex(index);
                       },
-                      tabs: getTabs(),
+                      tabs: getTabsWidget(),
                     ),
                   ),
                 )
               ];
             },
-            body: SafeArea(
-              bottom: false,
-              top: false,
-              child: tabViews(),
-            ),
+            body: getViewTabsWidget(),
           ),
         ),
       ),
     );
+  }
+
+  Widget getViewTabsWidget() {
+    //this should be a switch statement to return user tab
+    return SafeArea(
+      bottom: false,
+      top: false,
+      child: tabViews(),
+    );
+  }
+
+  List<Widget> getTabsWidget() {
+    //if user == 'businessUser';
+    //return getBusinessUserTabs();
+    //if (searchedUser?.type?.toLowerCase() == "user")
+    return getTabs();
   }
 
   void changeIndex(int index) {
