@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../../utils/navigation_util.dart';
 import '../../../utils/util.dart';
-import 'ask_customize_screen.dart';
+import 'yarn_customize_screen.dart';
 
 class YarnSettingsScreen extends StatefulWidget {
   YarnSettingsScreen({Key? key}) : super(key: key);

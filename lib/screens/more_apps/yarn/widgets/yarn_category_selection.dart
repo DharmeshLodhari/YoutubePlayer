@@ -1,7 +1,9 @@
-import 'package:Slydo/screens/more_apps/yarn/ask_by_category_screen.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_by_category_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/category_chip.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_list_screen.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +49,41 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
           SizedBox(
             width: 16,
           ),
+          CategoryChip(
+            onTap: () {
+              // YarnCategories createAskCategories(Map<String, dynamic> item) {
+              //   YarnCategories categories = YarnCategories();
+              //   categories.id = item['id'];
+              //   categories.name = item['name'];
+              //   categories.color = item['color'];
+              //   categories.image = item['image'];
+              //
+              //   return categories;
+              // }
+              //
+              // var allCategory = {
+              //   "id": "1a98ecf3-4c56-4b31-9686-111hf7gdg",
+              //   "name": "All",
+              //   "color": "#FF0000",
+              //   "image": null
+              // };
+              // YarnCategories categories = createAskCategories(allCategory);
+              //
+              // NavigationUtil.push(
+              //   context,
+              //   screen: YarnCategoryScreen(
+              //     askCategories: categories,
+              //   ),
+              // );
+              // YarnListScreen yarnList = YarnListScreen();
+              // YarnListScreenState yarnList = YarnListScreenState();
+              // yarnList.onRefresh;
+            },
+            title: 'All',
+            categoryColor: greySecondaryYarn,
+            selectedCategoryTextColor: HexColor("#000000"),
+            borderColor: greySecondaryYarn,
+          ),
           ...List.generate(
             yarnDashboardBloc.yarnCategories.length,
             (i) {
@@ -65,10 +102,13 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
                       );
                     },
                     title: yarnDashboardBloc.yarnCategories[i].name,
-                    categoryColor: greyBackground,
+                    categoryColor:
+                        yarnDashboardBloc.yarnCategories[i].name == 'All'
+                            ? greySecondaryYarn
+                            : greyBackground,
                     selectedCategoryTextColor: HexColor("#000000"),
                     borderColor: greySecondaryYarn,
-                  )
+                  ),
                 ],
               );
             },
@@ -104,6 +144,9 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
         if (mounted) {
           noCategoriesList = false;
           isLoading = false;
+
+          // debugPrint('tempList::: ${tempList.runtimeType}');
+
           yarnDashboardBloc.addCategories(tempList);
         }
       }
@@ -116,5 +159,4 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
       }
     }
   }
-
 }

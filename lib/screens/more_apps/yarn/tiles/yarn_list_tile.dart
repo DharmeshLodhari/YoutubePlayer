@@ -21,7 +21,7 @@ import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
 import '../../user_post/models/user_post.dart';
 import '../../user_profile/screens/user_profile_module_new/utils.dart';
-import '../ask_search_screen.dart';
+import '../yarn_search_screen.dart';
 import '../models/Topics/yarn_model.dart';
 import '../utils/slydo_yarn_links.dart';
 import '../widgets/url_reader_of_yarn.dart';
@@ -84,6 +84,8 @@ class _YarnTileState extends State<YarnTile> {
 
     if (widget.yarn.media.isNotEmpty) {
       isMediaPresent = true;
+      print('Reyarn::::: ${widget.yarn.media}');
+      print('Reyarn::::: ${widget.yarn.body}');
     }
 
     if (widget.yarn.attachment != null) {
@@ -151,15 +153,6 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 8,
           ),
-        if (isReYarnPresent && widget.yarn.reYarn != null) ...[
-          SizedBox(
-            height: 10,
-          ),
-          getDisplayWidget(_buildReYarnTile),
-          SizedBox(
-            height: 8,
-          ),
-        ],
         if (isAttachmentPresent &&
             widget.yarn.attachment != null &&
             widget.yarn.attachment?.isEmpty == false) ...[
@@ -192,6 +185,19 @@ class _YarnTileState extends State<YarnTile> {
             height: 8,
           ),
         ],
+        SizedBox(
+          height: 8,
+        ),
+        if (isReYarnPresent && widget.yarn.reYarn != null) ...[
+          SizedBox(
+            height: 10,
+          ),
+          getDisplayWidget(_buildReYarnTile),
+          SizedBox(
+            height: 8,
+          ),
+        ],
+
         widget.yarn.factChecked == true
             ? _buildFactCheckWidget()
             : SizedBox.shrink(),

@@ -233,6 +233,8 @@ class YarnListScreenState extends State<YarnListScreen> {
         yarnTopicList = [];
         if (mounted) setState(() {});
 
+        debugPrint('refresh called');
+
         getYarnList(categoryId: selectedId);
         setState(() {
           refreshController.refreshCompleted();

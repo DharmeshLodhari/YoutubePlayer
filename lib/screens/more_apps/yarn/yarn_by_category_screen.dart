@@ -13,7 +13,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
 import 'add_or_edit_yarn_screen.dart';
-import 'ask_search_screen.dart';
+import 'yarn_search_screen.dart';
 import 'question_list_screen.dart';
 import 'yarn_auth.dart';
 import 'yarn_dashboard_bloc.dart';
@@ -95,74 +95,6 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
       backgroundColor: yarnBlack,
       activeBackgroundColor: HexColor("#FFFFFF"),
     );
-
-    // return SpeedDial(
-    //   child: Icon(
-    //     Icons.add,
-    //     color: Colors.white,
-    //   ),
-    //   activeChild: Icon(
-    //     Icons.close,
-    //     color: yarnBlack,
-    //   ),
-    //   backgroundColor: yarnBlack,
-    //   activeBackgroundColor: HexColor("#FFFFFF"),
-    //   children: [
-    //     // _buildSpeedDialChild(
-    //     // title: "Ask Question",
-    //     // icon: SlydoAppIconNew.question,
-    //     // onTap: () {
-    //     //   NavigationUtil.push(context,
-    //     //       screen: AddTopicScreen(
-    //     //         askCategories: askViewModel.yarnCategories,
-    //     //         isYarn: false,
-    //     //         askCategory: widget.askCategories,
-    //     //       ));
-    //     // }),
-    //     _buildSpeedDialChild(
-    //         title: "Yarn",
-    //         icon: SlydoAppIconNew.yarn,
-    //         onTap: () {
-    //           NavigationUtil.push(context,
-    //               screen: AddOrEditYarn(
-    //                   askCategories: askViewModel.yarnCategories,
-    //                   isYarn: true,
-    //                   shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-    //                   askCategory: widget.askCategories));
-    //         }),
-    //   ],
-    // );
-  }
-
-  SpeedDialChild _buildSpeedDialChild(
-      {required String title,
-      required IconData icon,
-      required VoidCallback onTap}) {
-    return SpeedDialChild(
-        onTap: onTap,
-        backgroundColor: yarnBlack,
-        labelBackgroundColor: HexColor("#FFFFFF"),
-        labelWidget: Card(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Text(
-              title,
-              style: TextStyle(
-                  color: HexColor("#424242"),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 20,
-        ));
   }
 
   PreferredSizeWidget _buildAppBar() {

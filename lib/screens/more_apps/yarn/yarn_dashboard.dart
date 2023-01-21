@@ -9,15 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-
-import '../../../data/state_notifier.dart';
-import '../../../routes/route_constants.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
 import '../../../utils/util.dart';
 import '../messaging/message_auth.dart';
 import 'add_or_edit_yarn_screen.dart';
-import 'ask_search_screen.dart';
+import 'yarn_search_screen.dart';
 import 'question_list_screen.dart';
 import 'yarn_dashboard_bloc.dart';
 import 'yarn_list_screen.dart';

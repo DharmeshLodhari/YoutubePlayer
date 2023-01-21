@@ -6,7 +6,7 @@ import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 import '../../../../utils/common.dart';
 import '../../../../utils/navigation_util.dart';
-import '../ask_search_screen.dart';
+import '../yarn_search_screen.dart';
 import '../utils/utils.dart';
 
 class RichTextForTitle extends StatelessWidget {
