@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_blog_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
@@ -18,7 +16,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
@@ -33,7 +30,6 @@ import '../../../../widget/CustomBoxShadow.dart';
 import '../../../../widget/curved_btn.dart';
 import '../../../../widget/customized_dropdown_field.dart';
 import '../../../../widget/customized_textform_field.dart';
-import '../../../../widget/image_crop.dart';
 import '../../../widget/LoadingIndicator.dart';
 import '../../moments/screens/trimmer_view.dart';
 import '../messaging/chat/models/gif_model/GIFModel.dart';
@@ -88,11 +84,8 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   final textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
   ScrollController _scrollController = ScrollController();
-  // List<PickedFile> selectedImages = [];
-  // List<YarnMedia> selectedMedia = [];
   List<YarnMedia> newMediaList = [];
   List<YarnMedia> existingMediaList = [];
-  // List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
   YarnCategories? selectedAskCategory;
   ShareAsYarnModel? _shareAsYarnModel;
@@ -543,14 +536,10 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
             children: [
               if (!widget.isShare)
                 InkWell(
-                    onTap: () {
-                      // if (selectedImages.length == 4) {
-                      //   showToast(
-                      //       message: "You can select only 4 images or videos");
-                      // } else {
-                      pickFileFromMedia();
-                      // pickImage();
-                      // }
+                    onTap: () async {
+                      if (await checkStoragePermission()) {
+                        pickFileFromMedia();
+                      }
                     },
                     child: SvgPicture.asset("yarn/images".toSVG())),
               if (!widget.isShare) SizedBox(width: 8),
@@ -708,21 +697,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     );
   }
 
-  // Widget _buildAddImages() {
-  //   return Container(
-  //     height: 100,
-  //     child: ListView.builder(
-  //       controller: _scrollController,
-  //       scrollDirection: Axis.horizontal,
-  //       itemCount: selectedImagesList.length + 1,
-  //       itemBuilder: (context, index) => Container(
-  //         padding: EdgeInsets.only(right: 6),
-  //         child: index == 0 ? addImageButton() : showImage(index),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildAddImages() {
     if (existingMediaList.isEmpty && newMediaList.isEmpty) return Container();
 
@@ -794,51 +768,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
       children: existingMediaList.map((e) => showServerMedia(e)).toList(),
     );
   }
-
-  // Widget addImageButton() {
-  //   return CustomBoxShadow(
-  //     child: Card(
-  //       elevation: 0,
-  //       shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(10),
-  //           side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
-  //       shadowColor: boxShadowTwo,
-  //       margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-  //       child: Container(
-  //         width: 100,
-  //         decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(10),
-  //             border: Border.all(color: HexColor("#E9E9E9"), width: 1.5)),
-  //         child: InkWell(
-  //           child: Column(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: <Widget>[
-  //               Icon(
-  //                 Icons.camera_alt_outlined,
-  //                 color: HexColor("#130F26"),
-  //               ),
-  //               SizedBox(
-  //                 height: 4,
-  //               ),
-  //               Text(
-  //                 AppLocalization.of(context)!.addImage,
-  //                 style: TextStyle(color: HexColor("#000000"), fontSize: 14),
-  //               ),
-  //             ],
-  //           ),
-  //           onTap: () {
-  //             if (selectedImages.length == 4) {
-  //               showToast(message: "You can select only 4 images or videos");
-  //             } else {
-  //               // pickImage();
-  //               pickFileFromMedia();
-  //             }
-  //           },
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget addImageButton() {
     return CustomBoxShadow(
@@ -1033,66 +962,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
         fit: BoxFit.fill);
   }
 
-  // Widget showImage(int index) {
-  //   return Container(
-  //     height: 100,
-  //     child: Stack(
-  //       children: <Widget>[
-  //         Card(
-  //           elevation: 2,
-  //           shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(10),
-  //               side: BorderSide(color: HexColor("#E9E9E9"), width: 1.5)),
-  //           shadowColor: dividerColor,
-  //           margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-  //           child: Container(
-  //             width: 100,
-  //             decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.circular(10),
-  //               border: Border.all(color: HexColor("#E9E9E9"), width: 1.5),
-  //               image: selectedImagesList[index - 1]['mediaType'] == 'image'
-  //                   ? DecorationImage(
-  //                       image: FileImage(
-  //                         File(selectedImagesList[index - 1]['file'].path),
-  //                       ),
-  //                       fit: BoxFit.fill)
-  //                   : DecorationImage(
-  //                       image: MemoryImage(
-  //                         selectedImagesList[index - 1]['file'],
-  //                       ),
-  //                       fit: BoxFit.fill),
-  //             ),
-  //           ),
-  //         ),
-  //         Positioned(
-  //           right: 0,
-  //           top: 0,
-  //           child: InkWell(
-  //             onTap: () {
-  //               setState(() {
-  //                 selectedImagesList.removeAt(index - 1);
-  //                 selectedImages.removeAt(index - 1);
-  //               });
-  //             },
-  //             child: Container(
-  //               height: 25,
-  //               width: 25,
-  //               margin: EdgeInsets.only(right: 6, top: 6),
-  //               decoration: BoxDecoration(
-  //                   color: HexColor("#000000"), shape: BoxShape.circle),
-  //               child: Icon(
-  //                 Icons.close_outlined,
-  //                 color: white,
-  //                 size: 15,
-  //               ),
-  //             ),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
-
   void onValueChange(String value) {
     List<String> listOfWords = value.split(" ");
 
@@ -1218,39 +1087,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     );
   }
 
-  // void pickImage() async {
-  //   final imageSource = await showDialog<ImageSource>(
-  //       context: context,
-  //       builder: (context) => AlertDialog(
-  //             title: Text(AppLocalization.of(context)!.selectTheImageSource),
-  //             actions: <Widget>[
-  //               MaterialButton(
-  //                 child: Text(AppLocalization.of(context)!.camera),
-  //                 onPressed: () => Navigator.pop(context, ImageSource.camera),
-  //               ),
-  //               MaterialButton(
-  //                 child: Text(AppLocalization.of(context)!.gallery),
-  //                 onPressed: () => Navigator.pop(context, ImageSource.gallery),
-  //               )
-  //             ],
-  //           ));
-  //
-  //   if (imageSource != null) {
-  //     ImagePicker().pickImage(source: imageSource).then((value) async {
-  //       if (value != null) {
-  //         /// for cropping the image
-  //         String? croppedImage = await ImageCrop().cropImage(value.path);
-  //         if (croppedImage == null) {
-  //           return;
-  //         }
-  //
-  //         selectedImages.add(PickedFile(croppedImage));
-  //         if (mounted) setState(() {});
-  //       }
-  //     });
-  //   }
-  // }
-
   void pickFileFromMedia() async {
     List<Media>? res = await ImagesPicker.pick(
       count: 1,
@@ -1296,64 +1132,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
       }
     }
   }
-
-  // pickFileFromMedia() async {
-  //   List<Media>? res = await ImagesPicker.pick(
-  //     count: 1,
-  //     pickType: PickType.all,
-  //     language: Language.System,
-  //     maxTime: 900,
-  //     cropOpt: CropOption(
-  //       cropType: CropType.rect,
-  //     ),
-  //   );
-  //
-  //   if (res == null || res.isEmpty) return;
-  //   File file = File(res.first.path);
-  //   String? mediaType = getFileTypeByPath(path: file.path);
-  //
-  //   if (mediaType == null) return;
-  //
-  //   if (mediaType == 'image') {
-  //     imagePath = file.path;
-  //     selectedImagesList.add({
-  //       'mediaType': mediaType,
-  //       'file': PickedFile(imagePath!),
-  //     });
-  //     selectedImages.add(PickedFile(imagePath!));
-  //     selectedMedia
-  //         .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
-  //     if (mounted) setState(() {});
-  //   } else if (mediaType == 'video') {
-  //     var videoFilePath =
-  //         await NavigationUtil.push(context, screen: TrimmerView(file: file));
-  //     if (videoFilePath is String) {
-  //       videoPath = videoFilePath;
-  //       Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-  //       String? thumbnailImage =
-  //           await generateThumbNailFromVideo(videoPath: videoPath!);
-  //       // setUpVideoPlayer();
-  //       // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
-  //       //   if (thumbnail != null) {
-  //       //     generatedVideoThumbnail = thumbnail;
-  //       //     debugPrint('file path gen -> $generatedVideoThumbnail');
-  //       //   }
-  //       // });
-  //       selectedImagesList.add({
-  //         'mediaType': mediaType,
-  //         'file': uInt8List,
-  //         'imagePoster': thumbnailImage,
-  //       });
-  //       selectedImages.add(PickedFile(videoPath!));
-  //       selectedMedia.add(YarnMedia(
-  //           mediaFile: File(videoPath!),
-  //           mediaType: mediaType,
-  //           mediaPoster: thumbnailImage));
-  //       if (mounted) setState(() {});
-  //     }
-  //   }
-  //   debugPrint("SELECTED IMAGES:- $selectedImages");
-  // }
 
   void categoryAndroidSheet() {
     widget.askCategories = askCategoriesCopy;

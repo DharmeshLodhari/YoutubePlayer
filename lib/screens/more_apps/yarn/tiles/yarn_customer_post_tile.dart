@@ -4,9 +4,12 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/navigation_util.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -15,6 +18,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../locale/app_localization.dart';
 import '../../../../routes/route_constants.dart';
@@ -48,10 +52,18 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
   bool isAuthor = false;
   bool isSelected = false;
   bool isLoadingFollowingAction = false;
+  bool isLoadingFriendRequest = false;
+  bool isInRequestList = false;
+  bool isLoading = true;
+  CustomerProfile? searchedUser;
 
   @override
   void initState() {
     super.initState();
+
+    searchedUser = widget.customerProfile;
+
+    getSearchedUser();
   }
 
   @override
@@ -79,8 +91,6 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  // checkAccountType(),
-
                   ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
@@ -174,68 +184,15 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                               ],
                             ),
                           ),
-                          InkWell(
-                              onTap: () {},
-                              child: SvgPicture.asset('circle_chat'.toSVG())),
-                          SizedBox(width: 7),
-                          // InkWell(
-                          //   onTap: () {
-                          //     print(
-                          //         'follow tapped::: ${widget.customerProfile!.userName}');
-                          //     if(widget.customerProfile!.isFollowing == false){
-                          //       if (mounted) setState(() {});
-                          //       UserAuth()
-                          //           .followOrUnfollowUser(widget.customerProfile!.userName!,
-                          //           shouldFollow: false)
-                          //           .then((value) async {
-                          //         if (value == true) {
-                          //           // await getSearchedUser(load: false);
-                          //         }
-                          //         isLoadingFollowingAction = false;
-                          //         if (mounted) setState(() {});
-                          //       }).catchError((e) {
-                          //         isLoadingFollowingAction = false;
-                          //         if (mounted) setState(() {});
-                          //         showToast(message: e.toString());
-                          //       });
-                          //     }else{
-                          //       if (mounted) setState(() {});
-                          //       UserAuth()
-                          //           .followOrUnfollowUser(widget.customerProfile!.userName!, shouldFollow: true)
-                          //           .then((value) async {
-                          //         if (value == true) {
-                          //           // await getSearchedUser(load: false);
-                          //         }
-                          //         isLoadingFollowingAction = false;
-                          //         if (mounted) setState(() {});
-                          //       }).catchError((e) {
-                          //         isLoadingFollowingAction = true;
-                          //         if (mounted) setState(() {});
-                          //         showToast(message: e.toString());
-                          //       });
-                          //     }
-                          //   },
-                          //   child: Container(
-                          //     padding: EdgeInsets.symmetric(
-                          //         horizontal: 18, vertical: 7),
-                          //     decoration: BoxDecoration(
-                          //         color: blackFont,
-                          //         borderRadius: BorderRadius.circular(17)),
-                          //     child: Text(
-                          //       widget.customerProfile!.isFollowing == false
-                          //           ? 'Follow'
-                          //           : 'Following',
-                          //       style: TextStyle(
-                          //           fontWeight: FontWeight.w500,
-                          //           fontSize: getFontSize(
-                          //               widget.tileRenderPlace, context),
-                          //           color: white),
-                          //       maxLines: 2,
-                          //       overflow: TextOverflow.ellipsis,
-                          //     ),
-                          //   ),
-                          // )
-                          getFollowUnFollowBtn(),
+                          Container(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                getActionOnUsersBtn(),
+                                getFollowUnFollowBtn(),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(height: 8),
@@ -265,6 +222,183 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
     );
   }
 
+  Future<void> getSearchedUser({bool load = true}) async {
+    late CustomerProfile user;
+    if (load) {
+      isLoading = true;
+      if (mounted) setState(() {});
+    }
+
+    try {
+      user = await UserAuth()
+          .fetchCustomerProfileWithAuth(widget.customerProfile!.userName);
+    } catch (e) {
+      Navigator.pop(context);
+      showToast(message: 'User not found');
+    }
+
+    searchedUser = user;
+
+    checkCurrentUserIsInRequestList();
+
+    isLoading = false;
+    if (mounted) setState(() {});
+  }
+
+  Widget getActionOnUsersBtn() {
+    if (isLoadingFriendRequest) {
+      return Row(
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularLoadingIndicator(),
+          ),
+          SizedBox(width: 24),
+        ],
+      );
+    }
+
+    if (widget.customerProfile!.userName != userBloc!.user.userName) {
+      if (widget.customerProfile!.conversationId != "") {
+        return Row(
+          children: [
+            chatIcon(),
+            SizedBox(width: 8),
+          ],
+        );
+      } else {
+        return Row(
+          children: [
+            getAddConnectionBtn(),
+            SizedBox(width: 8),
+          ],
+        );
+      }
+    }
+
+    return SizedBox.shrink();
+  }
+
+  Widget chatIcon() {
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: HexColor("#292929"),
+          ),
+          shape: BoxShape.circle),
+      child: RoundedBackgroundIcon(
+        height: 30,
+        width: 30,
+        image: SvgPicture.asset(
+          "yarn/chat_icon".toSVG(),
+          height: 20,
+          width: 20,
+          color: HexColor("#292929"),
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, '/chat-screen', arguments: {
+            "recipientUserName": widget.customerProfile!.userName
+          });
+        },
+        backgroundColor: lightGrey.withOpacity(0.1),
+        enableMargin: true,
+        margin: 8,
+      ),
+    );
+  }
+
+  Widget getAddConnectionBtn() {
+    return Row(
+      children: [
+        getAddConnectionIcon(),
+        SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget getAddConnectionIcon() {
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(
+            color: greyBorderColor,
+          ),
+          shape: BoxShape.circle),
+      child: RoundedBackgroundIcon(
+        height: 34,
+        width: 34,
+        icon: Icon(
+          isInRequestList
+              ? SlydoAppIcon.cancel_connection_request
+              : SlydoAppIcon.send_connection_request,
+          size: 16,
+          color: isInRequestList ? mateRed : blackFont,
+        ),
+        onTap: () {
+          isLoadingFriendRequest = true;
+          if (mounted) setState(() {});
+
+          if (isInRequestList) {
+            UserAuth()
+                .cancelOrRejectContactRequest(widget.customerProfile!)
+                .then((value) async {
+              if (value) {
+                showToast(message: "Friend request Canceled");
+              } else {
+                showToast(message: "Friend request Canceled unsuccessfully");
+              }
+              await getSearchedUser(load: false);
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            }).catchError((error) {
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            });
+          } else {
+            UserAuth()
+                .makeContactRequest(widget.customerProfile!)
+                .then((value) async {
+              if (value) {
+                showToast(message: "Friend Request Sent !!");
+              } else {
+                showToast(message: "Request Not Sent.. ");
+              }
+              await getSearchedUser(load: false);
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            }).catchError((error) {
+              isLoadingFriendRequest = false;
+              if (mounted) setState(() {});
+            });
+          }
+        },
+        backgroundColor: lightGrey.withOpacity(0.1),
+        enableMargin: false,
+      ),
+    );
+  }
+
+  void checkCurrentUserIsInRequestList() async {
+    UserBloc _userBloc = Provider.of<UserBloc>(context, listen: false);
+    debugPrint("is In Request List -");
+
+    if (_userBloc.user.userName != widget.customerProfile?.userName) {
+      UserAuth().checkInRequest(widget.customerProfile?.userName).then((value) {
+        if (mounted) {
+          setState(() {
+            debugPrint("is In Request List : $isInRequestList");
+
+            if (value == true) {
+              isInRequestList = true;
+            } else {
+              isInRequestList = false;
+            }
+          });
+        }
+      });
+    }
+  }
+
   Widget getFollowUnFollowBtn() {
     if (isLoadingFollowingAction) {
       return Padding(
@@ -277,21 +411,21 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
       );
     }
 
-    // if (searchedUser!.userName == userBloc.user.userName) {
-    //   return SizedBox.shrink();
-    // }
-    if (widget.customerProfile?.isFollowing != null &&
-        widget.customerProfile!.isFollowing == true) {
+    if (searchedUser!.userName! == userBloc!.user.userName) {
+      return SizedBox.shrink();
+    }
+    if (searchedUser!.isFollowing != null &&
+        searchedUser!.isFollowing == true) {
       return InkWell(
         onTap: () {
           isLoadingFollowingAction = true;
           if (mounted) setState(() {});
           UserAuth()
-              .followOrUnfollowUser(widget.customerProfile!.userName!,
+              .followOrUnfollowUser(searchedUser!.userName!,
                   shouldFollow: false)
               .then((value) async {
             if (value == true) {
-              // await getSearchedUser(load: false);
+              await getSearchedUser(load: false);
             }
             isLoadingFollowingAction = false;
             if (mounted) setState(() {});
@@ -329,11 +463,10 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
         isLoadingFollowingAction = true;
         if (mounted) setState(() {});
         UserAuth()
-            .followOrUnfollowUser(widget.customerProfile!.userName!,
-                shouldFollow: true)
+            .followOrUnfollowUser(searchedUser!.userName!, shouldFollow: true)
             .then((value) async {
           if (value == true) {
-            // await getSearchedUser(load: false);
+            await getSearchedUser(load: false);
           }
           isLoadingFollowingAction = false;
           if (mounted) setState(() {});
@@ -471,34 +604,4 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
 
     return list;
   }
-
-  // checkAccountType() {
-  //   if (widget.customerProfile!.type == 'User') {
-  //     return ClipRRect(
-  //       borderRadius: BorderRadius.only(
-  //         topLeft: Radius.circular(10),
-  //         topRight: Radius.circular(10),
-  //       ),
-  //       child: CachedNetworkImage(
-  //           height: getWallPaperCoverHeight(widget.tileRenderPlace, context),
-  //           width: double.infinity,
-  //           fit: BoxFit.cover,
-  //           errorWidget: imageErrorWidget,
-  //           imageUrl: widget.customerProfile?.wallpaper ?? ""),
-  //     );
-  //   } else {
-  //     return ClipRRect(
-  //       borderRadius: BorderRadius.only(
-  //         topLeft: Radius.circular(10),
-  //         topRight: Radius.circular(10),
-  //       ),
-  //       child: CachedNetworkImage(
-  //           height: getWallPaperCoverHeight(widget.tileRenderPlace, context),
-  //           width: double.infinity,
-  //           fit: BoxFit.cover,
-  //           errorWidget: imageErrorWidget,
-  //           imageUrl: widget.customerProfile?.userAbout!.wallpaper ?? ''),
-  //     );
-  //   }
-  // }
 }
