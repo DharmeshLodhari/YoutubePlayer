@@ -50,37 +50,9 @@ class _YarnCategorySelectionState extends State<YarnCategorySelection> {
             width: 16,
           ),
           CategoryChip(
-            onTap: () {
-              // YarnCategories createAskCategories(Map<String, dynamic> item) {
-              //   YarnCategories categories = YarnCategories();
-              //   categories.id = item['id'];
-              //   categories.name = item['name'];
-              //   categories.color = item['color'];
-              //   categories.image = item['image'];
-              //
-              //   return categories;
-              // }
-              //
-              // var allCategory = {
-              //   "id": "1a98ecf3-4c56-4b31-9686-111hf7gdg",
-              //   "name": "All",
-              //   "color": "#FF0000",
-              //   "image": null
-              // };
-              // YarnCategories categories = createAskCategories(allCategory);
-              //
-              // NavigationUtil.push(
-              //   context,
-              //   screen: YarnCategoryScreen(
-              //     askCategories: categories,
-              //   ),
-              // );
-              // YarnListScreen yarnList = YarnListScreen();
-              // YarnListScreenState yarnList = YarnListScreenState();
-              // yarnList.onRefresh;
-            },
+            onTap: () {},
             title: 'All',
-            categoryColor: greySecondaryYarn,
+            categoryColor: darkGreyYarn,
             selectedCategoryTextColor: HexColor("#000000"),
             borderColor: greySecondaryYarn,
           ),

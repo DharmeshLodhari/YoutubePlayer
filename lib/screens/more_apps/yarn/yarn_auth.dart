@@ -653,7 +653,7 @@ class YarnAuth extends AuthService {
   }
 
   // ADD REYARN TO YARN
-  Future<Yarn?> addReYarn(Map<String, dynamic> body, Yarn reYarn) async {
+  Future<Yarn?> addReYarn(Yarn reYarn) async {
     debugPrint("CALLING REYARN");
 
     String url = "";

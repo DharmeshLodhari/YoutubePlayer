@@ -219,7 +219,7 @@ class _YarnActionsState extends State<YarnActions> {
                           shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                           yarnTopic: widget.yarn,
                           callback: (params) async {
-                            reYarn(params);
+                            createReYarn(params);
                             showToast(
                                 message: "Share in Yarn successfully created");
                           }));
@@ -418,20 +418,10 @@ class _YarnActionsState extends State<YarnActions> {
     return false;
   }
 
-  Future reYarn(Yarn yarn) async {
-    Map<String, dynamic> yarnMap = yarn.toAddMap();
-    // yarnMap['reyarn'] = widget.yarn.id;
+  Future createReYarn(Yarn yarn) async {
     yarn.reYarn = widget.yarn;
 
-
-    // print('object  yarn here');
-    // Map<String, dynamic> body = {"reyarn": widget.yarn.id};
-    debugPrint("BODY DATA REYARN::::- $yarnMap");
-
-    // logger.d('this is the yarn map data $yarnMap');
-
-    // Yarn? data = await YarnAuth().addReYarnNew(yarn, yarnMap);
-    Yarn? data = await YarnAuth().addReYarn(yarnMap, yarn);
+    Yarn? data = await YarnAuth().addReYarn(yarn);
     setState(() {
       widget.yarn.userReyarned = !widget.yarn.userReyarned;
     });
