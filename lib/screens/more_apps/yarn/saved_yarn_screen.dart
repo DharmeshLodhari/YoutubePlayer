@@ -1,6 +1,4 @@
-import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -134,7 +132,16 @@ class SavedYarnState extends State<SavedYarn> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: _buildListView(),
+      body: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: yarnBlack,
+        ),
+        controller: refreshController,
+        onRefresh: onRefresh,
+        child: _buildListView(),
+      ),
     );
   }
 
@@ -206,8 +213,6 @@ class SavedYarnState extends State<SavedYarn> {
           if (index == yarnTopicList.length) {
             return _buildLoadingIndicator();
           }
-
-          // debugPrint('yarn detail profile::: ${yarnTopicList[index]}');
 
           return InkWell(
             onTap: () async {

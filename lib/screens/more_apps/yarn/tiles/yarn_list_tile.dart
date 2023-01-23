@@ -120,10 +120,10 @@ class _YarnTileState extends State<YarnTile> {
 
   bool shouldShowYarnText() {
     if (widget.yarn.isSensitiveContent == true &&
-        _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
+        _yarnSettings.yarnSettings.allowSensitiveContent == false) {
       return _showText();
     } else if (widget.yarn.isAdultContent == true &&
-        _yarnSettings.yarnSettings?.allowAdultContent == false) {
+        _yarnSettings.yarnSettings.allowAdultContent == false) {
       return _showText();
     }
     return true;
