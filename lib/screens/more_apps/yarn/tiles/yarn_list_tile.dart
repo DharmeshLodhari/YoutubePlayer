@@ -134,11 +134,9 @@ class _YarnTileState extends State<YarnTile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildUserInfoRow(),
-
         SizedBox(
           height: 4,
         ),
-
         if (shouldShowYarnText() == true) ...[
           if (widget.yarn.body.toString().isNotEmpty) ...[
             SizedBox(
@@ -153,6 +151,15 @@ class _YarnTileState extends State<YarnTile> {
           SizedBox(
             height: 8,
           ),
+        if (isMediaPresent) ...[
+          SizedBox(
+            height: 10,
+          ),
+          getDisplayWidget(_buildImagesRow),
+          SizedBox(
+            height: 8,
+          ),
+        ],
         if (isAttachmentPresent &&
             widget.yarn.attachment != null &&
             widget.yarn.attachment?.isEmpty == false) ...[
@@ -160,27 +167,6 @@ class _YarnTileState extends State<YarnTile> {
             height: 10,
           ),
           getDisplayWidget(_buildAttachment),
-          SizedBox(
-            height: 8,
-          ),
-        ],
-        // if (isReYarnPresent && widget.yarn.reYarn != null) ...[
-        //   getDisplayWidget(_buildReYarnTile),
-        //   SizedBox(
-        //     height: 8,
-        //   ),
-        // ],
-        // if (isAttachmentPresent && widget.yarn.attachment != null) ...[
-        //   getDisplayWidget(_buildAttachment),
-        //   SizedBox(
-        //     height: 8,
-        //   ),
-        // ],
-        if (isMediaPresent) ...[
-          SizedBox(
-            height: 10,
-          ),
-          getDisplayWidget(_buildImagesRow),
           SizedBox(
             height: 8,
           ),
@@ -197,7 +183,6 @@ class _YarnTileState extends State<YarnTile> {
             height: 8,
           ),
         ],
-
         widget.yarn.factChecked == true
             ? _buildFactCheckWidget()
             : SizedBox.shrink(),

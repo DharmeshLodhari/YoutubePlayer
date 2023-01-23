@@ -233,101 +233,97 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         ),
         border: Border.all(color: blackFont.withOpacity(0.1), width: 2),
       ),
-      child: Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(left: 16, right: 8, top: 3.6),
-                  child: RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                          text: 'Replying to ',
-                          style: TextStyle(
-                              fontFamily: "Roboto",
-                              color: blackFont,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14)),
-                      TextSpan(
-                          text: '@${widget.yarn!.author}',
-                          style: TextStyle(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 16, right: 8, top: 3.6),
+                child: RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: 'Replying to ',
+                        style: TextStyle(
+                            fontFamily: "Roboto",
                             color: blackFont,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                          ))
-                    ]),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14)),
+                    TextSpan(
+                        text: '@${widget.yarn!.author}',
+                        style: TextStyle(
+                          color: blackFont,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ))
+                  ]),
+                ),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Divider(
+                color: greySecondaryYarn,
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 16, right: 8),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      InkWell(
+                          onTap: () {
+                            if (selectedImages.length == 4) {
+                              showToast(
+                                  message:
+                                      "You can select only 4 images or videos");
+                            } else {
+                              pickFileFromMedia();
+                              // pickImage();
+                            }
+                          },
+                          child: SvgPicture.asset("yarn/images".toSVG())),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      _buildRatingCategory(),
+                      SizedBox(width: 8),
+                      _buildEnableComment(),
+                      SizedBox(width: 8),
+                      _buildEnablePayme(),
+                      SizedBox(width: 8),
+                      _buildEnableViewerAdvice(),
+                      SizedBox(width: 8),
+                      _buildEnableAdultsOnly(),
+                    ],
                   ),
                 ),
-                SizedBox(
-                  height: 5,
-                ),
+              ),
+              SizedBox(
+                height: 3.4,
+              ),
+              if (selectedImages.isNotEmpty) ...[
                 Divider(
                   color: greySecondaryYarn,
                 ),
-                Container(
-                  padding: EdgeInsets.only(left: 16, right: 8),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        InkWell(
-                            onTap: () {
-                              if (selectedImages.length == 4) {
-                                showToast(
-                                    message:
-                                        "You can select only 4 images or videos");
-                              } else {
-                                pickFileFromMedia();
-                                // pickImage();
-                              }
-                            },
-                            child: SvgPicture.asset("yarn/images".toSVG())),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        _buildRatingCategory(),
-                        SizedBox(width: 8),
-                        _buildEnableComment(),
-                        SizedBox(width: 8),
-                        _buildEnablePayme(),
-                        SizedBox(width: 8),
-                        _buildEnableViewerAdvice(),
-                        SizedBox(width: 8),
-                        _buildEnableAdultsOnly(),
-                      ],
-                    ),
-                  ),
-                ),
+                _buildAddImages(),
                 SizedBox(
-                  height: 3.4,
+                  height: 5,
                 ),
-                if (selectedImages.isNotEmpty) ...[
-                  Divider(
-                    color: greySecondaryYarn,
-                  ),
-                  _buildAddImages(),
-                  SizedBox(
-                    height: 5,
-                  ),
-                ],
-                // Visibility(
-                //   visible: !isKeyboardVisible,
-                //   child: getPreviewContainer(),
-                // ),
-                getPreviewContainer(),
               ],
-            ),
-            Divider(
-              color: greySecondaryYarn,
-            ),
-            getCommentBox()
-          ],
-        ),
+              if (yarnDashboardBloc!.productService != null) ...[
+                checkIfProductService(),
+              ],
+            ],
+          ),
+          Divider(
+            color: greySecondaryYarn,
+          ),
+          getCommentBox()
+        ],
       ),
     );
   }
@@ -1088,8 +1084,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
               } else {
                 return GestureDetector(
                     onTap: () {
-                      // addProductOrServiceToChat(
-                      //     searchedProductAndService[index]);
                       productServicePreview = searchedProductAndService[index];
 
                       if (productServicePreview.runtimeType.toString() ==
@@ -1105,8 +1099,11 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                         serviceMode = searchedProductAndService[index];
                       }
 
+                      isShowExtension = true;
                       if (mounted) setState(() {});
                       Navigator.pop(context);
+
+                      FocusScope.of(context).requestFocus();
                     },
                     child: getResultTile(searchedProductAndService[index]));
               }
@@ -1527,6 +1524,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       keyboardType: TextInputType.multiline,
       maxLines: 10,
       minLines: 1,
+      autofocus: true,
       readOnly: widget.readOnly,
       onTap: widget.onTap ??
           () {
@@ -1539,6 +1537,42 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           hintText: widget.hint ?? '',
           hintStyle: TextStyle(fontSize: 14, color: HexColor("#808080")),
           suffixIcon: widget.suffixIcon ?? const SizedBox.shrink()),
+    );
+  }
+
+  Widget checkIfProductService() {
+    return Container(
+      child: Column(
+        children: [
+          Stack(
+            children: <Widget>[
+              getPreviewContainer(),
+              Positioned(
+                right: 20,
+                top: 10,
+                child: InkWell(
+                  onTap: () {
+                    yarnDashboardBloc!.productService = null;
+                    if (mounted) setState(() {});
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    margin: EdgeInsets.only(right: 6, top: 6),
+                    decoration: BoxDecoration(
+                        color: HexColor("#000000"), shape: BoxShape.circle),
+                    child: Icon(
+                      Icons.close_outlined,
+                      color: white,
+                      size: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
