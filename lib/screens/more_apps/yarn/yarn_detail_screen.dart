@@ -93,6 +93,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     userBloc = Provider.of<UserBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
+    // FocusScope.of(context).requestFocus();
+    // FocusScope.of(context).unfocus();
+
     return ColorfulSafeArea(
       color: Colors.white,
       child: Scaffold(
@@ -203,13 +206,6 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
           if (isLoading) YarnShimmer(),
           if (!isLoading) _buildMain(),
         ]))),
-        // ListView(
-        //   controller: scrollController,
-        //   children: [
-        //     if (isLoading) YarnShimmer(),
-        //     if (!isLoading) _buildMain(),
-        //   ],
-        // ),
       ),
     );
   }

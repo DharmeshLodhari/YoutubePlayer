@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
@@ -21,10 +20,10 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -215,11 +214,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
-    return ClipRect(
-        clipper: CustomShape(),
-        child: !widget.isScrolling && isShowExtension
-            ? getCommentBoxWithOptions()
-            : getCommentBox());
+    return ClipRect(clipper: CustomShape(), child: getCommentBoxWithOptions());
   }
 
   Widget getCommentBoxWithOptions() {
@@ -275,13 +270,25 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                   child: Row(
                     children: [
                       InkWell(
-                          onTap: () {
+                          onTap: () async {
                             if (selectedImages.length == 4) {
                               showToast(
                                   message:
                                       "You can select only 4 images or videos");
                             } else {
-                              pickFileFromMedia();
+                              final permission = Permission.storage;
+                              final status = await permission.status;
+
+                              if (status != PermissionStatus.granted) {
+                                await permission.request();
+                                if (await permission.status.isGranted) {
+                                  pickFileFromMedia();
+                                } else {
+                                  await permission.request();
+                                }
+                                debugPrint('>>> ${await permission.status}');
+                              }
+
                               // pickImage();
                             }
                           },
@@ -349,7 +356,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       return Container(
         margin:
             EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-        // padding: EdgeInsets.all(40.0),
         child: YarnProductTile(
           product: productMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
@@ -1189,12 +1195,27 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                 ),
               ],
             ),
-            onTap: () {
+            onTap: () async {
               if (selectedImages.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
                 // pickImage();
-                pickFileFromMedia();
+                // final result = await Permission.storage.request();
+                // if (result == PermissionStatus.granted) {
+                //   pickFileFromMedia();
+                // }
+                final permission = Permission.storage;
+                final status = await permission.status;
+
+                if (status != PermissionStatus.granted) {
+                  await permission.request();
+                  if (await permission.status.isGranted) {
+                    pickFileFromMedia();
+                  } else {
+                    await permission.request();
+                  }
+                  debugPrint('>>> ${await permission.status}');
+                }
               }
             },
           ),
@@ -1524,7 +1545,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       keyboardType: TextInputType.multiline,
       maxLines: 10,
       minLines: 1,
-      autofocus: true,
+      // autofocus: true,
       readOnly: widget.readOnly,
       onTap: widget.onTap ??
           () {
