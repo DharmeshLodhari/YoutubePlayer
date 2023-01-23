@@ -1,14 +1,32 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/main.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
@@ -113,6 +131,45 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   bool isShowExtension = false;
   bool onFocus = true;
 
+  ///variable for message actions
+  bool showMoreAction = false;
+
+  /// variables for GIF Message
+  List<GIFModel> _gifs = [];
+  bool _isMessageIsGIFOrSticker = false;
+  bool _isMessageIsSticker = false;
+  bool _isGIFLoading = false;
+  TextEditingController _gifController = TextEditingController();
+
+  /// variables for product or service search
+  bool isProductSearch = true;
+  bool isServiceSearch = false;
+  bool isCurrentUsersProductOrService = false;
+  List searchedProductAndService = [];
+  StateSetter? bottomSheetStateSetterGlobal;
+  bool bottomSheetMounted = false;
+
+  bool isItemLoading = false;
+  int? productOrServiceCount = 0;
+  String? productOrServiceNext = "";
+  String? productOrServicePrevious = "";
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  ScrollController _scrollController = new ScrollController();
+
+  TextEditingController? searchItemTextController;
+  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+  GlobalKey searchItemTextFormField = GlobalKey();
+  int bottomSheetSearchIndex = 0;
+  bool noSearchedItem = false;
+  var productServicePreview;
+  Product? productMode;
+  Service? serviceMode;
+  YarnDashboardBloc? yarnDashboardBloc;
+
   FocusNode _focus = FocusNode();
 
   void _onFocusChange() {
@@ -139,11 +196,25 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     shareAsYarnModelCopy = widget.shareAsYarnModel;
     _shareAsYarnModel = widget.shareAsYarnModel?.first;
     _focus.addListener(_onFocusChange);
+
+    searchItemTextController = TextEditingController();
+    _gifController.addListener(searchGiFListener);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getProductOrServiceList();
+      }
+    });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
     return ClipRect(
         clipper: CustomShape(),
         child: !widget.isScrolling && isShowExtension
@@ -153,8 +224,8 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
 
   Widget getCommentBoxWithOptions() {
     return Container(
-      padding: EdgeInsets.only(top: 8),
-      margin: EdgeInsets.only(bottom: 10),
+      // padding: EdgeInsets.only(top: 5),
+      // margin: EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -162,186 +233,917 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         ),
         border: Border.all(color: blackFont.withOpacity(0.1), width: 2),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: EdgeInsets.only(left: 16, right: 8, top: 3.6),
-                child: RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: 'Replying to ',
-                        style: TextStyle(
-                            fontFamily: "Roboto",
+      child: Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 16, right: 8, top: 3.6),
+                  child: RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: 'Replying to ',
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              color: blackFont,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14)),
+                      TextSpan(
+                          text: '@${widget.yarn!.author}',
+                          style: TextStyle(
                             color: blackFont,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14)),
-                    TextSpan(
-                        text: '@${widget.yarn!.author}',
-                        style: TextStyle(
-                          color: blackFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ))
-                  ]),
-                ),
-              ),
-              SizedBox(
-                height: 6,
-              ),
-              Divider(
-                color: greySecondaryYarn,
-              ),
-              Container(
-                padding: EdgeInsets.only(left: 16, right: 8),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      InkWell(
-                          onTap: () {
-                            if (selectedImages.length == 4) {
-                              showToast(
-                                  message:
-                                      "You can select only 4 images or videos");
-                            } else {
-                              pickFileFromMedia();
-                              // pickImage();
-                            }
-                          },
-                          child: SvgPicture.asset("yarn/images".toSVG())),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      _buildRatingCategory(),
-                      SizedBox(width: 8),
-                      _buildEnableComment(),
-                      SizedBox(width: 8),
-                      _buildEnablePayme(),
-                      SizedBox(width: 8),
-                      _buildEnableViewerAdvice(),
-                      SizedBox(width: 8),
-                      _buildEnableAdultsOnly(),
-                    ],
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ))
+                    ]),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 3.4,
-              ),
-              if (selectedImages.isNotEmpty) ...[
+                SizedBox(
+                  height: 5,
+                ),
                 Divider(
                   color: greySecondaryYarn,
                 ),
-                _buildAddImages(),
-                SizedBox(
-                  height: 10,
+                Container(
+                  padding: EdgeInsets.only(left: 16, right: 8),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        InkWell(
+                            onTap: () {
+                              if (selectedImages.length == 4) {
+                                showToast(
+                                    message:
+                                        "You can select only 4 images or videos");
+                              } else {
+                                pickFileFromMedia();
+                                // pickImage();
+                              }
+                            },
+                            child: SvgPicture.asset("yarn/images".toSVG())),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        _buildRatingCategory(),
+                        SizedBox(width: 8),
+                        _buildEnableComment(),
+                        SizedBox(width: 8),
+                        _buildEnablePayme(),
+                        SizedBox(width: 8),
+                        _buildEnableViewerAdvice(),
+                        SizedBox(width: 8),
+                        _buildEnableAdultsOnly(),
+                      ],
+                    ),
+                  ),
                 ),
+                SizedBox(
+                  height: 3.4,
+                ),
+                if (selectedImages.isNotEmpty) ...[
+                  Divider(
+                    color: greySecondaryYarn,
+                  ),
+                  _buildAddImages(),
+                  SizedBox(
+                    height: 5,
+                  ),
+                ],
+                // Visibility(
+                //   visible: !isKeyboardVisible,
+                //   child: getPreviewContainer(),
+                // ),
+                getPreviewContainer(),
               ],
-            ],
-          ),
-          Divider(
-            color: greySecondaryYarn,
-          ),
-          getCommentBox()
-        ],
+            ),
+            Divider(
+              color: greySecondaryYarn,
+            ),
+            getCommentBox()
+          ],
+        ),
       ),
     );
   }
 
   Widget getCommentBox() {
-    return Container(
-      padding: EdgeInsets.only(left: 16, right: 8),
+    return messageActionBar();
+  }
+
+  Widget getPreviewContainer() {
+    //display services
+    if (productServicePreview.runtimeType.toString() == 'Service') {
+      return Container(
+        margin:
+            EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+        child: YarnServiceTile(
+          service: serviceMode,
+          tileRenderPlace: TileRenderPlace.YarnProductService,
+        ),
+      );
+    }
+    //display product
+    else if (productServicePreview.runtimeType.toString() == 'Product') {
+      return Container(
+        margin:
+            EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+        // padding: EdgeInsets.all(40.0),
+        child: YarnProductTile(
+          product: productMode,
+          tileRenderPlace: TileRenderPlace.YarnProductService,
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  Widget messageActionBar() {
+    return Card(
+      elevation: 10,
+      margin: EdgeInsets.zero,
+      shadowColor: boxShadowTwo,
+      child: getSearchBarLayout(),
+    );
+  }
+
+  Widget getSearchBarLayout() {
+    return Column(
+      children: getSearchBarItems(),
+    );
+  }
+
+  List<Widget> getSearchBarItems() {
+    List<Widget> items = [];
+
+    if (_isMessageIsGIFOrSticker) {
+      items.add(Container(
+        constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
+        child: Row(
+          children: <Widget>[
+            getSearchGIFCancelBtn(),
+            Expanded(
+              child: searchGIFTextField(),
+            ),
+            searchGIFBtn(),
+          ],
+        ),
+      ));
+      items.add(gifPreviewList());
+      return items;
+    }
+
+    items.add(Container(
+      constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: 25,
-            width: 25,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: navyBlue,
-            ),
-            child: Icon(
-              Icons.add_outlined,
-              color: white,
-              size: 15,
-            ),
-          ),
-          SizedBox(
-            width: 12,
-          ),
-          Container(
-            height: 36,
-            width: 36,
-            decoration: BoxDecoration(shape: BoxShape.circle),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: widget.userImage!,
-                fit: BoxFit.cover,
-                errorWidget: imageErrorWidget,
-              ),
-            ),
-          ),
+        children: <Widget>[
+          moreActionBtn(),
           Expanded(
-            child: TextFormField(
-              textAlignVertical: TextAlignVertical.center,
-              onEditingComplete: widget.function,
-              controller: widget.controller,
-              onChanged: widget.onChanged,
-              focusNode: _focus,
-              style: TextStyle(
-                fontSize: 16,
-                color: blackFont,
-                fontWeight: FontWeight.w400,
-              ),
-              validator: widget.validator,
-              keyboardType: TextInputType.multiline,
-              maxLines: 10,
-              minLines: 1,
-              readOnly: widget.readOnly,
-              onTap: widget.onTap ??
-                  () {
-                    if (widget.resetScrollingValue != null)
-                      widget.resetScrollingValue!(false);
-                  },
-              decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  border: InputBorder.none,
-                  hintText: widget.hint ?? '',
-                  hintStyle:
-                      TextStyle(fontSize: 14, color: HexColor("#808080")),
-                  suffixIcon: widget.suffixIcon ?? const SizedBox.shrink()),
-            ),
+            child: textMessageField(),
           ),
-          widget.isLoading!
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Center(
-                    child: SizedBox(
-                      width: 15,
-                      height: 15,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
-                        strokeWidth: 2.0,
-                      ),
-                    ),
-                  ),
-                )
-              : IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: widget.onPressed,
-                  icon: Icon(
-                    Icons.send,
-                    color: darkGreyYarn,
-                  ),
-                ),
+          sendMessageBtn(),
         ],
       ),
+    ));
+
+    if (showMoreAction) {
+      items.add(moreActionsBtn());
+    }
+
+    return items;
+  }
+
+  Widget getSearchGIFCancelBtn() {
+    return IconButton(
+        icon: Icon(
+          SlydoAppIcon.close_2,
+          color: navyBlue,
+          size: 20,
+        ),
+        onPressed: () async {
+          _gifController.clear();
+          _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+          _isMessageIsSticker = false;
+          if (mounted) setState(() {});
+        });
+  }
+
+  Widget searchGIFTextField() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(3),
+      child: Container(
+        color: chatBackgroundColor,
+        child: Theme(
+            data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
+            child: Scrollbar(
+              radius: Radius.circular(12),
+              thickness: 2.5,
+              child: TextFormField(
+                controller: _gifController,
+                textInputAction: TextInputAction.search,
+                keyboardType: TextInputType.multiline,
+                onFieldSubmitted: (value) {
+                  getGIFs();
+                },
+                cursorColor: blackFont,
+                cursorWidth: 1,
+                cursorHeight: 20,
+                maxLines: null,
+                cursorRadius: Radius.circular(16),
+                decoration: InputDecoration(
+                  hintText: "Search ${_isMessageIsSticker ? "Sticker" : "GIF"}",
+                  hintStyle: TextStyle(
+                    color: darkGrey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  prefix: Padding(
+                    padding: EdgeInsets.only(left: 16),
+                  ),
+                  suffix: Padding(
+                    padding: EdgeInsets.only(right: 36),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  isDense: true,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(3),
+                    borderSide: BorderSide(
+                      color: chatBackgroundColor,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+
+  Widget searchGIFBtn() {
+    return InkWell(
+      onTap: getGIFs,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 10,
+            ),
+            Icon(
+              SlydoAppIcon.search,
+              color: navyBlue,
+              size: 22,
+            ),
+            SizedBox(
+              width: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget gifPreviewList() {
+    return Container(
+      height: MediaQuery.of(context).size.height / 3,
+      child: _isGIFLoading
+          ? Center(child: CircularLoadingIndicator())
+          : GridView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+              ),
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    // sendGIFToSocket(
+                    //     urlOfGIF: _gifs[index].images!.original!.url);
+                    _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+                    _isMessageIsSticker = false;
+                    _gifController.clear();
+                    if (mounted) setState(() {});
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: CachedNetworkImage(
+                      width: MediaQuery.of(context).size.width / 2,
+                      imageUrl: _gifs[index].images!.previewGif!.url!,
+                      fit: BoxFit.fill,
+                      errorWidget: imageErrorWidget,
+                      placeholder: (context, url) => Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Center(child: CircularLoadingIndicator())),
+                    ),
+                  ),
+                );
+              },
+              itemCount: _gifs.length,
+            ),
+    );
+  }
+
+  Widget moreActionBtn() {
+    return IconButton(
+        icon: Icon(
+          showMoreAction ? SlydoAppIcon.close_2 : SlydoAppIcon.add,
+          color: navyBlue,
+          size: showMoreAction ? 22 : 20,
+        ),
+        onPressed: () async {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+            Future.delayed(Duration(milliseconds: 100)).then((value) {
+              showMoreAction = !showMoreAction;
+              if (mounted) setState(() {});
+            });
+          } else {
+            showMoreAction = !showMoreAction;
+            if (mounted) setState(() {});
+          }
+        });
+  }
+
+  Widget moreActionsBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      child: Wrap(
+        spacing: 45,
+        runSpacing: 20,
+        children: [
+          assignTitleToAction(
+              text: "Product/ Service", child: searchProductAndServiceBtn()),
+          assignTitleToAction(text: "GIF", child: sendGIFButton()),
+          assignTitleToAction(text: "", child: Container()),
+          assignTitleToAction(text: "", child: Container()),
+        ],
+      ),
+    );
+  }
+
+  Widget assignTitleToAction({required String text, required Widget child}) {
+    return Container(
+      constraints: BoxConstraints(maxWidth: 60),
+      child: Column(
+        children: [
+          child,
+          SizedBox(height: 10),
+          Center(
+            child: Text(text,
+                style: TextStyle(
+                  color: blackFont,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget sendGIFButton() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        Icons.gif_rounded,
+        color: blackFont,
+        size: 38,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+        _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+        getGIFs(isRandom: true);
+        if (mounted) setState(() {});
+        // pickGIF();
+      },
+    );
+  }
+
+  void getGIFs({bool isRandom = false}) async {
+    _isGIFLoading = true;
+    if (mounted) setState(() {});
+
+    List<GIFModel> results;
+    if (isRandom) {
+      results = await MessageAuth()
+          .searchGIF(isRandom: true, isSticker: _isMessageIsSticker)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+    } else {
+      results = await MessageAuth()
+          .searchGIF(
+              query: _gifController.text.trim(), isSticker: _isMessageIsSticker)
+          .catchError((error) {
+        debugPrint("ERROR:- $error");
+      });
+    }
+
+    _isGIFLoading = false;
+    if (mounted) setState(() {});
+
+    if (results.isNotEmpty) {
+      _gifs.clear();
+      _gifs = results;
+      if (mounted) setState(() {});
+    }
+  }
+
+  Widget searchProductAndServiceBtn() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: blackFont,
+        size: 18,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+        if (mounted) setState(() {});
+        showSearchProductAndServiceBottomSheet();
+      },
+    );
+  }
+
+  void showSearchProductAndServiceBottomSheet() async {
+    var result = await showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        useRootNavigator: true,
+        barrierColor: Colors.black54,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (context, StateSetter bottomSheetStateSetter) {
+            bottomSheetStateSetterGlobal = bottomSheetStateSetter;
+            bottomSheetMounted = true;
+
+            return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                ),
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.88,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: searchBox()),
+                      SizedBox(height: 8),
+                      Expanded(child: bottomSheetTabBar())
+                    ],
+                  ),
+                ));
+          });
+        });
+    bottomSheetMounted = false;
+    if (result == null) {
+      if (itemSearchTypeSelectionMenu!.isMenuOpen) {
+        itemSearchTypeSelectionMenu!.closeMenu();
+      }
+    }
+  }
+
+  Widget searchBox() {
+    return Container(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionTheme:
+              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+        ),
+        child: TextFormField(
+          key: searchItemTextFormField,
+          controller: searchItemTextController,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            hintText: "Search here",
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefixIcon: searchTypeSelection(),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            suffixIcon: searchIcon(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          onFieldSubmitted: (val) {
+            if (mounted) {
+              FocusScope.of(context).unfocus();
+              searchProductOrService();
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget searchTypeSelection() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+        color: navyBlue,
+      ),
+      child: IconButton(
+        key: _key,
+        icon: Icon(
+          getSearchTypeIcon(),
+          color: Colors.white,
+          size: 16,
+        ),
+        onPressed: () {
+          if (itemSearchTypeSelectionMenu!.isMenuOpen) {
+            itemSearchTypeSelectionMenu!.closeMenu();
+          } else {
+            itemSearchTypeSelectionMenu!.openMenu();
+          }
+        },
+      ),
+    );
+  }
+
+  IconData getSearchTypeIcon() {
+    if (selectedMenuItemIndex == 1) {
+      return SlydoAppIcon.note_2;
+    } else if (selectedMenuItemIndex == 0) {
+      return SlydoAppIcon.product;
+    }
+    return SlydoAppIcon.product;
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        searchProductOrService();
+      },
+    );
+  }
+
+  void searchProductOrService() {
+    clearSearchedListItems();
+    getProductOrServiceList();
+  }
+
+  void clearSearchedListItems() {
+    searchedProductAndService.clear();
+    productOrServiceCount = 0;
+    productOrServiceNext = "";
+    productOrServicePrevious = "";
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+      bottomSheetStateSetterGlobal!(() {});
+    if (mounted) setState(() {});
+  }
+
+  void getProductOrServiceList() async {
+    String url = getSearchUrl();
+
+    if (!isItemLoading) {
+      if (productOrServiceNext != null && !isItemLoading) {
+        isItemLoading = true;
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await MessageAuth()
+            .searchProductAndServiceOfUser(
+                url, productOrServiceNext, productOrServicePrevious);
+        if (result == null) {
+          isItemLoading = false;
+          return;
+        }
+        productOrServiceCount = result['count'];
+        productOrServiceNext = result['next'];
+        productOrServicePrevious = result['previous'];
+        List tempList = result['results'];
+
+        isItemLoading = false;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        tempList.forEach((item) {
+          if (isProductSearch) {
+            searchedProductAndService.add(Product.fromJson(item));
+          } else if (isServiceSearch) {
+            searchedProductAndService.add(Service.fromJson(item));
+          }
+        });
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+      }
+      if (searchedProductAndService.isEmpty) {
+        noSearchedItem = true;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+      }
+    }
+  }
+
+  String getSearchUrl() {
+    if (isProductSearch) {
+      return AppConfig.baseUrl +
+          "/api/v1/search/products/?search=name__wildcard|*" +
+          searchItemTextController!.text +
+          "*";
+    }
+    if (isServiceSearch) {
+      return AppConfig.baseUrl +
+          "/api/v1/search/services/?search=name__wildcard|*" +
+          searchItemTextController!.text +
+          "*";
+    }
+    return "";
+  }
+
+  void searchGiFListener() {
+    if (_gifController.text != "") {
+      getGIFs();
+    }
+  }
+
+  Widget bottomSheetTabBar() {
+    return Column(
+      children: [
+        // Container(
+        //     padding: EdgeInsets.symmetric(horizontal: 20),
+        //     child: bottomSheetTabBars()),
+        SizedBox(
+          height: 8,
+        ),
+        Expanded(child: bottomSheetTabViews())
+      ],
+    );
+  }
+
+  Widget bottomSheetTabBars() {
+    return PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 0;
+                clearSearchedListItems();
+                bottomSheetStateSetterGlobal!(() {});
+                setState(() {});
+                searchProductOrService();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 0
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From partner",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 0
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 1;
+                clearSearchedListItems();
+                bottomSheetStateSetterGlobal!(() {});
+                setState(() {});
+                searchProductOrService();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 1
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From Mine",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 1
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget bottomSheetTabViews() {
+    return pullToRefresh();
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        productOrServiceCount = 0;
+        productOrServiceNext = "";
+        productOrServicePrevious = "";
+        searchedProductAndService = [];
+        noSearchedItem = false;
+        getProductOrServiceList();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  Widget pullToRefresh() {
+    return searchItemTextController!.text.isEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+            isResult: false,
+          )
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: buildProductOrServiceList(),
+          );
+  }
+
+  Widget buildProductOrServiceList() {
+    return noSearchedItem
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+            isResult: true,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: searchedProductAndService.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == searchedProductAndService.length) {
+                return _buildIndicatorForProductAndService();
+              } else {
+                return GestureDetector(
+                    onTap: () {
+                      // addProductOrServiceToChat(
+                      //     searchedProductAndService[index]);
+                      productServicePreview = searchedProductAndService[index];
+
+                      if (productServicePreview.runtimeType.toString() ==
+                          'Product') {
+                        Product product = searchedProductAndService[index];
+                        var attachment = {'product': product.toJson()};
+                        yarnDashboardBloc!.productService = attachment;
+                        productMode = searchedProductAndService[index];
+                      } else {
+                        Service service = searchedProductAndService[index];
+                        var attachment = {'service': service.toJson()};
+                        yarnDashboardBloc!.productService = attachment;
+                        serviceMode = searchedProductAndService[index];
+                      }
+
+                      if (mounted) setState(() {});
+                      Navigator.pop(context);
+                    },
+                    child: getResultTile(searchedProductAndService[index]));
+              }
+            },
+            controller: _scrollController,
+          );
+  }
+
+  Widget getResultTile(var result) {
+    if (isProductSearch) {
+      if (result is Product) {
+        return SearchProductTile(
+          product: result,
+        );
+      }
+      return Container();
+    }
+    if (isServiceSearch) {
+      if (result is Service) {
+        return SearchServiceTile(
+          service: result,
+        );
+      }
+      return Container();
+    }
+    return Container();
+  }
+
+  Widget _buildIndicatorForProductAndService() {
+    return Center(
+      child: isItemLoading
+          ? CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            )
+          : Container(),
     );
   }
 
@@ -680,6 +1482,63 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       highLightBGColor: HexColor("#D9E1FA"),
       highLightBorderColor: HexColor("#BBCBFF"),
       highLightTextColor: HexColor("#3F61DB"),
+    );
+  }
+
+  sendMessageBtn() {
+    return widget.isLoading!
+        ? Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: Center(
+              child: SizedBox(
+                width: 15,
+                height: 15,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(navyBlue),
+                  strokeWidth: 2.0,
+                ),
+              ),
+            ),
+          )
+        : IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: widget.onPressed,
+            icon: Icon(
+              Icons.send,
+              color: darkGreyYarn,
+            ),
+          );
+  }
+
+  textMessageField() {
+    return TextFormField(
+      textAlignVertical: TextAlignVertical.center,
+      onEditingComplete: widget.function,
+      controller: widget.controller,
+      onChanged: widget.onChanged,
+      focusNode: _focus,
+      cursorColor: blackFont,
+      style: TextStyle(
+        fontSize: 16,
+        color: blackFont,
+        fontWeight: FontWeight.w400,
+      ),
+      validator: widget.validator,
+      keyboardType: TextInputType.multiline,
+      maxLines: 10,
+      minLines: 1,
+      readOnly: widget.readOnly,
+      onTap: widget.onTap ??
+          () {
+            if (widget.resetScrollingValue != null)
+              widget.resetScrollingValue!(false);
+          },
+      decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+          border: InputBorder.none,
+          hintText: widget.hint ?? '',
+          hintStyle: TextStyle(fontSize: 14, color: HexColor("#808080")),
+          suffixIcon: widget.suffixIcon ?? const SizedBox.shrink()),
     );
   }
 }

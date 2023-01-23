@@ -1076,10 +1076,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
               isAdultContent: _isAdultContent,
               ageRestriction: _shareAsYarnModel?.id);
 
-          // print('Reyarn::: ${yarn}');
-          // print('Reyarn 1111::: ${yarn.body}');
-          // print('Reyarn 0000::: ${yarn.media[0].toJson().toString()}');
-
           widget.callback(yarn);
           Navigator.pop(context);
         },

@@ -119,7 +119,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                     isVerified: false,
                                     textStyle: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 16,
+                                      fontSize: getFontSize(
+                                          widget.tileRenderPlace, context),
                                       color: Colors.white,
                                       shadows: [
                                         Shadow(
@@ -194,7 +195,8 @@ class _YarnProductTileState extends State<YarnProductTile> {
                               maxLines: 2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w400,
-                                  fontSize: 12,
+                                  fontSize: getFontSize(
+                                      widget.tileRenderPlace, context),
                                   color: blackFont),
                               softWrap: false,
                               overflow: TextOverflow.ellipsis,
@@ -207,7 +209,7 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                     child: Column(
                                       children: [
                                         SizedBox(
-                                          height: 8,
+                                          height: 5,
                                         ),
                                         Row(
                                           children: [
@@ -218,7 +220,9 @@ class _YarnProductTileState extends State<YarnProductTile> {
                                             ),
                                             Expanded(
                                               child: CurvedButton(
-                                                height: 36,
+                                                height: getButtonSize(
+                                                    widget.tileRenderPlace,
+                                                    context),
                                                 isPaymentBtn: true,
                                                 textColor: Colors.white,
                                                 backgroundColor: navyBlue,

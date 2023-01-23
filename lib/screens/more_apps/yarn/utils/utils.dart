@@ -75,6 +75,8 @@ double getItemHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
       return MediaQuery.of(context).size.width / 1.5;
     case TileRenderPlace.YarnComment:
       return MediaQuery.of(context).size.width / 2.0;
+    case TileRenderPlace.YarnProductService:
+      return MediaQuery.of(context).size.width / 3.0;
   }
 }
 
@@ -83,6 +85,8 @@ double getSizeBoxHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
     case TileRenderPlace.YarnTimeLine:
       return 10;
     case TileRenderPlace.YarnComment:
+      return 6;
+    case TileRenderPlace.YarnProductService:
       return 6;
   }
 }
@@ -93,6 +97,8 @@ double getFontSize(TileRenderPlace tileRenderPlace, BuildContext context) {
       return 14;
     case TileRenderPlace.YarnComment:
       return 12;
+    case TileRenderPlace.YarnProductService:
+      return 10;
   }
 }
 
@@ -103,6 +109,8 @@ double getContainerHeight(
       return 140;
     case TileRenderPlace.YarnComment:
       return 120;
+    case TileRenderPlace.YarnProductService:
+      return 100;
   }
 }
 
@@ -113,6 +121,8 @@ double getWallPaperCoverHeight(
       return 130;
     case TileRenderPlace.YarnComment:
       return 110;
+    case TileRenderPlace.YarnProductService:
+      return 100;
   }
 }
 
@@ -122,5 +132,18 @@ double getAvatarTop(TileRenderPlace tileRenderPlace, BuildContext context) {
       return 100;
     case TileRenderPlace.YarnComment:
       return 80;
+    case TileRenderPlace.YarnProductService:
+      return 60;
+  }
+}
+
+double getButtonSize(TileRenderPlace tileRenderPlace, BuildContext context) {
+  switch (tileRenderPlace) {
+    case TileRenderPlace.YarnTimeLine:
+      return 36;
+    case TileRenderPlace.YarnComment:
+      return 36;
+    case TileRenderPlace.YarnProductService:
+      return 30;
   }
 }

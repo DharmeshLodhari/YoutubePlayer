@@ -2,6 +2,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_list_tile.dart';
@@ -10,6 +11,7 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_textfield.dart
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_list.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
@@ -43,8 +45,10 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   ScrollController _commentScrollController = new ScrollController();
   ScrollController scrollController = new ScrollController();
   GlobalKey<ScaffoldState> yarnCommentScreenKey = GlobalKey<ScaffoldState>();
-  bool? enableComment = true, enablePayment = true;
-  bool? viewerAdvice = false, adultOnly = false;
+  bool? enableComment = true;
+  bool? enablePayment = true;
+  bool? viewerAdvice = false;
+  bool? adultOnly = false;
   bool isMentionName = false;
   String? searchString;
   var ageRating;
@@ -53,6 +57,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   Yarn? finalYarn;
   GlobalKey<YarnCommentTextFieldState> yarnCommentTextFieldStateKey =
       GlobalKey<YarnCommentTextFieldState>();
+  Product? productValue;
+  Service? serviceValue;
+  YarnDashboardBloc? yarnDashboardBloc;
 
   @override
   void initState() {
@@ -64,6 +71,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     scrollController.addListener(() {
       setState(() => isScrolling = true);
     });
+
     super.initState();
 
     // debugPrint(
@@ -86,9 +94,12 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
     return ColorfulSafeArea(
       color: Colors.white,
       child: Scaffold(
+        // resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
         appBar: _buildAppBar(),
         body: _buildBody(),
@@ -166,7 +177,10 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     if (isSingleYarnLoading) {
       return YarnShimmer();
     }
+
     return Column(
+      // mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
       children: [
         _buildPostAndCommentView(),
         if (isMentionName) ...[
@@ -187,35 +201,43 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         ),
         controller: _postRefreshController,
         onRefresh: _onPostRefresh,
-        child: ListView(
-          controller: scrollController,
-          children: [
-            if (isLoading) YarnShimmer(),
-            if (!isLoading) _buildMain(),
-          ],
-        ),
+        child: Container(
+            child: SingleChildScrollView(
+                child: Column(children: <Widget>[
+          if (isLoading) YarnShimmer(),
+          if (!isLoading) _buildMain(),
+        ]))),
+        // ListView(
+        //   controller: scrollController,
+        //   children: [
+        //     if (isLoading) YarnShimmer(),
+        //     if (!isLoading) _buildMain(),
+        //   ],
+        // ),
       ),
     );
   }
 
   Widget _buildMain() {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: YarnTile(
-            yarn: finalYarn!,
-            onDeleteYarn: (Yarn yarn) {
-              Navigator.of(context).pop();
-            },
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: YarnTile(
+              yarn: finalYarn!,
+              onDeleteYarn: (Yarn yarn) {
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-        ),
-        YarnCommentList(
-          key: yarnCommentScreenKey,
-          yarn: finalYarn!,
-          commentScrollController: _commentScrollController,
-        ),
-      ],
+          YarnCommentList(
+            key: yarnCommentScreenKey,
+            yarn: finalYarn!,
+            commentScrollController: _commentScrollController,
+          ),
+        ],
+      ),
     );
   }
 
@@ -345,7 +367,9 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       "media_count": selectedMedia,
     };
 
-    logger.d(data);
+    if (yarnDashboardBloc!.productService != null) {
+      data['attachment'] = yarnDashboardBloc!.productService;
+    }
 
     try {
       YarnComment? commentDetails =
@@ -360,6 +384,8 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         controller.clear();
         selectedMedia.clear();
         yarnCommentTextFieldStateKey.currentState?.onAPICall();
+        //set product/service to null after comment is successful
+        yarnDashboardBloc!.productService = null;
 
         if (mounted) setState(() {});
       }
