@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 
 class YarnComment {
@@ -48,7 +50,12 @@ class YarnComment {
         media.add(YarnMedia.fromJson(v));
       });
     }
+
     if (json['attachment'] != null) {
+      if (json['attachment'] is String) {
+        json['attachment'] = jsonDecode(json['attachment']);
+      }
+
       if (json['attachment']['service'] != null) {
         attachmentType = 'service';
         attachment = json['attachment']['service'];

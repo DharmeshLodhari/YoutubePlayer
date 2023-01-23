@@ -1,7 +1,9 @@
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_comment_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_reply_list.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:connectivity/connectivity.dart';
@@ -47,6 +49,9 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   ScrollController scrollController = new ScrollController();
   List<YarnMedia> selectedMedia = [];
   bool isScrolling = false;
+  Product? productValue;
+  Service? serviceValue;
+  YarnDashboardBloc? yarnDashboardBloc;
 
   @override
   void initState() {
@@ -59,6 +64,8 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
     return ColorfulSafeArea(
       color: Colors.white,
       child: Scaffold(
@@ -227,7 +234,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
           isAPILoading = false;
           if (mounted) setState(() {});
         } else {
-          showToast(message: 'Enter a valid commment');
+          showToast(message: 'Enter a valid comment');
         }
       },
       onTapAgeRestriction: (value) {},
@@ -235,6 +242,8 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   }
 
   Future addReplyComment() async {
+    // debugPrint('RESPONSE Fola::; ${checkProductService}');
+
     Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": userBloc.user.userName,
@@ -246,7 +255,12 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       "age_restriction": ageRating ?? 13,
       "media_count": selectedMedia,
     };
-    logger.d(data);
+
+    if (yarnDashboardBloc!.productService != null) {
+      data['attachment'] = yarnDashboardBloc!.productService;
+    }
+
+    // debugPrint('Comment detail Fol::; ${data}');
 
     //create multipart request for POST or PATCH method
     try {
@@ -257,6 +271,8 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
         // replyCommentDetailsList.add(commentDetail);
         controller.clear();
         yarnCommentScreenKey = GlobalKey<ScaffoldState>();
+
+        yarnDashboardBloc!.productService = null;
 
         if (mounted) setState(() {});
       }

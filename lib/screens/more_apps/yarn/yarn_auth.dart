@@ -816,7 +816,7 @@ class YarnAuth extends AuthService {
     var headers = await getAuthHeaders();
     var request = http.MultipartRequest("POST", Uri.parse(url));
 
-    logger.d('body to see $body and d ${body['media_count'].length}');
+    // logger.d('body to see $body and d ${body['media_count'].length}');
 
     Map<String, String> payload = {
       "comment": body['comment'] ?? "",
@@ -830,7 +830,11 @@ class YarnAuth extends AuthService {
           body['media_count'] != null ? body['media_count'].length : 0),
     };
 
-    print('print payload let see $payload');
+    if (body['attachment'] != null) {
+      payload['attachment'] =
+          jsonEncode(Map<String, dynamic>.from(body['attachment']));
+    }
+
     request.fields.addAll(payload);
     List<MultipartFile> newList = [];
     List<MultipartFile> thumbnailList = [];
@@ -885,6 +889,7 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       YarnComment commentDetails =
           YarnComment.fromJson(json.decode(responseBody));
+
       return commentDetails;
     } else if (response.statusCode == 500) {
       return Future.error("Please try again later !!");
@@ -984,8 +989,6 @@ class YarnAuth extends AuthService {
     var headers = await getAuthHeaders();
 
     var request = http.MultipartRequest("POST", Uri.parse(url));
-    // var response =
-    //     await httpPost(url, headers: headers, body: jsonEncode(body));
 
     // debugPrint(
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
@@ -1002,6 +1005,11 @@ class YarnAuth extends AuthService {
       "media_count": jsonEncode(
           body['media_count'] != null ? body['media_count'].length : 0),
     };
+
+    if (body['attachment'] != null) {
+      payload['attachment'] =
+          jsonEncode(Map<String, dynamic>.from(body['attachment']));
+    }
 
     request.fields.addAll(payload);
     List<MultipartFile> newList = [];
@@ -1058,6 +1066,7 @@ class YarnAuth extends AuthService {
     if (response.statusCode == 200) {
       YarnComment commentDetail =
           YarnComment.fromJson(json.decode(responseBody));
+
       return commentDetail;
     } else if (response.statusCode == 500) {
       return null;

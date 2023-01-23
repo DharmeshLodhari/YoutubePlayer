@@ -79,7 +79,7 @@ class _YarnActionsState extends State<YarnActions> {
       Expanded(child: _buildCommentButton()),
       Expanded(child: _buildLikeButton()),
       Expanded(child: _buildDisLikeButton()),
-      Expanded(child: _buildReyarnButton()),
+      Expanded(child: _buildReYarnButton()),
     ]);
 
     // if (finalActionList.length == 3) {
@@ -197,7 +197,7 @@ class _YarnActionsState extends State<YarnActions> {
     );
   }
 
-  Widget _buildReyarnButton() {
+  Widget _buildReYarnButton() {
     bool canReYarn = true;
     if (widget.yarn.reYarn != null) {
       canReYarn = false;

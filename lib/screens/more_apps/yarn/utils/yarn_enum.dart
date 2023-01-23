@@ -1,1 +1,1 @@
-enum TileRenderPlace { YarnTimeLine, YarnComment }
+enum TileRenderPlace { YarnTimeLine, YarnComment, YarnProductService }

@@ -70,8 +70,8 @@ class _YarnCommentListState extends State<YarnCommentList> {
 
   Widget _buildCommentView() {
     return SingleChildScrollView(
-      controller: widget.commentScrollController,
-      physics: NeverScrollableScrollPhysics(),
+      // controller: widget.commentScrollController,
+      // physics: NeverScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
