@@ -73,9 +73,6 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     });
 
     super.initState();
-
-    // debugPrint(
-    //     'yarn detail profile full::: ${finalYarn!.viewersAvatars.toString()}');
   }
 
   Future getSingleYarn() async {
@@ -99,7 +96,6 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return ColorfulSafeArea(
       color: Colors.white,
       child: Scaffold(
-        // resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
         appBar: _buildAppBar(),
         body: _buildBody(),

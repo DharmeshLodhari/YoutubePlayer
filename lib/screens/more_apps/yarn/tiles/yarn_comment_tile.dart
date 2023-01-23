@@ -133,15 +133,15 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                             height: 8,
                           ),
                         ],
-                        if (isAttachmentPresent &&
-                            widget.yarnComment.attachment != null) ...[
-                          _buildAttachment(),
+                        if (isMediaPresent) ...[
+                          _buildImagesRow(),
                           SizedBox(
                             height: 8,
                           ),
                         ],
-                        if (isMediaPresent) ...[
-                          _buildImagesRow(),
+                        if (isAttachmentPresent &&
+                            widget.yarnComment.attachment != null) ...[
+                          _buildAttachment(),
                           SizedBox(
                             height: 8,
                           ),
