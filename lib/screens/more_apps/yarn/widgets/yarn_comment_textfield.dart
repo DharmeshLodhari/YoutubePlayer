@@ -214,13 +214,19 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
-    return ClipRect(clipper: CustomShape(), child: getCommentBoxWithOptions());
+    return Expanded(
+        child: ClipRect(
+            clipper: CustomShape(),
+            child: Align(
+                alignment: Alignment.bottomCenter,
+                // heightFactor: 1.5,
+                child: getCommentBoxWithOptions())));
   }
 
   Widget getCommentBoxWithOptions() {
     return Container(
-      // padding: EdgeInsets.only(top: 5),
-      // margin: EdgeInsets.only(bottom: 5),
+      padding: EdgeInsets.only(top: 5),
+      margin: EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -228,96 +234,98 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         ),
         border: Border.all(color: blackFont.withOpacity(0.1), width: 2),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                padding: EdgeInsets.only(left: 16, right: 8, top: 3.6),
-                child: RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: 'Replying to ',
-                        style: TextStyle(
-                            fontFamily: "Roboto",
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          // mainAxisSize: MainAxisSize.max,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 16, right: 8, top: 3.6),
+                  child: RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: 'Replying to ',
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              color: blackFont,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14)),
+                      TextSpan(
+                          text: '@${widget.yarn!.author}',
+                          style: TextStyle(
                             color: blackFont,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14)),
-                    TextSpan(
-                        text: '@${widget.yarn!.author}',
-                        style: TextStyle(
-                          color: blackFont,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ))
-                  ]),
-                ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Divider(
-                color: greySecondaryYarn,
-              ),
-              Container(
-                padding: EdgeInsets.only(left: 16, right: 8),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      InkWell(
-                          onTap: () async {
-                            if (selectedImages.length == 4) {
-                              showToast(
-                                  message:
-                                      "You can select only 4 images or videos");
-                            } else {
-                              pickFileFromMedia();
-                            }
-                          },
-                          child: SvgPicture.asset("yarn/images".toSVG())),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      _buildRatingCategory(),
-                      SizedBox(width: 8),
-                      _buildEnableComment(),
-                      SizedBox(width: 8),
-                      _buildEnablePayme(),
-                      SizedBox(width: 8),
-                      _buildEnableViewerAdvice(),
-                      SizedBox(width: 8),
-                      _buildEnableAdultsOnly(),
-                    ],
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ))
+                    ]),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 3.4,
-              ),
-              if (selectedImages.isNotEmpty) ...[
-                Divider(
-                  color: greySecondaryYarn,
-                ),
-                _buildAddImages(),
                 SizedBox(
                   height: 5,
                 ),
+                Divider(
+                  color: greySecondaryYarn,
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 16, right: 8),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        InkWell(
+                            onTap: () async {
+                              if (selectedImages.length == 4) {
+                                showToast(
+                                    message:
+                                        "You can select only 4 images or videos");
+                              } else {
+                                pickFileFromMedia();
+                              }
+                            },
+                            child: SvgPicture.asset("yarn/images".toSVG())),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        _buildRatingCategory(),
+                        SizedBox(width: 8),
+                        _buildEnableComment(),
+                        SizedBox(width: 8),
+                        _buildEnablePayme(),
+                        SizedBox(width: 8),
+                        _buildEnableViewerAdvice(),
+                        SizedBox(width: 8),
+                        _buildEnableAdultsOnly(),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 3.4,
+                ),
+                if (selectedImages.isNotEmpty) ...[
+                  Divider(
+                    color: greySecondaryYarn,
+                  ),
+                  _buildAddImages(),
+                  // SizedBox(
+                  //   height: 5,
+                  // ),
+                ],
+                if (yarnDashboardBloc!.productService != null) ...[
+                  checkIfProductService(),
+                ],
               ],
-              if (yarnDashboardBloc!.productService != null) ...[
-                checkIfProductService(),
-              ],
-            ],
-          ),
-          Divider(
-            color: greySecondaryYarn,
-          ),
-          getCommentBox()
-        ],
+            ),
+            Divider(
+              color: greySecondaryYarn,
+            ),
+            getCommentBox()
+          ],
+        ),
       ),
     );
   }
@@ -330,8 +338,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     //display services
     if (productServicePreview.runtimeType.toString() == 'Service') {
       return Container(
-        margin:
-            EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnServiceTile(
           service: serviceMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
@@ -341,8 +348,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     //display product
     else if (productServicePreview.runtimeType.toString() == 'Product') {
       return Container(
-        margin:
-            EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
         child: YarnProductTile(
           product: productMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
