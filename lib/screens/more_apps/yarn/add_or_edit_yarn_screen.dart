@@ -279,8 +279,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                   //       message: "You can select only 4 images or videos");
                   // } else {
                   pickFileFromMedia();
-                  // pickImage();
-                  // }
                 },
                 child: SvgPicture.asset("yarn/images".toSVG())),
             SizedBox(
