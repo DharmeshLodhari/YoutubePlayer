@@ -276,20 +276,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                                   message:
                                       "You can select only 4 images or videos");
                             } else {
-                              final permission = Permission.storage;
-                              final status = await permission.status;
-
-                              if (status != PermissionStatus.granted) {
-                                await permission.request();
-                                if (await permission.status.isGranted) {
-                                  pickFileFromMedia();
-                                } else {
-                                  await permission.request();
-                                }
-                                debugPrint('>>> ${await permission.status}');
-                              }
-
-                              // pickImage();
+                              pickFileFromMedia();
                             }
                           },
                           child: SvgPicture.asset("yarn/images".toSVG())),
@@ -1199,23 +1186,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
               if (selectedImages.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
-                // pickImage();
-                // final result = await Permission.storage.request();
-                // if (result == PermissionStatus.granted) {
-                //   pickFileFromMedia();
-                // }
-                final permission = Permission.storage;
-                final status = await permission.status;
-
-                if (status != PermissionStatus.granted) {
-                  await permission.request();
-                  if (await permission.status.isGranted) {
-                    pickFileFromMedia();
-                  } else {
-                    await permission.request();
-                  }
-                  debugPrint('>>> ${await permission.status}');
-                }
+                pickFileFromMedia();
               }
             },
           ),
