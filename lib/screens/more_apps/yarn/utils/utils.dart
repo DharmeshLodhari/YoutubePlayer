@@ -76,7 +76,7 @@ double getItemHeight(TileRenderPlace tileRenderPlace, BuildContext context) {
     case TileRenderPlace.YarnComment:
       return MediaQuery.of(context).size.width / 2.0;
     case TileRenderPlace.YarnProductService:
-      return MediaQuery.of(context).size.width / 3.0;
+      return MediaQuery.of(context).size.width / 2.7;
   }
 }
 
