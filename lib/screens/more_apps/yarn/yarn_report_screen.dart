@@ -301,7 +301,7 @@ class _AddReportScreenState extends State<AddReportScreen> {
       "type": widget.type,
       "violation_type": selectedViolationType!.id,
       "reported_by": userBloc.user.userName,
-      "report": textController.text
+      "report": messageDecoderWithEmoji(textController.text)
     };
     await YarnAuth().addReport(widget.object!['id'], data).then((value) {
       if (value != null) {
