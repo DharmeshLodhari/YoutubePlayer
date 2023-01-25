@@ -214,13 +214,21 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
 
-    return Expanded(
-        child: ClipRect(
-            clipper: CustomShape(),
-            child: Align(
-                alignment: Alignment.bottomCenter,
-                // heightFactor: 1.5,
-                child: getCommentBoxWithOptions())));
+    if (yarnDashboardBloc!.productService != null &&
+        selectedImages.isNotEmpty) {
+      return Expanded(
+          child: ClipRect(
+              clipper: CustomShape(),
+              child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: getCommentBoxWithOptions())));
+    } else {
+      return ClipRect(
+          clipper: CustomShape(),
+          child: Align(
+              alignment: Alignment.bottomCenter,
+              child: getCommentBoxWithOptions()));
+    }
   }
 
   Widget getCommentBoxWithOptions() {
@@ -271,7 +279,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                   color: greySecondaryYarn,
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 16, right: 8),
+                  padding: EdgeInsets.only(left: 0, right: 8),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -286,7 +294,10 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                                 pickFileFromMedia();
                               }
                             },
-                            child: SvgPicture.asset("yarn/images".toSVG())),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: SvgPicture.asset("yarn/images".toSVG()),
+                            )),
                         SizedBox(
                           width: 8,
                         ),
@@ -803,6 +814,17 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
               searchProductOrService();
             }
           },
+          // onChanged: (val) {
+          //   if (val.length == 3) {
+          //     if (mounted) {
+          //       searchProductOrService();
+          //     }
+          //   } else if (val.length == 6) {
+          //     if (mounted) {
+          //       searchProductOrService();
+          //     }
+          //   }
+          // },
         ),
       ),
     );

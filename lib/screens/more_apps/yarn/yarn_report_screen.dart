@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../data/state_notifier.dart';
 import '../../../utils/slydo_app_icon_icons.dart';
 import '../../../utils/util.dart';
