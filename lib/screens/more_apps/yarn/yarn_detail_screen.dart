@@ -177,7 +177,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
 
     return Column(
       // mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
+      // mainAxisSize: MainAxisSize.max,
       children: [
         _buildPostAndCommentView(),
         if (isMentionName) ...[
@@ -198,36 +198,34 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
         ),
         controller: _postRefreshController,
         onRefresh: _onPostRefresh,
-        child: Container(
-            child: SingleChildScrollView(
-                child: Column(children: <Widget>[
-          if (isLoading) YarnShimmer(),
-          if (!isLoading) _buildMain(),
-        ]))),
+        child: SingleChildScrollView(
+          child: Column(children: <Widget>[
+            if (isLoading) YarnShimmer(),
+            if (!isLoading) _buildMain(),
+          ]),
+        ),
       ),
     );
   }
 
   Widget _buildMain() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: YarnTile(
-              yarn: finalYarn!,
-              onDeleteYarn: (Yarn yarn) {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-          YarnCommentList(
-            key: yarnCommentScreenKey,
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: YarnTile(
             yarn: finalYarn!,
-            commentScrollController: _commentScrollController,
+            onDeleteYarn: (Yarn yarn) {
+              Navigator.of(context).pop();
+            },
           ),
-        ],
-      ),
+        ),
+        YarnCommentList(
+          key: yarnCommentScreenKey,
+          yarn: finalYarn!,
+          commentScrollController: _commentScrollController,
+        ),
+      ],
     );
   }
 
