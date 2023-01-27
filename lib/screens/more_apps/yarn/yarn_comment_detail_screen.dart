@@ -52,6 +52,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   Product? productValue;
   Service? serviceValue;
   YarnDashboardBloc? yarnDashboardBloc;
+  String? userName;
 
   @override
   void initState() {
@@ -196,6 +197,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
       hint: "Leave your thought",
       yarn: widget.yarn,
       userImage: userBloc.user.avatar,
+      userName: widget.yarnComment.authorUsername,
       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       isLoading: isAPILoading,
       enableComment: enableComment,
@@ -230,6 +232,8 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
           FocusScope.of(context).unfocus();
           isAPILoading = true;
           if (mounted) setState(() {});
+          debugPrint('Fola Thread::: ${widget.yarnComment.authorUsername}');
+          userName = widget.yarnComment.authorUsername;
           await addReplyComment();
           isAPILoading = false;
           if (mounted) setState(() {});
@@ -242,11 +246,11 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   }
 
   Future addReplyComment() async {
-    // debugPrint('RESPONSE Fola::; ${checkProductService}');
+    debugPrint('Fola Thread 000::; ${widget.yarnComment.authorUsername}');
 
     Map<String, dynamic> data = {
       "comment": controller.text,
-      "author_username": userBloc.user.userName,
+      "author_username": userName,
       "is_reply": true,
       "enable_payme": enablePayment,
       "enable_commenting": enableComment,
