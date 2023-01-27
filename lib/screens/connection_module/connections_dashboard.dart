@@ -9,7 +9,7 @@ import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/services/app_config_bloc.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -179,10 +179,7 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                           height: 20,
                           child: Padding(
                             padding: const EdgeInsets.only(),
-                            child: Badge(
-                              padding: EdgeInsets.all(2),
-                              badgeColor: naturalGreen,
-                              animationType: BadgeAnimationType.slide,
+                            child: badges.Badge(
                               badgeContent: Center(
                                 child: Text(
                                   '++',
@@ -190,7 +187,21 @@ class _ConnectionDashboardState extends State<ConnectionDashboard> {
                                       fontSize: 12, color: Colors.white),
                                 ),
                               ),
-                              position: BadgePosition(end: 0, top: 0),
+                              position:
+                                  badges.BadgePosition.topEnd(end: 0, top: 0),
+                              badgeAnimation: badges.BadgeAnimation.rotation(
+                                animationDuration: Duration(seconds: 1),
+                                colorChangeAnimationDuration:
+                                    Duration(seconds: 1),
+                                loopAnimation: false,
+                                curve: Curves.fastOutSlowIn,
+                                colorChangeAnimationCurve: Curves.easeInCubic,
+                              ),
+                              badgeStyle: badges.BadgeStyle(
+                                shape: badges.BadgeShape.circle,
+                                badgeColor: naturalGreen,
+                                padding: EdgeInsets.all(2),
+                              ),
                             ),
                           ),
                         )

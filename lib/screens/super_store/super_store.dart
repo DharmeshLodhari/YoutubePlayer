@@ -1,7 +1,6 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-
+import 'package:badges/badges.dart' as badges;
 import '../../data/currency.dart';
 import '../../data/state_notifier.dart';
 import '../../routes/route_constants.dart';
@@ -609,23 +608,33 @@ class _SuperStoreState extends State<SuperStore> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Badge(
-        badgeColor: naturalGreen,
-        animationType: BadgeAnimationType.slide,
+      icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        padding: basketBloc.items.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.only(
-                left: getBadgeCount().length == 1 ? 6 : 8,
-                right: 6,
-                top: 4,
-                bottom: 4),
-        position:
-            BadgePosition(end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
-        child: Icon(
-          SlydoAppIcon.cart,
-          size: 16,
-          color: blackFont,
+        badgeAnimation: badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: basketBloc.items.length == 0
+              ? EdgeInsets.all(0)
+              : EdgeInsets.only(
+                  left: getBadgeCount().length == 1 ? 6 : 8,
+                  right: 6,
+                  top: 4,
+                  bottom: 4),
+          elevation: 0,
+        ),
+        child: Center(
+          child: Icon(
+            SlydoAppIcon.cart,
+            size: 16,
+            color: blackFont,
+          ),
         ),
       ),
       onTap: () {
@@ -664,96 +673,96 @@ class SuperStoreSingleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DisplayProduct(product: product, giveRightPadding: false);
-    return Stack(
-      children: [
-        InkWell(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.PRODUCT,
-              arguments: {"product": product},
-            );
-          },
-          child: Card(
-            elevation: 12,
-            color: Colors.white,
-            shadowColor: lightGrey.withOpacity(0.4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                    child: CachedNetworkImage(
-                      height: 150,
-                      width: double.infinity,
-                      errorWidget: productAndServiceBigErrorWidget,
-                      imageUrl: product.serverImages![0]!,
-                      memCacheHeight:
-                          (MediaQuery.of(context).size.height * 0.6).toInt(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  truncateString(str: product.name!, lengthToTruncateAt: 15),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Expanded(
-                        child: RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            text: worldCurrencies[product.currency!]!,
-                            style: TextStyle(
-                                fontSize: 16.0,
-                                color: navyBlue,
-                                fontWeight: FontWeight.bold),
-                            children: [
-                              TextSpan(
-                                text: truncateString(
-                                  str: moneyDisplayNormalizer(
-                                      int.parse(product.price.toString())),
-                                  lengthToTruncateAt: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      getRating(
-                          numberOfRating: product.rating!.toInt(),
-                          starSize: 14),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+    // return Stack(
+    //   children: [
+    //     InkWell(
+    //       onTap: () {
+    //         Navigator.pushNamed(
+    //           context,
+    //           Routes.PRODUCT,
+    //           arguments: {"product": product},
+    //         );
+    //       },
+    //       child: Card(
+    //         elevation: 12,
+    //         color: Colors.white,
+    //         shadowColor: lightGrey.withOpacity(0.4),
+    //         shape: RoundedRectangleBorder(
+    //           borderRadius: BorderRadius.circular(12),
+    //         ),
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.center,
+    //           children: [
+    //             Padding(
+    //               padding: const EdgeInsets.all(16.0),
+    //               child: ClipRRect(
+    //                 borderRadius: BorderRadius.only(
+    //                   topLeft: Radius.circular(12),
+    //                   topRight: Radius.circular(12),
+    //                 ),
+    //                 child: CachedNetworkImage(
+    //                   height: 150,
+    //                   width: double.infinity,
+    //                   errorWidget: productAndServiceBigErrorWidget,
+    //                   imageUrl: product.serverImages![0]!,
+    //                   memCacheHeight:
+    //                       (MediaQuery.of(context).size.height * 0.6).toInt(),
+    //                 ),
+    //               ),
+    //             ),
+    //             const SizedBox(height: 6),
+    //             Text(
+    //               truncateString(str: product.name!, lengthToTruncateAt: 15),
+    //               style: TextStyle(
+    //                 fontSize: 16,
+    //                 fontWeight: FontWeight.w400,
+    //               ),
+    //             ),
+    //             Padding(
+    //               padding: const EdgeInsets.symmetric(vertical: 6.0),
+    //               child: Row(
+    //                 mainAxisSize: MainAxisSize.min,
+    //                 children: <Widget>[
+    //                   Expanded(
+    //                     child: RichText(
+    //                       textAlign: TextAlign.center,
+    //                       text: TextSpan(
+    //                         text: worldCurrencies[product.currency!]!,
+    //                         style: TextStyle(
+    //                             fontSize: 16.0,
+    //                             color: navyBlue,
+    //                             fontWeight: FontWeight.bold),
+    //                         children: [
+    //                           TextSpan(
+    //                             text: truncateString(
+    //                               str: moneyDisplayNormalizer(
+    //                                   int.parse(product.price.toString())),
+    //                               lengthToTruncateAt: 16,
+    //                             ),
+    //                           ),
+    //                         ],
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ],
+    //               ),
+    //             ),
+    //             Align(
+    //               alignment: Alignment.center,
+    //               child: Row(
+    //                 mainAxisAlignment: MainAxisAlignment.center,
+    //                 children: [
+    //                   getRating(
+    //                       numberOfRating: product.rating!.toInt(),
+    //                       starSize: 14),
+    //                 ],
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 }

@@ -649,9 +649,10 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       ),
       backgroundColor: navyBlue.withOpacity(0.08),
       onTap: () {
-        showMoreAction = false;
-        _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
-        getGIFs(isRandom: true);
+        // showMoreAction = false;
+        // _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
+        // getGIFs(isRandom: true);
+        showSnackbar(context, message: "coming soon");
         if (mounted) setState(() {});
         // pickGIF();
       },

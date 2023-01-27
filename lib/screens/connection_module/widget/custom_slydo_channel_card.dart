@@ -5,15 +5,12 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/channel_model.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../../data/state_notifier.dart';
-import '../../../utils/colors.dart';
 import '../../../widget/LoadingIndicator.dart';
 import '../../more_apps/messaging/message_auth.dart';
+import 'package:badges/badges.dart' as badges;
 
 // ignore: must_be_immutable
 class CustomSlydoChannelCard extends StatefulWidget {
@@ -265,19 +262,30 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
 
   Widget getBadge(int count, {double padding = 0}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: padding),
-      child: Badge(
-        elevation: 0,
-        badgeColor: naturalGreen,
-        animationType: BadgeAnimationType.slide,
-        badgeContent: Text(
-          getCountForMessage(count),
-          style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w400, fontSize: 12),
-        ),
-        position: BadgePosition(end: 0, top: 0),
-      ),
-    );
+        padding: EdgeInsets.symmetric(horizontal: padding),
+        child: badges.Badge(
+          badgeContent: Center(
+            child: Text(
+              getCountForMessage(count),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12),
+            ),
+          ),
+          position: badges.BadgePosition.topEnd(end: 0, top: 0),
+          badgeAnimation: badges.BadgeAnimation.rotation(
+            animationDuration: Duration(seconds: 1),
+            colorChangeAnimationDuration: Duration(seconds: 1),
+            loopAnimation: false,
+            curve: Curves.fastOutSlowIn,
+            colorChangeAnimationCurve: Curves.easeInCubic,
+          ),
+          badgeStyle: badges.BadgeStyle(
+            shape: badges.BadgeShape.circle,
+            badgeColor: naturalGreen,
+          ),
+        ));
   }
 
   String getCountForMessage(int count) {

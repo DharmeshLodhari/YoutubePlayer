@@ -8,7 +8,6 @@ import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:custom_qr_generator/custom_qr_generator.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:badges/badges.dart' as badges;
 import '../locator.dart';
 import '../routes/route_constants.dart';
 import '../services/app_config_bloc.dart';
@@ -236,7 +235,7 @@ class _HomeState extends State<Home> {
         _searchBtn(),
         SizedBox(width: 4.0),
         _cartBtn(),
-        SizedBox(width: 4.0),
+        SizedBox(width: 8.0),
         // _messageBtn(),
         _exploreBtn(),
         SizedBox(width: 8.0),
@@ -293,7 +292,8 @@ class _HomeState extends State<Home> {
                     color: HexColor("#151515"),
                   ),
                   onTap: () async {
-                    await Navigator.of(context).pushNamed(Routes.USER_DASHBOARD);
+                    await Navigator.of(context)
+                        .pushNamed(Routes.USER_DASHBOARD);
                     setState(() {});
                   },
                 ),
@@ -319,23 +319,35 @@ class _HomeState extends State<Home> {
       height: 34,
       width: 34,
       key: tutorialShoppingCartKey,
-      icon: Badge(
-        badgeColor: naturalGreen,
-        animationType: BadgeAnimationType.slide,
+      icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        padding: basketBloc.items.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.only(
-                left: getBadgeCount().length == 1 ? 6 : 8,
-                right: 6,
-                top: 4,
-                bottom: 4),
-        position:
-            BadgePosition(end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
-        child: Icon(
-          SlydoAppIconNew.cart,
-          size: 16,
-          color: HexColor("#151515"),
+        position: badges.BadgePosition.topEnd(
+            end: getBadgeCount().length == 1 ? -5 : 0, top: 0),
+        badgeAnimation: badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: basketBloc.items.length == 0
+              ? EdgeInsets.all(0)
+              : EdgeInsets.only(
+                  left: getBadgeCount().length == 1 ? 6 : 8,
+                  right: 6,
+                  top: 4,
+                  bottom: 4),
+          elevation: 0,
+        ),
+        child: Center(
+          child: Icon(
+            SlydoAppIconNew.cart,
+            size: 16,
+            color: HexColor("#151515"),
+          ),
         ),
       ),
       onTap: () {

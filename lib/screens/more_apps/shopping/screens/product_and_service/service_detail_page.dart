@@ -19,7 +19,6 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/item_display_card.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +26,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
+import 'package:badges/badges.dart' as badges;
 import '../../../../../utils/slydo_app_icon_new_icons.dart';
-import '../../../yarn/models/Topics/yarn_model.dart';
 import '../../../yarn/models/share_as_yarn_model.dart';
 import '../../../yarn/share_as_a_yarn_screen.dart';
 import '../../../yarn/yarn_auth.dart';
@@ -465,14 +464,22 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Badge(
-        badgeColor: naturalGreen,
-        animationType: BadgeAnimationType.slide,
+      icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        padding: basketBloc.items.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.all(4),
-        position: BadgePosition(end: 0, top: 0),
+        position: badges.BadgePosition.topEnd(end: 0, top: 0),
+        badgeAnimation: badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+            shape: badges.BadgeShape.circle,
+            badgeColor: naturalGreen,
+            padding: basketBloc.items.length == 0
+                ? EdgeInsets.all(0)
+                : EdgeInsets.all(4)),
         child: Icon(
           SlydoAppIcon.cart,
           size: 16,
@@ -576,13 +583,23 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
   }
 
   Widget goToBasket() {
-    return Badge(
-      badgeColor: Colors.green,
-      animationType: BadgeAnimationType.slide,
+    return badges.Badge(
       badgeContent: getBadgeContent(),
-      padding:
-          basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(end: 6, top: 6),
+      position: badges.BadgePosition.topEnd(end: 6, top: 6),
+      badgeAnimation: badges.BadgeAnimation.rotation(
+        animationDuration: Duration(seconds: 1),
+        colorChangeAnimationDuration: Duration(seconds: 1),
+        loopAnimation: false,
+        curve: Curves.fastOutSlowIn,
+        colorChangeAnimationCurve: Curves.easeInCubic,
+      ),
+      badgeStyle: badges.BadgeStyle(
+        shape: badges.BadgeShape.circle,
+        badgeColor: naturalGreen,
+        padding: basketBloc.items.length == 0
+            ? EdgeInsets.all(0)
+            : EdgeInsets.all(4),
+      ),
       child: IconButton(
         icon: Icon(
           Icons.shopping_cart,

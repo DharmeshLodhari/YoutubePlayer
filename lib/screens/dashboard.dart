@@ -23,12 +23,11 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/keep_alive_page.dart';
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-
+import 'package:badges/badges.dart' as badges;
 import '../services/app_tutorial_controller.dart';
 import '../utils/navigation_util.dart';
 import 'connection_module/connections_dashboard.dart';
@@ -354,17 +353,30 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget goToBasket() {
-    return Badge(
-      badgeColor: Colors.green,
-      animationType: BadgeAnimationType.slide,
+    return badges.Badge(
       badgeContent: getBadgeContent(),
-      padding:
-          basketBloc.items.length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(end: 6, top: 6),
+      position: badges.BadgePosition.topEnd(end: 6, top: 6),
+      badgeAnimation: badges.BadgeAnimation.rotation(
+        animationDuration: Duration(seconds: 1),
+        colorChangeAnimationDuration: Duration(seconds: 1),
+        loopAnimation: false,
+        curve: Curves.fastOutSlowIn,
+        colorChangeAnimationCurve: Curves.easeInCubic,
+      ),
+      badgeStyle: badges.BadgeStyle(
+        shape: badges.BadgeShape.circle,
+        badgeColor: naturalGreen,
+        padding: basketBloc.items.length == 0
+            ? EdgeInsets.all(0)
+            : EdgeInsets.all(4),
+        elevation: 0,
+      ),
       // ignore: required onPressed
-      child: Icon(
-        Icons.shopping_cart,
-        color: Colors.white,
+      child: Center(
+        child: Icon(
+          Icons.shopping_cart,
+          color: Colors.white,
+        ),
       ),
     );
   }

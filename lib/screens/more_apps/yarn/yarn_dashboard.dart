@@ -4,7 +4,6 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dar
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
@@ -19,6 +18,7 @@ import 'question_list_screen.dart';
 import 'yarn_dashboard_bloc.dart';
 import 'yarn_list_screen.dart';
 import 'yarn_setting_screen.dart';
+import 'package:badges/badges.dart' as badges;
 
 class YarnDashboard extends StatefulWidget {
   @override
@@ -118,24 +118,37 @@ class _YarnDashboardState extends State<YarnDashboard> {
       RoundedBackgroundIcon(
         height: 34,
         width: 34,
-        icon: Badge(
-            badgeColor: naturalGreen,
-            animationType: BadgeAnimationType.slide,
+        icon: badges.Badge(
             badgeContent: getUnReadCount(count),
-            padding: count == 0
-                ? EdgeInsets.all(0)
-                : EdgeInsets.only(
-                    left: count.toString().length == 1 ? 6 : 8,
-                    right: 6,
-                    top: 4,
-                    bottom: 4),
-            position: BadgePosition(
-                end: count.toString().length == 1 ? -5 : -10, top: 0),
-            child: SvgPicture.asset(
-              "yarn/notification".toSVG(),
-              height: 16,
-              width: 16,
-              color: HexColor("#151515"),
+            position: badges.BadgePosition.topEnd(
+                end: count.toString().length == 1 ? -5 : 0, top: 0),
+            badgeAnimation: badges.BadgeAnimation.rotation(
+              animationDuration: Duration(seconds: 1),
+              colorChangeAnimationDuration: Duration(seconds: 1),
+              loopAnimation: false,
+              curve: Curves.fastOutSlowIn,
+              colorChangeAnimationCurve: Curves.easeInCubic,
+            ),
+            badgeStyle: badges.BadgeStyle(
+              shape: badges.BadgeShape.circle,
+              badgeColor: naturalGreen,
+              padding: count == 0
+                  ? EdgeInsets.all(0)
+                  : EdgeInsets.only(
+                      left: count.toString().length == 1 ? 6 : 8,
+                      right: 6,
+                      top: 4,
+                      bottom: 4),
+              elevation: 0,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: SvgPicture.asset(
+                "yarn/notification".toSVG(),
+                height: 16,
+                width: 16,
+                color: HexColor("#151515"),
+              ),
             )),
         onTap: () {
           NavigationUtil.push(
@@ -146,7 +159,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
         backgroundColor: lightGrey.withOpacity(0.1),
         enableMargin: true,
       ),
-      SizedBox(width: 30),
+      SizedBox(width: 20),
       RoundedBackgroundIcon(
           backgroundColor: Colors.transparent,
           onTap: () {
@@ -161,13 +174,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
             "yarn/setting".toSVG(),
             height: 12,
             width: 12,
-          )
-          // Icon(
-          //   Icons.settings,
-          //   color: yarnBlack,
-          //   size: 26,
-          // ),
-          ),
+          )),
       SizedBox(width: 30),
     ];
   }
