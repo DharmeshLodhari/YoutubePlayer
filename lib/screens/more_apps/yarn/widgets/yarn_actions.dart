@@ -212,7 +212,7 @@ class _YarnActionsState extends State<YarnActions> {
                 } else {
                   NavigationUtil.push(context,
                       screen: ShareAsAyarnScreen(
-                          appTitle: "Reyarn",
+                          appTitle: "ReYarn",
                           enableText: true,
                           isShare: false,
                           askCategories: yarnDashboardBloc.yarnCategories,
@@ -220,12 +220,11 @@ class _YarnActionsState extends State<YarnActions> {
                           yarnTopic: widget.yarn,
                           callback: (params) async {
                             createReYarn(params);
-                            showToast(
-                                message: "Share in Yarn successfully created");
+                            showToast(message: "ReYarn successful");
                           }));
                 }
               } else {
-                showToast(message: "You cannot Reyarn.");
+                showToast(message: "You cannot ReYarn.");
               }
             }
           : null,

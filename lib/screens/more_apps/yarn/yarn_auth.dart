@@ -523,7 +523,7 @@ class YarnAuth extends AuthService {
 
     request.fields.addAll({
       "tags": jsonEncode(yarn.tags),
-      "body": yarn.body ?? "",
+      "body": messageDecoderWithEmoji(yarn.body) ?? "",
       "category": yarn.category?.id ?? "0",
       "author": yarn.author ?? "",
       "is_question": jsonEncode(yarn.isQuestion),
@@ -699,13 +699,13 @@ class YarnAuth extends AuthService {
     debugPrint('DATA ---> $_data');
 
     if (addYarnAndQuestion.isQuestion ?? false) {
-      request.fields["title"] = addYarnAndQuestion.title!;
+      request.fields["title"] =
+          messageDecoderWithEmoji(addYarnAndQuestion.title)!;
     }
 
     var mapValue = {
       "tags": jsonEncode(addYarnAndQuestion.tags),
       "body": messageDecoderWithEmoji(addYarnAndQuestion.body) ?? "",
-      // "body": addYarnAndQuestion.body ?? "",
       "category": addYarnAndQuestion.category?.id ?? "0",
       "author": addYarnAndQuestion.author ?? "",
       "is_question": jsonEncode(addYarnAndQuestion.isQuestion),
@@ -725,7 +725,8 @@ class YarnAuth extends AuthService {
           jsonEncode(addYarnAndQuestion.attachment ?? null);
     }
 
-    logger.d(' share as yar message...... $mapValue');
+    // logger.d(' share as yarn message...... $mapValue');
+    debugPrint('share as yarn message ---> $mapValue');
 
     request.fields.addAll(mapValue);
 
@@ -994,7 +995,7 @@ class YarnAuth extends AuthService {
     //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
 
     Map<String, String> payload = {
-      "comment": body['comment'] ?? "",
+      "comment": messageDecoderWithEmoji(body['comment']) ?? "",
       "is_reply": jsonEncode(body['is_reply']),
       "author_username": body['author_username'] ?? "",
       "enable_payme": jsonEncode(body['enable_payme'] ?? false),

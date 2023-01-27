@@ -169,20 +169,6 @@ class _YarnOptionsState extends State<YarnOptions> {
     return widgetList;
   }
 
-  // List<Widget> _buildMoreOptionList() {
-  //   final List<Widget> widgetList = [];
-  //
-  //   if ((widget.isComment ?? true)) {
-  //     widgetList.add(_buildMoreOptionForComments());
-  //   } else if (widget.commentDetail != null) {
-  //     widgetList.add(_buildMoreOptionForOwner());
-  //   } else {
-  //     widgetList.add(_buildMoreOptionForOther());
-  //   }
-  //
-  //   return widgetList;
-  // }
-
   Widget _buildMoreOptionForOwner() {
     DateTime messageCreatedTime =
         DateTime.parse(widget.yarnTopic!.createdAt!).toLocal();
@@ -283,15 +269,46 @@ class _YarnOptionsState extends State<YarnOptions> {
     );
   }
 
+  showDeleteYarnCommentDialog() {
+    showDialogBox(
+        context: context,
+        actionOneTextColor: white,
+        actionOneBgColor: mateRed,
+        actionTwoTextColor: blackFont,
+        actionTwoBgColor: greyBorderColor,
+        title: 'Delete',
+        actionTwoText: AppLocalization.of(context)!.cancel,
+        actionOneText: AppLocalization.of(context)!.delete,
+        description: 'Are you sure you want to delete this yarn?',
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          enableMargin: false,
+          width: 90,
+          height: 90,
+          image: Icon(SlydoAppIcon.delete, color: mateRed),
+        ),
+        leftButtonOnPressed: () {
+          // Navigator.pop(context);
+          return deleteComment();
+        },
+        rightButtonOnPressed: () {
+          debugPrint('Cancel clicked');
+          // return Navigator.pop(context);
+        });
+  }
+
   Widget _buildMoreOptionForOther() {
+    debugPrint('saved yarn::: ${widget.commentDetail!.authorUsername}');
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.yarnTopic!.saveId == null) ...[
+        // if (widget.yarnTopic!.saveId == null) ...[
+        if (widget.commentDetail!.authorUsername !=
+            getLoggedInUserName(context)) ...[
           _buildTile(
             icon: "yarn/bookmark",
-            title:
-                !widget.yarnTopic!.isQuestion ? 'Save Yarn' : 'Save Questions',
+            // title: !widget.yarnTopic!.isQuestion ? 'Save Yarn' : 'Save Questions',
+            title: 'Save Yarn',
             subTitle: 'Add this to you saved items',
             onTap: () {
               addUserVisibilityOption("saved");
@@ -300,9 +317,8 @@ class _YarnOptionsState extends State<YarnOptions> {
         ] else ...[
           _buildTile(
             icon: "yarn/delete",
-            title: !widget.yarnTopic!.isQuestion
-                ? 'Delete Saved Yarn'
-                : 'Delete Saved Questions',
+            // title: !widget.yarnTopic!.isQuestion ? 'Delete Saved Yarn' : 'Delete Saved Questions',
+            title: 'Delete Saved Yarn',
             subTitle: 'Deleted this from saved items',
             onTap: () {
               removeSavedYarn(widget.yarnTopic!.saveId.toString());
@@ -315,9 +331,7 @@ class _YarnOptionsState extends State<YarnOptions> {
         _buildTile(
             icon: "yarn/hide",
             title: 'Not Interested',
-            subTitle: !widget.yarnTopic!.isQuestion
-                ? 'Not interested in this yarn'
-                : 'Not interested in this type of question',
+            subTitle: 'Not interested in this yarn',
             onTap: () {
               addUserVisibilityOption("not-interested");
             }),
@@ -326,12 +340,8 @@ class _YarnOptionsState extends State<YarnOptions> {
         ),
         _buildTile(
             icon: "yarn/report",
-            title: !widget.yarnTopic!.isQuestion
-                ? 'Report yarn'
-                : "Report question",
-            subTitle: !widget.yarnTopic!.isQuestion
-                ? 'I’m concerned about this yarn'
-                : 'I’m concerned about this question',
+            title: 'Report yarn',
+            subTitle: 'I’m concerned about this yarn',
             onTap: () {
               Navigator.pop(context);
               NavigationUtil.push(context,
@@ -356,8 +366,8 @@ class _YarnOptionsState extends State<YarnOptions> {
               subTitle: 'Delete this comment',
               onTap: () {
                 print('Delete clicked');
-                deleteComment();
-                Navigator.pop(context);
+
+                showDeleteYarnCommentDialog();
               }),
         ] else ...[
           _buildTile(

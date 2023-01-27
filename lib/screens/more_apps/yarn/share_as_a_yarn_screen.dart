@@ -1064,8 +1064,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
           final yarn = Yarn(
               media: newMediaList,
-              // media: selectedMedia,
-              // title: messageDecoderWithEmoji(yarnController.text),
               body: messageDecoderWithEmoji(textController.text),
               category: selectedAskCategory,
               isQuestion: false, //widget.isYarn ?? false,
@@ -1366,10 +1364,9 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
   Future<void> addYarnAndQuestion() async {
     Yarn yarn = Yarn();
     yarn.media = newMediaList;
-    // yarn.media = selectedMedia;
     yarn.tags = userTags;
-    yarn.title = yarnController.text;
-    yarn.body = textController.text;
+    yarn.title = messageDecoderWithEmoji(yarnController.text);
+    yarn.body = messageDecoderWithEmoji(textController.text);
     yarn.category = selectedAskCategory;
     yarn.isQuestion = widget.isYarn == true ? false : true;
     yarn.author = userBloc.user.userName;

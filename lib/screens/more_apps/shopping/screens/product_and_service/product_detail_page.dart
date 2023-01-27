@@ -18,7 +18,7 @@ import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:Slydo/widget/curved_btn.dart';
 import 'package:Slydo/widget/disclaimer_dialogue_for_goods.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -471,14 +471,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Badge(
-        badgeColor: naturalGreen,
-        animationType: BadgeAnimationType.slide,
+      icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        padding: basketBloc.items.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.all(4),
-        position: BadgePosition(end: 0, top: 0),
+        position: badges.BadgePosition.topEnd(end: 0, top: 0),
+        badgeAnimation: badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+            shape: badges.BadgeShape.circle,
+            badgeColor: naturalGreen,
+            padding: basketBloc.items.length == 0
+                ? EdgeInsets.all(0)
+                : EdgeInsets.all(4)),
         child: Icon(
           SlydoAppIcon.cart,
           size: 16,

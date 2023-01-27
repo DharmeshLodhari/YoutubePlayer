@@ -387,7 +387,7 @@ class _YarnTileState extends State<YarnTile> {
   Widget _buildPostTitle() {
     return RichTextForTitle(
       description: widget.yarn.title ?? '',
-      fontSize: 12,
+      fontSize: 17,
       fontWeight: FontWeight.w600,
     );
   }
@@ -417,19 +417,22 @@ class _YarnTileState extends State<YarnTile> {
       childWidget = YarnServiceTile(
         service: service,
       );
-    } else if (widget.yarn.attachmentType == 'product') {
+    }
+    else if (widget.yarn.attachmentType == 'product') {
       Product product = Product.fromJson(widget.yarn.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
-    } else if (widget.yarn.attachmentType == 'blog') {
+    }
+    else if (widget.yarn.attachmentType == 'blog') {
       UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
-    } else if (widget.yarn.attachmentType == 'profile') {
+    }
+    else if (widget.yarn.attachmentType == 'profile') {
       CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarn.attachment ?? {});
 
@@ -478,7 +481,10 @@ class _YarnTileState extends State<YarnTile> {
           ),
           YarnSmartText(
             text: messageDecoderWithEmoji(newString)! ?? '',
-            atStyle: TextStyle(color: navyBlue),
+            style: TextStyle(
+                color: blackFont, fontSize: 18, fontFamily: "OpenSans"),
+            // atStyle: TextStyle(
+            //     color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
             disableAt: false,
             onTagClick: (tag) {
               NavigationUtil.push(context,
@@ -549,7 +555,8 @@ class _YarnTileState extends State<YarnTile> {
 
     return YarnSmartText(
       text: messageDecoderWithEmoji(newString)! ?? '',
-      atStyle: TextStyle(color: navyBlue, fontSize: 14),
+      style: TextStyle(color: blackFont, fontSize: 18, fontFamily: "OpenSans"),
+      // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,
       onTagClick: (tag) {
         NavigationUtil.push(context,

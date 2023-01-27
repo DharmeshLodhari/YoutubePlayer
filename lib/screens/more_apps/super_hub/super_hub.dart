@@ -4,14 +4,13 @@ import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/shopping/shopping_auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:badges/badges.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-
+import 'package:badges/badges.dart' as badges;
 import '../../../routes/route_constants.dart';
 import '../../../widget/item_display_card.dart';
 import '../../../widget/rounded_background_icon.dart';
@@ -538,23 +537,35 @@ class _SuperHubState extends State<SuperHub> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Badge(
-        badgeColor: naturalGreen,
-        animationType: BadgeAnimationType.slide,
+      icon: badges.Badge(
         badgeContent: getBadgeContent(),
-        padding: basketBloc.items.length == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.only(
-                left: getBadgeCount().length == 1 ? 6 : 8,
-                right: 6,
-                top: 4,
-                bottom: 4),
-        position:
-            BadgePosition(end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
-        child: Icon(
-          SlydoAppIcon.cart,
-          size: 16,
-          color: blackFont,
+        position: badges.BadgePosition.topEnd(
+            end: getBadgeCount().length == 1 ? -5 : -10, top: 0),
+        badgeAnimation: badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: basketBloc.items.length == 0
+              ? EdgeInsets.all(0)
+              : EdgeInsets.only(
+                  left: getBadgeCount().length == 1 ? 6 : 8,
+                  right: 6,
+                  top: 4,
+                  bottom: 4),
+          elevation: 0,
+        ),
+        child: Center(
+          child: Icon(
+            SlydoAppIcon.cart,
+            size: 16,
+            color: blackFont,
+          ),
         ),
       ),
       onTap: () {

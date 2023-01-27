@@ -1,11 +1,10 @@
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/colors.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/slydo_app_icon_new_icons.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart' as badges;
 
 class MessageNavBtn extends StatefulWidget {
   const MessageNavBtn({Key? key}) : super(key: key);
@@ -37,23 +36,35 @@ class _MessageNavBtnState extends State<MessageNavBtn> {
     return RoundedBackgroundIcon(
       height: 34,
       width: 34,
-      icon: Badge(
-        badgeColor: naturalGreen,
-        animationType: BadgeAnimationType.slide,
+      icon: badges.Badge(
         badgeContent: getUnReadCount(count),
-        padding: count == 0
-            ? EdgeInsets.all(0)
-            : EdgeInsets.only(
-                left: count.toString().length == 1 ? 6 : 8,
-                right: 6,
-                top: 4,
-                bottom: 4),
-        position:
-            BadgePosition(end: count.toString().length == 1 ? -5 : -10, top: 0),
-        child: Icon(
-          SlydoAppIconNew.inbox,
-          size: 16,
-          color: HexColor("#151515"),
+        position: badges.BadgePosition.topEnd(
+            end: count.toString().length == 1 ? -5 : 0, top: 0),
+        badgeAnimation: badges.BadgeAnimation.rotation(
+          animationDuration: Duration(seconds: 1),
+          colorChangeAnimationDuration: Duration(seconds: 1),
+          loopAnimation: false,
+          curve: Curves.fastOutSlowIn,
+          colorChangeAnimationCurve: Curves.easeInCubic,
+        ),
+        badgeStyle: badges.BadgeStyle(
+          shape: badges.BadgeShape.circle,
+          badgeColor: naturalGreen,
+          padding: count == 0
+              ? EdgeInsets.all(0)
+              : EdgeInsets.only(
+                  left: count.toString().length == 1 ? 6 : 8,
+                  right: 6,
+                  top: 4,
+                  bottom: 4),
+          elevation: 0,
+        ),
+        child: Center(
+          child: Icon(
+            SlydoAppIconNew.inbox,
+            size: 16,
+            color: HexColor("#151515"),
+          ),
         ),
       ),
       onTap: () {

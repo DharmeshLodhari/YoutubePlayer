@@ -3,11 +3,10 @@ import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../utils/colors.dart';
+import 'package:badges/badges.dart' as badges;
 
 // ignore: must_be_immutable
 class OrderTileForProduct extends StatefulWidget {
@@ -67,9 +66,7 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
   }
 
   Widget getLeading() {
-    return Badge(
-      badgeColor: naturalGreen,
-      animationType: BadgeAnimationType.slide,
+    return badges.Badge(
       badgeContent: Text(
         qty.toString(),
         style: TextStyle(
@@ -78,9 +75,21 @@ class _OrderTileForProductState extends State<OrderTileForProduct> {
           color: Colors.white,
         ),
       ),
-      padding:
-          qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(end: -6, top: -6),
+      position: badges.BadgePosition.topEnd(end: -6, top: -6),
+      badgeAnimation: badges.BadgeAnimation.rotation(
+        animationDuration: Duration(seconds: 1),
+        colorChangeAnimationDuration: Duration(seconds: 1),
+        loopAnimation: false,
+        curve: Curves.fastOutSlowIn,
+        colorChangeAnimationCurve: Curves.easeInCubic,
+      ),
+      badgeStyle: badges.BadgeStyle(
+        shape: badges.BadgeShape.circle,
+        badgeColor: naturalGreen,
+        padding:
+            qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
+        elevation: 0,
+      ),
       // ignore: required onPressed
       child: ClipOval(
         child: CachedNetworkImage(
@@ -248,9 +257,7 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
   }
 
   Widget getLeading() {
-    return Badge(
-      badgeColor: naturalGreen,
-      animationType: BadgeAnimationType.slide,
+    return badges.Badge(
       badgeContent: Text(
         qty.toString(),
         style: TextStyle(
@@ -259,9 +266,21 @@ class _OrderTileForServiceState extends State<OrderTileForService> {
           color: Colors.white,
         ),
       ),
-      padding:
-          qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
-      position: BadgePosition(end: -6, top: -6),
+      position: badges.BadgePosition.topEnd(end: -6, top: -6),
+      badgeAnimation: badges.BadgeAnimation.rotation(
+        animationDuration: Duration(seconds: 1),
+        colorChangeAnimationDuration: Duration(seconds: 1),
+        loopAnimation: false,
+        curve: Curves.fastOutSlowIn,
+        colorChangeAnimationCurve: Curves.easeInCubic,
+      ),
+      badgeStyle: badges.BadgeStyle(
+        shape: badges.BadgeShape.circle,
+        badgeColor: naturalGreen,
+        padding:
+            qty.toString().length == 0 ? EdgeInsets.all(0) : EdgeInsets.all(4),
+        elevation: 0,
+      ),
       // ignore: required onPressed
       child: ClipOval(
         child: CachedNetworkImage(
