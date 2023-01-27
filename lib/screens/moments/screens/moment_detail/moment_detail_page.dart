@@ -153,7 +153,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
         List<MomentsModel> momentsModelList = await MomentsService()
             .getMomentsWithOwnerName(
                 ownerName: widget.listOfConnectionNames[i]);
-        widget.momentsModelList.add(momentsModelList);
+        widget.momentsModelList = List.from(widget.momentsModelList)
+          ..add(momentsModelList);
       }
 
       showLoadingIndicator(loadingNextPageUrl: loadingNextPageUrl, show: false);
