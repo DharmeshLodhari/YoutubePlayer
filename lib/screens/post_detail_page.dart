@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:Slydo/screens/more_apps/news/news_auth.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_player/video_player.dart';
-
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
 import '../routes/route_constants.dart';
