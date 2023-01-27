@@ -48,20 +48,6 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
 
   @override
   Widget build(BuildContext context) {
-    // return Row(
-    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //   children: [
-    //     Expanded(child: _buildActionableList()),
-    //     _buildShareButton(),
-    //     SizedBox(
-    //       width: 18,
-    //     ),
-    //     _buildPayButton(),
-    //     SizedBox(
-    //       width: 16,
-    //     )
-    //   ],
-    // );
     return _buildActionableList();
   }
 
@@ -210,32 +196,6 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
       },
     );
   }
-
-  // Widget _buildRetweetButton() {
-  //   return InkWell(
-  //     onTap: () {
-  //       // addDisLikeToYarnAndQuestion();
-  //     },
-  //     child: Row(
-  //       children: [
-  //         SvgPicture.asset(
-  //           "yarn/re_share".toSVG(),
-  //           color: darkGreyYarn,
-  //           height: 13,
-  //           width: 13,
-  //         ),
-  //         SizedBox(
-  //           width: 6,
-  //         ),
-  //         Text(
-  //           "$retweetCount",
-  //           style: TextStyle(
-  //               fontSize: 13, fontWeight: FontWeight.w400, color: darkGreyYarn),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildShareButton() {
     return LikeButton(

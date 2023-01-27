@@ -13,7 +13,6 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../locator.dart';
@@ -681,6 +680,8 @@ class _ContactMomentsCardState extends State<ContactMomentsCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        debugPrint('clicked moment pals');
+
         NavigationUtil.push(
           context,
           screen: MomentsDetailsScreen(
