@@ -54,6 +54,7 @@ class YarnCommentTextField extends StatefulWidget {
   final Widget? suffixIcon;
   final Yarn? yarn;
   final String? userImage;
+  final String? userName;
   final VoidCallback? onPressed;
   final bool? isLoading;
   bool? enableComment;
@@ -87,6 +88,7 @@ class YarnCommentTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
     this.yarn,
+    this.userName,
     this.leading = const SizedBox(
       width: 0,
       height: 0,
@@ -263,7 +265,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                               fontWeight: FontWeight.w500,
                               fontSize: 14)),
                       TextSpan(
-                          text: '@${widget.yarn!.author}',
+                          text: '@${widget.userName}',
                           style: TextStyle(
                             color: blackFont,
                             fontSize: 14,

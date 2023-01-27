@@ -61,6 +61,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   Product? productValue;
   Service? serviceValue;
   YarnDashboardBloc? yarnDashboardBloc;
+  String? userName;
 
   @override
   void initState() {
@@ -276,6 +277,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   }
 
   Widget _buildTopicTextFiled() {
+    userName = widget.yarn.author;
     return YarnCommentTextField(
       key: yarnCommentTextFieldStateKey,
       height: 50,
@@ -284,6 +286,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       yarn: finalYarn,
       shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
       userImage: userBloc.user.avatar,
+      userName: widget.yarn.author,
       isLoading: isAPILoading,
       onChanged: onValueChange,
       enableComment: enableComment,
@@ -328,6 +331,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
           FocusScope.of(context).unfocus();
           isAPILoading = true;
           if (mounted) setState(() {});
+
           await addComment();
           isAPILoading = false;
           if (mounted) setState(() {});
@@ -344,9 +348,11 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   }
 
   Future addComment() async {
+    // debugPrint('Fola ::; ${widget.yarn.author}');
+
     Map<String, dynamic> data = {
       "comment": controller.text,
-      "author_username": userBloc.user.userName,
+      "author_username": userName,
       "enable_payme": enablePayment,
       "enable_commenting": enableComment,
       "is_adult_content": adultOnly,

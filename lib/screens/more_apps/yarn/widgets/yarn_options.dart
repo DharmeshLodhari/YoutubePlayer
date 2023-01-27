@@ -164,9 +164,68 @@ class _YarnOptionsState extends State<YarnOptions> {
         widgetList.add(_buildMoreOptionForOwner());
       }
     } else {
-      widgetList.add(_buildMoreOptionForOther());
+      if (widget.commentDetail != null) {
+        widgetList.add(_buildMoreOptionForOtherComment());
+      } else {
+        widgetList.add(_buildMoreOptionForOther());
+      }
     }
     return widgetList;
+  }
+
+  Widget _buildMoreOptionForComments() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // if (getLoggedInUserName(context) ==
+        //     widget.commentDetail!.authorUsername) ...[
+        //   _buildTile(
+        //       icon: "yarn/delete",
+        //       title: 'Delete',
+        //       subTitle: 'Delete this comment',
+        //       onTap: () {
+        //         print('Delete clicked');
+        //
+        //         showDeleteYarnCommentDialog();
+        //       }),
+        // ] else ...[
+        //   _buildTile(
+        //       icon: "yarn/report",
+        //       title: 'Report comment',
+        //       subTitle: 'I’m concerned about this post',
+        //       onTap: () {
+        //         Navigator.pop(context);
+        //         NavigationUtil.push(context,
+        //             screen: AddReportScreen(
+        //               object: widget.commentDetail!.toJson(),
+        //               type: "comment",
+        //             ));
+        //       }),
+        // ],
+        if (isComments()) ...[
+          _buildTile(
+              icon: "yarn/delete",
+              title: 'Delete',
+              subTitle: 'Delete this comment',
+              onTap: () {
+                showDeleteYarnCommentDialog();
+              }),
+        ] else ...[
+          _buildTile(
+              icon: "yarn/report",
+              title: 'Report comment',
+              subTitle: 'I’m concerned about this post',
+              onTap: () {
+                Navigator.pop(context);
+                NavigationUtil.push(context,
+                    screen: AddReportScreen(
+                      object: widget.commentDetail!.toJson(),
+                      type: "comment",
+                    ));
+              }),
+        ],
+      ],
+    );
   }
 
   Widget _buildMoreOptionForOwner() {
@@ -217,6 +276,21 @@ class _YarnOptionsState extends State<YarnOptions> {
         SizedBox(
           height: 15,
         ),
+        if (widget.yarnTopic!.saveId != null) ...[
+          _buildTile(
+            icon: "yarn/delete",
+            title: !widget.yarnTopic!.isQuestion
+                ? 'Delete Saved Yarn'
+                : 'Delete Saved Questions',
+            subTitle: 'Deleted this from saved items',
+            onTap: () {
+              removeSavedYarn(widget.yarnTopic!.saveId.toString());
+            },
+          ),
+          SizedBox(
+            height: 15,
+          ),
+        ],
         _buildTile(
             icon: "yarn/hide",
             title: widget.yarnTopic!.enableCommenting!
@@ -297,64 +371,77 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   Widget _buildMoreOptionForOther() {
-    debugPrint('saved yarn::: ${widget.commentDetail!.authorUsername}');
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // if (widget.yarnTopic!.saveId == null) ...[
-        if (widget.commentDetail!.authorUsername !=
-            getLoggedInUserName(context)) ...[
-          _buildTile(
-            icon: "yarn/bookmark",
-            // title: !widget.yarnTopic!.isQuestion ? 'Save Yarn' : 'Save Questions',
-            title: 'Save Yarn',
-            subTitle: 'Add this to you saved items',
-            onTap: () {
-              addUserVisibilityOption("saved");
-            },
-          ),
-        ] else ...[
+        if (widget.yarnTopic!.saveId != null) ...[
+          //if saved yarn is not null
           _buildTile(
             icon: "yarn/delete",
-            // title: !widget.yarnTopic!.isQuestion ? 'Delete Saved Yarn' : 'Delete Saved Questions',
-            title: 'Delete Saved Yarn',
+            title: !widget.yarnTopic!.isQuestion
+                ? 'Delete Saved Yarn'
+                : 'Delete Saved Questions',
             subTitle: 'Deleted this from saved items',
             onTap: () {
               removeSavedYarn(widget.yarnTopic!.saveId.toString());
             },
           ),
-        ],
-        SizedBox(
-          height: 15,
-        ),
-        _buildTile(
-            icon: "yarn/hide",
-            title: 'Not Interested',
-            subTitle: 'Not interested in this yarn',
-            onTap: () {
-              addUserVisibilityOption("not-interested");
-            }),
-        SizedBox(
-          height: 15,
-        ),
-        _buildTile(
-            icon: "yarn/report",
-            title: 'Report yarn',
-            subTitle: 'I’m concerned about this yarn',
-            onTap: () {
-              Navigator.pop(context);
-              NavigationUtil.push(context,
-                  screen: AddReportScreen(
-                    object: widget.yarnTopic!.toJson(),
-                    type: "yarn",
-                  ));
-            }),
+        ] else ...[
+          //if saved yarn is null
+          if (widget.yarnTopic!.authorName != getLoggedInUserName(context)) ...[
+            _buildTile(
+              icon: "yarn/bookmark",
+              title: !widget.yarnTopic!.isQuestion
+                  ? 'Save Yarn'
+                  : 'Save Questions',
+              subTitle: 'Add this to you saved items',
+              onTap: () {
+                addUserVisibilityOption("saved");
+              },
+            ),
+          ] else ...[
+            _buildTile(
+              icon: "yarn/delete",
+              title: !widget.yarnTopic!.isQuestion
+                  ? 'Delete Saved Yarn'
+                  : 'Delete Saved Questions',
+              subTitle: 'Deleted this from saved items',
+              onTap: () {
+                removeSavedYarn(widget.yarnTopic!.saveId.toString());
+              },
+            ),
+          ],
+          SizedBox(
+            height: 15,
+          ),
+          _buildTile(
+              icon: "yarn/hide",
+              title: 'Not Interested',
+              subTitle: 'Not interested in this yarn',
+              onTap: () {
+                addUserVisibilityOption("not-interested");
+              }),
+          SizedBox(
+            height: 15,
+          ),
+          _buildTile(
+              icon: "yarn/report",
+              title: 'Report yarn',
+              subTitle: 'I’m concerned about this yarn',
+              onTap: () {
+                Navigator.pop(context);
+                NavigationUtil.push(context,
+                    screen: AddReportScreen(
+                      object: widget.yarnTopic!.toJson(),
+                      type: "yarn",
+                    ));
+              }),
+        ]
       ],
     );
   }
 
-  Widget _buildMoreOptionForComments() {
+  Widget _buildMoreOptionForOtherComment() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -491,15 +578,16 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   bool isComments() {
-    debugPrint("IS MY COMMENTS::: ${widget.commentDetail!.authorUsername}");
+    // debugPrint("IS MY COMMENTS::: ${widget.commentDetail!.authorUsername}");
 
     if (widget.commentDetail != null) {
       debugPrint("IS MY COMMENTS");
       return getLoggedInUserName(context) ==
           widget.commentDetail!.authorUsername;
-    } else if (widget.yarnTopic != null) {
-      debugPrint("IS MY YARN QUESTION");
-      return getLoggedInUserName(context) == widget.yarnTopic!.author;
+    } else if (widget.commentDetail != null) {
+      debugPrint("IS Not MY COMMENT");
+      return getLoggedInUserName(context) !=
+          widget.commentDetail!.authorUsername;
     }
     debugPrint("NOTHING");
     return false;
