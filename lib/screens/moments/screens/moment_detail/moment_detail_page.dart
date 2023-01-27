@@ -60,6 +60,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
   @override
   void initState() {
     super.initState();
+
+    // debugPrint('contact list:::${}');
     _verticalScrollPageViewCtrl =
         PageController(initialPage: getInitialPageIndex());
     if (widget.listOfConnectionNames.isNotEmpty) {
@@ -192,6 +194,8 @@ class _MomentsDetailsScreenState extends State<MomentsDetailsScreen> {
 
       // Whether previous or next index depending on if the user has gotten to the top or end of the vertical list respectively.
       int indexToWorkWith = getNextList ? nextIndex : previousIndex;
+
+      debugPrint('ERROR FETCHING MOMENT :: ${indexToWorkWith}');
 
       if (widget.listOfConnectionNames.indices.contains(indexToWorkWith)) {
         try {

@@ -141,7 +141,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     return Column(
       children: [
         _buildCommentDetailView(),
-        _buildTopicTextField(),
+        if (widget.yarn.enableCommenting ?? false) _buildTopicTextField(),
       ],
     );
   }

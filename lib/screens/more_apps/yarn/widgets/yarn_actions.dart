@@ -93,14 +93,12 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildCommentButton() {
     return InkWell(
-      onTap: enableCommenting()
-          ? () {
-              NavigationUtil.push(
-                context,
-                screen: YarnDetailScreen(yarn: widget.yarn),
-              );
-            }
-          : null,
+      onTap: () {
+        NavigationUtil.push(
+          context,
+          screen: YarnDetailScreen(yarn: widget.yarn),
+        );
+      },
       child: Row(
         children: [
           SvgPicture.asset(
