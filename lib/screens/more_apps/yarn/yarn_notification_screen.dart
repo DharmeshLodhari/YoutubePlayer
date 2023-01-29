@@ -11,7 +11,9 @@ import '../../../widget/noItemInList.dart';
 import 'models/Topics/Notifications.dart';
 
 class YarnNotification extends StatefulWidget {
-  const YarnNotification({Key? key}) : super(key: key);
+  Function(bool)? onDeleteNotification;
+
+  YarnNotification({Key? key, this.onDeleteNotification}) : super(key: key);
 
   @override
   State<YarnNotification> createState() => _YarnNotificationState();
@@ -183,6 +185,8 @@ class _YarnNotificationState extends State<YarnNotification> {
             .indexWhere((element) => element.id == notifications.id);
         if (index != -1) {
           notificationList.removeAt(index);
+          //send callback to refresh notification count
+          widget.onDeleteNotification!(true);
           if (mounted) setState(() {});
         }
         // onRefresh();

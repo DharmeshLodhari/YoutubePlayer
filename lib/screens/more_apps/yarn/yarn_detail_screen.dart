@@ -348,8 +348,6 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   }
 
   Future addComment() async {
-    // debugPrint('Fola ::; ${widget.yarn.author}');
-
     Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": userName,
