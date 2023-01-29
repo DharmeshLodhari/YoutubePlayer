@@ -152,7 +152,9 @@ class _YarnDashboardState extends State<YarnDashboard> {
         onTap: () {
           NavigationUtil.push(
             context,
-            screen: YarnNotification(),
+            screen: YarnNotification(onDeleteNotification: (bool) {
+              fetchMessageCount();
+            }),
           );
         },
         backgroundColor: lightGrey.withOpacity(0.1),
