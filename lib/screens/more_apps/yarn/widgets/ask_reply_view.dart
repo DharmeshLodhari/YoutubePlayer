@@ -143,8 +143,7 @@ class AskReplyView extends StatelessWidget {
 
   Widget _buildCommentDescription() {
     return RichTextForTitle(
-      description:
-          replyCommentDetail!.comment ?? '',
+      description: replyCommentDetail!.comment ?? '',
     );
     // return Text(
     //   messageDecoderWithEmoji(replyCommentDetail!.comment!)!,

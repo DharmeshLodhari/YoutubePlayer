@@ -177,6 +177,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
             yarn: widget.yarn,
             yarnComment: widget.yarnComment,
             isCommentDetail: true,
+            yarnCommentReply: widget.yarnComment,
           ),
         ),
         YarnCommentReplyList(
@@ -232,7 +233,6 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
           FocusScope.of(context).unfocus();
           isAPILoading = true;
           if (mounted) setState(() {});
-          debugPrint('Fola Thread::: ${widget.yarnComment.authorUsername}');
           userName = widget.yarnComment.authorUsername;
           await addReplyComment();
           isAPILoading = false;
@@ -246,8 +246,6 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
   }
 
   Future addReplyComment() async {
-    debugPrint('Fola Thread 000::; ${widget.yarnComment.authorUsername}');
-
     Map<String, dynamic> data = {
       "comment": controller.text,
       "author_username": userName,
