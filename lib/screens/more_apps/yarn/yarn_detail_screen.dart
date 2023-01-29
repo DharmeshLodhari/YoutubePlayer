@@ -62,6 +62,7 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
   Service? serviceValue;
   YarnDashboardBloc? yarnDashboardBloc;
   String? userName;
+  int count = 0;
 
   @override
   void initState() {
@@ -214,17 +215,28 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16),
-          child: YarnTile(
-            yarn: finalYarn!,
-            onDeleteYarn: (Yarn yarn) {
-              Navigator.of(context).pop();
-            },
-          ),
+          child: count == 0
+              ? YarnTile(
+                  yarn: finalYarn!,
+                  onDeleteYarn: (Yarn yarn) {
+                    Navigator.of(context).pop();
+                  },
+                )
+              : YarnTile(
+                  yarn: finalYarn!,
+                  onDeleteYarn: (Yarn yarn) {
+                    Navigator.of(context).pop();
+                  },
+                  minusComment: true,
+                ),
         ),
         YarnCommentList(
           key: yarnCommentScreenKey,
           yarn: finalYarn!,
           commentScrollController: _commentScrollController,
+          onCountChanged: (int val) {
+            setState(() => count = val);
+          },
         ),
       ],
     );

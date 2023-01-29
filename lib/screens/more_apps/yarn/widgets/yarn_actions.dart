@@ -26,8 +26,9 @@ import '../yarn_dashboard_bloc.dart';
 class YarnActions extends StatefulWidget {
   final Yarn yarn;
   final Function(Yarn)? onReYarnAdded;
+  bool? minusComment;
 
-  YarnActions({required this.yarn, this.onReYarnAdded});
+  YarnActions({required this.yarn, this.onReYarnAdded, this.minusComment});
 
   @override
   State<YarnActions> createState() => _YarnActionsState();
@@ -338,7 +339,11 @@ class _YarnActionsState extends State<YarnActions> {
   String getCommentCount() {
     if (widget.yarn.numberOfComments != null &&
         widget.yarn.numberOfComments != 0) {
-      return widget.yarn.numberOfComments?.toString() ?? "";
+      if (widget.minusComment == true) {
+        return (widget.yarn.numberOfComments! - 1).toString() ?? "";
+      } else {
+        return widget.yarn.numberOfComments?.toString() ?? "";
+      }
     }
     return "";
   }

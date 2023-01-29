@@ -34,6 +34,7 @@ class YarnCommentTile extends StatefulWidget {
   final bool? openReply;
   final bool? isCommentDetail;
   final Function(YarnComment)? onDeleteComment;
+  bool? minusComment;
 
   YarnCommentTile({
     required this.yarn,
@@ -43,6 +44,7 @@ class YarnCommentTile extends StatefulWidget {
     this.openReply = false,
     this.isCommentDetail = false,
     this.onDeleteComment,
+    this.minusComment,
   });
 
   @override
@@ -565,6 +567,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       comment: widget.yarnComment,
       yarn: widget.yarn,
       isCommentDetail: widget.isCommentDetail ?? false,
+      minusComment: widget.minusComment,
     );
   }
 

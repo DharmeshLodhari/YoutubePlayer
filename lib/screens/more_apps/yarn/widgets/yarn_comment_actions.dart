@@ -27,11 +27,13 @@ class YarnCommentActions extends StatefulWidget {
   final YarnComment comment;
   final Yarn yarn;
   final bool isCommentDetail;
+  final bool? minusComment;
 
   YarnCommentActions({
     required this.comment,
     required this.yarn,
     this.isCommentDetail = false,
+    this.minusComment,
   });
 
   @override
@@ -300,7 +302,11 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
 
   String getCommentCount() {
     if (widget.comment.replyCount != null && widget.comment.replyCount != 0) {
-      return widget.comment.replyCount?.toString() ?? "";
+      if (widget.minusComment == true) {
+        return (widget.comment.replyCount! - 1).toString() ?? "";
+      } else {
+        return widget.comment.replyCount?.toString() ?? "";
+      }
     }
     return "";
   }

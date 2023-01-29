@@ -12,11 +12,13 @@ class YarnCommentReplyList extends StatefulWidget {
       {required this.yarn,
       required this.yarnComment,
       required this.commentScrollController,
-      Key? key})
+      Key? key,
+      this.onCountChanged})
       : super(key: key);
   final Yarn yarn;
   final ScrollController commentScrollController;
   final YarnComment yarnComment;
+  final Function(int)? onCountChanged;
 
   @override
   State<YarnCommentReplyList> createState() => _YarnCommentReplyListState();
@@ -104,6 +106,15 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
                             yarn: widget.yarn,
                             yarnComment: yarnComment,
                             openReply: false,
+                            onDeleteComment: (YarnComment yarnCmt) {
+                              int index = yarnComments.indexWhere(
+                                  (element) => element.id == yarnCmt.id);
+                              if (index != -1) {
+                                yarnComments.removeAt(index);
+                                widget.onCountChanged!(1);
+                              }
+                              if (mounted) setState(() {});
+                            },
                           ),
                         ),
                         SizedBox(
