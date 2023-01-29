@@ -104,13 +104,7 @@ class SavedYarnState extends State<SavedYarn> {
           noList = true;
         });
       }
-    } else if (next == null && yarnTopicList.length > 6) {
-      // _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //   content:
-      //   Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //   duration: Duration(milliseconds: 500),
-      // ));
-    }
+    } else if (next == null && yarnTopicList.length > 6) {}
   }
 
   @override

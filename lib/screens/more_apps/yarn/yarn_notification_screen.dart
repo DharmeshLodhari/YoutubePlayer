@@ -1,11 +1,10 @@
-import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/notification_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_shimmer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
-import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
-import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/utils/util.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../locale/app_localization.dart';
 import '../../../utils/colors.dart';
 import '../../../widget/noItemInList.dart';
@@ -24,6 +23,9 @@ class _YarnNotificationState extends State<YarnNotification> {
   List<Notifications> notificationList = [];
   int count = 0;
   bool noList = false;
+  RefreshController refreshController =
+      RefreshController(initialRefresh: false);
+  ScrollController _scrollController = new ScrollController();
 
   void getAllNotification() async {
     if (!isLoading) {
@@ -59,7 +61,6 @@ class _YarnNotificationState extends State<YarnNotification> {
             notificationList.addAll(tempList);
           });
         }
-        debugPrint("YARN TOPICS:- $notificationList");
       }
       if (notificationList.isEmpty) {
         if (mounted) {
@@ -68,19 +69,20 @@ class _YarnNotificationState extends State<YarnNotification> {
           });
         }
       }
-      // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //     content:
-      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //     duration: Duration(milliseconds: 500),
-      //   ));
-      // }
     }
   }
 
   @override
   void initState() {
     getAllNotification();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
+          _scrollController.position.pixels != 0) {
+        getAllNotification();
+      }
+    });
     super.initState();
   }
 
@@ -89,7 +91,16 @@ class _YarnNotificationState extends State<YarnNotification> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: _buildBody(),
+      body: SmartRefresher(
+        enablePullDown: true,
+        header: WaterDropHeader(
+          complete: Container(),
+          waterDropColor: yarnBlack,
+        ),
+        controller: refreshController,
+        onRefresh: onRefresh,
+        child: _buildBody(),
+      ),
     );
   }
 
@@ -167,6 +178,41 @@ class _YarnNotificationState extends State<YarnNotification> {
     }
     return AskNotificationView(
       notification: notification,
+      onDeleteNotification: (Notifications notifications) {
+        int index = notificationList
+            .indexWhere((element) => element.id == notifications.id);
+        if (index != -1) {
+          notificationList.removeAt(index);
+          if (mounted) setState(() {});
+        }
+        // onRefresh();
+      },
     );
+  }
+
+  void onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        count = 0;
+        next = "";
+        previous = "";
+        notificationList = [];
+        if (mounted) setState(() {});
+
+        getAllNotification();
+        setState(() {
+          refreshController.refreshCompleted();
+        });
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+        setState(() {
+          refreshController.refreshCompleted();
+        });
+      }
+    });
   }
 }

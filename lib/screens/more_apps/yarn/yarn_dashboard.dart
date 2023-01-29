@@ -114,7 +114,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
             height: 12,
             width: 12,
           )),
-      SizedBox(width: 30),
+      SizedBox(width: 20),
       RoundedBackgroundIcon(
         height: 34,
         width: 34,
@@ -141,8 +141,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
                       bottom: 4),
               elevation: 0,
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10.0),
+            child: Center(
               child: SvgPicture.asset(
                 "yarn/notification".toSVG(),
                 height: 16,
