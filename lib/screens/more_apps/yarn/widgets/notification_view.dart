@@ -1,7 +1,11 @@
+import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/dialog.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/util.dart';
 import '../models/Topics/Notifications.dart';
@@ -9,7 +13,10 @@ import '../utils/utils.dart';
 
 class AskNotificationView extends StatelessWidget {
   Notifications? notification;
-  AskNotificationView({Key? key, this.notification}) : super(key: key);
+  Function(Notifications)? onDeleteNotification;
+
+  AskNotificationView({Key? key, this.notification, this.onDeleteNotification})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -117,8 +124,8 @@ class AskNotificationView extends StatelessWidget {
               ),
             ),
             InkWell(
-              onTap: () {
-                print('Notification delete::: ${notification!.id}');
+              onTap: () async {
+                showDeleteNotificationDialog(context, notification!.id);
               },
               child: Icon(
                 Icons.cancel,
@@ -156,5 +163,43 @@ class AskNotificationView extends StatelessWidget {
     return RichTextForTitle(
       description: notification!.body ?? '',
     );
+  }
+
+  showDeleteNotificationDialog(BuildContext context, String? notificationId) {
+    showDialogBox(
+        context: context,
+        actionOneTextColor: white,
+        actionOneBgColor: mateRed,
+        actionTwoTextColor: blackFont,
+        actionTwoBgColor: greyBorderColor,
+        title: 'Delete',
+        actionTwoText: AppLocalization.of(context)!.cancel,
+        actionOneText: AppLocalization.of(context)!.delete,
+        description: 'Are you sure you want to delete this Notification?',
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          enableMargin: false,
+          width: 90,
+          height: 90,
+          image: Icon(SlydoAppIcon.delete, color: mateRed),
+        ),
+        leftButtonOnPressed: () {
+          // Navigator.pop(context);
+          return deleteNotification(notificationId);
+        },
+        rightButtonOnPressed: () {
+          debugPrint('Cancel clicked');
+          // return Navigator.pop(context);
+        });
+  }
+
+  deleteNotification(String? notificationId) async {
+    bool? data = await YarnAuth().deleteNotification(notification!.id);
+    if (data != null && data) {
+      showToast(message: "Notification deleted successfully");
+
+      if (notification != null) {
+        onDeleteNotification!(notification!);
+      }
+    }
   }
 }

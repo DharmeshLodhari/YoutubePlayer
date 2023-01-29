@@ -1305,7 +1305,7 @@ class YarnAuth extends AuthService {
     }
   }
 
-  // Get all Comment
+  // Get all Notifications
   Future<Map<String, dynamic>?> getAllNotification(
       String? next, String previous) async {
     debugPrint("CALLING ALL NOTIFICATION");
@@ -1341,6 +1341,29 @@ class YarnAuth extends AuthService {
       };
 
       return result;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // delete Notifications
+  Future<bool?> deleteNotification(String? notificationId) async {
+    debugPrint("CALLING DELETE NOTIFICATION");
+    String url =
+        AppConfig.baseUrl + "/api/v1/social/ask/notifications/$notificationId/";
+
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    debugPrint(
+        "DELETE NOTIFICATION RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 204) {
+      return true;
     } else if (response.statusCode == 500) {
       return null;
     } else {
