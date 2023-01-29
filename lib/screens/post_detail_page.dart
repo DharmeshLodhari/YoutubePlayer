@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart' as flutterQuill;
+import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -283,32 +284,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   Widget getPostFullText() {
-    debugPrint('FLUTTER QUIL widget.postType -> ${widget.postType}');
-    debugPrint('FLUTTER QUIL PostType.blog -> ${PostType.blog}');
-    var map = jsonDecode(userPost!.text!);
-
-    debugPrint('FLUTTER QUIL fola -> ${map}');
-
-    for (final e in map) {
-      debugPrint('FLUTTER QUIL fola 000 -> ${e['insert']}');
-    }
-
     if (widget.postType == PostType.blog) {
       if (blogBodyTextJson != null) {
-        debugPrint('FLUTTER QUIL -> $blogBodyTextJson');
-        debugPrint('FLUTTER QUIL -> ${blogBodyTextJson.runtimeType}');
-
-        // return flutterQuill.QuillEditor.basic(
-        //   controller: _quillController,
-        //   readOnly: true,
-        // );
-
-        for (final e in map) {
-          debugPrint('FLUTTER QUIL fola 001 -> ${e['insert']}');
-        }
-
         return flutterQuill.QuillEditor.basic(
           controller: _quillController,
+          embedBuilders: FlutterQuillEmbeds.builders(),
           readOnly: true,
         );
       } else {

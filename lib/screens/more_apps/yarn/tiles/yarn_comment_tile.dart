@@ -29,6 +29,7 @@ import '../yarn_comment_detail_screen.dart';
 class YarnCommentTile extends StatefulWidget {
   final Yarn yarn;
   final YarnComment yarnComment;
+  final YarnComment? yarnCommentReply;
   List<YarnComment>? commentDetailsList = [];
   final bool? openReply;
   final bool? isCommentDetail;
@@ -37,6 +38,7 @@ class YarnCommentTile extends StatefulWidget {
   YarnCommentTile({
     required this.yarn,
     required this.yarnComment,
+    this.yarnCommentReply,
     this.commentDetailsList,
     this.openReply = false,
     this.isCommentDetail = false,
@@ -399,6 +401,20 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     );
   }
 
+  String? getReplyingUsername() {
+    String? username;
+
+    // debugPrint('Comment reply:::: ${widget.yarnComment.comment}');
+    // debugPrint('Comment reply:::: ${item.comment}');
+
+    if (widget.yarnCommentReply != null) {
+      username = widget.yarnCommentReply!.authorUsername;
+    } else {
+      username = widget.yarn.author;
+    }
+    return "@$username";
+  }
+
   Widget _buildRepliedText() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -409,7 +425,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         ),
         Expanded(
           child: userNameWithVerifiedIcon(
-              name: "@${widget.yarn.author}",
+              name: getReplyingUsername()!,
               isVerified: false,
               textStyle: TextStyle(
                   fontSize: 13, fontWeight: FontWeight.w500, color: navyBlue)),

@@ -192,7 +192,9 @@ class _YarnCommentReplyListState extends State<YarnCommentReplyList> {
             yarnComments.addAll(tempList);
           });
         }
-        debugPrint("YARN TOPICS:- $widget.commentDetailsList");
+        debugPrint(
+            "YARN TOPICS comment:- ${widget.yarnComment.authorUsername}");
+        debugPrint("YARN TOPICS comment 00:- ${widget.yarnComment.comment}");
       }
       if (yarnComments.isEmpty) {
         if (mounted) {
