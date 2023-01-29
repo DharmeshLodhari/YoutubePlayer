@@ -8,11 +8,15 @@ import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:flutter/material.dart';
 
 class YarnCommentList extends StatefulWidget {
-  const YarnCommentList(
-      {required this.yarn, required this.commentScrollController, Key? key})
-      : super(key: key);
+  YarnCommentList({
+    required this.yarn,
+    required this.commentScrollController,
+    Key? key,
+    this.onCountChanged,
+  }) : super(key: key);
   final Yarn yarn;
   final ScrollController commentScrollController;
+  final Function(int)? onCountChanged;
 
   @override
   State<YarnCommentList> createState() => _YarnCommentListState();
@@ -105,6 +109,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
                                   (element) => element.id == yarnCmt.id);
                               if (index != -1) {
                                 yarnComments.removeAt(index);
+                                widget.onCountChanged!(1);
                               }
                               if (mounted) setState(() {});
                             },

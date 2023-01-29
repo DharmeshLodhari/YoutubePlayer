@@ -37,6 +37,7 @@ class YarnTile extends StatefulWidget {
   Function(Yarn)? onUpdateYarn;
   Function()? navigateToReyarn;
   final Color? backGroundColor;
+  bool? minusComment;
 
   YarnTile(
       {required this.yarn,
@@ -44,7 +45,8 @@ class YarnTile extends StatefulWidget {
       this.onDeleteYarn,
       this.onUpdateYarn,
       this.onReYarn,
-      this.navigateToReyarn});
+      this.navigateToReyarn,
+      this.minusComment});
 
   @override
   State<YarnTile> createState() => _YarnTileState();
@@ -407,6 +409,7 @@ class _YarnTileState extends State<YarnTile> {
       onReYarnAdded: (Yarn yarn) {
         widget.onReYarn!(yarn);
       },
+      minusComment: widget.minusComment,
     );
   }
 
@@ -417,22 +420,19 @@ class _YarnTileState extends State<YarnTile> {
       childWidget = YarnServiceTile(
         service: service,
       );
-    }
-    else if (widget.yarn.attachmentType == 'product') {
+    } else if (widget.yarn.attachmentType == 'product') {
       Product product = Product.fromJson(widget.yarn.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
-    }
-    else if (widget.yarn.attachmentType == 'blog') {
+    } else if (widget.yarn.attachmentType == 'blog') {
       UserPost post = UserPost.fromJson(widget.yarn.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
-    }
-    else if (widget.yarn.attachmentType == 'profile') {
+    } else if (widget.yarn.attachmentType == 'profile') {
       CustomerProfile customerProfile =
           CustomerProfile.fromJson(widget.yarn.attachment ?? {});
 
