@@ -123,6 +123,10 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     Future.microtask(() => context.read<YarnDashboardBloc>().init());
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
+
+    if (widget.yarnTopic!.category != null) {
+      selectedAskCategory = widget.yarnTopic!.category;
+    }
     super.initState();
   }
 
