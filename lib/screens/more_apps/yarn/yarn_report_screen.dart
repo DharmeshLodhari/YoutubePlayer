@@ -193,7 +193,11 @@ class _AddReportScreenState extends State<AddReportScreen> {
             backgroundColor: navyBlue,
             text: "Submit",
             onPressed: () async {
-              addReport();
+              if (selectedViolationType == null) {
+                showToast(message: "Selected reason to proceed");
+              } else {
+                addReport();
+              }
             },
           ),
         ),
