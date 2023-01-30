@@ -83,7 +83,7 @@ class PaymentAndBankingAuth extends AuthService {
   }
 
   Future<String?> verifyOtp(String otp) async {
-    var url = AppConfig.baseUrl + "/api/v1/sms/verify";
+    var url = AppConfig.baseUrl + "/api/v1/sms/verify/";
     var headers = getNonAuthHeader();
     var data = {
       "code": otp,

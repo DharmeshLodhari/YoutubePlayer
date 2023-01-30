@@ -78,13 +78,15 @@ class UserAuth extends AuthService {
     if (userName == null) {
       return {};
     }
-    var url = AppConfig.baseUrl + "/api/v1/user/follow/followers/" + userName.trim();
+    var url =
+        AppConfig.baseUrl + "/api/v1/user/follow/followers/" + userName.trim();
 
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
     print('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
-    debugPrint("RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+    debugPrint(
+        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200) {
       List<UserFollowers> userFollowers = [];
       var jsonData = json.decode(response.body);
@@ -258,7 +260,7 @@ class UserAuth extends AuthService {
 
 // it will register the phone number to get OTP
   Future<bool> registerPhoneNumber(String phoneNumber) async {
-    var url = AppConfig.baseUrl + "/api/v1/sms/register-phone-number";
+    var url = AppConfig.baseUrl + "/api/v1/sms/register-phone-number/";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
@@ -317,7 +319,7 @@ class UserAuth extends AuthService {
       String otp,
       String passwordToken) async {
     late String result;
-    var url = AppConfig.baseUrl + "/api/v1/sms/verify";
+    var url = AppConfig.baseUrl + "/api/v1/sms/verify/";
     var headers = getNonAuthHeader();
     var data = {
       "phone": phoneNumber,
