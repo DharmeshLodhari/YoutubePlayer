@@ -227,9 +227,9 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     } else {
       return ClipRect(
           clipper: CustomShape(),
-          child: Align(
-              alignment: Alignment.bottomCenter,
-              child: getCommentBoxWithOptions()));
+          child: !widget.isScrolling && isShowExtension
+              ? getCommentBoxWithOptions()
+              : getCommentBox());
     }
   }
 

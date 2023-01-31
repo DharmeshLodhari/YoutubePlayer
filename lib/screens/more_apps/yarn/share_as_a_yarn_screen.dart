@@ -83,7 +83,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
 
   final textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
-  ScrollController _scrollController = ScrollController();
   List<YarnMedia> newMediaList = [];
   List<YarnMedia> existingMediaList = [];
   int imageCount = 5;
@@ -124,9 +123,13 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     textFieldTagFocusNode = FocusNode();
     askCategoriesCopy = widget.askCategories;
 
-    if (widget.yarnTopic!.category != null) {
-      selectedAskCategory = widget.yarnTopic!.category;
+    if (widget.yarnTopic == null) {
+    } else {
+      if (widget.yarnTopic!.category != null) {
+        selectedAskCategory = widget.yarnTopic!.category;
+      }
     }
+
     super.initState();
   }
 

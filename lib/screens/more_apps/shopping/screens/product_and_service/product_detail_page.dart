@@ -38,7 +38,6 @@ import '../../../yarn/yarn_auth.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 import '../../shopping_auth.dart';
 
-// ignore: must_be_immutable
 class ProductDetailPage extends StatefulWidget {
   var arguments;
 
@@ -66,8 +65,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late bool isValidCustomer;
 
   ScrollController _scrollController = new ScrollController();
-
-  late DashboardBloc _dashboardBloc;
 
   List<dynamic> sellersOtherItems = [];
 
@@ -215,7 +212,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
       );
     }
     basketBloc = Provider.of<BasketBloc>(context);
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
 
@@ -400,16 +396,6 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   }
 
   Future shareAsYarn() async {
-    /*    AddYarnAndQuestion yarn = AddYarnAndQuestion();
-    yarn.body = product?.name ?? "";
-    yarn.attachment = {
-      "product": product?.toJson().cast<String, dynamic>() ?? {}
-    };
-    bool data = await YarnAuth().addYarnAndQuestion(yarn);
-    if (data) {
-      showToast(message: "Share in Yarn successfully created");
-    } */
-
     NavigationUtil.push(context,
         screen: ShareAsAyarnScreen(
             askCategories: yarnDashboardBloc.yarnCategories,
