@@ -721,8 +721,8 @@ class YarnAuth extends AuthService {
       "age_restriction": jsonEncode(addYarnAndQuestion.ageRestriction ?? 13),
     };
     if (addYarnAndQuestion.attachment != null) {
-      mapValue['attachment'] =
-          jsonEncode(addYarnAndQuestion.attachment ?? null);
+      mapValue['attachment'] = messageDecoderWithEmoji(
+          jsonEncode(addYarnAndQuestion.attachment ?? null))!;
     }
 
     // logger.d(' share as yarn message...... $mapValue');

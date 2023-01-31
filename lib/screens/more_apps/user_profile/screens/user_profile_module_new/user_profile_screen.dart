@@ -1278,6 +1278,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       );
     }
 
+    debugPrint('username init0 one::::: ${searchedUser!.userName}');
+    debugPrint('username init0 two::::: ${userBloc!.user.userName}');
+    debugPrint('username init0 three::::: ${searchedUser!.conversationId}');
+
     if (searchedUser!.userName != userBloc.user.userName) {
       if (searchedUser!.conversationId != "") {
         return Row(

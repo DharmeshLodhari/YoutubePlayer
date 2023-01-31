@@ -218,11 +218,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
             key: topicViewStateKey,
             selectedCategory: selectedCategoryId,
           ),
-          // QuestionListScreen(
-          //   key: questionViewStateKey,
-          //   selectedCategory: selectedCategoryId,
-          // ),
-          // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),
     );
@@ -245,7 +240,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
                 isYarn: true,
                 passedCategory: '',
               )).then((value) {
-            debugPrint("THEN VALUE===$value");
             if (value != null) {
               if (value == Types.Yarn) {
                 updateCurrentAskTapOnHome(index: 0);

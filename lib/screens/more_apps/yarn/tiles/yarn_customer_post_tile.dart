@@ -14,7 +14,6 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -47,7 +46,8 @@ class YarnCustomerPostTile extends StatefulWidget {
   _YarnCustomerPostTileState createState() => _YarnCustomerPostTileState();
 }
 
-class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
+class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
+    with TickerProviderStateMixin {
   UserBloc? userBloc;
   bool isAuthor = false;
   bool isSelected = false;
@@ -196,19 +196,31 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
                         ],
                       ),
                       SizedBox(height: 8),
-                      Linkify(
-                        onOpen: (_) {},
-                        text: widget.customerProfile?.bio == null
-                            ? ''
-                            : messageDecoderWithEmoji(
-                                    widget.customerProfile?.bio) ??
-                                "",
-                        textAlign: TextAlign.left,
+                      YarnSmartText(
+                        text: messageDecoderWithEmoji(
+                            widget.customerProfile?.bio)!,
                         style: TextStyle(
-                          fontSize:
-                              getFontSize(widget.tileRenderPlace, context),
-                        ),
+                            color: blackFont,
+                            fontSize: 16,
+                            fontFamily: "OpenSans"),
                         maxLines: 6,
+                        // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
+                        disableAt: false,
+                        onTagClick: (tag) {
+                          NavigationUtil.push(context,
+                              screen: SearchScreen(searchText: tag.trim()));
+                        },
+                        onUrlClicked: (open) {
+                          // launch  url
+                          launchUrl(Uri.parse(open.toString()));
+                        },
+                        onAtClick: (at) {
+                          Navigator.pushNamed(context, Routes.USER_PROFILE,
+                              arguments: {
+                                "searchedUserName":
+                                    at.replaceAll(RegExp('@'), '').trim()
+                              });
+                        },
                       ),
                       SizedBox(height: 10),
                     ],
@@ -258,6 +270,11 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile> {
         ],
       );
     }
+
+    debugPrint('username init one::::: ${widget.customerProfile!.userName}');
+    debugPrint('username init two::::: ${userBloc!.user.userName}');
+    debugPrint(
+        'username init three::::: ${widget.customerProfile!.conversationId}');
 
     if (widget.customerProfile!.userName != userBloc!.user.userName) {
       if (widget.customerProfile!.conversationId != "") {
