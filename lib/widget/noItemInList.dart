@@ -1,5 +1,6 @@
 import 'package:Slydo/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 // ignore: must_be_immutable
 class NoItemInList extends StatelessWidget {
@@ -16,14 +17,12 @@ class NoItemInList extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Expanded(
-              child: SizedBox(height: 2),
+              child: SizedBox(height: 1),
             ),
             Expanded(
               flex: 2,
-              child: Image.asset(
-                isResult
-                    ? "assets/images/no_result_found_1.png"
-                    : "assets/images/no_result_found_2.png",
+              child: SvgPicture.asset(
+                'assets/images/no_item.svg',
                 colorBlendMode: BlendMode.color,
                 height: 150,
                 width: 150,
@@ -45,7 +44,11 @@ class NoItemInList extends StatelessWidget {
             Expanded(
                 child: SizedBox(
               height: 2,
-            ))
+            )),
+            Expanded(
+                child: SizedBox(
+              height: 2,
+            )),
           ],
         ),
       ),

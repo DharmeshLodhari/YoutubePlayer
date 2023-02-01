@@ -313,6 +313,8 @@ class _AddReportScreenState extends State<AddReportScreen> {
           Navigator.pop(context);
           showToast(message: "Reported Successfully");
         }
+      } else {
+        showToast(message: 'Server error, report failed');
       }
     }).catchError((error) {
       debugPrint(error.toString());
