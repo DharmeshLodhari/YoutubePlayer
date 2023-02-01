@@ -1218,10 +1218,11 @@ class YarnAuth extends AuthService {
 
   // Add Report to YARN
   Future<bool?> addReport(String postId, Map<String, dynamic> body) async {
-    debugPrint("CALLING ALL CATEGORIES");
+    debugPrint("CALLING ALL REPORT");
     String url = "";
     url = AppConfig.baseUrl + "/api/v1/social/ask/report/$postId/";
     debugPrint(url);
+    debugPrint('report body::: ${body}');
 
     var headers = await getAuthHeaders();
     var response =
