@@ -471,9 +471,9 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
           YarnSmartText(
             text: messageDecoderWithEmoji(newString)!,
             style: TextStyle(
-                color: blackFont, fontSize: 17, fontFamily: "OpenSans"),
-            atStyle: TextStyle(
-                color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
+                color: blackFont, fontSize: 12, fontFamily: "OpenSans"),
+            // atStyle: TextStyle(
+            //     color: navyBlue, fontSize: 14, fontFamily: "OpenSans"),
             disableAt: false,
             onTagClick: (tag) {
               NavigationUtil.push(context,
@@ -544,7 +544,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
 
     return YarnSmartText(
       text: messageDecoderWithEmoji(newString)!,
-      style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
+      style: TextStyle(color: blackFont, fontSize: 12, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,
       onTagClick: (tag) {
