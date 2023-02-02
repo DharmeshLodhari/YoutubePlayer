@@ -117,7 +117,7 @@ class _YarnNotificationState extends State<YarnNotification> {
           color: blackFont,
         ),
       ),
-      elevation: 0,
+      elevation: 0.5,
       centerTitle: true,
       leading: IconButton(
         icon: Icon(
@@ -129,40 +129,36 @@ class _YarnNotificationState extends State<YarnNotification> {
           Navigator.pop(context);
         },
       ),
+      shadowColor: greySecondaryYarn,
     );
   }
 
   Widget _buildBody() {
-    return Column(
-      children: [
-        Divider(),
-        Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-            itemCount: notificationList.length + 1,
-            itemBuilder: (context, index) {
-              if (index == notificationList.length) {
-                return _buildLoadingIndicator();
-              }
-              return InkWell(
-                  onTap: () {
-                    // NavigationUtil.push(context,
-                    //     screen: YarnDetailScreen(
-                    //         yarnId: notificationList[index].yarn,
-                    //         yarn: yarnTopicList![index]));
-                    print('Notify:: ${notificationList.runtimeType}');
-                    print('Notify:: ${notificationList[index].id}');
-                    // print('Notify:: ${yarnTopicList}');
-                  },
-                  child: _buildListView(notificationList[index]));
-            },
-            separatorBuilder: (context, index) {
-              return Divider();
-            },
-          ),
-        )
-      ],
-    );
+    return _checkIfNotificationIsNotNull();
+  }
+
+  Widget _checkIfNotificationIsNotNull() {
+    if (noList) {
+      return NoItemInList(
+        msg: AppLocalization.of(context)!.noResultFound,
+      );
+    } else {
+      return Expanded(
+        child: ListView.separated(
+          padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
+          itemCount: notificationList.length + 1,
+          itemBuilder: (context, index) {
+            if (index == notificationList.length) {
+              return _buildLoadingIndicator();
+            }
+            return _buildListView(notificationList[index]);
+          },
+          separatorBuilder: (context, index) {
+            return Divider();
+          },
+        ),
+      );
+    }
   }
 
   Widget _buildLoadingIndicator() {
