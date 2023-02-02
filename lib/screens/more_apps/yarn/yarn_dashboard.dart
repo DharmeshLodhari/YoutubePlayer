@@ -7,6 +7,7 @@ import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:neat_periodic_task/neat_periodic_task.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/navigation_util.dart';
 import '../../../utils/slydo_app_icon_new_icons.dart';
@@ -42,6 +43,18 @@ class _YarnDashboardState extends State<YarnDashboard> {
   void initState() {
     _pageViewController = PageController(initialPage: 0);
     fetchMessageCount();
+
+    final scheduler = NeatPeriodicTaskScheduler(
+      interval: Duration(seconds: 60),
+      name: 'count-notify',
+      timeout: Duration(seconds: 5),
+      task: () async {
+        fetchMessageCount();
+      },
+      minCycle: Duration(seconds: 5),
+    );
+    scheduler.start();
+
     super.initState();
   }
 

@@ -40,10 +40,11 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
 
   Widget _buildSingleImageView() {
     return _buildCommonImageView(
-        imageUrl: widget.yarnTopic.media.first.mediaUrl ?? '',
-        mediaType: widget.yarnTopic.media.first.mediaType ?? '',
-        imagePoster: widget.yarnTopic.media.first.mediaPoster ?? '',
-        isSingleImage: true);
+      imageUrl: widget.yarnTopic.media.first.mediaUrl ?? '',
+      mediaType: widget.yarnTopic.media.first.mediaType ?? '',
+      imagePoster: widget.yarnTopic.media.first.mediaPoster ?? '',
+      isSingleImage: true,
+    );
   }
 
   Widget _buildTwoImageView() {
@@ -52,18 +53,20 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
         children: [
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
-                mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
+              imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
+              mediaType: widget.yarnTopic.media[0].mediaType ?? '',
+              imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
+            ),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
-                mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
+              imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
+              mediaType: widget.yarnTopic.media[1].mediaType ?? '',
+              imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
+            ),
           ),
         ],
       ),
@@ -77,27 +80,30 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
         children: [
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
-                mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
+              imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
+              mediaType: widget.yarnTopic.media[0].mediaType ?? '',
+              imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
+            ),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
-                mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
+              imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
+              mediaType: widget.yarnTopic.media[1].mediaType ?? '',
+              imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
+            ),
           ),
           SizedBox(
             width: 8,
           ),
           Expanded(
             child: _buildCommonImageView(
-                imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
-                mediaType: widget.yarnTopic.media[2].mediaType ?? '',
-                imagePoster: widget.yarnTopic.media[2].mediaPoster ?? ''),
+              imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
+              mediaType: widget.yarnTopic.media[2].mediaType ?? '',
+              imagePoster: widget.yarnTopic.media[2].mediaPoster ?? '',
+            ),
           ),
         ],
       ),
@@ -112,18 +118,20 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
-                    mediaType: widget.yarnTopic.media[0].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[0].mediaPoster ?? ''),
+                  imageUrl: widget.yarnTopic.media[0].mediaUrl ?? '',
+                  mediaType: widget.yarnTopic.media[0].mediaType ?? '',
+                  imagePoster: widget.yarnTopic.media[0].mediaPoster ?? '',
+                ),
               ),
               SizedBox(
                 width: 8,
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
-                    mediaType: widget.yarnTopic.media[1].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[1].mediaPoster ?? ''),
+                  imageUrl: widget.yarnTopic.media[1].mediaUrl ?? '',
+                  mediaType: widget.yarnTopic.media[1].mediaType ?? '',
+                  imagePoster: widget.yarnTopic.media[1].mediaPoster ?? '',
+                ),
               ),
             ],
           ),
@@ -134,18 +142,20 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
             children: [
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
-                    mediaType: widget.yarnTopic.media[2].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[2].mediaPoster ?? ''),
+                  imageUrl: widget.yarnTopic.media[2].mediaUrl ?? '',
+                  mediaType: widget.yarnTopic.media[2].mediaType ?? '',
+                  imagePoster: widget.yarnTopic.media[2].mediaPoster ?? '',
+                ),
               ),
               SizedBox(
                 width: 8,
               ),
               Expanded(
                 child: _buildCommonImageView(
-                    imageUrl: widget.yarnTopic.media[3].mediaUrl ?? '',
-                    mediaType: widget.yarnTopic.media[3].mediaType ?? '',
-                    imagePoster: widget.yarnTopic.media[3].mediaPoster ?? ''),
+                  imageUrl: widget.yarnTopic.media[3].mediaUrl ?? '',
+                  mediaType: widget.yarnTopic.media[3].mediaType ?? '',
+                  imagePoster: widget.yarnTopic.media[3].mediaPoster ?? '',
+                ),
               ),
             ],
           ),
@@ -154,11 +164,12 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
     );
   }
 
-  Widget _buildCommonImageView(
-      {required String imageUrl,
-      required String mediaType,
-      String? imagePoster,
-      bool isSingleImage = false}) {
+  Widget _buildCommonImageView({
+    required String imageUrl,
+    required String mediaType,
+    String? imagePoster,
+    bool isSingleImage = false,
+  }) {
     return InkWell(
       onTap: () {
         if (mediaType == 'video') {
@@ -180,10 +191,11 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
         }
       },
       child: _buildSingleAndMultiImageView(
-          imageUrl: imageUrl,
-          mediaType: mediaType,
-          imagePoster: imagePoster,
-          isSingleImage: isSingleImage),
+        imageUrl: imageUrl,
+        mediaType: mediaType,
+        imagePoster: imagePoster,
+        isSingleImage: isSingleImage,
+      ),
     );
   }
 
@@ -194,12 +206,12 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
     required bool isSingleImage,
   }) {
     return YarnSingleMediaPreview(
-        imageUrl: imageUrl,
-        isSingleImage: isSingleImage,
-        mediaType: mediaType,
-        imagePoster: imagePoster,
-        type:
-            'yarn' //this determine if its coming from yarn dashboard or comment
-        );
+      imageUrl: imageUrl,
+      isSingleImage: isSingleImage,
+      mediaType: mediaType,
+      imagePoster: imagePoster,
+      type:
+          'yarn', //this determine if its coming from yarn dashboard or comment
+    );
   }
 }
