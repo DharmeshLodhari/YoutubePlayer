@@ -112,6 +112,7 @@ dependencies:
   sqflite: ^2.0.0+4
   sqflite_migration: ^0.3.0
   swipe_to: ^0.1.0-nullsafety.1
+  swipe_image_gallery: ^0.8.0
   syncfusion_flutter_pdf: ^19.3.47-beta
   textfield_tags: 1.4.3
   tutorial_coach_mark: ^1.1.1

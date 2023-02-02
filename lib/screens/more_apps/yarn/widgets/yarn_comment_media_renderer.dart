@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/overlay_yarn_photo.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/view_ask_media.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_single_media_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:swipe_image_gallery/swipe_image_gallery.dart';
 
 import '../../../../routes/route_constants.dart';
 import '../../../../utils/navigation_util.dart';
@@ -15,6 +19,9 @@ class YarnCommentMediaRender extends StatefulWidget {
 }
 
 class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
+  StreamController<Widget> overlayController =
+      StreamController<Widget>.broadcast();
+
   @override
   void initState() {
     super.initState();
@@ -181,10 +188,29 @@ class _YarnCommentMediaRenderState extends State<YarnCommentMediaRender> {
             ),
           );
         } else {
-          Navigator.of(context).pushNamed(
-            Routes.PHOTO_VIEWER,
-            arguments: imageUrl,
-          );
+          // Navigator.of(context).pushNamed(
+          //   Routes.PHOTO_VIEWER,
+          //   arguments: imageUrl,
+          // );
+
+          List<Widget> imageList = [];
+          for (var item in widget.yarnTopic.media) {
+            imageList.add(Image.network('${item.mediaUrl.toString()}'));
+          }
+
+          return SwipeImageGallery(
+            context: context,
+            children: imageList,
+            onSwipe: (index) {
+              overlayController.add(OverlayYarnPhoto(
+                title: '${index + 1}/${imageList.length}',
+              ));
+            },
+            overlayController: overlayController,
+            initialOverlay: OverlayYarnPhoto(
+              title: '1/${imageList.length}',
+            ),
+          ).show();
         }
       },
       child: _buildSingleAndMultiImageView(
