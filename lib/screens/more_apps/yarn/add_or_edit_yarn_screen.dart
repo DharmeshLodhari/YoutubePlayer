@@ -131,6 +131,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   Product? productMode;
   Service? serviceMode;
   YarnDashboardBloc? yarnDashboardBloc;
+  bool editMode = false;
 
   @override
   void initState() {
@@ -140,6 +141,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn = widget.yarn?.toJson();
 
     searchItemTextController = TextEditingController();
+    editMode = true;
 
     if (widget.passedCategory.toString().isNotEmpty) {
       selectedAskCategory = widget.askCategory;
@@ -155,7 +157,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     if (yarn?['body'].toString() == 'null') {
       textController!.text = '';
     } else {
-      // textController!.text = yarn?['body'] ?? '';
       textController!.text = messageDecoderWithEmoji(yarn?['body']) ?? '';
     }
 
@@ -179,6 +180,30 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
+    if (editMode == true) {
+      if (widget.yarn != null) {
+        if (widget.yarn!.attachment.toString() != 'null') {
+          if (widget.yarn!.attachmentType == 'product') {
+            Product product = Product.fromJson(widget.yarn!.attachment);
+            var attachment = {'product': product.toJson()};
+            yarnDashboardBloc!.productService = attachment;
+            productMode = product;
+            productServicePreview = product;
+          } else if (widget.yarn!.attachmentType == 'service') {
+            Service service = Service.fromJson(widget.yarn!.attachment);
+            var attachment = {'service': service.toJson()};
+            yarnDashboardBloc!.productService = attachment;
+            serviceMode = service;
+            productServicePreview = service;
+          }
+        }
+
+        if (mounted) setState(() {});
+      }
+      editMode = false;
+      if (mounted) setState(() {});
+    }
 
     itemSearchTypeSelectionMenu = CustomizedPopUpMenu(
         buttonKey: _key,
@@ -1797,6 +1822,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                         serviceMode = searchedProductAndService[index];
                       }
 
+                      debugPrint(
+                          'checking attachment 011::: ${searchedProductAndService[index]}');
+                      debugPrint('checking attachment 012::: ${serviceMode}');
+                      debugPrint('checking attachment 013::: ${productMode}');
+                      debugPrint(
+                          'checking attachment 014::: ${productServicePreview}');
+
                       isShowExtension = true;
                       if (mounted) setState(() {});
                       Navigator.pop(context);
@@ -1854,6 +1886,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                 top: 10,
                 child: InkWell(
                   onTap: () {
+                    debugPrint('trying to remove product/service');
+
                     yarnDashboardBloc!.productService = null;
                     if (mounted) setState(() {});
                   },
