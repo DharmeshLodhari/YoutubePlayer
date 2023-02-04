@@ -59,6 +59,7 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     scrollController.addListener(() {
       setState(() => isScrolling = true);
     });
+
     super.initState();
   }
 
