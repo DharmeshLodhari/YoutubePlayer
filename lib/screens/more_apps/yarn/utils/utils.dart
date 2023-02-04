@@ -1,6 +1,6 @@
 import 'dart:typed_data';
-import 'package:Slydo/main.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
+import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -146,4 +146,25 @@ double getButtonSize(TileRenderPlace tileRenderPlace, BuildContext context) {
     case TileRenderPlace.YarnProductService:
       return 30;
   }
+}
+
+Widget assignTitleToAction({required String text, required Widget child}) {
+  return Container(
+    constraints: BoxConstraints(maxWidth: 60),
+    child: Column(
+      children: [
+        child,
+        SizedBox(height: 10),
+        Center(
+          child: Text(text,
+              style: TextStyle(
+                color: blackFont,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center),
+        )
+      ],
+    ),
+  );
 }

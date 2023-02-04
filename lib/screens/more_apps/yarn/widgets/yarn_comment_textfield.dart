@@ -143,6 +143,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   TextEditingController _gifController = TextEditingController();
 
   /// variables for product or service search
+  bool isBlogSearch = false;
   bool isProductSearch = true;
   bool isServiceSearch = false;
   bool isCurrentUsersProductOrService = false;
@@ -215,6 +216,26 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   @override
   Widget build(BuildContext context) {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
+    itemSearchTypeSelectionMenu = CustomizedPopUpMenu(
+        buttonKey: _key,
+        context: context,
+        hasIcon: true,
+        children: [
+          // CustomizedPopUpMenuItemWithIcon(
+          //     title: "Blog", value: "Blog", icon: SlydoAppIcon.circle_user),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Product", value: "Products", icon: SlydoAppIcon.product),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
+        ],
+        selectedIndex: selectedMenuItemIndex,
+        left: 16,
+        arrowPosition: Alignment.topLeft,
+        arrowLeftPadding: 16,
+        top: 14);
+    itemSearchTypeSelectionMenu!.onChange = menuItemSelectionChange;
+    itemSearchTypeSelectionMenu!.menuState = menuStateChange;
 
     if (yarnDashboardBloc!.productService != null &&
         selectedImages.isNotEmpty) {
@@ -613,27 +634,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           assignTitleToAction(text: "GIF", child: sendGIFButton()),
           assignTitleToAction(text: "", child: Container()),
           assignTitleToAction(text: "", child: Container()),
-        ],
-      ),
-    );
-  }
-
-  Widget assignTitleToAction({required String text, required Widget child}) {
-    return Container(
-      constraints: BoxConstraints(maxWidth: 60),
-      child: Column(
-        children: [
-          child,
-          SizedBox(height: 10),
-          Center(
-            child: Text(text,
-                style: TextStyle(
-                  color: blackFont,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center),
-          )
         ],
       ),
     );
@@ -1597,6 +1597,32 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         ],
       ),
     );
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+
+    if (value == "Products") {
+      isProductSearch = true;
+      isServiceSearch = false;
+      isBlogSearch = false;
+    } else if (value == "Services") {
+      isServiceSearch = true;
+      isProductSearch = false;
+      isBlogSearch = false;
+    } else if (value == "Blog") {
+      isBlogSearch = true;
+      isServiceSearch = false;
+      isProductSearch = false;
+    }
+
+    clearSearchedListItems();
+    if (mounted) setState(() {});
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
   }
 }
 

@@ -1,18 +1,31 @@
 import 'dart:io';
 
+import 'package:Slydo/data/environment.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
+import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/noItemInList.dart';
+import 'package:Slydo/widget/rounded_background_icon.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:video_player/video_player.dart';
-
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
 import '../../../main.dart';
@@ -55,10 +68,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   TextEditingController? textController = TextEditingController();
   late FocusNode textFieldTagFocusNode;
-  // List<PickedFile> selectedImages = [];
   List<YarnMedia> newMediaList = [];
   List<YarnMedia> existingMediaList = [];
-  // List<Map<String, dynamic>> selectedImagesList = [];
   int imageCount = 5;
   YarnCategories? selectedAskCategory;
   YarnCategories? pressedAskCategory;
@@ -87,12 +98,48 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   bool isAdultContent = false;
   var ageRating;
 
+  ///variable for message actions
+  bool showMoreAction = false;
+  bool isShowExtension = false;
+
+  /// variables for product or service search
+  bool isBlogSearch = false;
+  bool isProductSearch = true;
+  bool isServiceSearch = false;
+  bool isCurrentUsersProductOrService = false;
+  List searchedProductAndService = [];
+  StateSetter? bottomSheetStateSetterGlobal;
+  bool bottomSheetMounted = false;
+
+  bool isItemLoading = false;
+  int? productOrServiceCount = 0;
+  String? productOrServiceNext = "";
+  String? productOrServicePrevious = "";
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  ScrollController _scrollController = new ScrollController();
+
+  TextEditingController? searchItemTextController;
+  GlobalKey _key = LabeledGlobalKey("itemSearchTypeSelectionKey");
+  CustomizedPopUpMenu? itemSearchTypeSelectionMenu;
+  int selectedMenuItemIndex = 0;
+  bool isPopMenuOpen = false;
+  GlobalKey searchItemTextFormField = GlobalKey();
+  int bottomSheetSearchIndex = 0;
+  bool noSearchedItem = false;
+  var productServicePreview;
+  Product? productMode;
+  Service? serviceMode;
+  YarnDashboardBloc? yarnDashboardBloc;
+
   @override
   void initState() {
     shareAsYarnModelCopy = widget.shareAsYarnModel;
     _shareAsYarnModel = widget.shareAsYarnModel?.first;
     ageRating = _shareAsYarnModel?.name?.substring(9);
     yarn = widget.yarn?.toJson();
+
+    searchItemTextController = TextEditingController();
 
     if (widget.passedCategory.toString().isNotEmpty) {
       selectedAskCategory = widget.askCategory;
@@ -131,6 +178,28 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
+    itemSearchTypeSelectionMenu = CustomizedPopUpMenu(
+        buttonKey: _key,
+        context: context,
+        hasIcon: true,
+        children: [
+          // CustomizedPopUpMenuItemWithIcon(
+          //     title: "Blog", value: "Blog", icon: SlydoAppIcon.circle_user),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Product", value: "Products", icon: SlydoAppIcon.product),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
+        ],
+        selectedIndex: selectedMenuItemIndex,
+        left: 16,
+        arrowPosition: Alignment.topLeft,
+        arrowLeftPadding: 16,
+        top: 14);
+    itemSearchTypeSelectionMenu!.onChange = menuItemSelectionChange;
+    itemSearchTypeSelectionMenu!.menuState = menuStateChange;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
@@ -160,6 +229,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       leading: InkWell(
         onTap: () {
           Navigator.of(context).pop();
+          if (yarnDashboardBloc!.productService != null) {
+            yarnDashboardBloc!.productService == null;
+          }
         },
         child: Icon(
           Icons.keyboard_arrow_left,
@@ -192,6 +264,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             _buildUserNameContainer(),
           ],
           _buildAddImages(),
+          //check if product/services
+          if (yarnDashboardBloc!.productService != null) ...[
+            checkIfProductService(),
+          ],
           _buildRowForMedia(),
         ],
       ),
@@ -272,15 +348,21 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         padding: EdgeInsets.only(left: 8, bottom: 20, top: 15),
         child: Row(
           children: [
-            InkWell(
-                onTap: () {
-                  // if (selectedImagesList.length == 4) {
-                  //   showToast(
-                  //       message: "You can select only 4 images or videos");
-                  // } else {
-                  pickFileFromMedia();
-                },
-                child: SvgPicture.asset("yarn/images".toSVG())),
+            //check if image is not selected
+            if (existingMediaList.isEmpty && newMediaList.isEmpty) ...[
+              //add plus icon for product/services
+              getAddLayout(),
+            ],
+
+            //check if product/service is selected
+            if (yarnDashboardBloc!.productService == null) ...[
+              InkWell(
+                  onTap: () {
+                    pickFileFromMedia();
+                  },
+                  child: SvgPicture.asset("yarn/images".toSVG())),
+            ],
+
             SizedBox(
               width: 8,
             ),
@@ -1133,6 +1215,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     // yarnEdit.media = yarn?['media'];
     yarnEdit.tags = userTags;
 
+    if (yarnDashboardBloc!.productService != null) {
+      yarnEdit.attachment = yarnDashboardBloc!.productService;
+    }
+
     // debugPrint("YARN CATEGORY 000:- ${yarnEdit}");
     // debugPrint("YARN CATEGORY:- ${yarnEdit.category}");
 
@@ -1146,6 +1232,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       } else if (widget.isYarn == false) {
         Navigator.pop(context, Types.Question);
       }
+      //set product/service to null after comment is successful
+      yarnDashboardBloc!.productService = null;
       showToast(
           message: widget.isYarn == true
               ? "Yarn updated successfully"
@@ -1171,6 +1259,10 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarn.isAdultContent = isAdultContent;
     yarn.isSensitiveContent = isSensitiveContent;
 
+    if (yarnDashboardBloc!.productService != null) {
+      yarn.attachment = yarnDashboardBloc!.productService;
+    }
+
     logger.d(yarn.toAddMap());
 
     await YarnAuth().addYarnAndQuestion(yarn).then((value) {
@@ -1179,6 +1271,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       } else if (widget.isYarn == false) {
         Navigator.pop(context, Types.Question);
       }
+      //set product/service to null after comment is successful
+      yarnDashboardBloc!.productService = null;
       showToast(
           message: widget.isYarn == true
               ? "Yarn add successfully"
@@ -1189,58 +1283,625 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     });
   }
 
-// Widget getAmountField() {
-//   return CustomizedTextFormField(
-//     labelText: "Amount",
-//     keyboardType: Platform.isIOS
-//         ? TextInputType.numberWithOptions(decimal: true)
-//         : TextInputType.number,
-//     isAmountField: true,
-//     borderWidth: 2.0,
-//     onChanged: (val) {
-//       if (val.isNotEmpty) {
-//         try {
-//           // productPrice = double.parse(val.replaceAll(',', '')).toString();
-//         } catch (e) {
-//           showToast(message: e.toString());
-//         }
-//       }
-//     },
-//     validator: (val) {
-//       // if (val.isNotEmpty) {
-//       //   try {
-//       //     double.parse(val.replaceAll(',', ''));
-//       //     return null;
-//       //   } catch (e) {
-//       //     return AppLocalization.of(context)!.invalidAmount;
-//       //   }
-//       // }
-//       // return AppLocalization.of(context)!.pleaseEnterValidAmout;
-//     },
-//   );
-// }
-//
-// Widget _buildExpiresField() {
-//   return CustomizedDropDownField(
-//     title: "Expire",
-//     borderWidth: 2.0,
-//     child: ListTile(
-//       dense: true,
-//       title: Text(
-//         selectedAskCategory != null ? selectedAskCategory!.name! : "",
-//         style: TextStyle(
-//             color: blackFont, fontSize: 16, fontWeight: FontWeight.w600),
-//       ),
-//       trailing: Icon(
-//         Icons.keyboard_arrow_down,
-//         color: darkGrey,
-//       ),
-//       onTap: () {
-//         expiresAndroidSheet();
-//       },
-//     ),
-//   );
-// }
+  Widget getAddLayout() {
+    return Column(
+      children: getPlusBarItems(),
+    );
+  }
+
+  List<Widget> getPlusBarItems() {
+    List<Widget> items = [];
+
+    items.add(Container(
+      constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
+      child: Row(
+        children: <Widget>[
+          moreActionBtn(),
+        ],
+      ),
+    ));
+
+    if (showMoreAction) {
+      items.add(moreActionsBtn());
+    }
+
+    return items;
+  }
+
+  void menuItemSelectionChange(String value, int index) {
+    selectedMenuItemIndex = index;
+
+    if (value == "Products") {
+      isProductSearch = true;
+      isServiceSearch = false;
+      isBlogSearch = false;
+    } else if (value == "Services") {
+      isServiceSearch = true;
+      isProductSearch = false;
+      isBlogSearch = false;
+    } else if (value == "Blog") {
+      isBlogSearch = true;
+      isServiceSearch = false;
+      isProductSearch = false;
+    }
+
+    clearSearchedListItems();
+    if (mounted) setState(() {});
+  }
+
+  void menuStateChange(bool isOpen) {
+    isPopMenuOpen = isOpen;
+    setState(() {});
+  }
+
+  Widget moreActionBtn() {
+    return IconButton(
+        icon: Icon(
+          showMoreAction ? SlydoAppIcon.close_2 : SlydoAppIcon.add,
+          color: navyBlue,
+          size: showMoreAction ? 22 : 20,
+        ),
+        onPressed: () async {
+          if (FocusScope.of(context).hasFocus) {
+            FocusScope.of(context).unfocus();
+            Future.delayed(Duration(milliseconds: 100)).then((value) {
+              showMoreAction = !showMoreAction;
+              if (mounted) setState(() {});
+            });
+          } else {
+            showMoreAction = !showMoreAction;
+            if (mounted) setState(() {});
+          }
+        });
+  }
+
+  Widget moreActionsBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      child: Wrap(
+        spacing: 45,
+        runSpacing: 20,
+        children: [
+          assignTitleToAction(
+              text: "Product/ Service", child: searchProductAndServiceBtn()),
+        ],
+      ),
+    );
+  }
+
+  Widget searchProductAndServiceBtn() {
+    return RoundedBackgroundIcon(
+      borderRadius: 20,
+      height: 50,
+      width: 50,
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: blackFont,
+        size: 18,
+      ),
+      backgroundColor: navyBlue.withOpacity(0.08),
+      onTap: () {
+        showMoreAction = false;
+        if (mounted) setState(() {});
+        showSearchProductAndServiceBottomSheet();
+      },
+    );
+  }
+
+  void showSearchProductAndServiceBottomSheet() async {
+    var result = await showModalBottomSheet<String>(
+        backgroundColor: Colors.transparent,
+        context: context,
+        useRootNavigator: true,
+        barrierColor: Colors.black54,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (context, StateSetter bottomSheetStateSetter) {
+            bottomSheetStateSetterGlobal = bottomSheetStateSetter;
+            bottomSheetMounted = true;
+
+            return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20)),
+                ),
+                color: Colors.white,
+                margin: EdgeInsets.zero,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.88,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: searchBox()),
+                      SizedBox(height: 8),
+                      Expanded(child: bottomSheetTabBar())
+                    ],
+                  ),
+                ));
+          });
+        });
+    bottomSheetMounted = false;
+    if (result == null) {
+      if (itemSearchTypeSelectionMenu!.isMenuOpen) {
+        itemSearchTypeSelectionMenu!.closeMenu();
+      }
+    }
+  }
+
+  Widget searchBox() {
+    return Container(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textSelectionTheme:
+              TextSelectionThemeData().copyWith(selectionHandleColor: navyBlue),
+        ),
+        child: TextFormField(
+          key: searchItemTextFormField,
+          controller: searchItemTextController,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackFont,
+            fontWeight: FontWeight.w600,
+          ),
+          cursorWidth: 1.5,
+          cursorColor: navyBlue,
+          decoration: InputDecoration(
+            hintText: "Search here",
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
+            prefixIcon: searchTypeSelection(),
+            prefix: Padding(
+              padding: EdgeInsets.only(left: 12),
+            ),
+            suffixIcon: searchIcon(),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: navyBlue,
+                width: 1.0,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: dividerColor,
+                width: 1.0,
+              ),
+            ),
+          ),
+          onFieldSubmitted: (val) {
+            if (mounted) {
+              FocusScope.of(context).unfocus();
+              searchProductOrService();
+            }
+          },
+          // onChanged: (val) {
+          //   if (val.length == 3) {
+          //     if (mounted) {
+          //       searchProductOrService();
+          //     }
+          //   } else if (val.length == 6) {
+          //     if (mounted) {
+          //       searchProductOrService();
+          //     }
+          //   }
+          // },
+        ),
+      ),
+    );
+  }
+
+  Widget searchTypeSelection() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+        color: navyBlue,
+      ),
+      child: IconButton(
+        key: _key,
+        icon: Icon(
+          getSearchTypeIcon(),
+          color: Colors.white,
+          size: 16,
+        ),
+        onPressed: () {
+          if (itemSearchTypeSelectionMenu!.isMenuOpen) {
+            itemSearchTypeSelectionMenu!.closeMenu();
+          } else {
+            itemSearchTypeSelectionMenu!.openMenu();
+          }
+        },
+      ),
+    );
+  }
+
+  IconData getSearchTypeIcon() {
+    if (selectedMenuItemIndex == 1) {
+      return SlydoAppIcon.note_2;
+    } else if (selectedMenuItemIndex == 0) {
+      return SlydoAppIcon.product;
+    }
+    return SlydoAppIcon.product;
+  }
+
+  Widget searchIcon() {
+    return IconButton(
+      icon: Icon(
+        SlydoAppIcon.search,
+        color: darkGrey,
+        size: 16,
+      ),
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        searchProductOrService();
+      },
+    );
+  }
+
+  void searchProductOrService() {
+    clearSearchedListItems();
+    getProductOrServiceList();
+  }
+
+  void clearSearchedListItems() {
+    searchedProductAndService.clear();
+    productOrServiceCount = 0;
+    productOrServiceNext = "";
+    productOrServicePrevious = "";
+    if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+      bottomSheetStateSetterGlobal!(() {});
+    if (mounted) setState(() {});
+  }
+
+  void getProductOrServiceList() async {
+    String url = getSearchUrl();
+
+    if (!isItemLoading) {
+      if (productOrServiceNext != null && !isItemLoading) {
+        isItemLoading = true;
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        Map<String, dynamic>? result = await MessageAuth()
+            .searchProductAndServiceOfUser(
+                url, productOrServiceNext, productOrServicePrevious);
+        if (result == null) {
+          isItemLoading = false;
+          return;
+        }
+        productOrServiceCount = result['count'];
+        productOrServiceNext = result['next'];
+        productOrServicePrevious = result['previous'];
+        List tempList = result['results'];
+
+        isItemLoading = false;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+
+        tempList.forEach((item) {
+          if (isProductSearch) {
+            searchedProductAndService.add(Product.fromJson(item));
+          } else if (isServiceSearch) {
+            searchedProductAndService.add(Service.fromJson(item));
+          } else if (isBlogSearch) {
+            searchedProductAndService.add(UserPost.fromJson(item));
+          }
+        });
+
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+      }
+      if (searchedProductAndService.isEmpty) {
+        noSearchedItem = true;
+        if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
+          bottomSheetStateSetterGlobal!(() {});
+        if (mounted) setState(() {});
+      }
+    }
+  }
+
+  String getSearchUrl() {
+    if (isProductSearch) {
+      return AppConfig.baseUrl +
+          "/api/v1/search/products/?search=name__wildcard|*" +
+          searchItemTextController!.text +
+          "*";
+    }
+    if (isServiceSearch) {
+      return AppConfig.baseUrl +
+          "/api/v1/search/services/?search=name__wildcard|*" +
+          searchItemTextController!.text +
+          "*";
+    }
+    return "";
+  }
+
+  Widget bottomSheetTabBar() {
+    return Column(
+      children: [
+        // Container(
+        //     padding: EdgeInsets.symmetric(horizontal: 20),
+        //     child: bottomSheetTabBars()),
+        SizedBox(
+          height: 8,
+        ),
+        Expanded(child: bottomSheetTabViews())
+      ],
+    );
+  }
+
+  Widget bottomSheetTabBars() {
+    return PreferredSize(
+        preferredSize: Size.fromHeight(50.0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 0;
+                clearSearchedListItems();
+                bottomSheetStateSetterGlobal!(() {});
+                setState(() {});
+                searchProductOrService();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 0
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From partner",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 0 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 0
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                bottomSheetSearchIndex = 1;
+                clearSearchedListItems();
+                bottomSheetStateSetterGlobal!(() {});
+                setState(() {});
+                searchProductOrService();
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  shape: BoxShape.rectangle,
+                  color: bottomSheetSearchIndex == 1
+                      ? navyBlue.withOpacity(0.1)
+                      : Colors.white,
+                ),
+                child: Text(
+                  "From Mine",
+                  style: TextStyle(
+                    color: bottomSheetSearchIndex == 1 ? navyBlue : blackFont,
+                    fontSize: 14,
+                    fontWeight: bottomSheetSearchIndex == 1
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget bottomSheetTabViews() {
+    return pullToRefresh();
+  }
+
+  void _onRefresh() async {
+    Connectivity().checkConnectivity().then((value) {
+      var connectionResult = value;
+      if (connectionResult == ConnectivityResult.wifi ||
+          connectionResult == ConnectivityResult.mobile) {
+        productOrServiceCount = 0;
+        productOrServiceNext = "";
+        productOrServicePrevious = "";
+        searchedProductAndService = [];
+        noSearchedItem = false;
+        getProductOrServiceList();
+        _refreshController.refreshCompleted();
+      } else {
+        showToast(
+            message:
+                AppLocalization.of(context)!.internetConnectionNotAvailable);
+
+        _refreshController.refreshCompleted();
+      }
+    });
+  }
+
+  Widget pullToRefresh() {
+    return searchItemTextController!.text.isEmpty
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.pleaseTypeSomethingToGetResult,
+            isResult: false,
+          )
+        : SmartRefresher(
+            enablePullDown: true,
+            header: WaterDropHeader(
+              complete: Container(),
+              waterDropColor: navyBlue,
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            child: buildProductOrServiceList(),
+          );
+  }
+
+  Widget buildProductOrServiceList() {
+    return noSearchedItem
+        ? NoItemInList(
+            msg: AppLocalization.of(context)!.noResultFound,
+            isResult: true,
+          )
+        : ListView.builder(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            //+1 for progressbar
+            itemCount: searchedProductAndService.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index == searchedProductAndService.length) {
+                return _buildIndicatorForProductAndService();
+              } else {
+                return GestureDetector(
+                    onTap: () {
+                      productServicePreview = searchedProductAndService[index];
+
+                      if (productServicePreview.runtimeType.toString() ==
+                          'Product') {
+                        Product product = searchedProductAndService[index];
+                        var attachment = {'product': product.toJson()};
+                        yarnDashboardBloc!.productService = attachment;
+                        productMode = searchedProductAndService[index];
+                      } else {
+                        Service service = searchedProductAndService[index];
+                        var attachment = {'service': service.toJson()};
+                        yarnDashboardBloc!.productService = attachment;
+                        serviceMode = searchedProductAndService[index];
+                      }
+
+                      isShowExtension = true;
+                      if (mounted) setState(() {});
+                      Navigator.pop(context);
+
+                      FocusScope.of(context).requestFocus();
+                    },
+                    child: getResultTile(searchedProductAndService[index]));
+              }
+            },
+            controller: _scrollController,
+          );
+  }
+
+  Widget _buildIndicatorForProductAndService() {
+    return Center(
+      child: isItemLoading
+          ? CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation(navyBlue),
+              backgroundColor: Colors.transparent,
+            )
+          : Container(),
+    );
+  }
+
+  Widget getResultTile(var result) {
+    if (isProductSearch) {
+      if (result is Product) {
+        return SearchProductTile(
+          product: result,
+        );
+      }
+      return Container();
+    }
+    if (isServiceSearch) {
+      if (result is Service) {
+        return SearchServiceTile(
+          service: result,
+        );
+      }
+      return Container();
+    }
+    return Container();
+  }
+
+  Widget checkIfProductService() {
+    return Container(
+      child: Column(
+        children: [
+          Stack(
+            children: <Widget>[
+              getPreviewContainer(),
+              Positioned(
+                right: 20,
+                top: 10,
+                child: InkWell(
+                  onTap: () {
+                    yarnDashboardBloc!.productService = null;
+                    if (mounted) setState(() {});
+                  },
+                  child: Container(
+                    height: 25,
+                    width: 25,
+                    margin: EdgeInsets.only(right: 6, top: 6),
+                    decoration: BoxDecoration(
+                        color: HexColor("#000000"), shape: BoxShape.circle),
+                    child: Icon(
+                      Icons.close_outlined,
+                      color: white,
+                      size: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getPreviewContainer() {
+    //display services
+    if (productServicePreview.runtimeType.toString() == 'Service') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: YarnServiceTile(
+          service: serviceMode,
+          tileRenderPlace: TileRenderPlace.YarnProductService,
+        ),
+      );
+    }
+    //display product
+    else if (productServicePreview.runtimeType.toString() == 'Product') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: YarnProductTile(
+          product: productMode,
+          tileRenderPlace: TileRenderPlace.YarnProductService,
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
 }
 
 class TopicTextField extends StatelessWidget {
