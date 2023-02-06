@@ -313,7 +313,10 @@ class CustomerProfile {
     data['uuid'] = this.uuid;
     data['default_currency'] = this.defaultCurrency;
     data['is_verified'] = this.isVerified;
-    data['profile'] = this.userAbout!.toJson();
+    // if (data['profile'] != null) {
+    //   data['profile'] = this.userAbout!.toJson();
+    // }
+    // data['profile'] = this.userAbout!.toJson();
     return data;
   }
 
