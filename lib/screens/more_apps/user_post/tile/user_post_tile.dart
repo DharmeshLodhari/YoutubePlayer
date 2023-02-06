@@ -33,13 +33,15 @@ class PostTile extends StatefulWidget {
   bool? isNavigable;
   Function onDeleteBlog;
   final bool showAuthorDetails;
+  final bool disableClick;
 
   PostTile(
       {Key? key,
       this.post,
       this.showAuthorDetails = true,
       required this.onDeleteBlog,
-      this.isNavigable = true})
+      this.isNavigable = true,
+      this.disableClick = true})
       : super(key: key);
 
   @override
@@ -99,24 +101,8 @@ class _PostTileState extends State<PostTile> {
   }
 
   Widget _buildUserPostList() {
-    return GestureDetector(
-      onLongPress: () => showUserProfileActionsSheet(),
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return PostDetailPage(
-                postId: widget.post!.id,
-                postType: PostType.blog,
-                onDeleteBlog: () {
-                  widget.onDeleteBlog();
-                },
-              );
-            },
-          ),
-        );
-      },
-      child: Card(
+    if (widget.disableClick == false) {
+      return Card(
         margin: EdgeInsets.zero,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -303,8 +289,217 @@ class _PostTileState extends State<PostTile> {
             ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      return GestureDetector(
+        onLongPress: () => showUserProfileActionsSheet(),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return PostDetailPage(
+                  postId: widget.post!.id,
+                  postType: PostType.blog,
+                  onDeleteBlog: () {
+                    widget.onDeleteBlog();
+                  },
+                );
+              },
+            ),
+          );
+        },
+        child: Card(
+          margin: EdgeInsets.zero,
+          elevation: 0,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Container(
+            decoration: decorateBox(),
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                        child: widget.post?.video != null &&
+                                widget.post!.video!.isNotEmpty
+                            ? SizedBox(
+                                height: 150,
+                                child: Chewie(
+                                  posterUrl: widget.post?.image,
+                                  controller: _chewieMainController!,
+                                ),
+                              )
+                            : CachedNetworkImage(
+                                height: 150,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorWidget: imageErrorWidget,
+                                imageUrl: widget.post?.image ?? "",
+                              ),
+                      ),
+                      widget.showAuthorDetails
+                          ? Positioned(
+                              left: 10,
+                              bottom: 10,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, Routes.USER_PROFILE, arguments: {
+                                    "searchedUserName":
+                                        widget.post!.authorUsername
+                                  });
+                                },
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 25,
+                                      height: 25,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl: widget.post!.authorAvatar!,
+                                          errorWidget: imageErrorWidget,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    userNameWithVerifiedIcon(
+                                      name: widget.post!.authorName!,
+                                      isVerified: false,
+                                      textStyle: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 2.0,
+                                            color: blackFont,
+                                            offset: Offset(0.0, 0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      widget.post!.isPublished!
+                          ? SizedBox.shrink()
+                          : Positioned(
+                              left: 10,
+                              top: 10,
+                              child: CustomChip(
+                                textColor: blackFont,
+                                color: starYellow,
+                                text: 'Unpublished',
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 4),
+                              ),
+                            ),
+                    ],
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(left: 15, top: 16, bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                messageDecoderWithEmoji(widget.post?.title) ??
+                                    "",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: blackFont,
+                                ),
+                                maxLines: 2,
+                                softWrap: true,
+                                overflow: TextOverflow.clip,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => showUserProfileActionsSheet(),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Icon(SlydoAppIcon.menu, size: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          messageDecoderWithEmoji(widget.post?.tagLine) ?? "",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: darkGrey,
+                          ),
+                          maxLines: 3,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.visibility_rounded,
+                                  size: 16,
+                                  color: blackFont,
+                                ),
+                                SizedBox(width: 6),
+                                Text(
+                                  getFormattedViewCount(
+                                    noOfViews: widget.post?.views != null
+                                        ? widget.post!.views!
+                                        : 1,
+                                    addViewText: false,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: blackFont,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(width: 16),
+                            _buildLikeUnLikeReportTile(),
+                            Spacer(),
+                            CustomChip(
+                              color: greyBorderColor,
+                              textColor: blackFont,
+                              text: widget.post!.readTime == 0
+                                  ? '1 min read'
+                                  : '${widget.post!.readTime} min read',
+                              padding: EdgeInsets.all(4),
+                            ),
+                            SizedBox(width: 8),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   void showUserProfileActionsSheet() {

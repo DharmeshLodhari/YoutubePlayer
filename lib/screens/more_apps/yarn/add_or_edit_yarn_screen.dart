@@ -7,7 +7,6 @@ import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
 import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/search_user_item_with_filter.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
@@ -21,7 +20,6 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -1257,7 +1255,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     yarnEdit.enablePayMe = enablePayMe;
     yarnEdit.title = yarnController.text;
     yarnEdit.category = selectedAskCategory;
-    // yarnEdit.category?.id = selectedAskCategory?.id ?? "0";
     yarnEdit.isQuestion = widget.isYarn == true ? false : true;
     yarnEdit.author = userBloc.user.userName;
     // yarnEdit.media = yarn?['media'];
@@ -1266,9 +1263,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     if (yarnDashboardBloc!.productService != null) {
       yarnEdit.attachment = yarnDashboardBloc!.productService;
     }
-
-    // debugPrint("YARN CATEGORY 000:- ${yarnEdit}");
-    // debugPrint("YARN CATEGORY:- ${yarnEdit.category}");
 
     await YarnAuth().editYarnAndQuestion(yarnEdit).then((value) {
       debugPrint("EDIT YARN:- $value");
@@ -1414,8 +1408,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
             searchItemTextController!.addListener(() {
               if (searchItemTextController!.text.length == 3) {
-                _onRefresh();
-              } else if (searchItemTextController!.text.length == 6) {
                 _onRefresh();
               }
             });
@@ -1895,7 +1887,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     }
     if (isBlogSearch) {
       if (result is UserPost) {
-        return blogCard(result);
+        return Container(
+          margin: EdgeInsets.only(left: 20.0, right: 20.0),
+          child: PostTile(
+              post: result,
+              showAuthorDetails: true,
+              onDeleteBlog: () {},
+              disableClick: false),
+        );
       }
       return Container();
     }
@@ -1973,68 +1972,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     );
   }
 
-  Widget blogCard(UserPost user) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.zero,
-        shadowColor: boxShadowTwo,
-        elevation: 0,
-        child: Container(
-          decoration: decorateBox(),
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  dense: true,
-                  title: Text(
-                    user.title!,
-                    maxLines: 1,
-                    style: TextStyle(color: darkGrey, fontSize: 12),
-                  ),
-                  subtitle: Text(
-                    messageDecoderWithEmoji(user.tagLine)!,
-                    maxLines: 1,
-                    style: TextStyle(color: darkGrey, fontSize: 12),
-                  ),
-                  leading: getBlogLeading(user),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget getBlogLeading(UserPost user) {
-    return Container(
-      height: 50,
-      width: 100,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            25,
-          ),
-          border: Border.all(color: greyBorderColor, width: 1)),
-      child: CachedNetworkImage(
-        imageUrl: user.image == "" ? defaultImage : user.image!,
-        colorBlendMode: BlendMode.darken,
-        fit: BoxFit.cover,
-        errorWidget: imageErrorWidget,
-        height: double.infinity,
-        filterQuality: FilterQuality.high,
-        placeholder: (context, _) => CachedNetworkImage(
-          imageUrl: defaultImage,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fitWidth,
-          filterQuality: FilterQuality.high,
-        ),
-      ),
-    );
-  }
-
   Widget checkIfProductService() {
     return Container(
       child: Column(
@@ -2047,8 +1984,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                 top: 10,
                 child: InkWell(
                   onTap: () {
-                    debugPrint('trying to remove product/service');
-
                     yarnDashboardBloc!.productService = null;
                     if (mounted) setState(() {});
                   },
