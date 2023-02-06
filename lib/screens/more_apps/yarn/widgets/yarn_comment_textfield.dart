@@ -724,9 +724,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
             bottomSheetMounted = true;
 
             searchItemTextController!.addListener(() {
-              if (searchItemTextController!.text.length == 3) {
-                _onRefresh();
-              } else if (searchItemTextController!.text.length == 6) {
+              if (searchItemTextController!.text.length >= 3) {
                 _onRefresh();
               }
             });

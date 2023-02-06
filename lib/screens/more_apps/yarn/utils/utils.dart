@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
-import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
