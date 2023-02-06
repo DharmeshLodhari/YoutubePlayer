@@ -232,13 +232,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         hasIcon: true,
         children: [
           CustomizedPopUpMenuItemWithIcon(
+              title: "Blog", value: "Blog", icon: SlydoAppIcon.circle_user),
+          CustomizedPopUpMenuItemWithIcon(
               title: "Product", value: "Products", icon: SlydoAppIcon.product),
           CustomizedPopUpMenuItemWithIcon(
               title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
           CustomizedPopUpMenuItemWithIcon(
-              title: "User", value: "User", icon: SlydoAppIcon.circle_user),
-          CustomizedPopUpMenuItemWithIcon(
-              title: "Blog", value: "Blog", icon: SlydoAppIcon.circle_user),
+              title: "User", value: "User", icon: SlydoAppIcon.user),
         ],
         selectedIndex: selectedMenuItemIndex,
         left: 16,
@@ -1412,6 +1412,14 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             bottomSheetStateSetterGlobal = bottomSheetStateSetter;
             bottomSheetMounted = true;
 
+            searchItemTextController!.addListener(() {
+              if (searchItemTextController!.text.length == 3) {
+                _onRefresh();
+              } else if (searchItemTextController!.text.length == 6) {
+                _onRefresh();
+              }
+            });
+
             return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -1462,7 +1470,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           cursorWidth: 1.5,
           cursorColor: navyBlue,
           decoration: InputDecoration(
-            hintText: "Search here",
+            hintText: checkHintText(selectedMenuItemIndex),
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
@@ -1501,10 +1509,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             ),
           ),
           onFieldSubmitted: (val) {
-            if (mounted) {
-              FocusScope.of(context).unfocus();
-              searchProductOrService();
-            }
+            if (mounted) setState(() {});
+            FocusScope.of(context).unfocus();
+            _onRefresh();
           },
           // onChanged: (val) {
           //   if (val.length == 3) {
@@ -1548,12 +1555,16 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   IconData getSearchTypeIcon() {
-    if (selectedMenuItemIndex == 1) {
-      return SlydoAppIcon.note_2;
-    } else if (selectedMenuItemIndex == 0) {
+    if (selectedMenuItemIndex == 0) {
+      return SlydoAppIcon.circle_user;
+    } else if (selectedMenuItemIndex == 1) {
       return SlydoAppIcon.product;
+    } else if (selectedMenuItemIndex == 2) {
+      return SlydoAppIcon.note_2;
+    } else if (selectedMenuItemIndex == 3) {
+      return SlydoAppIcon.user;
     }
-    return SlydoAppIcon.product;
+    return SlydoAppIcon.circle_user;
   }
 
   Widget searchIcon() {
@@ -2107,6 +2118,18 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       );
     } else {
       return Container();
+    }
+  }
+
+  checkHintText(int selectedMenuItemIndex) {
+    if (selectedMenuItemIndex == 0) {
+      return 'Search blog';
+    } else if (selectedMenuItemIndex == 1) {
+      return 'Search product';
+    } else if (selectedMenuItemIndex == 2) {
+      return 'Search service';
+    } else if (selectedMenuItemIndex == 3) {
+      return 'Search user';
     }
   }
 }

@@ -723,6 +723,14 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
             bottomSheetStateSetterGlobal = bottomSheetStateSetter;
             bottomSheetMounted = true;
 
+            searchItemTextController!.addListener(() {
+              if (searchItemTextController!.text.length == 3) {
+                _onRefresh();
+              } else if (searchItemTextController!.text.length == 6) {
+                _onRefresh();
+              }
+            });
+
             return Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -773,7 +781,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           cursorWidth: 1.5,
           cursorColor: navyBlue,
           decoration: InputDecoration(
-            hintText: "Search here",
+            hintText: checkHintText(selectedMenuItemIndex),
             fillColor: Colors.white,
             filled: true,
             contentPadding: EdgeInsets.symmetric(vertical: 10),
@@ -814,7 +822,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           onFieldSubmitted: (val) {
             if (mounted) {
               FocusScope.of(context).unfocus();
-              searchProductOrService();
+              _onRefresh();
             }
           },
           // onChanged: (val) {
@@ -1623,6 +1631,14 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   void menuStateChange(bool isOpen) {
     isPopMenuOpen = isOpen;
     setState(() {});
+  }
+
+  checkHintText(int selectedMenuItemIndex) {
+    if (selectedMenuItemIndex == 0) {
+      return 'Search product';
+    } else if (selectedMenuItemIndex == 1) {
+      return 'Search service';
+    }
   }
 }
 
