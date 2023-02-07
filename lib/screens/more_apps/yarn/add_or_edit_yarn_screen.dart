@@ -1034,7 +1034,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   void pickFileFromMedia() async {
     List<Media>? res = await ImagesPicker.pick(
-      count: 1,
+      count: 4,
       pickType: PickType.all,
       language: Language.System,
       maxTime: 900,
@@ -1044,36 +1044,40 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     );
 
     if (res == null || res.isEmpty) return;
-    File file = File(res.first.path);
-    String? mediaType = getFileTypeByPath(path: file.path);
 
-    if (mediaType == null) return;
+    for (var item in res) {
+      File file = File(item.path);
+      String? mediaType = getFileTypeByPath(path: file.path);
 
-    if (mediaType == 'image') {
-      imagePath = file.path;
-      newMediaList
-          .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
-      if (mounted) setState(() {});
-    } else if (mediaType == 'video') {
-      var videoFilePath =
-          await NavigationUtil.push(context, screen: TrimmerView(file: file));
-      if (videoFilePath is String) {
-        videoPath = videoFilePath;
-        File? thumbnailImage =
-            await generateThumbnailFromVideo(videoPath: videoPath!);
-        // setUpVideoPlayer();
-        // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
-        //   if (thumbnail != null) {
-        //     generatedVideoThumbnail = thumbnail;
-        //     debugPrint('file path gen -> $generatedVideoThumbnail');
-        //   }
-        // });
-        newMediaList.add(YarnMedia(
-          mediaFile: File(videoPath!),
-          mediaType: mediaType,
-          posterFile: thumbnailImage,
-        ));
+      if (mediaType == null) return;
+
+      if (mediaType == 'image') {
+        imagePath = file.path;
+
+        newMediaList
+            .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
         if (mounted) setState(() {});
+      } else if (mediaType == 'video') {
+        var videoFilePath =
+            await NavigationUtil.push(context, screen: TrimmerView(file: file));
+        if (videoFilePath is String) {
+          videoPath = videoFilePath;
+          File? thumbnailImage =
+              await generateThumbnailFromVideo(videoPath: videoPath!);
+          // setUpVideoPlayer();
+          // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
+          //   if (thumbnail != null) {
+          //     generatedVideoThumbnail = thumbnail;
+          //     debugPrint('file path gen -> $generatedVideoThumbnail');
+          //   }
+          // });
+          newMediaList.add(YarnMedia(
+            mediaFile: File(videoPath!),
+            mediaType: mediaType,
+            posterFile: thumbnailImage,
+          ));
+          if (mounted) setState(() {});
+        }
       }
     }
   }
