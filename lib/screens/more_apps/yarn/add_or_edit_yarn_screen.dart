@@ -24,6 +24,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:images_picker/images_picker.dart';
 import 'package:provider/provider.dart';
@@ -106,8 +107,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   bool isShowExtension = false;
 
   /// variables for product or service search
-  bool isBlogSearch = false;
-  bool isProductSearch = true;
+  bool isBlogSearch = true;
+  bool isProductSearch = false;
   bool isServiceSearch = false;
   bool isUserSearch = false;
   bool isCurrentUsersProductOrService = false;
@@ -230,7 +231,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
         hasIcon: true,
         children: [
           CustomizedPopUpMenuItemWithIcon(
-              title: "Blog", value: "Blog", icon: SlydoAppIcon.circle_user),
+              title: "Blog", value: "Blog", icon: SlydoAppIcon.payout_list),
           CustomizedPopUpMenuItemWithIcon(
               title: "Product", value: "Products", icon: SlydoAppIcon.product),
           CustomizedPopUpMenuItemWithIcon(
@@ -314,6 +315,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
           if (yarnDashboardBloc!.productService != null) ...[
             checkIfProductService(),
           ],
+
           _buildRowForMedia(),
         ],
       ),
@@ -404,7 +406,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             if (yarnDashboardBloc!.productService == null) ...[
               InkWell(
                   onTap: () {
-                    pickFileFromMedia();
+                    selectCameraGallery(context);
                   },
                   child: SvgPicture.asset("yarn/images".toSVG())),
             ],
@@ -897,8 +899,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               if (existingMediaList.length + newMediaList.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
-                // pickImage();
-                pickFileFromMedia();
+                selectCameraGallery(context);
+                // pickFileFromMedia();
               }
             },
           ),
@@ -1030,6 +1032,114 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             ),
           )
         : Container();
+  }
+
+  void selectCameraGallery(BuildContext context) {
+    _showListAlert(context);
+  }
+
+  _showListAlert(BuildContext context) {
+    showPlatformDialog(
+      context: context,
+      builder: (_) => BasicDialogAlert(
+        title: Text("Select a Photo"),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _buildListItem("Take Photo..."),
+              _buildListItem("Choose from Library..."),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          BasicDialogAction(
+            title: Text("Cancel"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListItem(String title) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            title == 'Take Photo...' ? openCamera() : pickFileFromMedia();
+            Navigator.pop(context);
+          },
+          child: Container(
+            height: 48,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(child: Text(title)),
+              ],
+            ),
+          ),
+        ),
+        const Divider(height: 0.5),
+      ],
+    );
+  }
+
+  Future<void> openCamera() async {
+    List<Media>? res = await ImagesPicker.openCamera(
+      // pickType: PickType.video,
+      pickType: PickType.image,
+      quality: 0.8,
+      maxSize: 800,
+      // cropOpt: CropOption(
+      //   aspectRatio: CropAspectRatio.wh16x9,
+      // ),
+      maxTime: 15,
+    );
+    print(res);
+
+    if (res == null || res.isEmpty) return;
+
+    File file = File(res[0].path);
+    String? mediaType = getFileTypeByPath(path: file.path);
+
+    if (mediaType == null) return;
+
+    if (mediaType == 'image') {
+      imagePath = file.path;
+
+      newMediaList
+          .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
+      if (mounted) setState(() {});
+    } else if (mediaType == 'video') {
+      var videoFilePath =
+          await NavigationUtil.push(context, screen: TrimmerView(file: file));
+      if (videoFilePath is String) {
+        videoPath = videoFilePath;
+        File? thumbnailImage =
+            await generateThumbnailFromVideo(videoPath: videoPath!);
+        // setUpVideoPlayer();
+        // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
+        //   if (thumbnail != null) {
+        //     generatedVideoThumbnail = thumbnail;
+        //     debugPrint('file path gen -> $generatedVideoThumbnail');
+        //   }
+        // });
+        newMediaList.add(YarnMedia(
+          mediaFile: File(videoPath!),
+          mediaType: mediaType,
+          posterFile: thumbnailImage,
+        ));
+        if (mounted) setState(() {});
+      }
+    }
+
+    // print(res[0].path);
+    // setState(() {
+    //   path = res[0].thumbPath;
+    // });
   }
 
   void pickFileFromMedia() async {
@@ -1552,7 +1662,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   IconData getSearchTypeIcon() {
     if (selectedMenuItemIndex == 0) {
-      return SlydoAppIcon.circle_user;
+      return SlydoAppIcon.payout_list;
     } else if (selectedMenuItemIndex == 1) {
       return SlydoAppIcon.product;
     } else if (selectedMenuItemIndex == 2) {
@@ -1560,7 +1670,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     } else if (selectedMenuItemIndex == 3) {
       return SlydoAppIcon.user;
     }
-    return SlydoAppIcon.circle_user;
+    return SlydoAppIcon.payout_list;
   }
 
   Widget searchIcon() {
