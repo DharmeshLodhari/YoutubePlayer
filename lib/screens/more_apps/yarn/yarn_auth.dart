@@ -265,7 +265,7 @@ class YarnAuth extends AuthService {
       if (isType) {
         if (categoryId != null) {
           url = AppConfig.baseUrl +
-              "/api/v1/social/ask/?$type=$isType&category=$categoryId";
+              "/api/v1/social/ask/$latestTrending/?$type=$isType&category=$categoryId";
         } else {
           if (latestTrending != null) {
             url = AppConfig.baseUrl + "/api/v1/social/ask/$latestTrending/";
