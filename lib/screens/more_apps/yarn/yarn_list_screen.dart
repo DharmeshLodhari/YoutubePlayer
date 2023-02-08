@@ -54,15 +54,21 @@ class YarnListScreenState extends State<YarnListScreen> {
     if (categoryId != null) {
       selectedId = categoryId;
     }
-    debugPrint("NEXT URL1:- $next");
+    // debugPrint("NEXT URL1:- $next");
+
     if (!isLoading) {
       if (next != null && !isLoading) {
         isLoading = true;
         if (mounted) setState(() {});
 
+        String latestTrending = 'latest';
+
         Map<String, dynamic>? result = await YarnAuth().getAllYarn(
             next, previous ?? '',
-            type: type, isType: isType, categoryId: categoryId);
+            type: type,
+            isType: isType,
+            categoryId: categoryId,
+            latestTrending: latestTrending);
 
         if (result == null) {
           noList = true;
@@ -85,12 +91,6 @@ class YarnListScreenState extends State<YarnListScreen> {
             isLoading = false;
             yarnTopicList.addAll(tempList);
           });
-        }
-        // debugPrint("YARN TOPICS:- $yarnTopicList");
-
-        for (var item in yarnTopicList) {
-          debugPrint("YARN TOPICS List:- ${item.viewersAvatars.toString()}");
-          debugPrint("YARN TOPICS List body:::- ${item.body}");
         }
       }
     }
@@ -148,8 +148,6 @@ class YarnListScreenState extends State<YarnListScreen> {
           if (index == yarnTopicList.length) {
             return _buildLoadingIndicator();
           }
-
-          // debugPrint('yarn detail profile::: ${yarnTopicList[index]}');
 
           return InkWell(
             onTap: () async {

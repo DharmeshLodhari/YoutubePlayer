@@ -29,14 +29,14 @@ class _YarnTabSelectionState extends State<YarnTabSelection> {
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 0,
-                title: 'Yarns',
+                title: 'Latest',
                 currentIndex: widget.currentIndex),
           ),
           Expanded(
             child: buildTabItem(
                 onTap: widget.onTap,
                 tabIndex: 1,
-                title: 'Questions',
+                title: 'Trending',
                 currentIndex: widget.currentIndex),
           ),
         ],
@@ -67,7 +67,7 @@ class _YarnTabSelectionState extends State<YarnTabSelection> {
               color: currentIndex == tabIndex ? white : yarnBlack,
               fontSize: 14,
               fontWeight:
-                  currentIndex == tabIndex ? FontWeight.w600 : FontWeight.w500,
+                  currentIndex == tabIndex ? FontWeight.w700 : FontWeight.w700,
             ),
           ),
         ),
