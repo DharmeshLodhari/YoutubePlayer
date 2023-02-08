@@ -533,7 +533,8 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: getWebPreviewComment(webInfo, context)),
+                      children: getWebPreview(
+                          webInfo, context, linkToBePreview, 100.0)),
                 );
               },
             ),

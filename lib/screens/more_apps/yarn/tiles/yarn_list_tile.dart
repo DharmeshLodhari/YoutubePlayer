@@ -86,8 +86,6 @@ class _YarnTileState extends State<YarnTile> {
 
     if (widget.yarn.media.isNotEmpty) {
       isMediaPresent = true;
-      print('Reyarn::::: ${widget.yarn.media}');
-      print('Reyarn::::: ${widget.yarn.body}');
     }
 
     if (widget.yarn.attachment != null) {
@@ -490,10 +488,6 @@ class _YarnTileState extends State<YarnTile> {
               NavigationUtil.push(context,
                   screen: SearchScreen(searchText: tag.trim()));
             },
-            onUrlClicked: (open) {
-              // launch  url
-              launchUrl(Uri.parse(open.toString()));
-            },
             onAtClick: (at) {
               Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
                 "searchedUserName": at.replaceFirst("@", "").trim()
@@ -544,7 +538,8 @@ class _YarnTileState extends State<YarnTile> {
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: getWebPreview(webInfo, context)),
+                      children: getWebPreview(
+                          webInfo, context, linkToBePreview, 150.0)),
                 );
               },
             ),
