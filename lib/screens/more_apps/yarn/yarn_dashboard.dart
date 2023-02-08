@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
@@ -15,7 +16,7 @@ import '../../../utils/util.dart';
 import '../messaging/message_auth.dart';
 import 'add_or_edit_yarn_screen.dart';
 import 'yarn_search_screen.dart';
-import 'question_list_screen.dart';
+import 'trending_list_screen.dart';
 import 'yarn_dashboard_bloc.dart';
 import 'yarn_list_screen.dart';
 import 'yarn_setting_screen.dart';
@@ -29,8 +30,8 @@ class YarnDashboard extends StatefulWidget {
 class _YarnDashboardState extends State<YarnDashboard> {
   GlobalKey<YarnListScreenState> topicViewStateKey =
       GlobalKey<YarnListScreenState>();
-  GlobalKey<QuestionListScreenState> questionViewStateKey =
-      GlobalKey<QuestionListScreenState>();
+  GlobalKey<TrendingListScreenState> latestViewStateKey =
+      GlobalKey<TrendingListScreenState>();
 
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
@@ -214,7 +215,19 @@ class _YarnDashboardState extends State<YarnDashboard> {
           height: 0,
           thickness: 0.5,
           color: greySecondaryYarn,
-        )
+        ),
+        SizedBox(height: 8),
+        YarnTabSelection(
+          onTap: (index) {
+            currentAskTapOnHome = index;
+            _pageViewController.jumpToPage(currentAskTapOnHome);
+            if (mounted) setState(() {});
+          },
+          currentIndex: currentAskTapOnHome,
+        ),
+        SizedBox(
+          height: 16,
+        ),
       ],
     );
   }
@@ -229,6 +242,10 @@ class _YarnDashboardState extends State<YarnDashboard> {
         children: [
           YarnListScreen(
             key: topicViewStateKey,
+            selectedCategory: selectedCategoryId,
+          ),
+          TrendingListScreen(
+            key: latestViewStateKey,
             selectedCategory: selectedCategoryId,
           ),
         ],

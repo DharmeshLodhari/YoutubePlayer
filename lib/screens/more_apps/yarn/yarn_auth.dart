@@ -253,7 +253,8 @@ class YarnAuth extends AuthService {
       {String? type,
       bool isType = false,
       String? categoryId,
-      String? userName}) async {
+      String? userName,
+      String? latestTrending}) async {
     debugPrint("CALLING ALL YARNS");
     debugPrint("NEXT URL:- $next");
     String url = "";
@@ -266,7 +267,11 @@ class YarnAuth extends AuthService {
           url = AppConfig.baseUrl +
               "/api/v1/social/ask/?$type=$isType&category=$categoryId";
         } else {
-          url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
+          if (latestTrending != null) {
+            url = AppConfig.baseUrl + "/api/v1/social/ask/$latestTrending/";
+          } else {
+            url = AppConfig.baseUrl + "/api/v1/social/ask/?$type=$isType";
+          }
         }
       } else {
         url =

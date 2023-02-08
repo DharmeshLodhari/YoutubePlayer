@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 import 'add_or_edit_yarn_screen.dart';
 import 'yarn_search_screen.dart';
-import 'question_list_screen.dart';
+import 'trending_list_screen.dart';
 import 'yarn_auth.dart';
 import 'yarn_dashboard_bloc.dart';
 import 'yarn_list_screen.dart';
@@ -35,8 +35,8 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   int currentAskTapOnHome = 0;
   GlobalKey<YarnListScreenState> topicViewStateKey =
       GlobalKey<YarnListScreenState>();
-  GlobalKey<QuestionListScreenState> questionViewStateKey =
-      GlobalKey<QuestionListScreenState>();
+  GlobalKey<TrendingListScreenState> questionViewStateKey =
+      GlobalKey<TrendingListScreenState>();
 
   @override
   void initState() {
