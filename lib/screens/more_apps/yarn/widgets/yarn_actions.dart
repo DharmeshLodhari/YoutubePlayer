@@ -195,30 +195,28 @@ class _YarnActionsState extends State<YarnActions> {
     }
 
     return InkWell(
-      onTap: getLoggedInUserName(context) != widget.yarn.author
-          ? () {
-              if (canReYarn) {
-                if (widget.yarn.userReyarned) {
-                  showToast(message: "Re yarn added successfully");
-                } else {
-                  NavigationUtil.push(context,
-                      screen: ShareAsAyarnScreen(
-                          appTitle: "ReYarn",
-                          enableText: true,
-                          isShare: false,
-                          askCategories: yarnDashboardBloc.yarnCategories,
-                          shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                          yarnTopic: widget.yarn,
-                          callback: (params) async {
-                            createReYarn(params);
-                            showToast(message: "ReYarn successful");
-                          }));
-                }
-              } else {
-                showToast(message: "You cannot ReYarn.");
-              }
-            }
-          : null,
+      onTap: () {
+        if (canReYarn) {
+          if (widget.yarn.userReyarned) {
+            showToast(message: "Re yarn added successfully");
+          } else {
+            NavigationUtil.push(context,
+                screen: ShareAsAyarnScreen(
+                    appTitle: "ReYarn",
+                    enableText: true,
+                    isShare: false,
+                    askCategories: yarnDashboardBloc.yarnCategories,
+                    shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                    yarnTopic: widget.yarn,
+                    callback: (params) async {
+                      createReYarn(params);
+                      showToast(message: "ReYarn successful");
+                    }));
+          }
+        } else {
+          showToast(message: "You cannot ReYarn.");
+        }
+      },
       child: Row(
         children: [
           SizedBox(
