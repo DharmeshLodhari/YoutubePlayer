@@ -466,7 +466,8 @@ class _YarnQuotePreviewState extends State<YarnQuotePreview> {
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: getWebPreview(webInfo, context)),
+                      children: getWebPreview(
+                          webInfo, context, linkToBePreview, 150.0)),
                 );
               },
             ),

@@ -182,7 +182,7 @@ class YarnSmartText extends StatelessWidget {
           );
         } else if (element is SlydoYarnLinks) {
           return LinkTextSpan(
-            text: element.url,
+            text: '',
             style: linkStyle,
             onPressed: () => _onOpen(element.url),
           );
