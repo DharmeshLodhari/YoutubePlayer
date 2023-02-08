@@ -35,7 +35,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   int currentAskTapOnHome = 0;
   GlobalKey<YarnListScreenState> topicViewStateKey =
       GlobalKey<YarnListScreenState>();
-  GlobalKey<TrendingListScreenState> questionViewStateKey =
+  GlobalKey<TrendingListScreenState> latestViewStateKey =
       GlobalKey<TrendingListScreenState>();
 
   @override
@@ -202,10 +202,10 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   Widget _buildBody() {
     return Column(
       children: [
-        // SizedBox(
-        //   height: 16,
-        // ),
-        // _buildCategoryAndTabs(),
+        SizedBox(
+          height: 16,
+        ),
+        _buildCategoryAndTabs(),
         _buildPageView(),
       ],
     );
@@ -229,7 +229,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
           height: 0,
           thickness: 0.5,
           color: greySecondaryYarn,
-        )
+        ),
       ],
     );
   }
@@ -244,6 +244,10 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
         children: [
           YarnListScreen(
             key: topicViewStateKey,
+            selectedCategory: widget.askCategories!.id,
+          ),
+          TrendingListScreen(
+            key: latestViewStateKey,
             selectedCategory: widget.askCategories!.id,
           ),
           // QuestionListScreen(
