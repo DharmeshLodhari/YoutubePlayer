@@ -34,7 +34,9 @@ class YarnCommentTile extends StatefulWidget {
   final bool? openReply;
   final bool? isCommentDetail;
   final Function(YarnComment)? onDeleteComment;
+  final Function(Yarn)? onUpdate;
   bool? minusComment;
+  String? pinnedCommentId;
 
   YarnCommentTile({
     required this.yarn,
@@ -44,7 +46,9 @@ class YarnCommentTile extends StatefulWidget {
     this.openReply = false,
     this.isCommentDetail = false,
     this.onDeleteComment,
+    this.onUpdate,
     this.minusComment,
+    this.pinnedCommentId,
   });
 
   @override
@@ -59,15 +63,17 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
 
   @override
   void initState() {
-    Map<String, dynamic> linkData =
-        detectLinkInText(messageDecoderWithEmoji(widget.yarnComment.comment)!);
+    if (widget.yarnComment.comment != null) {
+      Map<String, dynamic> linkData = detectLinkInText(
+          messageDecoderWithEmoji(widget.yarnComment.comment)!);
 
-    if (linkData["hasLink"]) {
-      isUrlPresent = true;
+      if (linkData["hasLink"]) {
+        isUrlPresent = true;
 
-      linkToBePreview = linkData['links'][0];
-      if (!linkToBePreview!.contains("http")) {
-        linkToBePreview = "http://" + linkToBePreview!;
+        linkToBePreview = linkData['links'][0];
+        if (!linkToBePreview!.contains("http")) {
+          linkToBePreview = "http://" + linkToBePreview!;
+        }
       }
     }
 
@@ -86,6 +92,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     if (widget.yarnComment.attachment != null) {
       isAttachmentPresent = true;
     }
+
     super.initState();
   }
 
@@ -213,17 +220,26 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
         Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
             arguments: widget.yarnComment.authorAvatar!);
       },
-      child: Container(
-        height: 36,
-        width: 36,
-        decoration: BoxDecoration(shape: BoxShape.circle),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.yarnComment.authorAvatar!,
-            fit: BoxFit.cover,
-            errorWidget: imageErrorWidget,
+      child: Column(
+        children: [
+          if (widget.yarnComment.pinned == true) ...[
+            SizedBox(
+              height: 10,
+            ),
+          ],
+          Container(
+            height: 36,
+            width: 36,
+            decoration: BoxDecoration(shape: BoxShape.circle),
+            child: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: widget.yarnComment.authorAvatar!,
+                fit: BoxFit.cover,
+                errorWidget: imageErrorWidget,
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -244,6 +260,12 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.yarnComment.pinned == true) ...[
+              _buildPinned(context: context),
+            ],
+            SizedBox(
+              height: 3,
+            ),
             InkWell(
               onTap: () {
                 Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
@@ -303,40 +325,6 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             _buildRepliedText(),
           ],
         )),
-        // if (getLoggedInUserName(context) ==
-        //     widget.yarnComment.authorUsername) ...[
-        //   InkWell(
-        //     onTap: () {
-        //       showModalBottomSheet<void>(
-        //         backgroundColor: Colors.transparent,
-        //         context: context,
-        //         builder: (BuildContext context) {
-        //           return Card(
-        //             shape: RoundedRectangleBorder(
-        //               borderRadius: BorderRadius.only(
-        //                   topLeft: Radius.circular(20),
-        //                   topRight: Radius.circular(20)),
-        //             ),
-        //             color: Colors.white,
-        //             margin: EdgeInsets.zero,
-        //             child: YarnOptions(
-        //               commentDetail: widget.yarnComment,
-        //               isComment: true,
-        //               onDeleteComment: (YarnComment yarnComment) {
-        //                 widget.onDeleteComment!(yarnComment);
-        //               },
-        //             ),
-        //           );
-        //         },
-        //       );
-        //     },
-        //     child: Icon(
-        //       Icons.more_horiz_rounded,
-        //       color: Color(0xFF4B545A),
-        //     ),
-        //   ),
-        // ],
-
         InkWell(
           onTap: () {
             showModalBottomSheet<void>(
@@ -352,10 +340,14 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
                   color: Colors.white,
                   margin: EdgeInsets.zero,
                   child: YarnOptions(
+                    yarnTopic: widget.yarn,
                     commentDetail: widget.yarnComment,
                     isComment: true,
                     onDeleteComment: (YarnComment yarnComment) {
                       widget.onDeleteComment!(yarnComment);
+                    },
+                    onUpdate: (Yarn yarn) {
+                      widget.onUpdate!(yarn);
                     },
                   ),
                 );
@@ -367,38 +359,6 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
             color: Color(0xFF4B545A),
           ),
         ),
-        // isComments(context)
-        //     ? InkWell(
-        //         onTap: () {
-        //           showModalBottomSheet<void>(
-        //             backgroundColor: Colors.transparent,
-        //             context: context,
-        //             builder: (BuildContext context) {
-        //               return Card(
-        //                 shape: RoundedRectangleBorder(
-        //                   borderRadius: BorderRadius.only(
-        //                       topLeft: Radius.circular(20),
-        //                       topRight: Radius.circular(20)),
-        //                 ),
-        //                 color: Colors.white,
-        //                 margin: EdgeInsets.zero,
-        //                 child: YarnOptions(
-        //                   commentDetail: widget.yarnComment,
-        //                   isComment: true,
-        //                   onDeleteComment: (YarnComment yarnComment) {
-        //                     widget.onDeleteComment!(yarnComment);
-        //                   },
-        //                 ),
-        //               );
-        //             },
-        //           );
-        //         },
-        //         child: Icon(
-        //           Icons.more_horiz_rounded,
-        //           color: Color(0xFF4B545A),
-        //         ),
-        //       )
-        //     : SizedBox()
       ],
     );
   }
@@ -614,5 +574,32 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
     } else {
       return false;
     }
+  }
+
+  Widget _buildPinned({required BuildContext context}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          child: Icon(
+            Icons.push_pin,
+            color: greySecondaryYarn,
+            size: 15,
+          ),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        Expanded(
+          child: Text(
+            "Comment Pinned by ${widget.yarnComment.authorName}",
+            style: TextStyle(
+                fontSize: 12,
+                color: greySecondaryYarn,
+                fontWeight: FontWeight.w700),
+          ),
+        ),
+      ],
+    );
   }
 }
