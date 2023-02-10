@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/ChatConversation.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/CommentDetails.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_media_renderer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
@@ -32,24 +34,22 @@ import '../../../yarn/widgets/url_reader_of_yarn.dart';
 import '../../../yarn/widgets/yarn_media_renderer.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 
-class YarnQuestionTileForChat extends StatefulWidget {
+class CommentTileForChat extends StatefulWidget {
   final Map<String, dynamic>? message;
   final ChatConversation? chatConversation;
 
-  YarnQuestionTileForChat(
+  CommentTileForChat(
       {Key? key, required this.message, required this.chatConversation})
       : super(key: key);
 
   @override
-  State<YarnQuestionTileForChat> createState() =>
-      _YarnQuestionTileForChatState();
+  State<CommentTileForChat> createState() => _CommentTileForChatState();
 }
 
-class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
+class _CommentTileForChatState extends State<CommentTileForChat> {
   late UserBloc userBloc;
   late YarnQuestionForChatModel yarnQuestionForChatModel;
-  late Yarn yarn;
-  // VideoPlayerController? _mainVideoController;
+  late YarnComment yarnComment;
   bool isLoading = false;
   bool isMediaPresent = false;
   bool isNewModel = false;
@@ -66,17 +66,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     super.initState();
 
     checkModel();
-    // if (momentForChatModel.video != null) {
-    //   isLoading = true;
-    //   if (mounted) setState(() {});
-    //   _mainVideoController = VideoPlayerController.network(
-    //     momentForChatModel.video!,
-    //     videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    //   )..initialize().then((_) {
-    //       isLoading = false;
-    //       if (mounted) setState(() {});
-    //     });
-    // }
   }
 
   void checkModel() {
@@ -85,10 +74,10 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       yarnQuestionForChatModel = YarnQuestionForChatModel();
       var meta = widget.message!['meta_data'];
 
-      yarn = Yarn.fromJson(jsonDecode(meta));
-      if (yarn != null) {
+      yarnComment = YarnComment.fromJson(jsonDecode(meta));
+      if (yarnComment != null) {
         Map<String, dynamic> linkData =
-            detectLinkInText(messageDecoderWithEmoji(yarn.body)!);
+            detectLinkInText(messageDecoderWithEmoji(yarnComment.comment)!);
 
         if (linkData["hasLink"]) {
           isUrlPresent = true;
@@ -100,13 +89,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             linkToBePreview = "http://" + linkToBePreview!;
           }
         }
-        if (yarn.attachment != null) {
+        if (yarnComment.attachment != null) {
           isAttachmentPresent = true;
         }
-        if (yarn.reYarn != null) {
-          isReYarnPresent = true;
-        }
-        if (yarn.media.isNotEmpty) {
+
+        if (yarnComment.media.isNotEmpty) {
           isMediaPresent = true;
         }
       }
@@ -116,17 +103,14 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       debugPrint("TRY:- $yarnQuestionForChatModel");
     } catch (error) {
       debugPrint("ERROR:- $error");
-      // yarnQuestionForChatModel = YarnQuestionForChatModel.fromJson(jsonDecode(widget.message!['meta_data']));
-      // isNewModel = false;
-      // if (mounted) setState(() {});
-      debugPrint("CATCH:- $yarn");
+
+      debugPrint("CATCH:- $yarnComment");
     }
   }
 
   @override
   void dispose() {
     super.dispose();
-    // _mainVideoController?.dispose();
   }
 
   @override
@@ -140,7 +124,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        await YarnAuth().getSingleTopics(yarnId: yarn.id).then((data) {
+        await YarnAuth().getSingleTopics(yarnId: yarnComment.id).then((data) {
           Yarn? yarnTopic;
           if (data != null) {
             yarnTopic = data['results'];
@@ -301,12 +285,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        if (yarnQuestionForChatModel.isQuestion ?? false) ...[
-          _buildPostTitle(),
-          SizedBox(
-            height: 10,
-          ),
-        ],
         _buildPostDescription(),
         SizedBox(
           height: 10,
@@ -368,24 +346,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
-  Widget _buildPostTitle() {
-    return Text(
-      yarnQuestionForChatModel.title!,
-      overflow: TextOverflow.ellipsis,
-      maxLines: 3,
-      style: TextStyle(
-        color: blackFont,
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
   Widget _buildPostDescription() {
     var newString = '';
     var list = [];
 
-    yarn.body.toString().split(' ').forEach((ch) {
+    yarnComment.comment.toString().split(' ').forEach((ch) {
       list.add(ch);
       // print(ch);
     });
@@ -740,23 +705,18 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         SizedBox(
           height: 10,
         ),
-        if (yarn.isQuestion) ...[
-          _buildPostTitleNew(),
-          SizedBox(height: 8),
-        ],
+        // if (yarnComment.isQuestion) ...[
+        //   _buildPostTitleNew(),
+        //   SizedBox(height: 8),
+        // ],
         _buildPostDescriptionNew(),
         SizedBox(
           height: 10,
         ),
-        if (isReYarnPresent && yarn.reYarn != null) ...[
-          getDisplayWidget(_buildReYarnTile),
-          SizedBox(
-            height: 8,
-          ),
-        ],
+
         if (isAttachmentPresent &&
-            yarn.attachment != null &&
-            yarn.attachment?.isEmpty != true) ...[
+            yarnComment.attachment != null &&
+            yarnComment.attachment?.isEmpty != true) ...[
           getDisplayWidget(_buildAttachment),
           SizedBox(
             height: 8,
@@ -768,7 +728,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             height: 8,
           ),
         ],
-        yarn.factChecked == true ? _buildFactCheckWidget() : SizedBox.shrink(),
+        // yarnComment.factChecked == true ? _buildFactCheckWidget() : SizedBox.shrink(),
         SizedBox(height: 6),
       ],
     );
@@ -791,8 +751,9 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
             Expanded(
               child: InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, Routes.USER_PROFILE,
-                      arguments: {"searchedUserName": yarn.author});
+                  Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+                    "searchedUserName": yarnComment.authorUsername
+                  });
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -803,7 +764,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                         Expanded(
                           flex: 3,
                           child: Text(
-                            messageDecoderWithEmoji(yarn.authorName ?? "") ??
+                            messageDecoderWithEmoji(
+                                    yarnComment.authorName ?? "") ??
                                 "",
                             style: TextStyle(fontSize: 12, color: yarnBlack),
                           ),
@@ -812,24 +774,21 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
                           width: 4,
                         ),
                         Text(
-                          yarn.createdAt != null
-                              ? '${getGetYarnQuestionDateTime(yarn.createdAt!)}'
+                          yarnComment.createdAt != null
+                              ? '${getGetYarnQuestionDateTime(yarnComment.createdAt!)}'
                               : "",
                           overflow: TextOverflow.fade,
                           style: TextStyle(fontSize: 12, color: yarnBlack),
                         ),
                       ],
                     ),
-                    userNameWithVerifiedIcon(
-                      name: "@${yarn.author!}",
-                      isVerified: yarn.authorIsVerified ?? false,
-                      verifiedIconSize: 16,
-                      textStyle: TextStyle(
+                    Text(
+                      "@${yarnComment.authorUsername!}",
+                      style: TextStyle(
                         color: yarnBlack,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
-                      verifiedIconColor: verifyGreen,
                     ),
                   ],
                 ),
@@ -844,8 +803,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
   Widget _buildUserAvatar() {
     return InkWell(
       onTap: () {
-        Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: yarn.authorAvatar!);
+        Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+            arguments: yarnComment.authorAvatar!);
       },
       child: Container(
         height: 36,
@@ -853,7 +812,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         decoration: BoxDecoration(shape: BoxShape.circle),
         child: ClipOval(
           child: CachedNetworkImage(
-            imageUrl: yarn.authorAvatar!,
+            imageUrl: yarnComment.authorAvatar!,
             fit: BoxFit.cover,
             errorWidget: imageErrorWidget,
           ),
@@ -862,17 +821,11 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
-  Widget _buildPostTitleNew() {
-    return RichTextForTitle(
-      description: yarn.title ?? '',
-    );
-  }
-
   Widget _buildPostDescriptionNew() {
     var newString = '';
     var list = [];
 
-    yarn.body.toString().split(' ').forEach((ch) {
+    yarnComment.comment.toString().split(' ').forEach((ch) {
       list.add(ch);
       // print(ch);
     });
@@ -990,28 +943,29 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
 
   Widget _buildAttachment() {
     Widget childWidget;
-    if (yarn.attachmentType == 'service') {
-      Service service = Service.fromJson(yarn.attachment);
+    if (yarnComment.attachmentType == 'service') {
+      Service service = Service.fromJson(yarnComment.attachment);
       childWidget = YarnServiceTile(
         service: service,
       );
-    } else if (yarn.attachmentType == 'product') {
-      Product product = Product.fromJson(yarn.attachment);
+    } else if (yarnComment.attachmentType == 'product') {
+      Product product = Product.fromJson(yarnComment.attachment);
       childWidget = YarnProductTile(
         product: product,
       );
-    } else if (yarn.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(yarn.attachment);
+    } else if (yarnComment.attachmentType == 'blog') {
+      UserPost post = UserPost.fromJson(yarnComment.attachment);
       childWidget = YarnBlogPostTile(
         post: post,
         showAuthorDetails: true,
         onDeleteBlog: () {},
       );
-    } else if (yarn.attachmentType == 'profile') {
-      logger.d("profile yarn.attachment: ${yarn.attachment}, ${yarn.id}");
-      logger.d("profile yarn.createdAt: ${yarn.createdAt}");
+    } else if (yarnComment.attachmentType == 'profile') {
+      logger.d(
+          "profile yarn.attachment: ${yarnComment.attachment}, ${yarnComment.id}");
+      logger.d("profile yarn.createdAt: ${yarnComment.createdAt}");
       CustomerProfile customerProfile =
-          CustomerProfile.fromJson(yarn.attachment ?? {});
+          CustomerProfile.fromJson(yarnComment.attachment ?? {});
       childWidget = YarnCustomerPostTile(
         customerProfile: customerProfile,
         showAuthorDetails: true,
@@ -1021,19 +975,6 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       childWidget = SizedBox();
     }
     return childWidget;
-  }
-
-  //
-  // Widget _buildTopActions() {
-  //   return YarnActions(
-  //     yarn: yarn,
-  //   );
-  // }
-
-  Widget _buildReYarnTile() {
-    return ReYarnTile(
-      yarn: yarn.reYarn ?? Yarn(),
-    );
   }
 
   Widget _buildFactCheckWidget() {
@@ -1062,121 +1003,7 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
     );
   }
 
-  Widget _buildSensitiveContentWidget() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: deepPink),
-          color: lightPink),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'The following Yarn may contain sensitive information',
-            style: TextStyle(
-                color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Text(
-            'This media is not available because it contains content you’ve chosen not to see.',
-            style: TextStyle(
-                color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            children: [
-              clickWidget(
-                text: 'View',
-                onClick: () {
-                  setState(() {
-                    yarn.isSensitiveContent = false;
-                  });
-                },
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              clickWidget(
-                text: 'Always show me sensitive media',
-                onClick: () {
-                  print('sensitive');
-                },
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAdultContentWidget() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 18),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Color.fromARGB(255, 187, 118, 27)),
-          color: Color.fromARGB(255, 249, 242, 222)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'The following Yarn may contain adult content',
-            style: TextStyle(
-                color: blackFont, fontSize: 13, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Text(
-            'This media is not available because it contains content you’ve chosen not to see.',
-            style: TextStyle(
-                color: blackFont, fontSize: 12, fontWeight: FontWeight.w400),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Row(
-            children: [
-              clickWidget(
-                text: 'View',
-                onClick: () {
-                  setState(() {
-                    yarn.isAdultContent = false;
-                  });
-                },
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              clickWidget(
-                text: 'Always show me sensitive media',
-                onClick: () {
-                  print('sensitive');
-                },
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
   Widget getDisplayWidget(Function() widgetDisplay) {
-    if (yarn.isSensitiveContent == true &&
-        _yarnSettings.yarnSettings?.allowSensitiveContent == false) {
-      return _buildSensitiveContentWidget();
-    }
-    if (yarn.isAdultContent == true &&
-        _yarnSettings.yarnSettings?.allowAdultContent == false) {
-      return _buildAdultContentWidget();
-    }
     return widgetDisplay();
   }
 
@@ -1195,8 +1022,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
       );
 
   Widget _buildImagesRowNew() {
-    return YarnMediaRender(
-      yarnTopic: yarn,
+    return YarnCommentMediaRender(
+      yarnTopic: yarnComment,
     );
   }
 }
