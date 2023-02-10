@@ -26,6 +26,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/comment_tile.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/gif_image_tile_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';
@@ -3112,6 +3113,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
 
     Widget finalUI;
 
+    // debugPrint('messageType::: ${messageType}');
+    //
+    // debugPrint('messageType details::: ${messageData}');
+    // debugPrint('messageType details 000::: ${messageData['comment']}');
+    // debugPrint('messageType details:::');
+
     switch (messageType) {
       case "text":
         finalUI = renderMessage(
@@ -3186,6 +3193,12 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
       case "yarn":
         finalUI = renderYarnUI(
             message: messageData, chatConversation: chatConversation);
+        break;
+      case "comment":
+        finalUI = renderCommentUI(
+          message: messageData,
+          chatConversation: chatConversation,
+        );
         break;
       case "payment-contract":
         finalUI = renderPaymentContractUI(
@@ -3834,6 +3847,15 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
   Widget renderYarnUI(
       {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
     return YarnQuestionTileForChat(
+      key: ValueKey(message?["id"]),
+      message: message,
+      chatConversation: chatConversation,
+    );
+  }
+
+  Widget renderCommentUI(
+      {Map<String, dynamic>? message, ChatConversation? chatConversation}) {
+    return CommentTileForChat(
       key: ValueKey(message?["id"]),
       message: message,
       chatConversation: chatConversation,

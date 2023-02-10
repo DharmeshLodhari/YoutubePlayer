@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_comment_detail_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/navigation_util.dart';
+import 'package:Slydo/widget/bottom_sheet_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:like_button/like_button.dart';
@@ -200,11 +201,38 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
   }
 
   Widget _buildShareButton() {
-    return LikeButton(
-        size: 17,
-        onTap: (_) async => false,
-        likeBuilder: (_) => SvgPicture.asset("yarn/share".toSVG(),
-            color: darkGreyYarn, height: 17, width: 17));
+    return InkWell(
+      onTap: () {
+        androidBottomSheet(
+          context: context,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              bottomSheetItem(
+                  title: 'Share in chat',
+                  iconData: Icons.send_outlined,
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await sendMomentToUserInChat(yarnComment: widget.comment);
+                  }),
+            ],
+          ),
+        );
+      },
+      child: Column(
+        children: [
+          SvgPicture.asset(
+            "yarn/share".toSVG(),
+            color: darkGreyYarn,
+            height: 17,
+            width: 17,
+          ),
+          SizedBox(
+            height: 2,
+          )
+        ],
+      ),
+    );
   }
 
   Widget _buildPayButton() {
@@ -327,57 +355,38 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     return 0;
   }
 
-  Future<void> sendMomentToUserInChat({required Yarn yarnTopic}) async {
+  Future<void> sendMomentToUserInChat(
+      {required YarnComment yarnComment}) async {
     List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {
-      addMomentPostToChat(recipientUser: recipient!, yarnTopic: yarnTopic);
+      addMomentPostToChat(recipientUser: recipient!, yarnComment: yarnComment);
     });
   }
 
   Future<void> addMomentPostToChat({
     required ChatConversation recipientUser,
-    required Yarn yarnTopic,
+    required YarnComment yarnComment,
     String? url,
   }) async {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
-    Map<String, dynamic> metaData = {
-      "id": yarnTopic.id,
-      "author_avatar": yarnTopic.authorAvatar,
-      "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
-      "author_username": yarnTopic.author,
-      "title": messageDecoderWithEmoji(yarnTopic.title),
-      "description": yarnTopic.body,
-      "tags": yarnTopic.tags,
-      "image": yarnTopic.media,
-      "is_question": yarnTopic.isQuestion,
-    };
-
-    // switch (yarnTopic.mediaType) {
-    //   case "image":
-    //     metaData.addAll({"image": momentsModel.media});
-    //     break;
-    //   case "video":
-    //     metaData.addAll({"image": momentsModel.mediaPoster});
-    //     break;
-    // }
+    Map<String, dynamic> metaData = yarnComment.toJson();
 
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
-      "message": 'yarn',
-      "kind": "yarn",
+      "message": 'comment',
+      "kind": "comment",
       "created_at": DateTime.now().toUtc().toString(),
       "type": "chatroom_message",
     };
     await sendDataToSocket(data);
-    showToast(
-        message: yarnTopic.isQuestion ? 'Yarn Shared' : 'Question Shared');
+    showToast(message: 'Comment Shared');
   }
 
   Future<bool> addLikeToComment() async {
