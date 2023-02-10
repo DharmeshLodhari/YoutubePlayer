@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/utils/extensions.dart';
@@ -42,6 +43,7 @@ class YarnOptions extends StatefulWidget {
       this.onDeleteYarn,
       this.onUpdate,
       this.onDeleteComment});
+
   @override
   State<YarnOptions> createState() => _YarnOptionsState();
 }
@@ -50,6 +52,7 @@ class _YarnOptionsState extends State<YarnOptions> {
   late YarnDashboardBloc yarnDashboardBloc;
   late PageController _pageViewController;
   int currentAskTapOnHome = 0;
+  bool? pinned = false;
 
   GlobalKey<YarnListScreenState> topicViewStateKey =
       GlobalKey<YarnListScreenState>();
@@ -60,58 +63,10 @@ class _YarnOptionsState extends State<YarnOptions> {
     });
   }
 
-  Future addUserVisibilityOption(String status) async {
-    bool? data =
-        await YarnAuth().addStatusInPost(widget.yarnTopic!.id!, status);
-    if (data != null) {
-      if (data) {
-        showToast(message: "Status Updated Successfully");
-        Navigator.pop(context);
-      }
-    }
-  }
-
-  Future deleteYarnAndQuestion() async {
-    bool? isQuestion = widget.yarnTopic!.isQuestion;
-    bool? data =
-        await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
-    if (data != null && data) {
-      showToast(
-          message: isQuestion!
-              ? "Question Deleted Successfully"
-              : "Yarn Deleted Successfully");
-      if (widget.yarnTopic != null) {
-        widget.onDeleteYarn!(widget.yarnTopic!);
-      }
-      Navigator.pop(context);
-    }
-  }
-
-  Future removeSavedYarn(String yarnId) async {
-    bool? data = await YarnAuth().deleteSavedYarn(savedYarnID: yarnId);
-    if (data != null && data) {
-      showToast(message: "Removed Saved Yarn Successfully");
-      if (widget.yarnTopic != null) {
-        widget.onDeleteYarn!(widget.yarnTopic!);
-      }
-      Navigator.pop(context);
-    }
-  }
-
-  Future deleteComment() async {
-    bool? data = await YarnAuth().deleteComment(widget.commentDetail!.id!);
-    if (data != null && data) {
-      showToast(message: "Comment deleted successfully");
-      if (widget.commentDetail != null) {
-        widget.onDeleteComment!(widget.commentDetail!);
-      }
-      Navigator.pop(context);
-    }
-  }
-
   @override
   void initState() {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
+
     super.initState();
   }
 
@@ -156,8 +111,8 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   List<Widget> _buildMoreOptionList() {
     final List<Widget> widgetList = [];
+
     if (isMyYarnQuestion()) {
-      debugPrint("IS MY YARN QUESTION TRUE");
       if ((widget.isComment ?? true) && widget.commentDetail != null) {
         widgetList.add(_buildMoreOptionForComments());
       } else {
@@ -177,31 +132,6 @@ class _YarnOptionsState extends State<YarnOptions> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // if (getLoggedInUserName(context) ==
-        //     widget.commentDetail!.authorUsername) ...[
-        //   _buildTile(
-        //       icon: "yarn/delete",
-        //       title: 'Delete',
-        //       subTitle: 'Delete this comment',
-        //       onTap: () {
-        //         print('Delete clicked');
-        //
-        //         showDeleteYarnCommentDialog();
-        //       }),
-        // ] else ...[
-        //   _buildTile(
-        //       icon: "yarn/report",
-        //       title: 'Report comment',
-        //       subTitle: 'I’m concerned about this post',
-        //       onTap: () {
-        //         Navigator.pop(context);
-        //         NavigationUtil.push(context,
-        //             screen: AddReportScreen(
-        //               object: widget.commentDetail!.toJson(),
-        //               type: "comment",
-        //             ));
-        //       }),
-        // ],
         if (isComments()) ...[
           _buildTile(
               icon: "yarn/delete",
@@ -210,6 +140,32 @@ class _YarnOptionsState extends State<YarnOptions> {
               onTap: () {
                 showDeleteYarnCommentDialog();
               }),
+
+          ///Do a check for original post author
+          if (widget.yarnTopic!.author ==
+              widget.commentDetail!.authorUsername) ...[
+            SizedBox(height: 15),
+
+            ///check if comment is pinned
+            if (widget.commentDetail!.pinned == true) ...[
+              _buildTile(
+                  icon: "yarn/unpinned",
+                  title: 'Unpin Comment',
+                  subTitle: 'Unpin comment from the top of the feed',
+                  onTap: () {
+                    deletePinnedComment(
+                        widget.yarnTopic!.id, widget.commentDetail!.id);
+                  }),
+            ] else ...[
+              _buildTile(
+                  icon: "yarn/pinned",
+                  title: 'Pin Comment',
+                  subTitle: 'Pin comment to the top of the feed',
+                  onTap: () {
+                    pinComment(widget.yarnTopic!.id, widget.commentDetail!.id);
+                  }),
+            ]
+          ],
         ] else ...[
           _buildTile(
               icon: "yarn/report",
@@ -452,8 +408,6 @@ class _YarnOptionsState extends State<YarnOptions> {
               title: 'Delete',
               subTitle: 'Delete this comment',
               onTap: () {
-                print('Delete clicked');
-
                 showDeleteYarnCommentDialog();
               }),
         ] else ...[
@@ -578,8 +532,6 @@ class _YarnOptionsState extends State<YarnOptions> {
   }
 
   bool isComments() {
-    // debugPrint("IS MY COMMENTS::: ${widget.commentDetail!.authorUsername}");
-
     if (widget.commentDetail != null) {
       debugPrint("IS MY COMMENTS");
       return getLoggedInUserName(context) ==
@@ -646,5 +598,78 @@ class _YarnOptionsState extends State<YarnOptions> {
     await sendDataToSocket(data);
     showToast(
         message: yarnTopic.isQuestion ? 'Question Shared' : 'Yarn Shared');
+  }
+
+  Future addUserVisibilityOption(String status) async {
+    bool? data =
+        await YarnAuth().addStatusInPost(widget.yarnTopic!.id!, status);
+    if (data != null) {
+      if (data) {
+        showToast(message: "Status Updated Successfully");
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  Future deleteYarnAndQuestion() async {
+    bool? isQuestion = widget.yarnTopic!.isQuestion;
+    bool? data =
+        await YarnAuth().deleteSingleTopics(yarnId: widget.yarnTopic!.id);
+    if (data != null && data) {
+      showToast(
+          message: isQuestion!
+              ? "Question Deleted Successfully"
+              : "Yarn Deleted Successfully");
+      if (widget.yarnTopic != null) {
+        widget.onDeleteYarn!(widget.yarnTopic!);
+      }
+      Navigator.pop(context);
+    }
+  }
+
+  Future removeSavedYarn(String yarnId) async {
+    bool? data = await YarnAuth().deleteSavedYarn(savedYarnID: yarnId);
+    if (data != null && data) {
+      showToast(message: "Removed Saved Yarn Successfully");
+      if (widget.yarnTopic != null) {
+        widget.onDeleteYarn!(widget.yarnTopic!);
+      }
+      Navigator.pop(context);
+    }
+  }
+
+  Future deleteComment() async {
+    bool? data = await YarnAuth().deleteComment(widget.commentDetail!.id!);
+    if (data != null && data) {
+      showToast(message: "Comment deleted successfully");
+      if (widget.commentDetail != null) {
+        widget.onDeleteComment!(widget.commentDetail!);
+      }
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> pinComment(String? yarnId, String? commentId) async {
+    bool? data = await YarnAuth().pinComment(yarnId!, commentId!);
+    if (data != null && data) {
+      showToast(message: "Comment pinned successfully");
+      widget.onUpdate!(widget.yarnTopic!);
+      Navigator.pop(context);
+    } else {
+      showToast(message: "Comment pinned failed");
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> deletePinnedComment(String? yarnId, String? commentId) async {
+    bool? data = await YarnAuth().deletePinnedComment(yarnId!, commentId!);
+    if (data != null && data) {
+      showToast(message: "Pinned Comment remove successfully");
+      widget.onUpdate!(widget.yarnTopic!);
+      Navigator.pop(context);
+    } else {
+      showToast(message: "Pinned Comment removal failed");
+      Navigator.pop(context);
+    }
   }
 }

@@ -40,6 +40,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
   @override
   void initState() {
     getAllComments();
+
     super.initState();
   }
 
@@ -92,41 +93,50 @@ class _YarnCommentListState extends State<YarnCommentList> {
   }
 
   Widget _buildCommentList() {
-    return isLoading
-        ? YarnShimmer()
-        : Column(
-            children: yarnComments
-                .map((yarnComment) => Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: YarnCommentTile(
-                            yarn: widget.yarn,
-                            yarnComment: yarnComment,
-                            openReply: false,
-                            onDeleteComment: (YarnComment yarnCmt) {
-                              int index = yarnComments.indexWhere(
-                                  (element) => element.id == yarnCmt.id);
-                              if (index != -1) {
-                                yarnComments.removeAt(index);
-                                widget.onCountChanged!(1);
-                              }
-                              if (mounted) setState(() {});
-                            },
-                          ),
+    return isLoading ? YarnShimmer() : loadCommentList();
+  }
+
+  Widget loadCommentList() {
+    return Column(
+      children: [
+        Column(
+          children: yarnComments
+              .map((yarnComment) => Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: YarnCommentTile(
+                          yarn: widget.yarn,
+                          yarnComment: yarnComment,
+                          openReply: false,
+                          onDeleteComment: (YarnComment yarnCmt) {
+                            int index = yarnComments.indexWhere(
+                                (element) => element.id == yarnCmt.id);
+                            if (index != -1) {
+                              yarnComments.removeAt(index);
+                              widget.onCountChanged!(1);
+                            }
+                            if (mounted) setState(() {});
+                          },
+                          onUpdate: (Yarn yarn) {
+                            getAllComments();
+                          },
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Divider(
-                          height: 0,
-                          thickness: 0.5,
-                          color: greySecondaryYarn,
-                        ),
-                      ],
-                    ))
-                .toList(),
-          );
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        height: 0,
+                        thickness: 0.5,
+                        color: greySecondaryYarn,
+                      ),
+                    ],
+                  ))
+              .toList(),
+        ),
+      ],
+    );
   }
 
   Widget _buildTopActionButton() {
@@ -201,7 +211,6 @@ class _YarnCommentListState extends State<YarnCommentList> {
             yarnComments.addAll(tempList);
           });
         }
-        debugPrint("YARN TOPICS:- $widget.commentDetailsList");
       }
       if (yarnComments.isEmpty) {
         if (mounted) {
@@ -210,13 +219,6 @@ class _YarnCommentListState extends State<YarnCommentList> {
           });
         }
       }
-      // else if (categoriesNext == null && askCategoriesList.length > 6) {
-      //   _askCategoriesScaffoldMessengerKey.currentState!.showSnackBar(SnackBar(
-      //     content:
-      //     Text(AppLocalization.of(context)!.youHaveReachedBottomOfTheList),
-      //     duration: Duration(milliseconds: 500),
-      //   ));
-      // }
     }
   }
 
@@ -232,4 +234,62 @@ class _YarnCommentListState extends State<YarnCommentList> {
     isPopMenuOpen = isOpen;
     setState(() {});
   }
+
+  // String? checkIfPinnedCommentId() {
+  //   String? id = '';
+  //   for (var item in yarnPinnedComment) {
+  //     if (yarnPinnedComment.isNotEmpty) {
+  //       id = item.id;
+  //     } else {
+  //       id = '';
+  //     }
+  //   }
+  //   return id;
+  // }
+  //
+  // checkIfPinnedCommentIsAvailable() {
+  //   for (var item in yarnPinnedComment) {
+  //     if (yarnPinnedComment.isNotEmpty && item.comment!.isNotEmpty) {
+  //       return Column(
+  //         children: yarnPinnedComment
+  //             .map((yarnComment) => Column(
+  //                   children: [
+  //                     Container(
+  //                       padding: EdgeInsets.symmetric(horizontal: 16),
+  //                       child: YarnCommentTile(
+  //                         yarn: widget.yarn,
+  //                         yarnComment: yarnComment,
+  //                         pinnedCommentId: checkIfPinnedCommentId(),
+  //                         openReply: false,
+  //                         pinned: true,
+  //                         // onDeleteComment: (YarnComment yarnCmt) {
+  //                         //   int index = yarnComments.indexWhere(
+  //                         //       (element) => element.id == yarnCmt.id);
+  //                         //   if (index != -1) {
+  //                         //     yarnComments.removeAt(index);
+  //                         //     widget.onCountChanged!(1);
+  //                         //   }
+  //                         //   if (mounted) setState(() {});
+  //                         // },
+  //                         onUpdate: (Yarn yarn) {
+  //                           // getPinnedComment();
+  //                           getAllComments();
+  //                         },
+  //                       ),
+  //                     ),
+  //                     SizedBox(
+  //                       height: 10,
+  //                     ),
+  //                     Divider(
+  //                       height: 0,
+  //                       thickness: 0.5,
+  //                       color: greySecondaryYarn,
+  //                     ),
+  //                   ],
+  //                 ))
+  //             .toList(),
+  //       );
+  //     }
+  //   }
+  // }
 }

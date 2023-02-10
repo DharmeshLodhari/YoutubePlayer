@@ -24,6 +24,7 @@ class YarnComment {
     this.media = const [],
     this.attachment,
     this.attachmentType,
+    this.pinned,
   });
 
   YarnComment.fromJson(dynamic json) {
@@ -44,6 +45,7 @@ class YarnComment {
     likes = json['likes'] != null ? json['likes'] : 0;
     dislike = json['dislikes'] != null ? json['dislikes'] : 0;
     enablePayMe = json['enable_payme'] != null ? json['enable_payme'] : false;
+    pinned = json['pinned'] != null ? json['pinned'] : false;
     if (json['media'] != null) {
       media = [];
       json['media'].forEach((v) {
@@ -87,6 +89,7 @@ class YarnComment {
   String? socialLikes;
   String? socialDislikes;
   bool? enablePayMe;
+  bool? pinned = false;
   bool? userLike = false;
   bool? userDisLike = false;
   List<YarnMedia> media = [];
@@ -111,6 +114,7 @@ class YarnComment {
     map['dislikes'] = dislike;
     map['user_liked'] = userLike;
     map['user_disliked'] = userDisLike;
+    map['pinned'] = pinned;
     map['media'] = media.map((v) => v.toJson()).toList();
     return map;
   }

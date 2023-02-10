@@ -809,7 +809,6 @@ class YarnAuth extends AuthService {
     }
   }
 
-  // {"comment":"xyz","author_username:""};
   // ADD COMMENT TO YARN
   Future<YarnComment?> addCommentToYarn(
       String yarnId, Map<String, dynamic> body) async {
@@ -906,7 +905,7 @@ class YarnAuth extends AuthService {
 
   // Get all Comment
   Future<Map<String, dynamic>?> getAllComments(
-      String? next, String previous, String postId,
+      String? next, String previous, String yarnId,
       {String? sortBy}) async {
     debugPrint("CALLING ALL COMMENTS");
     String url = "";
@@ -916,9 +915,9 @@ class YarnAuth extends AuthService {
     if (next == "") {
       if (sortBy != null) {
         url = AppConfig.baseUrl +
-            "/api/v1/social/ask/yarn-comments/$postId/?sort_by=$sortBy";
+            "/api/v1/social/ask/yarn-comments/$yarnId/?sort_by=$sortBy";
       } else {
-        url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$postId/";
+        url = AppConfig.baseUrl + "/api/v1/social/ask/yarn-comments/$yarnId/";
       }
     } else {
       url = getSecureUrl(url: next);
@@ -928,12 +927,31 @@ class YarnAuth extends AuthService {
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
 
+    Map<String, dynamic>? pinnedYarn = await getPinnedComment(yarnId);
+
     debugPrint(
         "COMMENTS RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
     if (response.statusCode == 200) {
       List<YarnComment> commentsDetails = [];
       var jsonData = json.decode(response.body);
-      for (var item in jsonData["results"]) {
+
+      debugPrint(
+          'COMMENTS RESPONSE CODE::: ${jsonData['results'].runtimeType}');
+
+      List<dynamic> results = jsonData['results'];
+
+      if (pinnedYarn == null) {
+      } else {
+        if (pinnedYarn.isNotEmpty) {
+          pinnedYarn['pinned'] = true;
+
+          List<dynamic> pinnedYarnList = [pinnedYarn];
+
+          results = pinnedYarnList + results;
+        }
+      }
+
+      for (var item in results) {
         YarnComment commentsDetail = YarnComment.fromJson(item);
         commentsDetails.add(commentsDetail);
       }
@@ -975,6 +993,75 @@ class YarnAuth extends AuthService {
     var response = await httpDelete(url, headers: headers);
 
     if (response.statusCode == 204) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // Pin Single Comment
+  Future<bool?> pinComment(String yarnId, String commentId) async {
+    debugPrint("CALLING POST TO PIN COMMENT");
+    String url = "";
+    url = AppConfig.baseUrl +
+        "/api/v1/social/ask/pinned-comment/$yarnId/$commentId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpPost(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE PINNED POST CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 201) {
+      return true;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // get pinned comment
+  Future<Map<String, dynamic>?> getPinnedComment(String yarnId) async {
+    debugPrint("CALLING PINNED COMMENT");
+    String url = "";
+    url = AppConfig.baseUrl + "/api/v1/social/ask/pinned-comment/$yarnId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE PINNED GET CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      return data;
+    } else if (response.statusCode == 500) {
+      return null;
+    } else {
+      return null;
+    }
+  }
+
+  // DELETE PINNED COMMENT
+  Future<bool?> deletePinnedComment(String yarnId, String commentId) async {
+    debugPrint("CALLING DELETE PIN COMMENT");
+    String url = "";
+    url = AppConfig.baseUrl +
+        "/api/v1/social/ask/pinned-comment/$yarnId/$commentId/";
+    debugPrint(url);
+
+    var headers = await getAuthHeaders();
+    var response = await httpDelete(url, headers: headers);
+
+    debugPrint(
+        "RESPONSE PINNED DELETE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
       return true;
     } else if (response.statusCode == 500) {
       return null;
