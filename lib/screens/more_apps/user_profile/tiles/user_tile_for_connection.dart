@@ -269,12 +269,10 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: padding),
       child: badges.Badge(
-        badgeContent: Center(
-          child: Text(
-            getCountForMessage(count),
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w400, fontSize: 12),
-          ),
+        badgeContent: Text(
+          getCountForMessage(count),
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w400, fontSize: 12),
         ),
         position: badges.BadgePosition.topEnd(end: 0, top: 0),
         badgeAnimation: badges.BadgeAnimation.rotation(

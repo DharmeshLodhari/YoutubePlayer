@@ -2,10 +2,15 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/main.dart';
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
+import 'package:Slydo/screens/more_apps/user_post/models/user_post.dart';
+import 'package:Slydo/screens/more_apps/user_post/tile/user_post_tile.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_customer_post_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_product_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/tiles/yarn_service_tile.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
@@ -143,9 +148,10 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   TextEditingController _gifController = TextEditingController();
 
   /// variables for product or service search
-  bool isBlogSearch = false;
-  bool isProductSearch = true;
+  bool isBlogSearch = true;
+  bool isProductSearch = false;
   bool isServiceSearch = false;
+  bool isUserSearch = false;
   bool isCurrentUsersProductOrService = false;
   List searchedProductAndService = [];
   StateSetter? bottomSheetStateSetterGlobal;
@@ -170,6 +176,8 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   var productServicePreview;
   Product? productMode;
   Service? serviceMode;
+  CustomerProfile? customerProfileMode;
+  UserPost? userPostMode;
   YarnDashboardBloc? yarnDashboardBloc;
 
   FocusNode _focus = FocusNode();
@@ -222,12 +230,14 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         context: context,
         hasIcon: true,
         children: [
-          // CustomizedPopUpMenuItemWithIcon(
-          //     title: "Blog", value: "Blog", icon: SlydoAppIcon.circle_user),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "Blog", value: "Blog", icon: SlydoAppIcon.payout_list),
           CustomizedPopUpMenuItemWithIcon(
               title: "Product", value: "Products", icon: SlydoAppIcon.product),
           CustomizedPopUpMenuItemWithIcon(
               title: "Service", value: "Services", icon: SlydoAppIcon.note_2),
+          CustomizedPopUpMenuItemWithIcon(
+              title: "User", value: "User", icon: SlydoAppIcon.user),
         ],
         selectedIndex: selectedMenuItemIndex,
         left: 16,
@@ -307,20 +317,22 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        InkWell(
-                            onTap: () async {
-                              if (selectedImages.length == 4) {
-                                showToast(
-                                    message:
-                                        "You can select only 4 images or videos");
-                              } else {
-                                pickFileFromMedia();
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 16.0),
-                              child: SvgPicture.asset("yarn/images".toSVG()),
-                            )),
+                        if (yarnDashboardBloc!.productService == null) ...[
+                          InkWell(
+                              onTap: () async {
+                                if (selectedImages.length == 4) {
+                                  showToast(
+                                      message:
+                                          "You can select only 4 images or videos");
+                                } else {
+                                  pickFileFromMedia();
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: SvgPicture.asset("yarn/images".toSVG()),
+                              )),
+                        ],
                         SizedBox(
                           width: 8,
                         ),
@@ -345,9 +357,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                     color: greySecondaryYarn,
                   ),
                   _buildAddImages(),
-                  // SizedBox(
-                  //   height: 5,
-                  // ),
                 ],
                 if (yarnDashboardBloc!.productService != null) ...[
                   checkIfProductService(),
@@ -386,6 +395,29 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         child: YarnProductTile(
           product: productMode,
           tileRenderPlace: TileRenderPlace.YarnProductService,
+        ),
+      );
+    }
+    //display user profile
+    else if (productServicePreview.runtimeType.toString() ==
+        'CustomerProfile') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: YarnCustomerPostTile(
+          customerProfile: customerProfileMode,
+          showAuthorDetails: true,
+          onDeleteBlog: () {},
+        ),
+      );
+    }
+    //display blog post
+    else if (productServicePreview.runtimeType.toString() == 'UserPost') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: PostTile(
+          post: userPostMode,
+          showAuthorDetails: true,
+          onDeleteBlog: () {},
         ),
       );
     } else {
@@ -432,7 +464,9 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
       child: Row(
         children: <Widget>[
-          moreActionBtn(),
+          if (selectedImages.isEmpty && selectedImagesList.isEmpty) ...[
+            moreActionBtn(),
+          ],
           Expanded(
             child: textMessageField(),
           ),
@@ -865,12 +899,16 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   }
 
   IconData getSearchTypeIcon() {
-    if (selectedMenuItemIndex == 1) {
-      return SlydoAppIcon.note_2;
-    } else if (selectedMenuItemIndex == 0) {
+    if (selectedMenuItemIndex == 0) {
+      return SlydoAppIcon.payout_list;
+    } else if (selectedMenuItemIndex == 1) {
       return SlydoAppIcon.product;
+    } else if (selectedMenuItemIndex == 2) {
+      return SlydoAppIcon.note_2;
+    } else if (selectedMenuItemIndex == 3) {
+      return SlydoAppIcon.user;
     }
-    return SlydoAppIcon.product;
+    return SlydoAppIcon.payout_list;
   }
 
   Widget searchIcon() {
@@ -935,6 +973,10 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
             searchedProductAndService.add(Product.fromJson(item));
           } else if (isServiceSearch) {
             searchedProductAndService.add(Service.fromJson(item));
+          } else if (isBlogSearch) {
+            searchedProductAndService.add(UserPost.fromJson(item));
+          } else if (isUserSearch) {
+            searchedProductAndService.add(CustomerProfile.fromJson(item));
           }
         });
 
@@ -963,6 +1005,16 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           "/api/v1/search/services/?search=name__wildcard|*" +
           searchItemTextController!.text +
           "*";
+    }
+    if (isUserSearch) {
+      return AppConfig.baseUrl +
+          "/api/v1/search/users/?search=" +
+          searchItemTextController!.text;
+    }
+    if (isBlogSearch) {
+      return AppConfig.baseUrl +
+          "/api/v1/social/posts/public/?search=" +
+          searchItemTextController!.text;
     }
     return "";
   }
@@ -1122,11 +1174,25 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
                         var attachment = {'product': product.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         productMode = searchedProductAndService[index];
-                      } else {
+                      } else if (productServicePreview.runtimeType.toString() ==
+                          'Service') {
                         Service service = searchedProductAndService[index];
                         var attachment = {'service': service.toJson()};
                         yarnDashboardBloc!.productService = attachment;
                         serviceMode = searchedProductAndService[index];
+                      } else if (productServicePreview.runtimeType.toString() ==
+                          'CustomerProfile') {
+                        CustomerProfile customerProfile =
+                            searchedProductAndService[index];
+                        var attachment = {'profile': customerProfile.toJson()};
+                        yarnDashboardBloc!.productService = attachment;
+                        customerProfileMode = searchedProductAndService[index];
+                      } else if (productServicePreview.runtimeType.toString() ==
+                          'UserPost') {
+                        UserPost userPost = searchedProductAndService[index];
+                        var attachment = {'blog': userPost.toJson()};
+                        yarnDashboardBloc!.productService = attachment;
+                        userPostMode = searchedProductAndService[index];
                       }
 
                       isShowExtension = true;
@@ -1140,26 +1206,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
             },
             controller: _scrollController,
           );
-  }
-
-  Widget getResultTile(var result) {
-    if (isProductSearch) {
-      if (result is Product) {
-        return SearchProductTile(
-          product: result,
-        );
-      }
-      return Container();
-    }
-    if (isServiceSearch) {
-      if (result is Service) {
-        return SearchServiceTile(
-          service: result,
-        );
-      }
-      return Container();
-    }
-    return Container();
   }
 
   Widget _buildIndicatorForProductAndService() {
@@ -1612,12 +1658,20 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       isProductSearch = true;
       isServiceSearch = false;
       isBlogSearch = false;
+      isUserSearch = false;
     } else if (value == "Services") {
       isServiceSearch = true;
       isProductSearch = false;
       isBlogSearch = false;
+      isUserSearch = false;
     } else if (value == "Blog") {
       isBlogSearch = true;
+      isServiceSearch = false;
+      isProductSearch = false;
+      isUserSearch = false;
+    } else if (value == "User") {
+      isUserSearch = true;
+      isBlogSearch = false;
       isServiceSearch = false;
       isProductSearch = false;
     }
@@ -1631,11 +1685,125 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     setState(() {});
   }
 
+  Widget getResultTile(var result) {
+    if (isProductSearch) {
+      if (result is Product) {
+        return SearchProductTile(
+          product: result,
+        );
+      }
+      return Container();
+    }
+    if (isServiceSearch) {
+      if (result is Service) {
+        return SearchServiceTile(
+          service: result,
+        );
+      }
+      return Container();
+    }
+    if (isUserSearch) {
+      if (result is CustomerProfile) {
+        return userCard(result);
+      }
+      return Container();
+    }
+    if (isBlogSearch) {
+      if (result is UserPost) {
+        return Container(
+          margin: EdgeInsets.only(left: 20.0, right: 20.0),
+          child: PostTile(
+              post: result,
+              showAuthorDetails: true,
+              onDeleteBlog: () {},
+              disableClick: false),
+        );
+      }
+      return Container();
+    }
+    return Container();
+  }
+
+  Widget userCard(CustomerProfile user) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.zero,
+        shadowColor: boxShadowTwo,
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  dense: true,
+                  title: userNameWithVerifiedIcon(
+                    name: user.fullName!,
+                    isVerified: user.isVerified,
+                  ),
+                  subtitle: Text(
+                    user.userName!,
+                    maxLines: 1,
+                    style: TextStyle(color: darkGrey, fontSize: 12),
+                  ),
+                  leading: getUserLeading(user),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getUserLeading(CustomerProfile user) {
+    Color borderColor = getUserTypeColor(user: user);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context)
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
+      },
+      child: Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: user.avatar == "" ? defaultImage : user.avatar!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            errorWidget: imageErrorWidget,
+            height: double.infinity,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, _) => CachedNetworkImage(
+              imageUrl: defaultImage,
+              colorBlendMode: BlendMode.darken,
+              fit: BoxFit.fitWidth,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   checkHintText(int selectedMenuItemIndex) {
     if (selectedMenuItemIndex == 0) {
-      return 'Search product';
+      return 'Search blog';
     } else if (selectedMenuItemIndex == 1) {
+      return 'Search product';
+    } else if (selectedMenuItemIndex == 2) {
       return 'Search service';
+    } else if (selectedMenuItemIndex == 3) {
+      return 'Search user';
     }
   }
 }

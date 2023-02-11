@@ -961,9 +961,6 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         onDeleteBlog: () {},
       );
     } else if (yarnComment.attachmentType == 'profile') {
-      logger.d(
-          "profile yarn.attachment: ${yarnComment.attachment}, ${yarnComment.id}");
-      logger.d("profile yarn.createdAt: ${yarnComment.createdAt}");
       CustomerProfile customerProfile =
           CustomerProfile.fromJson(yarnComment.attachment ?? {});
       childWidget = YarnCustomerPostTile(
