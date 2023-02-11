@@ -1,5 +1,3 @@
-// ignore_for_file: must_be_immutable
-
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -69,6 +67,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
+
     return _buildProfileCard();
   }
 
@@ -102,7 +101,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                         width: double.infinity,
                         fit: BoxFit.cover,
                         errorWidget: imageErrorWidget,
-                        imageUrl: widget.customerProfile?.wallpaper ?? ""),
+                        imageUrl: searchedUser!.wallpaper ?? ""),
                   ),
                   Positioned(
                     top: getAvatarTop(widget.tileRenderPlace, context),
@@ -124,7 +123,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                           borderRadius: BorderRadius.circular(50),
                           child: CachedNetworkImage(
                             fit: BoxFit.cover,
-                            imageUrl: widget.customerProfile?.avatar ?? '',
+                            imageUrl: searchedUser!.avatar ?? '',
                             errorWidget: imageErrorWidget,
                           ),
                         ),
@@ -173,9 +172,8 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                                 SizedBox(height: 2),
                                 userNameWithVerifiedIcon(
                                     name:
-                                        '@${widget.customerProfile?.displayName() ?? ""}',
-                                    isVerified:
-                                        widget.customerProfile?.isVerified,
+                                        '@${searchedUser!.displayName() ?? ""}',
+                                    isVerified: searchedUser!.isVerified,
                                     textStyle: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: getFontSize(
@@ -197,8 +195,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                       ),
                       SizedBox(height: 8),
                       YarnSmartText(
-                        text: messageDecoderWithEmoji(
-                            widget.customerProfile?.bio)!,
+                        text: messageDecoderWithEmoji(searchedUser!.bio)!,
                         style: TextStyle(
                             color: blackFont,
                             fontSize: 16,
@@ -270,11 +267,6 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
         ],
       );
     }
-
-    debugPrint('username init one::::: ${widget.customerProfile!.userName}');
-    debugPrint('username init two::::: ${userBloc!.user.userName}');
-    debugPrint(
-        'username init three::::: ${widget.customerProfile!.conversationId}');
 
     if (widget.customerProfile!.userName != userBloc!.user.userName) {
       if (widget.customerProfile!.conversationId != "") {

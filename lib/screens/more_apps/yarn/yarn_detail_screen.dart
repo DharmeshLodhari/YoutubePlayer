@@ -176,8 +176,8 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     }
 
     return Column(
-      // mainAxisAlignment: MainAxisAlignment.center,
-      // mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
       children: [
         _buildPostAndCommentView(),
         if (isMentionName) ...[

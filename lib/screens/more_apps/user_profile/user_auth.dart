@@ -63,7 +63,6 @@ class UserAuth extends AuthService {
     print('FETCH PROFILE WITH AUTH ::: $url ${response.body}');
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      print('FETCH PROFILE  ::: $url ${jsonData['profile']['contact']}');
 
       CustomerProfile customerProfile = CustomerProfile.fromJson(jsonData);
       return customerProfile;
@@ -144,7 +143,6 @@ class UserAuth extends AuthService {
             "Please upload smaller image, This image is too large.");
       }
       var responseBody = await response.stream.bytesToString();
-      debugPrint('UPDATE PICS ---> ${responseBody}');
 
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(responseBody);
