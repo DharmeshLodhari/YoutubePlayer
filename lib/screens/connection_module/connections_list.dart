@@ -246,6 +246,7 @@ class _ConnectionListState extends State<ConnectionList> {
           )
         : Container(
             child: ListView.builder(
+            shrinkWrap: true,
             padding: EdgeInsets.symmetric(
               vertical: 4,
             ),
@@ -343,6 +344,7 @@ class _ConnectionListState extends State<ConnectionList> {
       return _connectionListBloc.connectionUsers.length == 0
           ? NoItemInList(msg: noContactMsg, isResult: true)
           : ListView.builder(
+              shrinkWrap: true,
               padding: EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
               itemCount: getConnectionListItemCount(),
@@ -370,6 +372,7 @@ class _ConnectionListState extends State<ConnectionList> {
               isResult: true,
             )
           : ListView.builder(
+              shrinkWrap: true,
               padding: EdgeInsets.symmetric(vertical: 4),
               //+1 for progressbar
               itemCount: _connectionListBloc.connectionUsers.length,
