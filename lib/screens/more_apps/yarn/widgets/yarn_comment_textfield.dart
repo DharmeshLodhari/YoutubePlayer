@@ -247,8 +247,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     itemSearchTypeSelectionMenu!.onChange = menuItemSelectionChange;
     itemSearchTypeSelectionMenu!.menuState = menuStateChange;
 
-    if (yarnDashboardBloc!.productService != null &&
-        selectedImages.isNotEmpty) {
+    if (yarnDashboardBloc!.productService != null) {
       return Expanded(
           child: ClipRect(
               clipper: CustomShape(),
@@ -375,54 +374,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
 
   Widget getCommentBox() {
     return messageActionBar();
-  }
-
-  Widget getPreviewContainer() {
-    //display services
-    if (productServicePreview.runtimeType.toString() == 'Service') {
-      return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
-        child: YarnServiceTile(
-          service: serviceMode,
-          tileRenderPlace: TileRenderPlace.YarnProductService,
-        ),
-      );
-    }
-    //display product
-    else if (productServicePreview.runtimeType.toString() == 'Product') {
-      return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
-        child: YarnProductTile(
-          product: productMode,
-          tileRenderPlace: TileRenderPlace.YarnProductService,
-        ),
-      );
-    }
-    //display user profile
-    else if (productServicePreview.runtimeType.toString() ==
-        'CustomerProfile') {
-      return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
-        child: YarnCustomerPostTile(
-          customerProfile: customerProfileMode,
-          showAuthorDetails: true,
-          onDeleteBlog: () {},
-        ),
-      );
-    }
-    //display blog post
-    else if (productServicePreview.runtimeType.toString() == 'UserPost') {
-      return Container(
-        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
-        child: PostTile(
-          post: userPostMode,
-          showAuthorDetails: true,
-          onDeleteBlog: () {},
-        ),
-      );
-    } else {
-      return Container();
-    }
   }
 
   Widget messageActionBar() {
@@ -1342,7 +1293,7 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
 
   pickFileFromMedia() async {
     List<Media>? res = await ImagesPicker.pick(
-      count: 1,
+      count: 4,
       pickType: PickType.all,
       language: Language.System,
       maxTime: 900,
@@ -1352,56 +1303,58 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     );
 
     if (res == null || res.isEmpty) return;
-    File file = File(res.first.path);
-    String? mediaType = getFileTypeByPath(path: file.path);
 
-    if (mediaType == null) return;
+    for (var item in res) {
+      File file = File(item.path);
+      String? mediaType = getFileTypeByPath(path: file.path);
 
-    if (mediaType == 'image') {
-      imagePath = file.path;
-      selectedImagesList.add({
-        'mediaType': mediaType,
-        'file': PickedFile(imagePath!),
-      });
-      selectedImages.add(PickedFile(imagePath!));
-      selectedMedia
-          .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
+      if (mediaType == null) return;
 
-      if (widget.addedSelectedMedia != null)
-        widget.addedSelectedMedia!(selectedMedia);
-      if (mounted) setState(() {});
-    } else if (mediaType == 'video') {
-      var videoFilePath =
-          await NavigationUtil.push(context, screen: TrimmerView(file: file));
-      if (videoFilePath is String) {
-        videoPath = videoFilePath;
-        Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
-        String? thumbnailImage =
-            await generateThumbNailFromVideo(videoPath: videoPath!);
-        // setUpVideoPlayer();
-        // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
-        //   if (thumbnail != null) {
-        //     generatedVideoThumbnail = thumbnail;
-        //     debugPrint('file path gen -> $generatedVideoThumbnail');
-        //   }
-        // });
+      if (mediaType == 'image') {
+        imagePath = file.path;
         selectedImagesList.add({
           'mediaType': mediaType,
-          'file': uInt8List,
-          'imagePoster': thumbnailImage,
+          'file': PickedFile(imagePath!),
         });
-        selectedImages.add(PickedFile(videoPath!));
-        selectedMedia.add(YarnMedia(
-            mediaFile: File(videoPath!),
-            mediaType: mediaType,
-            mediaPoster: thumbnailImage));
-        // ignore: unnecessary_statements
-        // if (widget.addedSelectedMedia != null)
-        widget.addedSelectedMedia!(selectedMedia);
+        selectedImages.add(PickedFile(imagePath!));
+        selectedMedia
+            .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
+
+        if (widget.addedSelectedMedia != null)
+          widget.addedSelectedMedia!(selectedMedia);
         if (mounted) setState(() {});
+      } else if (mediaType == 'video') {
+        var videoFilePath =
+            await NavigationUtil.push(context, screen: TrimmerView(file: file));
+        if (videoFilePath is String) {
+          videoPath = videoFilePath;
+          Uint8List? uInt8List = await getVideoThumbnailFromUrl(videoPath!);
+          String? thumbnailImage =
+              await generateThumbNailFromVideo(videoPath: videoPath!);
+          // setUpVideoPlayer();
+          // generateThumbNailFromVideo(videoPath: videoPath!).then((thumbnail) {
+          //   if (thumbnail != null) {
+          //     generatedVideoThumbnail = thumbnail;
+          //     debugPrint('file path gen -> $generatedVideoThumbnail');
+          //   }
+          // });
+          selectedImagesList.add({
+            'mediaType': mediaType,
+            'file': uInt8List,
+            'imagePoster': thumbnailImage,
+          });
+          selectedImages.add(PickedFile(videoPath!));
+          selectedMedia.add(YarnMedia(
+              mediaFile: File(videoPath!),
+              mediaType: mediaType,
+              mediaPoster: thumbnailImage));
+          // ignore: unnecessary_statements
+          // if (widget.addedSelectedMedia != null)
+          widget.addedSelectedMedia!(selectedMedia);
+          if (mounted) setState(() {});
+        }
       }
     }
-    debugPrint("SELECTED IMAGES:- $selectedImages");
   }
 
   void ratingCategory() {
@@ -1649,6 +1602,54 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
         ],
       ),
     );
+  }
+
+  Widget getPreviewContainer() {
+    //display services
+    if (productServicePreview.runtimeType.toString() == 'Service') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: YarnServiceTile(
+          service: serviceMode,
+          tileRenderPlace: TileRenderPlace.YarnProductService,
+        ),
+      );
+    }
+    //display product
+    else if (productServicePreview.runtimeType.toString() == 'Product') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: YarnProductTile(
+          product: productMode,
+          tileRenderPlace: TileRenderPlace.YarnProductService,
+        ),
+      );
+    }
+    //display user profile
+    else if (productServicePreview.runtimeType.toString() ==
+        'CustomerProfile') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: YarnCustomerPostTile(
+          customerProfile: customerProfileMode,
+          showAuthorDetails: true,
+          onDeleteBlog: () {},
+        ),
+      );
+    }
+    //display blog post
+    else if (productServicePreview.runtimeType.toString() == 'UserPost') {
+      return Container(
+        margin: EdgeInsets.only(left: 20.0, right: 20.0, top: 5.0, bottom: 5.0),
+        child: PostTile(
+          post: userPostMode,
+          showAuthorDetails: true,
+          onDeleteBlog: () {},
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   void menuItemSelectionChange(String value, int index) {

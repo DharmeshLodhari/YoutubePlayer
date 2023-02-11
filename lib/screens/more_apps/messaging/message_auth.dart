@@ -344,6 +344,7 @@ class MessageAuth extends AuthService {
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
+
       Map<String, dynamic> result = {
         "count": jsonData["count"],
         "next": jsonData["next"],

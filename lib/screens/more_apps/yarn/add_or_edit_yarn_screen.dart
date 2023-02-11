@@ -386,7 +386,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
   Widget _buildRowForMedia() {
     return Container(
-      // height: 65,
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(color: HexColor("#D9D9D9")),

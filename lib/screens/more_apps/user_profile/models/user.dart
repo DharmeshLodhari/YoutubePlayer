@@ -99,7 +99,7 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     UserAbout userAbout = UserAbout.fromJson(json["profile"]);
 
-    debugPrint('IS-VERIFIED --> ${json['is_verified']}');
+    // debugPrint('IS-VERIFIED --> ${json['is_verified']}');
     User user = User(
       nickName: json['nickname'] ?? "",
       type: json['account_type'],
@@ -228,7 +228,6 @@ class CustomerProfile {
         dateJoined: json['date_joined'] ?? "",
         isFollowing: json['is_following'] ?? false,
         chatWallpaper: json['chat_wallpaper'] ?? "",
-        wallpaper: json['wallpaper'] ?? "",
         avatar: json['avatar'] ?? "",
         qrCode: json['qr_code'] ?? "",
         following: json['following'] ?? 0,
@@ -238,6 +237,15 @@ class CustomerProfile {
         conversationId: json['conversation_id'] ?? "",
         status: UserStatus.UNKNOWN,
         rating: json['rating'] ?? 0.0);
+    if (json['profile'] != null) {
+      profile.userAbout = UserAbout.fromJson(json['profile']);
+    }
+    if (json['type'] == 'User') {
+      profile.wallpaper = json['wallpaper'];
+    } else if (json['type'] != null && json['profile'] != null) {
+      profile.wallpaper = profile.userAbout!.wallpaper;
+    }
+
     if (json['default_currency'] != null) {
       profile.defaultCurrency = json['default_currency'] ?? "NGN";
     }
@@ -246,9 +254,6 @@ class CustomerProfile {
     }
     if (json['uuid'] != null) {
       profile.uuid = json['uuid'] ?? "";
-    }
-    if (json['profile'] != null) {
-      profile.userAbout = UserAbout.fromJson(json['profile']);
     }
 
     return profile;
@@ -293,7 +298,7 @@ class CustomerProfile {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 
-    print('User type::: ${data['type']}');
+    // print('User type::: ${data['type']}');
 
     data['full_name'] = this.fullName;
     data['username'] = this.userName;
@@ -304,10 +309,9 @@ class CustomerProfile {
     data['bio'] = this.bio;
     if (data['type'] == "User") {
       data['wallpaper'] = this.wallpaper;
-    } else if (data['type'] == null) {
+    } else if (data['type'] != null) {
       data['wallpaper'] = this.userAbout?.wallpaper;
     }
-    // data['wallpaper'] = this.wallpaper;
     data['conversation_id'] = this.conversationId;
     data['status'] = this.status.name;
     data['uuid'] = this.uuid;
