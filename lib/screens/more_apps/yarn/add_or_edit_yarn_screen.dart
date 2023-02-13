@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
@@ -16,11 +17,14 @@ import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_adult_viewers_advice.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_enable_comment_payment.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/ask_mention_view.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/create_media_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -405,7 +409,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             if (yarnDashboardBloc!.productService == null) ...[
               InkWell(
                   onTap: () {
-                    selectCameraGallery(context);
+                    // selectCameraGallery(context);
+                    if (existingMediaList.length + newMediaList.length == 4) {
+                      showToast(
+                          message: "You can select only 4 images or videos");
+                    } else {
+                      buildCreateMediaScreen();
+                    }
                   },
                   child: SvgPicture.asset("yarn/images".toSVG())),
             ],
@@ -898,7 +908,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
               if (existingMediaList.length + newMediaList.length == 4) {
                 showToast(message: "You can select only 4 images or videos");
               } else {
-                selectCameraGallery(context);
+                // selectCameraGallery(context);
+                buildCreateMediaScreen();
                 // pickFileFromMedia();
               }
             },
@@ -2179,6 +2190,42 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     } else if (selectedMenuItemIndex == 3) {
       return 'Search user';
     }
+  }
+
+  buildCreateMediaScreen() {
+    String? mediaType = 'all';
+    if (existingMediaList.length + newMediaList.length > 0) {
+      for (var item in newMediaList) {
+        mediaType = item.mediaType;
+      }
+    }
+    return NavigationUtil.push(context,
+        screen: CreateMediaScreen(
+          imageCount: existingMediaList.length + newMediaList.length,
+          mediaTypeAdd: mediaType,
+          addedSelectedMedia: (value) async {
+            for (var media in value) {
+              if (media.mediaType == 'image') {
+                newMediaList.add(YarnMedia(
+                    mediaFile: File(media.mediaFile!.path),
+                    mediaType: media.mediaType));
+                if (mounted) setState(() {});
+              } else if (media.mediaType == 'video') {
+                File? thumbnailImage = await generateThumbnailFromVideo(
+                    videoPath: media.mediaFile!.path);
+
+                newMediaList.add(YarnMedia(
+                  mediaFile: File(media.mediaFile!.path),
+                  mediaType: media.mediaType,
+                  posterFile: thumbnailImage,
+                ));
+                if (mounted) setState(() {});
+              }
+            }
+
+            if (mounted) setState(() {});
+          },
+        ));
   }
 }
 
