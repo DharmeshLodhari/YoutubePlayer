@@ -526,17 +526,22 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       String? mediaType = getFileTypeByPath(path: videoPath.toString());
 
       if (videoPath is String) {
-        String? thumbnailImage =
-            await generateThumbNailFromVideo(videoPath: videoPath!);
+        File file = File(videoPath.toString());
+        var videoFilePath =
+            await NavigationUtil.push(context, screen: TrimmerView(file: file));
+        if (videoFilePath is String) {
+          videoPath = videoFilePath;
+          String? thumbnailImage =
+              await generateThumbNailFromVideo(videoPath: videoPath!);
 
-        selectedMedia.add(YarnMedia(
-            mediaFile: File(videoPath!),
-            mediaType: mediaType,
-            mediaPoster: thumbnailImage));
-
-        widget.addedSelectedMedia!(selectedMedia);
-        Navigator.pop(context);
-        if (mounted) setState(() {});
+          selectedMedia.add(YarnMedia(
+              mediaFile: File(videoPath!),
+              mediaType: mediaType,
+              mediaPoster: thumbnailImage));
+          widget.addedSelectedMedia!(selectedMedia);
+          Navigator.pop(context);
+          if (mounted) setState(() {});
+        }
       }
     }
 
@@ -548,7 +553,6 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       selectedMedia
           .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
 
-      // if (widget.addedSelectedMedia != null)
       widget.addedSelectedMedia!(selectedMedia);
       Navigator.pop(context);
       if (mounted) setState(() {});
