@@ -803,7 +803,7 @@ const String defaultWallPaper = "assets/images/home_screen_background.png";
 const String defaultProductAndServiceImage =
     "assets/images/default_image/product_and_service.png";
 
-void showToast({String? message}) {
+void showToast({BuildContext? context, String? message}) {
   Fluttertoast.showToast(
     msg: "$message",
     toastLength: Toast.LENGTH_LONG,

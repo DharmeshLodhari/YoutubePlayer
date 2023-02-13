@@ -280,27 +280,6 @@ class _YarnOptionsState extends State<YarnOptions> {
 
   showDeleteYarnDialog() {
     showDialogBox(
-      context: context,
-      actionOneTextColor: white,
-      actionOneBgColor: mateRed,
-      actionTwoTextColor: blackFont,
-      actionTwoBgColor: greyBorderColor,
-      title: 'Delete',
-      actionTwoText: AppLocalization.of(context)!.cancel,
-      actionOneText: AppLocalization.of(context)!.delete,
-      description: 'Are you sure you want to delete this yarn?',
-      roundedBackgroundIcon: RoundedBackgroundIcon(
-        enableMargin: false,
-        width: 90,
-        height: 90,
-        image: Icon(SlydoAppIcon.delete, color: mateRed),
-      ),
-      leftButtonOnPressed: () => deleteYarnAndQuestion(),
-    );
-  }
-
-  showDeleteYarnCommentDialog() {
-    showDialogBox(
         context: context,
         actionOneTextColor: white,
         actionOneBgColor: mateRed,
@@ -316,13 +295,35 @@ class _YarnOptionsState extends State<YarnOptions> {
           height: 90,
           image: Icon(SlydoAppIcon.delete, color: mateRed),
         ),
+        leftButtonOnPressed: () => deleteYarnAndQuestion(),
+        rightButtonOnPressed: () {
+          return Navigator.pop(context);
+        });
+  }
+
+  showDeleteYarnCommentDialog() {
+    showDialogBox(
+        context: context,
+        actionOneTextColor: white,
+        actionOneBgColor: mateRed,
+        actionTwoTextColor: blackFont,
+        actionTwoBgColor: greyBorderColor,
+        title: 'Delete',
+        actionTwoText: AppLocalization.of(context)!.cancel,
+        actionOneText: AppLocalization.of(context)!.delete,
+        description: 'Are you sure you want to delete this comment?',
+        roundedBackgroundIcon: RoundedBackgroundIcon(
+          enableMargin: false,
+          width: 90,
+          height: 90,
+          image: Icon(SlydoAppIcon.delete, color: mateRed),
+        ),
         leftButtonOnPressed: () {
           // Navigator.pop(context);
           return deleteComment();
         },
         rightButtonOnPressed: () {
-          debugPrint('Cancel clicked');
-          // return Navigator.pop(context);
+          return Navigator.pop(context);
         });
   }
 
