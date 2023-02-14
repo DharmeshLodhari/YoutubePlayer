@@ -285,6 +285,8 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       top: 50,
       child: InkWell(
         onTap: () {
+          cameraController?.dispose();
+          videoPlayerController?.dispose();
           Navigator.of(context).pop();
         },
         child: Icon(
@@ -475,6 +477,10 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
 
     if (widget.addedSelectedMedia != null)
       widget.addedSelectedMedia!(selectedMedia);
+
+    cameraController?.dispose();
+    videoPlayerController?.dispose();
+
     Navigator.pop(context);
   }
 
@@ -527,6 +533,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
 
       if (videoPath is String) {
         File file = File(videoPath.toString());
+
         var videoFilePath =
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
@@ -539,6 +546,10 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
               mediaType: mediaType,
               mediaPoster: thumbnailImage));
           widget.addedSelectedMedia!(selectedMedia);
+
+          cameraController?.dispose();
+          videoPlayerController?.dispose();
+
           Navigator.pop(context);
           if (mounted) setState(() {});
         }
@@ -554,6 +565,10 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
           .add(YarnMedia(mediaFile: File(imagePath!), mediaType: mediaType));
 
       widget.addedSelectedMedia!(selectedMedia);
+
+      cameraController?.dispose();
+      videoPlayerController?.dispose();
+
       Navigator.pop(context);
       if (mounted) setState(() {});
     }
