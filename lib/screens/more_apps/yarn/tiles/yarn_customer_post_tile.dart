@@ -100,7 +100,9 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                             widget.tileRenderPlace, context),
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        errorWidget: imageErrorWidget,
+                        placeholder: (context, url) =>
+                            Center(child: CircularLoadingIndicator()),
+                        errorWidget: wallpaperErrorWidget,
                         imageUrl: searchedUser!.wallpaper ?? ""),
                   ),
                   Positioned(
