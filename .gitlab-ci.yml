@@ -1,5 +1,5 @@
 #image: cirrusci/flutter:2.10.5
-image: cirrusci/flutter:3.3.2
+image: cirrusci/flutter:3.3.7
 
 stages:
   - Test
