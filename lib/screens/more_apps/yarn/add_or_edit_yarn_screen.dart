@@ -2197,16 +2197,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   buildCreateMediaScreen() {
-    String? mediaType = 'all';
-    if (existingMediaList.length + newMediaList.length > 0) {
-      for (var item in newMediaList) {
-        mediaType = item.mediaType;
-      }
-    }
     return NavigationUtil.push(context,
         screen: CreateMediaScreen(
           imageCount: existingMediaList.length + newMediaList.length,
-          mediaTypeAdd: mediaType,
           addedSelectedMedia: (value) async {
             for (var media in value) {
               if (media.mediaType == 'image') {
