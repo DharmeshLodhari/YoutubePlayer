@@ -18,10 +18,8 @@ import 'package:video_player/video_player.dart';
 class CreateMediaScreen extends StatefulWidget {
   final Function(List<YarnMedia>)? addedSelectedMedia;
   int? imageCount;
-  String? mediaTypeAdd;
 
-  CreateMediaScreen(
-      {Key? key, this.addedSelectedMedia, this.imageCount, this.mediaTypeAdd})
+  CreateMediaScreen({Key? key, this.addedSelectedMedia, this.imageCount})
       : super(key: key);
 
   @override
@@ -45,7 +43,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (cameras.isNotEmpty) {
         _initCameraController(newCameraDescription: cameras[0]);
       } else {
@@ -163,38 +161,22 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
                       onLongPressStart: mediaCaptured()
                           ? null
                           : (longPressDownDetails) async {
-                              if (widget.mediaTypeAdd == 'all' ||
-                                  widget.mediaTypeAdd == 'video') {
-                                takePictureOrVideo(mediaType: MediaType.video);
-                              } else {
-                                showToast(message: "You can only take picture");
-                              }
+                              takePictureOrVideo(mediaType: MediaType.video);
                             },
                       onLongPressUp: mediaCaptured()
                           ? null
                           : () {
-                              if (widget.mediaTypeAdd == 'all' ||
-                                  widget.mediaTypeAdd == 'video') {
-                                timer?.cancel();
-                                videoTimer = 30;
-                                if (cameraController?.value.isRecordingVideo ??
-                                    false) {
-                                  stopVideoRecording();
-                                }
-                              } else {
-                                showToast(message: "You can only take picture");
+                              timer?.cancel();
+                              videoTimer = 30;
+                              if (cameraController?.value.isRecordingVideo ??
+                                  false) {
+                                stopVideoRecording();
                               }
                             },
                       onTap: mediaCaptured()
                           ? null
                           : () {
-                              if (widget.mediaTypeAdd == 'all' ||
-                                  widget.mediaTypeAdd == 'image') {
-                                onTakePictureButtonPressed();
-                              } else {
-                                showToast(
-                                    message: "You can only record videos");
-                              }
+                              onTakePictureButtonPressed();
                             },
                       child: CircleAvatar(
                         radius: 30,
@@ -245,7 +227,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
                               : Colors.white.withOpacity(0.5),
                         ),
                       ),
-                      primary: Colors.white,
+                      backgroundColor: Colors.white,
                       fixedSize: const Size(208, 43),
                     ),
                   ),
@@ -387,6 +369,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
               onPressed: () {
                 setState(() {
                   videoPath = null;
+                  videoPlayerController?.pause();
                   videoPlayerController?.dispose();
                 });
               },
@@ -438,7 +421,7 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
 
     List<Media>? res = await ImagesPicker.pick(
       count: countMedia,
-      pickType: getPickType(),
+      pickType: PickType.all,
       language: Language.System,
       maxTime: 900,
       cropOpt: CropOption(
@@ -534,10 +517,13 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
       if (videoPath is String) {
         File file = File(videoPath.toString());
 
+        videoPlayerController!.pause();
+
         var videoFilePath =
             await NavigationUtil.push(context, screen: TrimmerView(file: file));
         if (videoFilePath is String) {
           videoPath = videoFilePath;
+
           String? thumbnailImage =
               await generateThumbNailFromVideo(videoPath: videoPath!);
 
@@ -571,18 +557,6 @@ class _CreateMediaScreenState extends State<CreateMediaScreen> {
 
       Navigator.pop(context);
       if (mounted) setState(() {});
-    }
-  }
-
-  getPickType() {
-    if (widget.mediaTypeAdd != null) {
-      if (widget.mediaTypeAdd == 'image') {
-        return PickType.image;
-      } else if (widget.mediaTypeAdd == 'video') {
-        return PickType.video;
-      } else if (widget.mediaTypeAdd == 'all') {
-        return PickType.all;
-      }
     }
   }
 }

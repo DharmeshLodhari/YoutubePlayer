@@ -194,8 +194,11 @@ class _YarnMediaRenderState extends State<YarnMediaRender> {
           // );
 
           List<Widget> imageList = [];
+
           for (var item in widget.yarnTopic.media) {
-            imageList.add(Image.network('${item.mediaUrl.toString()}'));
+            if (item.mediaType == 'image') {
+              imageList.add(Image.network('${item.mediaUrl.toString()}'));
+            }
           }
 
           return SwipeImageGallery(
