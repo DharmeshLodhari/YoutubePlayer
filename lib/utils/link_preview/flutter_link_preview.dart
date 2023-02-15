@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:flutter/material.dart';
 
