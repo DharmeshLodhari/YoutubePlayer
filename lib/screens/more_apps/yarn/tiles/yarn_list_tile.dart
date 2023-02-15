@@ -9,6 +9,7 @@ import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_category_individual_tag.dart';
+import 'package:any_link_preview/any_link_preview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -67,6 +68,12 @@ class _YarnTileState extends State<YarnTile> {
     _yarnSettings = Provider.of<YarnDashboardBloc>(context, listen: false);
 
     if (widget.yarn.body != null) {
+      // widget.yarn.body =
+      //     'Read this https://www.fastcompany.com/90828081/take-time-back-2023-planning-strategies';
+      // widget.yarn.body = 'Read this espn.com';
+      // widget.yarn.body =
+      //     'Read this https://www.simplilearn.com/building-career-in-mobile-app-development-article';
+
       Map<String, dynamic> linkData =
           detectLinkInText(messageDecoderWithEmoji(widget.yarn.body)!);
 
@@ -506,14 +513,34 @@ class _YarnTileState extends State<YarnTile> {
                     ),
                     width: .5)),
             child: FlutterLinkPreview(
-              key: ValueKey("${linkToBePreview}233"),
+              key: ValueKey("${linkToBePreview}211"),
               url: linkToBePreview!,
               builder: (info) {
+                // debugPrint('check link fola::: ${info}');
+                // debugPrint('check link fola 000::: ${linkToBePreview}');
+
                 if (info == null)
-                  return const SizedBox(
-                    height: 0,
-                    width: 0,
+                  // return const SizedBox(
+                  //   height: 0,
+                  //   width: 0,
+                  // );
+
+                  return InkWell(
+                    onTap: () {
+                      launchUrl(Uri.parse(linkToBePreview!));
+                    },
+                    child: Container(
+                      margin:
+                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      child: Text(
+                        linkToBePreview!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: navyBlue, fontSize: 14),
+                      ),
+                    ),
                   );
+
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
                     imageUrl: info.image!,
@@ -544,6 +571,55 @@ class _YarnTileState extends State<YarnTile> {
               },
             ),
           ),
+          // AnyLinkPreview.builder(
+          //   link: linkToBePreview!,
+          //   itemBuilder: (context, metadata, imageProvider) => Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       if (imageProvider != null)
+          //         Container(
+          //           constraints: BoxConstraints(
+          //             maxHeight: MediaQuery.of(context).size.width * 0.5,
+          //           ),
+          //           decoration: BoxDecoration(
+          //             image: DecorationImage(
+          //               image: imageProvider,
+          //               fit: BoxFit.cover,
+          //             ),
+          //           ),
+          //         ),
+          //       Container(
+          //         width: double.infinity,
+          //         color: Theme.of(context).primaryColor.withOpacity(0.6),
+          //         padding:
+          //             const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             if (metadata.title != null)
+          //               Text(
+          //                 metadata.title!,
+          //                 maxLines: 1,
+          //                 style: const TextStyle(fontWeight: FontWeight.w500),
+          //               ),
+          //             const SizedBox(height: 5),
+          //             if (metadata.desc != null)
+          //               Text(
+          //                 metadata.desc!,
+          //                 maxLines: 1,
+          //                 style: Theme.of(context).textTheme.bodySmall,
+          //               ),
+          //             Text(
+          //               metadata.url ?? linkToBePreview!,
+          //               maxLines: 1,
+          //               style: Theme.of(context).textTheme.bodySmall,
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       );
     }

@@ -282,9 +282,20 @@ class _ReYarnTileState extends State<ReYarnTile> {
               url: linkToBePreview!,
               builder: (info) {
                 if (info == null)
-                  return const SizedBox(
-                    height: 0,
-                    width: 0,
+                  return InkWell(
+                    onTap: () {
+                      launchUrl(Uri.parse(linkToBePreview!));
+                    },
+                    child: Container(
+                      margin:
+                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      child: Text(
+                        linkToBePreview!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: navyBlue, fontSize: 14),
+                      ),
+                    ),
                   );
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(

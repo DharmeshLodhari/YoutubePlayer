@@ -14,6 +14,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../main.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
@@ -446,9 +447,20 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
               url: linkToBePreview!,
               builder: (info) {
                 if (info == null)
-                  return const SizedBox(
-                    height: 0,
-                    width: 0,
+                  return InkWell(
+                    onTap: () {
+                      launchUrl(Uri.parse(linkToBePreview!));
+                    },
+                    child: Container(
+                      margin:
+                          EdgeInsets.only(left: 10.0, top: 10.0, bottom: 10.0),
+                      child: Text(
+                        linkToBePreview!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: navyBlue, fontSize: 14),
+                      ),
+                    ),
                   );
                 if (info is WebImageInfo) {
                   return CachedNetworkImage(
