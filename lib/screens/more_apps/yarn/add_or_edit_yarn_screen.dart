@@ -21,6 +21,7 @@ import 'package:Slydo/screens/more_apps/yarn/widgets/create_media_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
+import 'package:Slydo/widget/dialog.dart';
 import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -251,14 +252,19 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
     itemSearchTypeSelectionMenu!.onChange = menuItemSelectionChange;
     itemSearchTypeSelectionMenu!.menuState = menuStateChange;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(),
-      body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
-        return Column(
-          children: [_buildYarnForm(model)],
-        );
-      }),
+    return WillPopScope(
+      onWillPop: () async {
+        return checkShowBackDialog(context);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(),
+        body: Consumer<YarnDashboardBloc>(builder: (context, model, child) {
+          return Column(
+            children: [_buildYarnForm(model)],
+          );
+        }),
+      ),
     );
   }
 
@@ -279,10 +285,8 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       titleSpacing: 0,
       leading: InkWell(
         onTap: () {
-          Navigator.of(context).pop();
-          if (yarnDashboardBloc!.productService != null) {
-            yarnDashboardBloc!.productService == null;
-          }
+          ///check if page has content then show exit pop
+          checkShowBackDialog(context);
         },
         child: Icon(
           Icons.keyboard_arrow_left,
@@ -2226,6 +2230,35 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             if (mounted) setState(() {});
           },
         ));
+  }
+
+  Future<bool> checkShowBackDialog(BuildContext context) async {
+    if (yarnDashboardBloc!.productService != null ||
+        textController!.text.isNotEmpty ||
+        newMediaList.isNotEmpty ||
+        selectedAskCategory!.name != null) {
+      bool? result = await showDialogBox(
+        context: context,
+        actionOneBgColor: greyBorderColor,
+        actionOneTextColor: blackFont,
+        actionTwoBgColor: naturalGreen,
+        actionTwoTextColor: Colors.white,
+        title: "Do you want to leave this page?",
+        description: "If you leave, you will lose this draft",
+        actionOneText: AppLocalization.of(context)!.leave,
+        actionTwoText: AppLocalization.of(context)!.noContinue,
+      );
+      if (result != null && result) {
+        if (yarnDashboardBloc!.productService != null) {
+          yarnDashboardBloc!.productService == null;
+        }
+        Navigator.of(context).pop();
+      }
+      return false;
+    } else {
+      Navigator.of(context).pop();
+      return true;
+    }
   }
 }
 

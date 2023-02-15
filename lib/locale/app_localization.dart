@@ -1117,6 +1117,20 @@ class AppLocalization {
     );
   }
 
+  String get leave {
+    return Intl.message(
+      "Leave",
+      name: "leave",
+    );
+  }
+
+  String get noContinue {
+    return Intl.message(
+      "No, Continue",
+      name: "continue",
+    );
+  }
+
   String get exitApp {
     return Intl.message(
       "Exit App",
