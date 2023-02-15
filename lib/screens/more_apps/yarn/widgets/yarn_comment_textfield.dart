@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/main.dart';
 import 'package:Slydo/routes/route_constants.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/models/gif_model/GIFModel.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
@@ -18,20 +17,16 @@ import 'package:Slydo/screens/more_apps/yarn/utils/yarn_enum.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/noItemInList.dart';
-import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_picker/images_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../../../locale/app_localization.dart';
 import '../../../../utils/navigation_util.dart';
 import '../../../../utils/util.dart';
@@ -140,13 +135,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   ///variable for message actions
   bool showMoreAction = false;
 
-  /// variables for GIF Message
-  List<GIFModel> _gifs = [];
-  bool _isMessageIsGIFOrSticker = false;
-  bool _isMessageIsSticker = false;
-  bool _isGIFLoading = false;
-  TextEditingController _gifController = TextEditingController();
-
   /// variables for product or service search
   bool isBlogSearch = true;
   bool isProductSearch = false;
@@ -208,7 +196,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
     _focus.addListener(_onFocusChange);
 
     searchItemTextController = TextEditingController();
-    _gifController.addListener(searchGiFListener);
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
@@ -394,23 +381,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
   List<Widget> getSearchBarItems() {
     List<Widget> items = [];
 
-    if (_isMessageIsGIFOrSticker) {
-      items.add(Container(
-        constraints: BoxConstraints(minHeight: 54, maxHeight: 100),
-        child: Row(
-          children: <Widget>[
-            getSearchGIFCancelBtn(),
-            Expanded(
-              child: searchGIFTextField(),
-            ),
-            searchGIFBtn(),
-          ],
-        ),
-      ));
-      items.add(gifPreviewList());
-      return items;
-    }
-
     items.add(Container(
       constraints: BoxConstraints(minHeight: 40, maxHeight: 100),
       child: Row(
@@ -426,273 +396,20 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
       ),
     ));
 
-    if (showMoreAction) {
-      items.add(moreActionsBtn());
-    }
-
     return items;
-  }
-
-  Widget getSearchGIFCancelBtn() {
-    return IconButton(
-        icon: Icon(
-          SlydoAppIcon.close_2,
-          color: navyBlue,
-          size: 20,
-        ),
-        onPressed: () async {
-          _gifController.clear();
-          _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
-          _isMessageIsSticker = false;
-          if (mounted) setState(() {});
-        });
-  }
-
-  Widget searchGIFTextField() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(3),
-      child: Container(
-        color: chatBackgroundColor,
-        child: Theme(
-            data: ThemeData(highlightColor: navyBlue.withOpacity(0.3)),
-            child: Scrollbar(
-              radius: Radius.circular(12),
-              thickness: 2.5,
-              child: TextFormField(
-                controller: _gifController,
-                textInputAction: TextInputAction.search,
-                keyboardType: TextInputType.multiline,
-                onFieldSubmitted: (value) {
-                  getGIFs();
-                },
-                cursorColor: blackFont,
-                cursorWidth: 1,
-                cursorHeight: 20,
-                maxLines: null,
-                cursorRadius: Radius.circular(16),
-                decoration: InputDecoration(
-                  hintText: "Search ${_isMessageIsSticker ? "Sticker" : "GIF"}",
-                  hintStyle: TextStyle(
-                    color: darkGrey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  prefix: Padding(
-                    padding: EdgeInsets.only(left: 16),
-                  ),
-                  suffix: Padding(
-                    padding: EdgeInsets.only(right: 36),
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 10),
-                  isDense: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(3),
-                    borderSide: BorderSide(
-                      color: chatBackgroundColor,
-                      width: 1.0,
-                    ),
-                  ),
-                ),
-              ),
-            )),
-      ),
-    );
-  }
-
-  Widget searchGIFBtn() {
-    return InkWell(
-      onTap: getGIFs,
-      child: Container(
-        padding: EdgeInsets.all(2),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 10,
-            ),
-            Icon(
-              SlydoAppIcon.search,
-              color: navyBlue,
-              size: 22,
-            ),
-            SizedBox(
-              width: 12,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget gifPreviewList() {
-    return Container(
-      height: MediaQuery.of(context).size.height / 3,
-      child: _isGIFLoading
-          ? Center(child: CircularLoadingIndicator())
-          : GridView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 4),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-              ),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    // sendGIFToSocket(
-                    //     urlOfGIF: _gifs[index].images!.original!.url);
-                    _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
-                    _isMessageIsSticker = false;
-                    _gifController.clear();
-                    if (mounted) setState(() {});
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(3),
-                    child: CachedNetworkImage(
-                      width: MediaQuery.of(context).size.width / 2,
-                      imageUrl: _gifs[index].images!.previewGif!.url!,
-                      fit: BoxFit.fill,
-                      errorWidget: imageErrorWidget,
-                      placeholder: (context, url) => Container(
-                          width: MediaQuery.of(context).size.width / 2,
-                          child: Center(child: CircularLoadingIndicator())),
-                    ),
-                  ),
-                );
-              },
-              itemCount: _gifs.length,
-            ),
-    );
   }
 
   Widget moreActionBtn() {
     return IconButton(
         icon: Icon(
-          showMoreAction ? SlydoAppIcon.close_2 : SlydoAppIcon.add,
+          SlydoAppIcon.add,
           color: navyBlue,
-          size: showMoreAction ? 22 : 20,
+          size: 20,
         ),
         onPressed: () async {
-          if (FocusScope.of(context).hasFocus) {
-            FocusScope.of(context).unfocus();
-            Future.delayed(Duration(milliseconds: 100)).then((value) {
-              showMoreAction = !showMoreAction;
-              if (mounted) setState(() {});
-            });
-          } else {
-            showMoreAction = !showMoreAction;
-            if (mounted) setState(() {});
-          }
+          FocusScope.of(context).unfocus();
+          showSearchProductAndServiceBottomSheet();
         });
-  }
-
-  Widget moreActionsBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      child: Wrap(
-        spacing: 45,
-        runSpacing: 20,
-        children: [
-          assignTitleToAction(
-              text: "Product/ Service", child: searchProductAndServiceBtn()),
-          assignTitleToAction(text: "GIF", child: sendGIFButton()),
-          assignTitleToAction(text: "", child: Container()),
-          assignTitleToAction(text: "", child: Container()),
-        ],
-      ),
-    );
-  }
-
-  Widget sendGIFButton() {
-    return RoundedBackgroundIcon(
-      borderRadius: 20,
-      height: 50,
-      width: 50,
-      icon: Icon(
-        Icons.gif_rounded,
-        color: blackFont,
-        size: 38,
-      ),
-      backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () {
-        // showMoreAction = false;
-        // _isMessageIsGIFOrSticker = !_isMessageIsGIFOrSticker;
-        // getGIFs(isRandom: true);
-        showSnackbar(context, message: "coming soon");
-        if (mounted) setState(() {});
-        // pickGIF();
-      },
-    );
-  }
-
-  void getGIFs({bool isRandom = false}) async {
-    _isGIFLoading = true;
-    if (mounted) setState(() {});
-
-    List<GIFModel> results;
-    if (isRandom) {
-      results = await MessageAuth()
-          .searchGIF(isRandom: true, isSticker: _isMessageIsSticker)
-          .catchError((error) {
-        debugPrint("ERROR:- $error");
-      });
-    } else {
-      results = await MessageAuth()
-          .searchGIF(
-              query: _gifController.text.trim(), isSticker: _isMessageIsSticker)
-          .catchError((error) {
-        debugPrint("ERROR:- $error");
-      });
-    }
-
-    _isGIFLoading = false;
-    if (mounted) setState(() {});
-
-    if (results.isNotEmpty) {
-      _gifs.clear();
-      _gifs = results;
-      if (mounted) setState(() {});
-    }
-  }
-
-  Widget searchProductAndServiceBtn() {
-    return RoundedBackgroundIcon(
-      borderRadius: 20,
-      height: 50,
-      width: 50,
-      icon: Icon(
-        SlydoAppIcon.search,
-        color: blackFont,
-        size: 18,
-      ),
-      backgroundColor: navyBlue.withOpacity(0.08),
-      onTap: () {
-        showMoreAction = false;
-        if (mounted) setState(() {});
-        showSearchProductAndServiceBottomSheet();
-      },
-    );
   }
 
   void showSearchProductAndServiceBottomSheet() async {
@@ -968,12 +685,6 @@ class YarnCommentTextFieldState extends State<YarnCommentTextField> {
           searchItemTextController!.text;
     }
     return "";
-  }
-
-  void searchGiFListener() {
-    if (_gifController.text != "") {
-      getGIFs();
-    }
   }
 
   Widget bottomSheetTabBar() {
