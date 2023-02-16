@@ -419,35 +419,52 @@ class _YarnTileState extends State<YarnTile> {
 
   Widget _buildAttachment() {
     Widget childWidget;
-    if (widget.yarn.attachmentType == 'service') {
-      Service service = Service.fromJson(widget.yarn.attachment);
-      childWidget = YarnServiceTile(
-        service: service,
-      );
-    } else if (widget.yarn.attachmentType == 'product') {
-      Product product = Product.fromJson(widget.yarn.attachment);
-      childWidget = YarnProductTile(
-        product: product,
-      );
-    } else if (widget.yarn.attachmentType == 'blog') {
-      UserPost post = UserPost.fromJson(widget.yarn.attachment);
-      childWidget = YarnBlogPostTile(
-        post: post,
-        showAuthorDetails: true,
-        onDeleteBlog: () {},
-      );
-    } else if (widget.yarn.attachmentType == 'profile') {
-      CustomerProfile customerProfile =
-          CustomerProfile.fromJson(widget.yarn.attachment ?? {});
 
-      childWidget = YarnCustomerPostTile(
-        customerProfile: customerProfile,
-        showAuthorDetails: true,
-        onDeleteBlog: () {},
-      );
-    } else {
-      childWidget = SizedBox();
+    String? attachmentType = widget.yarn.attachmentType;
+
+    switch (attachmentType) {
+      case 'service':
+        Service service = Service.fromJson(widget.yarn.attachment);
+        childWidget = YarnServiceTile(
+          service: service,
+        );
+        break;
+
+      case 'product':
+        Product product = Product.fromJson(widget.yarn.attachment);
+        childWidget = YarnProductTile(
+          product: product,
+        );
+
+        break;
+
+      case 'blog':
+        UserPost post = UserPost.fromJson(widget.yarn.attachment);
+        childWidget = YarnBlogPostTile(
+          post: post,
+          showAuthorDetails: true,
+          onDeleteBlog: () {},
+        );
+        break;
+
+      case 'profile':
+        CustomerProfile customerProfile =
+            CustomerProfile.fromJson(widget.yarn.attachment ?? {});
+
+        childWidget = YarnCustomerPostTile(
+          customerProfile: customerProfile,
+          showAuthorDetails: true,
+          onDeleteBlog: () {},
+        );
+
+        break;
+
+      default:
+        childWidget = SizedBox();
+
+        break;
     }
+
     return childWidget;
   }
 

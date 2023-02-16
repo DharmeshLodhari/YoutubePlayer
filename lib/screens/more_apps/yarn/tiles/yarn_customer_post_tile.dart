@@ -1,3 +1,4 @@
+import 'package:Slydo/data/database_helper.dart';
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_post/user_post_utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
@@ -54,6 +55,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
   bool isInRequestList = false;
   bool isLoading = true;
   CustomerProfile? searchedUser;
+  bool isConnected = false;
 
   @override
   void initState() {
@@ -61,7 +63,14 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
 
     searchedUser = widget.customerProfile;
 
+    checkConnection();
+
     getSearchedUser();
+  }
+
+  Future<void> checkConnection() async {
+    isConnected = await DatabaseHelper()
+        .checkUserNameInDB(widget.customerProfile!.userName!);
   }
 
   @override
@@ -189,7 +198,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 getActionOnUsersBtn(),
-                                getFollowUnFollowBtn(),
+                                // getFollowUnFollowBtn(),
                               ],
                             ),
                           ),
@@ -271,7 +280,7 @@ class _YarnCustomerPostTileState extends State<YarnCustomerPostTile>
     }
 
     if (widget.customerProfile!.userName != userBloc!.user.userName) {
-      if (widget.customerProfile!.conversationId != "") {
+      if (isConnected) {
         return Row(
           children: [
             chatIcon(),
