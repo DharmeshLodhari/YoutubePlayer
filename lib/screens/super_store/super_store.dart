@@ -1,6 +1,7 @@
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
+import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -276,14 +277,8 @@ class _SuperStoreState extends State<SuperStore> {
                         !isTodayDealLoading &&
                         todaysDealList.isEmpty &&
                         productList.isEmpty,
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Lottie.asset('assets/lottie/no_moment_lottie.json'),
-                          SizedBox(height: 20),
-                          Text('No items at the moment'),
-                        ],
-                      ),
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noResultFound,
                     ),
                   ),
                 ],

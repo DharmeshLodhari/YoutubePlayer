@@ -154,7 +154,9 @@ class YarnListScreenState extends State<YarnListScreen> {
               if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
-                  screen: YarnDetailScreen(yarn: yarnTopicList[index]),
+                  screen: YarnDetailScreen(
+                    yarn: yarnTopicList[index],
+                  ),
                 );
               }
               if (mounted) setState(() {});

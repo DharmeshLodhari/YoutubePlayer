@@ -9,7 +9,6 @@ import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/rich_text.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_actions.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_category_individual_tag.dart';
-import 'package:any_link_preview/any_link_preview.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -571,55 +570,6 @@ class _YarnTileState extends State<YarnTile> {
               },
             ),
           ),
-          // AnyLinkPreview.builder(
-          //   link: linkToBePreview!,
-          //   itemBuilder: (context, metadata, imageProvider) => Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       if (imageProvider != null)
-          //         Container(
-          //           constraints: BoxConstraints(
-          //             maxHeight: MediaQuery.of(context).size.width * 0.5,
-          //           ),
-          //           decoration: BoxDecoration(
-          //             image: DecorationImage(
-          //               image: imageProvider,
-          //               fit: BoxFit.cover,
-          //             ),
-          //           ),
-          //         ),
-          //       Container(
-          //         width: double.infinity,
-          //         color: Theme.of(context).primaryColor.withOpacity(0.6),
-          //         padding:
-          //             const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          //         child: Column(
-          //           crossAxisAlignment: CrossAxisAlignment.start,
-          //           children: [
-          //             if (metadata.title != null)
-          //               Text(
-          //                 metadata.title!,
-          //                 maxLines: 1,
-          //                 style: const TextStyle(fontWeight: FontWeight.w500),
-          //               ),
-          //             const SizedBox(height: 5),
-          //             if (metadata.desc != null)
-          //               Text(
-          //                 metadata.desc!,
-          //                 maxLines: 1,
-          //                 style: Theme.of(context).textTheme.bodySmall,
-          //               ),
-          //             Text(
-          //               metadata.url ?? linkToBePreview!,
-          //               maxLines: 1,
-          //               style: Theme.of(context).textTheme.bodySmall,
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       );
     }

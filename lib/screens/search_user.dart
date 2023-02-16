@@ -2,7 +2,6 @@ import 'package:Slydo/services/auth.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../data/environment.dart';
 import '../data/state_notifier.dart';
 import '../locale/app_localization.dart';
@@ -11,9 +10,7 @@ import '../utils/slydo_app_icon_icons.dart';
 import '../utils/util.dart';
 import '../widget/LoadingIndicator.dart';
 import '../widget/noItemInList.dart';
-import '../widget/slide_action_button.dart';
 import 'more_apps/user_profile/models/user.dart';
-import 'more_apps/user_profile/user_auth.dart';
 
 class SearchUser extends StatefulWidget {
   const SearchUser({Key? key}) : super(key: key);
