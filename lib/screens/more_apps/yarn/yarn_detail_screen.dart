@@ -377,9 +377,12 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
       YarnComment? commentDetails =
           await YarnAuth().addCommentToYarn(finalYarn!.id!, data);
       if (commentDetails != null) {
+        // widget.onUpdate!(finalYarn!);
+
         setState(() {
           finalYarn!.numberOfComments = finalYarn!.numberOfComments! + 1;
         });
+
         // commentDetailsList.add(commentDetails);
         yarnCommentScreenKey = GlobalKey<ScaffoldState>();
 
