@@ -198,7 +198,7 @@ class _YarnActionsState extends State<YarnActions> {
       onTap: () {
         if (canReYarn) {
           if (widget.yarn.userReyarned) {
-            showToast(message: "Re yarn added successfully");
+            showToast(message: "Re yarn added already");
           } else {
             NavigationUtil.push(context,
                 screen: ShareAsAyarnScreen(

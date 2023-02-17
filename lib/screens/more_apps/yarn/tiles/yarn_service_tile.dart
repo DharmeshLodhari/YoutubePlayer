@@ -228,7 +228,7 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
                                                 isPaymentBtn: true,
                                                 textColor: Colors.white,
                                                 backgroundColor: navyBlue,
-                                                text: "BUY NOW",
+                                                text: "PAY NOW",
                                                 borderRadius: 10,
                                                 onPressed: () async {
                                                   if (appConfigurationModel
