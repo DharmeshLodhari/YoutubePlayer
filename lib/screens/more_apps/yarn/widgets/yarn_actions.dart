@@ -27,8 +27,13 @@ class YarnActions extends StatefulWidget {
   final Yarn yarn;
   final Function(Yarn)? onReYarnAdded;
   bool? minusComment;
+  List<Yarn>? checkIfReyarned;
 
-  YarnActions({required this.yarn, this.onReYarnAdded, this.minusComment});
+  YarnActions(
+      {required this.yarn,
+      this.onReYarnAdded,
+      this.minusComment,
+      this.checkIfReyarned});
 
   @override
   State<YarnActions> createState() => _YarnActionsState();
@@ -190,12 +195,25 @@ class _YarnActionsState extends State<YarnActions> {
 
   Widget _buildReYarnButton() {
     bool canReYarn = true;
+    bool canReYarnTemp = true;
     if (widget.yarn.reYarn != null) {
       canReYarn = false;
     }
 
+    if (widget.checkIfReyarned != null) {
+      for (var item in widget.checkIfReyarned!) {
+        if (item.reYarn!.id == widget.yarn.id) {
+          canReYarnTemp = false;
+        }
+      }
+    }
+
     return InkWell(
       onTap: () {
+        if (!canReYarnTemp) {
+          showToast(message: "You cannot ReYarn.");
+          return;
+        }
         if (canReYarn) {
           if (widget.yarn.userReyarned) {
             showToast(message: "Re yarn added already");
@@ -443,27 +461,6 @@ class _YarnActionsState extends State<YarnActions> {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     Map<String, dynamic> metaData = yarnTopic.toJson();
-    // {
-    //   "id": yarnTopic.id,
-    //   "author_avatar": yarnTopic.authorAvatar,
-    //   "author_name": messageDecoderWithEmoji(yarnTopic.authorName),
-    //   "author_username": yarnTopic.author,
-    //   "title": messageDecoderWithEmoji(yarnTopic.title),
-    //   "description": yarnTopic.body,
-    //   "tags": yarnTopic.tags,
-    //   "image": yarnTopic.media,
-    //   "is_question": yarnTopic.isQuestion,
-    //   "author_is_verified": yarnTopic.authorIsVerified,
-    // };
-
-    // switch (yarnTopic.mediaType) {
-    //   case "image":
-    //     metaData.addAll({"image": momentsModel.media});
-    //     break;
-    //   case "video":
-    //     metaData.addAll({"image": momentsModel.mediaPoster});
-    //     break;
-    // }
 
     Map<String, dynamic> data = {
       "meta_data": jsonEncode(metaData),

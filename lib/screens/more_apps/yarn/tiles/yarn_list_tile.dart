@@ -38,6 +38,7 @@ class YarnTile extends StatefulWidget {
   Function()? navigateToReyarn;
   final Color? backGroundColor;
   bool? minusComment;
+  List<Yarn>? checkIfReyarned;
 
   YarnTile(
       {required this.yarn,
@@ -46,7 +47,8 @@ class YarnTile extends StatefulWidget {
       this.onUpdateYarn,
       this.onReYarn,
       this.navigateToReyarn,
-      this.minusComment});
+      this.minusComment,
+      this.checkIfReyarned});
 
   @override
   State<YarnTile> createState() => _YarnTileState();
@@ -414,6 +416,7 @@ class _YarnTileState extends State<YarnTile> {
         widget.onReYarn!(yarn);
       },
       minusComment: widget.minusComment,
+      checkIfReyarned: widget.checkIfReyarned,
     );
   }
 

@@ -15,18 +15,27 @@ import 'yarn_detail_screen.dart';
 
 class YarnListScreen extends StatefulWidget {
   final String? selectedCategory;
-  YarnListScreen({Key? key, this.selectedCategory}) : super(key: key);
+
+  YarnListScreen({
+    Key? key,
+    this.selectedCategory,
+  }) : super(key: key);
+
   @override
   State<YarnListScreen> createState() => YarnListScreenState(key: key);
 }
 
 class YarnListScreenState extends State<YarnListScreen> {
   Key? key;
+
   YarnListScreenState({this.key});
 
   bool isLoading = false;
   String? next = "", previous = "";
   List<Yarn> yarnTopicList = [];
+  List<Yarn> deleteYarnTopicList = [];
+  List<Yarn> createYarnTopicList = [];
+  List<Yarn> reYarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController refreshController =
@@ -34,6 +43,8 @@ class YarnListScreenState extends State<YarnListScreen> {
   String? selectedId;
   ScrollController _scrollController = new ScrollController();
   late DashboardBloc _dashboardBloc;
+  // bool? create = false;
+  // Yarn? createYarn;
 
   @override
   void initState() {
@@ -54,7 +65,6 @@ class YarnListScreenState extends State<YarnListScreen> {
     if (categoryId != null) {
       selectedId = categoryId;
     }
-    // debugPrint("NEXT URL1:- $next");
 
     if (!isLoading) {
       if (next != null && !isLoading) {
@@ -84,13 +94,67 @@ class YarnListScreenState extends State<YarnListScreen> {
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        // yarnTopicList = [];
-        if (mounted && tempList.isNotEmpty) {
-          setState(() {
-            noList = false;
-            isLoading = false;
+
+        if (tempList.isNotEmpty) {
+          noList = false;
+          isLoading = false;
+          // yarnTopicList.addAll(tempList);
+
+          for (var obj1 in tempList) {
+            ///check if tempList id is same in reYarnTopicList id
+            for (var reYarnTopic in reYarnTopicList) {
+              if (obj1.id == reYarnTopic.id) {
+                reYarnTopicList
+                    .removeWhere((item) => item.id == reYarnTopic.id);
+                if (mounted) setState(() {});
+              }
+            }
+
+            ///check if tempList id is same in createYarnTopicList id
+            for (var createYarnTopic in createYarnTopicList) {
+              if (obj1.id == createYarnTopic.id) {
+                createYarnTopicList.removeWhere((item) => item.id == obj1.id);
+                if (mounted) setState(() {});
+              }
+            }
+          }
+
+          if (createYarnTopicList.isNotEmpty) {
+            ///add createYarnTopicList to tempList if any
+            for (var item in createYarnTopicList) {
+              tempList.insert(0, item);
+            }
+            if (mounted) setState(() {});
+          }
+
+          if (reYarnTopicList.isNotEmpty) {
+            ///add reYarnTopicList to tempList if any
+            for (var item in reYarnTopicList) {
+              tempList.insert(0, item);
+            }
+            if (mounted) setState(() {});
+          }
+
+          if (deleteYarnTopicList.isNotEmpty) {
+            for (Yarn obj1 in tempList) {
+              bool found = false;
+              for (Yarn obj2 in deleteYarnTopicList) {
+                if (obj1.id == obj2.id) {
+                  found = true;
+                  break;
+                }
+              }
+
+              if (!found) {
+                yarnTopicList.add(obj1);
+                if (mounted) setState(() {});
+              }
+            }
+          } else if (deleteYarnTopicList.isEmpty) {
             yarnTopicList.addAll(tempList);
-          });
+          }
+
+          if (mounted) setState(() {});
         }
       }
     }
@@ -156,6 +220,11 @@ class YarnListScreenState extends State<YarnListScreen> {
                   context,
                   screen: YarnDetailScreen(
                     yarn: yarnTopicList[index],
+                    onDeleteYarn: (Yarn yarn) {
+                      deleteYarnTopicList.add(yarn);
+                      yarnTopicList.removeWhere((item) => item.id == yarn.id);
+                      if (mounted) setState(() {});
+                    },
                   ),
                 );
               }
@@ -164,15 +233,14 @@ class YarnListScreenState extends State<YarnListScreen> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                int index = yarnTopicList
-                    .indexWhere((element) => element.id == yarn.id);
-                if (index != -1) {
-                  yarnTopicList.removeAt(index);
-                  if (mounted) setState(() {});
-                }
+                deleteYarnTopicList.add(yarn);
+                yarnTopicList.removeWhere((item) => item.id == yarn.id);
+                if (mounted) setState(() {});
               },
               onReYarn: (Yarn yarn) {
-                yarnTopicList.insert(0, yarn);
+                reYarnTopicList.add(yarn);
+                // yarnTopicList.insert(0, yarn);
+                onRefresh();
                 if (mounted) setState(() {});
               },
               onUpdateYarn: (Yarn yarn) {
@@ -188,6 +256,7 @@ class YarnListScreenState extends State<YarnListScreen> {
                   screen: YarnDetailScreen(yarn: yarnTopicList[index].reYarn!),
                 );
               },
+              checkIfReyarned: reYarnTopicList,
             ),
           );
         },
@@ -228,9 +297,8 @@ class YarnListScreenState extends State<YarnListScreen> {
         next = "";
         previous = "";
         yarnTopicList = [];
-        if (mounted) setState(() {});
 
-        debugPrint('refresh called');
+        if (mounted) setState(() {});
 
         getYarnList(categoryId: selectedId);
         setState(() {
@@ -245,5 +313,11 @@ class YarnListScreenState extends State<YarnListScreen> {
         });
       }
     });
+  }
+
+  void onCreateYarn(Yarn? yarnTopic) {
+    createYarnTopicList.add(yarnTopic!);
+
+    if (mounted) setState(() {});
   }
 }

@@ -15,6 +15,7 @@ import '../yarn_detail_screen.dart';
 class MyFeedView extends StatefulWidget {
   String? selectedCategory;
   String? userName;
+
   MyFeedView({Key? key, this.selectedCategory, this.userName})
       : super(key: key);
 
@@ -24,10 +25,13 @@ class MyFeedView extends StatefulWidget {
 
 class MyFeedViewState extends State<MyFeedView> {
   Key? key;
+
   MyFeedViewState({this.key});
+
   bool isLoading = false;
   String? next = "", previous = "";
   List<Yarn> yarnTopicList = [];
+  List<Yarn> deleteYarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController _postRefreshController =
@@ -74,12 +78,27 @@ class MyFeedViewState extends State<MyFeedView> {
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        if (mounted) {
-          setState(() {
-            noList = false;
-            isLoading = false;
-            yarnTopicList.addAll(tempList);
-          });
+
+        ///check if refresh list doesn't contain deleted yarn
+
+        if (tempList.isNotEmpty) {
+          noList = false;
+          isLoading = false;
+
+          for (Yarn obj1 in tempList) {
+            bool found = false;
+            for (Yarn obj2 in deleteYarnTopicList) {
+              if (obj1.id == obj2.id) {
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              yarnTopicList.add(obj1);
+            }
+          }
+
+          if (mounted) setState(() {});
         }
         // debugPrint("YARN TOPICS Feed:- $yarnTopicList");
 
@@ -144,7 +163,14 @@ class MyFeedViewState extends State<MyFeedView> {
               if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
-                  screen: YarnDetailScreen(yarn: yarnTopicList[index]),
+                  screen: YarnDetailScreen(
+                    yarn: yarnTopicList[index],
+                    onDeleteYarn: (Yarn yarn) {
+                      deleteYarnTopicList.add(yarn);
+                      yarnTopicList.removeWhere((item) => item.id == yarn.id);
+                      if (mounted) setState(() {});
+                    },
+                  ),
                 );
               }
               if (mounted) setState(() {});
@@ -152,12 +178,9 @@ class MyFeedViewState extends State<MyFeedView> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                int index = yarnTopicList
-                    .indexWhere((element) => element.id == yarn.id);
-                if (index != -1) {
-                  yarnTopicList.removeAt(index);
-                  if (mounted) setState(() {});
-                }
+                deleteYarnTopicList.add(yarn);
+                yarnTopicList.removeWhere((item) => item.id == yarn.id);
+                if (mounted) setState(() {});
               },
               onReYarn: (Yarn yarn) {
                 yarnTopicList.insert(0, yarn);

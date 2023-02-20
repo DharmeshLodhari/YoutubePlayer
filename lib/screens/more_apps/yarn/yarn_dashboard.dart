@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
@@ -39,6 +40,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
   late YarnDashboardBloc yarnDashboardBloc;
   bool isQuestionMode = false;
   int count = 0;
+  Yarn? yarnTopic;
+  // Function(Yarn)? onCreateYarn;
 
   @override
   void initState() {
@@ -243,6 +246,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
           YarnListScreen(
             key: topicViewStateKey,
             selectedCategory: selectedCategoryId,
+            // onCreateYarn: onCreateYarn,
           ),
           TrendingListScreen(
             key: latestViewStateKey,
@@ -269,11 +273,17 @@ class _YarnDashboardState extends State<YarnDashboard> {
                 shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                 isYarn: true,
                 passedCategory: '',
+                onUpdateYarn: (Yarn yarn) {
+                  yarnTopic = yarn;
+
+                  if (mounted) setState(() {});
+                },
               )).then((value) {
             if (value != null) {
               if (value == Types.Yarn) {
                 updateCurrentAskTapOnHome(index: 0);
                 _pageViewController.jumpToPage(0);
+                topicViewStateKey.currentState?.onCreateYarn(yarnTopic);
                 topicViewStateKey.currentState?.onRefresh();
               }
             }

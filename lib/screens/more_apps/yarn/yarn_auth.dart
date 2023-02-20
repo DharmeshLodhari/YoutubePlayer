@@ -676,11 +676,12 @@ class YarnAuth extends AuthService {
       var response = await _createYarn(reYarn, url);
     }
 
-    debugPrint(
-        "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.stream.bytesToString()}");
+    // debugPrint(
+    //     "RESPONSE CODE:- ${response.statusCode} RESPONSE BODY:- ${response.stream.bytesToString()}");
+    var responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      var data = jsonDecode(response.stream.bytesToString().toString());
+      var data = jsonDecode(responseBody);
       Yarn reYarn = Yarn.fromJson(data);
 
       return reYarn;
@@ -692,7 +693,7 @@ class YarnAuth extends AuthService {
   }
 
   // Add Yarn and Question
-  Future<bool> addYarnAndQuestion(Yarn addYarnAndQuestion) async {
+  Future<dynamic> addYarnAndQuestion(Yarn addYarnAndQuestion, String s) async {
     debugPrint("MEDIA LENGTH:- ${addYarnAndQuestion.media.length}");
     var headers = await getAuthHeaders();
     var url = AppConfig.baseUrl + "/api/v1/social/ask/";
@@ -783,7 +784,18 @@ class YarnAuth extends AuthService {
     }
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 201) {
-      return true;
+      // debugPrint('RESPONSE BODY create:::: ${responseBody}');
+
+      debugPrint('RESPONSE BODY create:::: ${responseBody}');
+
+      if (s == 'Add') {
+        var data = jsonDecode(responseBody);
+        Yarn reYarn = Yarn.fromJson(data);
+
+        return reYarn;
+      } else {
+        return true;
+      }
     } else {
       debugPrint(
           "URL $url STATUS CODE:- ${response.statusCode} BODY:- ${jsonDecode(responseBody)}");
