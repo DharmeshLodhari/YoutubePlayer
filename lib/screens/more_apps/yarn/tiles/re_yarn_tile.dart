@@ -256,10 +256,6 @@ class _ReYarnTileState extends State<ReYarnTile> {
               NavigationUtil.push(context,
                   screen: SearchScreen(searchText: tag.trim()));
             },
-            onUrlClicked: (open) {
-              // launch  url
-              launchUrl(Uri.parse(open.toString()));
-            },
             onAtClick: (at) {
               Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
                 "searchedUserName": at.replaceFirst("@", "").trim()

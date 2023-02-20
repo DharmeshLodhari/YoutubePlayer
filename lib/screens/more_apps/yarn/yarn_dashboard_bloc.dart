@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -12,8 +13,50 @@ class YarnDashboardBloc extends ChangeNotifier {
   List<String> _selectedAskCategories = [];
   List<String> get selectedAskCategories => _selectedAskCategories;
   int get random => Random().nextInt(categoryColors.length - 1);
+  UserYarnSettings get yarnSettings => _yarnSettings;
   UserYarnSettings _yarnSettings = UserYarnSettings();
+
+  bool get adultContent => yarnSettings.allowAdultContent;
+  bool get sensitiveContent => yarnSettings.allowSensitiveContent;
+  bool get pushNotification => yarnSettings.allowNotification;
+
   var productService;
+  List<Yarn> get createYarnTopicList => _createYarnTopicList;
+  List<Yarn> get deleteYarnTopicList => _deleteYarnTopicList;
+  List<Yarn> get reYarnTopicList => _reYarnTopicList;
+
+  List<Yarn> _createYarnTopicList = [];
+  List<Yarn> _deleteYarnTopicList = [];
+  List<Yarn> _reYarnTopicList = [];
+
+  void addCreateYarnTopicList(List<Yarn> yarn) {
+    _createYarnTopicList.addAll(yarn);
+    notifyListeners();
+  }
+
+  void addDeleteYarnTopicList(List<Yarn> yarn) {
+    _deleteYarnTopicList.addAll(yarn);
+    notifyListeners();
+  }
+
+  void addReYarnTopicList(List<Yarn> yarn) {
+    _reYarnTopicList.addAll(yarn);
+    notifyListeners();
+  }
+
+  void updateReYarnTopicList(List<Yarn> yarn) {
+    _reYarnTopicList = [];
+    _reYarnTopicList.addAll(yarn);
+
+    notifyListeners();
+  }
+
+  void updateCreateYarnTopicList(List<Yarn> yarn) {
+    _createYarnTopicList = [];
+    _createYarnTopicList.addAll(yarn);
+
+    notifyListeners();
+  }
 
   set yarnCategories(List<YarnCategories> cat) {
     _yarnCategories = cat;
@@ -34,12 +77,6 @@ class YarnDashboardBloc extends ChangeNotifier {
     _yarnSettings = userYarnSettings;
     notifyListeners();
   }
-
-  UserYarnSettings get yarnSettings => _yarnSettings;
-
-  bool get adultContent => yarnSettings.allowAdultContent;
-  bool get sensitiveContent => yarnSettings.allowSensitiveContent;
-  bool get pushNotification => yarnSettings.allowNotification;
 
   set adultContent(bool value) {
     yarnSettings.allowAdultContent = value;

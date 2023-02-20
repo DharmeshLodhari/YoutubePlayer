@@ -196,6 +196,7 @@ class _YarnActionsState extends State<YarnActions> {
   Widget _buildReYarnButton() {
     bool canReYarn = true;
     bool canReYarnTemp = true;
+    bool canReYarnMain = true;
     if (widget.yarn.reYarn != null) {
       canReYarn = false;
     }
@@ -210,13 +211,16 @@ class _YarnActionsState extends State<YarnActions> {
 
     return InkWell(
       onTap: () {
+        debugPrint('Fola check reyarn 000::: ${widget.yarn.toJson()}');
+
         if (!canReYarnTemp) {
           showToast(message: "You cannot ReYarn.");
           return;
         }
+
         if (canReYarn) {
           if (widget.yarn.userReyarned) {
-            showToast(message: "Re yarn added already");
+            showToast(message: "Reyarn added already");
           } else {
             NavigationUtil.push(context,
                 screen: ShareAsAyarnScreen(
