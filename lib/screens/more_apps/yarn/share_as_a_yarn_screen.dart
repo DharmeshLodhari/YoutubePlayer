@@ -1380,7 +1380,7 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     yarn.enablePayMe = enablePayMe;
     yarn.enableCommenting = enableCommenting;
 
-    await YarnAuth().addYarnAndQuestion(yarn).then((value) {
+    await YarnAuth().addYarnAndQuestion(yarn, '').then((value) {
       if (widget.isYarn == true) {
         Navigator.pop(context, Types.Yarn);
       } else if (widget.isYarn == false) {

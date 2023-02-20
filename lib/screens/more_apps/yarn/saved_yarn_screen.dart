@@ -16,18 +16,22 @@ import 'yarn_detail_screen.dart';
 
 class SavedYarn extends StatefulWidget {
   final String? selectedCategory;
+
   SavedYarn({Key? key, this.selectedCategory}) : super(key: key);
+
   @override
   State<SavedYarn> createState() => SavedYarnState(key: key);
 }
 
 class SavedYarnState extends State<SavedYarn> {
   Key? key;
+
   SavedYarnState({this.key});
 
   bool isLoading = false;
   String? next = "", previous = "";
   List<Yarn> yarnTopicList = [];
+  List<Yarn> deleteYarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController refreshController =
@@ -80,16 +84,41 @@ class SavedYarnState extends State<SavedYarn> {
         next = result['next'];
         previous = result['previous'];
         var tempList = result['results'];
-        // yarnTopicList = [];
-        if (mounted && tempList.isNotEmpty) {
-          setState(() {
-            noList = false;
-            isLoading = false;
 
-            yarnTopicList.addAll(tempList);
-          });
+        // if (mounted && tempList.isNotEmpty) {
+        //   setState(() {
+        //     noList = false;
+        //     isLoading = false;
+        //
+        //     yarnTopicList.addAll(tempList);
+        //   });
+        //
+        //   tempList.forEach((value) {});
+        // }
+
+        ///check if refresh list doesn't contain deleted yarn
+
+        if (tempList.isNotEmpty) {
+          noList = false;
+          isLoading = false;
+          // yarnTopicList.addAll(tempList);
+
+          for (Yarn obj1 in tempList) {
+            bool found = false;
+            for (Yarn obj2 in deleteYarnTopicList) {
+              if (obj1.id == obj2.id) {
+                found = true;
+                break;
+              }
+            }
+            if (!found) {
+              yarnTopicList.add(obj1);
+            }
+          }
 
           tempList.forEach((value) {});
+
+          if (mounted) setState(() {});
         }
 
         for (var item in yarnTopicList) {
@@ -213,7 +242,14 @@ class SavedYarnState extends State<SavedYarn> {
               if (yarnTopicList[index].enableCommenting ?? false) {
                 await NavigationUtil.push(
                   context,
-                  screen: YarnDetailScreen(yarn: yarnTopicList[index]),
+                  screen: YarnDetailScreen(
+                    yarn: yarnTopicList[index],
+                    onDeleteYarn: (Yarn yarn) {
+                      deleteYarnTopicList.add(yarn);
+                      yarnTopicList.removeWhere((item) => item.id == yarn.id);
+                      if (mounted) setState(() {});
+                    },
+                  ),
                 );
               }
               if (mounted) setState(() {});
@@ -221,12 +257,9 @@ class SavedYarnState extends State<SavedYarn> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                int index = yarnTopicList
-                    .indexWhere((element) => element.id == yarn.id);
-                if (index != -1) {
-                  yarnTopicList.removeAt(index);
-                  if (mounted) setState(() {});
-                }
+                deleteYarnTopicList.add(yarn);
+                yarnTopicList.removeWhere((item) => item.id == yarn.id);
+                if (mounted) setState(() {});
               },
               onReYarn: (Yarn yarn) {
                 yarnTopicList.insert(0, yarn);

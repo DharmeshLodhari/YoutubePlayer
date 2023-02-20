@@ -25,8 +25,9 @@ import 'widgets/ask_mention_view.dart';
 class YarnDetailScreen extends StatefulWidget {
   final Yarn yarn;
   String? yarnId;
+  Function(Yarn)? onDeleteYarn;
 
-  YarnDetailScreen({required this.yarn, this.yarnId});
+  YarnDetailScreen({required this.yarn, this.yarnId, this.onDeleteYarn});
 
   @override
   State<YarnDetailScreen> createState() => _YarnDetailScreenState();
@@ -217,12 +218,14 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
               ? YarnTile(
                   yarn: finalYarn!,
                   onDeleteYarn: (Yarn yarn) {
+                    widget.onDeleteYarn!(yarn);
                     Navigator.of(context).pop();
                   },
                 )
               : YarnTile(
                   yarn: finalYarn!,
                   onDeleteYarn: (Yarn yarn) {
+                    widget.onDeleteYarn!(yarn);
                     Navigator.of(context).pop();
                   },
                   minusComment: true,

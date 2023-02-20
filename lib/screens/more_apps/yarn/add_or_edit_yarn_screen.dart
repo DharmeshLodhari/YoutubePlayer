@@ -58,14 +58,17 @@ class AddOrEditYarn extends StatefulWidget {
   bool? isYarn = false;
   Yarn? yarn;
   String? passedCategory;
+  Function(Yarn)? onUpdateYarn;
 
   List<ShareAsYarnModel>? shareAsYarnModel;
+
   AddOrEditYarn(
       {this.askCategories,
       this.isYarn,
       this.askCategory,
       this.yarn,
       this.shareAsYarnModel,
+      this.onUpdateYarn,
       this.passedCategory});
 
   @override
@@ -1435,7 +1438,12 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
     logger.d(yarn.toAddMap());
 
-    await YarnAuth().addYarnAndQuestion(yarn).then((value) {
+    Yarn? data = await YarnAuth().addYarnAndQuestion(yarn, 'Add');
+
+    if (data != null) {
+      ///send yarn back list screen
+      widget.onUpdateYarn!(data);
+
       if (widget.isYarn == true) {
         Navigator.pop(context, Types.Yarn);
       } else if (widget.isYarn == false) {
@@ -1443,14 +1451,31 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
       }
       //set product/service to null after comment is successful
       yarnDashboardBloc!.productService = null;
-      showToast(
-          message: widget.isYarn == true
-              ? "Yarn add successfully"
-              : "Question add successfully");
-    }).catchError((error) {
-      debugPrint(error.toString());
-      showToast(message: error.toString());
-    });
+      showToast(message: "Yarn add successfully");
+
+      if (mounted) setState(() {});
+    } else {
+      showToast(message: "Error Adding Yarn");
+    }
+
+    // await YarnAuth().addYarnAndQuestion(yarn, 'Add').then((value) {
+    //   ///send yarn back list screen
+    //   widget.onUpdateYarn!(yarn);
+    //   if (widget.isYarn == true) {
+    //     Navigator.pop(context, Types.Yarn);
+    //   } else if (widget.isYarn == false) {
+    //     Navigator.pop(context, Types.Question);
+    //   }
+    //   //set product/service to null after comment is successful
+    //   yarnDashboardBloc!.productService = null;
+    //   showToast(
+    //       message: widget.isYarn == true
+    //           ? "Yarn add successfully"
+    //           : "Question add successfully");
+    // }).catchError((error) {
+    //   debugPrint(error.toString());
+    //   showToast(message: error.toString());
+    // });
   }
 
   Widget getAddLayout() {

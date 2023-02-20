@@ -406,7 +406,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 ..attachment = {
                   "product": product?.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params);
+              bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
                 showToast(message: "Share in Yarn successfully created");
               }

@@ -1940,7 +1940,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             userProfile: searchedUser,
             callback: (params) async {
               params..attachment = {"profile": searchedUser?.toJson()};
-              bool data = await YarnAuth().addYarnAndQuestion(params);
+              bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
                 showToast(message: "Share in Yarn successfully created");
               }

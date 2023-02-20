@@ -413,7 +413,7 @@ class _ServiceDetailPageState extends State<ServiceDetailPage>
                   "service": service?.toJson().cast<String, dynamic>() ?? {}
                 };
               logger.d(params.toAddMap());
-              bool data = await YarnAuth().addYarnAndQuestion(params);
+              bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
                 showToast(message: "Share in Yarn successfully created");
               }

@@ -293,7 +293,7 @@ class _DisplayProductState extends State<DisplayProduct> {
                 ..attachment = {
                   "product": widget.product.toJson().cast<String, dynamic>()
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params);
+              bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
                 showToast(message: "Share in Yarn successfully created");
               }
@@ -902,7 +902,7 @@ class _DisplayServiceState extends State<DisplayService> {
                   "service":
                       widget.service.toJson().cast<String, dynamic>() ?? {}
                 };
-              bool data = await YarnAuth().addYarnAndQuestion(params);
+              bool data = await YarnAuth().addYarnAndQuestion(params, '');
               if (data) {
                 showToast(message: "Share in Yarn successfully created");
               }
