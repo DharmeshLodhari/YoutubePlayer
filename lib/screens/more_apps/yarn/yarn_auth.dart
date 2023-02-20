@@ -731,6 +731,10 @@ class YarnAuth extends AuthService {
           jsonEncode(addYarnAndQuestion.attachment ?? null))!;
     }
 
+    // if (addYarnAndQuestion.userReyarned != null) {
+    //   mapValue['user_reyarned'] = jsonEncode(addYarnAndQuestion.userReyarned);
+    // }
+
     // logger.d(' share as yarn message...... $mapValue');
     debugPrint('share as yarn message ---> $mapValue');
 

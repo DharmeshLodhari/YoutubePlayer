@@ -535,9 +535,6 @@ class _YarnTileState extends State<YarnTile> {
               key: ValueKey("${linkToBePreview}211"),
               url: linkToBePreview!,
               builder: (info) {
-                // debugPrint('check link fola::: ${info}');
-                // debugPrint('check link fola 000::: ${linkToBePreview}');
-
                 if (info == null)
                   // return const SizedBox(
                   //   height: 0,

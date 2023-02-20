@@ -1,7 +1,6 @@
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../data/state_notifier.dart';
 import '../../../locale/app_localization.dart';
@@ -38,7 +37,6 @@ class SavedYarnState extends State<SavedYarn> {
       RefreshController(initialRefresh: false);
   String? selectedId;
   ScrollController _scrollController = new ScrollController();
-  late DashboardBloc _dashboardBloc;
   late UserBloc userBloc;
 
   @override
@@ -138,20 +136,6 @@ class SavedYarnState extends State<SavedYarn> {
 
   @override
   Widget build(BuildContext context) {
-    _dashboardBloc = Provider.of<DashboardBloc>(context);
-
-    if (_dashboardBloc.topYarn == true) {
-      _dashboardBloc.topYarn = false;
-      if (_scrollController.hasClients) {
-        final position = _scrollController.position.minScrollExtent;
-        _scrollController.animateTo(
-          position,
-          duration: Duration(seconds: 3),
-          curve: Curves.easeOut,
-        );
-      }
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),

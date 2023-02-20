@@ -1,7 +1,9 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -11,7 +13,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
-
 import 'add_or_edit_yarn_screen.dart';
 import 'yarn_search_screen.dart';
 import 'trending_list_screen.dart';
@@ -38,6 +39,7 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
       GlobalKey<YarnListScreenState>();
   GlobalKey<TrendingListScreenState> latestViewStateKey =
       GlobalKey<TrendingListScreenState>();
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -67,6 +69,8 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     askViewModel = Provider.of<YarnDashboardBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: _buildFloatingActionButton(),
@@ -80,12 +84,27 @@ class _YarnCategoryIndividualTagState extends State<YarnCategoryIndividualTag> {
       child: InkWell(
         onTap: () async {
           NavigationUtil.push(context,
-              screen: AddOrEditYarn(
-                  askCategories: askViewModel.yarnCategories,
-                  isYarn: true,
-                  shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
-                  askCategory: widget.askCategories,
-                  passedCategory: widget.askCategories!.name));
+                  screen: AddOrEditYarn(
+                      askCategories: askViewModel.yarnCategories,
+                      isYarn: true,
+                      shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
+                      askCategory: widget.askCategories,
+                      onUpdateYarn: (Yarn yarn) {
+                        List<Yarn> tempList = [];
+                        tempList.add(yarn);
+                        yarnDashboardBloc.addCreateYarnTopicList(tempList);
+
+                        if (mounted) setState(() {});
+                      },
+                      passedCategory: widget.askCategories!.name))
+              .then((value) {
+            if (value != null) {
+              if (value == Types.Yarn) {
+                updateCurrentAskTapOnHome(index: 0);
+                topicViewStateKey.currentState?.onRefresh();
+              }
+            }
+          });
         },
         child: Icon(
           SlydoAppIconNew.dashboard_yarn,

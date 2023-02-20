@@ -1442,7 +1442,9 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
 
     if (data != null) {
       ///send yarn back list screen
-      widget.onUpdateYarn!(data);
+      if (widget.onUpdateYarn != null) {
+        widget.onUpdateYarn!(data);
+      }
 
       if (widget.isYarn == true) {
         Navigator.pop(context, Types.Yarn);

@@ -1,7 +1,9 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/routes/route_constants.dart';
+import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/ask_categories_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
+import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/navigation_util.dart';
@@ -37,6 +39,7 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
       GlobalKey<YarnListScreenState>();
   GlobalKey<TrendingListScreenState> latestViewStateKey =
       GlobalKey<TrendingListScreenState>();
+  late YarnDashboardBloc yarnDashboardBloc;
 
   @override
   void initState() {
@@ -66,6 +69,8 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
     askViewModel = Provider.of<YarnDashboardBloc>(context);
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: _buildFloatingActionButton(),
@@ -84,8 +89,22 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
                 isYarn: true,
                 shareAsYarnModel: ShareAsYarnModel.shareAsYarnModel,
                 askCategory: widget.askCategories,
+                onUpdateYarn: (Yarn yarn) {
+                  List<Yarn> tempList = [];
+                  tempList.add(yarn);
+                  yarnDashboardBloc.addCreateYarnTopicList(tempList);
+
+                  if (mounted) setState(() {});
+                },
                 passedCategory: widget.askCategories!.name,
-              ));
+              )).then((value) {
+            if (value != null) {
+              if (value == Types.Yarn) {
+                updateCurrentAskTapOnHome(index: 0);
+                topicViewStateKey.currentState?.onRefresh();
+              }
+            }
+          });
         },
         child: Icon(
           SlydoAppIconNew.dashboard_yarn,

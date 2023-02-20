@@ -96,9 +96,6 @@ class Yarn {
     factChecked = json['fact_checked'];
     ageRestriction = json['age_restriction'];
     numberOfReYarn = json['numbers_of_reyarn'];
-    if (json['reyarn'] != null) {
-      reYarn = Yarn.fromJson(json['reyarn']);
-    }
     if (json['attachment'] != null) {
       Map<String, dynamic> item;
 
@@ -139,6 +136,11 @@ class Yarn {
     }
     if (json['user_down_voted'] != null) {
       userDownVoted = json['user_down_voted'];
+    }
+    if (json['reyarn'] != null) {
+      reYarn = Yarn.fromJson(json['reyarn']);
+
+      print('Fola check reyarn 001::: ${json['reyarn']}');
     }
   }
 

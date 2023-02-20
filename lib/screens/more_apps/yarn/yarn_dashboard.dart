@@ -41,7 +41,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
   bool isQuestionMode = false;
   int count = 0;
   Yarn? yarnTopic;
-  // Function(Yarn)? onCreateYarn;
 
   @override
   void initState() {

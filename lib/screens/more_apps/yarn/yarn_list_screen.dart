@@ -1,3 +1,4 @@
+import 'package:Slydo/screens/more_apps/yarn/yarn_dashboard_bloc.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,18 +34,14 @@ class YarnListScreenState extends State<YarnListScreen> {
   bool isLoading = false;
   String? next = "", previous = "";
   List<Yarn> yarnTopicList = [];
-  List<Yarn> deleteYarnTopicList = [];
-  List<Yarn> createYarnTopicList = [];
-  List<Yarn> reYarnTopicList = [];
   int count = 0;
   bool noList = false;
   RefreshController refreshController =
       RefreshController(initialRefresh: false);
   String? selectedId;
   ScrollController _scrollController = new ScrollController();
+  late YarnDashboardBloc yarnDashboardBloc;
   late DashboardBloc _dashboardBloc;
-  // bool? create = false;
-  // Yarn? createYarn;
 
   @override
   void initState() {
@@ -100,12 +97,20 @@ class YarnListScreenState extends State<YarnListScreen> {
           isLoading = false;
           // yarnTopicList.addAll(tempList);
 
+          List<Yarn> createYarnTopicList =
+              List.from(yarnDashboardBloc.createYarnTopicList);
+          List<Yarn> deleteYarnTopicList =
+              List.from(yarnDashboardBloc.deleteYarnTopicList);
+          List<Yarn> reYarnTopicList =
+              List.from(yarnDashboardBloc.reYarnTopicList);
+
           for (var obj1 in tempList) {
             ///check if tempList id is same in reYarnTopicList id
             for (var reYarnTopic in reYarnTopicList) {
               if (obj1.id == reYarnTopic.id) {
-                reYarnTopicList
+                yarnDashboardBloc.reYarnTopicList
                     .removeWhere((item) => item.id == reYarnTopic.id);
+
                 if (mounted) setState(() {});
               }
             }
@@ -113,26 +118,42 @@ class YarnListScreenState extends State<YarnListScreen> {
             ///check if tempList id is same in createYarnTopicList id
             for (var createYarnTopic in createYarnTopicList) {
               if (obj1.id == createYarnTopic.id) {
-                createYarnTopicList.removeWhere((item) => item.id == obj1.id);
+                yarnDashboardBloc.createYarnTopicList
+                    .removeWhere((item) => item.id == obj1.id);
+
                 if (mounted) setState(() {});
               }
             }
           }
 
-          if (createYarnTopicList.isNotEmpty) {
+          if (yarnDashboardBloc.createYarnTopicList.isNotEmpty) {
             ///add createYarnTopicList to tempList if any
-            for (var item in createYarnTopicList) {
-              tempList.insert(0, item);
+            for (var item in yarnDashboardBloc.createYarnTopicList) {
+              if (widget.selectedCategory != null && item.category != null) {
+                if (widget.selectedCategory == item.category!.id) {
+                  tempList.insert(0, item);
+                }
+              } else {
+                tempList.insert(0, item);
+              }
+              if (mounted) setState(() {});
             }
-            if (mounted) setState(() {});
+            // if (mounted) setState(() {});
           }
 
-          if (reYarnTopicList.isNotEmpty) {
+          if (yarnDashboardBloc.reYarnTopicList.isNotEmpty) {
             ///add reYarnTopicList to tempList if any
             for (var item in reYarnTopicList) {
-              tempList.insert(0, item);
+              if (widget.selectedCategory != null && item.category != null) {
+                if (widget.selectedCategory == item.category!.id) {
+                  tempList.insert(0, item);
+                }
+              } else {
+                tempList.insert(0, item);
+              }
+              if (mounted) setState(() {});
             }
-            if (mounted) setState(() {});
+            // if (mounted) setState(() {});
           }
 
           if (deleteYarnTopicList.isNotEmpty) {
@@ -175,6 +196,7 @@ class YarnListScreenState extends State<YarnListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
     if (_dashboardBloc.topYarn == true) {
@@ -221,7 +243,9 @@ class YarnListScreenState extends State<YarnListScreen> {
                   screen: YarnDetailScreen(
                     yarn: yarnTopicList[index],
                     onDeleteYarn: (Yarn yarn) {
-                      deleteYarnTopicList.add(yarn);
+                      List<Yarn> tempList = [];
+                      tempList.add(yarn);
+                      yarnDashboardBloc.addDeleteYarnTopicList(tempList);
                       yarnTopicList.removeWhere((item) => item.id == yarn.id);
                       if (mounted) setState(() {});
                     },
@@ -233,12 +257,16 @@ class YarnListScreenState extends State<YarnListScreen> {
             child: YarnTile(
               yarn: yarnTopicList[index],
               onDeleteYarn: (Yarn yarn) {
-                deleteYarnTopicList.add(yarn);
+                List<Yarn> tempList = [];
+                tempList.add(yarn);
+                yarnDashboardBloc.addDeleteYarnTopicList(tempList);
                 yarnTopicList.removeWhere((item) => item.id == yarn.id);
                 if (mounted) setState(() {});
               },
               onReYarn: (Yarn yarn) {
-                reYarnTopicList.add(yarn);
+                List<Yarn> tempList = [];
+                tempList.add(yarn);
+                yarnDashboardBloc.addReYarnTopicList(tempList);
                 // yarnTopicList.insert(0, yarn);
                 onRefresh();
                 if (mounted) setState(() {});
@@ -256,7 +284,7 @@ class YarnListScreenState extends State<YarnListScreen> {
                   screen: YarnDetailScreen(yarn: yarnTopicList[index].reYarn!),
                 );
               },
-              checkIfReyarned: reYarnTopicList,
+              checkIfReyarned: yarnDashboardBloc.reYarnTopicList,
             ),
           );
         },
@@ -316,7 +344,10 @@ class YarnListScreenState extends State<YarnListScreen> {
   }
 
   void onCreateYarn(Yarn? yarnTopic) {
-    createYarnTopicList.add(yarnTopic!);
+    List<Yarn> tempList = [];
+    tempList.add(yarnTopic!);
+    yarnDashboardBloc.addCreateYarnTopicList(tempList);
+    // createYarnTopicList.add(yarnTopic!);
 
     if (mounted) setState(() {});
   }
