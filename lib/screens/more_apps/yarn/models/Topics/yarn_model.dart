@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:equatable/equatable.dart';
+
 import '../ask_categories_model.dart';
 
-class Yarn {
+class Yarn extends Equatable {
   Yarn({
     this.id,
     this.saveId,
@@ -140,7 +142,7 @@ class Yarn {
     if (json['reyarn'] != null) {
       reYarn = Yarn.fromJson(json['reyarn']);
 
-      print('Fola check reyarn 001::: ${json['reyarn']}');
+      // print('Fola check reyarn 001::: ${json['reyarn']}');
     }
   }
 
@@ -257,6 +259,37 @@ class Yarn {
       if (ageRestriction != null) "age_restriction": ageRestriction
     };
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        saveId,
+        tags,
+        category,
+        authorName,
+        createdAt,
+        updatedAt,
+        title,
+        body,
+        author,
+        numberOfAnswers,
+        enablePayMe,
+        voteCount,
+        downVoteCount,
+        authorIsVerified,
+        reYarn,
+        numberOfReYarn,
+        media,
+        attachment,
+        attachmentType,
+        userSupported,
+        userDownVoted,
+        enableCommenting,
+        isSensitiveContent,
+        isAdultContent,
+        factChecked,
+        viewersAvatars
+      ];
 }
 
 class ViewersAvatars {

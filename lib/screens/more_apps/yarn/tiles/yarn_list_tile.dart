@@ -213,6 +213,12 @@ class _YarnTileState extends State<YarnTile> {
             height: 8,
           ),
         ],
+        if (widget.yarn.reYarn != null) ...[
+          _checkCategoryTypeChipReyarn(),
+          SizedBox(
+            height: 8,
+          ),
+        ],
         if (widget.yarn.isQuestion) ...[
           _buildPostTitle(),
           SizedBox(height: 8),
@@ -382,6 +388,35 @@ class _YarnTileState extends State<YarnTile> {
           ),
           child: Text(
             widget.yarn.category!.name ?? "",
+            style: TextStyle(
+                color: white, fontSize: 10.5, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+    } else {
+      return SizedBox();
+    }
+  }
+
+  Widget _checkCategoryTypeChipReyarn() {
+    if (widget.yarn.reYarn != null) {
+      return InkWell(
+        onTap: () {
+          NavigationUtil.push(
+            context,
+            screen: YarnCategoryIndividualTag(
+              askCategories: widget.yarn.reYarn!.category,
+            ),
+          );
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: yarnBlack,
+          ),
+          child: Text(
+            widget.yarn.reYarn!.category!.name ?? "",
             style: TextStyle(
                 color: white, fontSize: 10.5, fontWeight: FontWeight.w700),
           ),
