@@ -95,7 +95,6 @@ class YarnListScreenState extends State<YarnListScreen> {
         if (tempList.isNotEmpty) {
           noList = false;
           isLoading = false;
-          // yarnTopicList.addAll(tempList);
 
           List<Yarn> createYarnTopicList =
               List.from(yarnDashboardBloc.createYarnTopicList);
@@ -104,56 +103,80 @@ class YarnListScreenState extends State<YarnListScreen> {
           List<Yarn> reYarnTopicList =
               List.from(yarnDashboardBloc.reYarnTopicList);
 
-          for (var obj1 in tempList) {
-            ///check if tempList id is same in reYarnTopicList id
-            for (var reYarnTopic in reYarnTopicList) {
-              if (obj1.id == reYarnTopic.id) {
-                yarnDashboardBloc.reYarnTopicList
-                    .removeWhere((item) => item.id == reYarnTopic.id);
+          /// Get the common CreateYarnTopicList objects in both lists
+          List<Yarn> commonCreateYarnTopicList = tempList
+              .where((o1) => createYarnTopicList.any((o2) => o2.id == o1.id))
+              .toList();
 
-                if (mounted) setState(() {});
-              }
-            }
+          /// Remove the common reYarnTopicList objects from the main list
+          yarnDashboardBloc.createYarnTopicList.removeWhere(
+              (o1) => commonCreateYarnTopicList.any((o2) => o2.id == o1.id));
 
-            ///check if tempList id is same in createYarnTopicList id
-            for (var createYarnTopic in createYarnTopicList) {
-              if (obj1.id == createYarnTopic.id) {
-                yarnDashboardBloc.createYarnTopicList
-                    .removeWhere((item) => item.id == obj1.id);
+          /// Get the common reYarnTopicList objects in both lists
+          List<Yarn> commonReYarnTopicList = tempList
+              .where((o1) => reYarnTopicList.any((o2) => o2.id == o1.id))
+              .toList();
 
-                if (mounted) setState(() {});
-              }
-            }
-          }
+          /// Remove the common reYarnTopicList objects from the main list
+          yarnDashboardBloc.reYarnTopicList.removeWhere(
+              (o1) => commonReYarnTopicList.any((o2) => o2.id == o1.id));
 
           if (yarnDashboardBloc.createYarnTopicList.isNotEmpty) {
             ///add createYarnTopicList to tempList if any
-            for (var item in yarnDashboardBloc.createYarnTopicList) {
-              if (widget.selectedCategory != null && item.category != null) {
-                if (widget.selectedCategory == item.category!.id) {
+            if (widget.selectedCategory != null) {
+              // Filter the list of createYarnTopicList by id
+              List<Yarn>? filteredListCreateYarnTopicList = yarnDashboardBloc
+                  .createYarnTopicList
+                  .where((item) => item.category!.id == widget.selectedCategory)
+                  .toList();
+
+              // Check if any matching createYarnTopicList
+              if (filteredListCreateYarnTopicList.isNotEmpty) {
+                filteredListCreateYarnTopicList.forEach((item) {
                   tempList.insert(0, item);
-                }
-              } else {
-                tempList.insert(0, item);
+                });
               }
-              if (mounted) setState(() {});
+            } else {
+              yarnDashboardBloc.createYarnTopicList.forEach((item) {
+                tempList.insert(0, item);
+              });
             }
-            // if (mounted) setState(() {});
           }
 
           if (yarnDashboardBloc.reYarnTopicList.isNotEmpty) {
             ///add reYarnTopicList to tempList if any
-            for (var item in reYarnTopicList) {
-              if (widget.selectedCategory != null && item.category != null) {
-                if (widget.selectedCategory == item.category!.id) {
+
+            if (widget.selectedCategory != null) {
+              // Filter the list of reYarnTopicList by id
+              List<Yarn>? filteredListReYarnTopicList = yarnDashboardBloc
+                  .reYarnTopicList
+                  .where((item) =>
+                      item.reYarn!.category!.id == widget.selectedCategory)
+                  .toList();
+
+              // Check if any matching reYarnTopicList
+              if (filteredListReYarnTopicList.isNotEmpty) {
+                filteredListReYarnTopicList.forEach((item) {
                   tempList.insert(0, item);
-                }
-              } else {
-                tempList.insert(0, item);
+                });
               }
-              if (mounted) setState(() {});
+
+              // List<Yarn>? filteredListTempList = tempList
+              //     .where((item) =>
+              //         item.reYarn!.category!.id == widget.selectedCategory)
+              //     .toList();
+              //
+              // // Check if any matching tempList for reyarn
+              // if (filteredListTempList!.isNotEmpty) {
+              //   filteredListTempList.forEach((item) {
+              //     tempList.insert(0, item);
+              //   });
+              // }
+            } else {
+              yarnDashboardBloc.reYarnTopicList.forEach((item) {
+                tempList.insert(0, item);
+              });
             }
-            // if (mounted) setState(() {});
           }
 
           if (deleteYarnTopicList.isNotEmpty) {
@@ -168,6 +191,7 @@ class YarnListScreenState extends State<YarnListScreen> {
 
               if (!found) {
                 yarnTopicList.add(obj1);
+                // debugPrint('Check category delete batch :::: ${obj1.id}');
                 if (mounted) setState(() {});
               }
             }
