@@ -121,6 +121,7 @@ class _YarnCommentListState extends State<YarnCommentList> {
                           onUpdate: (Yarn yarn) {
                             getAllComments();
                           },
+                          commentType: 'yarn',
                         ),
                       ),
                       SizedBox(

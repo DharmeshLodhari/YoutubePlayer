@@ -1917,7 +1917,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       required ChatConversation recipientUser,
       String? url}) async {
     Map<String, dynamic> data = {
-      "meta_data": jsonEncode(itemData),
+      "meta_data": messageDecoderWithEmoji(jsonEncode(itemData)),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,

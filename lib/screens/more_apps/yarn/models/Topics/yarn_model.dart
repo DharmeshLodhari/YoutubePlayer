@@ -141,8 +141,6 @@ class Yarn extends Equatable {
     }
     if (json['reyarn'] != null) {
       reYarn = Yarn.fromJson(json['reyarn']);
-
-      // print('Fola check reyarn 001::: ${json['reyarn']}');
     }
   }
 

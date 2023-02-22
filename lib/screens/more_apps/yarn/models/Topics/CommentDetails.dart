@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
+import 'package:Slydo/utils/common.dart';
 
 class YarnComment {
   YarnComment({
@@ -30,7 +31,7 @@ class YarnComment {
   YarnComment.fromJson(dynamic json) {
     id = json['id'];
     authorAvatar = json['author_avatar'];
-    comment = json['comment'];
+    comment = messageDecoderWithEmoji(json['comment']);
     authorUsername = json['author_username'];
     authorName = json['author_name'];
     isReply = json['is_reply'];
@@ -100,7 +101,7 @@ class YarnComment {
     final map = <String, dynamic>{};
     map['id'] = id;
     map['author_avatar'] = authorAvatar;
-    map['comment'] = comment;
+    map['comment'] = messageDecoderWithEmoji(comment);
     map['author_username'] = authorUsername;
     map['author_name'] = authorName;
     map['is_reply'] = isReply;
@@ -116,6 +117,26 @@ class YarnComment {
     map['user_disliked'] = userDisLike;
     map['pinned'] = pinned;
     map['media'] = media.map((v) => v.toJson()).toList();
+
+    if (map['attachment'] != null) {
+      if (map['attachment'] is String) {
+        map['attachment'] = jsonDecode(map['attachment']);
+      }
+
+      if (map['attachment']['service'] != null) {
+        attachmentType = 'service';
+        attachment = map['attachment']['service'];
+      } else if (map['attachment']['blog'] != null) {
+        attachmentType = 'blog';
+        attachment = map['attachment']['blog'];
+      } else if (map['attachment']['product'] != null) {
+        attachmentType = 'product';
+        attachment = map['attachment']['product'];
+      } else if (map['attachment']['profile'] != null) {
+        attachmentType = 'profile';
+        attachment = map['attachment']['profile'];
+      }
+    }
     return map;
   }
 }

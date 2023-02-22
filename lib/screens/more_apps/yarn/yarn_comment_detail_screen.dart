@@ -81,7 +81,8 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       title: Text(
-        "Thread",
+        "Comments",
+        // "Thread",
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w700,
@@ -173,22 +174,14 @@ class _YarnCommentDetailScreenState extends State<YarnCommentDetailScreen> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: count == 0
-              ? YarnCommentTile(
-                  yarn: widget.yarn,
-                  yarnComment: widget.yarnComment,
-                  isCommentDetail: true,
-                  yarnCommentReply: widget.yarnComment,
-                )
-              : YarnCommentTile(
-                  yarn: widget.yarn,
-                  yarnComment: widget.yarnComment,
-                  isCommentDetail: true,
-                  yarnCommentReply: widget.yarnComment,
-                  minusComment: true,
-                ),
-        ),
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: YarnCommentTile(
+                yarn: widget.yarn,
+                yarnComment: widget.yarnComment,
+                isCommentDetail: true,
+                yarnCommentReply: widget.yarnComment,
+                minusComment: count == 0 ? false : true,
+                commentType: 'comment')),
         YarnCommentReplyList(
           key: yarnCommentScreenKey,
           yarn: widget.yarn,

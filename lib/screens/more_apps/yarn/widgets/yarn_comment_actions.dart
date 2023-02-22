@@ -29,12 +29,14 @@ class YarnCommentActions extends StatefulWidget {
   final Yarn yarn;
   final bool isCommentDetail;
   final bool? minusComment;
+  String? commentType;
 
   YarnCommentActions({
     required this.comment,
     required this.yarn,
     this.isCommentDetail = false,
     this.minusComment,
+    this.commentType,
   });
 
   @override
@@ -213,7 +215,8 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
                   iconData: Icons.send_outlined,
                   onTap: () async {
                     Navigator.of(context).pop();
-                    await sendMomentToUserInChat(yarnComment: widget.comment);
+                    await sendYarnCommentToUserInChat(
+                        yarnComment: widget.comment);
                   }),
             ],
           ),
@@ -277,57 +280,6 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
             color: darkGreyYarn, height: 17, width: 17));
   }
 
-  // Widget _buildPayButton() {
-  //   bool isPayMeEnable = false;
-  //   if (widget.comment.enablePayMe ?? false) {
-  //     isPayMeEnable = true;
-  //   }
-
-  //   return InkWell(
-  //     onTap: getLoggedInUserName(context) != widget.comment.authorUsername
-  //         ? () {
-  //             if (!isPayMeEnable) return;
-  //             if (getIt<AppConfigurationBloc>()
-  //                     .appConfigurationModel
-  //                     ?.enablePayment ==
-  //                 true) {
-  //               Navigator.of(context).pushNamed(
-  //                 Routes.SEND_PAYMENT,
-  //                 arguments: <String, dynamic>{
-  //                   'recipient': widget.comment.authorUsername!,
-  //                   'isFromProfile': false,
-  //                   'isFromChat': false,
-  //                   'defaultReferenceText': 'Payment from  "${truncateString(
-  //                     str: widget.comment.comment!,
-  //                     lengthToTruncateAt: 8,
-  //                   )}\" comment'
-  //                 },
-  //               );
-  //             } else {
-  //               showToast(message: 'Payment not available at the moment');
-  //             }
-  //           }
-  //         : () {
-  //             if (!isPayMeEnable) return;
-  //             showToast(message: 'You cannot pay yourself');
-  //           },
-  //     child: Column(
-  //       children: [
-  //         SizedBox(
-  //           height: 2,
-  //         ),
-  //         SvgPicture.asset(
-  //           "yarn/send_money".toSVG(),
-  //           color: darkGreyYarn,
-  //           height: 13,
-  //           width: 13,
-  //           // color: !isPayMeEnable ? Colors.transparent : null,
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   String getCommentCount() {
     if (widget.comment.replyCount != null && widget.comment.replyCount != 0) {
       if (widget.minusComment == true) {
@@ -355,28 +307,40 @@ class _YarnCommentActionsState extends State<YarnCommentActions> {
     return 0;
   }
 
-  Future<void> sendMomentToUserInChat(
+  Future<void> sendYarnCommentToUserInChat(
       {required YarnComment yarnComment}) async {
     List<ChatConversation?> listOfRecipient =
         await ShareInChat().selectShareCustomer(context);
     debugPrint("Selected users = ${listOfRecipient.length}");
 
     listOfRecipient.forEach((recipient) {
-      addMomentPostToChat(recipientUser: recipient!, yarnComment: yarnComment);
+      addYarnCommentPostToChat(
+          recipientUser: recipient!,
+          yarnComment: yarnComment,
+          commentType: widget.commentType);
     });
   }
 
-  Future<void> addMomentPostToChat({
+  Future<void> addYarnCommentPostToChat({
     required ChatConversation recipientUser,
     required YarnComment yarnComment,
     String? url,
+    String? commentType,
   }) async {
     UserBloc userBloc = Provider.of<UserBloc>(context, listen: false);
 
     Map<String, dynamic> metaData = yarnComment.toJson();
 
+    if (commentType != null) {
+      metaData['comment_type'] = commentType; //options(comment,yarn)
+    }
+    if (widget.yarn != null) {
+      metaData['related_object_id'] = widget.yarn.id;
+    }
+
     Map<String, dynamic> data = {
-      "meta_data": jsonEncode(metaData),
+      "meta_data": messageDecoderWithEmoji(jsonEncode(metaData)),
+      // "meta_data": jsonEncode(metaData),
       "check_id": Uuid().v4(),
       "conversation_id": recipientUser.conversationId,
       "author": userBloc.user.userName,
