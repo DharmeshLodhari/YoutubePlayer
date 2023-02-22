@@ -37,6 +37,7 @@ class YarnCommentTile extends StatefulWidget {
   final Function(Yarn)? onUpdate;
   bool? minusComment;
   String? pinnedCommentId;
+  String? commentType;
 
   YarnCommentTile({
     required this.yarn,
@@ -49,6 +50,7 @@ class YarnCommentTile extends StatefulWidget {
     this.onUpdate,
     this.minusComment,
     this.pinnedCommentId,
+    this.commentType,
   });
 
   @override
@@ -540,6 +542,7 @@ class _YarnCommentTileState extends State<YarnCommentTile> {
       yarn: widget.yarn,
       isCommentDetail: widget.isCommentDetail ?? false,
       minusComment: widget.minusComment,
+      commentType: widget.commentType,
     );
   }
 

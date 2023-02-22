@@ -26,7 +26,7 @@ import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/Chat
 import 'package:Slydo/screens/more_apps/messaging/chat/models/models_for_db/SocketQueueChatMessage.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/EditOrReplyMessageUI.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/audio_tile_for_chat.dart';
-import 'package:Slydo/screens/more_apps/messaging/chat/tiles/comment_tile.dart';
+import 'package:Slydo/screens/more_apps/messaging/chat/tiles/comment_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/envelope_tile_for_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/gif_image_tile_chat.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/image_tile_for_chat.dart';

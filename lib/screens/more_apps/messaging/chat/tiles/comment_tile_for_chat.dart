@@ -8,31 +8,27 @@ import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/slydo_yarn_links.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_comment_media_renderer.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
+import 'package:Slydo/screens/more_apps/yarn/yarn_comment_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_detail_screen.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_search_screen.dart';
 import 'package:Slydo/utils/link_preview/flutter_link_preview.dart';
 import 'package:Slydo/utils/link_preview/web_analyzer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../../main.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/navigation_util.dart';
 import '../../../../../utils/util.dart';
 import '../../../shopping/models/store.dart';
 import '../../../user_post/models/user_post.dart';
 import '../../../user_profile/models/user.dart';
-import '../../../yarn/tiles/re_yarn_tile.dart';
 import '../../../yarn/tiles/yarn_blog_post_tile.dart';
 import '../../../yarn/tiles/yarn_customer_post_tile.dart';
 import '../../../yarn/tiles/yarn_product_tile.dart';
 import '../../../yarn/tiles/yarn_service_tile.dart';
 import '../../../yarn/utils/utils.dart';
-import '../../../yarn/widgets/rich_text.dart';
 import '../../../yarn/widgets/url_reader_of_yarn.dart';
-import '../../../yarn/widgets/yarn_media_renderer.dart';
 import '../../../yarn/yarn_dashboard_bloc.dart';
 
 class CommentTileForChat extends StatefulWidget {
@@ -125,14 +121,28 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
         isLoading = true;
         if (mounted) setState(() {});
 
-        await YarnAuth().getSingleTopics(yarnId: yarnComment.id).then((data) {
-          Yarn? yarnTopic;
-          if (data != null) {
-            yarnTopic = data['results'];
-          }
-          isLoading = false;
-          if (mounted) setState(() {});
+        // debugPrint('Comment in chat::::: ${widget.message!['meta_data']}');
 
+        Map body = json.decode(widget.message!['meta_data']);
+        Yarn? yarnTopic;
+
+        Map<String, dynamic>? result =
+            await YarnAuth().getSingleTopics(yarnId: body['related_object_id']);
+
+        if (result == null) {
+          isLoading = false;
+          showToast(message: 'Yarn/comment no longer available');
+          if (mounted) {
+            setState(() {});
+          }
+          return;
+        }
+
+        yarnTopic = result['results'];
+        isLoading = false;
+        if (mounted) setState(() {});
+
+        if (body['comment_type'] == 'yarn') {
           if (yarnTopic != null) {
             NavigationUtil.push(
               context,
@@ -141,11 +151,18 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
               ),
             );
           }
-        }).catchError((e) {
-          isLoading = false;
-          if (mounted) setState(() {});
-          showToast(message: 'ERROR -> $e');
-        });
+        } else {
+          YarnComment yarnComment = YarnComment.fromJson(body);
+          if (yarnTopic != null) {
+            NavigationUtil.push(
+              context,
+              screen: YarnCommentDetailScreen(
+                yarn: yarnTopic,
+                yarnComment: yarnComment,
+              ),
+            );
+          }
+        }
       },
       child: Column(
         children: [
@@ -380,7 +397,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(newString)! ?? '',
+            text: messageDecoderWithEmoji(newString)!,
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -462,7 +479,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
     }
 
     return YarnSmartText(
-      text: messageDecoderWithEmoji(newString)! ?? '',
+      text: messageDecoderWithEmoji(newString)!,
       style: TextStyle(color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
       // atStyle: TextStyle(color: navyBlue, fontSize: 17, fontFamily: "OpenSans"),
       disableAt: false,
@@ -866,7 +883,7 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
             height: 5,
           ),
           YarnSmartText(
-            text: messageDecoderWithEmoji(newString)! ?? '',
+            text: messageDecoderWithEmoji(newString)!,
             style: TextStyle(
                 color: blackFont, fontSize: 14, fontFamily: "OpenSans"),
             // atStyle: TextStyle(
@@ -995,32 +1012,6 @@ class _CommentTileForChatState extends State<CommentTileForChat> {
       childWidget = SizedBox();
     }
     return childWidget;
-  }
-
-  Widget _buildFactCheckWidget() {
-    return Container(
-      padding: EdgeInsets.all(5),
-      //margin: EdgeInsets.only(right: 64),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.5),
-          border: Border.all(color: HexColor("#FCCF72")),
-          color: HexColor("#FEE6B5")),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SvgPicture.asset('assets/images/yarn/yell_icon.svg'),
-          SizedBox(
-            width: 2,
-          ),
-          Text(
-            'We doubt the information in the Yarn is correct.',
-            style: TextStyle(
-                color: Color.fromARGB(255, 187, 118, 27), fontSize: 10),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget getDisplayWidget(Function() widgetDisplay) {

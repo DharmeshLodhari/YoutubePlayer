@@ -50,13 +50,13 @@ class ShareAsAyarnScreen extends StatefulWidget {
   bool? isYarn = false;
   bool? enableText = false; //TODO: this attribute should be deprecated
   bool isShare = true;
-  Yarn? yarnTopic = null;
-  CustomerProfile? userProfile = null;
+  Yarn? yarnTopic;
+  CustomerProfile? userProfile;
 
-  Service? serviceModel = null;
-  Product? productModel = null;
+  Service? serviceModel;
+  Product? productModel;
 
-  UserPost? blogPost = null;
+  UserPost? blogPost;
 
   Function(Yarn params) callback;
   ShareAsAyarnScreen(
@@ -1379,11 +1379,6 @@ class _ShareAsAyarnScreenState extends State<ShareAsAyarnScreen> {
     yarn.author = userBloc.user.userName;
     yarn.enablePayMe = enablePayMe;
     yarn.enableCommenting = enableCommenting;
-
-    // if (widget.appTitle == 'ReYarn' &&
-    //     widget.yarnTopic!.author == userBloc.user.userName) {
-    //   yarn.userReyarned = true;
-    // }
 
     await YarnAuth().addYarnAndQuestion(yarn, '').then((value) {
       if (widget.isYarn == true) {

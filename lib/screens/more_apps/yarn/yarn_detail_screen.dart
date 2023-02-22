@@ -213,24 +213,15 @@ class _YarnDetailScreenState extends State<YarnDetailScreen> {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: count == 0
-              ? YarnTile(
-                  yarn: finalYarn!,
-                  onDeleteYarn: (Yarn yarn) {
-                    widget.onDeleteYarn!(yarn);
-                    Navigator.of(context).pop();
-                  },
-                )
-              : YarnTile(
-                  yarn: finalYarn!,
-                  onDeleteYarn: (Yarn yarn) {
-                    widget.onDeleteYarn!(yarn);
-                    Navigator.of(context).pop();
-                  },
-                  minusComment: true,
-                ),
-        ),
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: YarnTile(
+              yarn: finalYarn!,
+              onDeleteYarn: (Yarn yarn) {
+                widget.onDeleteYarn!(yarn);
+                Navigator.of(context).pop();
+              },
+              minusComment: count == 0 ? false : true,
+            )),
         YarnCommentList(
           key: yarnCommentScreenKey,
           yarn: finalYarn!,

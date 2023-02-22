@@ -604,7 +604,7 @@ class YarnAuth extends AuthService {
 
     if (addYarnAndQuestion.reYarn != null) {
       mapValue['reyarn'] = addYarnAndQuestion.reYarn!.id!;
-      logger.d("reyarnId ${mapValue['reyarn']}");
+      // logger.d("reyarnId ${mapValue['reyarn']}");
     }
 
     logger.d(' share as yar message...... $mapValue');
@@ -788,8 +788,6 @@ class YarnAuth extends AuthService {
     }
     var responseBody = await response.stream.bytesToString();
     if (response.statusCode == 201) {
-      // debugPrint('RESPONSE BODY create:::: ${responseBody}');
-
       debugPrint('RESPONSE BODY create:::: ${responseBody}');
 
       if (s == 'Add') {
