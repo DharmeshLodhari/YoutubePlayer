@@ -6,37 +6,38 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
+import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
-class DefaultBusinessProfileScreen extends StatefulWidget {
+class DefaultUserProfileScreen extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? searchedUserName;
-  int? currentIndex = 1;
+  int currentIndex = 1;
   TabController? tabController;
   PageController? pageController;
-  bool? isOwner;
-  bool? isLoading;
+  bool isOwner;
+  bool isLoading;
 
-  DefaultBusinessProfileScreen({
+  DefaultUserProfileScreen({
     Key? key,
-    this.searchedUser,
-    this.searchedUserName,
-    this.tabController,
-    this.currentIndex,
-    this.pageController,
-    this.isOwner,
-    this.isLoading,
+    required this.searchedUser,
+    required this.searchedUserName,
+    required this.tabController,
+    required this.currentIndex,
+    required this.pageController,
+    required this.isOwner,
+    required this.isLoading,
   }) : super(key: key);
 
   @override
-  State<DefaultBusinessProfileScreen> createState() =>
-      _DefaultBusinessProfileScreenState();
+  State<DefaultUserProfileScreen> createState() =>
+      _DefaultUserProfileScreenState();
 }
 
-class _DefaultBusinessProfileScreenState
-    extends State<DefaultBusinessProfileScreen> with TickerProviderStateMixin {
-  late UserTabView _currentUser;
+class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
+    with TickerProviderStateMixin {
+  UserTabView? _currentUser;
   String? searchedUserName;
   CustomerProfile? searchedUser;
   bool? isOwner;
@@ -50,9 +51,8 @@ class _DefaultBusinessProfileScreenState
     isOwner = widget.isOwner;
 
     // Define the tabs and their corresponding data for each user
-
-    UserTabView businessView = UserTabView(
-      name: "business",
+    UserTabView userView = UserTabView(
+      name: "user",
       tabs: [
         UserTab(
           label: "Yarn",
@@ -65,43 +65,23 @@ class _DefaultBusinessProfileScreenState
           apiCall: () async => await fetchChannelData(searchedUserName),
         ),
         UserTab(
-          label: "Moment",
-          child: momentTab(searchedUser),
-          apiCall: () async => await fetchMomentData(searchedUserName),
-        ),
-        UserTab(
-          label: "Product",
-          child: productTab(searchedUser, isOwner!),
-          apiCall: () async => await fetchProductData(searchedUserName),
-        ),
-        UserTab(
           label: "Post",
           child: postTab(searchedUser),
           apiCall: () async => await fetchPostData(searchedUserName),
         ),
         UserTab(
-          label: "Service",
-          child: serviceTab(searchedUser, isOwner!),
-          apiCall: () async => await fetchServiceData(searchedUserName),
-        ),
-        UserTab(
-          label: "Review",
-          child: reviewTab(searchedUser),
-          apiCall: () async => ['1'],
-        ),
-        UserTab(
-          label: "Hours",
-          child: hoursTab(searchedUser),
-          apiCall: () async => ['1'],
+          label: "Moment",
+          child: momentTab(searchedUser),
+          apiCall: () async => await fetchMomentData(searchedUserName),
         ),
       ],
     );
 
     // Set the current user here
-    _currentUser = businessView;
+    _currentUser = userView;
 
     widget.tabController = TabController(
-      length: _currentUser.tabs.where((tab) => tab.apiCall != null).length,
+      length: _currentUser!.tabs.where((tab) => tab.apiCall != null).length,
       vsync: this,
     );
 
@@ -128,16 +108,17 @@ class _DefaultBusinessProfileScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: NestedScrollView(
-        // controller: _scrollController,
+    return Container(
+      child: NestedScrollView(
+        controller: scrollController,
         headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
           return <Widget>[
             GetAppbarTile(
-                searchedUser: searchedUser!,
-                isLoading: widget.isLoading!,
-                isShrink: isShrink,
-                scrollController: scrollController),
+              searchedUser: searchedUser!,
+              isLoading: widget.isLoading,
+              isShrink: isShrink,
+              scrollController: scrollController,
+            ),
             SliverPersistentHeader(
               key: UniqueKey(),
               floating: true,
@@ -209,7 +190,7 @@ class _DefaultBusinessProfileScreenState
   getTabViewLayout() {
     return TabBarView(
       controller: widget.tabController,
-      children: _currentUser.tabs
+      children: _currentUser!.tabs
           .map((tab) => FutureBuilder(
                 future: tab.apiCall!(),
                 builder: (context, snapshot) {
@@ -255,7 +236,7 @@ class _DefaultBusinessProfileScreenState
     List<Widget> tabs = [];
     int index = 0;
 
-    _currentUser.tabs.where((tab) => tab.apiCall != null).map((tab) {
+    _currentUser!.tabs.where((tab) => tab.apiCall != null).map((tab) {
       tabs.add(getTabUI(title: tab.label.toString(), tabIndex: index));
       index++;
     }).toList();
@@ -280,7 +261,7 @@ class _DefaultBusinessProfileScreenState
           Navigator.pop(context);
         },
       ),
-      title: widget.isLoading!
+      title: widget.isLoading
           ? SizedBox.shrink()
           : userNameWithVerifiedIcon(
               name: searchedUser!.displayName()!,
