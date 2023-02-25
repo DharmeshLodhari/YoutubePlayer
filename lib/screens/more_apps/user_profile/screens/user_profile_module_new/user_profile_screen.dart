@@ -29,8 +29,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isLoading = true;
 
-  TabController? _tabController;
-
   _UserProfileScreenState({this.arguments});
 
   int currentIndex = 1;
@@ -43,16 +41,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool isOwner = false;
   double? top;
 
-  // page view controller
-  PageController? pageController;
-
   late CustomerProfileBloc customerProfileBloc;
 
-  ScrollController? _scrollController;
   bool appBarStatus = true;
 
   bool isInRequestList = false;
-  late UserTabView _currentUser;
 
   @override
   void initState() {
@@ -66,19 +59,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     currentIndex = arguments['index'] ?? 0;
     debugPrint('CURRENT INDEX -> $currentIndex');
     selectedIndexStream.sink.add(currentIndex);
-    pageController = PageController(initialPage: currentIndex);
     if (mounted) setState(() {});
-
-    _scrollController = ScrollController();
-    // _scrollController?.addListener(_scrollListener);
-  }
-
-  Future<void> dispose() async {
-    super.dispose();
-    // selectedIndexStream.close();
-    // _scrollController?.removeListener(_scrollListener);
-    // _scrollController?.dispose();
-    _tabController?.dispose();
   }
 
   Future<void> getSearchedUser({bool load = true}) async {
@@ -100,88 +81,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     searchedUser = user;
 
     checkCurrentUserIsInRequestList();
-
-    // Define the tabs and their corresponding data for each user
-    UserTabView userView = UserTabView(
-      name: "user",
-      tabs: [
-        UserTab(
-          label: "Yarn",
-          child: yarnTab(searchedUserName),
-          apiCall: () async => await fetchYarnData(searchedUserName),
-        ),
-        UserTab(
-          label: "Channel",
-          child: channelTab(searchedUserName),
-          apiCall: () async => await fetchChannelData(searchedUserName),
-        ),
-        UserTab(
-          label: "Post",
-          child: postTab(searchedUser),
-          apiCall: () async => await fetchPostData(searchedUserName),
-        ),
-        UserTab(
-          label: "Moment",
-          child: momentTab(searchedUser),
-          apiCall: () async => await fetchMomentData(searchedUserName),
-        ),
-      ],
-    );
-
-    UserTabView businessView = UserTabView(
-      name: "business",
-      tabs: [
-        UserTab(
-          label: "Yarn",
-          child: yarnTab(searchedUserName),
-          apiCall: () async => await fetchYarnData(searchedUserName),
-        ),
-        UserTab(
-          label: "Channel",
-          child: channelTab(searchedUserName),
-          apiCall: () async => await fetchChannelData(searchedUserName),
-        ),
-        UserTab(
-          label: "Moment",
-          child: momentTab(searchedUser),
-          apiCall: () async => await fetchMomentData(searchedUserName),
-        ),
-        UserTab(
-          label: "Product",
-          child: productTab(searchedUser, isOwner),
-          apiCall: () async => await fetchProductData(searchedUserName),
-        ),
-        UserTab(
-          label: "Post",
-          child: postTab(searchedUser),
-          apiCall: () async => await fetchPostData(searchedUserName),
-        ),
-        UserTab(
-          label: "Service",
-          child: serviceTab(searchedUser, isOwner),
-          apiCall: () async => await fetchServiceData(searchedUserName),
-        ),
-        UserTab(
-          label: "Review",
-          child: reviewTab(searchedUser),
-          apiCall: () async => ['1'],
-        ),
-        UserTab(
-          label: "Hours",
-          child: hoursTab(searchedUser),
-          apiCall: () async => ['1'],
-        ),
-      ],
-    );
-
-    // Set the current user here
-    _currentUser =
-        searchedUser!.type!.toLowerCase() == "user" ? userView : businessView;
-
-    _tabController = TabController(
-      length: _currentUser.tabs.where((tab) => tab.apiCall != null).length,
-      vsync: this,
-    );
 
     isLoading = false;
     if (mounted) setState(() {});
@@ -268,9 +167,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return DefaultUserProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
-        tabController: _tabController,
-        currentIndex: currentIndex,
-        pageController: pageController,
         isOwner: isOwner,
         isLoading: isLoading,
       );
@@ -278,9 +174,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return DefaultBusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
-        tabController: _tabController,
-        currentIndex: currentIndex,
-        pageController: pageController,
         isOwner: isOwner,
         isLoading: isLoading,
       );

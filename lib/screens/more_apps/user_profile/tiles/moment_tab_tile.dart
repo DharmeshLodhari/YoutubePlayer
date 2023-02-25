@@ -13,8 +13,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MomentsTab extends StatefulWidget {
-  final CustomerProfile searchedUser;
-  const MomentsTab({Key? key, required this.searchedUser}) : super(key: key);
+  CustomerProfile searchedUser;
+  MomentsTab({Key? key, required this.searchedUser}) : super(key: key);
 
   @override
   _MomentsTabState createState() => _MomentsTabState();
@@ -26,7 +26,7 @@ class _MomentsTabState extends State<MomentsTab> {
   int? myMomentsCount = 0;
   bool isMyMomentsLoading = false;
   List<MomentsModel> myMomentsList = [];
-  ScrollController _myMomentsScrollController = ScrollController();
+  ScrollController _myMomentsScrollController = new ScrollController();
 
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -150,9 +150,10 @@ class _MomentsTabState extends State<MomentsTab> {
 
   Widget myMomentsListWidget() {
     if (myMomentsList.isEmpty) {
-      return NoItemInList(
-        msg: AppLocalization.of(context)!.noMoments,
-      );
+      return SizedBox.shrink();
+      // return NoItemInList(
+      //   msg: AppLocalization.of(context)!.noMoments,
+      // );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

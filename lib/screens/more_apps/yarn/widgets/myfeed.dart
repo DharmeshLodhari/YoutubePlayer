@@ -155,9 +155,6 @@ class MyFeedViewState extends State<MyFeedView> {
             return _buildLoadingIndicator();
           }
 
-          debugPrint(
-              'yarn detail feed::: ${yarnTopicList[index].viewersAvatars.toString()}');
-
           return InkWell(
             onTap: () async {
               if (yarnTopicList[index].enableCommenting ?? false) {
