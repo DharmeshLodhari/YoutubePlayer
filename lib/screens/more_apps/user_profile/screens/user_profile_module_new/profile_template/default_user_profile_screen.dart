@@ -1,4 +1,3 @@
-import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -6,16 +5,11 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/LoadingIndicator.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
 class DefaultUserProfileScreen extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? searchedUserName;
-  int currentIndex = 1;
-  TabController? tabController;
-  PageController? pageController;
   bool isOwner;
   bool isLoading;
 
@@ -23,9 +17,6 @@ class DefaultUserProfileScreen extends StatefulWidget {
     Key? key,
     required this.searchedUser,
     required this.searchedUserName,
-    required this.tabController,
-    required this.currentIndex,
-    required this.pageController,
     required this.isOwner,
     required this.isLoading,
   }) : super(key: key);
@@ -36,13 +27,18 @@ class DefaultUserProfileScreen extends StatefulWidget {
 }
 
 class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   UserTabView? _currentUser;
   String? searchedUserName;
-  CustomerProfile? searchedUser;
+  late CustomerProfile searchedUser;
   bool? isOwner;
   bool appBarStatus = true;
   ScrollController? scrollController;
+
+  TabController? _tabController;
+  PageController? _pageController;
+  int _currentIndex = 0;
+  final PageStorageBucket _bucket = new PageStorageBucket();
 
   @override
   void initState() {
@@ -60,9 +56,9 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
           apiCall: () async => await fetchYarnData(searchedUserName),
         ),
         UserTab(
-          label: "Channel",
-          child: channelTab(searchedUserName),
-          apiCall: () async => await fetchChannelData(searchedUserName),
+          label: "Moment",
+          child: momentTab(searchedUser),
+          apiCall: () async => await fetchMomentData(searchedUserName),
         ),
         UserTab(
           label: "Post",
@@ -70,9 +66,9 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
           apiCall: () async => await fetchPostData(searchedUserName),
         ),
         UserTab(
-          label: "Moment",
-          child: momentTab(searchedUser),
-          apiCall: () async => await fetchMomentData(searchedUserName),
+          label: "Channel",
+          child: channelTab(searchedUserName),
+          apiCall: () async => await fetchChannelData(searchedUserName),
         ),
       ],
     );
@@ -80,7 +76,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     // Set the current user here
     _currentUser = userView;
 
-    widget.tabController = TabController(
+    _tabController = TabController(
       length: _currentUser!.tabs.where((tab) => tab.apiCall != null).length,
       vsync: this,
     );
@@ -88,7 +84,11 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     scrollController = ScrollController();
     scrollController?.addListener(_scrollListener);
 
-    // isLoading = false;
+    _pageController = PageController(initialPage: _currentIndex);
+
+    // Add a listener to the tab controller that updates the current index
+    _tabController!.addListener(tabController);
+
     if (mounted) setState(() {});
 
     super.initState();
@@ -101,6 +101,18 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     }
   }
 
+  void tabController() {
+    _currentIndex = _tabController!.index;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_pageController!.hasClients) {
+        _pageController!.animateToPage(_currentIndex,
+            duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
+      }
+    });
+    if (mounted) setState(() {});
+  }
+
   bool get isShrink {
     return (scrollController?.hasClients ?? false) &&
         (scrollController?.offset ?? 0) > (150 - kToolbarHeight);
@@ -108,37 +120,35 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: NestedScrollView(
-        controller: scrollController,
-        headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
-          return <Widget>[
-            GetAppbarTile(
-              searchedUser: searchedUser!,
-              isLoading: widget.isLoading,
-              isShrink: isShrink,
-              scrollController: scrollController,
-            ),
-            SliverPersistentHeader(
-              key: UniqueKey(),
-              floating: true,
-              pinned: true,
-              delegate: SliverAppBarDelegate(
-                TabBar(
-                  controller: widget.tabController,
-                  isScrollable: true,
-                  indicator: BoxDecoration(),
-                  onTap: (int index) {
-                    changeIndex(index);
-                  },
-                  tabs: getTabsWidget(),
-                ),
+    return NestedScrollView(
+      controller: scrollController,
+      headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
+        return <Widget>[
+          GetAppbarTile(
+            searchedUser: searchedUser,
+            isLoading: widget.isLoading,
+            isShrink: isShrink,
+            scrollController: scrollController,
+          ),
+          SliverPersistentHeader(
+            key: UniqueKey(),
+            floating: true,
+            pinned: true,
+            delegate: SliverAppBarDelegate(
+              TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                indicator: BoxDecoration(),
+                onTap: (int index) {
+                  changeIndex(index);
+                },
+                tabs: getTabsWidget(),
               ),
-            )
-          ];
-        },
-        body: getTabViewLayout(),
-      ),
+            ),
+          ),
+        ];
+      },
+      body: getTabViewLayout(),
     );
   }
 
@@ -147,38 +157,29 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
   }
 
   void changeIndex(int index) {
-    widget.currentIndex = index;
+    _currentIndex = index;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.pageController!.hasClients) {
-        widget.pageController!.animateToPage(widget.currentIndex!,
-            duration: Duration(milliseconds: 1), curve: Curves.easeInOut);
-      }
-    });
-
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Widget getTabUI({String title = "", @required int? tabIndex}) {
     return Tab(
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: widget.tabController?.index == tabIndex ? 16 : 18,
+            horizontal: _tabController?.index == tabIndex ? 16 : 18,
             vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           shape: BoxShape.rectangle,
-          color:
-              widget.tabController?.index == tabIndex ? navyBlue : Colors.white,
+          color: _tabController?.index == tabIndex ? navyBlue : Colors.white,
         ),
         child: Text(
           title,
           maxLines: 1,
           overflow: TextOverflow.visible,
           style: TextStyle(
-            color: widget.tabController?.index == tabIndex
-                ? white
-                : HexColor("#78797A"),
+            color:
+                _tabController?.index == tabIndex ? white : HexColor("#78797A"),
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
@@ -189,46 +190,24 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
 
   getTabViewLayout() {
     return TabBarView(
-      controller: widget.tabController,
-      children: _currentUser!.tabs
-          .map((tab) => FutureBuilder(
-                future: tab.apiCall!(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    // By default, show a loading spinner
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasData) {
-                    List<dynamic>? data = snapshot.data as List?;
-
-                    if (data!.isEmpty) {
-                      return NoItemInList(
-                        msg: AppLocalization.of(context)!.noResultFound,
-                      );
-                    } else {
-                      return PageView(
-                        children: List<Widget>.generate(
-                          data!.length,
-                          (index) {
-                            index++;
-                            return tab.child!;
-                          },
-                        ),
-                        controller: widget.pageController,
-                        onPageChanged: (int index) {
-                          widget.tabController!.index = index;
-                          widget.currentIndex = index;
-                          if (mounted) setState(() {});
-                        },
-                      );
-                    }
-                  } else {
-                    return NoItemInList(
-                      msg: AppLocalization.of(context)!.noResultFound,
-                    );
-                  }
-                },
-              ))
-          .toList(),
+      controller: _tabController,
+      children:
+          _currentUser!.tabs.where((tab) => tab.apiCall != null).map((tab) {
+        return PageStorage(
+          key: PageStorageKey(tab.label),
+          bucket: _bucket,
+          child: FutureBuilder(
+            future: tab.apiCall!(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return tab.child!;
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -257,15 +236,26 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
           size: 24,
         ),
         onPressed: () {
-          searchedUser = null;
+          // searchedUser = null;
           Navigator.pop(context);
         },
       ),
       title: widget.isLoading
           ? SizedBox.shrink()
           : userNameWithVerifiedIcon(
-              name: searchedUser!.displayName()!,
-              isVerified: searchedUser!.isVerified),
+              name: searchedUser.displayName()!,
+              isVerified: searchedUser.isVerified),
     );
+  }
+
+  Future<void> dispose() async {
+    super.dispose();
+    scrollController!.dispose();
+    _tabController!.dispose();
+    _pageController!.dispose();
+
+    scrollController!.removeListener(_scrollListener);
+    _tabController!.removeListener(_scrollListener);
+    _pageController!.removeListener(_scrollListener);
   }
 }

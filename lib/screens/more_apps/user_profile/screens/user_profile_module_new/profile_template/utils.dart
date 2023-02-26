@@ -34,7 +34,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     // } else {
     //   height = 340;
     // }
-    height = 360;
+    height = 380;
   } else if (bioLength <= 50) {
     // if (hasAddress && hasContact) {
     //   height = 350;
@@ -43,7 +43,7 @@ double getBgHeightOfAppBar(String bio, bool hasAddress, bool hasContact) {
     // } else {
     //   height = 380;
     // }
-    height = 370;
+    height = 380;
   } else if (bioLength <= 100) {
     // if (hasAddress && hasContact) {
     //   height = 460;
@@ -187,9 +187,9 @@ Widget postTab(CustomerProfile? searchedUser) {
   );
 }
 
-Widget momentTab(CustomerProfile? searchedUser) {
+Widget momentTab(CustomerProfile searchedUser) {
   return KeepAlivePage(
-    child: MomentsTab(searchedUser: searchedUser!),
+    child: MomentsTab(searchedUser: searchedUser),
   );
 }
 
