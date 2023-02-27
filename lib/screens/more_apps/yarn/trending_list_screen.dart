@@ -15,8 +15,10 @@ import 'yarn_detail_screen.dart';
 
 class TrendingListScreen extends StatefulWidget {
   final String? selectedCategory;
+  Function(bool)? onPageRefresh;
 
-  TrendingListScreen({Key? key, this.selectedCategory}) : super(key: key);
+  TrendingListScreen({Key? key, this.selectedCategory, this.onPageRefresh})
+      : super(key: key);
 
   @override
   State<TrendingListScreen> createState() => TrendingListScreenState(key: key);
@@ -125,6 +127,8 @@ class TrendingListScreenState extends State<TrendingListScreen> {
   Widget build(BuildContext context) {
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
+    /// check if yarn bottom navigation is clicked
+    /// scroll back to the top of the page
     if (_dashboardBloc.topYarn == true) {
       _dashboardBloc.topYarn = false;
       if (_trendingScrollController.hasClients) {
@@ -136,6 +140,17 @@ class TrendingListScreenState extends State<TrendingListScreen> {
         );
       }
     }
+
+    /// check if scroll controller is at the top, send call back to
+    /// yarn dashboard to set category as visible
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_trendingScrollController.position.pixels == 0) {
+        // Scroll controller is at the top
+        widget.onPageRefresh!(true);
+        if (mounted) setState(() {});
+      }
+    });
+
     return Column(
       children: [
         Expanded(
