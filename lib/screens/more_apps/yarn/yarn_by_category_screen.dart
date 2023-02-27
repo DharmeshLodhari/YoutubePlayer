@@ -41,11 +41,21 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
       GlobalKey<TrendingListScreenState>();
   late YarnDashboardBloc yarnDashboardBloc;
 
+  bool _tabsVisible = true;
+
   @override
   void initState() {
     _pageViewCtrl = PageController(initialPage: 0);
     getUserCategories();
     super.initState();
+  }
+
+  void _showTabs(bool visible) {
+    if (_tabsVisible != visible) {
+      setState(() {
+        _tabsVisible = visible;
+      });
+    }
   }
 
   Future<UsersCategories?> getUserCategories() async {
@@ -219,36 +229,53 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
   }
 
   Widget _buildBody() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 16,
-        ),
-        _buildCategoryAndTabs(),
-        _buildPageView(),
-      ],
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        if (scrollNotification is ScrollUpdateNotification) {
+          if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
+            // Scrolling down
+            _showTabs(false);
+          } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
+            // Scrolling up
+            _showTabs(true);
+          }
+        }
+
+        return true;
+      },
+      child: Column(
+        children: [
+          SizedBox(
+            height: 16,
+          ),
+          _buildCategoryAndTabs(),
+          _buildPageView(),
+        ],
+      ),
     );
   }
 
   Widget _buildCategoryAndTabs() {
     return Column(
       children: [
-        YarnTabSelection(
-          onTap: (index) {
-            currentAskTapOnHome = index;
-            _pageViewCtrl.jumpToPage(currentAskTapOnHome);
-            if (mounted) setState(() {});
-          },
-          currentIndex: currentAskTapOnHome,
-        ),
-        SizedBox(
-          height: 16,
-        ),
-        Divider(
-          height: 0,
-          thickness: 0.5,
-          color: greySecondaryYarn,
-        ),
+        if (_tabsVisible) ...[
+          YarnTabSelection(
+            onTap: (index) {
+              currentAskTapOnHome = index;
+              _pageViewCtrl.jumpToPage(currentAskTapOnHome);
+              if (mounted) setState(() {});
+            },
+            currentIndex: currentAskTapOnHome,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          Divider(
+            height: 0,
+            thickness: 0.5,
+            color: greySecondaryYarn,
+          ),
+        ],
       ],
     );
   }
@@ -264,16 +291,21 @@ class _YarnCategoryScreenState extends State<YarnCategoryScreen> {
           YarnListScreen(
             key: topicViewStateKey,
             selectedCategory: widget.askCategories!.id,
+            onPageRefresh: (bool data) {
+              if (data == true) {
+                _showTabs(true);
+              }
+            },
           ),
           TrendingListScreen(
             key: latestViewStateKey,
             selectedCategory: widget.askCategories!.id,
+            onPageRefresh: (bool data) {
+              if (data == true) {
+                _showTabs(true);
+              }
+            },
           ),
-          // QuestionListScreen(
-          //   key: questionViewStateKey,
-          //   selectedCategory: widget.askCategories!.id,
-          // ),
-          // MyFeedView(key: myFeedViewStateKey, selectedCategory: selectedCategoryId,),
         ],
       ),
     );

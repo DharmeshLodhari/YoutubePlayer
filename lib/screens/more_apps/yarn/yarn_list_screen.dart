@@ -16,10 +16,12 @@ import 'yarn_detail_screen.dart';
 
 class YarnListScreen extends StatefulWidget {
   final String? selectedCategory;
+  Function(bool)? onPageRefresh;
 
   YarnListScreen({
     Key? key,
     this.selectedCategory,
+    this.onPageRefresh,
   }) : super(key: key);
 
   @override
@@ -223,6 +225,8 @@ class YarnListScreenState extends State<YarnListScreen> {
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context);
     _dashboardBloc = Provider.of<DashboardBloc>(context);
 
+    /// check if yarn bottom navigation is clicked
+    /// scroll back to the top of the page
     if (_dashboardBloc.topYarn == true) {
       _dashboardBloc.topYarn = false;
       if (_scrollController.hasClients) {
@@ -234,6 +238,16 @@ class YarnListScreenState extends State<YarnListScreen> {
         );
       }
     }
+
+    /// check if scroll controller is at the top, send call back to
+    /// yarn dashboard to set category as visible
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.position.pixels == 0) {
+        // Scroll controller is at the top
+        widget.onPageRefresh!(true);
+        if (mounted) setState(() {});
+      }
+    });
 
     return SmartRefresher(
       enablePullDown: true,
@@ -371,7 +385,6 @@ class YarnListScreenState extends State<YarnListScreen> {
     List<Yarn> tempList = [];
     tempList.add(yarnTopic!);
     yarnDashboardBloc.addCreateYarnTopicList(tempList);
-    // createYarnTopicList.add(yarnTopic!);
 
     if (mounted) setState(() {});
   }

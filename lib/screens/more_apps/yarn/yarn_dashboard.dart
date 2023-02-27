@@ -7,6 +7,7 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/rounded_background_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:neat_periodic_task/neat_periodic_task.dart';
@@ -42,6 +43,8 @@ class _YarnDashboardState extends State<YarnDashboard> {
   int count = 0;
   Yarn? yarnTopic;
 
+  bool _tabsVisible = true;
+
   @override
   void initState() {
     _pageViewController = PageController(initialPage: 0);
@@ -59,6 +62,14 @@ class _YarnDashboardState extends State<YarnDashboard> {
     scheduler.start();
 
     super.initState();
+  }
+
+  void _showTabs(bool visible) {
+    if (_tabsVisible != visible) {
+      setState(() {
+        _tabsVisible = visible;
+      });
+    }
   }
 
   void fetchMessageCount() async {
@@ -197,39 +208,79 @@ class _YarnDashboardState extends State<YarnDashboard> {
   }
 
   Widget _buildBody() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 16,
-        ),
-        _buildCategoryAndTabs(),
-        _buildPageView(),
-      ],
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        if (scrollNotification is ScrollUpdateNotification) {
+          if (scrollNotification.scrollDelta! > 0 && _tabsVisible) {
+            // Scrolling down
+            _showTabs(false);
+          } else if (scrollNotification.scrollDelta! < 0 && !_tabsVisible) {
+            // Scrolling up
+            _showTabs(true);
+          }
+        }
+
+        return true;
+      },
+      child: Column(
+        children: [
+          SizedBox(
+            height: 16,
+          ),
+          _buildCategoryAndTabs(),
+          _buildPageView(),
+        ],
+      ),
     );
   }
 
   Widget _buildCategoryAndTabs() {
     return Column(
       children: [
-        YarnCategorySelection(),
-        SizedBox(height: 14),
-        Divider(
-          height: 0,
-          thickness: 0.5,
-          color: greySecondaryYarn,
-        ),
-        SizedBox(height: 8),
-        YarnTabSelection(
-          onTap: (index) {
-            currentAskTapOnHome = index;
-            _pageViewController.jumpToPage(currentAskTapOnHome);
-            if (mounted) setState(() {});
-          },
-          currentIndex: currentAskTapOnHome,
-        ),
-        SizedBox(
-          height: 16,
-        ),
+        if (_tabsVisible) ...[
+          YarnCategorySelection(),
+          SizedBox(height: 14),
+          Divider(
+            height: 0,
+            thickness: 0.5,
+            color: greySecondaryYarn,
+          ),
+          SizedBox(height: 8),
+        ],
+        if (_tabsVisible) ...[
+          YarnTabSelection(
+            onTap: (index) {
+              currentAskTapOnHome = index;
+              _pageViewController.jumpToPage(currentAskTapOnHome);
+              _showTabs(true);
+              if (mounted) setState(() {});
+            },
+            currentIndex: currentAskTapOnHome,
+          ),
+          SizedBox(
+            height: 16,
+          ),
+        ],
+        // YarnCategorySelection(),
+        // SizedBox(height: 14),
+        // Divider(
+        //   height: 0,
+        //   thickness: 0.5,
+        //   color: greySecondaryYarn,
+        // ),
+        // SizedBox(height: 8),
+        // YarnTabSelection(
+        //   onTap: (index) {
+        //     currentAskTapOnHome = index;
+        //     _pageViewController.jumpToPage(currentAskTapOnHome);
+        //     _showTabs(true);
+        //     if (mounted) setState(() {});
+        //   },
+        //   currentIndex: currentAskTapOnHome,
+        // ),
+        // SizedBox(
+        //   height: 16,
+        // ),
       ],
     );
   }
@@ -238,6 +289,9 @@ class _YarnDashboardState extends State<YarnDashboard> {
     return Expanded(
       child: PageView(
         onPageChanged: (currentPage) {
+          // _showTabs(true);
+          // _tabsVisible = true;
+          debugPrint('Fola page change:::${currentPage}');
           updateCurrentAskTapOnHome(index: currentPage);
         },
         controller: _pageViewController,
@@ -245,15 +299,28 @@ class _YarnDashboardState extends State<YarnDashboard> {
           YarnListScreen(
             key: topicViewStateKey,
             selectedCategory: selectedCategoryId,
-            // onCreateYarn: onCreateYarn,
+            onPageRefresh: (bool data) {
+              if (data == true) {
+                _showTabs(true);
+              }
+            },
           ),
           TrendingListScreen(
             key: latestViewStateKey,
             selectedCategory: selectedCategoryId,
+            onPageRefresh: (bool data) {
+              if (data == true) {
+                _showTabs(true);
+              }
+            },
           ),
         ],
       ),
     );
+  }
+
+  bool isPageViewAtTop() {
+    return _pageViewController.page == 0;
   }
 
   void updateCurrentAskTapOnHome({required int index}) {
