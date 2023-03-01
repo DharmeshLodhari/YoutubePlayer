@@ -47,6 +47,16 @@ class Yarn extends Equatable {
     if (json['category'] != null) {
       category = YarnCategories.fromJson(json['category']);
     }
+    if (json['category'] == null) {
+      YarnCategories defaultCategory = new YarnCategories();
+
+      defaultCategory.id = 'd7dd7084-b4bd-4ff3-9372-f314d5ac819f';
+      defaultCategory.name = 'General';
+      defaultCategory.color = null;
+      defaultCategory.image = null;
+
+      category = defaultCategory;
+    }
     authorName = json['author_name'];
     authorAvatar = json['author_avatar'];
     createdAt = json['created_at'];

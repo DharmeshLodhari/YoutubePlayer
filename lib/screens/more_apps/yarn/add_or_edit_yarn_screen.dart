@@ -22,10 +22,8 @@ import 'package:Slydo/screens/more_apps/yarn/yarn_auth.dart';
 import 'package:Slydo/utils/extensions.dart';
 import 'package:Slydo/widget/customized_popup_menu.dart';
 import 'package:Slydo/widget/dialog.dart';
-import 'package:Slydo/widget/image_crop.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:camera/camera.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1292,6 +1290,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
                           if (pressedAskCategory != null) {
                             selectedAskCategory = pressedAskCategory;
                             askCategory = selectedAskCategory!.name!;
+
                             setState(() {});
                           }
                         },
