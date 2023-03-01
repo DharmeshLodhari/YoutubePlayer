@@ -104,7 +104,8 @@ class MyFeedViewState extends State<MyFeedView> {
 
         for (var item in yarnTopicList) {
           debugPrint("YARN TOPICS Feed:- ${item.viewersAvatars.toString()}");
-          debugPrint("YARN TOPICS Feed body:::- ${item.body}");
+          // debugPrint("YARN TOPICS Feed body:::- ${item.body}");
+          // debugPrint("YARN TOPICS Feed :::- ${item}");
         }
       }
       if (yarnTopicList.isEmpty) {
