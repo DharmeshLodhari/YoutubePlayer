@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/channel_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/default_user_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -9,7 +10,7 @@ import 'package:Slydo/widget/LoadingIndicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
-import 'profile_template/default_business_profile_screen.dart';
+import 'profile_template/business_profile_screen.dart';
 
 // ignore: must_be_immutable
 class UserProfileScreen extends StatefulWidget {
@@ -171,7 +172,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isLoading: isLoading,
       );
     } else {
-      return DefaultBusinessProfileScreen(
+      // return ChannelProfileScreen(
+      //   searchedUser: searchedUser,
+      //   searchedUserName: searchedUserName,
+      //   isOwner: isOwner,
+      //   isLoading: isLoading,
+      // );
+      return BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
         isOwner: isOwner,

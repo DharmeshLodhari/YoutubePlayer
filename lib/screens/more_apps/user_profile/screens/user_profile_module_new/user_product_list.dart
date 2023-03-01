@@ -145,35 +145,48 @@ class _UserProductListState extends State<UserProductList> {
             ),
             controller: _productsRefreshController,
             onRefresh: _onProductRefresh,
-            child: ListView(
+            child: Column(
               children: [
-                _buildProductList(),
-                isProductLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                            mainAxisExtent: 180,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 15,
-                            maxCrossAxisExtent: 200,
-                          ),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            );
-                          },
+                noProductInList
+                    ? Expanded(
+                        child: NoItemInList(
+                          msg: AppLocalization.of(context)!.noProducts,
                         ),
                       )
-                    : SizedBox.shrink(),
+                    : Expanded(
+                        child: ListView(
+                          children: [
+                            _buildProductList(),
+                            isProductLoading
+                                ? Shimmer.fromColors(
+                                    baseColor: Colors.white,
+                                    highlightColor: greyBorderColor,
+                                    child: GridView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          SliverGridDelegateWithMaxCrossAxisExtent(
+                                        mainAxisExtent: 180,
+                                        mainAxisSpacing: 16,
+                                        crossAxisSpacing: 15,
+                                        maxCrossAxisExtent: 200,
+                                      ),
+                                      itemCount: 2,
+                                      itemBuilder: (context, index) {
+                                        return Card(
+                                          color: Colors.grey,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
               ],
             ),
           ),
@@ -183,16 +196,6 @@ class _UserProductListState extends State<UserProductList> {
   }
 
   Widget _buildProductList() {
-    if (productList.isEmpty) {
-      return SizedBox.shrink();
-    }
-
-    if (noProductInList) {
-      return NoItemInList(
-        msg: AppLocalization.of(context)!.noProducts,
-      );
-    }
-
     return productNext == "" && isProductLoading
         ? SizedBox.shrink()
         : Padding(
@@ -221,53 +224,6 @@ class _UserProductListState extends State<UserProductList> {
               },
             ),
           );
-
-    ListView.builder(
-      itemCount: productList.length + 1,
-      shrinkWrap: true,
-      physics: ClampingScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      controller: _productScrollController,
-      itemBuilder: (context, index) {
-        if (index == productList.length) {
-          return _buildProductIndicator();
-        } else {
-          return CustomBoxShadow(
-            child: SizedBox(
-              height: 250,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 4),
-                child: DisplayProduct(
-                  product: productList[index],
-                  onProductRefresh: () {
-                    _onProductRefresh();
-                  },
-                ),
-              ),
-            ),
-          );
-          return productTile(index);
-        }
-      },
-    );
-    // StaggeredGridView.countBuilder(
-    //   physics: ClampingScrollPhysics(),
-    //   controller: _productScrollController,
-    //   crossAxisCount: 2,
-    //   shrinkWrap: true,
-    //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-    //   mainAxisSpacing: 20,
-    //   itemCount: productList.length + 1,
-    //   itemBuilder: (BuildContext context, int index) {
-    //     if (index == productList.length) {
-    //       return _buildProductIndicator();
-    //     } else {
-    //       return productTile(index);
-    //     }
-    //   },
-    //   staggeredTileBuilder: (int index) =>
-    //   new StaggeredTile.count(2, 1.2),
-    // );
   }
 
   Widget productTile(int index) {
@@ -278,164 +234,6 @@ class _UserProductListState extends State<UserProductList> {
           padding: const EdgeInsets.symmetric(vertical: 4.0),
           child: DisplayProduct(
             product: productList[index],
-          ),
-        ),
-      ),
-    );
-
-    return CustomBoxShadow(
-      child: SizedBox(
-        height: 300,
-        child: Card(
-          elevation: 3,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          margin: EdgeInsets.symmetric(vertical: 10.0),
-          shadowColor: boxShadowTwo,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      InkWell(
-                        child: CachedNetworkImage(
-                          width: double.infinity,
-                          errorWidget: productAndServiceBigErrorWidget,
-                          imageUrl: getDisplayImage(index, productList)!,
-                          fit: BoxFit.cover,
-                          filterQuality: FilterQuality.high,
-                        ),
-                        onTap: () async {
-                          var result = await Navigator.pushNamed(
-                            context,
-                            Routes.PRODUCT,
-                            arguments: {"product": productList[index]},
-                          );
-
-                          if (result != null) {
-                            if (result is String) {
-                              if (result == "delete_item" ||
-                                  result == "update_item") {
-                                _onProductRefresh();
-                              }
-                            }
-                          }
-                        },
-                      ),
-                      widget.isOwner
-                          ? Positioned(
-                              left: 8,
-                              top: 8,
-                              child: RoundedBackgroundIcon(
-                                  height: 28,
-                                  width: 28,
-                                  backgroundColor: Colors.white,
-                                  icon: Icon(
-                                    Icons.print,
-                                    color: blackFont,
-                                    size: 16,
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                      '/print-qr',
-                                      arguments: {
-                                        "imageUrl": productList[index].qrCode,
-                                        "itemName": productList[index].name
-                                      },
-                                    );
-                                  }),
-                            )
-                          : Container(),
-                      widget.isOwner
-                          ? Positioned(
-                              right: 8,
-                              top: 8,
-                              child: RoundedBackgroundIcon(
-                                  height: 28,
-                                  width: 28,
-                                  backgroundColor: Colors.white,
-                                  icon: Icon(
-                                    SlydoAppIcon.edit,
-                                    color: blackFont,
-                                    size: 12,
-                                  ),
-                                  onTap: () async {
-                                    var result =
-                                        await Navigator.of(context).pushNamed(
-                                      '/edit-product',
-                                      arguments: {
-                                        "productId":
-                                            productList[index].id.toString(),
-                                      },
-                                    );
-
-                                    if (result != null) {
-                                      if (result is String) {
-                                        if (result == "delete_item" ||
-                                            result == "update_item") {
-                                          _onProductRefresh();
-                                        }
-                                      }
-                                    }
-                                  }),
-                            )
-                          : Container(),
-                      getOutOfStockTag(index),
-                      Positioned(
-                        right: 10,
-                        bottom: 10,
-                        child: getRating(
-                            numberOfRating: productList[index].rating?.toInt()),
-                      ),
-                    ],
-                  ),
-                ),
-                ListTile(
-                  dense: true,
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          messageDecoderWithEmoji(productList[index].name!) ??
-                              "",
-                          maxLines: 1,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: blackFont),
-                          softWrap: false,
-                          overflow: TextOverflow.fade,
-                        ),
-                      ),
-                    ],
-                  ),
-                  subtitle: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: worldCurrencies[productList[index].currency!],
-                            style: TextStyle(
-                                fontFamily: "Roboto",
-                                color: navyBlue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14)),
-                        TextSpan(
-                            text: moneyDisplayNormalizer(
-                                int.parse(productList[index].price.toString())),
-                            style: TextStyle(
-                              color: navyBlue,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ))
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),

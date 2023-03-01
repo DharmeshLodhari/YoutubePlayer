@@ -92,35 +92,48 @@ class _UserServiceListState extends State<UserServiceList> {
             ),
             controller: _servicesRefreshController,
             onRefresh: _onServiceRefresh,
-            child: ListView(
+            child: Column(
               children: [
-                _buildServiceList(),
-                isServiceLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.white,
-                        highlightColor: greyBorderColor,
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithMaxCrossAxisExtent(
-                            mainAxisExtent: 180,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 15,
-                            maxCrossAxisExtent: 200,
-                          ),
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              color: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            );
-                          },
+                noServiceInList
+                    ? Expanded(
+                        child: NoItemInList(
+                          msg: AppLocalization.of(context)!.noProducts,
                         ),
                       )
-                    : SizedBox.shrink(),
+                    : Expanded(
+                        child: ListView(
+                          children: [
+                            _buildServiceList(),
+                            isServiceLoading
+                                ? Shimmer.fromColors(
+                                    baseColor: Colors.white,
+                                    highlightColor: greyBorderColor,
+                                    child: GridView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          SliverGridDelegateWithMaxCrossAxisExtent(
+                                        mainAxisExtent: 180,
+                                        mainAxisSpacing: 16,
+                                        crossAxisSpacing: 15,
+                                        maxCrossAxisExtent: 200,
+                                      ),
+                                      itemCount: 2,
+                                      itemBuilder: (context, index) {
+                                        return Card(
+                                          color: Colors.grey,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                          ],
+                        ),
+                      ),
               ],
             ),
           ),
@@ -130,16 +143,6 @@ class _UserServiceListState extends State<UserServiceList> {
   }
 
   Widget _buildServiceList() {
-    if (serviceList.isEmpty) {
-      return SizedBox.shrink();
-    }
-
-    if (noServiceInList) {
-      return NoItemInList(
-        msg: AppLocalization.of(context)!.noProducts,
-      );
-    }
-
     return serviceNext == "" && isServiceLoading
         ? SizedBox.shrink()
         : Padding(

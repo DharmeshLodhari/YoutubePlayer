@@ -112,34 +112,47 @@ class _MomentsTabState extends State<MomentsTab> {
         ),
         controller: _refreshController,
         onRefresh: _onRefresh,
-        child: ListView(
-          controller: _myMomentsScrollController,
+        child: Column(
           children: [
-            SizedBox(height: 16),
-            isMyMomentsLoading
-                ? Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: greyBorderColor,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 200,
-                        mainAxisExtent: 300,
-                      ),
-                      itemCount: 2,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          color: Colors.grey,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        );
-                      },
+            myMomentsList.isEmpty
+                ? Expanded(
+                    child: NoItemInList(
+                      msg: AppLocalization.of(context)!.noMoments,
                     ),
                   )
-                : SizedBox.shrink(),
-            myMomentsListWidget(),
+                : Expanded(
+                    child: ListView(
+                      controller: _myMomentsScrollController,
+                      children: [
+                        SizedBox(height: 16),
+                        isMyMomentsLoading
+                            ? Shimmer.fromColors(
+                                baseColor: Colors.white,
+                                highlightColor: greyBorderColor,
+                                child: GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  gridDelegate:
+                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 200,
+                                    mainAxisExtent: 300,
+                                  ),
+                                  itemCount: 2,
+                                  itemBuilder: (context, index) {
+                                    return Card(
+                                      color: Colors.grey,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              )
+                            : SizedBox.shrink(),
+                        myMomentsListWidget(),
+                      ],
+                    ),
+                  ),
           ],
         ),
       ),
@@ -149,12 +162,6 @@ class _MomentsTabState extends State<MomentsTab> {
   bool momentClicked = false;
 
   Widget myMomentsListWidget() {
-    if (myMomentsList.isEmpty) {
-      return SizedBox.shrink();
-      // return NoItemInList(
-      //   msg: AppLocalization.of(context)!.noMoments,
-      // );
-    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
