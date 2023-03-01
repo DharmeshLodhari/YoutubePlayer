@@ -9,13 +9,13 @@ import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
-class DefaultBusinessProfileScreen extends StatefulWidget {
+class BusinessProfileScreen extends StatefulWidget {
   CustomerProfile? searchedUser;
   String? searchedUserName;
   bool isOwner;
   bool isLoading;
 
-  DefaultBusinessProfileScreen({
+  BusinessProfileScreen({
     Key? key,
     required this.searchedUser,
     required this.searchedUserName,
@@ -24,12 +24,10 @@ class DefaultBusinessProfileScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DefaultBusinessProfileScreen> createState() =>
-      _DefaultBusinessProfileScreenState();
+  State<BusinessProfileScreen> createState() => _BusinessProfileScreenState();
 }
 
-class _DefaultBusinessProfileScreenState
-    extends State<DefaultBusinessProfileScreen>
+class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     with SingleTickerProviderStateMixin {
   late UserTabView _currentUser;
   String? searchedUserName;
@@ -127,9 +125,6 @@ class _DefaultBusinessProfileScreenState
 
   void tabController() {
     _currentIndex = _tabController!.index;
-
-    debugPrint('Fola check tab::: 00 ${_currentIndex}');
-    debugPrint('Fola check tab::: 01 ${_tabController!.index}');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_pageController!.hasClients) {

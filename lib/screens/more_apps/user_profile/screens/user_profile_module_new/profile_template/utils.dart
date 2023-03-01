@@ -144,7 +144,7 @@ fetchProductData(String? searchedUserName) async {
         .listOfProduct("", "", userName: searchedUserName);
   } catch (error) {}
   if (data != null) {
-    // debugPrint('IS SHOW PRODUCT ---> $data');
+    debugPrint('IS SHOW PRODUCT ---> $data');
     List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;
   }

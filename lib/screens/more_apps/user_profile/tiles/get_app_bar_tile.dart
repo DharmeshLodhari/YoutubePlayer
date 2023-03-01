@@ -40,13 +40,15 @@ class GetAppbarTile extends StatefulWidget {
   bool isLoading = true;
   bool isShrink = false;
   ScrollController? scrollController;
+  String? userType;
 
   GetAppbarTile(
       {Key? key,
       required this.searchedUser,
       required this.isLoading,
       required this.isShrink,
-      required this.scrollController})
+      required this.scrollController,
+      this.userType})
       : super(key: key);
 
   @override
@@ -167,7 +169,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         getProfileCover(),
 
         /// UserModel avatar, message icon, profile edit
-        getUserDetails(),
+        widget.userType == 'channel'
+            ? getUserDetailsChannel()
+            : getUserDetails(),
       ],
     );
   }
@@ -253,6 +257,143 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
               ),
             );
     }
+  }
+
+  Widget getUserDetailsChannel() {
+    Color borderColor = getUserTypeColor(user: searchedUser!);
+    return Positioned(
+      top: 170,
+      left: 20,
+      right: 0,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              AnimatedContainer(
+                width: 96,
+                duration: Duration(milliseconds: 500),
+                decoration: BoxDecoration(
+                    border: Border.all(color: borderColor, width: 3),
+                    shape: BoxShape.circle),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                        arguments: searchedUser!.avatar);
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Center(child: getUserProfilePic()),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        messageDecoderWithEmoji(
+                                searchedUser!.displayName() ?? "") ??
+                            "",
+                        style: TextStyle(fontSize: 12, color: yarnBlack),
+                      )),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: userNameWithVerifiedIcon(
+                        name: "@${searchedUser!.userName ?? ''}",
+                        isVerified: searchedUser!.isVerified,
+                        textStyle: TextStyle(
+                          fontSize: 12,
+                          color: HexColor("#151515"),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        verifiedIconColor: verifyGreen,
+                        verifiedIconSize: 15),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    getActionOnUsersBtn(),
+                    getFollowUnFollowBtn(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          getUserBioStringWidget(),
+          Row(
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              getJoinedDate(),
+              SizedBox(width: 20),
+              //get subscriber
+              Column(
+                children: [
+                  SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {
+                      // if (searchedUser?.userName != null) {
+                      //   NavigationUtil.push(
+                      //     context,
+                      //     screen: FollowingAndFollowersList(
+                      //         userName: searchedUser?.userName ?? "", index: 1),
+                      //   );
+                      // }
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          getFormattedViewCount(
+                              noOfViews: searchedUser!.followers!,
+                              addViewText: false,
+                              showZeroViews: true),
+                          style: TextStyle(
+                              color: blackFont,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10),
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          searchedUser!.followers! > 1
+                              ? 'Subscribers'
+                              : 'Subscriber',
+                          style: TextStyle(color: blackFont, fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              usernameNamePhoto(),
+              UserFollowersView(
+                userName: searchedUserName,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget getUserDetails() {
@@ -487,6 +628,54 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     );
   }
 
+  Widget usernameNamePhoto() {
+    return Column(
+      children: [
+        SizedBox(height: 12),
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 15,
+              backgroundImage: CachedNetworkImageProvider(
+                searchedUser!.avatar!,
+              ),
+            ),
+            SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      messageDecoderWithEmoji(
+                              searchedUser!.displayName() ?? "") ??
+                          "",
+                      style: TextStyle(
+                          fontSize: 10,
+                          color: HexColor("#151515"),
+                          fontWeight: FontWeight.w600),
+                    )),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: userNameWithVerifiedIcon(
+                      name: "@${searchedUser!.userName ?? ''}",
+                      isVerified: searchedUser!.isVerified,
+                      textStyle: TextStyle(
+                        fontSize: 10,
+                        color: HexColor("#151515"),
+                        fontWeight: FontWeight.w600,
+                      ),
+                      verifiedIconColor: verifyGreen,
+                      verifiedIconSize: 12),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget getJoinedDate() {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -667,7 +856,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   List<Widget> actionButtons() {
     return [
       getQRCodeIcon(),
-      getSearchIcon(),
+      widget.userType == 'channel' ? SizedBox() : getSearchIcon(),
       menuIcon(),
       SizedBox(width: 16),
     ];

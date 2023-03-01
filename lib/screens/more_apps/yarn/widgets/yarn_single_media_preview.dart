@@ -41,6 +41,8 @@ class YarnSingleMediaPreview extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
+                memCacheWidth: 100,
+                fadeInDuration: const Duration(milliseconds: 400),
                 imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
                 fit: BoxFit.cover,
                 width: double.infinity,
@@ -111,6 +113,8 @@ class YarnSingleMediaPreview extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
+                memCacheWidth: 100,
+                fadeInDuration: const Duration(milliseconds: 400),
                 imageUrl: mediaType == 'video' ? imagePoster ?? '' : imageUrl,
                 fit: BoxFit.cover,
                 height: double.infinity,
