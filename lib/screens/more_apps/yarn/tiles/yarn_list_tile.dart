@@ -207,13 +207,17 @@ class _YarnTileState extends State<YarnTile> {
         SizedBox(
           height: 4,
         ),
-        if (widget.yarn.category != null) ...[
+        if (widget.yarn.category != null && widget.yarn.reYarn != null) ...[
           _buildCategoryTypeChip(),
           SizedBox(
             height: 8,
           ),
-        ],
-        if (widget.yarn.reYarn != null) ...[
+        ] else if (widget.yarn.category != null) ...[
+          _buildCategoryTypeChip(),
+          SizedBox(
+            height: 8,
+          ),
+        ] else if (widget.yarn.reYarn != null) ...[
           _checkCategoryTypeChipReyarn(),
           SizedBox(
             height: 8,
