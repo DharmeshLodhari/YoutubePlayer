@@ -41,8 +41,6 @@ class _YarnServiceTileState extends State<YarnServiceTile> {
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
 
-    print('service ::: ${widget.tileRenderPlace.runtimeType}');
-    // print('service name ${widget.service?.shortDescription}');
     super.initState();
   }
 

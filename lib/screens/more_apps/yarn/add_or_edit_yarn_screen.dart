@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:Slydo/data/environment.dart';
@@ -648,9 +649,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   String checkCategory() {
-    // if (widget.passedCategory.toString().isNotEmpty) {
-    //   selectedAskCategory!.name = widget.passedCategory.toString();
-    // }
     if (selectedAskCategory!.name != null) {
       return selectedAskCategory!.name.toString();
     } else {
@@ -1208,8 +1206,13 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
   }
 
   void categoryAndroidSheet() {
-    widget.askCategories = askCategoriesCopy;
-    debugPrint("CATEGORIES:- ${widget.askCategories}");
+    // widget.askCategories = askCategoriesCopy;
+
+    // List<YarnCategories> result =
+    //     LinkedHashSet<YarnCategories>.from(widget.askCategories!).toList();
+
+    // debugPrint("CATEGORIES:- ${widget.askCategories!.length}");
+    // debugPrint("CATEGORIES result:- ${result.length}");
     androidBottomSheet(
       context: context,
       child: StatefulBuilder(

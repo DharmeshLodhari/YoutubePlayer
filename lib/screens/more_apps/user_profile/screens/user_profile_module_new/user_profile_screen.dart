@@ -164,6 +164,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget checkView() {
+    debugPrint('fola user check::::${searchedUser!.type!}');
+
     if (searchedUser!.type!.toLowerCase() == 'user') {
       return DefaultUserProfileScreen(
         searchedUser: searchedUser,
