@@ -1,3 +1,4 @@
+import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/connection_module/widget/custom_slydo_channel_card.dart';
 import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
 import 'package:Slydo/utils/util.dart';
@@ -152,8 +153,20 @@ class _ChatChannelsState extends State<ChatChannels> {
                       if (index == channelModelList.length) {
                         return buildLoadingIndicator(isLoading: _isLoading);
                       } else {
-                        return CustomSlydoChannelCard(
-                            channelModel: channelModelList[index]);
+                        return GestureDetector(
+                          onTap: () {
+                            debugPrint(
+                                'Fola channel:::${channelModelList[index].toJson()}');
+                            Navigator.pushNamed(context, Routes.USER_PROFILE,
+                                arguments: {
+                                  "searchedUserName":
+                                      channelModelList[index].id,
+                                  "channel": channelModelList[index].groupName
+                                });
+                          },
+                          child: CustomSlydoChannelCard(
+                              channelModel: channelModelList[index]),
+                        );
                       }
                     },
                   ),

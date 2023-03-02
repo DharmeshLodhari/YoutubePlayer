@@ -326,8 +326,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    getActionOnUsersBtn(),
-                    getFollowUnFollowBtn(),
+                    // getActionOnUsersBtn(),
+                    getSubscriberBtn(),
                   ],
                 ),
               ),
@@ -525,6 +525,105 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         // filterQuality: FilterQuality.high,
         // imageUrl: searchedUser!.avatar!,
         // errorWidget: imageErrorWidget,
+      ),
+    );
+  }
+
+  Widget getSubscriberBtn() {
+    if (isLoadingFollowingAction) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 14),
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularLoadingIndicator(),
+        ),
+      );
+    }
+
+    if (searchedUser!.userName == userBloc.user.userName) {
+      return SizedBox.shrink();
+    }
+    if (searchedUser!.isFollowing != null &&
+        searchedUser!.isFollowing == true) {
+      return InkWell(
+        onTap: () {
+          // isLoadingFollowingAction = true;
+          // if (mounted) setState(() {});
+          // UserAuth()
+          //     .followOrUnfollowUser(searchedUser!.userName!,
+          //     shouldFollow: false)
+          //     .then((value) async {
+          //   if (value == true) {
+          //     await getSearchedUser(load: false);
+          //   }
+          //   isLoadingFollowingAction = false;
+          //   if (mounted) setState(() {});
+          // }).catchError((e) {
+          //   isLoadingFollowingAction = false;
+          //   if (mounted) setState(() {});
+          //   showToast(message: e.toString());
+          // });
+        },
+        child: Container(
+          height: 30,
+          width: 80,
+          margin: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+              color: blackFont,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: HexColor("#292929"), width: 1)),
+          child: Center(
+            child: Text(
+              'Subscribed',
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: () {
+        // isLoadingFollowingAction = true;
+        // if (mounted) setState(() {});
+        // UserAuth()
+        //     .followOrUnfollowUser(searchedUser!.userName!, shouldFollow: true)
+        //     .then((value) async {
+        //   if (value == true) {
+        //     await getSearchedUser(load: false);
+        //   }
+        //   isLoadingFollowingAction = false;
+        //   if (mounted) setState(() {});
+        // }).catchError((e) {
+        //   isLoadingFollowingAction = true;
+        //   if (mounted) setState(() {});
+        //   showToast(message: e.toString());
+        // });
+      },
+      child: Container(
+        height: 30,
+        width: 80,
+        margin: EdgeInsets.symmetric(vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            border: Border.all(color: HexColor("#292929"), width: 1)),
+        child: Center(
+          child: Text(
+            'Subscribe',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
     );
   }
