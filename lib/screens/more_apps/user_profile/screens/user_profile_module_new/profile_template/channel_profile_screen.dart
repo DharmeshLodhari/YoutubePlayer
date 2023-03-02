@@ -1,4 +1,5 @@
 import 'package:Slydo/locale/app_localization.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -10,14 +11,16 @@ import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
 class ChannelProfileScreen extends StatefulWidget {
-  CustomerProfile? searchedUser;
+  // CustomerProfile? searchedUser;
   String? searchedUserName;
+  String? channelId;
   bool isOwner;
   bool isLoading;
 
   ChannelProfileScreen({
     Key? key,
-    required this.searchedUser,
+    // this.searchedUser,
+    this.channelId,
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
@@ -44,7 +47,31 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   @override
   void initState() {
     searchedUserName = widget.searchedUserName!;
-    searchedUser = widget.searchedUser!;
+
+    UserAbout userAbout = UserAbout(
+      wallpaper:
+          "http://www.publicdomainpictures.net/pictures/130000/velka/pink-simple-background.jpg",
+      // bio: "Hello, I'm Yusuf!",
+    );
+
+    CustomerProfile profile = CustomerProfile(
+        fullName: "John Doe",
+        userName: "johndoe123",
+        avatar: "http://via.placeholder.com/400x200",
+        wallpaper:
+            "http://www.publicdomainpictures.net/pictures/130000/velka/pink-simple-background.jpg",
+        bio:
+            "Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf!",
+        // dateJoined: "02-02-2023",
+        userAbout: userAbout,
+        followers: 100,
+        following: 50,
+        isVerified: true,
+        status: UserStatus.ACTIVE,
+        rating: 4.5);
+
+    searchedUser = profile;
+    // searchedUser = widget.searchedUser!;
     isOwner = widget.isOwner;
 
     // Define the tabs and their corresponding data for each user

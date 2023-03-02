@@ -72,6 +72,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       if (mounted) setState(() {});
     }
 
+    if (arguments['channel'] != null) {
+      isLoading = false;
+      if (mounted) setState(() {});
+      return;
+    }
+
     try {
       user = await UserAuth().fetchCustomerProfileWithAuth(searchedUserName);
     } catch (e) {
@@ -164,9 +170,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget checkView() {
-    debugPrint('fola user check::::${searchedUser!.type!}');
-
-    if (searchedUser!.type!.toLowerCase() == 'user') {
+    if (arguments['channel'] != null) {
+      return ChannelProfileScreen(
+        // searchedUser: profile,
+        channelId: arguments['channel'].toString(),
+        searchedUserName: searchedUserName,
+        isOwner: isOwner,
+        isLoading: isLoading,
+      );
+    } else if (searchedUser!.type!.toLowerCase() == 'user') {
       return DefaultUserProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
@@ -174,12 +186,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isLoading: isLoading,
       );
     } else {
-      // return ChannelProfileScreen(
-      //   searchedUser: searchedUser,
-      //   searchedUserName: searchedUserName,
-      //   isOwner: isOwner,
-      //   isLoading: isLoading,
-      // );
       return BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
