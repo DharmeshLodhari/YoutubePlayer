@@ -59,16 +59,19 @@ class YarnDashboardBloc extends ChangeNotifier {
   }
 
   set yarnCategories(List<YarnCategories> cat) {
+    _yarnCategories = [];
     _yarnCategories = cat;
     notifyListeners();
   }
 
   void setAskCategories(List<YarnCategories> cat) {
+    _yarnCategories = [];
     _yarnCategories = cat;
     notifyListeners();
   }
 
   void addCategories(List<YarnCategories> cat) {
+    _yarnCategories = [];
     _yarnCategories.addAll(cat);
     notifyListeners();
   }

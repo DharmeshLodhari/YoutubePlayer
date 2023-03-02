@@ -726,6 +726,11 @@ class _PostTileState extends State<PostTile> {
   }
 
   Widget _buildPostUnLike() {
+    // debugPrint('fola user check one::: ${widget.post?.userDisLiked}');
+
+    if (widget.post?.userDisLiked == null) {
+      return SizedBox();
+    }
     return GestureDetector(
       onTap: isAuthor
           ? () => showToast(message: 'You cannot dislike your post')
