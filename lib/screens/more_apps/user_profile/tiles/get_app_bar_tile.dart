@@ -35,12 +35,16 @@ import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../messaging/message_auth.dart';
+import '../screens/user_profile_module_new/utils.dart';
+
 class GetAppbarTile extends StatefulWidget {
   final CustomerProfile searchedUser;
   bool isLoading = true;
   bool isShrink = false;
   ScrollController? scrollController;
   String? userType;
+  Map<String, dynamic>? channelDetail;
 
   GetAppbarTile(
       {Key? key,
@@ -48,7 +52,8 @@ class GetAppbarTile extends StatefulWidget {
       required this.isLoading,
       required this.isShrink,
       required this.scrollController,
-      this.userType})
+      this.userType,
+      this.channelDetail})
       : super(key: key);
 
   @override
@@ -67,10 +72,18 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   AppConfigurationModel? appConfigurationModel;
   late YarnDashboardBloc yarnDashboardBloc;
   late CustomerProfileBloc customerProfileBloc;
+  Map<String, dynamic>? channelDetail;
+  bool isLoading = false;
 
   @override
   void initState() {
     appConfigurationModel = getIt<AppConfigurationBloc>().appConfigurationModel;
+
+    if (widget.channelDetail != null) {
+      channelDetail = widget.channelDetail;
+
+      if (mounted) setState(() {});
+    }
 
     super.initState();
   }
@@ -166,13 +179,38 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ),
 
         /// Banner image
-        getProfileCover(),
+        widget.userType == 'channel'
+            ? getProfileCoverChannel()
+            : getProfileCover(),
 
         /// UserModel avatar, message icon, profile edit
         widget.userType == 'channel'
             ? getUserDetailsChannel()
             : getUserDetails(),
       ],
+    );
+  }
+
+  Widget getProfileCoverChannel() {
+    return Container(
+      height: 200,
+      child: widget.isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+                backgroundColor: Colors.transparent,
+              ),
+            )
+          : widget.channelDetail == null
+              ? Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: Colors.transparent,
+                  ),
+                )
+              : getWallpaper(),
     );
   }
 
@@ -200,7 +238,36 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getWallpaper() {
-    if (searchedUser!.type!.toLowerCase() == "user") {
+    if (widget.userType == "channel") {
+      return widget.channelDetail!['banner'] == "" ||
+              widget.channelDetail!['banner'] == null
+          ? Image.asset(
+              "assets/images/default_user_wallpaper.png",
+              width: double.infinity,
+              fit: BoxFit.cover,
+            )
+          : GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: widget.channelDetail!['banner']);
+              },
+              child: Container(
+                color: navyBlue,
+                child: CachedNetworkImage(
+                  width: double.infinity,
+                  height: double.infinity,
+                  errorWidget: wallpaperErrorWidget,
+                  imageUrl: widget.channelDetail!['banner'],
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Center(child: CircularLoadingIndicator()),
+                  color: blackFont.withOpacity(0.4),
+                  colorBlendMode: BlendMode.darken,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+            );
+    } else if (searchedUser!.type!.toLowerCase() == "user") {
       return searchedUser!.wallpaper == "" || searchedUser!.wallpaper == null
           ? Image.asset(
               "assets/images/default_user_wallpaper.png",
@@ -260,7 +327,21 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserDetailsChannel() {
-    Color borderColor = getUserTypeColor(user: searchedUser!);
+    ///get the list of user subscribe to channel
+    List<UserFollowers> userFollowers = [];
+
+    channelDetail!['members'].forEach((k, v) {
+      // debugPrint("Fola Key : $k, Value : $v");
+      UserFollowers user = UserFollowers(
+        avatar: v,
+        userName: '',
+        fullName: '',
+        accountType: '',
+      );
+      user.avatar = v;
+      userFollowers.add(user);
+    });
+
     return Positioned(
       top: 170,
       left: 20,
@@ -274,12 +355,13 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 width: 96,
                 duration: Duration(milliseconds: 500),
                 decoration: BoxDecoration(
-                    border: Border.all(color: borderColor, width: 3),
+                    border: Border.all(color: white, width: 3),
                     shape: BoxShape.circle),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                        arguments: searchedUser!.avatar);
+                    // Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                    //     arguments: getInitials(
+                    //         widget.channelDetail!['owner']['full_name']));
                   },
                   child: Stack(
                     clipBehavior: Clip.none,
@@ -302,23 +384,17 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         messageDecoderWithEmoji(
-                                searchedUser!.displayName() ?? "") ??
+                                widget.channelDetail!['group_name'] ?? "") ??
                             "",
                         style: TextStyle(fontSize: 12, color: yarnBlack),
                       )),
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: userNameWithVerifiedIcon(
-                        name: "@${searchedUser!.userName ?? ''}",
-                        isVerified: searchedUser!.isVerified,
-                        textStyle: TextStyle(
-                          fontSize: 12,
-                          color: HexColor("#151515"),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        verifiedIconColor: verifyGreen,
-                        verifiedIconSize: 15),
-                  ),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "@${widget.channelDetail!['group_name'].replaceAll(' ', '') ?? ''}",
+                        style: TextStyle(fontSize: 12, color: yarnBlack),
+                      )),
+                  //
                 ],
               ),
               Container(
@@ -326,7 +402,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // getActionOnUsersBtn(),
                     getSubscriberBtn(),
                   ],
                 ),
@@ -336,8 +411,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
           SizedBox(height: 12),
           getUserBioStringWidget(),
           Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               getJoinedDate(),
               SizedBox(width: 20),
@@ -386,9 +459,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               usernameNamePhoto(),
-              UserFollowersView(
-                userName: searchedUserName,
-              ),
+              followersWidget(userImages: userFollowers),
             ],
           ),
         ],
@@ -516,115 +587,89 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   }
 
   Widget getUserProfilePic() {
-    return CircleAvatar(
-      radius: 25,
-      backgroundImage: CachedNetworkImageProvider(
-        searchedUser!.avatar!,
-
-        // fit: BoxFit.fill,
-        // filterQuality: FilterQuality.high,
-        // imageUrl: searchedUser!.avatar!,
-        // errorWidget: imageErrorWidget,
-      ),
-    );
+    if (widget.userType == 'channel') {
+      return CircleAvatar(
+        backgroundColor: lightGreyYarn,
+        radius: 25,
+        child: Text(
+          getInitials(widget.channelDetail!['owner']['full_name']),
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      );
+    } else {
+      return CircleAvatar(
+        radius: 25,
+        backgroundImage: CachedNetworkImageProvider(
+          searchedUser!.avatar!,
+        ),
+      );
+    }
   }
 
   Widget getSubscriberBtn() {
-    if (isLoadingFollowingAction) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: 14),
-        child: SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularLoadingIndicator(),
-        ),
-      );
-    }
+    return InkWell(
+      onTap: channelDetail!['is_member'] == true
+          ? () {
+              showToast(message: 'You are already a member');
+            }
+          : () {
+              if (mounted) setState(() => isLoading = true);
+              MessageAuth()
+                  .joinChannel(
+                      channelId: channelDetail!['id'],
+                      userName: userBloc.user.userName!)
+                  .then((value) {
+                if (mounted) setState(() => isLoading = false);
 
-    if (searchedUser!.userName == userBloc.user.userName) {
-      return SizedBox.shrink();
-    }
-    if (searchedUser!.isFollowing != null &&
-        searchedUser!.isFollowing == true) {
-      return InkWell(
-        onTap: () {
-          // isLoadingFollowingAction = true;
-          // if (mounted) setState(() {});
-          // UserAuth()
-          //     .followOrUnfollowUser(searchedUser!.userName!,
-          //     shouldFollow: false)
-          //     .then((value) async {
-          //   if (value == true) {
-          //     await getSearchedUser(load: false);
-          //   }
-          //   isLoadingFollowingAction = false;
-          //   if (mounted) setState(() {});
-          // }).catchError((e) {
-          //   isLoadingFollowingAction = false;
-          //   if (mounted) setState(() {});
-          //   showToast(message: e.toString());
-          // });
-        },
-        child: Container(
-          height: 30,
-          width: 80,
-          margin: EdgeInsets.symmetric(vertical: 8),
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-              color: blackFont,
-              borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: HexColor("#292929"), width: 1)),
-          child: Center(
-            child: Text(
-              'Subscribed',
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
+                if (value) {
+                  showToast(message: "Joined channel successfully");
+                  channelDetail!['is_member'] = true;
+                  if (mounted) setState(() {});
+                }
+              }).catchError((error) {
+                if (mounted) setState(() => isLoading = false);
+                if (error.toString().contains('is full')) {
+                  showToast(message: error.toString());
+                } else {
+                  showToast(message: 'Something went wrong, please try again.');
+                }
+
+                debugPrint("ERROR: $error");
+              });
+            },
+      child: isLoading
+          ? SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularLoadingIndicator(color: naturalGreen),
+            )
+          : Container(
+              height: 30,
+              width: 80,
+              margin: EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                  color:
+                      channelDetail!['is_member'] == true ? blackFont : white,
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(color: HexColor("#292929"), width: 1)),
+              child: Center(
+                child: Text(
+                  // 'Subscribed',
+                  channelDetail!['is_member'] == true
+                      ? 'Subscribed'
+                      : 'Subscribe',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color:
+                        channelDetail!['is_member'] == true ? white : blackFont,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      );
-    }
-
-    return InkWell(
-      onTap: () {
-        // isLoadingFollowingAction = true;
-        // if (mounted) setState(() {});
-        // UserAuth()
-        //     .followOrUnfollowUser(searchedUser!.userName!, shouldFollow: true)
-        //     .then((value) async {
-        //   if (value == true) {
-        //     await getSearchedUser(load: false);
-        //   }
-        //   isLoadingFollowingAction = false;
-        //   if (mounted) setState(() {});
-        // }).catchError((e) {
-        //   isLoadingFollowingAction = true;
-        //   if (mounted) setState(() {});
-        //   showToast(message: e.toString());
-        // });
-      },
-      child: Container(
-        height: 30,
-        width: 80,
-        margin: EdgeInsets.symmetric(vertical: 8),
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: HexColor("#292929"), width: 1)),
-        child: Center(
-          child: Text(
-            'Subscribe',
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -733,10 +778,16 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         SizedBox(height: 12),
         Row(
           children: [
-            CircleAvatar(
-              radius: 15,
-              backgroundImage: CachedNetworkImageProvider(
-                searchedUser!.avatar!,
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: searchedUser!.avatar!);
+              },
+              child: CircleAvatar(
+                radius: 15,
+                backgroundImage: CachedNetworkImageProvider(
+                  searchedUser!.avatar!,
+                ),
               ),
             ),
             SizedBox(width: 8),
@@ -808,7 +859,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     String month = DateFormat("MMMM").format(dateTime);
     String year = DateFormat("y").format(dateTime);
 
-    return 'Joined $month $year';
+    return widget.userType == 'channel'
+        ? 'Created $month $year'
+        : 'Joined $month $year';
   }
 
   Widget getFollowUnFollowWidget() {
@@ -1159,10 +1212,6 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         ],
       );
     }
-
-    // debugPrint('username init0 one::::: ${searchedUser!.userName}');
-    // debugPrint('username init0 two::::: ${userBloc.user.userName}');
-    // debugPrint('username init0 three::::: ${searchedUser!.conversationId}');
 
     if (searchedUser!.userName != userBloc.user.userName) {
       if (searchedUser!.conversationId != "") {

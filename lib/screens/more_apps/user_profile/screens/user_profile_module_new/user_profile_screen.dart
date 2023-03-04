@@ -1,9 +1,9 @@
 import 'package:Slydo/data/state_notifier.dart';
+import 'package:Slydo/screens/more_apps/messaging/message_auth.dart';
+import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/channel_profile_screen.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/default_user_profile_screen.dart';
-import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -47,6 +47,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   bool appBarStatus = true;
 
   bool isInRequestList = false;
+  Map<String, dynamic> channelDetail = {};
 
   @override
   void initState() {
@@ -73,8 +74,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
 
     if (arguments['channel'] != null) {
+      Map<String, dynamic>? data;
+
+      try {
+        data =
+            await MessageAuth().getSingleChannel(searchText: searchedUserName);
+
+        if (data != null && data.isNotEmpty) {
+          channelDetail.addAll(data['results']);
+        } else {
+          showToast(message: 'Something went wrong');
+        }
+      } catch (e) {
+        Navigator.pop(context);
+        showToast(message: 'Channel not found');
+      }
+
       isLoading = false;
       if (mounted) setState(() {});
+
       return;
     }
 
@@ -171,10 +189,23 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget checkView() {
     if (arguments['channel'] != null) {
+      String name = channelDetail['owner']['full_name'];
+      String username = channelDetail['owner']['username'];
+
+      CustomerProfile profile = CustomerProfile(
+        fullName: name,
+        userName: username,
+        avatar: channelDetail['owner']['avatar'],
+        bio: channelDetail['description'],
+        dateJoined: channelDetail['created_at'],
+        followers: channelDetail['no_of_members'],
+        isVerified: channelDetail['owner']['is_verified'],
+      );
+      if (mounted) setState(() {});
       return ChannelProfileScreen(
-        // searchedUser: profile,
-        channelId: arguments['channel'].toString(),
-        searchedUserName: searchedUserName,
+        searchedUser: profile,
+        channelDetail: channelDetail,
+        searchedUserName: channelDetail['owner']['username'],
         isOwner: isOwner,
         isLoading: isLoading,
       );

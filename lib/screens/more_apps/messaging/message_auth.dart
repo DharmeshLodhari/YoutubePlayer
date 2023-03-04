@@ -1180,4 +1180,37 @@ class MessageAuth extends AuthService {
       return Future.error("ERROR:- ${response.body}");
     }
   }
+
+  Future<Map<String, dynamic>?> getSingleChannel({String? searchText}) async {
+    var url = AppConfig.baseUrl + "/api/v1/user/get-channel/";
+
+    if (searchText != null && searchText.isNotEmpty) {
+      url = url + "$searchText" + "/";
+    }
+
+    debugPrint("URL:- $url");
+
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+    debugPrint(
+        "GET CHANNELS two $url ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+    if (response.statusCode == 200) {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+
+      final jsonData = jsonDecode(response.body);
+
+      Map<String, dynamic> result = {
+        "results": jsonData,
+      };
+
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
+  }
 }

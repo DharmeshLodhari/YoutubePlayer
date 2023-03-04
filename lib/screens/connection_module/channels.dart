@@ -6,7 +6,6 @@ import 'package:Slydo/widget/customized_textform_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../locale/app_localization.dart';
 import '../../utils/slydo_app_icon_icons.dart';
 import '../../widget/noItemInList.dart';
@@ -155,14 +154,17 @@ class _ChatChannelsState extends State<ChatChannels> {
                       } else {
                         return GestureDetector(
                           onTap: () {
-                            debugPrint(
-                                'Fola channel:::${channelModelList[index].toJson()}');
                             Navigator.pushNamed(context, Routes.USER_PROFILE,
                                 arguments: {
                                   "searchedUserName":
                                       channelModelList[index].id,
-                                  "channel": channelModelList[index].groupName
+                                  "channel": channelModelList[index].groupName,
                                 });
+                            // arguments: {
+                            //   "searchedUserName":
+                            //       'd9bd2da1-ad60-4cfa-b226-fc813cb8c36c',
+                            //   "channel": 'Internal Marketing Group',
+                            // });
                           },
                           child: CustomSlydoChannelCard(
                               channelModel: channelModelList[index]),
