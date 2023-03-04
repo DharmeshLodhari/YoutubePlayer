@@ -1,5 +1,3 @@
-import 'package:Slydo/locale/app_localization.dart';
-import 'package:Slydo/screens/more_apps/user_profile/models/UserAbout.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user_tab.dart';
 import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
@@ -7,20 +5,19 @@ import 'package:Slydo/screens/more_apps/user_profile/tiles/get_app_bar_tile.dart
 import 'package:Slydo/screens/more_apps/user_profile/widgets/silver_app_bar_delegate.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
-import 'package:Slydo/widget/noItemInList.dart';
 import 'package:flutter/material.dart';
 
 class ChannelProfileScreen extends StatefulWidget {
-  // CustomerProfile? searchedUser;
+  CustomerProfile? searchedUser;
   String? searchedUserName;
-  String? channelId;
+  Map<String, dynamic>? channelDetail;
   bool isOwner;
   bool isLoading;
 
   ChannelProfileScreen({
     Key? key,
-    // this.searchedUser,
-    this.channelId,
+    this.searchedUser,
+    this.channelDetail,
     required this.searchedUserName,
     required this.isOwner,
     required this.isLoading,
@@ -43,35 +40,18 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
   PageController? _pageController;
   int _currentIndex = 0;
   final PageStorageBucket _bucket = new PageStorageBucket();
+  Map<String, dynamic>? channelDetail;
 
   @override
   void initState() {
     searchedUserName = widget.searchedUserName!;
 
-    UserAbout userAbout = UserAbout(
-      wallpaper:
-          "http://www.publicdomainpictures.net/pictures/130000/velka/pink-simple-background.jpg",
-      // bio: "Hello, I'm Yusuf!",
-    );
+    searchedUser = widget.searchedUser!;
 
-    CustomerProfile profile = CustomerProfile(
-        fullName: "John Doe",
-        userName: "johndoe123",
-        avatar: "http://via.placeholder.com/400x200",
-        wallpaper:
-            "http://www.publicdomainpictures.net/pictures/130000/velka/pink-simple-background.jpg",
-        bio:
-            "Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf! Hello, I'm Yusuf!",
-        // dateJoined: "02-02-2023",
-        userAbout: userAbout,
-        followers: 100,
-        following: 50,
-        isVerified: true,
-        status: UserStatus.ACTIVE,
-        rating: 4.5);
+    channelDetail = widget.channelDetail!;
 
-    searchedUser = profile;
-    // searchedUser = widget.searchedUser!;
+    // channelDetail!.forEach((k, v) => debugPrint("Fola Key : $k, Value : $v"));
+
     isOwner = widget.isOwner;
 
     // Define the tabs and their corresponding data for each user
@@ -159,7 +139,8 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
               isLoading: widget.isLoading,
               isShrink: isShrink,
               scrollController: scrollController,
-              userType: userType),
+              userType: userType,
+              channelDetail: channelDetail),
           SliverPersistentHeader(
             key: UniqueKey(),
             floating: true,

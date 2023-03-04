@@ -220,3 +220,7 @@ Widget reviewTab(CustomerProfile? searchedUser) {
 Widget hoursTab(CustomerProfile? searchedUser) {
   return KeepAlivePage(child: UserAboutScreen(user: searchedUser));
 }
+
+String getInitials(String fullName) => fullName.isNotEmpty
+    ? fullName.trim().split(' ').map((l) => l[0]).take(2).join()
+    : '';

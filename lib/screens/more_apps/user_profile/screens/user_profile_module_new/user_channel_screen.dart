@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../../../../locale/app_localization.dart';
+import '../../../../../routes/route_constants.dart';
 import '../../../../../widget/noItemInList.dart';
 import '../../../../moments/models/comment_model.dart';
 import '../../../messaging/chat/models/channel_model.dart';
@@ -113,8 +114,18 @@ class _UserChannelsListState extends State<UserChannelsList> {
                       if (index == channelModelList.length) {
                         return buildLoadingIndicator(isLoading: _isLoading);
                       } else {
-                        return CustomSlydoChannelCard(
-                            channelModel: channelModelList[index]);
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, Routes.USER_PROFILE,
+                                arguments: {
+                                  "searchedUserName":
+                                      channelModelList[index].id,
+                                  "channel": channelModelList[index].groupName,
+                                });
+                          },
+                          child: CustomSlydoChannelCard(
+                              channelModel: channelModelList[index]),
+                        );
                       }
                     },
                   ),
