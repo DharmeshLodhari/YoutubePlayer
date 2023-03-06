@@ -224,3 +224,11 @@ Widget hoursTab(CustomerProfile? searchedUser) {
 String getInitials(String fullName) => fullName.isNotEmpty
     ? fullName.trim().split(' ').map((l) => l[0]).take(2).join()
     : '';
+
+String getGroupUsername(String channelUsername) {
+  if (channelUsername.contains(' ')) {
+    return "${channelUsername.replaceAll(' ', '') ?? ''}";
+  } else {
+    return channelUsername;
+  }
+}

@@ -14,6 +14,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../routes/route_constants.dart';
+import '../screens/user_profile_module_new/profile_template/utils.dart';
+
 // ignore: must_be_immutable
 class UserTileForConnection extends StatefulWidget {
   ChatConversation? user;
@@ -74,42 +77,6 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    Widget avatarImage;
-
-    Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
-
-    avatarImage = GestureDetector(
-      onTap: () {
-        if (widget.user!.isGroupConversation!) {
-          Navigator.of(context)
-              .pushNamed("/photo-viewer", arguments: widget.user!.avatar);
-        } else {
-          Navigator.of(context).pushNamed("/profile",
-              arguments: {"searchedUserName": widget.user!.userName});
-        }
-      },
-      child: Container(
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            25,
-          ),
-          border: Border.all(color: borderColor, width: 2),
-        ),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.user!.avatar == "" || widget.user!.avatar == null
-                ? defaultImage
-                : widget.user!.avatar!,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
-      ),
-    );
 
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -126,7 +93,22 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
             verifiedIconColor: verifyGreen,
           ),
           subtitle: getSubtitle(context),
-          leading: avatarImage,
+          leading: GestureDetector(
+              onTap: () {
+                String? link =
+                    widget.user!.avatar == null || widget.user!.avatar == ""
+                        ? getInitials(widget.user!.fullName!)
+                        : widget.user!.avatar;
+
+                if (widget.user!.isGroupConversation!) {
+                  Navigator.of(context)
+                      .pushNamed("/photo-viewer", arguments: link);
+                } else {
+                  Navigator.of(context).pushNamed("/profile",
+                      arguments: {"searchedUserName": widget.user!.userName});
+                }
+              },
+              child: getAvatar()),
           trailing: getTrailing(),
         ),
       ),
@@ -178,6 +160,45 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
                 );
               });
         });
+  }
+
+  Widget getAvatar() {
+    Color borderColor = getUserTypeColorByType(type: widget.user!.type!);
+
+    if (widget.user!.avatar == null || widget.user!.avatar == "") {
+      return CircleAvatar(
+        backgroundColor: lightGreyYarn,
+        radius: 25,
+        child: Text(
+          getInitials(widget.user!.fullName!),
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(
+            25,
+          ),
+          border: Border.all(color: borderColor, width: 2),
+        ),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.user!.avatar == "" || widget.user!.avatar == null
+                ? defaultImage
+                : widget.user!.avatar!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      );
+    }
   }
 
   Widget getBadgeAndGroupLabel(int? count) {

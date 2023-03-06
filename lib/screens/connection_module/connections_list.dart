@@ -695,6 +695,7 @@ class _VerticalListItemState extends State<VerticalListItem> {
 
         await Navigator.pushNamed(context, Routes.CHAT_SCREEN,
             arguments: {"searchedUser": widget.user});
+
         if (mounted) setState(() {});
       },
       child: Container(
