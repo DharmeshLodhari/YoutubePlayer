@@ -12,6 +12,8 @@ import '../../../widget/LoadingIndicator.dart';
 import '../../more_apps/messaging/message_auth.dart';
 import 'package:badges/badges.dart' as badges;
 
+import '../../more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+
 // ignore: must_be_immutable
 class CustomSlydoChannelCard extends StatefulWidget {
   ChannelModel? channelModel;
@@ -42,39 +44,6 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
   @override
   Widget build(BuildContext context) {
     userBloc = Provider.of<UserBloc>(context);
-    Widget avatarImage;
-
-    Color borderColor = getUserTypeColorByType(type: 'user');
-
-    avatarImage = GestureDetector(
-      onTap: () {
-        if (widget.channelModel!.isGroupConversation!) {
-          Navigator.of(context).pushNamed("/photo-viewer",
-              arguments: widget.channelModel?.banner ?? defaultImage);
-        }
-      },
-      child: Container(
-        height: 48,
-        width: 48,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.channelModel!.banner == "" ||
-                    widget.channelModel!.banner == null
-                ? defaultImage
-                : widget.channelModel!.banner!,
-            colorBlendMode: BlendMode.darken,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            errorWidget: imageErrorWidget,
-          ),
-        ),
-      ),
-    );
 
     Widget tile = Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -95,7 +64,16 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
             ),
           ),
           subtitle: getSubtitle(context),
-          leading: avatarImage,
+          leading: GestureDetector(
+              onTap: () {
+                String? link = widget.channelModel?.banner != null
+                    ? widget.channelModel?.banner
+                    : getInitials(widget.channelModel!.groupName!);
+
+                Navigator.of(context).pushNamed("/photo-viewer",
+                    arguments: link ?? defaultImage);
+              },
+              child: getAvatar()),
           trailing: getTrailing(),
         ),
       ),
@@ -171,6 +149,45 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
               ),
             ),
     );
+  }
+
+  Widget getAvatar() {
+    Color borderColor = getUserTypeColorByType(type: 'user');
+
+    if (widget.channelModel!.banner == null) {
+      return CircleAvatar(
+        backgroundColor: lightGreyYarn,
+        radius: 25,
+        child: Text(
+          getInitials(widget.channelModel!.groupName!),
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        height: 48,
+        width: 48,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              25,
+            ),
+            border: Border.all(color: borderColor, width: 2)),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.channelModel!.banner == "" ||
+                    widget.channelModel!.banner == null
+                ? defaultImage
+                : widget.channelModel!.banner!,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
+            errorWidget: imageErrorWidget,
+          ),
+        ),
+      );
+    }
   }
 
   Widget getBadgeAndGroupLabel(int? count) {

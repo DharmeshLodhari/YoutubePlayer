@@ -78,7 +78,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       try {
         data =
-            await MessageAuth().getSingleChannel(searchText: searchedUserName);
+            await MessageAuth().getSingleChannel(channelId: searchedUserName);
 
         if (data != null && data.isNotEmpty) {
           channelDetail.addAll(data['results']);
@@ -194,7 +194,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       CustomerProfile profile = CustomerProfile(
         fullName: name,
-        userName: username,
+        userName: channelDetail['group_username'] != null
+            ? channelDetail['group_username']
+            : '',
         avatar: channelDetail['owner']['avatar'],
         bio: channelDetail['description'],
         dateJoined: channelDetail['created_at'],
@@ -202,10 +204,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isVerified: channelDetail['owner']['is_verified'],
       );
       if (mounted) setState(() {});
+
       return ChannelProfileScreen(
         searchedUser: profile,
         channelDetail: channelDetail,
-        searchedUserName: channelDetail['owner']['username'],
+        searchedUserName: channelDetail['group_username'] != null
+            ? channelDetail['group_username']
+            : '',
+        // searchedUserName: channelDetail['owner']['username'],
         isOwner: isOwner,
         isLoading: isLoading,
       );

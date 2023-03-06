@@ -35,7 +35,26 @@ class _PhotoViewerState extends State<PhotoViewer> {
         elevation: 0,
         backgroundColor: Colors.black,
       ),
-      body: PhotoView(
+      body: checkImageLink(),
+    );
+  }
+
+  Widget checkImageLink() {
+    bool validURL = Uri.parse(imageUrl!).isAbsolute;
+
+    if (!validURL) {
+      return Center(
+        child: CircleAvatar(
+          backgroundColor: lightGreyYarn,
+          radius: 100,
+          child: Text(
+            imageUrl!,
+            style: TextStyle(color: Colors.black, fontSize: 100),
+          ),
+        ),
+      );
+    } else {
+      return PhotoView(
         imageProvider: NetworkImage(imageUrl!),
         backgroundDecoration: BoxDecoration(color: Colors.black),
         loadingBuilder: (context, event) {
@@ -58,7 +77,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
         errorBuilder: (context, error, stackTrace) => Center(
           child: CachedNetworkImage(imageUrl: defaultImage),
         ),
-      ),
-    );
+      );
+    }
   }
 }

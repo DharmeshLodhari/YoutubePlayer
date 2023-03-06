@@ -342,6 +342,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       userFollowers.add(user);
     });
 
+    String channelUsername = getGroupUsername(
+        channelDetail!['group_username'] != null
+            ? channelDetail!['group_username']
+            : channelDetail!['group_name']);
+
     return Positioned(
       top: 170,
       left: 20,
@@ -391,10 +396,9 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "@${widget.channelDetail!['group_name'].replaceAll(' ', '') ?? ''}",
+                        "@$channelUsername",
                         style: TextStyle(fontSize: 12, color: yarnBlack),
                       )),
-                  //
                 ],
               ),
               Container(
@@ -588,16 +592,25 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
   Widget getUserProfilePic() {
     if (widget.userType == 'channel') {
-      return CircleAvatar(
-        backgroundColor: lightGreyYarn,
-        radius: 25,
-        child: Text(
-          getInitials(widget.channelDetail!['owner']['full_name']),
-          style: TextStyle(
-            color: Colors.black,
+      if (widget.channelDetail!['avatar'] == null) {
+        return CircleAvatar(
+          backgroundColor: lightGreyYarn,
+          radius: 25,
+          child: Text(
+            getInitials(widget.channelDetail!['group_name']),
+            style: TextStyle(
+              color: Colors.black,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        return CircleAvatar(
+          radius: 25,
+          backgroundImage: CachedNetworkImageProvider(
+            widget.channelDetail!['avatar'],
+          ),
+        );
+      }
     } else {
       return CircleAvatar(
         radius: 25,
@@ -657,10 +670,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                   border: Border.all(color: HexColor("#292929"), width: 1)),
               child: Center(
                 child: Text(
-                  // 'Subscribed',
-                  channelDetail!['is_member'] == true
-                      ? 'Subscribed'
-                      : 'Subscribe',
+                  channelDetail!['is_member'] == true ? 'Member' : 'Join',
                   style: TextStyle(
                     fontSize: 10,
                     color:
@@ -808,7 +818,7 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: userNameWithVerifiedIcon(
-                      name: "@${searchedUser!.userName ?? ''}",
+                      name: "@${channelDetail!['owner']['username'] ?? ''}",
                       isVerified: searchedUser!.isVerified,
                       textStyle: TextStyle(
                         fontSize: 10,
@@ -1375,44 +1385,28 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
       }
     }
 
-    if (userBloc.user.userName != searchedUser!.userName) {
-      list.addAll(
-        [
-          bottomSheetItem(
-            title: "Message",
-            iconData: SlydoAppIcon.message,
-            onTap: () {
-              Navigator.pop(context);
-              if (!isOwner) {
-                Navigator.of(context).pushNamed('/compose_message', arguments: {
-                  'recipient': searchedUser!.userName,
-                  'subject': "",
-                });
-              }
-            },
-          ),
-          bottomSheetItem(
-            title: "Send",
-            iconData: SlydoAppIcon.send,
-            onTap: () {
-              if (appConfigurationModel?.enablePayment == true) {
-                UserAuth()
-                    .fetchCustomerProfile(searchedUserName)
-                    .then((fetchedUser) {
-                  customerProfileBloc.customer = fetchedUser;
-                  Navigator.pop(context);
-                  Navigator.of(context).pushNamed('/send-payment',
-                      arguments: <String, bool>{'isFromProfile': false});
-                });
-              } else {
-                showToast(message: 'Payment not available at the moment');
-              }
-            },
-          ),
-          bottomSheetItem(
-              title: "Request",
-              iconData: SlydoAppIcon.receive,
-              isLast: true,
+    ///check if the profile is not for channel
+    if (widget.userType != 'channel') {
+      if (userBloc.user.userName != searchedUser!.userName) {
+        list.addAll(
+          [
+            bottomSheetItem(
+              title: "Message",
+              iconData: SlydoAppIcon.message,
+              onTap: () {
+                Navigator.pop(context);
+                if (!isOwner) {
+                  Navigator.of(context)
+                      .pushNamed('/compose_message', arguments: {
+                    'recipient': searchedUser!.userName,
+                    'subject': "",
+                  });
+                }
+              },
+            ),
+            bottomSheetItem(
+              title: "Send",
+              iconData: SlydoAppIcon.send,
               onTap: () {
                 if (appConfigurationModel?.enablePayment == true) {
                   UserAuth()
@@ -1420,38 +1414,58 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
                       .then((fetchedUser) {
                     customerProfileBloc.customer = fetchedUser;
                     Navigator.pop(context);
-                    Navigator.of(context).pushNamed('/request-payment',
-                        arguments: <String, bool>{
-                          'isFromProfile': false,
-                          'isRequest': true
-                        });
+                    Navigator.of(context).pushNamed('/send-payment',
+                        arguments: <String, bool>{'isFromProfile': false});
                   });
                 } else {
                   showToast(message: 'Payment not available at the moment');
                 }
-              }),
-        ],
-      );
-    }
-    if (userBloc.user.type == "User") {
-      list.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: bottomSheetItem(
-            title: "Upgrade",
-            icon: Icon(Icons.upgrade_rounded),
-            isLast: userBloc.user.userName == searchedUser!.userName,
-            onTap: () async {
-              Navigator.pop(context);
-              upgradeAccount();
-            },
-            extraWidget: getColoredLabeledWidget(
-              text: 'Pro',
-              color: naturalGreen,
+              },
+            ),
+            bottomSheetItem(
+                title: "Request",
+                iconData: SlydoAppIcon.receive,
+                isLast: true,
+                onTap: () {
+                  if (appConfigurationModel?.enablePayment == true) {
+                    UserAuth()
+                        .fetchCustomerProfile(searchedUserName)
+                        .then((fetchedUser) {
+                      customerProfileBloc.customer = fetchedUser;
+                      Navigator.pop(context);
+                      Navigator.of(context).pushNamed('/request-payment',
+                          arguments: <String, bool>{
+                            'isFromProfile': false,
+                            'isRequest': true
+                          });
+                    });
+                  } else {
+                    showToast(message: 'Payment not available at the moment');
+                  }
+                }),
+          ],
+        );
+      }
+      if (userBloc.user.type == "User") {
+        list.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: bottomSheetItem(
+              title: "Upgrade",
+              icon: Icon(Icons.upgrade_rounded),
+              isLast: userBloc.user.userName == searchedUser!.userName,
+              onTap: () async {
+                Navigator.pop(context);
+                upgradeAccount();
+              },
+              extraWidget: getColoredLabeledWidget(
+                text: 'Pro',
+                color: naturalGreen,
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     }
 
     return list;

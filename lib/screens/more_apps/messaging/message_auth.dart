@@ -1181,11 +1181,11 @@ class MessageAuth extends AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> getSingleChannel({String? searchText}) async {
+  Future<Map<String, dynamic>?> getSingleChannel({String? channelId}) async {
     var url = AppConfig.baseUrl + "/api/v1/user/get-channel/";
 
-    if (searchText != null && searchText.isNotEmpty) {
-      url = url + "$searchText" + "/";
+    if (channelId != null && channelId.isNotEmpty) {
+      url = url + "$channelId" + "/";
     }
 
     debugPrint("URL:- $url");

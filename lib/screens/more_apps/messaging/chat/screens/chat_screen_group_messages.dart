@@ -1363,7 +1363,10 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         onTap: () async {
           stopShakeDetector();
           if (chatConversation!.isGroupConversation!) {
-            navigateToGroupDetailScreen();
+            Navigator.pushNamed(context, Routes.USER_PROFILE, arguments: {
+              "searchedUserName": chatConversation!.conversationId,
+              "channel": chatConversation!.fullName,
+            });
           } else {
             await Navigator.pushNamed(context, Routes.USER_PROFILE,
                 arguments: {"searchedUserName": chatConversation!.userName});
@@ -1419,10 +1422,26 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
       ),
       actions: [
-        // synchronizeContactBtn(),
-        // SizedBox(width: 8),
-        // getNudgeUserBtn(),
-        // SizedBox(width: 16)
+        GestureDetector(
+          onTap: () async {
+            stopShakeDetector();
+            if (chatConversation!.isGroupConversation!) {
+              navigateToGroupDetailScreen();
+            } else {
+              await Navigator.pushNamed(context, Routes.USER_PROFILE,
+                  arguments: {"searchedUserName": chatConversation!.userName});
+            }
+            setupShakeDetector();
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 10.0),
+            child: Icon(
+              Icons.settings,
+              color: blackFont,
+              size: 28,
+            ),
+          ),
+        ),
       ],
     );
   }

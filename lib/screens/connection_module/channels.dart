@@ -160,11 +160,6 @@ class _ChatChannelsState extends State<ChatChannels> {
                                       channelModelList[index].id,
                                   "channel": channelModelList[index].groupName,
                                 });
-                            // arguments: {
-                            //   "searchedUserName":
-                            //       'd9bd2da1-ad60-4cfa-b226-fc813cb8c36c',
-                            //   "channel": 'Internal Marketing Group',
-                            // });
                           },
                           child: CustomSlydoChannelCard(
                               channelModel: channelModelList[index]),

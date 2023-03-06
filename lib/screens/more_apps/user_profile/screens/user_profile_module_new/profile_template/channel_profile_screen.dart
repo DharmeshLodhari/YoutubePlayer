@@ -30,8 +30,8 @@ class ChannelProfileScreen extends StatefulWidget {
 class _ChannelProfileScreenState extends State<ChannelProfileScreen>
     with SingleTickerProviderStateMixin {
   late UserTabView _currentUser;
-  String? searchedUserName;
-  late CustomerProfile searchedUser;
+  String? channelUserName;
+  late CustomerProfile channelOwner;
   bool? isOwner;
   bool appBarStatus = true;
   ScrollController? scrollController;
@@ -44,13 +44,17 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
 
   @override
   void initState() {
-    searchedUserName = widget.searchedUserName!;
-
-    searchedUser = widget.searchedUser!;
-
     channelDetail = widget.channelDetail!;
 
-    // channelDetail!.forEach((k, v) => debugPrint("Fola Key : $k, Value : $v"));
+    channelOwner = widget.searchedUser!;
+
+    channelUserName = getGroupUsername(channelDetail!['group_username'] != null
+        ? channelDetail!['group_username']
+        : channelDetail!['group_name']);
+
+    // channelDetail!.forEach((k, v) {
+    //   debugPrint("Fola Key : $k, Value : $v");
+    // });
 
     isOwner = widget.isOwner;
 
@@ -60,23 +64,28 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       tabs: [
         UserTab(
           label: "Yarn",
-          child: yarnTab(searchedUserName),
-          apiCall: () async => await fetchYarnData(searchedUserName),
+          child: yarnTab(channelUserName),
+          apiCall: () async => await fetchYarnData(channelUserName),
         ),
         UserTab(
           label: "Moment",
-          child: momentTab(searchedUser),
-          apiCall: () async => await fetchMomentData(searchedUserName),
+          child: momentTab(channelOwner),
+          apiCall: () async => await fetchMomentData(channelUserName),
         ),
         UserTab(
           label: "Post",
-          child: postTab(searchedUser),
-          apiCall: () async => await fetchPostData(searchedUserName),
+          child: postTab(channelOwner),
+          apiCall: () async => await fetchPostData(channelUserName),
+        ),
+        UserTab(
+          label: "Event",
+          child: productTab(channelOwner, isOwner!),
+          apiCall: () async => await fetchProductData(channelUserName),
         ),
         UserTab(
           label: "Merchandise",
-          child: productTab(searchedUser, isOwner!),
-          apiCall: () async => await fetchProductData(searchedUserName),
+          child: productTab(channelOwner, isOwner!),
+          apiCall: () async => await fetchProductData(channelUserName),
         ),
       ],
     );
@@ -135,7 +144,7 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
         return <Widget>[
           GetAppbarTile(
-              searchedUser: searchedUser,
+              searchedUser: channelOwner,
               isLoading: widget.isLoading,
               isShrink: isShrink,
               scrollController: scrollController,
@@ -254,8 +263,8 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
       title: widget.isLoading
           ? SizedBox.shrink()
           : userNameWithVerifiedIcon(
-              name: searchedUser.displayName()!,
-              isVerified: searchedUser.isVerified),
+              name: channelOwner.displayName()!,
+              isVerified: channelOwner.isVerified),
     );
   }
 
