@@ -94,6 +94,7 @@ class _UserProductListState extends State<UserProductList> {
 
         if (result == null) {
           isProductLoading = false;
+          noProductInList = true;
           if (mounted) {
             setState(() {});
           }

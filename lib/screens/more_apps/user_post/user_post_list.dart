@@ -13,8 +13,10 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class UserPostList extends StatefulWidget {
   CustomerProfile? user;
   final String? titleToSearch;
+
   UserPostList({@required this.user, this.titleToSearch, Key? key})
       : super(key: key);
+
   @override
   _UserPostListState createState() => _UserPostListState();
 }
@@ -105,11 +107,13 @@ class _UserPostListState extends State<UserPostList> {
               .listUserPosts(next: postNext, userName: widget.user!.userName);
         } catch (e) {
           isPostLoading = false;
+          noPostInList = true;
           if (mounted) {
             setState(() {});
           }
-          showToast(
-              message: 'Server error. Please refresh ::: ${e.toString()}');
+
+          // showToast(
+          //     message: 'Server error. Please refresh ::: ${e.toString()}');
           return;
         }
 
