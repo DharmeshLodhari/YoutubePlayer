@@ -1,6 +1,7 @@
 import 'package:Slydo/screens/more_apps/yarn/models/Topics/yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/models/share_as_yarn_model.dart';
 import 'package:Slydo/screens/more_apps/yarn/utils/utils.dart';
+import 'package:Slydo/screens/more_apps/yarn/widgets/category_chip.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_category_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/widgets/yarn_tab_selection.dart';
 import 'package:Slydo/screens/more_apps/yarn/yarn_notification_screen.dart';
@@ -44,6 +45,7 @@ class _YarnDashboardState extends State<YarnDashboard> {
   Yarn? yarnTopic;
 
   bool _tabsVisible = true;
+  bool _isVisible = true;
 
   @override
   void initState() {
@@ -289,9 +291,6 @@ class _YarnDashboardState extends State<YarnDashboard> {
     return Expanded(
       child: PageView(
         onPageChanged: (currentPage) {
-          // _showTabs(true);
-          // _tabsVisible = true;
-          debugPrint('Fola page change:::${currentPage}');
           updateCurrentAskTapOnHome(index: currentPage);
         },
         controller: _pageViewController,

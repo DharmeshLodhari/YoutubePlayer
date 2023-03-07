@@ -9,6 +9,7 @@ import 'package:Slydo/widget/curved_btn.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../messaging/chat/utils.dart';
@@ -253,13 +254,13 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
                         padding: EdgeInsets.only(left: 16, right: 16, top: 16),
                         child: Column(
                           children: [
-                            getSlydoBankAccountDetail(),
-                            SizedBox(height: 24),
                             getAccountName(),
                             SizedBox(height: 8),
                             getAccountNumber(),
                             SizedBox(height: 8),
                             getTierInstruction(),
+                            SizedBox(height: 24),
+                            getSlydoBankAccountDetail(),
                           ],
                         ),
                       ),
@@ -302,7 +303,10 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
             ),
             Expanded(
               child: Text(
-                virtualAccount?.accountTier?.cumulativeBalance ?? "",
+                getAmountFormatter(virtualAccount
+                        ?.accountTier?.cumulativeBalance
+                        .toString()) ??
+                    "",
                 style: TextStyle(
                     color: blackFont,
                     fontWeight: FontWeight.w600,
@@ -324,7 +328,9 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
             ),
             Expanded(
               child: Text(
-                virtualAccount?.accountTier?.dailyCumulativeTransactionLimit ??
+                getAmountFormatter(virtualAccount
+                        ?.accountTier?.dailyCumulativeTransactionLimit
+                        .toString()) ??
                     "",
                 style: TextStyle(
                     color: blackFont,
@@ -470,5 +476,13 @@ class _VirtualAccountDetailState extends State<VirtualAccountDetail> {
       return amount;
     }
     return "0";
+  }
+
+  String getAmountFormatter(String? value) {
+    final commaFormatter = NumberFormat('#,###.##');
+    double? amount = double.tryParse(value!);
+    String formattedAmount = commaFormatter.format(amount);
+
+    return formattedAmount;
   }
 }

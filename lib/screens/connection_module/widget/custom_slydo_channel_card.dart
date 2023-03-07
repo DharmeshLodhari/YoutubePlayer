@@ -156,13 +156,11 @@ class _CustomSlydoChannelCardState extends State<CustomSlydoChannelCard> {
 
     if (widget.channelModel!.banner == null) {
       return CircleAvatar(
-        backgroundColor: lightGreyYarn,
+        backgroundColor: navyBlue,
         radius: 25,
         child: Text(
-          getInitials(widget.channelModel!.groupName!),
-          style: TextStyle(
-            color: Colors.black,
-          ),
+          getInitials(widget.channelModel!.groupName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
         ),
       );
     } else {

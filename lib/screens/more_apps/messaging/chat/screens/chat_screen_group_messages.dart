@@ -84,6 +84,7 @@ import '../../../../../data/database_helper.dart';
 import '../../../../../locator.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../services/app_config_bloc.dart';
+import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import '../tiles/document_file_tile_for_chat.dart';
 import '../tiles/invoice_tile_for_chat.dart';
 import '../tiles/payment_contract_tile_for_chat.dart';
@@ -1438,7 +1439,7 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
             child: Icon(
               Icons.settings,
               color: blackFont,
-              size: 28,
+              size: 22,
             ),
           ),
         ),
@@ -1612,38 +1613,56 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
     }
     Color borderColor = getUserTypeColorByType(type: chatConversation!.type!);
 
-    return Container(
-      height: 36,
-      width: 36,
-      child: Container(
+    if (chatConversation!.avatar == null || chatConversation!.avatar == "") {
+      return GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+              arguments:
+                  getInitials(chatConversation!.fullName!).toUpperCase());
+        },
+        child: CircleAvatar(
+          backgroundColor: navyBlue,
+          radius: 20,
+          child: Text(
+            getInitials(chatConversation!.fullName!).toUpperCase(),
+            style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+    } else {
+      return Container(
         height: 36,
         width: 36,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-              25,
-            ),
-            border: Border.all(color: borderColor, width: 2)),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
-                arguments: chatConversation != null
+        child: Container(
+          height: 36,
+          width: 36,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                25,
+              ),
+              border: Border.all(color: borderColor, width: 2)),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed(Routes.PHOTO_VIEWER,
+                  arguments: chatConversation != null
+                      ? chatConversation!.avatar ?? defaultImage
+                      : defaultImage);
+            },
+            child: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: chatConversation != null
                     ? chatConversation!.avatar ?? defaultImage
-                    : defaultImage);
-          },
-          child: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: chatConversation != null
-                  ? chatConversation!.avatar ?? defaultImage
-                  : defaultImage,
-              colorBlendMode: BlendMode.darken,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.high,
-              errorWidget: imageErrorWidget,
+                    : defaultImage,
+                colorBlendMode: BlendMode.darken,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.high,
+                errorWidget: imageErrorWidget,
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget userProfileIcon() {
