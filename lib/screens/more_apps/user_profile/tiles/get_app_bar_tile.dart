@@ -594,13 +594,11 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     if (widget.userType == 'channel') {
       if (widget.channelDetail!['avatar'] == null) {
         return CircleAvatar(
-          backgroundColor: lightGreyYarn,
+          backgroundColor: navyBlue,
           radius: 25,
           child: Text(
-            getInitials(widget.channelDetail!['group_name']),
-            style: TextStyle(
-              color: Colors.black,
-            ),
+            getInitials(widget.channelDetail!['group_name']).toUpperCase(),
+            style: TextStyle(color: white, fontWeight: FontWeight.w700),
           ),
         );
       } else {

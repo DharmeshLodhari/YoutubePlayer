@@ -110,13 +110,17 @@ fetchPostData(String? searchedUserName) async {
   try {
     data = await UserPostAuth()
         .listUserPosts(next: '', userName: searchedUserName);
-  } catch (error) {}
+  } catch (error) {
+    debugPrint('IS SHOW POST error ---> $error');
+  }
   if (data != null) {
     // debugPrint('IS SHOW POST ---> $data');
 
     List<dynamic> result = data["results"];
     if (result.isNotEmpty) return result;
   }
+
+  debugPrint('IS SHOW POST error ---> $data');
 
   return [];
 }
