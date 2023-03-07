@@ -167,13 +167,11 @@ class _UserTileForConnectionState extends State<UserTileForConnection> {
 
     if (widget.user!.avatar == null || widget.user!.avatar == "") {
       return CircleAvatar(
-        backgroundColor: lightGreyYarn,
+        backgroundColor: navyBlue,
         radius: 25,
         child: Text(
-          getInitials(widget.user!.fullName!),
-          style: TextStyle(
-            color: Colors.black,
-          ),
+          getInitials(widget.user!.fullName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
         ),
       );
     } else {
