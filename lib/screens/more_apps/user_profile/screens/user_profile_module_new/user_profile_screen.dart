@@ -80,7 +80,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         data =
             await MessageAuth().getSingleChannel(channelId: searchedUserName);
 
-        if (data != null && data.isNotEmpty) {
+        if (data == null) {
+          Navigator.pop(context);
+          showToast(message: 'Something went wrong');
+          return;
+        } else if (data != null && data.isNotEmpty) {
           channelDetail.addAll(data['results']);
         } else {
           showToast(message: 'Something went wrong');
@@ -190,7 +194,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget checkView() {
     if (arguments['channel'] != null) {
       String name = channelDetail['owner']['full_name'];
-      String username = channelDetail['owner']['username'];
 
       CustomerProfile profile = CustomerProfile(
         fullName: name,

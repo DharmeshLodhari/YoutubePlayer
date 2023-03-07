@@ -239,16 +239,16 @@ class _YarnDashboardState extends State<YarnDashboard> {
   Widget _buildCategoryAndTabs() {
     return Column(
       children: [
-        if (_tabsVisible) ...[
-          YarnCategorySelection(),
-          SizedBox(height: 14),
-          Divider(
-            height: 0,
-            thickness: 0.5,
-            color: greySecondaryYarn,
-          ),
-          SizedBox(height: 8),
-        ],
+        // if (_tabsVisible) ...[
+        YarnCategorySelection(),
+        SizedBox(height: 14),
+        Divider(
+          height: 0,
+          thickness: 0.5,
+          color: greySecondaryYarn,
+        ),
+        SizedBox(height: 8),
+        // ],
         if (_tabsVisible) ...[
           YarnTabSelection(
             onTap: (index) {
