@@ -4,6 +4,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/services/auth.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
@@ -728,14 +729,33 @@ class _SearchModuleState extends State<SearchModule> {
   }
 
   Widget getUserLeading(CustomerProfile user) {
-    Color borderColor = getUserTypeColor(user: user);
+    String imageUrl = user.avatar != ""
+        ? user.avatar!
+        : getInitials(user.fullName!).toString().toUpperCase();
 
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .pushNamed(Routes.PHOTO_VIEWER, arguments: user.avatar);
+            .pushNamed(Routes.PHOTO_VIEWER, arguments: imageUrl);
       },
-      child: Container(
+      child: getUserProfilePic(user),
+    );
+  }
+
+  Widget getUserProfilePic(CustomerProfile user) {
+    Color borderColor = getUserTypeColor(user: user);
+
+    if (user.avatar == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(user.fullName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return Container(
         height: 48,
         width: 48,
         decoration: BoxDecoration(
@@ -759,8 +779,8 @@ class _SearchModuleState extends State<SearchModule> {
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget getProductTile(var object) {
