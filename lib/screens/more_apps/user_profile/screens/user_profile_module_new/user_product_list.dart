@@ -151,8 +151,9 @@ class _UserProductListState extends State<UserProductList> {
                 noProductInList
                     ? Expanded(
                         child: NoItemInList(
-                          msg: AppLocalization.of(context)!.noProducts,
-                        ),
+                            msg: AppLocalization.of(context)!.noResultFound
+                            // msg: AppLocalization.of(context)!.noProducts,
+                            ),
                       )
                     : Expanded(
                         child: ListView(

@@ -610,12 +610,23 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
         );
       }
     } else {
-      return CircleAvatar(
-        radius: 25,
-        backgroundImage: CachedNetworkImageProvider(
-          searchedUser!.avatar!,
-        ),
-      );
+      if (searchedUser!.avatar! == null) {
+        return CircleAvatar(
+          backgroundColor: navyBlue,
+          radius: 25,
+          child: Text(
+            getInitials(searchedUser!.fullName!).toUpperCase(),
+            style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          ),
+        );
+      } else {
+        return CircleAvatar(
+          radius: 25,
+          backgroundImage: CachedNetworkImageProvider(
+            searchedUser!.avatar!,
+          ),
+        );
+      }
     }
   }
 

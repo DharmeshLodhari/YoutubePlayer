@@ -52,10 +52,6 @@ class _ChannelProfileScreenState extends State<ChannelProfileScreen>
         ? channelDetail!['group_username']
         : channelDetail!['group_name']);
 
-    // channelDetail!.forEach((k, v) {
-    //   debugPrint("Fola Key : $k, Value : $v");
-    // });
-
     isOwner = widget.isOwner;
 
     // Define the tabs and their corresponding data for each user
