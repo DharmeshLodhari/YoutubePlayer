@@ -1,6 +1,7 @@
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
+import 'package:Slydo/screens/more_apps/user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 import 'package:Slydo/utils/slydo_app_icon_icons.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/LoadingIndicator.dart';
@@ -234,6 +235,15 @@ class _BankAccountListState extends State<BankAccountList> {
   }
 
   Widget bankAccountTile({required BankAccount account}) {
+    String? imageUrl;
+    if (account.bankAvatar == "") {
+      imageUrl = getInitials(account.bankName.toString()).toUpperCase();
+    } else {
+      String? url = account.bankAvatar;
+
+      imageUrl = url!.replaceAll('https//', 'https://');
+    }
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -248,26 +258,9 @@ class _BankAccountListState extends State<BankAccountList> {
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context)
-                  .pushNamed("/photo-viewer", arguments: account.bankAvatar);
+                  .pushNamed("/photo-viewer", arguments: imageUrl);
             },
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: account.bankAvatar!,
-                height: 48,
-                width: 48,
-                colorBlendMode: BlendMode.darken,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.high,
-                placeholder: (context, url) => account.bankAvatar == ""
-                    ? Icon(
-                        Icons.account_balance,
-                        size: 45,
-                        color: navyBlue,
-                      )
-                    : CircularLoadingIndicator(),
-                errorWidget: imageErrorWidget,
-              ),
-            ),
+            child: checkBankImage(account),
           ),
         ),
       ),
@@ -440,5 +433,40 @@ class _BankAccountListState extends State<BankAccountList> {
     _scrollController.dispose();
     _refreshController.dispose();
     super.dispose();
+  }
+
+  Widget checkBankImage(BankAccount account) {
+    String? url = account.bankAvatar;
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
+    if (account.bankAvatar == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(account.bankName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          height: 48,
+          width: 48,
+          colorBlendMode: BlendMode.darken,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.high,
+          placeholder: (context, url) => imageUrl == ""
+              ? Icon(
+                  Icons.account_balance,
+                  size: 45,
+                  color: navyBlue,
+                )
+              : CircularLoadingIndicator(),
+          errorWidget: imageErrorWidget,
+        ),
+      );
+    }
   }
 }

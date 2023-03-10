@@ -45,11 +45,11 @@ class _PhotoViewerState extends State<PhotoViewer> {
     if (!validURL) {
       return Center(
         child: CircleAvatar(
-          backgroundColor: lightGreyYarn,
+          backgroundColor: navyBlue,
           radius: 100,
           child: Text(
             imageUrl!,
-            style: TextStyle(color: Colors.black, fontSize: 100),
+            style: TextStyle(color: white, fontSize: 100),
           ),
         ),
       );

@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:io';
-
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/routes/route_constants.dart';
 import 'package:Slydo/screens/more_apps/messaging/chat/tiles/product_and_service_tile_for_search.dart';
@@ -1564,7 +1562,7 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             bottomSheetMounted = true;
 
             searchItemTextController!.addListener(() {
-              if (searchItemTextController!.text.length == 3) {
+              if (searchItemTextController!.text.length >= 3) {
                 _onRefresh();
               }
             });
@@ -1662,17 +1660,6 @@ class _AddOrEditYarnState extends State<AddOrEditYarn> {
             FocusScope.of(context).unfocus();
             _onRefresh();
           },
-          // onChanged: (val) {
-          //   if (val.length == 3) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   } else if (val.length == 6) {
-          //     if (mounted) {
-          //       searchProductOrService();
-          //     }
-          //   }
-          // },
         ),
       ),
     );

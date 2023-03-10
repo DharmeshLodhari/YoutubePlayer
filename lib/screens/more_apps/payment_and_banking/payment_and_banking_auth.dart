@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:Slydo/data/environment.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank.dart';
+import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank_list.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/credit_card_data_model.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/screens/banking/models/kyc_model.dart';
@@ -168,7 +170,92 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
+
+    debugPrint("VerifyBankAccount ooo::: ${data}");
+    debugPrint("VerifyBankAccount final::: ${response.statusCode}");
+    debugPrint("VerifyBankAccount final::: ${response.body}");
+
     return response.statusCode == 201;
+  }
+
+  Future<bool?> verifyBankAccount(Map data) async {
+    String? accountNumber = data['account_number'];
+    String? bankCode = data['bank_code'];
+    String? username = data['customer_username'];
+    String? slug = data['bank_slug'];
+    var isDefault = data['is_default'];
+
+    var url = AppConfig.baseUrl +
+        "/api/v1/bankly/transfers/lookup/$accountNumber/$bankCode/";
+
+    var headers = await getAuthHeaders();
+    var response = await httpGet(url, headers: headers);
+
+    debugPrint(
+        "status code :- ${response.statusCode} VerifyBankAccount ---> response ${response.body}");
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      Map info = {
+        "customer_username": username,
+        "bank": slug,
+        "account_name": jsonData['account_name'],
+        "account_number": jsonData['account_number'],
+        "is_default": isDefault,
+      };
+
+      // Future<bool> res = addBankAccount(info);
+
+      ///add bank account
+      var urlAdd = AppConfig.baseUrl + "/api/v1/transactions/add-bank-account/";
+
+      var headersAdd = await getAuthHeaders();
+      var _data = jsonEncode(info);
+      var responseAdd =
+          await httpPost(urlAdd, headers: headersAdd, body: _data);
+
+      // debugPrint("VerifyBankAccount final::: ${responseAdd.body}");
+
+      return responseAdd.statusCode == 201;
+    } else {
+      return null;
+      // throw "Can't get https.";
+    }
+  }
+
+  // List the  searchBankList with pagination
+  Future<Map<String, dynamic>?> searchBankList(
+      String url, String? next, String? previous) async {
+    debugPrint("URl:- $url");
+    if (next == null) {
+      return null;
+    }
+    if (next != "") {
+      url = getSecureUrl(url: next);
+    }
+    var headers = await getAuthHeaders();
+
+    var response = await httpGet(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${jsonData}");
+
+      Map<String, dynamic> result = {
+        "count": jsonData["count"],
+        "next": jsonData["next"],
+        "previous": jsonData["previous"],
+        "results": jsonData["results"],
+      };
+      return result;
+    } else {
+      debugPrint(
+          "URL:- $url RESPONSE STATUS CODE:- ${response.statusCode}  RESPONSE BODY:- ${response.body}");
+      return Future.error("ERROR:- ${response.body}");
+    }
   }
 
   // update bank account information
@@ -206,6 +293,8 @@ class PaymentAndBankingAuth extends AuthService {
     }
     var headers = await getAuthHeaders();
     var response = await httpGet(url, headers: headers);
+
+    print('Bank List DATA :::: ${json.decode(response.body)}');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -531,21 +620,6 @@ class PaymentAndBankingAuth extends AuthService {
       for (var item in jsonData["results"]) {
         PaymentRequest paymentRequest = PaymentRequest.fromJson(item);
 
-        // var payee = isCredit ? item["from_customer"] : item['to_customer'];
-        // var avatar = isCredit
-        //     ? item["from_customer_avatar"]
-        //     : item['to_customer_avatar'];
-        //
-        // PaymentRequest paymentRequest = PaymentRequest(
-        //     status: item['status'],
-        //     id: item['id'].toString(),
-        //     description: item['description'],
-        //     payee: payee,
-        //     avatar: avatar,
-        //     currency: item['currency'],
-        //     createdAt: item['created_at'],
-        //     amount: item['amount'],
-        //     isCredit: isCredit);
         paymentRequests.add(paymentRequest);
       }
 
