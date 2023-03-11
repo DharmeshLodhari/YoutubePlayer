@@ -987,48 +987,48 @@ class _UserDashboardState extends State<UserDashboard> {
                       title: AppLocalization.of(context)!.cashOut,
                       iconData: SlydoAppIcon.payout,
                       onTap: () {
-                        if (appConfigurationModel?.enablePayment == true &&
-                            appConfigurationModel?.enableCashout == true) {
-                          BottomSheetPassCode(
-                              context: context,
-                              isValidCallback: () {
-                                if (bankAccountBloc.bankAccount == null ||
-                                    bankAccountBloc.bankAccount!.bankName ==
-                                        null) {
-                                  Navigator.pop(context);
-                                  showToast(
-                                      message:
-                                          "Please add bank account first !!");
-                                } else {
-                                  Navigator.pop(context);
-                                  Navigator.pushNamed(context, Routes.PAYOUT);
-                                }
-                              },
-                              cancelCallBack: () {
-                                Navigator.pop(context);
-                              });
-                        } else {
-                          showToast(message: 'Coming soon');
-                        }
+                        // if (appConfigurationModel?.enablePayment == true &&
+                        //     appConfigurationModel?.enableCashout == true) {
+                        //   BottomSheetPassCode(
+                        //       context: context,
+                        //       isValidCallback: () {
+                        //         if (bankAccountBloc.bankAccount == null ||
+                        //             bankAccountBloc.bankAccount!.bankName ==
+                        //                 null) {
+                        //           Navigator.pop(context);
+                        //           showToast(
+                        //               message:
+                        //                   "Please add bank account first !!");
+                        //         } else {
+                        //           Navigator.pop(context);
+                        //           Navigator.pushNamed(context, Routes.PAYOUT);
+                        //         }
+                        //       },
+                        //       cancelCallBack: () {
+                        //         Navigator.pop(context);
+                        //       });
+                        // } else {
+                        //   showToast(message: 'Coming soon');
+                        // }
 
-                        // BottomSheetPassCode(
-                        //     context: context,
-                        //     isValidCallback: () {
-                        //       if (bankAccountBloc.bankAccount == null ||
-                        //           bankAccountBloc.bankAccount!.bankName ==
-                        //               null) {
-                        //         Navigator.pop(context);
-                        //         showToast(
-                        //             message:
-                        //                 "Please add bank account first !!");
-                        //       } else {
-                        //         Navigator.pop(context);
-                        //         Navigator.pushNamed(context, Routes.PAYOUT);
-                        //       }
-                        //     },
-                        //     cancelCallBack: () {
-                        //       Navigator.pop(context);
-                        //     });
+                        BottomSheetPassCode(
+                            context: context,
+                            isValidCallback: () {
+                              if (bankAccountBloc.bankAccount == null ||
+                                  bankAccountBloc.bankAccount!.bankName ==
+                                      null) {
+                                Navigator.pop(context);
+                                showToast(
+                                    message:
+                                        "Please add bank account first !!");
+                              } else {
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, Routes.PAYOUT);
+                              }
+                            },
+                            cancelCallBack: () {
+                              Navigator.pop(context);
+                            });
                       }),
                   bottomSheetItem(
                     title: "Cashout transactions",

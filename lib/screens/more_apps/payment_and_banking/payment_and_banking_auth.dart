@@ -147,7 +147,7 @@ class PaymentAndBankingAuth extends AuthService {
     return responseString;
   }
 
-  // delete single bankaccount
+  // delete single bank account
   Future<bool> deleteBankAccount(String id) async {
     var url = AppConfig.baseUrl +
         "/api/v1/transactions/delete-bank-account/" +
@@ -165,25 +165,31 @@ class PaymentAndBankingAuth extends AuthService {
     }
   }
 
-  Future<bool> addBankAccount(Map data) async {
+  Future<Map<String, dynamic>?> addBankAccount(Map data) async {
     var url = AppConfig.baseUrl + "/api/v1/transactions/add-bank-account/";
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
 
-    debugPrint("VerifyBankAccount ooo::: ${data}");
-    debugPrint("VerifyBankAccount final::: ${response.statusCode}");
-    debugPrint("VerifyBankAccount final::: ${response.body}");
-
-    return response.statusCode == 201;
+    if (response.statusCode == 201) {
+      var jsonData = json.decode(response.body);
+      Map<String, dynamic> result = {
+        "status": 201,
+        "results": jsonData,
+      };
+      return result;
+    } else {
+      Map<String, dynamic> result = {
+        "status": response.statusCode,
+        "results": response.body,
+      };
+      return result;
+    }
   }
 
-  Future<bool?> verifyBankAccount(Map data) async {
+  Future<Map<String, dynamic>?> verifyBankAccount(Map data) async {
     String? accountNumber = data['account_number'];
     String? bankCode = data['bank_code'];
-    String? username = data['customer_username'];
-    String? slug = data['bank_slug'];
-    var isDefault = data['is_default'];
 
     var url = AppConfig.baseUrl +
         "/api/v1/bankly/transfers/lookup/$accountNumber/$bankCode/";
@@ -197,27 +203,10 @@ class PaymentAndBankingAuth extends AuthService {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
 
-      Map info = {
-        "customer_username": username,
-        "bank": slug,
-        "account_name": jsonData['account_name'],
-        "account_number": jsonData['account_number'],
-        "is_default": isDefault,
+      Map<String, dynamic> result = {
+        "results": jsonData,
       };
-
-      // Future<bool> res = addBankAccount(info);
-
-      ///add bank account
-      var urlAdd = AppConfig.baseUrl + "/api/v1/transactions/add-bank-account/";
-
-      var headersAdd = await getAuthHeaders();
-      var _data = jsonEncode(info);
-      var responseAdd =
-          await httpPost(urlAdd, headers: headersAdd, body: _data);
-
-      // debugPrint("VerifyBankAccount final::: ${responseAdd.body}");
-
-      return responseAdd.statusCode == 201;
+      return result;
     } else {
       return null;
       // throw "Can't get https.";
@@ -755,6 +744,8 @@ class PaymentAndBankingAuth extends AuthService {
     var headers = await getAuthHeaders();
     var _data = jsonEncode(data);
     var response = await httpPost(url, headers: headers, body: _data);
+
+    debugPrint('MAKE PAYMENT ::: ${response.body}');
     return response;
   }
 

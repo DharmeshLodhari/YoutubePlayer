@@ -32,7 +32,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   late UserBloc userBloc;
   late BankAccountBloc bankAccountBloc;
 
-  int? amount;
+  int? amount = 0;
   String errorMessage = "";
   int? accountBalance = 0;
 
@@ -219,7 +219,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
       onChanged: (val) {
         if (mounted) {
           setState(() {
-            amount = int.parse(val.replaceAll(',', ''));
+            amount = int.parse(val.replaceAll(",", "").split(".")[0]);
           });
         }
       },
@@ -254,6 +254,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
     if (_formKey.currentState!.validate()) {
       debugPrint(
           "virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ${virtualAccount?.accountTier?.dailyCumulativeTransactionLimit!}");
+
       if (amount! <=
           int.parse(
               virtualAccount?.accountTier?.dailyCumulativeTransactionLimit! ??
