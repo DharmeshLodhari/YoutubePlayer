@@ -51,3 +51,12 @@ Color getUserTypeColorByType({required String type}) {
           : naturalGreen
       : navyBlue;
 }
+
+String trimString(String input) {
+  List<String> words = input.split(' ');
+  if (words.length > 30) {
+    words = words.sublist(0, 30);
+    input = words.join(' ') + '...';
+  }
+  return input;
+}

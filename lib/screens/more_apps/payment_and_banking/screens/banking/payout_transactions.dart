@@ -133,10 +133,14 @@ class _PayoutTransactionsState extends State<PayoutTransactions> {
               } else {
                 return Container(
                   padding: EdgeInsets.symmetric(vertical: 2),
-                  child: PayoutTile(
-                    payout: payoutList[index],
-                    key: Key(
-                        "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+                  child: Column(
+                    children: [
+                      PayoutTile(
+                        payout: payoutList[index],
+                        key: Key(
+                            "Payout:${payoutList[index].uuid! + payoutList[index].timeStamp!}"),
+                      ),
+                    ],
                   ),
                 );
               }

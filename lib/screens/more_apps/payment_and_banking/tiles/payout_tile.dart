@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../utils/colors.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 class PayoutTile extends StatelessWidget {
   final Payout? payout;
@@ -58,26 +59,7 @@ class PayoutTile extends StatelessWidget {
   }
 
   Widget getLeading() {
-    return ClipOval(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(myGlobals.navigationKey.currentContext!)
-              .pushNamed("/photo-viewer", arguments: payout!.bankLogo);
-        },
-        child: CachedNetworkImage(
-          imageUrl: payout!.bankLogo!,
-          height: 48,
-          width: 48,
-          colorBlendMode: BlendMode.darken,
-          fit: BoxFit.fill,
-          errorWidget: imageErrorWidget,
-          filterQuality: FilterQuality.high,
-          placeholder: (context, url) => payout!.bankLogo == ""
-              ? Icon(Icons.account_balance)
-              : CircularLoadingIndicator(),
-        ),
-      ),
-    );
+    return checkBankImage();
   }
 
   Color getStatusColor(String? status) {
@@ -92,7 +74,7 @@ class PayoutTile extends StatelessWidget {
 
   Widget getTitle() {
     return Text(
-      payout!.bankName!,
+      trimString(payout!.bankName!),
       style: TextStyle(
         color: blackFont,
         fontWeight: FontWeight.w600,
@@ -111,5 +93,42 @@ class PayoutTile extends StatelessWidget {
       overflow: TextOverflow.visible,
       style: TextStyle(color: darkGrey, fontSize: 10),
     );
+  }
+
+  Widget checkBankImage() {
+    String? url = payout!.bankLogo;
+
+    String imageUrl = url!.replaceAll('https//', 'https://');
+    if (payout!.bankName! == "") {
+      return CircleAvatar(
+        backgroundColor: navyBlue,
+        radius: 25,
+        child: Text(
+          getInitials(payout!.bankName!).toUpperCase(),
+          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+        ),
+      );
+    } else {
+      return ClipOval(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(myGlobals.navigationKey.currentContext!)
+                .pushNamed("/photo-viewer", arguments: imageUrl);
+          },
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            height: 48,
+            width: 48,
+            colorBlendMode: BlendMode.darken,
+            fit: BoxFit.fill,
+            errorWidget: imageErrorWidget,
+            filterQuality: FilterQuality.high,
+            placeholder: (context, url) => payout!.bankLogo == ""
+                ? Icon(Icons.account_balance)
+                : CircularLoadingIndicator(),
+          ),
+        ),
+      );
+    }
   }
 }
