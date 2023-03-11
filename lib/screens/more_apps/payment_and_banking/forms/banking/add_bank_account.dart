@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/bank_list.dart';
-import 'package:Slydo/screens/more_apps/payment_and_banking/models/transactions.dart';
 import 'package:Slydo/utils/colors.dart';
 import 'package:Slydo/utils/util.dart';
 import 'package:Slydo/widget/curved_btn.dart';
@@ -11,13 +12,15 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
 import '../../../../../data/environment.dart';
 import '../../../../../locale/app_localization.dart';
 import '../../../../../routes/route_constants.dart';
 import '../../../../../utils/slydo_app_icon_icons.dart';
+import '../../../../../widget/dialog.dart';
 import '../../../../../widget/noItemInList.dart';
+import '../../../../../widget/rounded_background_icon.dart';
 import '../../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
+import '../../models/transactions.dart';
 import '../../payment_and_banking_auth.dart';
 
 class AddAccount extends StatefulWidget {
@@ -41,7 +44,8 @@ class _AddAccountState extends State<AddAccount> {
   int count = 0;
   bool noList = false;
   bool isLoading = false;
-  List<BankModel>? bankList = [];
+  List<BankModel> bankList = [];
+  List searchedProductAndService = [];
   BankModel? selectedBank;
   final bankController = TextEditingController();
 
@@ -91,6 +95,9 @@ class _AddAccountState extends State<AddAccount> {
           size: 24,
         ),
         onPressed: () {
+          if (isLoading) {
+            return;
+          }
           Navigator.pop(context);
         },
       ),
@@ -103,6 +110,10 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   Widget scaffoldBody() {
+    if (isLoading) {
+      return _buildLoadingIndicator();
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -346,44 +357,127 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   void onSubmit(String? userName) async {
-    final BankAccountBloc bankAccountBloc =
-        Provider.of<BankAccountBloc>(context, listen: false);
     if (_formKey.currentState!.validate()) {
+      isLoading = true;
+      if (mounted) setState(() {});
+
       Map data = {
-        "customer_username": userName,
-        "bank": bankName,
         "bank_code": selectedBank!.providerCode,
-        "bank_slug": selectedBank!.slug,
-        "account_name": accountName,
         "account_number": accountNumber,
-        "is_default": isDefault,
       };
-      bool wasSuccessful = false;
 
       try {
-        wasSuccessful = (await _auth.verifyBankAccount(data))!;
-        // wasSuccessful = (await _auth.addBankAccount(data))!;
-      } catch (error) {}
-      if (wasSuccessful) {
-        BankAccount _bankAccount;
-        await _auth.getBankAccounts().then((accounts) {
-          try {
-            _bankAccount = accounts[0];
-            if (_bankAccount != null) {
-              bankAccountBloc.bankAccount = _bankAccount;
-            }
-          } catch (e) {}
-        });
-        Navigator.pop(context);
-        Navigator.of(context).popAndPushNamed('/bank-account-list');
-      } else {
-        if (mounted) {
-          setState(() {
-            errorMessage = AppLocalization.of(context)!.errorMsg1;
-          });
+        Map<String, dynamic>? result = await _auth.verifyBankAccount(data);
+
+        isLoading = false;
+        if (mounted) setState(() {});
+
+        if (result == null) {
+          showToast(message: 'Unable to validate account');
+          return;
         }
+
+        var tempList = result['results'];
+
+        showDialogBox(
+          context: context,
+          actionOneTextColor: white,
+          actionOneBgColor: mateRed,
+          actionTwoTextColor: blackFont,
+          actionTwoBgColor: greyBorderColor,
+          title: AppLocalization.of(context)!.addAccount,
+          actionTwoText: AppLocalization.of(context)!.cancel,
+          actionOneText: AppLocalization.of(context)!.continueMsg,
+          description:
+              "Add this account details: \nAccount Number: ${tempList['account_number']} \nAccount Name: ${tempList['account_name']} \nBank Name: ${tempList['bank_name']}",
+          roundedBackgroundIcon: RoundedBackgroundIcon(
+            width: 90,
+            height: 90,
+            enableMargin: false,
+            image: Image.asset('assets/images/accept_dialog_icon.png'),
+          ),
+          leftButtonOnPressed: () {
+            onAddAccount(userName, tempList);
+          },
+        );
+      } catch (error) {
+        isLoading = false;
+        if (mounted) setState(() {});
+        // showToast(message: error.toString());
       }
     }
+  }
+
+  void onAddAccount(String? userName, Map tempList) async {
+    final BankAccountBloc bankAccountBloc =
+        Provider.of<BankAccountBloc>(context, listen: false);
+
+    isLoading = true;
+    if (mounted) setState(() {});
+
+    Map data = {
+      "customer_username": userName,
+      "bank": selectedBank!.slug,
+      "account_name": tempList['account_name'],
+      "account_number": tempList['account_number'],
+      "is_default": isDefault,
+    };
+
+    Map<String, dynamic>? result = await _auth.addBankAccount(data);
+
+    isLoading = false;
+    if (mounted) setState(() {});
+
+    if (result == null) {
+      showToast(message: 'Unable to add account');
+      return;
+    }
+
+    if (result['status'] == 201) {
+      BankAccount _bankAccount;
+      await _auth.getBankAccounts().then((accounts) {
+        try {
+          _bankAccount = accounts[0];
+          if (_bankAccount != null) {
+            bankAccountBloc.bankAccount = _bankAccount;
+          }
+        } catch (e) {
+          isLoading = false;
+          if (mounted) {
+            setState(() {
+              errorMessage = AppLocalization.of(context)!.errorMsg1;
+            });
+          }
+        }
+      });
+      Navigator.pop(context);
+      Navigator.of(context).popAndPushNamed('/bank-account-list');
+    } else {
+      dynamic jsonObject = jsonDecode(result['results']);
+      // debugPrint("Fola final 11::: ${jsonObject['non_field_errors'][0]}");
+      showToast(message: jsonObject['non_field_errors'][0].toString());
+      isLoading = false;
+      if (mounted) {
+        setState(() {
+          errorMessage = AppLocalization.of(context)!.errorMsg1;
+        });
+      }
+    }
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Opacity(
+      opacity: isLoading ? 1.0 : 00,
+      child: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation(navyBlue),
+                backgroundColor: Colors.transparent,
+              ),
+            )
+          : Container(),
+    );
   }
 
   Widget getUserAgreeCheckBoxWidget() {
@@ -582,9 +676,10 @@ class _AddAccountState extends State<AddAccount> {
             GestureDetector(
               onTap: () {
                 bottomSheetSearchIndex = 0;
-                clearSearchedListItems();
+                // clearSearchedListItems();
                 bottomSheetStateSetterGlobal!(() {});
-                setState(() {});
+
+                if (mounted) setState(() {});
                 searchBankList();
               },
               child: Container(
@@ -724,14 +819,14 @@ class _AddAccountState extends State<AddAccount> {
   }
 
   void clearSearchedListItems() {
-    bankList!.clear();
+    bankList.clear();
     count = 0;
     next = "";
     previous = "";
     searchItemTextController.text = "";
     if (bottomSheetStateSetterGlobal != null) if (bottomSheetMounted)
       bottomSheetStateSetterGlobal!(() {});
-    if (mounted) setState(() {});
+    // if (mounted) setState(() {});
   }
 
   Widget buildBankList() {
@@ -744,14 +839,14 @@ class _AddAccountState extends State<AddAccount> {
             padding: EdgeInsets.symmetric(vertical: 4),
             //+1 for progressbar
             shrinkWrap: true,
-            itemCount: bankList!.length,
+            itemCount: bankList.length + 1,
             itemBuilder: (BuildContext context, int index) {
-              if (index == bankList!.length) {
+              if (index == bankList.length) {
                 return _buildIndicatorForBankList();
               } else {
                 return GestureDetector(
                     onTap: () {
-                      selectedBank = bankList![index];
+                      selectedBank = bankList[index];
 
                       bankController.text = selectedBank!.name!;
 
@@ -760,7 +855,15 @@ class _AddAccountState extends State<AddAccount> {
 
                       FocusScope.of(context).requestFocus();
                     },
-                    child: getResultTile(bankList![index]));
+                    child: Column(
+                      children: [
+                        if (bankList.length >= 1) ...[
+                          getResultTile(bankList[index]),
+                        ] else ...[
+                          // print('The array does not have a second element.');
+                        ]
+                      ],
+                    ));
               }
             },
             controller: _scrollController,

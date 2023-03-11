@@ -253,8 +253,14 @@ class _BankAccountListState extends State<BankAccountList> {
         decoration: decorateBox(),
         child: ListTile(
           dense: account.isDefault! ? true : false,
-          title: getTitle(account: account),
-          subtitle: getSubtitle(account: account),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              getAccountName(account: account),
+              getAccountNumber(account: account)
+            ],
+          ),
+          subtitle: getBankName(account: account),
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context)
@@ -267,7 +273,7 @@ class _BankAccountListState extends State<BankAccountList> {
     );
   }
 
-  Widget getTitle({required BankAccount account}) {
+  Widget getBankName({required BankAccount account}) {
     if (account.isDefault!) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,7 +285,7 @@ class _BankAccountListState extends State<BankAccountList> {
             account.bankName!,
             maxLines: 1,
             style: TextStyle(
-                color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+                color: darkGrey, fontWeight: FontWeight.normal, fontSize: 15),
           ),
         ],
       );
@@ -287,11 +293,28 @@ class _BankAccountListState extends State<BankAccountList> {
     return Text(
       account.bankName!,
       style: TextStyle(
-          color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+          color: darkGrey, fontWeight: FontWeight.normal, fontSize: 15),
     );
   }
 
-  Widget getSubtitle({required BankAccount account}) {
+  Widget getAccountName({required BankAccount account}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          account.accountName!,
+          maxLines: 1,
+          style: TextStyle(
+              color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+      ],
+    );
+  }
+
+  Widget getAccountNumber({required BankAccount account}) {
     if (account.isDefault!) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,16 +334,23 @@ class _BankAccountListState extends State<BankAccountList> {
             AppLocalization.of(context)!.defaultMsg,
             style: TextStyle(color: darkGrey, fontSize: 12),
           ),
-          SizedBox(
-            height: 4,
-          ),
+          // SizedBox(
+          //   height: 4,
+          // ),
         ],
       );
     }
-    return Text(
-      getFormattedAccountNumber(
-          accountNumber: account.accountNumber!.toString()),
-      style: TextStyle(color: darkGrey, fontSize: 12),
+    return Column(
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          getFormattedAccountNumber(
+              accountNumber: account.accountNumber!.toString()),
+          style: TextStyle(color: darkGrey, fontSize: 12),
+        ),
+      ],
     );
   }
 
