@@ -1005,14 +1005,17 @@ class _SendPaymentState extends State<SendPayment> {
                   }
 
                   deviceData = await getDeviceInfo();
+
+                  String description = 'General Payment';
                   var data = {
                     "from_customer": userBloc.user.userName,
                     "to_customer": _recipientController.text.trim(),
                     "currency": userBloc.user.currency,
                     "amount": moneyInputNormalizer(amount.toString()),
                     "category": selectedCategory!.trim(),
-                    "notes": reference.trim(),
-                    "description": reference.trim(),
+                    "notes": reference.isEmpty ? description : reference.trim(),
+                    "description":
+                        reference.isEmpty ? description : reference.trim(),
                     "latitude": Platform.isIOS ? userLocation.latitude : "",
                     "longitude": Platform.isIOS ? userLocation.longitude : "",
                     "deviceData": deviceData,

@@ -278,11 +278,8 @@ class _BankAccountListState extends State<BankAccountList> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(
-            height: 8,
-          ),
           Text(
-            account.bankName!,
+            trimString(account.bankName!),
             maxLines: 1,
             style: TextStyle(
                 color: darkGrey, fontWeight: FontWeight.normal, fontSize: 15),
@@ -305,7 +302,7 @@ class _BankAccountListState extends State<BankAccountList> {
           height: 8,
         ),
         Text(
-          account.accountName!,
+          trimString(account.accountName!),
           maxLines: 1,
           style: TextStyle(
               color: blackFont, fontWeight: FontWeight.bold, fontSize: 15),
@@ -322,20 +319,23 @@ class _BankAccountListState extends State<BankAccountList> {
           SizedBox(
             height: 4,
           ),
-          Text(
-            getFormattedAccountNumber(
-                accountNumber: account.accountNumber!.toString()),
-            style: TextStyle(color: darkGrey, fontSize: 12),
-          ),
-          SizedBox(
-            height: 2,
-          ),
-          Text(
-            AppLocalization.of(context)!.defaultMsg,
-            style: TextStyle(color: darkGrey, fontSize: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                getFormattedAccountNumber(
+                    accountNumber: account.accountNumber!.toString()),
+                style: TextStyle(color: darkGrey, fontSize: 12),
+              ),
+              Text(
+                AppLocalization.of(context)!.defaultMsg,
+                style: TextStyle(color: darkGrey, fontSize: 12),
+              ),
+            ],
           ),
           // SizedBox(
-          //   height: 4,
+          //   height: 2,
           // ),
         ],
       );

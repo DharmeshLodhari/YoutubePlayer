@@ -175,10 +175,6 @@ class _AddAccountState extends State<AddAccount> {
                   SizedBox(
                     height: 20,
                   ),
-                  getAccountName(),
-                  SizedBox(
-                    height: 20,
-                  ),
                   getAccountNumber(),
                   SizedBox(
                     height: 20,
@@ -286,22 +282,6 @@ class _AddAccountState extends State<AddAccount> {
     );
   }
 
-  Widget getAccountName() {
-    return CustomizedTextFormField(
-      labelText: AppLocalization.of(context)!.accountNameHint,
-      validator: (val) => val.length < 5
-          ? AppLocalization.of(context)!.validationTextMessage
-          : null,
-      onChanged: (val) {
-        if (mounted) {
-          setState(() {
-            accountName = val;
-          });
-        }
-      },
-    );
-  }
-
   Widget getAccountNumber() {
     return CustomizedTextFormField(
       labelText: AppLocalization.of(context)!.accountNumber,
@@ -382,7 +362,7 @@ class _AddAccountState extends State<AddAccount> {
         showDialogBox(
           context: context,
           actionOneTextColor: white,
-          actionOneBgColor: mateRed,
+          actionOneBgColor: naturalGreen,
           actionTwoTextColor: blackFont,
           actionTwoBgColor: greyBorderColor,
           title: AppLocalization.of(context)!.addAccount,
