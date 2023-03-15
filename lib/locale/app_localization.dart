@@ -476,6 +476,13 @@ class AppLocalization {
     );
   }
 
+  String get registerTopInformation {
+    return Intl.message(
+      "Please enter your phone number. This phone number must be the one registered with your BVN",
+      name: "registerTopInformation",
+    );
+  }
+
   String get search {
     return Intl.message(
       "Search",
@@ -2849,6 +2856,13 @@ class AppLocalization {
     return Intl.message(
       "Putting Misleading Info May Results In Delays Or Lost of Money.",
       name: "bankAccountUserAgreeTerm",
+    );
+  }
+
+  String get registerAccountUserAgreeTerm {
+    return Intl.message(
+      "I confirm that this number is valid and I can receive OTP with it to continue this registration.",
+      name: "registerAccountUserAgreeTerm",
     );
   }
 

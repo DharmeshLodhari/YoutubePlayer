@@ -30,7 +30,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
     with SingleTickerProviderStateMixin {
   UserTabView? _currentUser;
   String? searchedUserName;
-  late CustomerProfile searchedUser;
+  CustomerProfile? searchedUser;
   bool? isOwner;
   bool appBarStatus = true;
   ScrollController? scrollController;
@@ -57,12 +57,12 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
         ),
         UserTab(
           label: "Moment",
-          child: momentTab(searchedUser),
+          child: momentTab(searchedUser!),
           apiCall: () async => await fetchMomentData(searchedUserName),
         ),
         UserTab(
           label: "Post",
-          child: postTab(searchedUser),
+          child: postTab(searchedUser!),
           apiCall: () async => await fetchPostData(searchedUserName),
         ),
         UserTab(
@@ -125,7 +125,7 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
         return <Widget>[
           GetAppbarTile(
-            searchedUser: searchedUser,
+            searchedUser: searchedUser!,
             isLoading: widget.isLoading,
             isShrink: isShrink,
             scrollController: scrollController,
@@ -243,8 +243,8 @@ class _DefaultUserProfileScreenState extends State<DefaultUserProfileScreen>
       title: widget.isLoading
           ? SizedBox.shrink()
           : userNameWithVerifiedIcon(
-              name: searchedUser.displayName()!,
-              isVerified: searchedUser.isVerified),
+              name: searchedUser!.displayName()!,
+              isVerified: searchedUser!.isVerified),
     );
   }
 

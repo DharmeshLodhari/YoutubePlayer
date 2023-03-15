@@ -39,7 +39,7 @@ import '../../messaging/message_auth.dart';
 import '../screens/user_profile_module_new/utils.dart';
 
 class GetAppbarTile extends StatefulWidget {
-  final CustomerProfile searchedUser;
+  CustomerProfile? searchedUser;
   bool isLoading = true;
   bool isShrink = false;
   ScrollController? scrollController;
@@ -61,7 +61,7 @@ class GetAppbarTile extends StatefulWidget {
 }
 
 class _GetAppbarTileState extends State<GetAppbarTile> {
-  late CustomerProfile? searchedUser = widget.searchedUser;
+  CustomerProfile? searchedUser;
   late UserBloc userBloc;
   bool isOwner = false;
   String? searchedUserName;
@@ -74,6 +74,8 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
   late CustomerProfileBloc customerProfileBloc;
   Map<String, dynamic>? channelDetail;
   bool isLoading = false;
+  bool hasAddress = false;
+  bool hasContact = false;
 
   @override
   void initState() {
@@ -81,6 +83,12 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
 
     if (widget.channelDetail != null) {
       channelDetail = widget.channelDetail;
+
+      if (mounted) setState(() {});
+    }
+
+    if (widget.searchedUser != null) {
+      searchedUser = widget.searchedUser;
 
       if (mounted) setState(() {});
     }
@@ -94,12 +102,15 @@ class _GetAppbarTileState extends State<GetAppbarTile> {
     customerProfileBloc = Provider.of<CustomerProfileBloc>(context);
     yarnDashboardBloc = Provider.of<YarnDashboardBloc>(context, listen: false);
 
-    bool hasAddress =
-        searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
-            (searchedUser!.userAbout?.userAddress?.addressLine1?.isNotEmpty ??
-                false);
-    bool hasContact = searchedUser!.userAbout?.contact != null &&
-        (searchedUser?.userAbout?.contact.isNotEmpty ?? false);
+    if (searchedUser != null) {
+      hasAddress = searchedUser!.userAbout?.userAddress?.addressLine1 != null &&
+          (searchedUser!.userAbout?.userAddress?.addressLine1?.isNotEmpty ??
+              false);
+      hasContact = searchedUser!.userAbout?.contact != null &&
+          (searchedUser?.userAbout?.contact.isNotEmpty ?? false);
+
+      if (mounted) setState(() {});
+    }
 
     if (userBloc.user.userName == searchedUser?.userName) {
       isOwner = true;

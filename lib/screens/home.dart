@@ -504,6 +504,10 @@ class _HomeState extends State<Home> {
             } else {
               showToast(message: 'Payment not available at the moment');
             }
+            // Navigator.of(context)
+            //     .pushNamed(Routes.REQUEST_PAYMENT, arguments: <String, bool>{
+            //   'isFromProfile': true,
+            // });
           }),
     );
   }
@@ -543,6 +547,8 @@ class _HomeState extends State<Home> {
             } else {
               showToast(message: 'Payment not available at the moment');
             }
+            // Navigator.of(context).pushNamed(Routes.SEND_PAYMENT,
+            //     arguments: <String, bool>{'isFromProfile': true});
           }),
     );
   }

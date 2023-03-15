@@ -1020,8 +1020,8 @@ class _YarnQuestionTileForChatState extends State<YarnQuestionTileForChat> {
         onDeleteBlog: () {},
       );
     } else if (yarn.attachmentType == 'profile') {
-      logger.d("profile yarn.attachment: ${yarn.attachment}, ${yarn.id}");
-      logger.d("profile yarn.createdAt: ${yarn.createdAt}");
+      // logger.d("profile yarn.attachment: ${yarn.attachment}, ${yarn.id}");
+      // logger.d("profile yarn.createdAt: ${yarn.createdAt}");
       CustomerProfile customerProfile =
           CustomerProfile.fromJson(yarn.attachment ?? {});
       childWidget = YarnCustomerPostTile(

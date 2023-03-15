@@ -1423,26 +1423,30 @@ class _ChatScreenGroupMessageState extends State<ChatScreenGroupMessage>
         ),
       ),
       actions: [
-        GestureDetector(
-          onTap: () async {
-            stopShakeDetector();
-            if (chatConversation!.isGroupConversation!) {
-              navigateToGroupDetailScreen();
-            } else {
-              await Navigator.pushNamed(context, Routes.USER_PROFILE,
-                  arguments: {"searchedUserName": chatConversation!.userName});
-            }
-            setupShakeDetector();
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: Icon(
-              Icons.settings,
-              color: blackFont,
-              size: 22,
+        if (chatConversation!.isGroupConversation!) ...[
+          GestureDetector(
+            onTap: () async {
+              stopShakeDetector();
+              if (chatConversation!.isGroupConversation!) {
+                navigateToGroupDetailScreen();
+              } else {
+                await Navigator.pushNamed(context, Routes.USER_PROFILE,
+                    arguments: {
+                      "searchedUserName": chatConversation!.userName
+                    });
+              }
+              setupShakeDetector();
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Icon(
+                Icons.settings,
+                color: blackFont,
+                size: 22,
+              ),
             ),
           ),
-        ),
+        ]
       ],
     );
   }

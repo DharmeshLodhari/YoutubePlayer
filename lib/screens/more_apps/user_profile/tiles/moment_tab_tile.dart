@@ -13,7 +13,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MomentsTab extends StatefulWidget {
-  CustomerProfile searchedUser;
+  CustomerProfile? searchedUser;
   MomentsTab({Key? key, required this.searchedUser}) : super(key: key);
 
   @override
@@ -46,29 +46,33 @@ class _MomentsTabState extends State<MomentsTab> {
             isMyMomentsLoading = true;
           });
         }
-        await MomentsService()
-            .getMomentsWithOwnerName(ownerName: widget.searchedUser.userName!)
-            .then(
-          (myMomentsModelList) {
-            isMyMomentsLoading = false;
-            myMomentsList.addAll(myMomentsModelList);
 
-            if (mounted) setState(() {});
+        if (widget.searchedUser != null) {
+          await MomentsService()
+              .getMomentsWithOwnerName(
+                  ownerName: widget.searchedUser!.userName!)
+              .then(
+            (myMomentsModelList) {
+              isMyMomentsLoading = false;
+              myMomentsList.addAll(myMomentsModelList);
 
-            if (isFirstTime && myMomentsNext != null && myMomentsNext != "") {
-              isFirstTime = false;
-              getSearchedUserMoments();
-            }
-          },
-        ).catchError(
-          (error) {
-            isMyMomentsLoading = false;
+              if (mounted) setState(() {});
 
-            if (mounted) setState(() {});
+              if (isFirstTime && myMomentsNext != null && myMomentsNext != "") {
+                isFirstTime = false;
+                getSearchedUserMoments();
+              }
+            },
+          ).catchError(
+            (error) {
+              isMyMomentsLoading = false;
 
-            debugPrint('ERROR GETTING MY MOMENTS -> $error');
-          },
-        );
+              if (mounted) setState(() {});
+
+              debugPrint('ERROR GETTING MY MOMENTS -> $error');
+            },
+          );
+        }
       }
     }
   }
