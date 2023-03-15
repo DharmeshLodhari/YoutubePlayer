@@ -7,6 +7,7 @@ import 'package:Slydo/data/state_notifier.dart';
 import 'package:Slydo/locale/app_localization.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/VirtualAccount.dart';
 import 'package:Slydo/screens/more_apps/payment_and_banking/models/fee_structure.dart';
+import 'package:Slydo/screens/more_apps/payment_loading_screen.dart';
 import 'package:Slydo/screens/more_apps/shopping/models/store.dart';
 import 'package:Slydo/screens/more_apps/user_profile/models/user.dart';
 import 'package:Slydo/screens/more_apps/user_profile/user_auth.dart';
@@ -976,14 +977,15 @@ class _SendPaymentState extends State<SendPayment> {
         if (userBloc.user.userName != recipient) {
           var userLocation;
           Map deviceData;
+
           try {
             BottomSheetPassCode(
                 context: context,
                 isValidCallback: () async {
                   showDialog(
                       context: context,
-                      builder: (context) =>
-                          Center(child: CircularLoadingIndicator()));
+                      builder: (context) => Center(child: SizedBox()));
+                  // Center(child: CircularLoadingIndicator()));
 
                   if (Platform.isIOS) {
                     userLocation = await locationService.getLocation();
@@ -994,6 +996,19 @@ class _SendPaymentState extends State<SendPayment> {
                   double transactionalAmount = double.parse(amount.toString());
 
                   debugPrint("AMOUNT:- ${amount.toString()}");
+
+                  //show loading screen
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentLoadingScreen(
+                              text: 'Sending Payment...',
+                              imagePath: 'assets/images/app_logo.png',
+                            )),
+                  );
+
+                  await Future.delayed(Duration(seconds: 3));
 
                   if (transactionalAmount > currentBalance) {
                     Navigator.pop(context);
@@ -1031,6 +1046,7 @@ class _SendPaymentState extends State<SendPayment> {
                   await _auth.makePayment(data).then((value) {
                     debugPrint(
                         "status code:- ${value.statusCode}  body:- ${value.body}");
+
                     response = value;
                     if (response.statusCode == 200) {
                       popFromShoppingCart(product);

@@ -31,7 +31,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
     with SingleTickerProviderStateMixin {
   late UserTabView _currentUser;
   String? searchedUserName;
-  late CustomerProfile searchedUser;
+  CustomerProfile? searchedUser;
   bool? isOwner;
   bool appBarStatus = true;
   ScrollController? scrollController;
@@ -44,7 +44,11 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
   @override
   void initState() {
     searchedUserName = widget.searchedUserName!;
-    searchedUser = widget.searchedUser!;
+    if (searchedUser != null) {
+      searchedUser = widget.searchedUser!;
+    }
+
+    debugPrint('Fola data::::${widget.searchedUser}');
     isOwner = widget.isOwner;
 
     // Define the tabs and their corresponding data for each user
@@ -58,12 +62,12 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         ),
         UserTab(
           label: "Moment",
-          child: momentTab(searchedUser),
+          child: momentTab(widget.searchedUser),
           apiCall: () async => await fetchMomentData(searchedUserName),
         ),
         UserTab(
           label: "Post",
-          child: postTab(searchedUser),
+          child: postTab(widget.searchedUser),
           apiCall: () async => await fetchPostData(searchedUserName),
         ),
         UserTab(
@@ -73,22 +77,22 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
         ),
         UserTab(
           label: "Product",
-          child: productTab(searchedUser, isOwner!),
+          child: productTab(widget.searchedUser, isOwner!),
           apiCall: () async => await fetchProductData(searchedUserName),
         ),
         UserTab(
           label: "Service",
-          child: serviceTab(searchedUser, isOwner!),
+          child: serviceTab(widget.searchedUser, isOwner!),
           apiCall: () async => await fetchServiceData(searchedUserName),
         ),
         UserTab(
           label: "Review",
-          child: reviewTab(searchedUser),
+          child: reviewTab(widget.searchedUser),
           apiCall: () async => ['1'],
         ),
         UserTab(
           label: "Hours",
-          child: hoursTab(searchedUser),
+          child: hoursTab(widget.searchedUser),
           apiCall: () async => ['1'],
         ),
       ],
@@ -147,7 +151,7 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
         return <Widget>[
           GetAppbarTile(
-            searchedUser: searchedUser,
+            searchedUser: widget.searchedUser,
             isLoading: widget.isLoading,
             isShrink: isShrink,
             scrollController: scrollController,
@@ -265,8 +269,8 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen>
       title: widget.isLoading
           ? SizedBox.shrink()
           : userNameWithVerifiedIcon(
-              name: searchedUser.displayName()!,
-              isVerified: searchedUser.isVerified),
+              name: searchedUser!.displayName()!,
+              isVerified: searchedUser!.isVerified),
     );
   }
 

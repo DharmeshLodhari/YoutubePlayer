@@ -191,7 +191,7 @@ Widget postTab(CustomerProfile? searchedUser) {
   );
 }
 
-Widget momentTab(CustomerProfile searchedUser) {
+Widget momentTab(CustomerProfile? searchedUser) {
   return KeepAlivePage(
     child: MomentsTab(searchedUser: searchedUser),
   );

@@ -27,6 +27,7 @@ class _RegistrationState extends State<Registration> {
 
   // this variable is responsible to enable and disable submit btn
   bool showButton = false;
+  bool isUserAgree = false;
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +66,19 @@ class _RegistrationState extends State<Registration> {
                     appIcon(),
                     SizedBox(height: 20),
                     registerTitle(),
-                    SizedBox(height: 50),
+                    SizedBox(height: 8),
+                    Text(
+                      AppLocalization.of(context)!.registerTopInformation,
+                      style: TextStyle(color: darkGrey, fontSize: 14),
+                    ),
+                    SizedBox(
+                      height: 50,
+                    ),
                     selectCountryField(),
                     SizedBox(height: 12),
                     phoneNumberField(),
+                    SizedBox(height: 12),
+                    getUserAgreeCheckBoxWidget(),
                     SizedBox(height: 40),
                     continueBtn(),
                     SizedBox(
@@ -204,6 +214,66 @@ class _RegistrationState extends State<Registration> {
     }
   }
 
+  Widget getUserAgreeCheckBoxWidget() {
+    return InkWell(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          ClipRRect(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            child: SizedBox(
+              width: Checkbox.width - 1.5,
+              height: Checkbox.width - 1.5,
+              child: Container(
+                decoration: new BoxDecoration(
+                  border: Border.all(
+                    color: greyBorderColor,
+                    width: 1,
+                  ),
+                  borderRadius: new BorderRadius.circular(5),
+                ),
+                child: Theme(
+                  data: ThemeData(
+                    unselectedWidgetColor: Colors.transparent,
+                  ),
+                  child: Checkbox(
+                    value: isUserAgree,
+                    activeColor: navyBlue,
+                    checkColor: Colors.white,
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                    onChanged: (value) {
+                      // if (mounted) {
+                      //   setState(() {
+                      //     isUserAgree = value;
+                      //   });
+                      // }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Expanded(
+              child: Text(
+            AppLocalization.of(context)!.registerAccountUserAgreeTerm,
+            style: TextStyle(color: blackFont, fontSize: 14),
+          ))
+        ],
+      ),
+      onTap: () {
+        if (mounted) {
+          isUserAgree = !isUserAgree;
+          setState(() {});
+        }
+      },
+    );
+  }
+
   Widget continueBtn() {
     return showButton
         ? CurvedButton(
@@ -217,6 +287,10 @@ class _RegistrationState extends State<Registration> {
 
   void submit() {
     var phoneNumberFromTextField = phoneNumberController.text.trim();
+
+    if (isUserAgree == false) {
+      return showToast(message: "Accept the Terms first");
+    }
 
     if (phoneNumberFromTextField.substring(0, 1) == "0") {
       phoneNumberFromTextField = phoneNumberFromTextField.replaceFirst("0", "");

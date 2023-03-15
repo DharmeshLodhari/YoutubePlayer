@@ -48,6 +48,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   bool isInRequestList = false;
   Map<String, dynamic> channelDetail = {};
+  CustomerProfile? user;
 
   @override
   void initState() {
@@ -65,7 +66,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Future<void> getSearchedUser({bool load = true}) async {
-    late CustomerProfile user;
     searchedUserName = arguments['searchedUserName'].toString();
 
     if (load) {
@@ -108,6 +108,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     }
 
     searchedUser = user;
+    // debugPrint("Fola In Request:::${searchedUser!.userName}");
 
     checkCurrentUserIsInRequestList();
 
@@ -218,20 +219,25 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         isOwner: isOwner,
         isLoading: isLoading,
       );
-    } else if (searchedUser!.type!.toLowerCase() == 'user') {
+    } else if (searchedUser != null &&
+        searchedUser!.type!.toLowerCase() == 'user') {
       return DefaultUserProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
         isOwner: isOwner,
         isLoading: isLoading,
       );
-    } else {
+    } else if (searchedUser != null) {
+      debugPrint("Fola In Request:::${searchedUser}");
+
       return BusinessProfileScreen(
         searchedUser: searchedUser,
         searchedUserName: searchedUserName,
         isOwner: isOwner,
         isLoading: isLoading,
       );
+    } else {
+      return Container();
     }
   }
 }

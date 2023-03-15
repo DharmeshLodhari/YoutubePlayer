@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../payment_loading_screen.dart';
 import '../../payment_and_banking_auth.dart';
 
 class PayoutScreen extends StatefulWidget {
@@ -93,6 +94,9 @@ class _PayoutScreenState extends State<PayoutScreen> {
           size: 24,
         ),
         onPressed: () {
+          if (isLoading == true) {
+            return;
+          }
           Navigator.pop(context);
         },
       ),
@@ -270,10 +274,24 @@ class _PayoutScreenState extends State<PayoutScreen> {
                 showDialog(
                     context: context,
                     builder: (context) =>
-                        Center(child: CircularLoadingIndicator()));
+                        // Center(child: CircularLoadingIndicator()));
+                        Center(child: SizedBox()));
+                //show loading screen
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PaymentLoadingScreen(
+                            text: 'Payout Processing...',
+                            imagePath: 'assets/images/app_logo.png',
+                          )),
+                );
 
                 _auth.accountPayout(data).then((value) {
                   response = value;
+
+                  Navigator.pop(context);
+
                   if (response.statusCode == 201) {
                     Navigator.pop(context);
                     Navigator.of(context).popAndPushNamed('/payout-list');

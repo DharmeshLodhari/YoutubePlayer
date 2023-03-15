@@ -46,6 +46,7 @@ class _UserLoginState extends State<UserLogin> {
 
   //for remember user
   bool isChecked = false;
+  bool isUserAgree = false;
   String? countryFromPref;
   String? phoneNumberFromPref;
   String? passwordFromPref;

@@ -23,6 +23,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../../../search_user.dart';
+import '../../../payment_loading_screen.dart';
 import '../../payment_and_banking_auth.dart';
 
 // ignore: must_be_immutable
@@ -796,8 +797,19 @@ class _RequestPaymentState extends State<RequestPayment> {
                   if (conversationId != null) {
                     data["conversation_id"] = conversationId;
                   }
+                  //show loading screen
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PaymentLoadingScreen(
+                              text: 'Requesting Payment...',
+                              imagePath: 'assets/images/app_logo.png',
+                            )),
+                  );
 
                   await _auth.createPaymentRequests(data).then((value) {
+                    Navigator.pop(context);
                     response = value;
                     if (response.statusCode == 201) {
                       if (!isFromChat!) {
