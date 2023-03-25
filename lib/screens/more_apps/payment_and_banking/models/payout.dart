@@ -5,6 +5,9 @@ class Payout {
   String? bankLogo;
   String? currency;
   String? bankName;
+  String? accountName;
+  String? accountNumber;
+  String? description;
   int? amount;
 
   // Pass in as named parameter in constructor
@@ -15,5 +18,8 @@ class Payout {
       this.bankLogo,
       this.currency,
       this.bankName,
+        this.accountName,
+        this.accountNumber,
+        this.description,
       this.amount});
 }

@@ -49,6 +49,13 @@ class AppLocalization {
     );
   }
 
+  String get accountNumberHint {
+    return Intl.message(
+      "Account Number",
+      name: "accountNumberHint",
+    );
+  }
+
   String get accountNumber {
     return Intl.message(
       "Account Number",

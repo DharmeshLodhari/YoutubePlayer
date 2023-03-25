@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../routes/route_constants.dart';
 import '../../../../utils/colors.dart';
 import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
@@ -18,39 +19,63 @@ class PayoutTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      shadowColor: boxShadowTwo,
-      elevation: 0,
-      child: Container(
-        decoration: decorateBox(),
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 1),
-          child: ListTile(
-            dense: true,
-            leading: getLeading(),
-            title: getTitle(),
-            subtitle: getDateTime(context),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  worldCurrencies[payout!.currency!]!,
-                  style: TextStyle(
-                      fontFamily: "Roboto",
-                      color: getStatusColor(payout!.status),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(Routes.PAYOUT_TRANSACTION_DETAIL,
+            arguments: {'transaction': payout});
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        shadowColor: boxShadowTwo,
+        elevation: 0,
+        child: Container(
+          decoration: decorateBox(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 1),
+            child: ListTile(
+              dense: true,
+              leading: getLeading(),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getBankName(),
+                  getAccountName(),
+                ],
+              ),
+              subtitle: getMaskedAccountNumber(),
+              trailing: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          worldCurrencies[payout!.currency!]!,
+                          style: TextStyle(
+                              fontFamily: "Roboto",
+                              color: getStatusColor(payout!.status),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
+                        ),
+                        Text(
+                          moneyDisplayNormalizer(payout!.amount),
+                          style: TextStyle(
+                              color: getStatusColor(payout!.status),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
+                        )
+                      ],
+                    ),
+                    getDateTime(context),
+                    SizedBox(
+                      height: 2.0,
+                    ),
+                    getPayoutStatus(),
+                  ],
                 ),
-                Text(
-                  moneyDisplayNormalizer(payout!.amount),
-                  style: TextStyle(
-                      color: getStatusColor(payout!.status),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
-                )
-              ],
+              ),
             ),
           ),
         ),
@@ -72,7 +97,7 @@ class PayoutTile extends StatelessWidget {
     }
   }
 
-  Widget getTitle() {
+  Widget getBankName() {
     return Text(
       trimString(payout!.bankName!),
       style: TextStyle(
@@ -100,12 +125,19 @@ class PayoutTile extends StatelessWidget {
 
     String imageUrl = url!.replaceAll('https//', 'https://');
     if (payout!.bankName! == "") {
-      return CircleAvatar(
-        backgroundColor: navyBlue,
-        radius: 25,
-        child: Text(
-          getInitials(payout!.bankName!).toUpperCase(),
-          style: TextStyle(color: white, fontWeight: FontWeight.w700),
+      return GestureDetector(
+        onTap: () {
+          Navigator.of(myGlobals.navigationKey.currentContext!).pushNamed(
+              "/photo-viewer",
+              arguments: getInitials(payout!.bankName!).toUpperCase());
+        },
+        child: CircleAvatar(
+          backgroundColor: navyBlue,
+          radius: 25,
+          child: Text(
+            getInitials(payout!.bankName!).toUpperCase(),
+            style: TextStyle(color: white, fontWeight: FontWeight.w700),
+          ),
         ),
       );
     } else {
@@ -130,5 +162,55 @@ class PayoutTile extends StatelessWidget {
         ),
       );
     }
+  }
+
+  Widget getAccountName() {
+    return Text(
+      trimString(payout!.accountName!),
+      style: TextStyle(
+        color: darkGrey,
+        fontWeight: FontWeight.w600,
+        fontSize: 10,
+      ),
+    );
+  }
+
+  Widget getMaskedAccountNumber() {
+    return Text(
+      getFormattedAccountNumber(
+          accountNumber: payout!.accountNumber!.toString()),
+      style: TextStyle(
+        color: darkGrey,
+        fontWeight: FontWeight.w600,
+        fontSize: 10,
+      ),
+    );
+  }
+
+  Widget getPayoutStatus() {
+    String? status = "";
+    if (payout!.status! == 'Paid' || payout!.status! == 'Settled') {
+      status = 'done';
+    } else if (payout!.status! == 'Pending') {
+      status = 'pend';
+    } else if (payout!.status! == 'Cancelled') {
+      status = 'cancel';
+    }
+
+    return Container(
+      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5.0),
+        color: checkStatusBgColor(status),
+      ),
+      child: Text(
+        trimString(payout!.status!),
+        style: TextStyle(
+          color: checkStatusForColor(status),
+          fontWeight: FontWeight.w600,
+          fontSize: 10,
+        ),
+      ),
+    );
   }
 }

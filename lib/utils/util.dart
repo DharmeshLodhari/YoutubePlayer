@@ -13,6 +13,7 @@ import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -433,6 +434,99 @@ Widget transactionOrKycDetailTile(IconData icon, String title, String subtitle,
       trailing: trailingWidget,
     ),
   );
+}
+
+Widget transactionOrPayoutTile(
+    String path, String title, String subtitle, bool val,
+    {Transaction? transaction,
+    Widget? trailingWidget,
+    TextStyle? subtitleTextStyle}) {
+  debugPrint("Fola ==>$subtitle");
+
+  String? status = "";
+  if (subtitle == 'Paid' || subtitle == 'Settled') {
+    status = 'done';
+  } else if (subtitle == 'Pending') {
+    status = 'pend';
+  } else if (subtitle == 'Cancelled') {
+    status = 'cancel';
+  }
+
+  return Container(
+    child: ListTile(
+      dense: true,
+      leading: Container(
+        padding: const EdgeInsets.all(10.0),
+        margin: const EdgeInsets.only(top: 5.0, bottom: 5.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: navyBlueLight.withOpacity(0.1),
+        ),
+        child: SvgPicture.asset(
+          path,
+          width: 14,
+          height: 14,
+          color: blackFont,
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          color: blackFont,
+          fontSize: 14,
+        ),
+      ),
+      subtitle: Row(
+        children: [
+          Container(
+            padding: status != ""
+                ? EdgeInsets.only(left: 10.0, right: 10, top: 3.0, bottom: 3.0)
+                : EdgeInsets.all(0.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5.0),
+              color: checkStatusBgColor(status),
+            ),
+            child: Text(
+              getCurrency(subtitle, transaction?.currency),
+              style: subtitleTextStyle ??
+                  TextStyle(
+                    color: checkStatusForColor(status),
+                    fontSize: 14,
+                    fontFamily: "roberto",
+                  ),
+            ),
+          ),
+          Container(),
+        ],
+      ),
+      trailing: trailingWidget,
+    ),
+  );
+}
+
+checkStatusBgColor(String status) {
+  if (status == 'done') {
+    return naturalGreen.withOpacity(0.1);
+  } else if (status == 'pend') {
+    return starYellow.withOpacity(0.1);
+  } else if (status == 'cancel') {
+    return mateRed.withOpacity(0.1);
+  } else if (status == "") {
+    return Colors.transparent;
+  }
+}
+
+checkStatusForColor(String status) {
+  if (status == 'done') {
+    return naturalGreen;
+  } else if (status == 'pend') {
+    return starYellow;
+  } else if (status == 'cancel') {
+    return mateRed;
+  } else if (status == "") {
+    return blackFont;
+  }
 }
 
 Widget getSettingTile(
