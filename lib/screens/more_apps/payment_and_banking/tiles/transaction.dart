@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../routes/route_constants.dart';
+import '../../user_profile/screens/user_profile_module_new/profile_template/utils.dart';
 
 // ignore: must_be_immutable
 class PaymentRequestTile extends StatelessWidget {
@@ -223,6 +224,68 @@ class TransactionTile extends StatelessWidget {
   }
 
   Widget getLeading() {
+    // if (transaction!.isAnonymous!) {
+    //   return Container(
+    //     padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+    //     child: Image.asset(
+    //       "assets/images/anonymous.png",
+    //       height: 48,
+    //       width: 48,
+    //       colorBlendMode: BlendMode.darken,
+    //       fit: BoxFit.fitHeight,
+    //     ),
+    //   );
+    // } else if (transaction!.fromCustomer == "") {
+    //   return GestureDetector(
+    //     onTap: () {
+    //       Navigator.of(myGlobals.navigationKey.currentContext!).pushNamed(
+    //           "/photo-viewer",
+    //           arguments:
+    //               getInitials(transaction!.displayFromCustomer).toUpperCase());
+    //     },
+    //     child: CircleAvatar(
+    //       backgroundColor: navyBlue,
+    //       radius: 25,
+    //       child: Text(
+    //         getInitials(transaction!.displayFromCustomer).toUpperCase(),
+    //         style: TextStyle(color: white, fontWeight: FontWeight.w700),
+    //       ),
+    //     ),
+    //   );
+    // } else {
+    //   return Container(
+    //     height: 48,
+    //     width: 48,
+    //     decoration: BoxDecoration(
+    //       borderRadius: BorderRadius.circular(
+    //         25,
+    //       ),
+    //       // border: Border.all(color: borderColor, width: 2),
+    //       border: Border.all(color: Colors.transparent, width: 0),
+    //     ),
+    //     child: GestureDetector(
+    //       onTap: () {
+    //         Navigator.of(myGlobals.navigationKey.currentContext!)
+    //             .pushNamed("/photo-viewer", arguments: transaction!.avatar);
+    //       },
+    //       child: ClipOval(
+    //         child: CachedNetworkImage(
+    //           imageUrl: transaction!.avatar!,
+    //           height: 48,
+    //           errorWidget: imageErrorWidget,
+    //           width: 48,
+    //           colorBlendMode: BlendMode.darken,
+    //           fit: BoxFit.cover,
+    //           filterQuality: FilterQuality.high,
+    //           placeholder: (context, url) => transaction!.avatar == ""
+    //               ? Icon(Icons.person)
+    //               : CircularLoadingIndicator(),
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // }
+
     return transaction!.isAnonymous!
         ? Container(
             padding: EdgeInsets.only(top: 4.0, bottom: 4.0),

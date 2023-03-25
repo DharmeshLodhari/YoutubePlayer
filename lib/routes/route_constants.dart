@@ -42,6 +42,7 @@ class Routes {
   static const String SCAN_QR = "/scan-qr";
   static const String PAYOUT = "/payout";
   static const String PAYOUT_LIST = "/payout-list";
+  static const String PAYOUT_TRANSACTION_DETAIL = "/payout-transaction-detail";
   static const String FORGOT_PASSWORD = "/forgot-password";
   static const String RESET_PASSWORD = "/reset-password";
   static const String CHANGE_PASSWORD = "/change-password";

@@ -769,6 +769,8 @@ class PaymentAndBankingAuth extends AuthService {
       var jsonData = json.decode(response.body);
 
       for (var item in jsonData["results"]) {
+        debugPrint("Fola payout list::: ${item}");
+
         var timeStamp = item["credited_at"] == null
             ? item["created_at"]
             : item["credited_at"];
@@ -781,7 +783,14 @@ class PaymentAndBankingAuth extends AuthService {
           timeStamp: timeStamp,
           bankName: item["customer_bank_account"]["bank"]["short_name"],
           bankLogo: item["customer_bank_account"]["bank"]["logo_url"],
+          accountName: item["customer_bank_account"]["account_name"],
+          accountNumber: item["customer_bank_account"]["account_number"],
         );
+        if (item['description'] == null) {
+          payout.description = "---";
+        } else {
+          payout.description = item['description'];
+        }
         payouts.add(payout);
       }
       Map<String, dynamic> result = {
